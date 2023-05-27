@@ -1,0 +1,161 @@
+
+/*----- Componant: Top Navigation Bar ----- */
+.app-header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  background-color: #009688;
+  z-index: 1030;
+  font-size: 18px;
+  color: white;
+}
+
+
+
+
+.cursor-pointer, .pointer{
+  cursor: pointer !important;
+}
+#questions-content{
+  line-height: 1.8rem;
+  font-size: 1.15rem;
+  font-family: 'ABeeZee', sans-serif;
+  padding-bottom: 30px;
+}
+#questions-content .question-no{
+  font-size: 1.05rem;
+}
+#questions-content .option{
+  padding: 5px 0;
+}
+#questions-content .option-letter{
+  font-weight: 500;
+  padding-right: 4px;
+}
+#questions-content .option-text{
+  padding-left: 4px;
+  vertical-align: baseline;
+}
+#questions-content .option-text *{
+  display: inline !important;
+  vertical-align: middle;
+}
+#questions-content .instruction{
+  font-weight: bold;
+  margin: 10px 0;
+}
+#questions-content .passage{
+  margin: 10px 0;
+  padding: 7px 0;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+#questions-content .passage:empty,
+#questions-content .instruction:empty
+{
+  display: none;
+}
+#questions-content .passage:blank, 
+#questions-content .passage:-moz-only-whitespace, 
+#questions-content .instruction:blank, 
+#questions-content .instruction:-moz-only-whitespace
+{
+  display: none;
+}
+#questions-content .question-numbers-tab{
+  margin-top: 5px;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0e0;
+}
+#questions-content .question-numbers-tab > li{
+  float: left;
+  width: 50px;
+  height: 50px;
+  border: 1px solid #2f2f2f;
+  border-radius: 3px;
+  margin: 0 4px 4px 0;
+  line-height: 45px;
+}
+#questions-content .question-numbers-tab > li.current{
+  font-weight: bold;
+  border-width: 2px;
+  border-color: #003e37;
+}
+#questions-content .question-numbers-tab > li.attempted.current{
+  color: inherit;
+  font-weight: bold;
+  background-color: rgba(0, 150, 136, 0.5);
+}
+#questions-content .question-numbers-tab > li.attempted{
+  background-color: #009688;
+  color: #efefef;
+  font-weight: 500;
+  border-color: #007569;
+  border-width: 2px;
+}
+#exam-layout .question-nav{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #09524b;
+}
+#exam-layout #next-question,
+#exam-layout #previous-question{
+  border: 1px solid #0d1214;
+  border-radius: 0;
+}
+#exam-layout #exam-tabs{
+  position: fixed;
+  top: 43px;
+  z-index: 999;
+  background: #fafafa;
+  left: 0;
+  right: 0;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+
+
+
+.btn-primary {
+  color: #FFF;
+  background-color: #009688;
+  border-color: #009688;
+}
+
+.btn-primary:hover {
+  color: #FFF;
+  background-color: #007065;
+  border-color: #00635a;
+}
+
+.btn-primary:focus, .btn-primary.focus {
+  -webkit-box-shadow: 0 0 0 0 rgba(0, 150, 136, 0.5);
+          box-shadow: 0 0 0 0 rgba(0, 150, 136, 0.5);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

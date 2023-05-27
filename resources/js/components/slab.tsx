@@ -1,0 +1,54 @@
+import React from 'react';
+import { Div } from '@/components/semantic';
+import {
+  BoxProps,
+  Divider,
+  Heading,
+  HeadingProps,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
+
+export const SlabBody = ({ children, ...props }: BoxProps) => (
+  <Div {...props}>{children}</Div>
+);
+
+export const SlabFooter = ({ children, ...props }: BoxProps) => (
+  <Div {...props}>{children}</Div>
+);
+
+interface SlabHeadingProps {
+  title?: string;
+}
+export const SlabHeading = ({
+  children,
+  title,
+  ...props
+}: SlabHeadingProps & HeadingProps) => (
+  <Heading size={'md'} fontWeight={'medium'} {...props}>
+    {title && <Text>{title}</Text>}
+    {children}
+    <Divider mt={2} />
+  </Heading>
+);
+
+export default function Slab({ children, ...props }: BoxProps) {
+  return (
+    <Div
+      border={'solid'}
+      borderWidth={1}
+      borderColor={'gray.200'}
+      rounded={'lg'}
+      px={6}
+      py={4}
+      background={'white'}
+      boxShadow={'0px 2px 6px rgba(0, 0, 0, 0.1)'}
+      w={'full'}
+      {...props}
+    >
+      <VStack align={'stretch'} spacing={4}>
+        {children}
+      </VStack>
+    </Div>
+  );
+}

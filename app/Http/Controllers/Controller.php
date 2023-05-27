@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Arr;
+use App\Core\ErrorCodes;
+use App\Enums\UserRoleType;
+use Illuminate\Routing\ControllerMiddlewareOptions;
+
+class Controller extends BaseController
+{
+  use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+  protected $page = 1;
+  protected $lastIndex = 0;
+  protected $numPerPage = 100;
+
+  public function view($view, $data = [], $merge = [])
+  {
+    if (!isset($data['page'])) {
+      $data['page'] = $this->page;
+    }
+
+    if (!isset($data['numPerPage'])) {
+      $data['numPerPage'] = $this->numPerPage;
+    }
+
+    return view($view, $data, $merge);
+  }
+
+  function redirect($redirect, $ret)
+  {
+    return $redirect
+      ->with($ret['success'] ? 'error' : 'success', $ret['message'])
+      ->withInput()
+      ->withErrors(Arr::get($ret, 'val'));
+  }
+
+  function apiRes(
+    bool $success,
+    string $message,
+    $data = [],
+    $errorCode = ErrorCodes::OK,
+    $httpStatusCode = 200
+  ) {
+    $arr = [
+      'success' => $success,
+      'message' => $message,
+      'data' => $data
+    ];
+
+    return response()->json($arr, $httpStatusCode);
+  }
+
+  function emitResponseRet(array $ret)
+  {
+    $ret['error_code'] = $ret['success'] ? ErrorCodes::OK : ErrorCodes::FAILED;
+
+    return response()->json($ret);
+  }
+
+  function apiEmitResponse($data)
+  {
+    return response()->json($data);
+  }
+
+  protected function onlyAdmins()
+  {
+    $this->middleware(function ($request, $next) {
+      abort_unless(
+        currentUser()->currentInstitutionUser()->role === UserRoleType::Admin,
+        403,
+        'You are not allowed to access this'
+      );
+      return $next($request);
+    });
+  }
+
+  protected function allowedRoles(array $roles): ControllerMiddlewareOptions
+  {
+    return $this->middleware(function ($request, $next) use ($roles) {
+      abort_unless(
+        in_array(currentUser()->currentInstitutionUser()->role, $roles),
+        403,
+        'This role is not part of the allowed roles for this operation'
+      );
+      return $next($request);
+    });
+  }
+
+  protected function ok()
+  {
+    return response()->json(['ok' => true]);
+  }
+}

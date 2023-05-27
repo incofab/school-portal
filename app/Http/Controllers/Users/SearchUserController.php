@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Http\Controllers\Users;
+
+use App\Enums\UserRoleType;
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Support\UITableFilters\UserUITableFilters;
+use Illuminate\Http\Request;
+
+class SearchUserController extends Controller
+{
+  public function __invoke(Request $request)
+  {
+    $institutionUser = currentUser()->currentInstitutionUser();
+    abort_if(
+      in_array($institutionUser->role, [
+        UserRoleType::Alumni,
+        UserRoleType::Student
+      ]),
+      403
+    );
+
+    $query = User::query();
+    UserUITableFilters::make($request->all(), $query)->filterQuery();
+
+    return response()->json([
+      'result' => paginateFromRequest($query)
+    ]);
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "http://mock.examscholars.com/examiner/build/static/css/main.91b0bbaa.chunk.css",
+    "main.js": "http://mock.examscholars.com/examiner/build/static/js/main.ab6af081.chunk.js",
+    "main.js.map": "http://mock.examscholars.com/examiner/build/static/js/main.ab6af081.chunk.js.map",
+    "runtime-main.js": "http://mock.examscholars.com/examiner/build/static/js/runtime-main.10d699f7.js",
+    "runtime-main.js.map": "http://mock.examscholars.com/examiner/build/static/js/runtime-main.10d699f7.js.map",
+    "static/js/2.23de386e.chunk.js": "http://mock.examscholars.com/examiner/build/static/js/2.23de386e.chunk.js",
+    "static/js/2.23de386e.chunk.js.map": "http://mock.examscholars.com/examiner/build/static/js/2.23de386e.chunk.js.map",
+    "static/js/3.5a9e7341.chunk.js": "http://mock.examscholars.com/examiner/build/static/js/3.5a9e7341.chunk.js",
+    "static/js/3.5a9e7341.chunk.js.map": "http://mock.examscholars.com/examiner/build/static/js/3.5a9e7341.chunk.js.map",
+    "index.html": "http://mock.examscholars.com/examiner/build/index.html",
+    "static/css/main.91b0bbaa.chunk.css.map": "http://mock.examscholars.com/examiner/build/static/css/main.91b0bbaa.chunk.css.map",
+    "static/js/2.23de386e.chunk.js.LICENSE.txt": "http://mock.examscholars.com/examiner/build/static/js/2.23de386e.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.10d699f7.js",
+    "static/js/2.23de386e.chunk.js",
+    "static/css/main.91b0bbaa.chunk.css",
+    "static/js/main.ab6af081.chunk.js"
+  ]
+}
