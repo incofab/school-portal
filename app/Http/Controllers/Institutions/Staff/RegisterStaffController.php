@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Institution;
+namespace App\Http\Controllers\Institutions\Staff;
 
 use App\Actions\RecordStaff;
 use App\Http\Controllers\Controller;

@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum Term: string
+enum TermType: string
 {
   case First = 'first';
   case Second = 'second';

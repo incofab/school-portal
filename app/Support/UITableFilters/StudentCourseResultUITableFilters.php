@@ -2,7 +2,7 @@
 
 namespace App\Support\UITableFilters;
 
-use App\Enums\Term;
+use App\Enums\TermType;
 use Illuminate\Validation\Rules\Enum;
 
 class StudentCourseResultUITableFilters extends BaseUITableFilter
@@ -19,7 +19,7 @@ class StudentCourseResultUITableFilters extends BaseUITableFilter
       'course' => ['sometimes', 'integer'],
       'classification' => ['sometimes', 'integer'],
       'academicSession' => ['sometimes', 'integer'],
-      'term' => ['sometimes', new Enum(Term::class)]
+      'term' => ['sometimes', new Enum(TermType::class)]
     ];
   }
 

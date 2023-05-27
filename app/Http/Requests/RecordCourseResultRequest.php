@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\Term;
+use App\Enums\TermType;
 use App\Models\Course;
 use App\Models\Institution;
 use App\Rules\InstitutionStudentRule;
@@ -53,7 +53,7 @@ class RecordCourseResultRequest extends FormRequest
       // ],
       // 'course_id' => ['required', Rule::exists('courses', 'id')],
       'academic_session_id' => ['required', 'exists:academic_sessions,id'],
-      'term' => ['required', new Enum(Term::class)],
+      'term' => ['required', new Enum(TermType::class)],
       'classification_id' => [
         'required',
         Rule::exists('classifications', 'id')

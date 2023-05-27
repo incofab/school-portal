@@ -5,29 +5,13 @@ namespace App\Models;
 use App\Enums\TermType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Validation\Rule;
 
-class CourseResult extends Model
+class ClassResultInfo extends Model
 {
   use HasFactory;
 
   protected $guarded = [];
   protected $casts = ['term' => TermType::class];
-  public function rule()
-  {
-    return [
-      'student_id' => ['required', Rule::exists('students', 'id')]
-    ];
-  }
-  public function student()
-  {
-    return $this->belongsTo(Student::class);
-  }
-
-  public function teacher()
-  {
-    return $this->belongsTo(User::class, 'teacher_user_id', 'id');
-  }
 
   public function course()
   {

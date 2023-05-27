@@ -1,8 +1,8 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\CourseResult;
 
 use App\Enums\ResultRecordingColumn;
-use App\Http\Requests\RecordStudentCourseResultRequest;
+use App\Http\Requests\RecordCourseResultRequest;
 use App\Models\CourseTeacher;
 use Illuminate\Http\UploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -64,7 +64,7 @@ class InsertResultFromRecordingSheet
     $this->validate($data);
 
     foreach ($data as $result) {
-      RecordStudentCourseResult::run(
+      RecordCourseResult::run(
         [...$this->post, ...$result],
         $this->courseTeacher
       );
@@ -73,7 +73,7 @@ class InsertResultFromRecordingSheet
 
   private function validate(array $data)
   {
-    $request = new RecordStudentCourseResultRequest($data);
+    $request = new RecordCourseResultRequest($data);
     $validated = $request->validate();
     return $validated;
   }

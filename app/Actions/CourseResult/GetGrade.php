@@ -1,5 +1,5 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\CourseResult;
 
 use App\Enums\Grade;
 

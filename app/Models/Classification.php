@@ -21,4 +21,19 @@ class Classification extends Model
   {
     return $this->hasMany(Student::class);
   }
+
+  function courseResults()
+  {
+    return $this->hasMany(CourseResult::class);
+  }
+
+  function termResults()
+  {
+    return $this->hasMany(TermResult::class);
+  }
+
+  function sessionResults()
+  {
+    return $this->hasMany(SessionResult::class);
+  }
 }

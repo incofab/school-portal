@@ -70,7 +70,7 @@ class ClassificationController extends Controller
     return $this->ok();
   }
 
-  function delete(Classification $classification)
+  function destroy(Classification $classification)
   {
     abort_unless(
       $classification->institution_id === currentInstitution()->id,

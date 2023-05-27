@@ -54,7 +54,7 @@ class TeacherCoursesController extends Controller
   //   ]);
   // }
 
-  function delete(CourseTeacher $courseTeacher)
+  function destroy(CourseTeacher $courseTeacher)
   {
     $courseTeacher->delete();
     return $this->ok();

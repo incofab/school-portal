@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Institutions\Staff;
 
-use App\Actions\RecordCourseResult;
+use App\Actions\CourseResult\InsertResultFromRecordingSheet;
+use App\Actions\CourseResult\RecordCourseResult;
 use App\Enums\UserRoleType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RecordCourseResultRequest;
@@ -36,13 +37,10 @@ class RecordCourseResultController extends Controller
     ]);
   }
 
-  public function edit(CourseResult $studentCourseResult)
+  public function edit(CourseResult $courseResult)
   {
-    $courseTeacher = CourseTeacher::where(
-      'course_id',
-      $studentCourseResult->course_id
-    )
-      ->where('user_id', $studentCourseResult->teacher_user_id)
+    $courseTeacher = CourseTeacher::where('course_id', $courseResult->course_id)
+      ->where('user_id', $courseResult->teacher_user_id)
       ->first();
 
     $this->validateUser($courseTeacher);
@@ -59,6 +57,21 @@ class RecordCourseResultController extends Controller
     $this->validateUser($courseTeacher);
 
     RecordCourseResult::run($request->validated(), $courseTeacher);
+
+    return response()->json(['ok' => true]);
+  }
+
+  public function upload(
+    RecordCourseResultRequest $request,
+    CourseTeacher $courseTeacher
+  ) {
+    $this->validateUser($courseTeacher);
+
+    InsertResultFromRecordingSheet::run(
+      $request->file('file'),
+      $request->all(),
+      $courseTeacher
+    );
 
     return response()->json(['ok' => true]);
   }

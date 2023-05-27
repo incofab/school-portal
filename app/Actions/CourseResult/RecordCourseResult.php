@@ -1,5 +1,5 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\CourseResult;
 
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;

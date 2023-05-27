@@ -1,5 +1,5 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\CourseResult;
 
 use App\Enums\ResultRecordingColumn;
 use App\Models\Student;
