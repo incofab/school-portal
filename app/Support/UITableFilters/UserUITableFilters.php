@@ -2,7 +2,7 @@
 
 namespace App\Support\UITableFilters;
 
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use Illuminate\Validation\Rules\Enum;
 
 class UserUITableFilters extends BaseUITableFilter
@@ -21,7 +21,7 @@ class UserUITableFilters extends BaseUITableFilter
       'last_name' => ['sometimes', 'string'],
       'name' => ['sometimes', 'string'],
       'email' => ['sometimes', 'string'],
-      'role' => ['sometimes', new Enum(UserRoleType::class)]
+      'role' => ['sometimes', new Enum(InstitutionUserType::class)]
     ];
   }
 

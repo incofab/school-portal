@@ -7,24 +7,37 @@ import {
 } from '@chakra-ui/react';
 import React, { PropsWithChildren } from 'react';
 
+export interface FormProps<
+  Data = Record<string, any>,
+  Errors = Record<keyof Data, string>
+> {
+  data: Data;
+  errors: Errors;
+  processing: boolean;
+}
+
 interface Props {
-  form: WebForm<{
-    [key: string]: string;
+  form: FormProps<{
+    [key: string]: string | { [key: string]: string };
   }>;
   title: string;
+  formKey: string;
 }
 
 export default function FormControlBox({
   form,
   title,
+  formKey,
   children,
   ...props
 }: Props & PropsWithChildren<FormControlProps>) {
+  // console.log('Form', formKey, form);
+
   return (
-    <FormControl isInvalid={!!form.errors.key} {...props}>
+    <FormControl isInvalid={!!form.errors[formKey]} {...props}>
       <FormLabel>{title}</FormLabel>
       {children}
-      <FormErrorMessage>{form.errors.key}</FormErrorMessage>
+      <FormErrorMessage>{form.errors[formKey]}</FormErrorMessage>
     </FormControl>
   );
 }

@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class InstitutionUser extends Model
 {
   use HasFactory;
-
   protected $guarded = [];
+  public $table = 'institution_users';
 
   protected $casts = [
-    'role' => UserRoleType::class
+    'role' => InstitutionUserType::class
   ];
 
   function institution()

@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\Semester;
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use App\Models\Hostel;
 use App\Rules\FailIfRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -57,7 +57,10 @@ class StoreHostelUserRequest extends FormRequest
       'user_ids' => ['required', 'array', 'min:1'],
       'user_ids.*' => [
         'required',
-        Rule::exists('users', 'id')->where('role', UserRoleType::Student->value)
+        Rule::exists('users', 'id')->where(
+          'role',
+          InstitutionUserType::Student->value
+        )
       ],
       'academic_session_id' => ['required', 'exists:academic_sessions,id'],
       'semester' => ['nullable', new Enum(Semester::class)]

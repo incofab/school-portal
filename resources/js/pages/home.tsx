@@ -1,6 +1,6 @@
 import { PageTitle } from '@/components/page-header';
 import useIsAlumni from '@/hooks/use-is-alumni';
-import useIsLecturer from '@/hooks/use-is-lecturer';
+// import useIsLecturer from '@/hooks/use-is-lecturer';
 import useIsStudent from '@/hooks/use-is-student';
 import useSharedProps from '@/hooks/use-shared-props';
 import { UserRoleType } from '@/types/types';
@@ -71,7 +71,7 @@ function DashboardItemCard(prop: ItemCardProps) {
 function home() {
   const { currentUser } = useSharedProps();
   const isStudent = useIsStudent();
-  const isLecturer = useIsLecturer();
+  const isLecturer = false;
   const isAlumni = useIsAlumni();
   const items: ItemCardProps[] = [
     {

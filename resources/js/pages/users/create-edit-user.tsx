@@ -1,6 +1,6 @@
 import React from 'react';
 import { AxiosInstance } from 'axios';
-import '../../../css/dashboard.css';
+// import '../../../css/dashboard.css';
 import { FormControl, VStack, useToast } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';

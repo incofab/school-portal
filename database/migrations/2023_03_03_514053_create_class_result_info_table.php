@@ -46,7 +46,7 @@ return new class extends Migration {
         ->cascadeOnDelete();
 
       $table
-        ->foreign('academic_sessions')
+        ->foreign('academic_session_id')
         ->references('id')
         ->on('academic_sessions')
         ->cascadeOnDelete();

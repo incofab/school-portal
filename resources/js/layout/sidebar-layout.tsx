@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../css/dashboard.css';
+// import '../../css/dashboard.css';
 import {
   Sidebar,
   Menu,
@@ -11,15 +11,15 @@ import {
 } from 'react-pro-sidebar';
 import { SidebarHeader } from '../components/SidebarHeader';
 import { InertiaLink } from '@inertiajs/inertia-react';
-import route from '@/util/route';
-import { Nullable, UserRoleType } from '@/types/types';
+import route, { instRoute } from '@/util/route';
+import { Nullable, InstitutionUserType } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
 import useIsAdmin from '@/hooks/use-is-admin';
 
 interface MenuType {
   label: string;
   icon?: string;
-  roles?: Nullable<UserRoleType[]>;
+  roles?: Nullable<InstitutionUserType[]>;
   route?: string;
 }
 
@@ -28,27 +28,28 @@ interface MenuListType extends MenuType {
 }
 
 export default function SideBarLayout() {
-  const { currentUser } = useSharedProps();
+  const { currentUser, currentInstitution, currentInstitutionUser } =
+    useSharedProps();
   const isAdmin = useIsAdmin();
 
   const menus: MenuListType[] = [
     {
       label: 'Dashboard',
-      route: route('home'),
+      route: instRoute('dashboard'),
     },
     {
-      label: 'Users',
-      roles: [UserRoleType.Admin],
+      label: 'Students',
+      roles: [InstitutionUserType.Admin],
       sub_items: [
         {
-          label: 'All Users',
-          route: route('users.index'),
-          roles: [UserRoleType.Admin],
+          label: 'All Students',
+          route: instRoute('students.index'),
+          roles: [InstitutionUserType.Admin],
         },
         {
-          label: 'Add User',
-          route: route('users.create'),
-          roles: [UserRoleType.Admin],
+          label: 'Add Student',
+          route: instRoute('students.create'),
+          roles: [InstitutionUserType.Admin],
         },
       ],
     },
@@ -57,135 +58,44 @@ export default function SideBarLayout() {
       sub_items: [
         {
           label: 'All Courses',
-          route: route('courses.index'),
+          route: instRoute('courses.index'),
           roles: [
-            UserRoleType.Student,
-            UserRoleType.Admin,
-            UserRoleType.Lecturer,
+            InstitutionUserType.Student,
+            InstitutionUserType.Admin,
+            InstitutionUserType.Teacher,
           ],
         },
         {
           label: 'Add Course',
-          route: route('courses.create'),
-          roles: [UserRoleType.Admin],
+          route: instRoute('courses.create'),
+          roles: [InstitutionUserType.Admin],
         },
         {
-          label: 'Course Registrations',
-          route: route('course-registrations.index', [currentUser]),
+          label: 'Teacher Courses',
+          route: instRoute('course-teachers.index', [1]),
           roles: [
-            UserRoleType.Student,
-            UserRoleType.Admin,
-            UserRoleType.Lecturer,
-          ],
-        },
-        {
-          label: 'Lecturer Courses',
-          route: route('lecturer-courses.index'),
-          roles: [
-            UserRoleType.Student,
-            UserRoleType.Admin,
-            UserRoleType.Lecturer,
+            InstitutionUserType.Student,
+            InstitutionUserType.Admin,
+            InstitutionUserType.Teacher,
           ],
         },
         {
           label: 'Course Results',
-          route: route('course-results.index'),
+          route: instRoute('course-results.index'),
         },
       ],
     },
     {
-      label: 'Faculties',
-      roles: [UserRoleType.Admin],
+      label: 'Classes',
       sub_items: [
         {
-          label: 'All Faculties',
-          route: route('faculties.index'),
-          roles: [UserRoleType.Admin],
+          label: 'All Classes',
+          route: instRoute('classifications.index'),
         },
         {
-          label: 'Add Faculty',
-          route: route('faculties.create'),
-          roles: [UserRoleType.Admin],
-        },
-      ],
-    },
-    {
-      label: 'Departments',
-      roles: [UserRoleType.Admin],
-      sub_items: [
-        {
-          label: 'All Departments',
-          route: route('departments.index'),
-          roles: [UserRoleType.Admin],
-        },
-        {
-          label: 'Add Department',
-          route: route('departments.create'),
-          roles: [UserRoleType.Admin],
-        },
-      ],
-    },
-    {
-      label: 'Hostel',
-      roles: [UserRoleType.Admin, UserRoleType.Student],
-      sub_items: [
-        {
-          label: 'All Hostels',
-          route: route('hostels.index'),
-          roles: [UserRoleType.Admin, UserRoleType.Student],
-        },
-        {
-          label: 'Add New Hostel',
-          route: route('hostels.create'),
-          roles: [UserRoleType.Admin],
-        },
-        ...(currentUser.is_welfare || isAdmin
-          ? [
-              {
-                label: 'Assign Hostel',
-                route: route('hostel-users.create'),
-              },
-            ]
-          : []),
-        {
-          label: 'List Assigned Hostels',
-          route: route('hostel-users.index'),
-          roles: [UserRoleType.Admin, UserRoleType.Student],
-        },
-      ],
-    },
-    {
-      label: 'Academic Sessions',
-      roles: [UserRoleType.Admin],
-      sub_items: [
-        {
-          label: 'All Sessions',
-          route: route('academic-sessions.index'),
-          roles: [UserRoleType.Admin],
-        },
-        {
-          label: 'Add Session',
-          route: route('academic-sessions.create'),
-          roles: [UserRoleType.Admin],
-        },
-      ],
-    },
-    {
-      label: 'Fees',
-      sub_items: [
-        {
-          label: 'All Fees',
-          route: route('fees.index'),
-        },
-        {
-          label: 'Add New Fee',
-          route: route('fees.create'),
-          roles: [UserRoleType.Admin],
-        },
-        {
-          label: 'Payment History',
-          route: route('fee-payments.index', [isAdmin ? '' : currentUser]),
-          roles: [UserRoleType.Admin, UserRoleType.Student],
+          label: 'Add Class',
+          route: instRoute('classifications.create'),
+          roles: [InstitutionUserType.Admin],
         },
       ],
     },
@@ -239,7 +149,7 @@ export default function SideBarLayout() {
       <SidebarHeader style={{ marginBottom: '24px', marginTop: '16px' }} />
       <Menu menuItemStyles={menuItemStyles}>
         {menus.map(function (menu: MenuListType, i: number) {
-          if (menu.roles && !menu.roles.includes(currentUser.role)) {
+          if (menu.roles && !menu.roles.includes(currentInstitutionUser.role)) {
             return;
           }
           if (!menu.sub_items) {
@@ -257,7 +167,7 @@ export default function SideBarLayout() {
               {menu.sub_items.map(function (subItem: MenuListType, i: number) {
                 if (
                   subItem.roles &&
-                  !subItem.roles?.includes(currentUser.role)
+                  !subItem.roles?.includes(currentInstitutionUser.role)
                 ) {
                   return;
                 }

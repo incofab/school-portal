@@ -47,7 +47,7 @@
 			</div>
 			<div class="semibold-text mb-2">
 				<a href="#">Forgot Password</a> | 
-				<a href="{{route('register')}}">Register</a>
+				<a href="{{route('register.create')}}">Register</a>
 			</div>
 			<div class="form-group btn-container">
 				<button class="btn btn-primary btn-block">

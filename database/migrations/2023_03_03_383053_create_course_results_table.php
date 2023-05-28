@@ -22,7 +22,7 @@ return new class extends Migration {
       $table->float('first_assessment')->default(0);
       $table->float('second_assessment')->default(0);
       $table->float('result');
-      $table->float('average')->default(0);
+      // $table->float('average')->default(0);
       $table->unsignedInteger('result_max')->nullable();
       $table->string('grade')->nullable();
       $table->string('remark')->nullable();
@@ -60,7 +60,7 @@ return new class extends Migration {
         ->cascadeOnDelete();
 
       $table
-        ->foreign('academic_sessions')
+        ->foreign('academic_session_id')
         ->references('id')
         ->on('academic_sessions')
         ->cascadeOnDelete();

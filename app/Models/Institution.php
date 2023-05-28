@@ -2,41 +2,31 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Institution extends Model
 {
-  use HasFactory, HasUuids;
+  use HasFactory;
 
-  protected $fillable = [
-    'uuid',
-    'code',
-    'name',
-    'address',
-    'phone',
-    'email',
-    'status'
-  ];
-
+  protected $guarded = [];
   public function getRouteKeyName()
   {
     return 'uuid';
   }
 
-  static function insert($post)
-  {
-    $post['code'] = static::generateInstitutionCode();
+  // static function insert($post)
+  // {
+  //   $post['code'] = static::generateInstitutionCode();
 
-    $data = static::create($post);
+  //   $data = static::create($post);
 
-    if (!$data) {
-      return retF('Error: Data entry failed');
-    }
+  //   if (!$data) {
+  //     return retF('Error: Data entry failed');
+  //   }
 
-    return retS('Registration successful, You can login now', $data);
-  }
+  //   return retS('Registration successful, You can login now', $data);
+  // }
 
   static function generateInstitutionCode()
   {
@@ -62,6 +52,11 @@ class Institution extends Model
   function users()
   {
     return $this->belongsToMany(User::class);
+  }
+
+  function institutionUsers()
+  {
+    return $this->hasMany(InstitutionUser::class);
   }
 
   function createdBy()

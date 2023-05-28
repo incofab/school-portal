@@ -12,26 +12,29 @@ Route::resource('/classifications', Web\ClassificationController::class)
     ->except(['show']);
 Route::get('/students/search', Web\Students\SearchStudentController::class)
     ->name('students.search');
-Route::resource('/students', Web\Students\SearchStudentController::class);
+Route::resource('/students', Web\Students\StudentController::class);
 Route::resource('/staff', Web\Staff\RegisterStaffController::class)->only(['create', 'store']);
+Route::resource('/courses', Web\Staff\RegisterStaffController::class);
 
 // Teacher courses
-Route::get('/teacher-courses/index/{user?}', [Web\Staff\TeacherCoursesController::class, 'index'])
-    ->name('teacher-courses.index');
-Route::get('/teacher-courses/create/{user?}', [Web\Staff\TeacherCoursesController::class, 'create'])
-    ->name('teacher-courses.create');
-Route::post('/teacher-courses/store/{user}', [Web\Staff\TeacherCoursesController::class, 'store'])
-    ->name('teacher-courses.store');
-Route::put('/teacher-courses/{courseTeacher}/destroy', [Web\Staff\TeacherCoursesController::class, 'destroy'])
-    ->name('teacher-courses.destroy');
+Route::get('/course-teachers/index/{user?}', [Web\Staff\TeacherCoursesController::class, 'index'])
+    ->name('course-teachers.index');
+Route::get('/course-teachers/create/{user?}', [Web\Staff\TeacherCoursesController::class, 'create'])
+    ->name('course-teachers.create');
+Route::post('/course-teachers/store/{user}', [Web\Staff\TeacherCoursesController::class, 'store'])
+    ->name('course-teachers.store');
+Route::put('/course-teachers/{courseTeacher}/destroy', [Web\Staff\TeacherCoursesController::class, 'destroy'])
+    ->name('course-teachers.destroy');
 
-Route::get('/course-results/create/{courseTeacher}', [Web\Staff\RecordCourseResultController::class, 'create'])
+Route::get('/course-results/index', [Web\Staff\CourseResultsController::class, 'index'])
+    ->name('course-results.index');
+Route::get('/course-results/create/{courseTeacher}', [Web\Staff\CourseResultsController::class, 'create'])
     ->name('course-results.create');
-Route::get('/course-results/{courseResult}/edit', [Web\Staff\RecordCourseResultController::class, 'edit'])
+Route::get('/course-results/{courseResult}/edit', [Web\Staff\CourseResultsController::class, 'edit'])
     ->name('course-results.edit');
-Route::pos('/course-results/store/{courseTeacher}', [Web\Staff\RecordCourseResultController::class, 'store'])
+Route::post('/course-results/store/{courseTeacher}', [Web\Staff\CourseResultsController::class, 'store'])
     ->name('course-results.store');
-Route::pos('/course-results/upload/{courseTeacher}', [Web\Staff\RecordCourseResultController::class, 'upload'])
+Route::post('/course-results/upload/{courseTeacher}', [Web\Staff\CourseResultsController::class, 'upload'])
     ->name('course-results.store');
 
 

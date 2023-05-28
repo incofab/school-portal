@@ -7,6 +7,6 @@ class InstitutionController extends Controller
 {
   function index()
   {
-    return inertia('institution/dashboard');
+    return inertia('institutions/dashboard');
   }
 }

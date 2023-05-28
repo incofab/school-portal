@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Staff;
 
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseTeacher;
@@ -15,7 +15,7 @@ class TeacherCoursesController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([UserRoleType::Admin])->only([
+    $this->allowedRoles([InstitutionUserType::Admin])->only([
       'create',
       'store',
       'edit',

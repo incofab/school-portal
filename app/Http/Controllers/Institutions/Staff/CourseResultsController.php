@@ -4,18 +4,23 @@ namespace App\Http\Controllers\Institutions\Staff;
 
 use App\Actions\CourseResult\InsertResultFromRecordingSheet;
 use App\Actions\CourseResult\RecordCourseResult;
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RecordCourseResultRequest;
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;
+use App\Support\UITableFilters\CourseResultsUITableFilters;
 use Inertia\Inertia;
+use Request;
 
-class RecordCourseResultController extends Controller
+class CourseResultsController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([UserRoleType::Admin, UserRoleType::Teacher]);
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ]);
   }
 
   private function validateUser(CourseTeacher $courseTeacher)
@@ -28,11 +33,22 @@ class RecordCourseResultController extends Controller
     );
   }
 
+  public function index(Request $request)
+  {
+    $query = CourseResult::query();
+    CourseResultsUITableFilters::make($request->all(), $query);
+    return Inertia::render('institutions/staff/list-course-results', [
+      'courseResults' => paginateFromRequest(
+        $query->latest('course-results.id')
+      )
+    ]);
+  }
+
   public function create(CourseTeacher $courseTeacher)
   {
     $courseTeacher->load(['course', 'teacher']);
     $this->validateUser($courseTeacher);
-    return Inertia::render('institutions/staff/record-student-course-result', [
+    return Inertia::render('institutions/staff/record-course-result', [
       'courseTeacher' => $courseTeacher
     ]);
   }
@@ -45,7 +61,7 @@ class RecordCourseResultController extends Controller
 
     $this->validateUser($courseTeacher);
 
-    return Inertia::render('institutions/staff/record-student-course-result', [
+    return Inertia::render('institutions/staff/record-course-result', [
       'courseTeacher' => $courseTeacher
     ]);
   }

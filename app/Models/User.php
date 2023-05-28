@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -74,7 +74,10 @@ class User extends Authenticatable
   /** Institutions this user is assigned to */
   function institutions()
   {
-    return $this->belongsToMany(Institution::class)->withTimestamps();
+    return $this->belongsToMany(
+      Institution::class,
+      'institution_users'
+    )->withTimestamps();
   }
 
   private InstitutionUser $institutionUserData;
@@ -103,23 +106,23 @@ class User extends Authenticatable
     return $this->hasOne(Student::class);
   }
 
-  function hasRole(UserRoleType $role): bool
+  function hasRole(InstitutionUserType $role): bool
   {
-    return $this->currentInstitutionUser()?->role === $role;
+    return currentInstitutionUser()?->role === $role;
   }
 
   function isAdmin()
   {
-    return $this->hasRole(UserRoleType::Admin);
+    return $this->hasRole(InstitutionUserType::Admin);
   }
 
   function isTeacher()
   {
-    return $this->hasRole(UserRoleType::Teacher);
+    return $this->hasRole(InstitutionUserType::Teacher);
   }
 
   function isStudent()
   {
-    return $this->hasRole(UserRoleType::Student);
+    return $this->hasRole(InstitutionUserType::Student);
   }
 }

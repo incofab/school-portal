@@ -63,7 +63,7 @@ class Student extends Model
 
   function classification()
   {
-    return $this->belongsTo(StudentClass::class);
+    return $this->belongsTo(Classification::class);
   }
 
   function user()

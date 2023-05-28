@@ -17,7 +17,9 @@ class StudentController extends Controller
     StudentUITableFilters::make($request->all(), $query)->filterQuery();
 
     return inertia('institutions/students/list-students', [
-      'students' => paginateFromRequest($query)
+      'students' => paginateFromRequest(
+        $query->with('user', 'classification')->latest('students.id')
+      )
     ]);
   }
 

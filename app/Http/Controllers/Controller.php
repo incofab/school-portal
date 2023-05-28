@@ -8,7 +8,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Arr;
 use App\Core\ErrorCodes;
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use Illuminate\Routing\ControllerMiddlewareOptions;
 
 class Controller extends BaseController
@@ -72,7 +72,7 @@ class Controller extends BaseController
   {
     $this->middleware(function ($request, $next) {
       abort_unless(
-        currentUser()->currentInstitutionUser()->role === UserRoleType::Admin,
+        currentInstitutionUser()->role === InstitutionUserType::Admin,
         403,
         'You are not allowed to access this'
       );
@@ -84,7 +84,7 @@ class Controller extends BaseController
   {
     return $this->middleware(function ($request, $next) use ($roles) {
       abort_unless(
-        in_array(currentUser()->currentInstitutionUser()->role, $roles),
+        in_array(currentInstitutionUser()->role, $roles),
         403,
         'This role is not part of the allowed roles for this operation'
       );

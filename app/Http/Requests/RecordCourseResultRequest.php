@@ -49,7 +49,7 @@ class RecordCourseResultRequest extends FormRequest
     return [
       // 'teacher_user_id' => [
       //   'required',
-      //   new InstitutionUserRule($this->institution, UserRoleType::Teacher)
+      //   new InstitutionUserRule($this->institution, InstitutionUserType::Teacher)
       // ],
       // 'course_id' => ['required', Rule::exists('courses', 'id')],
       'academic_session_id' => ['required', 'exists:academic_sessions,id'],

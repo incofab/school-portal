@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import '../../css/dashboard.css';
+// import '../../css/dashboard.css';
 import { Div } from '../components/semantic';
 import useSharedProps from '@/hooks/use-shared-props';
 import ImpersonationBanner from '@/layout/impersonation-banner';

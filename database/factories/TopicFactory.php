@@ -1,15 +1,19 @@
 <?php
 
-use Faker\Generator as Faker;
-use App\Models\Topic;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Topic::class, function (Faker $faker) {
-    
-    $couseIDs = \App\Models\Course::all('id')->pluck('id')->toArray();
-    
+class TopicFactory extends Factory
+{
+  public function definition(): array
+  {
+    $couseIDs = \App\Models\Course::all('id')
+      ->pluck('id')
+      ->toArray();
+
     return [
-        'course_id' => $faker->randomElement($couseIDs), 
-        'title' => $faker->words(8, true), 
-        'description' => $faker->paragraph
+      'course_id' => $this->faker->randomElement($couseIDs),
+      'title' => $this->faker->words(8, true),
+      'description' => $this->faker->paragraph
     ];
-});
+  }
+}

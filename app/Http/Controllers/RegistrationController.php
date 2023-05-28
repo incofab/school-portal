@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\User;
@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Str;
 
 class RegistrationController extends Controller
 {
@@ -40,12 +41,14 @@ class RegistrationController extends Controller
         ->toArray()
     );
 
-    $user
+    $institution = $user
       ->institutions()
-      ->withPivotValue('role', UserRoleType::Admin)
+      ->withPivotValue('role', InstitutionUserType::Admin)
       ->create([
         ...$data['institution'],
-        'code' => Institution::generateInstitutionCode()
+        'code' => Institution::generateInstitutionCode(),
+        'uuid' => Str::orderedUuid(),
+        'user_id' => $user->id
       ]);
     DB::commit();
 
@@ -53,6 +56,8 @@ class RegistrationController extends Controller
 
     event(new Registered($user));
 
-    return redirect()->intended(RouteServiceProvider::HOME);
+    return redirect()->intended(
+      route('institutions.dashboard', [$institution])
+    );
   }
 }

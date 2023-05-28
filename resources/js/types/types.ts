@@ -20,11 +20,24 @@ export interface Message {
   success: string;
 }
 
+export enum InstitutionUserType {
+  Admin = 'admin',
+  Student = 'student',
+  Teacher = 'teacher',
+  Alumni = 'alumni',
+}
+
 export enum UserRoleType {
   Admin = 'admin',
   Student = 'student',
   Lecturer = 'lecturer',
   Alumni = 'alumni',
+}
+
+export enum TermType {
+  First = 'first',
+  Second = 'second',
+  Third = 'third',
 }
 
 export enum Semester {

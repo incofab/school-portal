@@ -17,29 +17,18 @@ if (!function_exists('currentUser')) {
 if (!function_exists('currentInstitution')) {
   function currentInstitution(): Institution|null
   {
-    /** @var Institution */
     $institution = request()->route('institution');
     return $institution;
   }
 }
 
-// if (!function_exists('currentInstitutionUser')) {
-//   function currentInstitutionUser(): InstitutionUser|null
-//   {
-//     $user = currentUser();
-//     $institution = currentInstitution();
-
-//     /** @var InstitutionUser $institutionUser */
-//     $institutionUser = $user
-//       ->institutionUsers()
-//       ->where('institution_id', $institution->id)
-//       ->first();
-
-//     $institutionUser->user = $user;
-//     $institutionUser->institution = $institution;
-//     return $institutionUser;
-//   }
-// }
+if (!function_exists('currentInstitutionUser')) {
+  function currentInstitutionUser(): InstitutionUser|null
+  {
+    $institution = request()->route('institutionUser');
+    return $institution;
+  }
+}
 
 if (!function_exists('isProduction')) {
   function isProduction(): bool

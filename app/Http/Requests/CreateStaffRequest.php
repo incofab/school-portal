@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -29,9 +29,9 @@ class CreateStaffRequest extends FormRequest
       'role' => [
         'required',
         Rule::in(
-          collect(UserRoleType::values())->except([
-            UserRoleType::Student->value,
-            UserRoleType::Alumni->value
+          collect(InstitutionUserType::values())->except([
+            InstitutionUserType::Student->value,
+            InstitutionUserType::Alumni->value
           ])
         )
       ]

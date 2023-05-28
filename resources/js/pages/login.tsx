@@ -29,13 +29,13 @@ export default function Login() {
   }
 
   useEffect(() => {
-    message.error &&
+    message?.error &&
       toast({
         title: message.error,
         status: 'error',
       });
 
-    message.success &&
+    message?.success &&
       toast({
         title: message.success,
         status: 'success',
@@ -124,7 +124,7 @@ export default function Login() {
             Login
           </Button>
           <Div textAlign={'center'}>
-            <InertiaLink href={route('register')}>
+            <InertiaLink href={route('register.create')}>
               <Button colorScheme={'brand'} variant={'link'}>
                 Need an account?
               </Button>

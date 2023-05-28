@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use App\Models\Institution;
 use App\Models\User;
 use Closure;
@@ -12,7 +12,7 @@ class InstitutionUserRule implements ValidationRule
 {
   public function __construct(
     private Institution $institution,
-    private UserRoleType $role
+    private InstitutionUserType $role
   ) {
     //
   }

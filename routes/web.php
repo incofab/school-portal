@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers as Web;
 
+// dd('fmfskfmdf');
 // Auth::routes();
 Route::group(['middleware' => ['guest']], function () {
     Route::get('login', [Web\AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [Web\AuthController::class, 'login'])->name('login.store');
-    Route::resource('register', Web\RegistrationController::class)
-        ->only(['create', 'store']);
-  
+    Route::get('register', [Web\RegistrationController::class, 'create'])->name('register.create');
+    Route::post('register', [Web\RegistrationController::class, 'store'])->name('register.store');
+    
     Route::get('forgot-password', [Web\AuthController::class, 'showForgotPassword'])
     ->name('forgot-password');
     Route::post('forgot-password', [Web\AuthController::class, 'forgotPassword'])
@@ -25,7 +26,16 @@ Route::group(['middleware' => ['guest']], function () {
 
 Route::any('/logout', '\App\Http\Controllers\Auth\LoginController@logout')->name('logout');
 
-
+Route::group(['middleware' => ['auth']], function () {
+  Route::get('/dashboard', [Web\Users\UserController::class, 'index'])->name('user.dashboard');
+    
+  Route::get('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'edit'])
+  ->name('users.password.edit');
+  Route::put('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'update'])
+  ->name('users.password.update');
+//   Route::put('admin/users/reset-password/{user}', [Web\Admin\ResetUserPasswordController::class, 'update'])
+//   ->name('admin.users.password.reset');
+});
 
 
 
@@ -43,7 +53,6 @@ Route::get('/exam/view-result', [\App\Http\Controllers\Exam\ExamController::clas
 
 Route::group(['middleware' => ['auth:admin']], function() {
     
-    Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
     
     //Admin
     Route::get('/admin/dashboard', [Web\Admin\AdminController::class, 'index'])->name('admin.dashboard');

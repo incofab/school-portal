@@ -1,7 +1,7 @@
 <?php
 namespace App\Actions;
 
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use App\Http\Requests\CreateStudentRequest;
 use App\Models\Classification;
 use App\Models\Student;
@@ -31,7 +31,7 @@ class RecordStudent
       ->institutions()
       ->syncWithPivotValues(
         [$classification->institution_id],
-        ['role' => UserRoleType::Student]
+        ['role' => InstitutionUserType::Student]
       );
 
     $user->student()->firstOrCreate([

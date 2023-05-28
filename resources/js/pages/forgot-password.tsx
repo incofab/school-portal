@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link, useForm } from '@inertiajs/inertia-react';
-import myConfig from '../myConfig';
 import {
   Box,
   Center,
@@ -77,12 +76,12 @@ export default function ForgotPassword() {
           <Box ml={5}>
             <ul>
               <li>
-                <Link href={myConfig.registrationPage} className="authPgLink">
+                <Link href={route('register.create')} className="authPgLink">
                   No Account? - Register
                 </Link>
               </li>
               <li>
-                <Link href={myConfig.loginPage} className="authPgLink">
+                <Link href={route('login')} className="authPgLink">
                   Already Registered? - Login
                 </Link>
               </li>

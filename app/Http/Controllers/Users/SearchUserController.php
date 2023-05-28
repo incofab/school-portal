@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Users;
 
-use App\Enums\UserRoleType;
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Support\UITableFilters\UserUITableFilters;
@@ -12,11 +12,11 @@ class SearchUserController extends Controller
 {
   public function __invoke(Request $request)
   {
-    $institutionUser = currentUser()->currentInstitutionUser();
+    $institutionUser = currentInstitutionUser();
     abort_if(
       in_array($institutionUser->role, [
-        UserRoleType::Alumni,
-        UserRoleType::Student
+        InstitutionUserType::Alumni,
+        InstitutionUserType::Student
       ]),
       403
     );

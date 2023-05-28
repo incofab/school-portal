@@ -10,7 +10,7 @@
 		<h1>{{SITE_TITLE}}</h1>
 	</div>
 	<div class="login-box" style="min-height: 750px; margin-bottom: 30px;">
-        <form method="POST" action="{{ route('register') }}" class="login-form">
+        <form method="POST" action="{{ route('register.create') }}" class="login-form">
 			<h3 class="login-head">
 				<i class="fa fa-lg fa-fw fa-user"></i>REGISTER
 			</h3>

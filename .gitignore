@@ -1,5 +1,6 @@
 /node_modules
 /public/hot
+/public/build
 /public/storage
 /storage/*.key
 /vendor
@@ -15,9 +16,12 @@ yarn-error.log
 /.vscode
 
 
-
 # Ignore zipped files
 **/*.zip
 
 # Ignore the error log file
 /public/errorlog.txt
+
+# ide helpers
+_ide_helper_models.php
+_ide_helper.php

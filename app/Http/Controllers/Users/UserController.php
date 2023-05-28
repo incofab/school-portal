@@ -2,22 +2,21 @@
 namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
-use App\Models\InstitutionUser;
 
 class UserController extends Controller
 {
   function index()
   {
     $user = currentUser();
-
-    $institutionUser = InstitutionUser::whereUser_id($user->id)->first();
-
-    if ($institutionUser) {
-      return redirect(
-        route('institution.dashboard', $institutionUser->institution->id)
-      );
+    // dd(['user' => $user]);
+    $institutions = $user->institutions()->get();
+    // dd($institutions->toArray());
+    if ($institution = $institutions->first()) {
+      if ($institution) {
+        return redirect(route('institutions.dashboard', $institution));
+      }
     }
-
+    dd('You are not assigned to any institution yet');
     return $this->view('user.index', []);
   }
 }
