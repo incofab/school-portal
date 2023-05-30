@@ -1,64 +1,51 @@
 import React from 'react';
 import { AxiosInstance } from 'axios';
-// import '../../../css/dashboard.css';
-import { FormControl, VStack, useToast } from '@chakra-ui/react';
+import { FormControl, VStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
-import route from '@/util/route';
 import { Inertia } from '@inertiajs/inertia';
 import UserInputForm from '@/components/user-input-form';
-import { Student, User } from '@/types/models';
+import { InstitutionUser, User } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
+import useMyToast from '@/hooks/use-my-toast';
+import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface Props {
   user?: User & {
-    student?: Student;
+    institution_user: InstitutionUser;
   };
 }
 
-function CreateOrUpdateUser({ user }: Props) {
-  const toast = useToast();
+export function CreateOrUpdateStaff({ user }: Props) {
+  const { handleResponseToast } = useMyToast();
+  const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
-    ...(user ?? {
-      first_name: '',
-      last_name: '',
-      other_names: '',
-      email: '',
-      phone: '',
-      role: '',
-      is_welfare: false,
-    }),
-    ...(user?.student ? user.student : {}),
+    first_name: user?.first_name ?? '',
+    last_name: user?.last_name ?? '',
+    other_names: user?.other_names ?? '',
+    email: user?.email ?? '',
+    phone: user?.phone ?? '',
+    role: user?.institution_user.role ?? '',
   });
 
   const submit = async () => {
-    const { ok, message } = await webForm.submit((data, web: AxiosInstance) =>
+    const res = await webForm.submit((data, web: AxiosInstance) =>
       user
-        ? web.put(route('users.update', [user]), data)
-        : web.post(route('users.store'), data)
+        ? web.put(instRoute('staff.update', [user]), data)
+        : web.post(instRoute('staff.store'), data)
     );
-    if (!ok) {
-      return void toast({
-        title: message ?? 'Error process user record',
-        status: 'error',
-      });
-    }
-    toast({
-      title: 'User record processed successfully',
-      status: 'success',
-    });
-
-    Inertia.visit(route('users.index'));
+    handleResponseToast(res);
+    Inertia.visit(instRoute('users.index'));
   };
 
   return (
     <DashboardLayout>
       <CenteredBox>
         <Slab w={'full'}>
-          <SlabHeading title={`${user ? 'Update' : 'Create'} user record`} />
+          <SlabHeading title={`${user ? 'Update' : 'Create'} User Record`} />
           <SlabBody>
             <VStack
               spacing={4}
@@ -76,5 +63,3 @@ function CreateOrUpdateUser({ user }: Props) {
     </DashboardLayout>
   );
 }
-
-export default CreateOrUpdateUser;

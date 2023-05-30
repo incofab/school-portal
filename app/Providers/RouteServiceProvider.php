@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Institution;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -35,6 +36,24 @@ class RouteServiceProvider extends ServiceProvider
    */
   public function boot()
   {
+    Route::model('institution', Institution::class);
+    // Route::model('institution', function (string $value) {
+    //   // dd(currentUser());
+    //   $institutionModel = Institution::query()
+    //     ->select('institutions.*')
+    //     ->join(
+    //       'institution_users',
+    //       'institution_users.institution_id',
+    //       'institutions.id'
+    //     )
+    //     ->where('uuid', $value)
+    //     ->where('institution_users.user_id', currentUser()->id)
+    //     ->with('institutionUsers')
+    //     ->firstOrFail();
+    //   dd($institutionModel);
+    //   return $institutionModel;
+    // });
+
     $this->configureRateLimiting();
 
     $this->routes(function () {

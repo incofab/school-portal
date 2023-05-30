@@ -7,13 +7,14 @@ use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreateStudentRequest;
 use App\Models\Classification;
+use App\Models\Institution;
 use App\Support\UITableFilters\StudentUITableFilters;
 
 class StudentController extends Controller
 {
   function index(Request $request)
   {
-    $query = Student::query();
+    $query = Student::query()->select('students.*');
     StudentUITableFilters::make($request->all(), $query)->filterQuery();
 
     return inertia('institutions/students/list-students', [
@@ -25,13 +26,30 @@ class StudentController extends Controller
 
   public function create()
   {
-    return inertia('institutions/students/register', [
+    return inertia('institutions/students/create-edit-student', [
       'classification' => Classification::all()
     ]);
   }
 
   public function store(CreateStudentRequest $request)
   {
+    RecordStudent::create($request);
+
+    return $this->ok();
+  }
+
+  function edit(Institution $institution, Student $student)
+  {
+    return inertia('institutions/students/create-edit-student', [
+      'student' => $student->load('user.institutionUser', 'classification')
+    ]);
+  }
+
+  public function update(
+    CreateStudentRequest $request,
+    Institution $institution,
+    Student $student
+  ) {
     RecordStudent::create($request);
 
     return $this->ok();

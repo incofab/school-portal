@@ -15,18 +15,21 @@ class Institution extends Model
     return 'uuid';
   }
 
-  // static function insert($post)
-  // {
-  //   $post['code'] = static::generateInstitutionCode();
-
-  //   $data = static::create($post);
-
-  //   if (!$data) {
-  //     return retF('Error: Data entry failed');
-  //   }
-
-  //   return retS('Registration successful, You can login now', $data);
-  // }
+  public function resolveRouteBinding($value, $field = null)
+  {
+    $institutionModel = Institution::query()
+      ->select('institutions.*')
+      ->join(
+        'institution_users',
+        'institution_users.institution_id',
+        'institutions.id'
+      )
+      ->where('uuid', $value)
+      ->where('institution_users.user_id', currentUser()->id)
+      ->with('institutionUsers')
+      ->firstOrFail();
+    return $institutionModel;
+  }
 
   static function generateInstitutionCode()
   {
@@ -41,7 +44,7 @@ class Institution extends Model
 
   function courses()
   {
-    return $this->hasMany(Course::class, 'course_id', 'id');
+    return $this->hasMany(Course::class);
   }
 
   function classifications()

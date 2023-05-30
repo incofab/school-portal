@@ -15,18 +15,31 @@ class RecordStudent
     DB::beginTransaction();
 
     /** @var User $user */
-    $user = User::create([
-      ...$request->except('classification_id'),
-      'password' => bcrypt('password')
-    ]);
+    $user = User::query()->updateOrCreate(
+      ['email' => $request->email],
+      [
+        ...collect($request->validated())->except(
+          'classification_id',
+          'role',
+          'guardian_phone'
+        ),
+        'password' => bcrypt('password')
+      ]
+    );
 
-    static::attach($user, $request->classification);
+    static::attach($request, $user, $request->classification);
 
     DB::commit();
   }
 
-  public static function attach(User $user, Classification $classification)
-  {
+  public static function attach(
+    CreateStudentRequest $request,
+    User $user,
+    Classification $classification
+  ) {
+    if ($user->institutionUser()->exists()) {
+      return;
+    }
     $user
       ->institutions()
       ->syncWithPivotValues(
@@ -36,7 +49,8 @@ class RecordStudent
 
     $user->student()->firstOrCreate([
       'classification_id' => $classification->id,
-      'code' => Student::generateStudentID()
+      'code' => Student::generateStudentID(),
+      'guardian_phone' => $request->guardian_phone
     ]);
   }
 }

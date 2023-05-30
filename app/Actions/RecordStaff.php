@@ -12,10 +12,13 @@ class RecordStaff
     DB::beginTransaction();
 
     /** @var User $user */
-    $user = User::create([
-      ...$request->except('role'),
-      'password' => bcrypt('password')
-    ]);
+    $user = User::query()->updateOrCreate(
+      ['email' => $request->email],
+      [
+        ...collect($request->validated())->except('role'),
+        'password' => bcrypt('password')
+      ]
+    );
 
     $user
       ->institutions()

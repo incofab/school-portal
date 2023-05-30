@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Institutions;
 
 use App\Http\Controllers\Controller;
 use App\Models\Classification;
+use App\Models\Institution;
 use Illuminate\Validation\Rule;
 
 class ClassificationController extends Controller
@@ -10,14 +11,27 @@ class ClassificationController extends Controller
   function index()
   {
     $query = Classification::query();
-    return inertia('institutions/staff/list-classifications', [
+    return inertia('institutions/classifications/list-classifications', [
       'classifications' => paginateFromRequest($query)
+    ]);
+  }
+
+  function search()
+  {
+    return response()->json([
+      'result' => Classification::query()
+        ->when(
+          request('search'),
+          fn($q, $search) => $q->where('title', 'like', "%$search%")
+        )
+        ->orderBy('title')
+        ->get()
     ]);
   }
 
   function create()
   {
-    return inertia('institutions/staff/create-classification');
+    return inertia('institutions/classifications/create-edit-classification');
   }
 
   function store()
@@ -41,26 +55,23 @@ class ClassificationController extends Controller
     return $this->ok();
   }
 
-  function edit(Classification $classification)
+  function edit(Institution $institution, Classification $classification)
   {
-    return inertia('institutions/staff/create-classification', [
+    return inertia('institutions/classifications/create-edit-classification', [
       'classification' => $classification
     ]);
   }
 
-  function update(Classification $classification)
+  function update(Institution $institution, Classification $classification)
   {
-    abort_unless(
-      $classification->institution_id === currentInstitution()->id,
-      403
-    );
+    abort_unless($classification->institution_id === $institution->id, 403);
     $data = request()->validate([
       'title' => [
         'required',
         'string',
         'max:100',
         Rule::unique('classifications', 'title')
-          ->where('institution_id', currentInstitution()->id)
+          ->where('institution_id', $institution->id)
           ->ignore($classification->id, 'id')
       ],
       'description' => ['nullable', 'string']
@@ -70,12 +81,9 @@ class ClassificationController extends Controller
     return $this->ok();
   }
 
-  function destroy(Classification $classification)
+  function destroy(Institution $institution, Classification $classification)
   {
-    abort_unless(
-      $classification->institution_id === currentInstitution()->id,
-      403
-    );
+    abort_unless($classification->institution_id === $institution->id, 403);
 
     $classification->delete();
     return $this->ok();

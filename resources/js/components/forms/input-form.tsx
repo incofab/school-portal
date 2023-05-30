@@ -1,13 +1,7 @@
-import {
-  FormControl,
-  FormControlProps,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  InputProps,
-} from '@chakra-ui/react';
-import React, { PropsWithChildren } from 'react';
+import { Input, InputProps } from '@chakra-ui/react';
+import React from 'react';
 import FormControlBox from './form-control-box';
+import { WebForm } from '@/hooks/use-web-form';
 
 export interface FormProps<
   Data = Record<string, any>,
@@ -16,11 +10,13 @@ export interface FormProps<
   data: Data;
   errors: Errors;
   processing: boolean;
+  // setValue: (key: string, value: string | number) => void;
   setValue<Key extends keyof Data>(key: Key, value: Data[Key]): void;
   setData(data: Data): void;
 }
 
 interface Props {
+  // form: WebForm;
   form: FormProps<{
     [key: string]: string;
   }>;
@@ -35,8 +31,6 @@ export default function InputForm({
   children,
   ...props
 }: Props & InputProps) {
-  console.log('Form', formKey, form);
-
   return (
     <FormControlBox title={title} formKey={formKey} form={form}>
       <Input

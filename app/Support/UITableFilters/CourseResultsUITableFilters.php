@@ -17,7 +17,6 @@ class CourseResultsUITableFilters extends BaseUITableFilter
       'student' => ['sometimes', 'integer'],
       'course' => ['sometimes', 'integer'],
       'classification' => ['sometimes', 'integer'],
-      'student' => ['sometimes', 'integer'],
       'teacher' => ['sometimes', 'integer'],
       'academicSession' => ['sometimes', 'integer'],
       'term' => ['sometimes', new Enum(TermType::class)]

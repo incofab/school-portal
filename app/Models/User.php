@@ -38,9 +38,8 @@ class User extends Authenticatable
     'email_verified_at' => 'datetime'
   ];
 
-  public static function generalRule()
+  public static function generalRule($userId = null)
   {
-    $user = request('user');
     return [
       'first_name' => ['required', 'string', 'max:255'],
       'last_name' => ['required', 'string', 'max:255'],
@@ -50,9 +49,9 @@ class User extends Authenticatable
         'required',
         'string',
         'email',
-        'unique:users,email,' . $user?->id
+        'unique:users,email,' . $userId
       ],
-      ...$user
+      ...$userId
         ? []
         : ['password' => ['required', 'string', 'confirmed', 'min:6']]
     ];
@@ -96,6 +95,14 @@ class User extends Authenticatable
     return $this->hasMany(InstitutionUser::class);
   }
 
+  function institutionUser()
+  {
+    return $this->institutionUsers()->where(
+      'institution_id',
+      currentInstitution()->id
+    );
+  }
+
   function courseTeachers()
   {
     return $this->hasMany(CourseTeacher::class);
@@ -106,23 +113,25 @@ class User extends Authenticatable
     return $this->hasOne(Student::class);
   }
 
-  function hasRole(InstitutionUserType $role): bool
+  function hasInstitutionRole(InstitutionUserType $role): bool
   {
-    return currentInstitutionUser()?->role === $role;
+    return $this->institutionUser()
+      ->where('role', $role)
+      ->exists();
   }
 
-  function isAdmin()
+  function isInstitutionAdmin()
   {
-    return $this->hasRole(InstitutionUserType::Admin);
+    return $this->hasInstitutionRole(InstitutionUserType::Admin);
   }
 
-  function isTeacher()
+  function isInstitutionTeacher()
   {
-    return $this->hasRole(InstitutionUserType::Teacher);
+    return $this->hasInstitutionRole(InstitutionUserType::Teacher);
   }
 
-  function isStudent()
+  function isInstitutionStudent()
   {
-    return $this->hasRole(InstitutionUserType::Student);
+    return $this->hasInstitutionRole(InstitutionUserType::Student);
   }
 }

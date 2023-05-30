@@ -30,7 +30,6 @@ export enum InstitutionUserType {
 export enum UserRoleType {
   Admin = 'admin',
   Student = 'student',
-  Lecturer = 'lecturer',
   Alumni = 'alumni',
 }
 
@@ -40,53 +39,53 @@ export enum TermType {
   Third = 'third',
 }
 
-export enum Semester {
-  First = 'first',
-  Second = 'second',
-}
+// export enum Semester {
+//   First = 'first',
+//   Second = 'second',
+// }
 
-export enum ProgrammeType {
-  Regular = 'regular',
-  Sandwich = 'sandwich',
-  Certificate = 'certificate',
-  Postgraduate = 'postgraduate',
-}
+// export enum ProgrammeType {
+//   Regular = 'regular',
+//   Sandwich = 'sandwich',
+//   Certificate = 'certificate',
+//   Postgraduate = 'postgraduate',
+// }
 
-export enum AdmissionYear {
-  Y2023 = '2023',
-  Y2022 = '2022',
-  Y2021 = '2021',
-  Y2020 = '2020',
-  Y2019 = '2019',
-  Y2018 = '2018',
-  Y2017 = '2017',
-  Y2016 = '2016',
-  Y2015 = '2015',
-  Y2014 = '2014',
-  Y2013 = '2013',
-  Y2012 = '2012',
-  Y2011 = '2011',
-  Y2010 = '2010',
-}
+// export enum AdmissionYear {
+//   Y2023 = '2023',
+//   Y2022 = '2022',
+//   Y2021 = '2021',
+//   Y2020 = '2020',
+//   Y2019 = '2019',
+//   Y2018 = '2018',
+//   Y2017 = '2017',
+//   Y2016 = '2016',
+//   Y2015 = '2015',
+//   Y2014 = '2014',
+//   Y2013 = '2013',
+//   Y2012 = '2012',
+//   Y2011 = '2011',
+//   Y2010 = '2010',
+// }
 
 export interface SelectOptionType<T = string> {
   label: string;
   value: T;
 }
 
-export enum FeePaymentInterval {
-  // PerMonth = 'per-month',
-  PerSemester = 'per-semester',
-  PerSession = 'per-session',
-  PerYear = 'per-year',
-}
+// export enum FeePaymentInterval {
+//   // PerMonth = 'per-month',
+//   PerSemester = 'per-semester',
+//   PerSession = 'per-session',
+//   PerYear = 'per-year',
+// }
 
-export enum PaymentDomain {
-  Institution = 'institution',
-  Welfare = 'welfare',
-}
+// export enum PaymentDomain {
+//   Institution = 'institution',
+//   Welfare = 'welfare',
+// }
 
-export enum FeePayers {
-  Department = 'department',
-  Faculty = 'faculty',
-}
+// export enum FeePayers {
+//   Department = 'department',
+//   Faculty = 'faculty',
+// }

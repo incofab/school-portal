@@ -25,15 +25,13 @@ class CreateStaffRequest extends FormRequest
   public function rules(): array
   {
     return [
-      ...User::generalRule(),
+      ...User::generalRule($this->institutionUser?->id),
       'role' => [
         'required',
-        Rule::in(
-          collect(InstitutionUserType::values())->except([
-            InstitutionUserType::Student->value,
-            InstitutionUserType::Alumni->value
-          ])
-        )
+        Rule::notIn([
+          InstitutionUserType::Student->value,
+          InstitutionUserType::Alumni->value
+        ])
       ]
     ];
   }

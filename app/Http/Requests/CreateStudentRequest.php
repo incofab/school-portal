@@ -42,6 +42,10 @@ class CreateStudentRequest extends FormRequest
    */
   public function rules(): array
   {
-    return [...User::generalRule(), 'classification_id' => ['required']];
+    return [
+      ...User::generalRule($this->student?->user_id),
+      'classification_id' => ['required'],
+      'guardian_phone' => ['nullable', 'string']
+    ];
   }
 }

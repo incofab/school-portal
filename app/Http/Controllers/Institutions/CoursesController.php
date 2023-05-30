@@ -6,7 +6,7 @@ use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateCourseRequest;
 use App\Models\Course;
-use App\Models\CourseTeacher;
+use App\Models\Institution;
 use App\Support\UITableFilters\CoursesUITableFilters;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,20 +26,31 @@ class CoursesController extends Controller
 
   function index(Request $request)
   {
-    $query = CourseTeacher::query();
+    $query = Course::query();
     CoursesUITableFilters::make($request->all(), $query);
 
-    return Inertia::render('institutions/list-courses', [
+    return Inertia::render('institutions/courses/list-courses', [
       'courses' => paginateFromRequest($query->latest('id'))
+    ]);
+  }
+
+  function search(Request $request)
+  {
+    $query = Course::query()->when(
+      $request->search,
+      fn($q, $value) => $q->where('title', $value)
+    );
+    return response()->json([
+      'result' => $query->latest('courses.id')->get()
     ]);
   }
 
   function create()
   {
-    return Inertia::render('institutions/create-edit-course', []);
+    return Inertia::render('institutions/courses/create-edit-course', []);
   }
 
-  function edit(Course $course)
+  function edit(Institution $institution, Course $course)
   {
     abort_unless(
       $course->institution_id === currentInstitution()->id,
@@ -47,12 +58,12 @@ class CoursesController extends Controller
       'Access denied'
     );
 
-    return Inertia::render('institutions/staff/create-edit-course', [
+    return Inertia::render('institutions/courses/create-edit-course', [
       'course' => $course
     ]);
   }
 
-  function destroy(Course $course)
+  function destroy(Institution $institution, Course $course)
   {
     abort_unless(
       $course->institution_id === currentInstitution()->id,
@@ -73,8 +84,11 @@ class CoursesController extends Controller
     return $this->ok();
   }
 
-  function update(CreateCourseRequest $request, Course $course)
-  {
+  function update(
+    CreateCourseRequest $request,
+    Institution $institution,
+    Course $course
+  ) {
     abort_unless(
       $course->institution_id === currentInstitution()->id,
       403,

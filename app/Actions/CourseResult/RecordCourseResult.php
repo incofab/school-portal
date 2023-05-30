@@ -10,6 +10,7 @@ class RecordCourseResult
   {
     $data['course_id'] = $courseTeacher->course_id;
     $data['teacher_user_id'] = $courseTeacher->user_id;
+    $data['classification_id'] = $courseTeacher->classification_id;
     $result = $data['result'];
     CourseResult::query()->updateOrCreate(
       [

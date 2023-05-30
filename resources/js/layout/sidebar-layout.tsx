@@ -11,10 +11,11 @@ import {
 } from 'react-pro-sidebar';
 import { SidebarHeader } from '../components/SidebarHeader';
 import { InertiaLink } from '@inertiajs/inertia-react';
-import route, { instRoute } from '@/util/route';
+import route from '@/util/route';
 import { Nullable, InstitutionUserType } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
 import useIsAdmin from '@/hooks/use-is-admin';
+import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface MenuType {
   label: string;
@@ -31,11 +32,35 @@ export default function SideBarLayout() {
   const { currentUser, currentInstitution, currentInstitutionUser } =
     useSharedProps();
   const isAdmin = useIsAdmin();
+  const { instRoute } = useInstitutionRoute();
 
   const menus: MenuListType[] = [
     {
       label: 'Dashboard',
       route: instRoute('dashboard'),
+    },
+    {
+      label: 'Staff',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'All Staff',
+          route: instRoute('users.index', [
+            {
+              roles_not_in: [
+                InstitutionUserType.Student,
+                InstitutionUserType.Alumni,
+              ],
+            },
+          ]),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Add Staff',
+          route: instRoute('users.create'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
     },
     {
       label: 'Students',
@@ -54,10 +79,10 @@ export default function SideBarLayout() {
       ],
     },
     {
-      label: 'Courses',
+      label: 'Subject',
       sub_items: [
         {
-          label: 'All Courses',
+          label: 'All Subject',
           route: instRoute('courses.index'),
           roles: [
             InstitutionUserType.Student,
@@ -66,13 +91,13 @@ export default function SideBarLayout() {
           ],
         },
         {
-          label: 'Add Course',
+          label: 'Add Subject',
           route: instRoute('courses.create'),
           roles: [InstitutionUserType.Admin],
         },
         {
-          label: 'Teacher Courses',
-          route: instRoute('course-teachers.index', [1]),
+          label: 'Subject Teachers',
+          route: instRoute('course-teachers.index'),
           roles: [
             InstitutionUserType.Student,
             InstitutionUserType.Admin,
@@ -80,7 +105,7 @@ export default function SideBarLayout() {
           ],
         },
         {
-          label: 'Course Results',
+          label: 'Subject Results',
           route: instRoute('course-results.index'),
         },
       ],

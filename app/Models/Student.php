@@ -50,11 +50,11 @@ class Student extends Model
 
   static function generateStudentID()
   {
-    $prefix = 'S-';
+    $prefix = date('Y') . '-';
 
     $key = $prefix . rand(1000000, 9999999);
 
-    while (Student::where('student_id', '=', $key)->first()) {
+    while (Student::where('code', '=', $key)->first()) {
       $key = $prefix . rand(1000000, 9999999);
     }
 

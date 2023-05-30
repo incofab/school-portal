@@ -1,11 +1,4 @@
-import {
-  AdmissionYear,
-  InstitutionUserType,
-  PaymentDomain,
-  ProgrammeType,
-  TermType,
-  UserRoleType,
-} from './types';
+import { InstitutionUserType, TermType } from './types';
 
 export interface Row {
   id: number;
@@ -47,6 +40,7 @@ interface InstitutionRow extends Row {
 export interface InstitutionUser extends InstitutionRow {
   user_id: number;
   role: InstitutionUserType;
+  user?: User;
 }
 
 export interface Classification extends InstitutionRow {
@@ -63,8 +57,9 @@ export interface Course extends InstitutionRow {
 
 export interface Student extends Row {
   user_id: string;
+  classification_id: number;
   code: string;
-  classification_id: string;
+  guardian_phone: string;
   classification?: Classification;
   user?: User;
 }
@@ -78,9 +73,15 @@ export interface CourseResult extends InstitutionRow {
   term: TermType;
   first_assessment: number;
   second_assessment: number;
+  exam: number;
   result: number;
   grade: string;
   remark: string;
+  teacher?: User;
+  student?: Student;
+  course?: Course;
+  classification?: Classification;
+  academic_session?: AcademicSession;
 }
 
 export interface ClassResultInfo extends InstitutionRow {
@@ -99,34 +100,51 @@ export interface ClassResultInfo extends InstitutionRow {
   average: number;
 }
 
-export interface Hostel extends Row {
-  title: string;
-  apartment_name: string;
-  capacity: number;
-  num_of_users: number;
+export interface TermResult extends InstitutionRow {
+  student_id: number;
+  classification_id: number;
+  academic_session_id: number;
+  term: TermType;
+  result: number;
+  average: number;
+  result_max: number;
+  grade: string;
+  remark: string;
 }
 
-export interface LecturerCourse extends Row {
+export interface SessionResult extends InstitutionRow {
+  student_id: number;
+  classification_id: number;
+  academic_session_id: number;
+  result: number;
+  average: number;
+  result_max: number;
+  grade: string;
+  remark: string;
+}
+
+export interface CourseTeacher extends Row {
   course_id: number;
   user_id: number;
-  programme: ProgrammeType;
+  classification_id: number;
   course?: Course;
   user?: User;
+  classification?: Classification;
 }
 
-export interface Fee extends Row {
-  title: string;
-  amount: number;
-  payment_interval: string;
-  feeable_type: string;
-  feeable_id: number;
-  domain: PaymentDomain;
-}
+// export interface Fee extends Row {
+//   title: string;
+//   amount: number;
+//   payment_interval: string;
+//   feeable_type: string;
+//   feeable_id: number;
+//   domain: PaymentDomain;
+// }
 
-export interface FeePayment extends Row {
-  fee_id: number;
-  user_id: number;
-  academic_session_id: number;
-  semester: string;
-  reference: string;
-}
+// export interface FeePayment extends Row {
+//   fee_id: number;
+//   user_id: number;
+//   academic_session_id: number;
+//   semester: string;
+//   reference: string;
+// }

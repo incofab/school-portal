@@ -8,22 +8,40 @@ use App\Http\Controllers\Institutions as Web;
 Route::get('/dashboard', [Web\InstitutionController::class, 'index'])
     ->name('dashboard');
 
+Route::get('/classifications/search', [Web\ClassificationController::class, 'search'])
+->name('classifications.search');
 Route::resource('/classifications', Web\ClassificationController::class)
     ->except(['show']);
 Route::get('/students/search', Web\Students\SearchStudentController::class)
     ->name('students.search');
 Route::resource('/students', Web\Students\StudentController::class);
-Route::resource('/staff', Web\Staff\RegisterStaffController::class)->only(['create', 'store']);
-Route::resource('/courses', Web\Staff\RegisterStaffController::class);
+
+Route::get('/courses/search', [Web\CoursesController::class, 'search'])
+    ->name('courses.search');
+Route::resource('/courses', Web\CoursesController::class);
+
+Route::get('/users/{institutionUser}/edit', [Web\InstitutionUserController::class, 'edit'])
+    ->name('users.edit');
+Route::put('/users/{institutionUser}/edit', [Web\InstitutionUserController::class, 'update'])
+    ->name('users.update');
+Route::resource('/users', Web\InstitutionUserController::class)
+    ->only(['create', 'store']);
+
+Route::get('/users/index', [Web\ListInstitutionUserController::class, 'index'])
+    ->name('users.index');
+Route::get('/users/search', [Web\ListInstitutionUserController::class, 'search'])
+    ->name('users.search');
 
 // Teacher courses
-Route::get('/course-teachers/index/{user?}', [Web\Staff\TeacherCoursesController::class, 'index'])
+Route::get('/course-teachers/index/{user?}', [Web\Staff\CourseTeachersController::class, 'index'])
     ->name('course-teachers.index');
-Route::get('/course-teachers/create/{user?}', [Web\Staff\TeacherCoursesController::class, 'create'])
+Route::get('/course-teachers/search', [Web\Staff\CourseTeachersController::class, 'search'])
+    ->name('course-teachers.search');
+Route::get('/course-teachers/create/{user?}', [Web\Staff\CourseTeachersController::class, 'create'])
     ->name('course-teachers.create');
-Route::post('/course-teachers/store/{user}', [Web\Staff\TeacherCoursesController::class, 'store'])
+Route::post('/course-teachers/store/{user}', [Web\Staff\CourseTeachersController::class, 'store'])
     ->name('course-teachers.store');
-Route::put('/course-teachers/{courseTeacher}/destroy', [Web\Staff\TeacherCoursesController::class, 'destroy'])
+Route::delete('/course-teachers/{courseTeacher}/destroy', [Web\Staff\CourseTeachersController::class, 'destroy'])
     ->name('course-teachers.destroy');
 
 Route::get('/course-results/index', [Web\Staff\CourseResultsController::class, 'index'])

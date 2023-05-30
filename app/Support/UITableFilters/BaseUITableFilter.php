@@ -63,7 +63,7 @@ abstract class BaseUITableFilter
 
   public function filterQuery(): static
   {
-    return $this->directQuery()->where(
+    return $this->directQuery()->when(
       $this->requestGet('search'),
       fn(self $that, $search) => $that->generalSearch($search)
     );

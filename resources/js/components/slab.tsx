@@ -3,11 +3,14 @@ import { Div } from '@/components/semantic';
 import {
   BoxProps,
   Divider,
+  HStack,
   Heading,
   HeadingProps,
+  Spacer,
   Text,
   VStack,
 } from '@chakra-ui/react';
+import { PageTitle } from './page-header';
 
 export const SlabBody = ({ children, ...props }: BoxProps) => (
   <Div {...props}>{children}</Div>
@@ -19,15 +22,24 @@ export const SlabFooter = ({ children, ...props }: BoxProps) => (
 
 interface SlabHeadingProps {
   title?: string;
+  rightElement?: React.ReactNode;
 }
 export const SlabHeading = ({
   children,
   title,
+  rightElement,
   ...props
 }: SlabHeadingProps & HeadingProps) => (
   <Heading size={'md'} fontWeight={'medium'} {...props}>
-    {title && <Text>{title}</Text>}
-    {children}
+    {children ? (
+      children
+    ) : (
+      <HStack>
+        <PageTitle>{title}</PageTitle>
+        <Spacer />
+        {rightElement}
+      </HStack>
+    )}
     <Divider mt={2} />
   </Heading>
 );

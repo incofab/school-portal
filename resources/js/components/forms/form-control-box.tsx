@@ -18,7 +18,7 @@ export interface FormProps<
 
 interface Props {
   form: FormProps<{
-    [key: string]: string | { [key: string]: string };
+    [key: string]: string | number | undefined | { [key: string]: string };
   }>;
   title: string;
   formKey: string;

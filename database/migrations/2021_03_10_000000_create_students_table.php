@@ -18,6 +18,7 @@ return new class extends Migration {
       $table->unsignedBigInteger('user_id');
       $table->unsignedBigInteger('classification_id');
       $table->string('code')->unique();
+      $table->string('guardian_phone')->nullable();
       $table->timestamps();
       $table->softDeletes();
 

@@ -57,7 +57,7 @@ class RegistrationController extends Controller
     event(new Registered($user));
 
     return redirect()->intended(
-      route('institutions.dashboard', [$institution])
+      route('institutions.dashboard', [$institution->uuid])
     );
   }
 }

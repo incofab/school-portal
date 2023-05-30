@@ -48,14 +48,13 @@ class DownloadResultRecordingSheetRequest extends FormRequest
   public function rules(): array
   {
     $user = $this->user();
-
     return [
       'academicSession' => ['required'],
       'semester' => ['required', new Enum(Semester::class)],
       'course' => [
         'required',
         function ($attr, $value, $fail) use ($user) {
-          if ($user->isAdmin()) {
+          if (currentInstitutionUser()->isAdmin()) {
             return;
           }
           if (

@@ -33,6 +33,7 @@ export function LinkButton({
       variant={'solid'}
       size={'sm'}
       {...props}
+      fontWeight={'normal'}
     >
       {title ?? 'New'}
     </Button>

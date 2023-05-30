@@ -1,5 +1,3 @@
-import { ProgrammeType } from '@/types/types';
-
 export const dateFormat = 'yyyy-MM-dd';
 
 type PreventDefault = Pick<React.FormEvent, 'preventDefault'>['preventDefault'];
@@ -61,11 +59,4 @@ export function setUrlFilterOptions(
 
   url.searchParams.set(option, optionValue?.value ?? '');
   url.searchParams.set(`${option}Label`, optionValue?.label ?? '');
-}
-
-export function hasNoSemester(programme: string | string[]) {
-  if (typeof programme === 'string') {
-    return programme === ProgrammeType.Sandwich;
-  }
-  return programme.includes(ProgrammeType.Sandwich);
 }

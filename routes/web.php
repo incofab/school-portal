@@ -5,9 +5,27 @@ use App\Http\Controllers\HomeController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers as Web;
+use App\Models\Course;
+use App\Models\Institution;
 
 // dd('fmfskfmdf');
 // Auth::routes();
+
+// Route::prefix('{institution}/dummy2')
+// ->name('institutions.')
+// ->group(function (Institution $institution)
+// {
+//     dd('dsdos,od,');
+//     Route::get('course/1', function (Course $course)
+//     {
+//         dd($course->toArray());
+//     });
+// });
+
+
+Route::get('academic-sessions/search', [Web\AcademicSessionController::class, 'search'])
+    ->name('academic-sessions.search');
+
 Route::group(['middleware' => ['guest']], function () {
     Route::get('login', [Web\AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [Web\AuthController::class, 'login'])->name('login.store');
@@ -51,20 +69,20 @@ Route::get('/exam/view-result-form', [\App\Http\Controllers\Exam\ExamController:
 Route::get('/exam/view-result', [\App\Http\Controllers\Exam\ExamController::class, 'viewResult'])->name('home.exam.view-result');
 
 
-Route::group(['middleware' => ['auth:admin']], function() {
-    
+Route::group(['middleware' => ['auth:admin'], 'prefix' => 'admin'], function() {
     
     //Admin
-    Route::get('/admin/dashboard', [Web\Admin\AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard', [Web\Admin\AdminController::class, 'index'])->name('admin.dashboard');
     
-    Route::resource('/admin/user', Web\Admin\UserController::class, ['as' => 'admin'])
+    Route::resource('/user', Web\Admin\UserController::class, ['as' => 'admin'])
     ->except(['create']);
-    Route::get('/admin/search', [Web\Admin\UserController::class, 'search'])->name('admin.user.search');
+    Route::get('/search', [Web\Admin\UserController::class, 'search'])->name('admin.user.search');
 
-    Route::resource('/admin/institution', Web\Admin\InstitutionController::class, ['as' => 'admin']);
-    Route::get('/admin/institution/assign-user/{id}', [Web\Admin\InstitutionController::class, 'assignUserView'])->name('admin.institution.assign-user');
-    Route::post('/admin/institution/assign-user/{id}', [Web\Admin\InstitutionController::class, 'assignUserStore'])->name('admin.institution.assign-user');
+    Route::resource('/institution', Web\Admin\InstitutionController::class, ['as' => 'admin']);
+    Route::get('/institution/assign-user/{id}', [Web\Admin\InstitutionController::class, 'assignUserView'])->name('admin.institution.assign-user');
+    Route::post('/institution/assign-user/{id}', [Web\Admin\InstitutionController::class, 'assignUserStore'])->name('admin.institution.assign-user');
     
+    Route::resource('academic-sessions', Web\AcademicSessionController::class);
 });
 
 

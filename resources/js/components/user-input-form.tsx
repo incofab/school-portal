@@ -1,22 +1,20 @@
 import useIsAdmin from '@/hooks/use-is-admin';
 import { WebForm } from '@/hooks/use-web-form';
-import { Student } from '@/types/models';
-import { AdmissionYear, ProgrammeType, UserRoleType } from '@/types/types';
+import { InstitutionUserType, UserRoleType } from '@/types/types';
 import {
-  Checkbox,
   Divider,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
-  Select,
   Text,
 } from '@chakra-ui/react';
-import startCase from 'lodash/startCase';
 import React from 'react';
-import DepartmentSelect from './department-select';
-import ReactSelect from './react-select';
 import { Div } from './semantic';
+import ClassificationSelect from './selectors/classification-select';
+import EnumSelect from './dropdown-select/enum-select';
+import FormControlBox from './forms/form-control-box';
+import InputForm from './forms/input-form';
 
 interface Props {
   webForm: WebForm<{
@@ -26,11 +24,8 @@ interface Props {
     email: string;
     phone: string;
     role: string;
-    is_welfare: boolean;
-    reg_no?: string;
-    department_id?: string;
-    admission_year?: AdmissionYear;
-    programme?: ProgrammeType;
+    // classification_id?: string;
+    // guardian_phone?: string;
   }>;
 }
 
@@ -96,36 +91,17 @@ export default function UserInputForm({ webForm }: Props) {
         <>
           <FormControl isRequired isInvalid={!!webForm.errors.role}>
             <FormLabel>Role</FormLabel>
-            <Select
-              onChange={(e) => webForm.setValue('role', e.currentTarget.value)}
-              value={webForm.data.role}
+            <EnumSelect
+              enumData={InstitutionUserType}
+              onChange={(e: any) => webForm.setValue('role', e.value)}
+              selectValue={webForm.data.role}
               required
-            >
-              <option></option>
-              {Object.entries(UserRoleType).map(([key, value]) => (
-                <option key={key} value={value}>
-                  {startCase(value.replaceAll('-', ' '))}
-                </option>
-              ))}
-            </Select>
+            />
             <FormErrorMessage>{webForm.errors.role}</FormErrorMessage>
-          </FormControl>
-          <FormControl isRequired isInvalid={!!webForm.errors.is_welfare}>
-            <FormLabel>Welfare</FormLabel>
-            <Checkbox
-              isChecked={webForm.data.is_welfare}
-              onChange={(e) =>
-                webForm.setValue('is_welfare', e.currentTarget.checked)
-              }
-              isRequired={false}
-            >
-              Is Welfare Officer?
-            </Checkbox>
-            <FormErrorMessage>{webForm.errors.is_welfare}</FormErrorMessage>
           </FormControl>
         </>
       )}
-      {(webForm.data.role === UserRoleType.Student ||
+      {/* {(webForm.data.role === UserRoleType.Student ||
         webForm.data.role === UserRoleType.Alumni) && (
         <>
           <Div width={'full'}>
@@ -139,60 +115,26 @@ export default function UserInputForm({ webForm }: Props) {
             </Text>
             <Divider />
           </Div>
-          <FormControl isRequired isInvalid={!!webForm.errors.reg_no}>
-            <FormLabel>Reg. Number</FormLabel>
-            <Input
-              type="text"
-              onChange={(e) =>
-                webForm.setValue('reg_no', e.currentTarget.value.toUpperCase())
+          <FormControlBox
+            isRequired
+            formKey="classification_id"
+            title="Class"
+            form={webForm}
+          >
+            <ClassificationSelect
+              selectValue={webForm.data.classification_id}
+              onChange={(e: any) =>
+                webForm.setValue('classification_id', e.value)
               }
-              value={webForm.data.reg_no}
-              placeholder="Eg. 22/B.TH/SW/A/277"
-              required
             />
-            <FormErrorMessage>{webForm.errors.reg_no}</FormErrorMessage>
-          </FormControl>
-
-          <FormControl isRequired isInvalid={!!webForm.errors.department_id}>
-            <FormLabel>Department</FormLabel>
-            <DepartmentSelect
-              selectValue={webForm.data.department_id}
-              onChange={(e: any) => webForm.setValue('department_id', e.value)}
-            />
-            <FormErrorMessage>{webForm.errors.department_id}</FormErrorMessage>
-          </FormControl>
-
-          <FormControl isRequired isInvalid={!!webForm.errors.programme}>
-            <FormLabel>Programme</FormLabel>
-            <ReactSelect
-              selectValue={webForm.data.programme}
-              data={{
-                main: Object.entries(ProgrammeType),
-                label: '0',
-                value: '1',
-              }}
-              isLoading={webForm.processing}
-              onChange={(e: any) => webForm.setValue('programme', e.value)}
-            />
-            <FormErrorMessage>{webForm.errors.programme}</FormErrorMessage>
-          </FormControl>
-
-          <FormControl isRequired isInvalid={!!webForm.errors.admission_year}>
-            <FormLabel>Admission Year</FormLabel>
-            <ReactSelect
-              selectValue={webForm.data.admission_year}
-              data={{
-                main: Object.entries(AdmissionYear),
-                label: '1',
-                value: '1',
-              }}
-              isLoading={webForm.processing}
-              onChange={(e: any) => webForm.setValue('admission_year', e.value)}
-            />
-            <FormErrorMessage>{webForm.errors.admission_year}</FormErrorMessage>
-          </FormControl>
+          </FormControlBox>
+          <InputForm
+            form={webForm as any}
+            formKey="guardian_phone"
+            title="Guardian Phone"
+          />
         </>
-      )}
+      )} */}
     </>
   );
 }

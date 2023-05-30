@@ -10,8 +10,8 @@ use App\Http\Requests\RecordCourseResultRequest;
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Request;
 
 class CourseResultsController extends Controller
 {
@@ -27,7 +27,7 @@ class CourseResultsController extends Controller
   {
     $teacher = $courseTeacher->teacher;
     abort_if(
-      !$teacher->isAdmin() && !$teacher->is(currentUser()),
+      !$teacher->isInstitutionAdmin() && !$teacher->is(currentUser()),
       403,
       'You cannot record result for this course'
     );
@@ -37,7 +37,7 @@ class CourseResultsController extends Controller
   {
     $query = CourseResult::query();
     CourseResultsUITableFilters::make($request->all(), $query);
-    return Inertia::render('institutions/staff/list-course-results', [
+    return Inertia::render('institutions/courses/list-course-results', [
       'courseResults' => paginateFromRequest(
         $query->latest('course-results.id')
       )

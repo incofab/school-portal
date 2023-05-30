@@ -25,7 +25,9 @@ class SearchStudentController extends Controller
     StudentUITableFilters::make($request->all(), $query)->filterQuery();
 
     return response()->json([
-      'result' => paginateFromRequest($query)
+      'result' => paginateFromRequest(
+        $query->with('user', 'classification')->latest('students.id')
+      )
     ]);
   }
 }
