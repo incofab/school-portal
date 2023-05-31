@@ -8,10 +8,12 @@ class RecordCourseResult
 {
   public static function run($data, CourseTeacher $courseTeacher)
   {
+    $result =
+      $data['first_assessment'] + $data['second_assessment'] + $data['exam'];
     $data['course_id'] = $courseTeacher->course_id;
     $data['teacher_user_id'] = $courseTeacher->user_id;
     $data['classification_id'] = $courseTeacher->classification_id;
-    $result = $data['result'];
+
     CourseResult::query()->updateOrCreate(
       [
         ...collect($data)
@@ -24,7 +26,12 @@ class RecordCourseResult
           ])
           ->toArray()
       ],
-      [...$data, 'grade' => GetGrade::run($result), 'result_max' => null]
+      [
+        ...$data,
+        'result' => $result,
+        'grade' => GetGrade::run($result),
+        'result_max' => null
+      ]
     );
   }
 }

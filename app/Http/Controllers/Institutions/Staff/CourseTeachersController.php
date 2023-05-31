@@ -26,9 +26,10 @@ class CourseTeachersController extends Controller
 
   function index(Request $request, Institution $institution, User $user = null)
   {
-    $query = $user
+    $query = ($user
       ? $user->courseTeachers()->getQuery()
-      : CourseTeacher::query();
+      : CourseTeacher::query()
+    )->select('course_teachers.*');
     CourseTeachersUITableFilters::make($request->all(), $query);
 
     $query = $query->with('course', 'user', 'classification')->latest('id');
@@ -41,7 +42,7 @@ class CourseTeachersController extends Controller
 
   function search(Request $request)
   {
-    $query = CourseTeacher::query();
+    $query = CourseTeacher::query()->select('course_teachers.*');
     CourseTeachersUITableFilters::make($request->all(), $query)->filterQuery();
     $query = $query
       ->with('course', 'user', 'classification')

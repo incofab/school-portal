@@ -122,6 +122,11 @@ export default function SideBarLayout() {
           route: instRoute('classifications.create'),
           roles: [InstitutionUserType.Admin],
         },
+        {
+          label: 'Class Result',
+          route: instRoute('class-result-info.index'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
       ],
     },
     {

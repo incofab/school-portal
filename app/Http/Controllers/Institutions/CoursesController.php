@@ -26,7 +26,7 @@ class CoursesController extends Controller
 
   function index(Request $request)
   {
-    $query = Course::query();
+    $query = Course::query()->select('courses.*');
     CoursesUITableFilters::make($request->all(), $query);
 
     return Inertia::render('institutions/courses/list-courses', [

@@ -12,8 +12,11 @@ Route::get('/classifications/search', [Web\ClassificationController::class, 'sea
 ->name('classifications.search');
 Route::resource('/classifications', Web\ClassificationController::class)
     ->except(['show']);
+    
 Route::get('/students/search', Web\Students\SearchStudentController::class)
     ->name('students.search');
+Route::get('/students/download/{classification}', Web\Students\DownloadClassStudentsController::class)
+    ->name('students.download');
 Route::resource('/students', Web\Students\StudentController::class);
 
 Route::get('/courses/search', [Web\CoursesController::class, 'search'])
@@ -53,7 +56,19 @@ Route::get('/course-results/{courseResult}/edit', [Web\Staff\CourseResultsContro
 Route::post('/course-results/store/{courseTeacher}', [Web\Staff\CourseResultsController::class, 'store'])
     ->name('course-results.store');
 Route::post('/course-results/upload/{courseTeacher}', [Web\Staff\CourseResultsController::class, 'upload'])
-    ->name('course-results.store');
+    ->name('course-results.upload');
+Route::get('/course-results/download', Web\Staff\DownloadCourseResultSheetController::class)
+    ->name('course-results.download');
+
+Route::get('/class-result-info/index', [Web\Staff\ClassResultInfoController::class, 'index'])
+    ->name('class-result-info.index');
+Route::post('/class-result-info/calculate/{classification}', [Web\Staff\ClassResultInfoController::class, 'calculate'])
+    ->name('class-result-info.calculate');
+Route::post('/class-result-info/recalculate/{classResultInfo}', [Web\Staff\ClassResultInfoController::class, 'reCalculate'])
+    ->name('class-result-info.recalculate');
+
+Route::get('/term-results/index/{user?}', Web\ListTermResultController::class)
+    ->name('term-results.index');
 
 
 

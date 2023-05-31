@@ -113,6 +113,20 @@ class User extends Authenticatable
     return $this->hasOne(Student::class);
   }
 
+  function institutionStudent(): Student
+  {
+    return Student::query()
+      ->join(
+        'classifications',
+        'classifications.id',
+        '=',
+        'students.classification_id'
+      )
+      ->where('classifications.institution_id', currentInstitution()->id)
+      ->where('students.user_id', $this->id)
+      ->first();
+  }
+
   function hasInstitutionRole(InstitutionUserType $role): bool
   {
     return $this->institutionUser()

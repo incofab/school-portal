@@ -8,6 +8,7 @@ import web from '@/util/web';
 interface MyProps<T> {
   searchUrl: string;
   label: (item: T) => string;
+  valueKey?: string;
 }
 export default function MyAsyncSelect<
   T extends Row,
@@ -17,6 +18,7 @@ export default function MyAsyncSelect<
 >({
   searchUrl,
   label,
+  valueKey,
   ...props
 }: MyProps<T> & AsyncProps<Option, IsMulti, Group>) {
   const debouncedSearch = useMemo(() => {
@@ -26,9 +28,9 @@ export default function MyAsyncSelect<
         url.searchParams.set('search', inputValue);
       }
       const res = await web.get(url.toString());
-      const result = res.data.result.data.map((item: T) => ({
+      const result = res.data.result.data.map((item: T | any) => ({
         label: label(item),
-        value: item.id,
+        value: valueKey ? item[valueKey] : item['id'],
       }));
       callback(result);
     }, 250);

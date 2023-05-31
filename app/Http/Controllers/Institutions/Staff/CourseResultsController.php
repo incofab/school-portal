@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RecordCourseResultRequest;
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;
+use App\Models\Institution;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -25,9 +26,10 @@ class CourseResultsController extends Controller
 
   private function validateUser(CourseTeacher $courseTeacher)
   {
-    $teacher = $courseTeacher->teacher;
+    $teacher = $courseTeacher->user;
+    $user = currentUser();
     abort_if(
-      !$teacher->isInstitutionAdmin() && !$teacher->is(currentUser()),
+      !$user->isInstitutionAdmin() && !$teacher->is(currentUser()),
       403,
       'You cannot record result for this course'
     );
@@ -35,11 +37,13 @@ class CourseResultsController extends Controller
 
   public function index(Request $request)
   {
-    $query = CourseResult::query();
-    CourseResultsUITableFilters::make($request->all(), $query);
+    $query = CourseResult::query()->select('course_results.*');
+    CourseResultsUITableFilters::make($request->all(), $query)->filterQuery();
     return Inertia::render('institutions/courses/list-course-results', [
       'courseResults' => paginateFromRequest(
-        $query->latest('course-results.id')
+        $query
+          ->with('academicSession', 'student', 'teacher', 'course')
+          ->latest('course_results.id')
       )
     ]);
   }
@@ -79,13 +83,14 @@ class CourseResultsController extends Controller
 
   public function upload(
     RecordCourseResultRequest $request,
+    Institution $institution,
     CourseTeacher $courseTeacher
   ) {
     $this->validateUser($courseTeacher);
 
     InsertResultFromRecordingSheet::run(
       $request->file('file'),
-      $request->all(),
+      $request->validated(),
       $courseTeacher
     );
 

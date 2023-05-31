@@ -36,6 +36,12 @@ class InstitutionUser extends Model
     return $this->hasRole(InstitutionUserType::Student);
   }
 
+  function isStaff()
+  {
+    return $this->hasRole(InstitutionUserType::Teacher) ||
+      $this->hasRole(InstitutionUserType::Admin);
+  }
+
   function institution()
   {
     return $this->belongsTo(Institution::class);

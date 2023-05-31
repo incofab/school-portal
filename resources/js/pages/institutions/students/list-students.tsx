@@ -1,6 +1,6 @@
 import React from 'react';
 import { Student } from '@/types/models';
-import { HStack, IconButton, Icon } from '@chakra-ui/react';
+import { HStack, IconButton, Icon, Button } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
@@ -13,6 +13,10 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import StudentsTableFilters from '@/components/table-filters/students-table-filters';
+import { CloudArrowDownIcon } from '@heroicons/react/24/solid';
+import useIsStaff from '@/hooks/use-is-staff';
+import useQueryString from '@/hooks/use-query-string';
+import useMyToast from '@/hooks/use-my-toast';
 
 interface Props {
   students: PaginationResponse<Student>;
@@ -20,7 +24,24 @@ interface Props {
 
 function ListStudents({ students }: Props) {
   const { instRoute } = useInstitutionRoute();
+  const isStaff = useIsStaff();
+  const { params } = useQueryString();
+  const { toastError } = useMyToast();
   const studentFiltersModalToggle = useModalToggle();
+
+  function canDownloadSheet() {
+    return params.classification;
+  }
+
+  function downloadSheet(e: any) {
+    if (!canDownloadSheet()) {
+      e.preventDefault();
+      toastError('You have to select a class before downloading');
+      return false;
+    }
+    return true;
+  }
+
   const headers: ServerPaginatedTableHeader<Student>[] = [
     {
       label: 'Name',
@@ -76,7 +97,33 @@ function ListStudents({ students }: Props) {
         <SlabHeading
           title="List Students"
           rightElement={
-            <LinkButton href={instRoute('students.create')} title={'New'} />
+            <HStack>
+              {isStaff && (
+                <>
+                  <LinkButton
+                    href={instRoute('students.create')}
+                    title={'New'}
+                  />
+                  <Button
+                    as={'a'}
+                    href={
+                      params.classification
+                        ? instRoute('students.download', [
+                            params.classification,
+                          ])
+                        : '#'
+                    }
+                    colorScheme={'brand'}
+                    variant={'solid'}
+                    size={'sm'}
+                    leftIcon={<Icon as={CloudArrowDownIcon} />}
+                    onClick={downloadSheet}
+                  >
+                    Download Students
+                  </Button>
+                </>
+              )}
+            </HStack>
           }
         />
         <SlabBody>

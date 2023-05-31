@@ -27,39 +27,55 @@ class CourseResultsUITableFilters extends BaseUITableFilter
   {
   }
 
+  private function joinCourse(): static
+  {
+    $this->callOnce(
+      'joinCourse',
+      fn() => $this->baseQuery->join(
+        'courses',
+        'courses.id',
+        'course_results.course_id'
+      )
+    );
+    return $this;
+  }
+
   protected function directQuery()
   {
-    $this->baseQuery
-      ->when(
+    $this->when(
+      $this->requestGet('institution_id'),
+      fn(self $that) => $that->joinCourse()
+    )
+      ->baseQuery->when(
         $this->requestGet('institution_id'),
-        fn($q, $value) => $q->where('course-results.institution_id', $value)
+        fn($q, $value) => $q->where('courses.institution_id', $value)
       )
       ->when(
         $this->requestGet('classification'),
-        fn($q, $value) => $q->where('course-results.classification_id', $value)
+        fn($q, $value) => $q->where('course_results.classification_id', $value)
       )
       ->when(
         $this->requestGet('student'),
-        fn($q, $value) => $q->where('course-results.student_id', $value)
+        fn($q, $value) => $q->where('course_results.student_id', $value)
       )
       ->when(
         $this->requestGet('teacher'),
-        fn($q, $value) => $q->where('course-results.teacher_user_id', $value)
+        fn($q, $value) => $q->where('course_results.teacher_user_id', $value)
       )
       ->when(
         $this->requestGet('course'),
-        fn($q, $value) => $q->where('course-results.course_id', $value)
+        fn($q, $value) => $q->where('course_results.course_id', $value)
       )
       ->when(
         $this->requestGet('academicSession'),
         fn($q, $value) => $q->where(
-          'course-results.academic_session_id',
+          'course_results.academic_session_id',
           $value
         )
       )
       ->when(
         $this->requestGet('term'),
-        fn($q, $value) => $q->where('course-results.term', $value)
+        fn($q, $value) => $q->where('course_results.term', $value)
       );
 
     return $this;

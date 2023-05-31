@@ -56,21 +56,23 @@ class RecordCourseResultRequest extends FormRequest
       //   'required',
       //   Rule::exists('classifications', 'id')
       // ],
+      'institution_id' => ['required'],
       'academic_session_id' => ['required', 'exists:academic_sessions,id'],
       'term' => ['required', new Enum(TermType::class)],
-      'result' => ['array', 'min:1', Rule::requiredIf(!$this->has('results'))],
-      ...$this->resultRule('result.'),
-      'results' => ['array', 'min:1', Rule::requiredIf(!$this->has('result'))],
-      ...$this->resultRule('results.*.')
+      'result' => ['nullable', 'array', 'min:1'],
+      ...self::resultRule('result.*.')
+      // 'results' => ['array', 'min:1', Rule::requiredIf(!$this->has('result'))],
+      // ...$this->resultRule('results.*.')
     ];
   }
 
-  private function resultRule(string $prefix)
+  public static function resultRule(string $prefix = '')
   {
+    $institution = currentInstitution();
     return [
       $prefix . 'student_id' => [
         'required',
-        new InstitutionStudentRule($this->institution)
+        new InstitutionStudentRule($institution)
       ],
       $prefix . 'first_assessment' => ['nullable', 'numeric', 'min:0'],
       $prefix . 'second_assessment' => ['nullable', 'numeric', 'min:0'],

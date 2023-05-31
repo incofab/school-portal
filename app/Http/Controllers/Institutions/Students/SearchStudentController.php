@@ -21,7 +21,7 @@ class SearchStudentController extends Controller
       403
     );
 
-    $query = Student::query();
+    $query = Student::query()->select('students.*');
     StudentUITableFilters::make($request->all(), $query)->filterQuery();
 
     return response()->json([

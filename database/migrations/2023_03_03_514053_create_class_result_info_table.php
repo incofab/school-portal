@@ -13,7 +13,7 @@ return new class extends Migration {
     Schema::create('class_result_info', function (Blueprint $table) {
       $table->id();
       $table->unsignedBigInteger('institution_id');
-      $table->unsignedBigInteger('course_id');
+      // $table->unsignedBigInteger('course_id');
       $table->unsignedBigInteger('classification_id');
       $table->unsignedBigInteger('academic_session_id')->nullable();
       $table->string('term')->nullable();
@@ -33,11 +33,11 @@ return new class extends Migration {
         ->on('institutions')
         ->cascadeOnDelete();
 
-      $table
-        ->foreign('course_id')
-        ->references('id')
-        ->on('courses')
-        ->cascadeOnDelete();
+      // $table
+      //   ->foreign('course_id')
+      //   ->references('id')
+      //   ->on('courses')
+      //   ->cascadeOnDelete();
 
       $table
         ->foreign('classification_id')

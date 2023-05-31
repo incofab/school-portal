@@ -21,7 +21,7 @@ class SearchUserController extends Controller
       403
     );
 
-    $query = User::query();
+    $query = User::query()->select('users.*');
     UserUITableFilters::make($request->all(), $query)->filterQuery();
 
     return response()->json([

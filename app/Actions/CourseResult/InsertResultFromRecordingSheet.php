@@ -4,10 +4,12 @@ namespace App\Actions\CourseResult;
 use App\Enums\ResultRecordingColumn;
 use App\Http\Requests\RecordCourseResultRequest;
 use App\Models\CourseTeacher;
+use DB;
 use Illuminate\Http\UploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Validator;
 
 class InsertResultFromRecordingSheet
 {
@@ -49,32 +51,38 @@ class InsertResultFromRecordingSheet
       $exam = (int) $this->sheetData
         ->getCell(ResultRecordingColumn::ExamResult . $row)
         ->getValue();
-      $result = $assesment1 + $assesment2 + $exam;
 
       $data[] = [
-        'student_id' => $this->sheetData
+        'student_id' => (int) $this->sheetData
           ->getCell(ResultRecordingColumn::StudentID . $row)
           ->getValue(),
         'first_assessment' => $assesment1,
-        'last_assessment' => $assesment2,
-        'result' => $result
+        'second_assessment' => $assesment2,
+        'exam' => $exam
       ];
     }
 
-    $this->validate($data);
-
+    $data = $this->validate($data);
+    // info([...$this->post, ...$data]);
+    // dd('dmsknksd');
+    DB::beginTransaction();
     foreach ($data as $result) {
       RecordCourseResult::run(
         [...$this->post, ...$result],
         $this->courseTeacher
       );
     }
+    DB::commit();
   }
 
   private function validate(array $data)
   {
-    $request = new RecordCourseResultRequest($data);
-    $validated = $request->validate();
+    $validated = Validator::validate(
+      $data,
+      RecordCourseResultRequest::resultRule('*.')
+    );
+    // $request = new RecordCourseResultRequest($data);
+    // $validated = $request->validate();
     return $validated;
   }
 }

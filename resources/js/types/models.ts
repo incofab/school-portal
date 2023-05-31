@@ -85,9 +85,9 @@ export interface CourseResult extends InstitutionRow {
 }
 
 export interface ClassResultInfo extends InstitutionRow {
-  student_id: number;
-  teacher_user_id: number;
-  course_id: number;
+  // student_id: number;
+  // teacher_user_id: number;
+  // course_id: number;
   classification_id: number;
   academic_session_id: number;
   term: TermType;
@@ -98,6 +98,8 @@ export interface ClassResultInfo extends InstitutionRow {
   max_score: number;
   min_score: number;
   average: number;
+  classification?: Classification;
+  academicSession?: AcademicSession;
 }
 
 export interface TermResult extends InstitutionRow {

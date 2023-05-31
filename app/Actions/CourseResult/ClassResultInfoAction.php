@@ -1,69 +1,86 @@
 <?php
 namespace App\Actions\CourseResult;
 
+use App\Enums\TermType;
+use App\Models\Classification;
 use App\Models\CourseResult;
 use App\Models\ClassResultInfo;
 use Illuminate\Database\Eloquent\Collection;
 
 class ClassResultInfoAction
 {
-  function __construct(private CourseResult $courseResult)
+  // function __construct(private CourseResult $courseResult)
+  // {
+  // }
+
+  public static function make()
   {
+    return new self();
   }
 
-  public static function make(CourseResult $courseResult)
+  // public function firstOrCreate(): ClassResultInfo
+  // {
+  //   $classResultInfo = ClassResultInfo::query()
+  //     // ->where('course_id', $this->courseResult->course_id)
+  //     ->where('classification_id', $this->courseResult->classification_id)
+  //     ->where('academic_session_id', $this->courseResult->academic_session_id)
+  //     ->where('term', $this->courseResult->term)
+  //     ->first();
+
+  //   $classResultInfo = !empty($classResultInfo)
+  //     ? $classResultInfo
+  //     : $this->recalculate();
+
+  //   return $classResultInfo;
+  // }
+
+  public function recalculate(ClassResultInfo $classResultInfo): ClassResultInfo
   {
-    return new self($courseResult);
+    return $this->calculate(
+      $classResultInfo->classification,
+      $classResultInfo->academic_session_id,
+      $classResultInfo->term
+    );
   }
 
-  public function firstOrCreate(): ClassResultInfo
-  {
-    $classResultInfo = ClassResultInfo::query()
-      ->where('course_id', $this->courseResult->course_id)
-      ->where('classification_id', $this->courseResult->classification_id)
-      ->where('academic_session_id', $this->courseResult->academic_session_id)
-      ->where('term', $this->courseResult->term)
-      ->first();
-
-    $classResultInfo = !empty($classResultInfo)
-      ? $classResultInfo
-      : $this->recalculate();
-
-    return $classResultInfo;
-  }
-
-  public function recalculate(): ClassResultInfo
-  {
+  public function calculate(
+    Classification $classification,
+    int $academicSessionId,
+    string|TermType $term
+  ): ClassResultInfo {
     $queryCourseResults = CourseResult::query()
-      ->where('classification_id', $this->courseResult->classification_id)
-      ->where('academic_session_id', $this->courseResult->academic_session_id)
-      ->where('term', $this->courseResult->term);
+      ->where('classification_id', $classification->id)
+      ->where('academic_session_id', $academicSessionId)
+      ->where('term', $term);
 
     $courseResults = $queryCourseResults->get();
     $courseResultsGroupedByCourses = $queryCourseResults
+      ->select('course_id')
       ->groupBy('course_id')
       ->get();
     $classResultsGroupedByStudents = $queryCourseResults
+      ->select('student_id')
       ->groupBy('student_id')
       ->get();
 
     $numOfCourses = $courseResultsGroupedByCourses->count();
+    $numOfStudents = $classResultsGroupedByStudents->count();
 
     [$totalScore, $minScore, $maxScore] = $this->getTotalScore($courseResults);
 
     $bindingData = [
-      'institution_id' => $this->courseResult->institution_id,
-      'term' => $this->courseResult->term,
-      'academic_session_id' => $this->courseResult->academic_session_id,
-      'course_id' => $this->courseResult->id,
-      'classification_id' => $this->courseResult->classification_id
+      'institution_id' => $classification->institution_id,
+      'term' => $term,
+      'academic_session_id' => $academicSessionId,
+      // 'course_id' => $this->courseResult->id,
+      'classification_id' => $classification->id
     ];
 
     $data = [
       'num_of_courses' => $numOfCourses,
-      'num_of_students' => $classResultsGroupedByStudents->count(),
+      'num_of_students' => $numOfStudents,
       'total_score' => $totalScore,
-      'max_obtainable_score' => $numOfCourses * 100,
+      'max_obtainable_score' => $numOfCourses * $numOfStudents * 100,
       'average' => round($totalScore / $numOfCourses, 2),
       'min_score' => $minScore,
       'max_score' => $maxScore
@@ -81,7 +98,7 @@ class ClassResultInfoAction
   {
     $overallTotal = 0;
     $maxScore = 0;
-    $minScore = 0;
+    $minScore = $courseResults[0]?->result ?? 0;
     foreach ($courseResults as $key => $courseResult) {
       $result = $courseResult->result;
       if ($result > $maxScore) {

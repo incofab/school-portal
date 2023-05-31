@@ -2,26 +2,26 @@
 namespace App\Actions\CourseResult;
 
 use App\Enums\ResultRecordingColumn;
-use App\Models\Student;
+use App\Models\CourseResult;
 use Illuminate\Database\Eloquent\Collection;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class DownloadResultRecordingSheet
+class DownloadCourseResultSheet
 {
   private Worksheet $workSheet;
   private Spreadsheet $spreadsheet;
 
-  function __construct(private Collection $students)
+  function __construct(private Collection $courseResults)
   {
     $this->spreadsheet = new Spreadsheet();
     $this->workSheet = $this->spreadsheet->getActiveSheet();
   }
 
-  public static function run(Collection $students): Xlsx
+  public static function run(Collection $courseResults): Xlsx
   {
-    $obj = new DownloadResultRecordingSheet($students);
+    $obj = new DownloadCourseResultSheet($courseResults);
     return $obj->execute();
   }
 
@@ -32,8 +32,9 @@ class DownloadResultRecordingSheet
     $this->setHeaders($row);
     $row++;
 
-    foreach ($this->students as $key => $student) {
-      $this->insert($student, $row);
+    /** @var \App\Models\CourseResult $courseResults */
+    foreach ($this->courseResults as $key => $courseResult) {
+      $this->insert($courseResult, $row);
       $row++;
     }
 
@@ -96,16 +97,31 @@ class DownloadResultRecordingSheet
     );
   }
 
-  public function insert(Student $student, int $row)
+  public function insert(CourseResult $courseResult, int $row)
   {
     $this->workSheet->setCellValue(
       ResultRecordingColumn::StudentID . $row,
-      $student->id
+      $courseResult->student_id
     );
 
     $this->workSheet->setCellValue(
       ResultRecordingColumn::StudentName . $row,
-      $student->user->full_name
+      $courseResult->student->user->full_name
+    );
+
+    $this->workSheet->setCellValue(
+      ResultRecordingColumn::Assesment1Result . $row,
+      $courseResult->first_assessment
+    );
+
+    $this->workSheet->setCellValue(
+      ResultRecordingColumn::Assesment2Result . $row,
+      $courseResult->second_assessment
+    );
+
+    $this->workSheet->setCellValue(
+      ResultRecordingColumn::ExamResult . $row,
+      $courseResult->exam
     );
   }
 }

@@ -21,6 +21,11 @@ class TermResult extends Model
     return $this->belongsTo(Student::class);
   }
 
+  function classification()
+  {
+    return $this->belongsTo(Classification::class);
+  }
+
   function academicSession()
   {
     return $this->belongsTo(AcademicSession::class);

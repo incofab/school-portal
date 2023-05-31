@@ -2,22 +2,25 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\Semester;
+use App\Enums\TermType;
 use App\Models\AcademicSession;
+use App\Models\Classification;
 use App\Models\Course;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class DownloadResultRecordingSheetRequest extends FormRequest
+class DownloadCourseResultSheetRequest extends FormRequest
 {
   public ?AcademicSession $academicSessionObj;
   public ?Course $courseObj;
+  public ?Classification $classificationObj;
 
   protected function prepareForValidation()
   {
     $this->academicSessionObj = AcademicSession::find($this->academicSession);
     $this->courseObj = Course::find($this->course);
+    $this->classificationObj = Classification::find($this->classification);
 
     if (!$this->academicSessionObj) {
       return throw ValidationException::withMessages([
@@ -28,6 +31,12 @@ class DownloadResultRecordingSheetRequest extends FormRequest
     if (!$this->courseObj) {
       return throw ValidationException::withMessages([
         'course' => 'Course not selected/invalid'
+      ]);
+    }
+
+    if (!$this->classificationObj) {
+      return throw ValidationException::withMessages([
+        'classification' => 'Class not selected/invalid'
       ]);
     }
   }
@@ -47,27 +56,11 @@ class DownloadResultRecordingSheetRequest extends FormRequest
    */
   public function rules(): array
   {
-    $user = $this->user();
     return [
       'academicSession' => ['required'],
-      'semester' => ['required', new Enum(Semester::class)],
-      'course' => [
-        'required',
-        function ($attr, $value, $fail) use ($user) {
-          if (currentInstitutionUser()->isAdmin()) {
-            return;
-          }
-          if (
-            $user
-              ->lecturerCoursesPivot()
-              ->where('course_id', $value)
-              ->exists()
-          ) {
-            return;
-          }
-          $fail('You have not been assigned to this course');
-        }
-      ]
+      'classification' => ['required'],
+      'term' => ['required', new Enum(TermType::class)],
+      'course' => ['required']
     ];
   }
 }

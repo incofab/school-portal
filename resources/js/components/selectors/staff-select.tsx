@@ -34,6 +34,7 @@ export default function StaffSelect<
       label={(item: InstitutionUser) =>
         item.user!.full_name + ' - ' + item.role
       }
+      valueKey="user_id"
       {...props}
     />
   );
