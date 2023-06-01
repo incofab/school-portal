@@ -17,10 +17,11 @@ return new class extends Migration {
       $table->unsignedBigInteger('classification_id');
       $table->unsignedBigInteger('academic_session_id');
       $table->string('term');
-      $table->float('result');
+      $table->float('total_score');
+      $table->unsignedInteger('position');
       $table->float('average')->default(0);
-      $table->unsignedInteger('result_max')->nullable();
-      $table->string('grade')->nullable();
+      // $table->unsignedInteger('result_max')->nullable();
+      // $table->string('grade')->nullable();
       $table->string('remark')->nullable();
 
       $table->timestamps();

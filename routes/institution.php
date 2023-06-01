@@ -17,6 +17,10 @@ Route::get('/students/search', Web\Students\SearchStudentController::class)
     ->name('students.search');
 Route::get('/students/download/{classification}', Web\Students\DownloadClassStudentsController::class)
     ->name('students.download');
+Route::get(
+        '/students/term-result-detail/{student}/{classification}/{academicSession}/{term}', 
+        Web\Students\StudentTermResultDetailController::class
+    )->name('students.term-result-detail');
 Route::resource('/students', Web\Students\StudentController::class);
 
 Route::get('/courses/search', [Web\CoursesController::class, 'search'])

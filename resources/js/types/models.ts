@@ -98,6 +98,7 @@ export interface ClassResultInfo extends InstitutionRow {
   max_score: number;
   min_score: number;
   average: number;
+  student?: Student;
   classification?: Classification;
   academicSession?: AcademicSession;
 }
@@ -108,10 +109,14 @@ export interface TermResult extends InstitutionRow {
   academic_session_id: number;
   term: TermType;
   result: number;
+  position: number;
   average: number;
   result_max: number;
   grade: string;
   remark: string;
+  student?: Student;
+  classification?: Classification;
+  academicSession?: AcademicSession;
 }
 
 export interface SessionResult extends InstitutionRow {

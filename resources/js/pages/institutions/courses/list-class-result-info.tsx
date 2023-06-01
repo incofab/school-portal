@@ -4,7 +4,7 @@ import ServerPaginatedTable, {
 import useModalToggle from '@/hooks/use-modal-toggle';
 import { ClassResultInfo } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
-import { Text } from '@chakra-ui/react';
+import { HStack, Icon, IconButton, Text } from '@chakra-ui/react';
 import { Inertia } from '@inertiajs/inertia';
 import startCase from 'lodash/startCase';
 import React from 'react';
@@ -13,11 +13,14 @@ import useIsStaff from '@/hooks/use-is-staff';
 import DashboardLayout from '@/layout/dashboard-layout';
 import ClassResultInfoTableFilters from '@/components/table-filters/class-result-info-table-filters';
 import CalculateClassResultInfoModal from '@/components/modals/calculate-class-result-info-modal';
-import { BrandButton } from '@/components/buttons';
+import { BrandButton, LinkButton } from '@/components/buttons';
 import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import route from '@/util/route';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   classResultInfo: PaginationResponse<ClassResultInfo>;
@@ -27,6 +30,7 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
   const webForm = useWebForm({});
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
+  const { currentInstitution } = useSharedProps();
   const calculateClassResultInfoToggle = useModalToggle();
   const classResultInfoFilterToggle = useModalToggle();
   const isStaff = useIsStaff();
@@ -93,14 +97,28 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
     {
       label: 'Action',
       render: (row) => (
-        <DestructivePopover
-          label={`Do you want to recalculate the results for this ${row.classification?.title}?`}
-          onConfirm={(onClose) => recalculateClassResultInfo(onClose, row)}
-          isLoading={webForm.processing}
-          positiveButtonLabel="Recalculate"
-        >
-          <BrandButton title="Recalculate" />
-        </DestructivePopover>
+        <HStack>
+          <LinkButton
+            href={route('institutions.term-results.index', {
+              institution: currentInstitution.uuid,
+              classification: row.classification_id,
+            })}
+            title="Student Results"
+          />
+          <DestructivePopover
+            label={`Do you want to recalculate the results for this ${row.classification?.title}?`}
+            onConfirm={(onClose) => recalculateClassResultInfo(onClose, row)}
+            isLoading={webForm.processing}
+            positiveButtonLabel="Recalculate"
+          >
+            <IconButton
+              aria-label="Recalculate"
+              icon={<Icon as={ArrowPathIcon} />}
+              colorScheme="brand"
+              size="sm"
+            />
+          </DestructivePopover>
+        </HStack>
       ),
     },
   ];

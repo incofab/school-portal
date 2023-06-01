@@ -5,34 +5,15 @@ use App\Enums\TermType;
 use App\Models\Classification;
 use App\Models\CourseResult;
 use App\Models\ClassResultInfo;
+use DB;
 use Illuminate\Database\Eloquent\Collection;
 
 class ClassResultInfoAction
 {
-  // function __construct(private CourseResult $courseResult)
-  // {
-  // }
-
   public static function make()
   {
     return new self();
   }
-
-  // public function firstOrCreate(): ClassResultInfo
-  // {
-  //   $classResultInfo = ClassResultInfo::query()
-  //     // ->where('course_id', $this->courseResult->course_id)
-  //     ->where('classification_id', $this->courseResult->classification_id)
-  //     ->where('academic_session_id', $this->courseResult->academic_session_id)
-  //     ->where('term', $this->courseResult->term)
-  //     ->first();
-
-  //   $classResultInfo = !empty($classResultInfo)
-  //     ? $classResultInfo
-  //     : $this->recalculate();
-
-  //   return $classResultInfo;
-  // }
 
   public function recalculate(ClassResultInfo $classResultInfo): ClassResultInfo
   {
@@ -66,6 +47,13 @@ class ClassResultInfoAction
     $numOfCourses = $courseResultsGroupedByCourses->count();
     $numOfStudents = $classResultsGroupedByStudents->count();
 
+    abort_if($numOfCourses < 1, 421, 'There are no subjects in this selection');
+    abort_if(
+      $numOfStudents < 1,
+      421,
+      'There are no students in this selection'
+    );
+
     [$totalScore, $minScore, $maxScore] = $this->getTotalScore($courseResults);
 
     $bindingData = [
@@ -86,10 +74,14 @@ class ClassResultInfoAction
       'max_score' => $maxScore
     ];
 
+    DB::beginTransaction();
     $classResultInfo = ClassResultInfo::query()->updateOrCreate(
       $bindingData,
       $data
     );
+
+    ProcessTermResult::run($classResultInfo);
+    DB::commit();
 
     return $classResultInfo;
   }

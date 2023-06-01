@@ -150,7 +150,7 @@ export default function SideBarLayout() {
       color: 'purple',
     },
     subMenuContent: ({ level }) => ({
-      backgroundColor: level === 0 ? '#10105a' : 'transparent',
+      backgroundColor: level === 0 ? '#123a2b' : 'transparent',
     }),
     button: {
       color: '#c2c1c1',
@@ -158,7 +158,7 @@ export default function SideBarLayout() {
         color: 'gray',
       },
       '&:hover': {
-        backgroundColor: '#04136b',
+        backgroundColor: '#2a8864',
         color: '#ffffff',
       },
     },
@@ -172,11 +172,11 @@ export default function SideBarLayout() {
       breakPoint="lg"
       rootStyles={{
         [`.${sidebarClasses.container}`]: {
-          backgroundColor: '#060644',
+          backgroundColor: '#06130e',
         },
       }}
     >
-      <SidebarHeader style={{ marginBottom: '24px', marginTop: '16px' }} />
+      <SidebarHeader />
       <Menu menuItemStyles={menuItemStyles}>
         {menus.map(function (menu: MenuListType, i: number) {
           if (menu.roles && !menu.roles.includes(currentInstitutionUser.role)) {

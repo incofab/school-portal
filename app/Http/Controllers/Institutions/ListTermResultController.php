@@ -11,7 +11,7 @@ use Inertia\Inertia;
 
 class ListTermResultController extends Controller
 {
-  public function __invoke(Request $request, User $user)
+  public function __invoke(Request $request, User $user = null)
   {
     $query = $this->getQuery($user);
     TermResultUITableFilters::make($request->all(), $query)->filterQuery();
@@ -19,8 +19,8 @@ class ListTermResultController extends Controller
     return Inertia::render('institutions/list-term-results', [
       'termResults' => paginateFromRequest(
         $query
-          ->with('academicSession', 'classification', 'student')
-          ->oldest('term_results.student_id')
+          ->with('academicSession', 'classification', 'student.user')
+          ->oldest('term_results.position')
       )
     ]);
   }
@@ -28,9 +28,12 @@ class ListTermResultController extends Controller
   public function validateUser(User $user = null)
   {
     $institutionUser = currentInstitutionUser();
-    abort_if(empty($user) && !$institutionUser->isStaff(), 403);
+    if (!$user) {
+      abort_if(!$institutionUser->isStaff(), 403);
+      return;
+    }
 
-    if ($user?->id === $institutionUser->user_id) {
+    if ($user->id === $institutionUser->user_id) {
       abort_unless($institutionUser->isStudent(), 403, 'You are not a student');
       return;
     }
@@ -42,7 +45,7 @@ class ListTermResultController extends Controller
     );
 
     abort_unless(
-      $user?->isInstitutionStudent(),
+      $user->isInstitutionStudent(),
       403,
       'This user is not a student'
     );

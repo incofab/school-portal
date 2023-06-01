@@ -14,14 +14,14 @@ import { dateFormat } from '@/util/util';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
 import route from '@/util/route';
-import UsersTableFilters from '@/domain/users/users-table-filters';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import ServerPaginatedTable from '@/components/server-paginated-table';
-import { PaginationResponse, UserRoleType } from '@/types/types';
+import { PaginationResponse } from '@/types/types';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { PageTitle } from '@/components/page-header';
 import { LinkButton } from '@/components/buttons';
+import UsersTableFilters from '@/components/table-filters/users-table-filters';
 
 interface Props {
   users: PaginationResponse<User>;
@@ -65,18 +65,6 @@ function ListUsers({ users }: Props) {
             variant={'ghost'}
             colorScheme={'brand'}
           />
-          {row.role === UserRoleType.Lecturer && (
-            <Button
-              as={InertiaLink}
-              href={route('lecturer-courses.create', [row])}
-              colorScheme={'brand'}
-              variant={'link'}
-              size={'sm'}
-              fontWeight={'normal'}
-            >
-              Assign Course
-            </Button>
-          )}
           <Button
             as={InertiaLink}
             href={route('users.impersonate', [row])}

@@ -1,7 +1,8 @@
-import { BoxProps } from '@chakra-ui/react';
+import { BoxProps, Divider, Text } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import React from 'react';
 import { Div } from './semantic';
+import useSharedProps from '@/hooks/use-shared-props';
 
 // const StyledSidebarHeader = styled.div`
 //   margin-top: 5px !important;
@@ -34,12 +35,24 @@ const StyledLogo = styled.div`
 `;
 
 export const SidebarHeader = ({ ...props }: BoxProps) => {
+  const { currentInstitution } = useSharedProps();
   return (
     <Div {...props} p={1}>
-      <Div style={{ display: 'flex', alignItems: 'center' }}>
-        <StyledLogo>T</StyledLogo>
-        <h1 className="sidebarTitle">TriniCol</h1>
-      </Div>
+      {/* <Div style={{ display: 'flex', alignItems: 'center' }}> */}
+      {/* <StyledLogo>T</StyledLogo> */}
+      {/* <h1 className="sidebarTitle">TriniCol</h1> */}
+      <Text
+        color={'brand.50'}
+        textAlign={'center'}
+        fontSize={'lg'}
+        width={'full'}
+        fontWeight={'semibold'}
+        my={4}
+      >
+        {currentInstitution.name}
+      </Text>
+      {/* </Div> */}
+      <Divider background={'brand.50'} />
     </Div>
   );
 };
