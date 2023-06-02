@@ -39,11 +39,11 @@ export default function ListStudents({ institutionUsers }: Props) {
       label: 'Role',
       value: 'role',
     },
-    {
-      label: 'Created At',
-      value: 'created_at',
-      render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
-    },
+    // {
+    //   label: 'Created At',
+    //   value: 'created_at',
+    //   render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
+    // },
     {
       label: 'Action',
       render: (row) => (

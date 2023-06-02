@@ -176,7 +176,7 @@ export default function ServerPaginatedTable<T>({
       </Div>
       <Div display={'flex'} justifyContent={'end'} mt={4}>
         <HStack spacing={8}>
-          <HStack spacing={2}>
+          {/* <HStack spacing={2}>
             <Text fontSize={'sm'}>Per Page </Text>
             <HStack
               spacing={2}
@@ -195,7 +195,7 @@ export default function ServerPaginatedTable<T>({
                 </Box>
               ))}
             </HStack>
-          </HStack>
+          </HStack> */}
           <HStack spacing={2}>
             {paginator.prev_page_url && (
               <IconButton

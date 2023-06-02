@@ -47,13 +47,13 @@ function ListUsers({ users }: Props) {
       label: 'Phone',
       value: 'phone',
     },
-    {
-      label: 'Created At',
-      value: 'created_at',
-      render: (row: User) => (
-        <Text>{format(new Date(row.created_at), dateFormat)}</Text>
-      ),
-    },
+    // {
+    //   label: 'Created At',
+    //   value: 'created_at',
+    //   render: (row: User) => (
+    //     <Text>{format(new Date(row.created_at), dateFormat)}</Text>
+    //   ),
+    // },
     {
       label: 'Action',
       render: (row: User) => (

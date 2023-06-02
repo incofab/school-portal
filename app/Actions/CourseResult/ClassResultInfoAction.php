@@ -34,15 +34,16 @@ class ClassResultInfoAction
       ->where('academic_session_id', $academicSessionId)
       ->where('term', $term);
 
-    $courseResults = $queryCourseResults->get();
-    $courseResultsGroupedByCourses = $queryCourseResults
-      ->select('course_id')
-      ->groupBy('course_id')
-      ->get();
-    $classResultsGroupedByStudents = $queryCourseResults
+    $classResultsGroupedByStudents = (clone $queryCourseResults)
       ->select('student_id')
       ->groupBy('student_id')
       ->get();
+    $courseResultsGroupedByCourses = (clone $queryCourseResults)
+      ->select('course_id')
+      ->groupBy('course_id')
+      ->get();
+
+    $courseResults = $queryCourseResults->get();
 
     $numOfCourses = $courseResultsGroupedByCourses->count();
     $numOfStudents = $classResultsGroupedByStudents->count();

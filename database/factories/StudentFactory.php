@@ -31,29 +31,17 @@ class StudentFactory extends Factory
 
   public function withInstitution(Institution $institution): static
   {
-    $institutionUser = InstitutionUser::factory()
-      ->withInstitution($institution)
-      ->create();
-    return $this->withInstitutionUser($institutionUser);
-    // return $this->state(function (array $attributes) use ($institutionUser) {
-    //   return [
-    //     'institution_user_id' => $institutionUser->id,
-    //     'user_id' => $institutionUser->user_id
-    //   ];
-    // });
-  }
-
-  public function withInstitutionUser(InstitutionUser $institutionUser): static
-  {
-    $institutionUser = $institutionUser ?? InstitutionUser::factory()->create();
-    return $this->state(
-      fn(array $attributes) => [
+    return $this->state(function (array $attributes) use ($institution) {
+      $institutionUser = InstitutionUser::factory()
+        ->withInstitution($institution)
+        ->create();
+      return [
         'institution_user_id' => $institutionUser->id,
         'user_id' => $institutionUser->user_id,
         'classification_id' => Classification::factory()->withInstitution(
           $institutionUser->institution
         )
-      ]
-    );
+      ];
+    });
   }
 }
