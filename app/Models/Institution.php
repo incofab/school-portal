@@ -26,7 +26,7 @@ class Institution extends Model
       )
       ->where('uuid', $value)
       ->where('institution_users.user_id', currentUser()->id)
-      ->with('institutionUsers')
+      ->with('institutionUsers.student')
       ->firstOrFail();
     return $institutionModel;
   }

@@ -27,17 +27,23 @@ Route::get('/courses/search', [Web\CoursesController::class, 'search'])
     ->name('courses.search');
 Route::resource('/courses', Web\CoursesController::class);
 
-Route::get('/users/{institutionUser}/edit', [Web\InstitutionUserController::class, 'edit'])
+Route::get('/users/{institutionUser}/edit', [Web\Users\InstitutionUserController::class, 'edit'])
     ->name('users.edit');
-Route::put('/users/{institutionUser}/edit', [Web\InstitutionUserController::class, 'update'])
+Route::put('/users/{institutionUser}/edit', [Web\Users\InstitutionUserController::class, 'update'])
     ->name('users.update');
-Route::resource('/users', Web\InstitutionUserController::class)
+Route::resource('/users', Web\Users\InstitutionUserController::class)
     ->only(['create', 'store']);
 
-Route::get('/users/index', [Web\ListInstitutionUserController::class, 'index'])
+Route::get('/users/index', [Web\Users\ListInstitutionUserController::class, 'index'])
     ->name('users.index');
-Route::get('/users/search', [Web\ListInstitutionUserController::class, 'search'])
+Route::get('/users/search', [Web\Users\ListInstitutionUserController::class, 'search'])
     ->name('users.search');
+Route::get('/users/{user}/profile', [Web\Users\UpdateInstitutionUserController::class, 'edit'])
+    ->name('users.profile');
+Route::put('/users/{user}/update', [Web\Users\UpdateInstitutionUserController::class, 'update'])
+    ->name('users.update');
+Route::post('/users/{user}/upload-phone', [Web\Users\UpdateInstitutionUserController::class, 'uploadPhoto'])
+    ->name('users.upload-photo');
 
 // Teacher courses
 Route::get('/course-teachers/index/{user?}', [Web\Staff\CourseTeachersController::class, 'index'])

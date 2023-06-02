@@ -21,7 +21,7 @@ class User extends Authenticatable
    */
   protected $guarded = [];
 
-  protected $appends = ['full_name'];
+  protected $appends = ['full_name', 'photo_url'];
   /**
    * The attributes that should be hidden for arrays.
    *
@@ -57,6 +57,17 @@ class User extends Authenticatable
     ];
   }
 
+  protected function photoUrl(): Attribute
+  {
+    if (!$this->photo) {
+      $encodedName = urlencode($this->getAttribute('full_name'));
+      return new Attribute(
+        get: fn() => "https://ui-avatars.com/api/?name={$encodedName}"
+      );
+    }
+    return new Attribute(get: fn() => $this->photo);
+  }
+
   protected function fullName(): Attribute
   {
     return Attribute::make(
@@ -79,16 +90,16 @@ class User extends Authenticatable
     )->withTimestamps();
   }
 
-  private InstitutionUser $institutionUserData;
-  function currentInstitutionUser(): InstitutionUser
-  {
-    if ($this->institutionUserData) {
-      $this->institutionUserData = $this->institutionUsers()
-        ->where('institution_id', currentInstitution()->id)
-        ->first();
-    }
-    return $this->institutionUserData;
-  }
+  // private InstitutionUser $institutionUserData;
+  // function currentInstitutionUser(): InstitutionUser
+  // {
+  //   if ($this->institutionUserData) {
+  //     $this->institutionUserData = $this->institutionUsers()
+  //       ->where('institution_id', currentInstitution()->id)
+  //       ->first();
+  //   }
+  //   return $this->institutionUserData;
+  // }
 
   function institutionUsers()
   {
@@ -97,10 +108,9 @@ class User extends Authenticatable
 
   function institutionUser()
   {
-    return $this->institutionUsers()->where(
-      'institution_id',
-      currentInstitution()->id
-    );
+    return $this->institutionUsers()
+      ->where('institution_id', currentInstitution()->id)
+      ->with('student');
   }
 
   function courseTeachers()
@@ -113,18 +123,19 @@ class User extends Authenticatable
     return $this->hasOne(Student::class);
   }
 
-  function institutionStudent(): Student
+  function institutionStudent(): Student|null
   {
-    return Student::query()
-      ->join(
-        'classifications',
-        'classifications.id',
-        '=',
-        'students.classification_id'
-      )
-      ->where('classifications.institution_id', currentInstitution()->id)
-      ->where('students.user_id', $this->id)
-      ->first();
+    return $this->institutionUser()->first()?->student;
+    // return Student::query()
+    //   ->join(
+    //     'classifications',
+    //     'classifications.id',
+    //     '=',
+    //     'students.classification_id'
+    //   )
+    //   ->where('classifications.institution_id', currentInstitution()->id)
+    //   ->where('students.user_id', $this->id)
+    //   ->first();
   }
 
   function hasInstitutionRole(InstitutionUserType $role): bool

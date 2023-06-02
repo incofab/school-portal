@@ -39,13 +39,17 @@ class TestSeeder extends Seeder
       ->withInstitution($institution)
       ->count(8)
       ->create();
+
     $classification = Classification::factory()
       ->withInstitution($institution)
       ->create(['title' => 'JSS 1']);
+
     $students = Student::factory()
       ->withInstitution($institution)
       ->count(10)
       ->create(['classification_id' => $classification->id]);
+
+    $this->seedMoreClassesAndStudents($institution);
 
     /** @var \App\Models\User $teacher */
     $teacher = User::factory()
@@ -71,6 +75,21 @@ class TestSeeder extends Seeder
           'term' => TermType::Third
         ]);
       }
+    }
+  }
+
+  private function seedMoreClassesAndStudents(Institution $institution)
+  {
+    $classTitles = ['JSS 2', 'JSS 3'];
+    foreach ($classTitles as $key => $classTitle) {
+      $classification = Classification::factory()
+        ->withInstitution($institution)
+        ->create(['title' => $classTitle]);
+
+      Student::factory()
+        ->withInstitution($institution)
+        ->count(10)
+        ->create(['classification_id' => $classification->id]);
     }
   }
 }

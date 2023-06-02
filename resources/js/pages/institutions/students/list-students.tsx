@@ -3,7 +3,7 @@ import { Student } from '@/types/models';
 import { HStack, IconButton, Icon, Button } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import ServerPaginatedTable from '@/components/server-paginated-table';
-import { PaginationResponse } from '@/types/types';
+import { InstitutionUserType, PaginationResponse } from '@/types/types';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { LinkButton } from '@/components/buttons';
@@ -17,12 +17,14 @@ import { CloudArrowDownIcon } from '@heroicons/react/24/solid';
 import useIsStaff from '@/hooks/use-is-staff';
 import useQueryString from '@/hooks/use-query-string';
 import useMyToast from '@/hooks/use-my-toast';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   students: PaginationResponse<Student>;
 }
 
 function ListStudents({ students }: Props) {
+  const { currentUser, currentInstitutionUser } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const isStaff = useIsStaff();
   const { params } = useQueryString();
@@ -80,6 +82,16 @@ function ListStudents({ students }: Props) {
             variant={'ghost'}
             colorScheme={'brand'}
           />
+          {(row.user_id === currentUser.id ||
+            currentInstitutionUser.role === InstitutionUserType.Admin ||
+            currentInstitutionUser.role === InstitutionUserType.Teacher) && (
+            <LinkButton
+              href={instRoute('users.profile', [row.user_id])}
+              colorScheme={'brand'}
+              variant={'link'}
+              title="Profile"
+            />
+          )}
           {/* <LinkButton
             href={route('users.impersonate', [row.user_id])}
             colorScheme={'red'}

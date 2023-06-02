@@ -78,7 +78,7 @@ export default function StudentTermResultDetail({
         <SlabBody>
           <Div>
             {headerInfo.map(({ label, value }) => (
-              <HStack my={1}>
+              <HStack my={1} key={value}>
                 <Text width={'100px'}>{label}</Text> <Text>{value}</Text>
               </HStack>
             ))}

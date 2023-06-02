@@ -13,7 +13,7 @@ class ListTermResultController extends Controller
 {
   public function __invoke(Request $request, User $user = null)
   {
-    $query = $this->getQuery($user);
+    $query = $this->getQuery($user)->select('term_results.*');
     TermResultUITableFilters::make($request->all(), $query)->filterQuery();
 
     return Inertia::render('institutions/list-term-results', [
@@ -54,12 +54,14 @@ class ListTermResultController extends Controller
   private function getQuery(User $user = null)
   {
     $this->validateUser($user);
-    if ($user) {
-      $student = $user->institutionStudent();
-      $query = $student->termResults();
-    } else {
-      $query = TermResult::query();
+    if (!$user) {
+      if (currentInstitutionUser()->isStaff()) {
+        return TermResult::query();
+      }
+      $user = currentUser();
     }
-    return $query->select('term_results.*');
+
+    $student = $user->institutionStudent();
+    return $student->termResults();
   }
 }

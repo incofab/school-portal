@@ -1,3 +1,5 @@
+import { Resizer } from './image-file-resizer';
+
 export const dateFormat = 'yyyy-MM-dd';
 
 type PreventDefault = Pick<React.FormEvent, 'preventDefault'>['preventDefault'];
@@ -25,6 +27,23 @@ export function formatAsCurrency(num: number) {
     currency: 'NGN',
   });
   return formatter.format(num);
+}
+
+export function resizeImage(file: Blob, maxWidth: number, maxHeight: number) {
+  return new Promise((resolve) => {
+    Resizer.createResizedImage(
+      file,
+      maxWidth,
+      maxHeight,
+      'JPEG',
+      100,
+      0,
+      (uri: string) => {
+        resolve(uri);
+      },
+      'blob'
+    );
+  });
 }
 
 export function setUrlFilterOptions(

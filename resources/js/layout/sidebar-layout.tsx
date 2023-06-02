@@ -130,6 +130,10 @@ export default function SideBarLayout() {
       ],
     },
     {
+      label: 'Profile',
+      route: instRoute('users.profile', [currentUser]),
+    },
+    {
       label: 'Logout',
       route: route('logout'),
     },

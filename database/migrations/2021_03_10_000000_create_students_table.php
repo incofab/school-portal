@@ -15,6 +15,7 @@ return new class extends Migration {
     Schema::create('students', function (Blueprint $table) {
       $table->bigIncrements('id');
 
+      $table->unsignedBigInteger('institution_user_id');
       $table->unsignedBigInteger('user_id');
       $table->unsignedBigInteger('classification_id');
       $table->string('code')->unique();
@@ -22,6 +23,11 @@ return new class extends Migration {
       $table->timestamps();
       $table->softDeletes();
 
+      $table
+        ->foreign('institution_user_id')
+        ->references('id')
+        ->on('institution_users')
+        ->cascadeOnDelete();
       $table
         ->foreign('user_id')
         ->references('id')

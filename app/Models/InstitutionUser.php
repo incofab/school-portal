@@ -47,6 +47,11 @@ class InstitutionUser extends Model
     return $this->belongsTo(Institution::class);
   }
 
+  function student()
+  {
+    return $this->hasOne(Student::class);
+  }
+
   function user()
   {
     return $this->belongsTo(User::class);

@@ -27,23 +27,6 @@ class VerifyInstitutionUser
     }
 
     $institution = $request->route()->institution;
-    // dd($institution);
-    // if (is_string($institution)) {
-    //   /** @var \App\Models\Institution $institution */
-    //   $institution = Institution::query()
-    //     ->select('institutions.*')
-    //     ->join(
-    //       'institution_users',
-    //       'institution_users.institution_id',
-    //       'institutions.id'
-    //     )
-    //     ->where('uuid', $institution)
-    //     ->where('institution_users.user_id', $user->id)
-    //     ->with('institutionUsers')
-    //     ->first();
-    // } else {
-    //   $institution = $institution;
-    // }
 
     if (!$institution) {
       $message = 'You are not authorized to access this page.';

@@ -40,14 +40,19 @@ class RecordStudent
     if ($user->institutionUser()->exists()) {
       return;
     }
-    $user
-      ->institutions()
-      ->syncWithPivotValues(
-        [$classification->institution_id],
-        ['role' => InstitutionUserType::Student]
-      );
+    $institutionUser = $user->institutionUsers()->firstOrCreate(
+      [
+        'institution_id' => $classification->institution_id
+      ],
+      ['role' => InstitutionUserType::Student]
+    );
+    // ->syncWithPivotValues(
+    //   [$classification->institution_id],
+    //   ['role' => InstitutionUserType::Student]
+    // );
 
     $user->student()->firstOrCreate([
+      'institution_user_id' => $institutionUser->id,
       'classification_id' => $classification->id,
       'code' => Student::generateStudentID(),
       'guardian_phone' => $request->guardian_phone

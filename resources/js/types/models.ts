@@ -16,6 +16,8 @@ export interface User extends Row {
   other_names: string;
   full_name: string;
   phone: string;
+  photo: string;
+  photo_url: string;
   email: string;
   is_welfare: boolean;
 }
@@ -41,6 +43,7 @@ export interface InstitutionUser extends InstitutionRow {
   user_id: number;
   role: InstitutionUserType;
   user?: User;
+  student?: Student;
 }
 
 export interface Classification extends InstitutionRow {
@@ -56,7 +59,7 @@ export interface Course extends InstitutionRow {
 }
 
 export interface Student extends Row {
-  user_id: string;
+  user_id: number;
   classification_id: number;
   code: string;
   guardian_phone: string;

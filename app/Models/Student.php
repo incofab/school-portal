@@ -12,42 +12,6 @@ class Student extends Model
 
   public $guarded = [];
 
-  // static function multiInsert($post, Institution $institution)
-  // {
-  //   foreach ($post as $arr) {
-  //     $arr['code'] = Student::generateStudentID();
-  //     $arr['institution_id'] = $institution->id;
-
-  //     Student::create($arr);
-  //   }
-
-  //   return retS('All records inserted');
-  // }
-
-  // static function insert($post, Institution $institution)
-  // {
-  //   $post['code'] = Student::generateStudentID();
-  //   $post['institution_id'] = $institution->id;
-
-  //   $data = Student::create($post);
-
-  //   if (!$data) {
-  //     return retF('Error: Data entry failed');
-  //   }
-
-  //   $msg = 'Registration successful, You can login now';
-  //   return retS($msg, $data);
-  // }
-
-  // static function edit($post)
-  // {
-  //   $student = Student::whereId($post['id'])->firstOrFail();
-
-  //   $student->update($post);
-
-  //   return retS('Record updated successfully', $student);
-  // }
-
   static function generateStudentID()
   {
     $prefix = date('Y') . '-';
@@ -64,6 +28,11 @@ class Student extends Model
   function classification()
   {
     return $this->belongsTo(Classification::class);
+  }
+
+  function institutionUser()
+  {
+    return $this->belongsTo(InstitutionUser::class);
   }
 
   function user()
