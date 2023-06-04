@@ -58,7 +58,7 @@ class InstitutionUserController extends Controller
   public function uploadStaff(Request $request, Institution $institution)
   {
     $request->validate([
-      'file' => ['required', 'file', new ExcelRule($this->file('file'))],
+      'file' => ['required', 'file', new ExcelRule($request->file('file'))],
       'role' => [
         'required',
         Rule::notIn([

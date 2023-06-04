@@ -32,9 +32,11 @@ class InsertStaffFromRecordingSheet
 
   public function execute()
   {
-    $totalRows = $this->sheetData->getHighestDataRow();
+    $totalRows = $this->sheetData->getHighestDataRow(
+      StaffRecordingSheetColumn::FirstName
+    );
     $data = [];
-    $rows = range(2, $totalRows);
+    $rows = range(3, $totalRows);
 
     foreach ($rows as $row) {
       $data[] = [

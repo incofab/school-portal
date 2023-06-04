@@ -10,9 +10,9 @@ use Illuminate\Http\UploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Illuminate\Support\Str;
 use Validator;
 use DB;
-use Illuminate\Support\Str;
 
 class InsertStudentFromRecordingSheet
 {
@@ -23,23 +23,23 @@ class InsertStudentFromRecordingSheet
     private UploadedFile $file,
     private Classification $classification
   ) {
-    // private InstitutionUserType $role
     $this->spreadsheet = IOFactory::load($this->file->getRealPath());
     $this->sheetData = $this->spreadsheet->getActiveSheet();
   }
 
   public static function run(UploadedFile $file, Classification $classification)
   {
-    // InstitutionUserType $role
     $obj = new self($file, $classification);
     return $obj->execute();
   }
 
   public function execute()
   {
-    $totalRows = $this->sheetData->getHighestDataRow();
+    $totalRows = $this->sheetData->getHighestDataRow(
+      StudentRecordingSheetColumn::FirstName
+    );
     $data = [];
-    $rows = range(2, $totalRows);
+    $rows = range(3, $totalRows);
 
     foreach ($rows as $row) {
       $data[] = [

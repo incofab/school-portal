@@ -8,7 +8,7 @@ interface ToastParams {
 export default function useMyToast() {
   const toast = useToast();
   function handleResponseToast(res: ToastParams): boolean {
-    if (!res.ok) {
+    if (!res || !res.ok) {
       toast({
         title: res.message ?? 'Error process request',
         status: 'error',
@@ -19,7 +19,7 @@ export default function useMyToast() {
         status: 'success',
       });
     }
-    return res.ok;
+    return res?.ok;
   }
 
   function toastError(message: string) {

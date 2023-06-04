@@ -31,7 +31,7 @@ export default function UploadStaffModal({
   onSuccess,
   onClose,
 }: Props) {
-  const { handleResponseToast } = useMyToast();
+  const { handleResponseToast, toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
     files: [] as FileObject[],
@@ -39,11 +39,18 @@ export default function UploadStaffModal({
   });
 
   const onSubmit = async () => {
+    if (!webForm.data.files || !webForm.data.role) {
+      toastError('Attach a file and select a role before submitting');
+      return;
+    }
     const res = await webForm.submit((data, web) => {
       const formData = new FormData();
       const file = data.files[0] ?? null;
       formData.append('file', file?.file, file?.getNameWithExtension());
-      return web.post(instRoute('users.upload', [data.role]), formData);
+      return web.post(
+        instRoute('users.upload', [{ role: data.role }]),
+        formData
+      );
     });
 
     if (!handleResponseToast(res)) return;
@@ -60,6 +67,7 @@ export default function UploadStaffModal({
       bodyContent={
         <VStack>
           <LinkButton
+            as={'a'}
             title="Download Template"
             leftIcon={<Icon as={CloudArrowDownIcon} />}
             href={instRoute('users.download-recording-template')}

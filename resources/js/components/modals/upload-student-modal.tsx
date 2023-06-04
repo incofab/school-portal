@@ -30,7 +30,7 @@ export default function UploadStudentModal({
   onSuccess,
   onClose,
 }: Props) {
-  const { handleResponseToast } = useMyToast();
+  const { handleResponseToast, toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
     files: [] as FileObject[],
@@ -38,6 +38,10 @@ export default function UploadStudentModal({
   });
 
   const onSubmit = async () => {
+    if (!webForm.data.files || !webForm.data.classification) {
+      toastError('Attach a file and select a class before submitting');
+      return;
+    }
     const res = await webForm.submit((data, web) => {
       const formData = new FormData();
       const file = data.files[0] ?? null;

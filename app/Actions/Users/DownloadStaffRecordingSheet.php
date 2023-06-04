@@ -3,6 +3,7 @@ namespace App\Actions\Users;
 
 use App\Enums\Sheet\StaffRecordingSheetColumn;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -57,13 +58,15 @@ class DownloadStaffRecordingSheet
       ->setWidth(24);
     $this->workSheet
       ->getColumnDimension(StaffRecordingSheetColumn::Gender)
-      ->setWidth(10);
+      ->setWidth(15);
     $this->workSheet
       ->getColumnDimension(StaffRecordingSheetColumn::Email)
       ->setWidth(20);
     $this->workSheet
       ->getColumnDimension(StaffRecordingSheetColumn::Phone)
       ->setWidth(15);
+
+    $this->setPhoneNumberColumn(StaffRecordingSheetColumn::Phone);
 
     $this->workSheet->setCellValue(
       StaffRecordingSheetColumn::FirstName . $row,
@@ -90,5 +93,12 @@ class DownloadStaffRecordingSheet
       StaffRecordingSheetColumn::Phone . $row,
       'Phone'
     );
+  }
+  private function setPhoneNumberColumn(string $column)
+  {
+    $this->workSheet
+      ->getStyle($column)
+      ->getNumberFormat()
+      ->setFormatCode(NumberFormat::FORMAT_TEXT);
   }
 }

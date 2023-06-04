@@ -14,7 +14,7 @@ class Student extends Model
 
   static function generateStudentID()
   {
-    $prefix = date('Y') . '-';
+    $prefix = date('Y');
 
     $key = $prefix . rand(1000000, 9999999);
 

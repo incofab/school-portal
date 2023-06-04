@@ -74,7 +74,7 @@ class StudentController extends Controller
     Classification $classification
   ) {
     $request->validate([
-      'file' => ['required', 'file', new ExcelRule($this->file('file'))]
+      'file' => ['required', 'file', new ExcelRule($request->file('file'))]
     ]);
     InsertStudentFromRecordingSheet::run($request->file, $classification);
     return $this->ok();

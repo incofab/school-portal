@@ -3,6 +3,7 @@ namespace App\Actions\Users;
 
 use App\Enums\Sheet\StudentRecordingSheetColumn;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -65,6 +66,9 @@ class DownloadStudentRecordingSheet
       ->getColumnDimension(StudentRecordingSheetColumn::Phone)
       ->setWidth(15);
 
+    $this->setPhoneNumberColumn(StudentRecordingSheetColumn::GuardianPhone);
+    $this->setPhoneNumberColumn(StudentRecordingSheetColumn::Phone);
+
     $this->workSheet->setCellValue(
       StudentRecordingSheetColumn::FirstName . $row,
       'First Name'
@@ -90,5 +94,12 @@ class DownloadStudentRecordingSheet
       StudentRecordingSheetColumn::Phone . $row,
       'Phone'
     );
+  }
+  private function setPhoneNumberColumn(string $column)
+  {
+    $this->workSheet
+      ->getStyle($column)
+      ->getNumberFormat()
+      ->setFormatCode(NumberFormat::FORMAT_TEXT);
   }
 }
