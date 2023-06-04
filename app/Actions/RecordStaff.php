@@ -7,24 +7,26 @@ use Illuminate\Support\Facades\DB;
 
 class RecordStaff
 {
-  public static function create(CreateStaffRequest $request)
+  // public static function createWithTransaction(array $data)
+  // {
+
+  // }
+
+  public static function create(array $data)
   {
     DB::beginTransaction();
 
     /** @var User $user */
     $user = User::query()->updateOrCreate(
-      ['email' => $request->email],
-      [
-        ...collect($request->validated())->except('role'),
-        'password' => bcrypt('password')
-      ]
+      ['email' => $data['email']],
+      [...collect($data)->except('role'), 'password' => bcrypt('password')]
     );
 
     $user
       ->institutions()
       ->syncWithPivotValues(
         [currentInstitution()->id],
-        ['role' => $request->role]
+        ['role' => $data['role']]
       );
 
     DB::commit();

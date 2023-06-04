@@ -1,7 +1,7 @@
 <?php
 namespace App\Actions\CourseResult;
 
-use App\Enums\ResultRecordingColumn;
+use App\Enums\Sheet\ResultRecordingColumn;
 use App\Http\Requests\RecordCourseResultRequest;
 use App\Models\CourseTeacher;
 use DB;

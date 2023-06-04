@@ -7,13 +7,14 @@ import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
-import { LinkButton } from '@/components/buttons';
+import { BrandButton, LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
-import DateTimeDisplay from '@/components/date-time-display';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import UsersTableFilters from '@/components/table-filters/users-table-filters';
-import route from '@/util/route';
+import { CloudArrowUpIcon } from '@heroicons/react/24/solid';
+import UploadStaffModal from '@/components/modals/upload-staff-modal';
+import { Inertia } from '@inertiajs/inertia';
 
 interface Props {
   institutionUsers: PaginationResponse<InstitutionUser>;
@@ -22,6 +23,7 @@ interface Props {
 export default function ListStudents({ institutionUsers }: Props) {
   const { instRoute } = useInstitutionRoute();
   const userFilterToggle = useModalToggle();
+  const staffUploadModalToggle = useModalToggle();
   const headers: ServerPaginatedTableHeader<InstitutionUser>[] = [
     {
       label: 'Name',
@@ -71,9 +73,16 @@ export default function ListStudents({ institutionUsers }: Props) {
     <DashboardLayout>
       <Slab>
         <SlabHeading
-          title="Staff Members"
+          title="Members"
           rightElement={
-            <LinkButton href={instRoute('users.create')} title={'New'} />
+            <HStack>
+              <LinkButton href={instRoute('users.create')} title={'New'} />
+              <BrandButton
+                leftIcon={<Icon as={CloudArrowUpIcon} />}
+                onClick={staffUploadModalToggle.open}
+                title="Upload Staff"
+              />
+            </HStack>
           }
         />
         <SlabBody>
@@ -89,6 +98,10 @@ export default function ListStudents({ institutionUsers }: Props) {
         </SlabBody>
       </Slab>
       <UsersTableFilters {...userFilterToggle.props} />
+      <UploadStaffModal
+        {...staffUploadModalToggle.props}
+        onSuccess={() => Inertia.reload({ only: ['institutionUsers'] })}
+      />
     </DashboardLayout>
   );
 }

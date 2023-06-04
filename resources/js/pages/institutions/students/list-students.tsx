@@ -6,18 +6,23 @@ import ServerPaginatedTable from '@/components/server-paginated-table';
 import { InstitutionUserType, PaginationResponse } from '@/types/types';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
-import { LinkButton } from '@/components/buttons';
+import { BrandButton, LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import DateTimeDisplay from '@/components/date-time-display';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import StudentsTableFilters from '@/components/table-filters/students-table-filters';
-import { CloudArrowDownIcon } from '@heroicons/react/24/solid';
+import {
+  CloudArrowDownIcon,
+  CloudArrowUpIcon,
+} from '@heroicons/react/24/solid';
 import useIsStaff from '@/hooks/use-is-staff';
 import useQueryString from '@/hooks/use-query-string';
 import useMyToast from '@/hooks/use-my-toast';
 import useSharedProps from '@/hooks/use-shared-props';
+import UploadStudentModal from '@/components/modals/upload-student-modal';
+import { Inertia } from '@inertiajs/inertia';
 
 interface Props {
   students: PaginationResponse<Student>;
@@ -30,6 +35,7 @@ function ListStudents({ students }: Props) {
   const { params } = useQueryString();
   const { toastError } = useMyToast();
   const studentFiltersModalToggle = useModalToggle();
+  const studentUploadModalToggle = useModalToggle();
 
   function canDownloadSheet() {
     return params.classification;
@@ -116,6 +122,11 @@ function ListStudents({ students }: Props) {
                     href={instRoute('students.create')}
                     title={'New'}
                   />
+                  <BrandButton
+                    leftIcon={<Icon as={CloudArrowUpIcon} />}
+                    onClick={studentUploadModalToggle.open}
+                    title="Upload Students"
+                  />
                   <Button
                     as={'a'}
                     href={
@@ -131,7 +142,7 @@ function ListStudents({ students }: Props) {
                     leftIcon={<Icon as={CloudArrowDownIcon} />}
                     onClick={downloadSheet}
                   >
-                    Download Students
+                    Download
                   </Button>
                 </>
               )}
@@ -150,6 +161,10 @@ function ListStudents({ students }: Props) {
           />
         </SlabBody>
         <StudentsTableFilters {...studentFiltersModalToggle.props} />
+        <UploadStudentModal
+          {...studentUploadModalToggle.props}
+          onSuccess={() => Inertia.reload({ only: ['students'] })}
+        />
       </Slab>
     </DashboardLayout>
   );

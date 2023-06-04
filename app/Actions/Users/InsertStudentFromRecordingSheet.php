@@ -1,0 +1,101 @@
+<?php
+namespace App\Actions\Users;
+
+use App\Actions\RecordStudent;
+use App\Enums\Gender;
+use App\Enums\Sheet\StudentRecordingSheetColumn;
+use App\Models\Classification;
+use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Validator;
+use DB;
+use Illuminate\Support\Str;
+
+class InsertStudentFromRecordingSheet
+{
+  private Spreadsheet $spreadsheet;
+  private Worksheet $sheetData;
+
+  function __construct(
+    private UploadedFile $file,
+    private Classification $classification
+  ) {
+    // private InstitutionUserType $role
+    $this->spreadsheet = IOFactory::load($this->file->getRealPath());
+    $this->sheetData = $this->spreadsheet->getActiveSheet();
+  }
+
+  public static function run(UploadedFile $file, Classification $classification)
+  {
+    // InstitutionUserType $role
+    $obj = new self($file, $classification);
+    return $obj->execute();
+  }
+
+  public function execute()
+  {
+    $totalRows = $this->sheetData->getHighestDataRow();
+    $data = [];
+    $rows = range(2, $totalRows);
+
+    foreach ($rows as $row) {
+      $data[] = [
+        'first_name' => $this->getValue(
+          StudentRecordingSheetColumn::FirstName . $row
+        ),
+        'last_name' => $this->getValue(
+          StudentRecordingSheetColumn::LastName . $row
+        ),
+        'other_names' => $this->getValue(
+          StudentRecordingSheetColumn::OtherNames . $row
+        ),
+        'gender' => $this->getGender($row),
+        'guardian_phone' => $this->getValue(
+          StudentRecordingSheetColumn::GuardianPhone . $row
+        ),
+        'phone' => $this->getValue(StudentRecordingSheetColumn::Phone . $row),
+        'email' => Str::orderedUuid() . '@email.com',
+        'password' => 'password',
+        'password_confirmation' => 'password'
+      ];
+    }
+
+    $data = $this->validate($data);
+
+    DB::beginTransaction();
+    foreach ($data as $studentData) {
+      RecordStudent::create($studentData, $this->classification);
+    }
+    DB::commit();
+  }
+
+  private function getValue(string $column)
+  {
+    return $this->sheetData->getCell($column)->getValue();
+  }
+
+  private function getGender($row)
+  {
+    $gender = $this->getValue(StudentRecordingSheetColumn::Gender . $row);
+    $gender = strtolower($gender);
+    if ($gender === 'm') {
+      return Gender::Male;
+    } elseif ($gender === 'f') {
+      return Gender::Female;
+    }
+    return Gender::tryFrom($gender ?? '');
+  }
+
+  private function validate(array $data)
+  {
+    $validated = Validator::validate($data, [
+      ...User::generalRule(null, '*.'),
+      '*.guardian_phone' => ['nullable', 'string']
+    ]);
+
+    return $validated;
+  }
+}

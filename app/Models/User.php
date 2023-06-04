@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\Gender;
 use App\Enums\InstitutionUserType;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Validation\Rules\Enum;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -38,14 +40,15 @@ class User extends Authenticatable
     'email_verified_at' => 'datetime'
   ];
 
-  public static function generalRule($userId = null)
+  public static function generalRule($userId = null, $prefix = '')
   {
     return [
-      'first_name' => ['required', 'string', 'max:255'],
-      'last_name' => ['required', 'string', 'max:255'],
-      'other_names' => ['nullable', 'string', 'max:255'],
-      'phone' => ['nullable', 'string', 'max:20'],
-      'email' => [
+      $prefix . 'first_name' => ['required', 'string', 'max:255'],
+      $prefix . 'last_name' => ['required', 'string', 'max:255'],
+      $prefix . 'other_names' => ['nullable', 'string', 'max:255'],
+      $prefix . 'phone' => ['nullable', 'string', 'max:20'],
+      $prefix . 'gender' => ['nullable', new Enum(Gender::class)],
+      $prefix . 'email' => [
         'required',
         'string',
         'email',
@@ -53,7 +56,7 @@ class User extends Authenticatable
       ],
       ...$userId
         ? []
-        : ['password' => ['required', 'string', 'confirmed', 'min:6']]
+        : [$prefix . 'password' => ['required', 'string', 'confirmed', 'min:6']]
     ];
   }
 

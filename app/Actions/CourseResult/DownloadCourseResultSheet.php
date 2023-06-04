@@ -1,7 +1,7 @@
 <?php
 namespace App\Actions\CourseResult;
 
-use App\Enums\ResultRecordingColumn;
+use App\Enums\Sheet\ResultRecordingColumn;
 use App\Models\CourseResult;
 use Illuminate\Database\Eloquent\Collection;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;

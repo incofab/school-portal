@@ -2,7 +2,6 @@
 namespace App\Actions;
 
 use App\Enums\InstitutionUserType;
-use App\Http\Requests\CreateStudentRequest;
 use App\Models\Classification;
 use App\Models\Student;
 use App\Models\User;
@@ -10,15 +9,15 @@ use Illuminate\Support\Facades\DB;
 
 class RecordStudent
 {
-  public static function create(CreateStudentRequest $request)
+  public static function create(array $data, Classification $classification)
   {
     DB::beginTransaction();
 
     /** @var User $user */
     $user = User::query()->updateOrCreate(
-      ['email' => $request->email],
+      ['email' => $data['email']],
       [
-        ...collect($request->validated())->except(
+        ...collect($data)->except(
           'classification_id',
           'role',
           'guardian_phone'
@@ -27,13 +26,13 @@ class RecordStudent
       ]
     );
 
-    static::attach($request, $user, $request->classification);
+    static::attach($data, $user, $classification);
 
     DB::commit();
   }
 
   public static function attach(
-    CreateStudentRequest $request,
+    $data,
     User $user,
     Classification $classification
   ) {
@@ -46,16 +45,12 @@ class RecordStudent
       ],
       ['role' => InstitutionUserType::Student]
     );
-    // ->syncWithPivotValues(
-    //   [$classification->institution_id],
-    //   ['role' => InstitutionUserType::Student]
-    // );
 
     $user->student()->firstOrCreate([
       'institution_user_id' => $institutionUser->id,
       'classification_id' => $classification->id,
       'code' => Student::generateStudentID(),
-      'guardian_phone' => $request->guardian_phone
+      'guardian_phone' => $data['guardian_phone'] ?? null
     ]);
   }
 }

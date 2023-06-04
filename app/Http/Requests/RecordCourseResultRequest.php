@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\TermType;
 use App\Models\Course;
 use App\Models\Institution;
+use App\Rules\ExcelRule;
 use App\Rules\InstitutionStudentRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -47,22 +48,12 @@ class RecordCourseResultRequest extends FormRequest
   public function rules(): array
   {
     return [
-      // 'teacher_user_id' => [
-      //   'required',
-      //   new InstitutionUserRule($this->institution, InstitutionUserType::Teacher)
-      // ],
-      // 'course_id' => ['required', Rule::exists('courses', 'id')],
-      // 'classification_id' => [
-      //   'required',
-      //   Rule::exists('classifications', 'id')
-      // ],
+      'file' => ['required', 'file', new ExcelRule($this->file('file'))],
       'institution_id' => ['required'],
       'academic_session_id' => ['required', 'exists:academic_sessions,id'],
       'term' => ['required', new Enum(TermType::class)],
       'result' => ['nullable', 'array', 'min:1'],
       ...self::resultRule('result.*.')
-      // 'results' => ['array', 'min:1', Rule::requiredIf(!$this->has('result'))],
-      // ...$this->resultRule('results.*.')
     ];
   }
 
@@ -77,7 +68,6 @@ class RecordCourseResultRequest extends FormRequest
       $prefix . 'first_assessment' => ['nullable', 'numeric', 'min:0'],
       $prefix . 'second_assessment' => ['nullable', 'numeric', 'min:0'],
       $prefix . 'exam' => ['nullable', 'numeric', 'min:0']
-      // $prefix . 'result' => ['required', 'numeric', 'min:0']
     ];
   }
 }

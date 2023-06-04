@@ -17,6 +17,10 @@ Route::get('/students/search', Web\Students\SearchStudentController::class)
     ->name('students.search');
 Route::get('/students/download/{classification}', Web\Students\DownloadClassStudentsController::class)
     ->name('students.download');
+Route::get('/students/download-recording-template', [Web\Students\StudentController::class, 'downloadTemplate'])
+    ->name('students.download-recording-template');
+Route::post('/students/upload/{classification}', [Web\Students\StudentController::class, 'uploadStudents'])
+    ->name('students.upload');
 Route::get(
         '/students/term-result-detail/{student}/{classification}/{academicSession}/{term}', 
         Web\Students\StudentTermResultDetailController::class
@@ -42,6 +46,10 @@ Route::get('/users/{user}/profile', [Web\Users\UpdateInstitutionUserController::
     ->name('users.profile');
 Route::put('/users/{user}/update', [Web\Users\UpdateInstitutionUserController::class, 'update'])
     ->name('users.update');
+Route::get('/users/download-recording-template', [Web\Users\InstitutionUserController::class, 'downloadTemplate'])
+    ->name('users.download-recording-template');
+Route::post('/users/upload', [Web\Users\InstitutionUserController::class, 'uploadStaff'])
+    ->name('users.upload');
 Route::post('/users/{user}/upload-phone', [Web\Users\UpdateInstitutionUserController::class, 'uploadPhoto'])
     ->name('users.upload-photo');
 
