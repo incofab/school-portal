@@ -39,10 +39,10 @@ export enum TermType {
   Third = 'third',
 }
 
-// export enum Semester {
-//   First = 'first',
-//   Second = 'second',
-// }
+export enum Gender {
+  Male = 'male',
+  Female = 'female',
+}
 
 // export enum ProgrammeType {
 //   Regular = 'regular',

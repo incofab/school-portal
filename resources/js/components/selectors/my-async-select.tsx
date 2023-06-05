@@ -7,6 +7,7 @@ import web from '@/util/web';
 
 interface MyProps<T> {
   searchUrl: string;
+  params?: { [key: string]: string | number };
   label: (item: T) => string;
   valueKey?: string;
 }
@@ -17,6 +18,7 @@ export default function MyAsyncSelect<
   Group extends GroupBase<Option>
 >({
   searchUrl,
+  params,
   label,
   valueKey,
   ...props
@@ -26,6 +28,11 @@ export default function MyAsyncSelect<
       const url = new URL(searchUrl);
       if (inputValue) {
         url.searchParams.set('search', inputValue);
+      }
+      if (params) {
+        Object.entries(params).map(([label, value]) =>
+          url.searchParams.set(label, String(value))
+        );
       }
       const res = await web.get(url.toString());
       const result = res.data.result.data.map((item: T | any) => ({

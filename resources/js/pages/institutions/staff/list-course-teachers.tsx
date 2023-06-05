@@ -1,7 +1,7 @@
 import { CourseTeacher } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
 import route from '@/util/route';
-import { IconButton, Icon } from '@chakra-ui/react';
+import { IconButton, Icon, HStack } from '@chakra-ui/react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { Inertia } from '@inertiajs/inertia';
 import React from 'react';
@@ -58,15 +58,12 @@ function ListLecturerCourses({ courseTeachers }: Props) {
           {
             label: 'Action',
             render: (row: CourseTeacher) => (
-              <>
-                {/* <IconButton
-                as={InertiaLink}
-                  aria-label={'Edit'}
-                  icon={<Icon as={PencilIcon} />}
-                  variant={'ghost'}
-                  colorScheme={'brand'}
-                  href={''}
-                /> */}
+              <HStack>
+                <LinkButton
+                  title="Record Result"
+                  href={instRoute('course-results.create', [row])}
+                  variant={'link'}
+                />
                 <DestructivePopover
                   label={`Delete ${row.course!.title} assignment from ${
                     row.user!.full_name
@@ -81,7 +78,7 @@ function ListLecturerCourses({ courseTeachers }: Props) {
                     colorScheme={'red'}
                   />
                 </DestructivePopover>
-              </>
+              </HStack>
             ),
           },
         ]

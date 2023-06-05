@@ -10,8 +10,10 @@ use App\Http\Requests\RecordCourseResultRequest;
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;
 use App\Models\Institution;
+use App\Rules\ExcelRule;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Inertia\Inertia;
 
 class CourseResultsController extends Controller
@@ -48,35 +50,43 @@ class CourseResultsController extends Controller
     ]);
   }
 
-  public function create(CourseTeacher $courseTeacher)
+  public function create(Institution $institution, CourseTeacher $courseTeacher)
   {
-    $courseTeacher->load(['course', 'teacher']);
+    $courseTeacher->load(['course', 'user', 'classification']);
     $this->validateUser($courseTeacher);
-    return Inertia::render('institutions/staff/record-course-result', [
+    return Inertia::render('institutions/courses/record-course-result', [
       'courseTeacher' => $courseTeacher
     ]);
   }
 
-  public function edit(CourseResult $courseResult)
+  public function edit(Institution $institution, CourseResult $courseResult)
   {
+    $courseResult->load('academicSession', 'student.user');
     $courseTeacher = CourseTeacher::where('course_id', $courseResult->course_id)
       ->where('user_id', $courseResult->teacher_user_id)
+      ->with('user', 'course', 'classification')
       ->first();
 
     $this->validateUser($courseTeacher);
 
-    return Inertia::render('institutions/staff/record-course-result', [
-      'courseTeacher' => $courseTeacher
+    return Inertia::render('institutions/courses/record-course-result', [
+      'courseTeacher' => $courseTeacher,
+      'user' => $courseResult->user,
+      'academicSession' => $courseResult->academicSession,
+      'student' => $courseResult->student
     ]);
   }
 
   public function store(
     RecordCourseResultRequest $request,
+    Institution $institution,
     CourseTeacher $courseTeacher
   ) {
     $this->validateUser($courseTeacher);
-
-    RecordCourseResult::run($request->validated(), $courseTeacher);
+    RecordCourseResult::run(
+      [...Arr::except($request->validated(), 'result'), ...$request->result[0]],
+      $courseTeacher
+    );
 
     return response()->json(['ok' => true]);
   }
@@ -86,11 +96,16 @@ class CourseResultsController extends Controller
     Institution $institution,
     CourseTeacher $courseTeacher
   ) {
+    request()->validate([
+      'file' => ['required', 'file', new ExcelRule($this->file('file'))]
+    ]);
     $this->validateUser($courseTeacher);
 
     InsertResultFromRecordingSheet::run(
       $request->file('file'),
-      $request->validated(),
+      collect($request->validated())
+        ->except('file')
+        ->toArray(),
       $courseTeacher
     );
 

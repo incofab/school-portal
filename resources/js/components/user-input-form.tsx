@@ -1,20 +1,14 @@
 import useIsAdmin from '@/hooks/use-is-admin';
 import { WebForm } from '@/hooks/use-web-form';
-import { InstitutionUserType, UserRoleType } from '@/types/types';
+import { Gender, InstitutionUserType } from '@/types/types';
 import {
-  Divider,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
-  Text,
 } from '@chakra-ui/react';
 import React from 'react';
-import { Div } from './semantic';
-import ClassificationSelect from './selectors/classification-select';
 import EnumSelect from './dropdown-select/enum-select';
-import FormControlBox from './forms/form-control-box';
-import InputForm from './forms/input-form';
 
 interface Props {
   webForm: WebForm<{
@@ -24,6 +18,7 @@ interface Props {
     email: string;
     phone: string;
     role: string;
+    gender: string;
     // classification_id?: string;
     // guardian_phone?: string;
   }>;
@@ -87,6 +82,17 @@ export default function UserInputForm({ webForm }: Props) {
         />
         <FormErrorMessage>{webForm.errors.phone}</FormErrorMessage>
       </FormControl>
+
+      <FormControl isInvalid={!!webForm.errors.gender}>
+        <FormLabel>Gender</FormLabel>
+        <EnumSelect
+          enumData={Gender}
+          onChange={(e: any) => webForm.setValue('gender', e.value)}
+          value={webForm.data.gender}
+        />
+        <FormErrorMessage>{webForm.errors.phone}</FormErrorMessage>
+      </FormControl>
+
       {isAdmin && (
         <>
           <FormControl isRequired isInvalid={!!webForm.errors.role}>

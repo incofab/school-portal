@@ -24,6 +24,7 @@ export default function ListStudents({ institutionUsers }: Props) {
   const { instRoute } = useInstitutionRoute();
   const userFilterToggle = useModalToggle();
   const staffUploadModalToggle = useModalToggle();
+
   const headers: ServerPaginatedTableHeader<InstitutionUser>[] = [
     {
       label: 'Name',
@@ -40,6 +41,10 @@ export default function ListStudents({ institutionUsers }: Props) {
     {
       label: 'Role',
       value: 'role',
+    },
+    {
+      label: 'Gender',
+      value: 'user.gender',
     },
     // {
     //   label: 'Created At',

@@ -8,7 +8,6 @@ use App\Models\Institution;
 use App\Rules\ExcelRule;
 use App\Rules\InstitutionStudentRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
@@ -48,7 +47,6 @@ class RecordCourseResultRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'file' => ['required', 'file', new ExcelRule($this->file('file'))],
       'institution_id' => ['required'],
       'academic_session_id' => ['required', 'exists:academic_sessions,id'],
       'term' => ['required', new Enum(TermType::class)],
@@ -61,13 +59,13 @@ class RecordCourseResultRequest extends FormRequest
   {
     $institution = currentInstitution();
     return [
-      $prefix . 'student_id' => [
-        'required',
-        new InstitutionStudentRule($institution)
-      ],
       $prefix . 'first_assessment' => ['nullable', 'numeric', 'min:0'],
       $prefix . 'second_assessment' => ['nullable', 'numeric', 'min:0'],
-      $prefix . 'exam' => ['nullable', 'numeric', 'min:0']
+      $prefix . 'exam' => ['nullable', 'numeric', 'min:0'],
+      $prefix . 'student_id' => [
+        'required'
+        // new InstitutionStudentRule($institution)
+      ]
     ];
   }
 }

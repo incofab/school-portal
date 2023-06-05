@@ -56,16 +56,16 @@ function ListStudents({ students }: Props) {
       value: 'user.full_name',
     },
     {
-      label: 'Email',
-      value: 'user.email',
-    },
-    {
       label: 'Class',
       value: 'classification.title',
     },
     {
       label: 'Guardian Phone',
       value: 'guardian_phone',
+    },
+    {
+      label: 'Gender',
+      value: 'user.gender',
     },
     {
       label: 'Student Id',

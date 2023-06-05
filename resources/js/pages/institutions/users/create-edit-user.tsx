@@ -27,6 +27,7 @@ export default function CreateOrUpdateStudent({ institutionUser }: Props) {
     email: institutionUser?.user!.email ?? '',
     phone: institutionUser?.user!.phone ?? '',
     role: institutionUser?.role ?? '',
+    gender: institutionUser?.user!.gender ?? '',
   });
 
   const submit = async () => {

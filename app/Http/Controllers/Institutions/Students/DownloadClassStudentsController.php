@@ -18,8 +18,6 @@ class DownloadClassStudentsController extends Controller
     Classification $classification,
     Request $request
   ) {
-    abort_unless($classification->institution_id === $institution->id, 403);
-
     $query = Student::query()->select('students.*');
     StudentUITableFilters::make(
       [...$request->all(), 'classification' => $classification->id],

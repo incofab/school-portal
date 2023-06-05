@@ -20,6 +20,7 @@ export interface User extends Row {
   photo_url: string;
   email: string;
   is_welfare: boolean;
+  gender: string;
 }
 
 export interface Institution extends Row {

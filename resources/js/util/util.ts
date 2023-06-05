@@ -1,4 +1,6 @@
+import { Nullable, SelectOptionType } from '@/types/types';
 import { Resizer } from './image-file-resizer';
+import objectGet from 'lodash/get';
 
 export const dateFormat = 'yyyy-MM-dd';
 
@@ -78,4 +80,17 @@ export function setUrlFilterOptions(
 
   url.searchParams.set(option, optionValue?.value ?? '');
   url.searchParams.set(`${option}Label`, optionValue?.label ?? '');
+}
+
+export function getSelectOption(
+  obj: any,
+  labelPath: string,
+  valuePath: string = 'id'
+): Nullable<SelectOptionType<number>> {
+  return obj
+    ? {
+        label: objectGet(obj, labelPath, ''),
+        value: objectGet(obj, valuePath, ''),
+      }
+    : ({} as Nullable<SelectOptionType<number>>);
 }
