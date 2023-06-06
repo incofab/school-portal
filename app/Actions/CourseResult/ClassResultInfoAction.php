@@ -69,8 +69,8 @@ class ClassResultInfoAction
       'num_of_courses' => $numOfCourses,
       'num_of_students' => $numOfStudents,
       'total_score' => $totalScore,
-      'max_obtainable_score' => $numOfCourses * $numOfStudents * 100,
-      'average' => round($totalScore / $numOfCourses, 2),
+      'max_obtainable_score' => $numOfCourses * 100,
+      'average' => round($totalScore / $numOfCourses / $numOfStudents, 2),
       'min_score' => $minScore,
       'max_score' => $maxScore
     ];

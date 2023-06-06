@@ -6,8 +6,11 @@ use App\Models\CourseResult;
 
 class RecordCourseResult
 {
-  public static function run($data, CourseTeacher $courseTeacher)
-  {
+  public static function run(
+    $data,
+    CourseTeacher $courseTeacher,
+    bool $processCourseResultForClass = false
+  ) {
     $result =
       $data['first_assessment'] + $data['second_assessment'] + $data['exam'];
     $data['course_id'] = $courseTeacher->course_id;
@@ -26,12 +29,16 @@ class RecordCourseResult
           ])
           ->toArray()
       ],
-      [
-        ...$data,
-        'result' => $result,
-        'grade' => GetGrade::run($result),
-        'result_max' => null
-      ]
+      [...$data, 'result' => $result, 'grade' => GetGrade::run($result)]
     );
+
+    if ($processCourseResultForClass) {
+      EvaluateCourseResultForClass::run(
+        $courseTeacher->classification,
+        $courseTeacher->course_id,
+        $data['academic_session_id'],
+        $data['term']
+      );
+    }
   }
 }

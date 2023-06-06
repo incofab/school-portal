@@ -23,8 +23,9 @@ return new class extends Migration {
       $table->float('second_assessment')->default(0);
       $table->float('exam')->default(0);
       $table->float('result');
+      $table->unsignedInteger('position')->nullable();
       // $table->float('average')->default(0);
-      $table->unsignedInteger('result_max')->nullable();
+      // $table->unsignedInteger('result_max')->nullable();
       $table->string('grade')->nullable();
       $table->string('remark')->nullable();
 

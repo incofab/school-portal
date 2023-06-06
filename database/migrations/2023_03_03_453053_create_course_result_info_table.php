@@ -10,14 +10,14 @@ return new class extends Migration {
    */
   public function up(): void
   {
-    Schema::create('class_result_info', function (Blueprint $table) {
+    Schema::create('course_result_info', function (Blueprint $table) {
       $table->id();
       $table->unsignedBigInteger('institution_id');
+      $table->unsignedBigInteger('course_id');
       $table->unsignedBigInteger('classification_id');
       $table->unsignedBigInteger('academic_session_id')->nullable();
       $table->string('term')->nullable();
-      $table->float('num_of_students')->default(0);
-      $table->float('num_of_courses')->default(0);
+
       $table->float('total_score')->default(0);
       $table->float('max_obtainable_score')->default(0);
       $table->float('max_score')->default(0);
@@ -32,11 +32,11 @@ return new class extends Migration {
         ->on('institutions')
         ->cascadeOnDelete();
 
-      // $table
-      //   ->foreign('course_id')
-      //   ->references('id')
-      //   ->on('courses')
-      //   ->cascadeOnDelete();
+      $table
+        ->foreign('course_id')
+        ->references('id')
+        ->on('courses')
+        ->cascadeOnDelete();
 
       $table
         ->foreign('classification_id')
@@ -57,6 +57,6 @@ return new class extends Migration {
    */
   public function down(): void
   {
-    Schema::dropIfExists('class_result_info');
+    Schema::dropIfExists('course_result_info');
   }
 };

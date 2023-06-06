@@ -105,7 +105,7 @@ export default function SideBarLayout() {
           ],
         },
         {
-          label: 'Subject Results',
+          label: 'Recorded Results',
           route: instRoute('course-results.index'),
         },
       ],

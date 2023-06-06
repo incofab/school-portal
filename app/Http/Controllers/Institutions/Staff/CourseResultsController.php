@@ -85,7 +85,8 @@ class CourseResultsController extends Controller
     $this->validateUser($courseTeacher);
     RecordCourseResult::run(
       [...Arr::except($request->validated(), 'result'), ...$request->result[0]],
-      $courseTeacher
+      $courseTeacher,
+      true
     );
 
     return response()->json(['ok' => true]);

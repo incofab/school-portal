@@ -73,6 +73,13 @@ class InsertResultFromRecordingSheet
       );
     }
     DB::commit();
+
+    EvaluateCourseResultForClass::run(
+      $this->courseTeacher->classification,
+      $this->courseTeacher->course_id,
+      $this->post['academic_session_id'],
+      $this->post['term']
+    );
   }
 
   private function validate(array $data)
@@ -81,8 +88,6 @@ class InsertResultFromRecordingSheet
       $data,
       RecordCourseResultRequest::resultRule('*.')
     );
-    // $request = new RecordCourseResultRequest($data);
-    // $validated = $request->validate();
     return $validated;
   }
 }

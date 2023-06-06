@@ -1,0 +1,51 @@
+/* body {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ctext x='0' y='50' font-size='12' fill='%23000'%3EYour Text Here%3C/text%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-color: #f2f2f2; // Fallback color if the background image is not loaded 
+} */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    /* opacity: 0.4; */
+}
+/* .result-table {
+    width: auto;
+    border-collapse: collapse;
+    width: 100%;
+} */
+.result-table thead{
+    background-color: #f2f2f2;
+}
+.result-table, .result-table th, .result-table td  {
+    border: 1px solid #000;
+    /* border: 2px solid #DFDFDF; */
+    border-collapse: collapse;
+    padding: 8px;
+}
+
+.result-table th:first-child,
+.result-table td:first-child {
+  text-align: left;
+}
+.result-table th:not(:first-child),
+.result-table td:not(:first-child) {
+  text-align: center;
+}
+
+.vertical-header {
+    writing-mode: vertical-lr;
+    /* text-orientation: upright; */
+    height: 120px; /* Set the desired width for the header cells */
+    position: relative;
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+.result-analysis-table, .result-analysis-table td  {
+    border: 1px solid #000;
+    border-collapse: collapse;
+    padding: 8px;
+    font-weight: bold;
+    font-size: 16px;
+}

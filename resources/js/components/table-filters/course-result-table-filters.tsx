@@ -35,20 +35,9 @@ export default function CourseResultsTableFilters({ isOpen, onClose }: Props) {
           }
         />
       </FilterFormControlBox>
-      <FilterFormControlBox title="Student">
-        <StudentSelect
-          onChange={(e: any) => setFilters({ ...filters, student: e.value })}
-        />
-      </FilterFormControlBox>
       <FilterFormControlBox title="Course">
         <CourseSelect
           onChange={(e: any) => setFilters({ ...filters, course: e.value })}
-        />
-      </FilterFormControlBox>
-      <FilterFormControlBox title="Teacher">
-        <StaffSelect
-          rolesIn={[InstitutionUserType.Teacher]}
-          onChange={(e: any) => setFilters({ ...filters, teacher: e.value })}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Academic Session">
@@ -62,6 +51,17 @@ export default function CourseResultsTableFilters({ isOpen, onClose }: Props) {
         <EnumSelect
           enumData={TermType}
           onChange={(e: any) => setFilters({ ...filters, term: e.value })}
+        />
+      </FilterFormControlBox>
+      <FilterFormControlBox title="Student">
+        <StudentSelect
+          onChange={(e: any) => setFilters({ ...filters, student: e.value })}
+        />
+      </FilterFormControlBox>
+      <FilterFormControlBox title="Teacher">
+        <StaffSelect
+          rolesIn={[InstitutionUserType.Teacher]}
+          onChange={(e: any) => setFilters({ ...filters, teacher: e.value })}
         />
       </FilterFormControlBox>
     </BaseTableFilter>

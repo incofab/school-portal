@@ -54,6 +54,10 @@ abstract class BaseUITableFilter
 
     return $this;
   }
+  public function getQuery()
+  {
+    return $this->baseQuery;
+  }
 
   /** Handle searches from the url request params */
   abstract protected function directQuery();

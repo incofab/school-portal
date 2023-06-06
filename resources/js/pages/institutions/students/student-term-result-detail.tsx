@@ -13,6 +13,8 @@ import DataTable from '@/components/data-table';
 import { TableHeader } from '@/components/data-table';
 import { HStack, Spacer, Text } from '@chakra-ui/react';
 import startCase from 'lodash/startCase';
+import { BrandButton, LinkButton } from '@/components/buttons';
+import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface Props {
   term: string;
@@ -31,6 +33,7 @@ export default function StudentTermResultDetail({
   courseResults,
   termResult,
 }: Props) {
+  const { instRoute } = useInstitutionRoute();
   const headers: TableHeader<CourseResult>[] = [
     {
       label: 'Subject',
@@ -74,7 +77,21 @@ export default function StudentTermResultDetail({
   return (
     <DashboardLayout>
       <Slab>
-        <SlabHeading title="Student Results" />
+        <SlabHeading
+          title="Student Results"
+          rightElement={
+            <LinkButton
+              title="View result sheet"
+              variant={'outline'}
+              href={instRoute('students.result-sheet', [
+                student.id,
+                classification.id,
+                academicSession.id,
+                term,
+              ])}
+            />
+          }
+        />
         <SlabBody>
           <Div>
             {headerInfo.map(({ label, value }) => (

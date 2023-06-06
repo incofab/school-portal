@@ -25,6 +25,10 @@ Route::get(
         '/students/term-result-detail/{student}/{classification}/{academicSession}/{term}', 
         Web\Students\StudentTermResultDetailController::class
     )->name('students.term-result-detail');
+Route::get(
+        '/students/result-sheet/{student}/{classification}/{academicSession}/{term}', 
+        Web\Students\ViewResultSheetController::class
+    )->name('students.result-sheet');
 Route::resource('/students', Web\Students\StudentController::class);
 
 Route::get('/courses/search', [Web\CoursesController::class, 'search'])

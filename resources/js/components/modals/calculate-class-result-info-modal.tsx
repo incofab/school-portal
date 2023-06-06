@@ -49,7 +49,7 @@ export default function CalculateClassResultInfoModal({
   return (
     <GenericModal
       props={{ isOpen, onClose }}
-      headerContent={'Upload course results'}
+      headerContent={'Evaluate Student Result'}
       bodyContent={
         <VStack>
           {isAdmin && (
@@ -105,7 +105,7 @@ export default function CalculateClassResultInfoModal({
             onClick={onSubmit}
             isLoading={webForm.processing}
           >
-            Save
+            Evaluate
           </Button>
         </HStack>
       }

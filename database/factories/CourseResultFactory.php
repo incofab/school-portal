@@ -41,7 +41,6 @@ class CourseResultFactory extends Factory
       'second_assessment' => $ca2,
       'exam' => $exam,
       'result' => $result,
-      'result_max' => 100,
       'grade' => GetGrade::run($result),
       'remark' => fake()->sentence()
     ];

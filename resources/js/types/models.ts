@@ -79,6 +79,7 @@ export interface CourseResult extends InstitutionRow {
   second_assessment: number;
   exam: number;
   result: number;
+  position: number;
   grade: string;
   remark: string;
   teacher?: User;
@@ -88,10 +89,22 @@ export interface CourseResult extends InstitutionRow {
   academic_session?: AcademicSession;
 }
 
+export interface CourseResultInfo extends InstitutionRow {
+  course_id: number;
+  classification_id: number;
+  academic_session_id: number;
+  term: TermType;
+  total_score: number;
+  max_obtainable_score: number;
+  max_score: number;
+  min_score: number;
+  average: number;
+  course?: Course;
+  classification?: Classification;
+  academicSession?: AcademicSession;
+}
+
 export interface ClassResultInfo extends InstitutionRow {
-  // student_id: number;
-  // teacher_user_id: number;
-  // course_id: number;
   classification_id: number;
   academic_session_id: number;
   term: TermType;
@@ -102,7 +115,6 @@ export interface ClassResultInfo extends InstitutionRow {
   max_score: number;
   min_score: number;
   average: number;
-  student?: Student;
   classification?: Classification;
   academicSession?: AcademicSession;
 }
@@ -112,11 +124,11 @@ export interface TermResult extends InstitutionRow {
   classification_id: number;
   academic_session_id: number;
   term: TermType;
-  result: number;
+  total_score: number;
   position: number;
   average: number;
-  result_max: number;
-  grade: string;
+  // result_max: number;
+  // grade: string;
   remark: string;
   student?: Student;
   classification?: Classification;
