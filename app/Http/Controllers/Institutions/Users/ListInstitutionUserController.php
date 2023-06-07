@@ -13,6 +13,7 @@ class ListInstitutionUserController extends Controller
   {
     $request = request();
     return InstitutionUser::query()
+      ->select('institution_users.*')
       ->where('institution_users.institution_id', currentInstitution()->id)
       ->when(
         $request->roles_in,
@@ -26,7 +27,7 @@ class ListInstitutionUserController extends Controller
         $request->role,
         fn($q, $value) => $q->where('institution_users.role', $value)
       )
-      ->with('user')
+      ->with('user', 'student')
       ->latest('institution_users.id');
   }
   /**

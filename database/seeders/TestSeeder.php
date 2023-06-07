@@ -1,6 +1,7 @@
 <?php
 namespace Database\Seeders;
 
+use App\Actions\CourseResult\EvaluateCourseResultForClass;
 use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
@@ -22,6 +23,7 @@ class TestSeeder extends Seeder
   public function run()
   {
     $date = date('Y');
+    $term = TermType::Third;
     $academicSession = AcademicSession::query()->firstOrCreate([
       'title' => $date - 1 . '/' . $date
     ]);
@@ -72,9 +74,18 @@ class TestSeeder extends Seeder
           'course_id' => $course->id,
           'classification_id' => $classification->id,
           'academic_session_id' => $academicSession->id,
-          'term' => TermType::Third
+          'term' => $term
         ]);
       }
+    }
+
+    foreach ($courses as $key => $course) {
+      EvaluateCourseResultForClass::run(
+        $classification,
+        $course->id,
+        $academicSession->id,
+        $term->value
+      );
     }
   }
 

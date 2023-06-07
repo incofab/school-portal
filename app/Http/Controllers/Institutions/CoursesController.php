@@ -27,7 +27,7 @@ class CoursesController extends Controller
   function index(Request $request)
   {
     $query = Course::query()->select('courses.*');
-    CoursesUITableFilters::make($request->all(), $query);
+    CoursesUITableFilters::make($request->all(), $query)->filterQuery();
 
     return Inertia::render('institutions/courses/list-courses', [
       'courses' => paginateFromRequest($query->latest('id'))
@@ -52,12 +52,6 @@ class CoursesController extends Controller
 
   function edit(Institution $institution, Course $course)
   {
-    abort_unless(
-      $course->institution_id === currentInstitution()->id,
-      403,
-      'Access denied'
-    );
-
     return Inertia::render('institutions/courses/create-edit-course', [
       'course' => $course
     ]);
@@ -65,12 +59,6 @@ class CoursesController extends Controller
 
   function destroy(Institution $institution, Course $course)
   {
-    abort_unless(
-      $course->institution_id === currentInstitution()->id,
-      403,
-      'Access denied'
-    );
-
     $course->delete();
     return $this->ok();
   }
@@ -89,12 +77,6 @@ class CoursesController extends Controller
     Institution $institution,
     Course $course
   ) {
-    abort_unless(
-      $course->institution_id === currentInstitution()->id,
-      403,
-      'Access denied'
-    );
-
     $data = $request->validated();
     $course->fill($data)->update();
     return $this->ok();

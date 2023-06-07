@@ -26,17 +26,15 @@ class CreateCourseRequest extends FormRequest
     return [
       'title' => [
         'required',
-        Rule::unique('courses', 'title')->when(
-          $course,
-          fn($q) => $q->ignore($course->id, 'id')
-        )
+        Rule::unique('courses', 'title')
+          ->where('institution_id', currentInstitution()->id)
+          ->when($course, fn($q) => $q->ignore($course->id, 'id'))
       ],
       'code' => [
         'required',
-        Rule::unique('courses', 'code')->when(
-          $course,
-          fn($q) => $q->ignore($course->id, 'id')
-        )
+        Rule::unique('courses', 'code')
+          ->where('institution_id', currentInstitution()->id)
+          ->when($course, fn($q) => $q->ignore($course->id, 'id'))
       ],
       'institution_id' => ['nullable'],
       'category' => ['nullable', 'string'],

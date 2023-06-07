@@ -28,14 +28,17 @@ import ProfileLayout from '@/domain/institutions/user-profile/profile-layout';
 import useWebForm, { useWeb } from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
-import { User } from '@/types/models';
+import { Student, User } from '@/types/models';
 import { preventNativeSubmit } from '@/util/util';
 import DashboardLayout from '@/layout/dashboard-layout';
+import Dt from '@/components/dt';
+import { SelectOptionType } from '@/types/types';
 
 interface Props {
   user: User;
+  student: Student;
 }
-export default function Profile({ user }: Props) {
+export default function Profile({ user, student }: Props) {
   const { currentUser } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
@@ -80,6 +83,22 @@ export default function Profile({ user }: Props) {
     Inertia.reload({ only: ['user'] });
   }
 
+  const profileData: SelectOptionType[] = [
+    { label: 'First name', value: user.first_name },
+    { label: 'Last name', value: user.last_name },
+    { label: 'Other names', value: user.other_names },
+    { label: 'Email', value: user.email },
+    { label: 'Phone', value: user.phone },
+    { label: 'Gender', value: user.gender },
+    ...(student
+      ? [
+          { label: 'Student Id', value: student.code },
+          { label: 'Guardian Phone', value: student.guardian_phone },
+          { label: 'Class', value: student.classification?.title ?? '' },
+        ]
+      : []),
+  ];
+
   return (
     <div>
       <Slab>
@@ -91,9 +110,11 @@ export default function Profile({ user }: Props) {
           }
         />
         <SlabBody>
-          <form onSubmit={preventNativeSubmit(onSubmit)}>
-            <Grid templateColumns={{ lg: 'repeat(3, 1fr)' }} gap={4}>
-              <GridItem colSpan={{ lg: 2 }}>
+          {/* <form onSubmit={preventNativeSubmit(onSubmit)}> */}
+          <Grid templateColumns={{ lg: 'repeat(3, 1fr)' }} gap={4}>
+            <GridItem colSpan={{ lg: 2 }}>
+              <Dt contentData={profileData} spacing={4} labelWidth={'150px'} />
+              {/* 
                 <VStack spacing={4}>
                   <FormControl isInvalid={!!form.errors.first_name}>
                     <FormLabel htmlFor="first_name">First Name</FormLabel>
@@ -154,61 +175,59 @@ export default function Profile({ user }: Props) {
                     />
                   </FormControlBox>
                 </VStack>
-              </GridItem>
-              <GridItem colSpan={{ lg: 1 }}>
-                <FormControl isInvalid={!!form.errors.photo}>
+                   */}
+            </GridItem>
+            <GridItem colSpan={{ lg: 1 }}>
+              <FormControl isInvalid={!!form.errors.photo}>
+                <Div
+                  mt={{ lg: 4 }}
+                  display={'flex'}
+                  alignItems={'center'}
+                  flexDirection={{ base: 'column' }}
+                >
                   <Div
-                    mt={{ lg: 4 }}
                     display={'flex'}
                     alignItems={'center'}
-                    flexDirection={{ base: 'column' }}
+                    justifyContent={'center'}
+                    w={200}
+                    h={200}
+                    borderWidth={1}
+                    borderColor={'gray.200'}
                   >
-                    <Div
-                      display={'flex'}
-                      alignItems={'center'}
-                      justifyContent={'center'}
-                      w={200}
-                      h={200}
-                      borderWidth={1}
-                      borderColor={'gray.200'}
-                    >
-                      <Avatar
-                        size={'2xl'}
-                        src={form.data.photo || user.photo}
-                      />
-                    </Div>
-                    <Div mt={4} textAlign={'center'}>
-                      <FormLabel
-                        htmlFor="photo"
-                        textColor={'brand.500'}
-                        display={'inline-block'}
-                        cursor={'pointer'}
-                        m={0}
-                        p={0}
-                      >
-                        <Input
-                          type={'file'}
-                          id="photo"
-                          hidden
-                          accept={'image/jpeg,image/png,image/jpg'}
-                          onChange={(e) => uploadImage(e)}
-                        />
-                        Change profile photo
-                      </FormLabel>
-                      <Text fontSize={'sm'} color={'blackAlpha.700'}>
-                        Allowed extensions {extensions.join(', ')}
-                      </Text>
-                      <Text fontSize={'sm'} color={'blackAlpha.700'}>
-                        Maximum size{' '}
-                        {Math.floor(bytesToMb(MAX_FILE_SIZE_BYTES))}MB
-                      </Text>
-                      <FormErrorMessage>{form.errors.photo}</FormErrorMessage>
-                    </Div>
+                    <Avatar size={'2xl'} src={form.data.photo || user.photo} />
                   </Div>
-                </FormControl>
-              </GridItem>
-            </Grid>
-            <Div mt={4} alignSelf={'start'}>
+                  <Div mt={4} textAlign={'center'}>
+                    <FormLabel
+                      htmlFor="photo"
+                      textColor={'brand.500'}
+                      display={'inline-block'}
+                      cursor={'pointer'}
+                      m={0}
+                      p={0}
+                    >
+                      <Input
+                        type={'file'}
+                        id="photo"
+                        hidden
+                        accept={'image/jpeg,image/png,image/jpg'}
+                        onChange={(e) => uploadImage(e)}
+                      />
+                      Change profile photo
+                    </FormLabel>
+                    <Text fontSize={'sm'} color={'blackAlpha.700'}>
+                      Allowed extensions {extensions.join(', ')}
+                    </Text>
+                    <Text fontSize={'sm'} color={'blackAlpha.700'}>
+                      Maximum size {Math.floor(bytesToMb(MAX_FILE_SIZE_BYTES))}
+                      MB
+                    </Text>
+                    <FormErrorMessage>{form.errors.photo}</FormErrorMessage>
+                  </Div>
+                </Div>
+              </FormControl>
+            </GridItem>
+          </Grid>
+          {/* <Div mt={4} alignSelf={'start'}>
               <Button
                 type="submit"
                 isLoading={form.processing}
@@ -217,8 +236,8 @@ export default function Profile({ user }: Props) {
               >
                 Save
               </Button>
-            </Div>
-          </form>
+            </Div> */}
+          {/* </form> */}
         </SlabBody>
       </Slab>
     </div>

@@ -16,6 +16,8 @@ import { InertiaLink, useForm } from '@inertiajs/inertia-react';
 import React, { useEffect } from 'react';
 import useSharedProps from '@/hooks/use-shared-props';
 import FormControlBox from '@/components/forms/form-control-box';
+import EnumSelect from '@/components/dropdown-select/enum-select';
+import { Gender } from '@/types/types';
 
 export default function Login() {
   const { message } = useSharedProps();
@@ -26,6 +28,7 @@ export default function Login() {
     other_names: '',
     phone: '',
     email: '',
+    gender: '',
     password: '',
     password_confirmation: '',
     institution: {
@@ -106,6 +109,13 @@ export default function Login() {
               type="email"
               onChange={(e) => form.setData('email', e.currentTarget.value)}
               value={form.data.email}
+              required
+            />
+          </FormControlBox>
+          <FormControlBox form={form} title="Gender" formKey="gender">
+            <EnumSelect
+              enumData={Gender}
+              onChange={(e: any) => form.setData('gender', e.value)}
               required
             />
           </FormControlBox>

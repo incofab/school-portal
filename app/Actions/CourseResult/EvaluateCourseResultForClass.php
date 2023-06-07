@@ -58,6 +58,7 @@ class EvaluateCourseResultForClass
 
     $numOfStudents = $courseResults->count();
     $data = [
+      'num_of_students' => $numOfStudents,
       'total_score' => $totalScore,
       'max_obtainable_score' => 100,
       'average' => round($totalScore / $numOfStudents, 2),

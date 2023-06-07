@@ -67,7 +67,7 @@ class InsertStudentFromRecordingSheet
 
     DB::beginTransaction();
     foreach ($data as $studentData) {
-      RecordStudent::create($studentData, $this->classification);
+      RecordStudent::make($studentData, $this->classification)->create();
     }
     DB::commit();
   }

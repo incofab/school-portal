@@ -74,26 +74,26 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
       label: 'Num of Courses',
       value: 'num_of_courses',
     },
-    // {
-    //   label: 'Total Score',
-    //   value: 'total_score',
-    // },
-    // {
-    //   label: 'Max Obtainable Score',
-    //   value: 'max_obtainable_score',
-    // },
-    // {
-    //   label: 'Student Max Score',
-    //   value: 'max_score',
-    // },
-    // {
-    //   label: 'Student Min Score',
-    //   value: 'min_score',
-    // },
-    // {
-    //   label: 'Average',
-    //   value: 'average',
-    // },
+    {
+      label: 'Total Score',
+      value: 'total_score',
+    },
+    {
+      label: 'Max Obtainable Score',
+      value: 'max_obtainable_score',
+    },
+    {
+      label: 'Student Max Score',
+      value: 'max_score',
+    },
+    {
+      label: 'Student Min Score',
+      value: 'min_score',
+    },
+    {
+      label: 'Average',
+      value: 'average',
+    },
     {
       label: 'Action',
       render: (row) => (

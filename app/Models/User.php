@@ -128,7 +128,9 @@ class User extends Authenticatable
 
   function institutionStudent(): Student|null
   {
-    return $this->institutionUser()->first()?->student;
+    return $this->institutionUser()
+      ->with('student.classification')
+      ->first()?->student;
     // return Student::query()
     //   ->join(
     //     'classifications',

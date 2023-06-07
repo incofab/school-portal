@@ -18,6 +18,7 @@ return new class extends Migration {
       $table->unsignedBigInteger('academic_session_id')->nullable();
       $table->string('term')->nullable();
 
+      $table->float('num_of_students')->default(0);
       $table->float('total_score')->default(0);
       $table->float('max_obtainable_score')->default(0);
       $table->float('max_score')->default(0);

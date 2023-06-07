@@ -114,7 +114,11 @@ export default function ResultSheet({
       <Div mx={'auto'} width={'900px'} px={3}>
         <VStack align={'stretch'}>
           <HStack background={'#FAFAFA'} p={2}>
-            <Avatar size={'2xl'} name="Institution logo" />
+            <Avatar
+              size={'2xl'}
+              name="Institution logo"
+              src={currentInstitution.phone}
+            />
             <VStack spacing={1} align={'stretch'} width={'full'}>
               <Text fontSize={'2xl'} fontWeight={'bold'} textAlign={'center'}>
                 {currentInstitution.name}
@@ -193,7 +197,7 @@ export default function ResultSheet({
               </thead>
               <tbody>
                 {courseResults.map((courseResult) => (
-                  <tr>
+                  <tr key={courseResult.id}>
                     <td>{courseResult.course?.title}</td>
                     <td>{courseResult.first_assessment}</td>
                     <td>{courseResult.second_assessment}</td>
@@ -214,7 +218,7 @@ export default function ResultSheet({
             <table className="result-analysis-table">
               <tbody>
                 {resultDetail.map(({ label, value }) => (
-                  <tr>
+                  <tr key={label}>
                     <td style={{ width: '250px' }}>{label}</td>
                     <td>{value}</td>
                   </tr>

@@ -106,7 +106,8 @@ export default function SideBarLayout() {
         },
         {
           label: 'Recorded Results',
-          route: instRoute('course-results.index'),
+          route: instRoute('course-result-info.index'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
       ],
     },
@@ -128,6 +129,10 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
       ],
+    },
+    {
+      label: 'School Profile',
+      route: instRoute('profile'),
     },
     {
       label: 'Profile',

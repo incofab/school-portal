@@ -22,7 +22,8 @@ export default function MySelect<T>({
     if (param === undefined) {
       return;
     }
-    const result = optionsData.filter((item) => item.value === param);
+    const result = optionsData.filter((item) => item.value == param);
+
     return result ? result[0] : undefined;
   }
 

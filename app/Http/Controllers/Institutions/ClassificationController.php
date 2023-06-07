@@ -64,7 +64,6 @@ class ClassificationController extends Controller
 
   function update(Institution $institution, Classification $classification)
   {
-    abort_unless($classification->institution_id === $institution->id, 403);
     $data = request()->validate([
       'title' => [
         'required',
@@ -83,8 +82,6 @@ class ClassificationController extends Controller
 
   function destroy(Institution $institution, Classification $classification)
   {
-    abort_unless($classification->institution_id === $institution->id, 403);
-
     $classification->delete();
     return $this->ok();
   }

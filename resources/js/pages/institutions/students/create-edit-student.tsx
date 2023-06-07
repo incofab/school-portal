@@ -1,6 +1,5 @@
 import React from 'react';
 import { AxiosInstance } from 'axios';
-// import '../../../css/dashboard.css';
 import { Divider, FormControl, Text, VStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
@@ -70,7 +69,7 @@ export default function CreateOrUpdateStudent({ student }: Props) {
               as={'form'}
               onSubmit={preventNativeSubmit(submit)}
             >
-              <UserInputForm webForm={webForm} />
+              <UserInputForm webForm={webForm as any} />
 
               {(webForm.data.role === InstitutionUserType.Student ||
                 webForm.data.role === InstitutionUserType.Alumni) && (

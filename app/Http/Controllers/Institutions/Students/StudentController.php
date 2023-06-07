@@ -37,7 +37,10 @@ class StudentController extends Controller
 
   public function store(CreateStudentRequest $request)
   {
-    RecordStudent::create($request->validated(), $request->classification);
+    RecordStudent::make(
+      $request->validated(),
+      $request->classification
+    )->create();
 
     return $this->ok();
   }
@@ -63,7 +66,10 @@ class StudentController extends Controller
     Institution $institution,
     Student $student
   ) {
-    RecordStudent::create($request->validated(), $request->classification);
+    RecordStudent::make(
+      $request->validated(),
+      $request->classification
+    )->update($student->user);
 
     return $this->ok();
   }

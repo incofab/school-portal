@@ -2,11 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Institutions as Web;
-    
+
 //Institution
 
 Route::get('/dashboard', [Web\InstitutionController::class, 'index'])
     ->name('dashboard');
+Route::get('/profile', [Web\InstitutionController::class, 'profile'])
+    ->name('profile');
+Route::put('/update', [Web\InstitutionController::class, 'update'])
+    ->name('update');
+Route::post('/upload-photo', [Web\InstitutionController::class, 'uploadPhoto'])
+    ->name('upload-photo');
 
 Route::get('/classifications/search', [Web\ClassificationController::class, 'search'])
 ->name('classifications.search');
@@ -35,9 +41,9 @@ Route::get('/courses/search', [Web\CoursesController::class, 'search'])
     ->name('courses.search');
 Route::resource('/courses', Web\CoursesController::class);
 
-Route::get('/users/{institutionUser}/edit', [Web\Users\InstitutionUserController::class, 'edit'])
+Route::get('/users/{editInstitutionUser}/edit', [Web\Users\InstitutionUserController::class, 'edit'])
     ->name('users.edit');
-Route::put('/users/{institutionUser}/edit', [Web\Users\InstitutionUserController::class, 'update'])
+Route::put('/users/{editInstitutionUser}/edit', [Web\Users\InstitutionUserController::class, 'update'])
     ->name('users.update');
 Route::resource('/users', Web\Users\InstitutionUserController::class)
     ->only(['create', 'store']);
@@ -54,7 +60,7 @@ Route::get('/users/download-recording-template', [Web\Users\InstitutionUserContr
     ->name('users.download-recording-template');
 Route::post('/users/upload', [Web\Users\InstitutionUserController::class, 'uploadStaff'])
     ->name('users.upload');
-Route::post('/users/{user}/upload-phone', [Web\Users\UpdateInstitutionUserController::class, 'uploadPhoto'])
+Route::post('/users/{user}/upload-photo', [Web\Users\UpdateInstitutionUserController::class, 'uploadPhoto'])
     ->name('users.upload-photo');
 
 // Teacher courses
@@ -81,6 +87,9 @@ Route::post('/course-results/upload/{courseTeacher}', [Web\Staff\CourseResultsCo
     ->name('course-results.upload');
 Route::get('/course-results/download', Web\Staff\DownloadCourseResultSheetController::class)
     ->name('course-results.download');
+
+Route::get('/course-result-info/index', Web\Staff\ListCourseResultInfo::class)
+    ->name('course-result-info.index');
 
 Route::get('/class-result-info/index', [Web\Staff\ClassResultInfoController::class, 'index'])
     ->name('class-result-info.index');

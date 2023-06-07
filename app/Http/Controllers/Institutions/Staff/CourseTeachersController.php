@@ -30,7 +30,7 @@ class CourseTeachersController extends Controller
       ? $user->courseTeachers()->getQuery()
       : CourseTeacher::query()
     )->select('course_teachers.*');
-    CourseTeachersUITableFilters::make($request->all(), $query);
+    CourseTeachersUITableFilters::make($request->all(), $query)->filterQuery();
 
     $query = $query->with('course', 'user', 'classification')->latest('id');
 

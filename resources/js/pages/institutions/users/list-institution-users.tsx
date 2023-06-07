@@ -4,7 +4,7 @@ import { HStack, IconButton, Icon } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import ServerPaginatedTable from '@/components/server-paginated-table';
-import { PaginationResponse } from '@/types/types';
+import { InstitutionUserType, PaginationResponse } from '@/types/types';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { BrandButton, LinkButton } from '@/components/buttons';
@@ -46,11 +46,6 @@ export default function ListStudents({ institutionUsers }: Props) {
       label: 'Gender',
       value: 'user.gender',
     },
-    // {
-    //   label: 'Created At',
-    //   value: 'created_at',
-    //   render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
-    // },
     {
       label: 'Action',
       render: (row) => (
@@ -59,7 +54,11 @@ export default function ListStudents({ institutionUsers }: Props) {
             as={InertiaLink}
             aria-label={'Edit user'}
             icon={<Icon as={PencilIcon} />}
-            href={instRoute('users.edit', [row.id])}
+            href={
+              row.student
+                ? instRoute('students.edit', [row.student.id])
+                : instRoute('users.edit', [row.id])
+            }
             variant={'ghost'}
             colorScheme={'brand'}
           />

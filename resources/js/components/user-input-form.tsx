@@ -68,7 +68,6 @@ export default function UserInputForm({ webForm }: Props) {
           type={'text'}
           onChange={(e) => webForm.setValue('email', e.currentTarget.value)}
           value={webForm.data.email}
-          required
         />
         <FormErrorMessage>{webForm.errors.email}</FormErrorMessage>
       </FormControl>
