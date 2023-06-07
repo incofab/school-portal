@@ -23,7 +23,11 @@ class StudentFactory extends Factory
     return [
       // 'institution_user_id' => InstitutionUser::factory()->student(),
       // 'user_id' => User::factory(null, ['other_names' => null])->student(),
-      'code' => date('Y') . fake()->numerify('####'),
+      'code' =>
+        date('Y') .
+        fake()
+          ->unique()
+          ->numerify('####'),
       'classification_id' => Classification::factory(),
       'guardian_phone' => fake()->phoneNumber()
     ];
