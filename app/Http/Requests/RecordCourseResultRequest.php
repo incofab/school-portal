@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Institution;
 use App\Rules\ExcelRule;
 use App\Rules\InstitutionStudentRule;
+use Arr;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
@@ -51,17 +52,35 @@ class RecordCourseResultRequest extends FormRequest
       'academic_session_id' => ['required', 'exists:academic_sessions,id'],
       'term' => ['required', new Enum(TermType::class)],
       'result' => ['nullable', 'array', 'min:1'],
-      ...self::resultRule('result.*.')
+      ...self::resultRule($this->all(), 'result.*.')
     ];
   }
 
-  public static function resultRule(string $prefix = '')
+  public static function resultRule($data, string $prefix = '')
   {
     $institution = currentInstitution();
     return [
       $prefix . 'first_assessment' => ['nullable', 'numeric', 'min:0'],
       $prefix . 'second_assessment' => ['nullable', 'numeric', 'min:0'],
-      $prefix . 'exam' => ['nullable', 'numeric', 'min:0'],
+      $prefix . 'exam' => [
+        'nullable',
+        'numeric',
+        'min:0',
+        function ($attr, $value, $fail) use ($data) {
+          $examPos = strrpos($attr, 'exam');
+          $arrayPrefix = substr($attr, 0, $examPos);
+          $ca1 = floatval(
+            Arr::get($data, $arrayPrefix . 'first_assessment', 0)
+          );
+          $ca2 = floatval(
+            Arr::get($data, $arrayPrefix . 'second_assessment', 0)
+          );
+          $exam = floatval(Arr::get($data, $arrayPrefix . 'exam', 0));
+          if ($ca1 + $ca2 + $exam > 100) {
+            $fail('Summation of scores cannot be more than 100');
+          }
+        }
+      ],
       $prefix . 'student_id' => [
         'required'
         // new InstitutionStudentRule($institution)

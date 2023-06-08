@@ -52,7 +52,7 @@ class RecordStudent
       'institution_user_id' => $institutionUser->id,
       'classification_id' => $this->classification->id,
       'code' => Student::generateStudentID(),
-      'guardian_phone' => $data['guardian_phone'] ?? null
+      'guardian_phone' => $this->data['guardian_phone'] ?? null
     ]);
   }
 

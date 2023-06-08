@@ -11,16 +11,12 @@ use App\Models\Institution;
 // dd('fmfskfmdf');
 // Auth::routes();
 
-// Route::prefix('{institution}/dummy2')
-// ->name('institutions.')
-// ->group(function (Institution $institution)
-// {
-//     dd('dsdos,od,');
-//     Route::get('course/1', function (Course $course)
-//     {
-//         dd($course->toArray());
-//     });
-// });
+Route::group(['middleware' => ['institution.user']], function () {
+    Route::get('/dummy1', function ()
+    {
+        dd(',ksdmksdmds-12');
+    });
+});
 
 
 Route::get('academic-sessions/search', [Web\AcademicSessionController::class, 'search'])

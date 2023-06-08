@@ -4,6 +4,7 @@ import { Gender, InstitutionUserType } from '@/types/types';
 import {
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Input,
 } from '@chakra-ui/react';
@@ -62,13 +63,14 @@ export default function UserInputForm({ webForm }: Props) {
         <FormErrorMessage>{webForm.errors.other_names}</FormErrorMessage>
       </FormControl>
 
-      <FormControl isRequired isInvalid={!!webForm.errors.email}>
+      <FormControl isInvalid={!!webForm.errors.email}>
         <FormLabel>Email</FormLabel>
         <Input
           type={'text'}
           onChange={(e) => webForm.setValue('email', e.currentTarget.value)}
           value={webForm.data.email}
         />
+        <FormHelperText>Note: Email is optional for students</FormHelperText>
         <FormErrorMessage>{webForm.errors.email}</FormErrorMessage>
       </FormControl>
 
@@ -87,7 +89,8 @@ export default function UserInputForm({ webForm }: Props) {
         <EnumSelect
           enumData={Gender}
           onChange={(e: any) => webForm.setValue('gender', e.value)}
-          value={webForm.data.gender}
+          selectValue={webForm.data.gender}
+          required
         />
         <FormErrorMessage>{webForm.errors.phone}</FormErrorMessage>
       </FormControl>
@@ -106,40 +109,6 @@ export default function UserInputForm({ webForm }: Props) {
           </FormControl>
         </>
       )}
-      {/* {(webForm.data.role === UserRoleType.Student ||
-        webForm.data.role === UserRoleType.Alumni) && (
-        <>
-          <Div width={'full'}>
-            <Text
-              fontWeight={'semibold'}
-              fontSize={'md'}
-              mt={3}
-              textAlign={'center'}
-            >
-              Student Data
-            </Text>
-            <Divider />
-          </Div>
-          <FormControlBox
-            isRequired
-            formKey="classification_id"
-            title="Class"
-            form={webForm}
-          >
-            <ClassificationSelect
-              selectValue={webForm.data.classification_id}
-              onChange={(e: any) =>
-                webForm.setValue('classification_id', e.value)
-              }
-            />
-          </FormControlBox>
-          <InputForm
-            form={webForm as any}
-            formKey="guardian_phone"
-            title="Guardian Phone"
-          />
-        </>
-      )} */}
     </>
   );
 }

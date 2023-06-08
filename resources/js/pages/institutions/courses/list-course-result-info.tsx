@@ -73,7 +73,8 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
             classification: row.classification_id,
             course: row.course_id,
           })}
-          title="Student Results"
+          variant={'link'}
+          title="Student Scores"
         />
       ),
     },

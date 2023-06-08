@@ -35,6 +35,7 @@ export default function CreateOrUpdateStudent({ student }: Props) {
     other_names: student?.user!.other_names ?? '',
     email: student?.user!.email ?? '',
     phone: student?.user!.phone ?? '',
+    gender: student?.user!.gender ?? '',
     role: student?.user!.institution_user.role ?? InstitutionUserType.Student,
     guardian_phone: student?.guardian_phone ?? '',
     classification_id: student?.classification_id + '',

@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -94,31 +92,6 @@ class AuthController extends Controller
       ? redirect()->route('login')
       : back()->withErrors(['email' => __($status)]);
   }
-
-  // public function showRegister()
-  // {
-  //   return Inertia::render('register', []);
-  // }
-
-  // public function register()
-  // {
-  //   $data = request()->validate([
-  //     'first_name' => ['required', 'string', 'max:255'],
-  //     'last_name' => ['required', 'string', 'max:255'],
-  //     'email' => ['required', 'string', 'email', 'unique:users,email'],
-  //     'password' => ['required', 'string', 'confirmed', 'min:4']
-  //   ]);
-
-  //   $data['password'] = bcrypt($data['password']);
-
-  //   $user = User::create($data);
-
-  //   Auth::login($user);
-
-  //   event(new Registered($user));
-
-  //   return redirect()->intended(RouteServiceProvider::HOME);
-  // }
 
   public function logout()
   {

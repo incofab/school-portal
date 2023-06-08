@@ -25,10 +25,7 @@ class RegistrationController extends Controller
     $data = $request->validate([
       ...User::generalRule(),
       'institution' => ['required', 'array'],
-      'institution.name' => ['required', 'string'],
-      'institution.phone' => ['nullable', 'string'],
-      'institution.email' => ['nullable', 'string'],
-      'institution.address' => ['nullable', 'string']
+      ...Institution::generalRule('institution.')
     ]);
 
     $data['password'] = bcrypt($data['password']);

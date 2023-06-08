@@ -6,6 +6,7 @@ use App\Models\Classification;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
+use Str;
 
 class CreateStudentRequest extends FormRequest
 {
@@ -14,6 +15,10 @@ class CreateStudentRequest extends FormRequest
   protected function prepareForValidation()
   {
     $institution = currentInstitution();
+
+    if (!$this->email) {
+      $this->merge(['email' => Str::orderedUuid() . '@email.com']);
+    }
 
     $classification = Classification::where('id', $this->classification_id)
       ->where('institution_id', $institution->id)

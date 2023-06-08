@@ -10,6 +10,16 @@ class Institution extends Model
   use HasFactory;
 
   protected $guarded = [];
+  public static function generalRule($prefix = '')
+  {
+    return [
+      $prefix . 'name' => ['required', 'string'],
+      $prefix . 'phone' => ['nullable', 'string'],
+      $prefix . 'email' => ['nullable', 'string'],
+      $prefix . 'address' => ['nullable', 'string']
+    ];
+  }
+
   public function getRouteKeyName()
   {
     return 'uuid';
