@@ -3,10 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use Illuminate\Http\Request;
-use App\Http\Controllers\User\UserController;
 use App\Http\Controllers as Web;
-use App\Models\Course;
-use App\Models\Institution;
 
 // dd('fmfskfmdf');
 // Auth::routes();
@@ -28,6 +25,9 @@ Route::group(['middleware' => ['guest']], function () {
     Route::get('register', [Web\RegistrationController::class, 'create'])->name('register.create');
     Route::post('register', [Web\RegistrationController::class, 'store'])->name('register.store');
     
+    Route::get('student/login', [Web\StudentAuthController::class, 'showLogin'])->name('student-login');
+    Route::post('student/login', [Web\StudentAuthController::class, 'login'])->name('student-login.store');
+
     Route::get('forgot-password', [Web\AuthController::class, 'showForgotPassword'])
     ->name('forgot-password');
     Route::post('forgot-password', [Web\AuthController::class, 'forgotPassword'])

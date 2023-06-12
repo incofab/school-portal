@@ -33,7 +33,7 @@ export default function SideBarLayout() {
     useSharedProps();
   const isAdmin = useIsAdmin();
   const { instRoute } = useInstitutionRoute();
-
+  
   const menus: MenuListType[] = [
     {
       label: 'Dashboard',
@@ -133,6 +133,7 @@ export default function SideBarLayout() {
     {
       label: 'School Profile',
       route: instRoute('profile'),
+      roles: [InstitutionUserType.Admin]
     },
     {
       label: 'Profile',

@@ -14,6 +14,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    'user_default_password' => env('USER_DEFAULT_PASSWORD', 'password'),
 
     /*
     |--------------------------------------------------------------------------

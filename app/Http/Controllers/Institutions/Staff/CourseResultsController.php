@@ -98,7 +98,7 @@ class CourseResultsController extends Controller
     CourseTeacher $courseTeacher
   ) {
     request()->validate([
-      'file' => ['required', 'file', new ExcelRule($this->file('file'))]
+      'file' => ['required', 'file', new ExcelRule($request->file('file'))]
     ]);
     $this->validateUser($courseTeacher);
 

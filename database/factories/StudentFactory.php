@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\InstitutionUserType;
 use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
@@ -38,7 +39,7 @@ class StudentFactory extends Factory
     return $this->state(function (array $attributes) use ($institution) {
       $institutionUser = InstitutionUser::factory()
         ->withInstitution($institution)
-        ->create();
+        ->create(['role' => InstitutionUserType::Student]);
       return [
         'institution_user_id' => $institutionUser->id,
         'user_id' => $institutionUser->user_id,

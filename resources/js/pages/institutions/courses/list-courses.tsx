@@ -9,13 +9,13 @@ import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
-import DateTimeDisplay from '@/components/date-time-display';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
+import useIsAdmin from '@/hooks/use-is-admin';
 
 interface Props {
   courses: PaginationResponse<Course>;
@@ -25,6 +25,7 @@ export default function ListCourse({ courses }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
+  const isAdmin = useIsAdmin();
 
   async function deleteItem(obj: Course) {
     const res = await deleteForm.submit((data, web) =>
@@ -39,38 +40,37 @@ export default function ListCourse({ courses }: Props) {
       label: 'Title',
       value: 'title',
     },
-    // {
-    //   label: 'Created At',
-    //   value: 'created_at',
-    //   render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
-    // },
-    {
-      label: 'Action',
-      render: (row) => (
-        <HStack>
-          <IconButton
-            aria-label={'Edit Subject'}
-            icon={<Icon as={PencilIcon} />}
-            as={InertiaLink}
-            href={instRoute('courses.edit', [row.id])}
-            variant={'ghost'}
-            colorScheme={'brand'}
-          />
-          <DestructivePopover
-            label={'Delete this subject'}
-            onConfirm={() => deleteItem(row)}
-            isLoading={deleteForm.processing}
-          >
-            <IconButton
-              aria-label={'Delete subject'}
-              icon={<Icon as={TrashIcon} />}
-              variant={'ghost'}
-              colorScheme={'red'}
-            />
-          </DestructivePopover>
-        </HStack>
-      ),
-    },
+    ...(isAdmin
+      ? [
+          {
+            label: 'Action',
+            render: (row: Course) => (
+              <HStack>
+                <IconButton
+                  aria-label={'Edit Subject'}
+                  icon={<Icon as={PencilIcon} />}
+                  as={InertiaLink}
+                  href={instRoute('courses.edit', [row.id])}
+                  variant={'ghost'}
+                  colorScheme={'brand'}
+                />
+                <DestructivePopover
+                  label={'Delete this subject'}
+                  onConfirm={() => deleteItem(row)}
+                  isLoading={deleteForm.processing}
+                >
+                  <IconButton
+                    aria-label={'Delete subject'}
+                    icon={<Icon as={TrashIcon} />}
+                    variant={'ghost'}
+                    colorScheme={'red'}
+                  />
+                </DestructivePopover>
+              </HStack>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (

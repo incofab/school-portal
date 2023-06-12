@@ -12,7 +12,7 @@ use App\Models\Classification;
 use App\Models\Institution;
 use App\Rules\ExcelRule;
 use App\Support\UITableFilters\StudentUITableFilters;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
@@ -20,7 +20,7 @@ class StudentController extends Controller
   {
     $query = Student::query()->select('students.*');
     StudentUITableFilters::make($request->all(), $query)->filterQuery();
-
+    
     return inertia('institutions/students/list-students', [
       'students' => paginateFromRequest(
         $query->with('user', 'classification')->latest('students.id')

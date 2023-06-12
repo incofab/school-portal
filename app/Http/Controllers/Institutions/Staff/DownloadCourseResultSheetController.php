@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DownloadCourseResultSheetRequest;
 use App\Models\CourseResult;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class DownloadCourseResultSheetController extends Controller
 {
@@ -16,12 +16,12 @@ class DownloadCourseResultSheetController extends Controller
     $query = CourseResult::query()->select('course_results.*');
     CourseResultsUITableFilters::make($request->all(), $query)->filterQuery();
 
-    $students = $query
-      ->with('user')
+    $courseResults = $query
+      ->with('student.user')
       ->oldest('course_results.student_id')
       ->get();
 
-    $excelWriter = DownloadCourseResultSheet::run($students);
+    $excelWriter = DownloadCourseResultSheet::run($courseResults);
 
     $filename =
       "{$request->courseObj->title}-{$request->classificationObj->title}" .
