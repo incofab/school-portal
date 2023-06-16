@@ -37,6 +37,7 @@ class HandleInertiaRequests extends Middleware
   public function share(Request $request): array
   {
     return array_merge(parent::share($request), [
+      'shared__isImpersonating' => session()->has('impersonator_id'),
       'shared__currentUser' => currentUser(),
       'shared__currentInstitution' => fn() => currentInstitution(),
       'shared__currentInstitutionUser' => fn() => currentInstitutionUser()

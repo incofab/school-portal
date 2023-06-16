@@ -1,9 +1,17 @@
 import React from 'react';
-import { Button, ButtonProps } from '@chakra-ui/react';
+import { Button, ButtonProps, FormControl } from '@chakra-ui/react';
 import { InertiaLink, InertiaLinkProps } from '@inertiajs/inertia-react';
 
 interface Props {
   title?: string;
+}
+
+export function FormControlButton({ title, ...props }: Props & ButtonProps) {
+  return (
+    <FormControl>
+      <FormButton title={title} {...props} />
+    </FormControl>
+  );
 }
 
 export function FormButton({ title, ...props }: Props & ButtonProps) {

@@ -1,5 +1,4 @@
 import React from 'react';
-// import '../../css/dashboard.css';
 import {
   Sidebar,
   Menu,
@@ -33,11 +32,17 @@ export default function SideBarLayout() {
     useSharedProps();
   const isAdmin = useIsAdmin();
   const { instRoute } = useInstitutionRoute();
-  
+  const staffOnly = [InstitutionUserType.Admin, InstitutionUserType.Teacher];
+
   const menus: MenuListType[] = [
     {
       label: 'Dashboard',
       route: instRoute('dashboard'),
+    },
+    {
+      label: 'My Results',
+      route: instRoute('students.term-results.index'),
+      roles: [InstitutionUserType.Student],
     },
     {
       label: 'Staff',
@@ -64,12 +69,12 @@ export default function SideBarLayout() {
     },
     {
       label: 'Students',
-      roles: [InstitutionUserType.Admin],
+      roles: staffOnly,
       sub_items: [
         {
           label: 'All Students',
           route: instRoute('students.index'),
-          roles: [InstitutionUserType.Admin],
+          roles: staffOnly,
         },
         {
           label: 'Add Student',
@@ -107,12 +112,13 @@ export default function SideBarLayout() {
         {
           label: 'Recorded Results',
           route: instRoute('course-result-info.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          roles: staffOnly,
         },
       ],
     },
     {
       label: 'Classes',
+      roles: staffOnly,
       sub_items: [
         {
           label: 'All Classes',
@@ -131,9 +137,20 @@ export default function SideBarLayout() {
       ],
     },
     {
-      label: 'School Profile',
-      route: instRoute('profile'),
-      roles: [InstitutionUserType.Admin]
+      label: 'Admin',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'School Profile',
+          route: instRoute('profile'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Pins',
+          route: instRoute('pin-prints.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
     },
     {
       label: 'Profile',

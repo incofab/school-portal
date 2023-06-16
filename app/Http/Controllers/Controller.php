@@ -92,8 +92,12 @@ class Controller extends BaseController
     });
   }
 
-  protected function ok()
+  protected function ok($data = [])
   {
-    return response()->json(['ok' => true]);
+    return response()->json(['ok' => true, ...$data]);
+  }
+  protected function message(string $message)
+  {
+    return response()->json(['message' => $message]);
   }
 }

@@ -35,7 +35,9 @@ Route::get(
         '/students/result-sheet/{student}/{classification}/{academicSession}/{term}', 
         Web\Students\ViewResultSheetController::class
     )->name('students.result-sheet');
-Route::resource('/students', Web\Students\StudentController::class);
+Route::resource('/students', Web\Students\StudentController::class)->except(['show', 'destroy']);
+Route::get('/students/term-results', Web\Students\ListStudentTermResultController::class)
+    ->name('students.term-results.index');
 
 Route::get('/courses/search', [Web\CoursesController::class, 'search'])
     ->name('courses.search');
@@ -62,6 +64,8 @@ Route::post('/users/upload', [Web\Users\InstitutionUserController::class, 'uploa
     ->name('users.upload');
 Route::post('/users/{user}/upload-photo', [Web\Users\UpdateInstitutionUserController::class, 'uploadPhoto'])
     ->name('users.upload-photo');
+Route::post('/users/{user}/reset-password', Web\Users\ResetUserPasswordController::class)
+    ->name('users.reset-password');
 
 // Teacher courses
 Route::get('/course-teachers/index/{user?}', [Web\Staff\CourseTeachersController::class, 'index'])
@@ -101,74 +105,7 @@ Route::post('/class-result-info/recalculate/{classResultInfo}', [Web\Staff\Class
 Route::get('/term-results/index/{user?}', Web\ListTermResultController::class)
     ->name('term-results.index');
 
+Route::resource('/pin-prints', Web\Staff\PinPrintController::class)->only(['index', 'store', 'show']);
 
 
 
-
-    
-
-// Institution Event
-// Route::resource('/institution/{institution_id}/event', EventController::class, ['as' => 'institution'])
-// ->except(['destroy']);
-// //     Route::any('/institution/{institution_id}/event/{id}/update', [EventController::class, 'update'])->name('institution.event.update');
-// Route::any('/institution/{institution_id}/event/suspend', [EventController::class, 'suspend'])->name('institution.event.suspend');
-// Route::any('/institution/{institution_id}/event/unsuspend', [EventController::class, 'unsuspend'])->name('institution.event.unsuspend');
-// Route::any('/institution/{institution_id}/event/result/{id}', [EventController::class, 'eventResult'])->name('institution.event.result');
-// Route::any('/institution/{institution_id}/event/destroy/{id}', [EventController::class, 'destroy'])->name('institution.event.destroy');
-// Route::any('/institution/{institution_id}/event/result-download/{id}', [EventController::class, 'downloadEventResult'])->name('institution.event.result-download');
-
-// // Institution Student
-// Route::resource('/institution/{institution_id}/student', StudentController::class, ['as' => 'institution'])
-// ->except(['index', 'destroy']);
-// Route::get('/institution/{institution_id}/student/delete/{id}', [StudentController::class, 'destroy'])->name('institution.student.destroy');
-// Route::get('/institution/{institution_id}/students/{gradeId?}', [StudentController::class, 'index'])->name('institution.student.index');
-// Route::get('/institution/{institution_id}/student/upload/create', [StudentController::class, 'uploadStudentsView'])->name('institution.student.upload.create');
-// Route::post('/institution/{institution_id}/student/upload/store', [StudentController::class, 'uploadStudents'])->name('institution.student.upload.store');
-// Route::post('/institution/{institution_id}/student/manage/suspend', [StudentController::class, 'suspend'])->name('institution.student.suspend');
-// Route::post('/institution/{institution_id}/student/manage/unsuspend', [StudentController::class, 'unsuspend'])->name('institution.student.unsuspend');
-// Route::get('/institution/{institution_id}/student/multi/create', [StudentController::class, 'multiStudentCreate'])->name('institution.student.multi-create');
-// Route::post('/institution/{institution_id}/student/multi/create', [StudentController::class, 'multiStudentStore'])->name('institution.student.multi-store');
-// Route::get('/institution/{institution_id}/student/manage/download-sample-file', [StudentController::class, 'downloadSampleExcel'])->name('institution.student.download-sample-excel');
-// Route::post('/institution/{institution_id}/student/multi-delete', [StudentController::class, 'multiDelete'])->name('institution.student.multi-delete');
-
-// Route::resource('/institution/{institution_id}/grade', GradeController::class, ['as' => 'institution']);
-
-// // Institution Exam
-// Route::resource('/institution/{institution_id}/exam', \App\Http\Controllers\Institution\ExamController::class, ['as' => 'institution'])
-// ->except(['create', 'index', 'show']);
-// Route::get('/institution/{institution_id}/exam/manage/index/{eventId?}', [\App\Http\Controllers\Institution\ExamController::class, 'index'])->name('institution.exam.index');
-// Route::get('/institution/{institution_id}/exam/manage/create/{studentId?}', [\App\Http\Controllers\Institution\ExamController::class, 'create'])->name('institution.exam.create');
-// Route::get('/institution/{institution_id}/exam/manage/extend/{examNo}', [\App\Http\Controllers\Institution\ExamController::class, 'extendExamTimeView'])->name('institution.exam.extend');
-// Route::post('/institution/{institution_id}/exam/manage/extend/{examNo}', [\App\Http\Controllers\Institution\ExamController::class, 'extendExamTime'])->name('institution.exam.extend.store');
-// Route::get('/institution/{institution_id}/exam/grade/create/{gradeId?}', [\App\Http\Controllers\Institution\ExamController::class, 'createGradeExam'])->name('institution.exam.grade.create');
-// Route::post('/institution/{institution_id}/exam/grade/create/{gradeId?}', [\App\Http\Controllers\Institution\ExamController::class, 'storeGradeExam'])->name('institution.exam.grade.store');
-
-// /**** CCD *****/ 
-// // CCD Course
-// Route::resource('/ccd/institution/{institution_id}/course', CourseController::class, ['as' => 'ccd'])
-// ->except(['show', 'destroy']);
-// Route::get('/ccd/institution/{institution_id}/course/{courseId}/delete', [CourseController::class, 'delete'])->name('ccd.course.delete');
-
-// // CCD Session
-// Route::resource('/ccd/institution/{institution_id}/session', SessionController::class, ['as' => 'ccd'])
-// ->except(['index', 'create', 'store']);
-// Route::any('/ccd/institution/{institution_id}/session/preview/{id}', [SessionController::class, 'preview'])->name('ccd.session.preview');
-// Route::get('/ccd/institution/{institution_id}/sessions/{courseId}', [SessionController::class, 'index'])->name('ccd.session.index');
-// Route::get('/ccd/institution/{institution_id}/session/create/{courseId}', [SessionController::class, 'create'])->name('ccd.session.create');
-// Route::post('/ccd/institution/{institution_id}/session/store/{courseId}', [SessionController::class, 'store'])->name('ccd.session.store');
-// Route::get('/ccd/institution/{institution_id}/session/store/{courseId}/upload-excel-questions/{courseSessionId}', [SessionController::class, 'uploadExcelQuestionCreate'])->name('ccd.session.upload-excel-question');
-// Route::post('/ccd/institution/{institution_id}/session/store/{courseId}/upload-excel-questions/{courseSessionId}', [SessionController::class, 'uploadExcelQuestionStore']);
-
-// // CCD Question
-// Route::resource('/ccd/institution/{institution_id}/question', QuestionController::class, ['as' => 'ccd'])
-// ->except(['index', 'create', 'store']);
-// Route::get('/ccd/institution/{institution_id}/questions/{sessionId}', [QuestionController::class, 'index'])->name('ccd.question.index');
-// Route::get('/ccd/institution/{institution_id}/question/create/{sessionId}', [QuestionController::class, 'create'])->name('ccd.question.create');
-// Route::post('/ccd/institution/{institution_id}/question/create/{sessionId}', [QuestionController::class, 'store'])->name('ccd.question.store');
-// Route::any('/ccd/image-upload/institution/{institution_id}/question/{courseId}/{sessionId}', [\App\Http\Controllers\CCD\HomeController::class, 'uploadImage'])->name('ccd.question.upload-image');
-
-// //Content Upload
-// Route::get('/ccd/institution/{institution_id}/course/upload/{courseId}', [\App\Http\Controllers\CCD\CourseUploadController::class, 'uploadCourseView'])->name('ccd.course.upload');
-// Route::post('/ccd/institution/{institution_id}/course/upload/{courseId}', [\App\Http\Controllers\CCD\CourseUploadController::class, 'uploadCourse'])->name('ccd.course.upload.store');
-// Route::get('/ccd/institution/{institution_id}/course/uninstall/{courseId}', [\App\Http\Controllers\CCD\CourseUploadController::class, 'unInstallCourse'])->name('ccd.course.uninstall');
-// Route::get('/ccd/institution/{institution_id}/course/export/{courseId}', [\App\Http\Controllers\CCD\CourseUploadController::class, 'exportCourse'])->name('ccd.course.export');

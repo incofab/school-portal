@@ -20,6 +20,10 @@ export interface Message {
   success: string;
 }
 
+export enum ManagerRole {
+  Admin = 'admin',
+}
+
 export enum InstitutionUserType {
   Admin = 'admin',
   Student = 'student',

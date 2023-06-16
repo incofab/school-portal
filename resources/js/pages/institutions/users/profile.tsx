@@ -1,17 +1,15 @@
 import { Div } from '@/components/semantic';
-import route from '@/util/route';
 import {
-  Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
   useToast,
-  VStack,
   Grid,
   GridItem,
   Text,
   Avatar,
+  HStack,
 } from '@chakra-ui/react';
 import React, { ChangeEvent } from 'react';
 import {
@@ -23,21 +21,22 @@ import { resizeImage } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
 import useSharedProps from '@/hooks/use-shared-props';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
-import FormControlBox from '@/components/forms/form-control-box';
-import ProfileLayout from '@/domain/institutions/user-profile/profile-layout';
 import useWebForm, { useWeb } from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
 import { Student, User } from '@/types/models';
-import { preventNativeSubmit } from '@/util/util';
 import DashboardLayout from '@/layout/dashboard-layout';
 import Dt from '@/components/dt';
 import { SelectOptionType } from '@/types/types';
+import { BrandButton } from '@/components/buttons';
+import useIsAdmin from '@/hooks/use-is-admin';
+import DestructivePopover from '@/components/destructive-popover';
 
 interface Props {
   user: User;
   student: Student;
 }
+
 export default function Profile({ user, student }: Props) {
   const { currentUser } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
@@ -52,16 +51,16 @@ export default function Profile({ user, student }: Props) {
   });
   const toast = useToast();
   const web = useWeb();
+  const isAdmin = useIsAdmin();
   const extensions = FileDropperType.Image.extensionLabels;
 
-  async function onSubmit() {
+  async function resetPassword(onClose: () => void) {
     const res = await form.submit((data, web) => {
-      return web.put(instRoute('users.update', [user]), data);
+      return web.put(instRoute('users.reset-password', [user]), data);
     });
 
     if (!handleResponseToast(res)) return;
-
-    Inertia.reload({ only: ['user'] });
+    onClose();
   }
 
   async function uploadImage(e: ChangeEvent<HTMLInputElement>) {
@@ -178,6 +177,18 @@ export default function Profile({ user, student }: Props) {
                    */}
             </GridItem>
             <GridItem colSpan={{ lg: 1 }}>
+              {currentUser.id !== user.id && isAdmin && (
+                <HStack>
+                  <DestructivePopover
+                    label={`Reset user's password to default?`}
+                    onConfirm={(onClose) => resetPassword(onClose)}
+                    isLoading={form.processing}
+                    positiveButtonLabel="Reset"
+                  >
+                    <BrandButton title="Reset Password" />
+                  </DestructivePopover>
+                </HStack>
+              )}
               <FormControl isInvalid={!!form.errors.photo}>
                 <Div
                   mt={{ lg: 4 }}
@@ -227,24 +238,10 @@ export default function Profile({ user, student }: Props) {
               </FormControl>
             </GridItem>
           </Grid>
-          {/* <Div mt={4} alignSelf={'start'}>
-              <Button
-                type="submit"
-                isLoading={form.processing}
-                loadingText="Saving"
-                colorScheme={'brand'}
-              >
-                Save
-              </Button>
-            </Div> */}
-          {/* </form> */}
         </SlabBody>
       </Slab>
     </div>
   );
 }
 
-{
-  /* <ProfileLayout children={page} /> */
-}
 Profile.layout = (page: any) => <DashboardLayout children={page} />;

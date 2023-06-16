@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Queries\InstitutionQueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,6 +19,16 @@ class Institution extends Model
       $prefix . 'email' => ['nullable', 'string'],
       $prefix . 'address' => ['nullable', 'string']
     ];
+  }
+
+  public static function query(): InstitutionQueryBuilder
+  {
+    return parent::query();
+  }
+
+  public function newEloquentBuilder($query)
+  {
+    return new InstitutionQueryBuilder($query);
   }
 
   public function getRouteKeyName()
@@ -37,7 +48,12 @@ class Institution extends Model
       )
       ->where('uuid', $value)
       ->where('institution_users.user_id', $user->id)
-      ->with('institutionUsers', fn($q) => $q->where('institution_users.user_id', $user->id)->with('student'))
+      ->with(
+        'institutionUsers',
+        fn($q) => $q
+          ->where('institution_users.user_id', $user->id)
+          ->with('student')
+      )
       ->firstOrFail();
     return $institutionModel;
   }
@@ -76,5 +92,20 @@ class Institution extends Model
   function createdBy()
   {
     return $this->belongsTo(User::class);
+  }
+
+  function termResults()
+  {
+    return $this->hasMany(TermResult::class);
+  }
+
+  function pins()
+  {
+    return $this->hasMany(Pin::class);
+  }
+
+  function pinPrints()
+  {
+    return $this->hasMany(PinPrint::class);
   }
 }

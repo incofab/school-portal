@@ -16,6 +16,11 @@ class TermResult extends Model
     return $this->belongsTo(Institution::class);
   }
 
+  function scopeActivated($query, $isActivated = true)
+  {
+    return $query->where('is_activated', $isActivated);
+  }
+
   function student()
   {
     return $this->belongsTo(Student::class);

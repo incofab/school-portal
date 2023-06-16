@@ -4,5 +4,9 @@ import { format } from 'date-fns';
 import { dateFormat } from '@/util/util';
 
 export default function DateTimeDisplay({ dateTime }: { dateTime: string }) {
-  return <Text>{format(new Date(dateTime), dateFormat)}</Text>;
+  return dateTime ? (
+    <Text>{format(new Date(dateTime), dateFormat)}</Text>
+  ) : (
+    <></>
+  );
 }

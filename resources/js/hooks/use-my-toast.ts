@@ -3,6 +3,7 @@ import { useToast } from '@chakra-ui/react';
 interface ToastParams {
   ok: boolean;
   message: string | null;
+  data?: any;
 }
 
 export default function useMyToast() {
@@ -15,16 +16,16 @@ export default function useMyToast() {
       });
     } else {
       toast({
-        title: 'operation successful',
+        title: res.data?.message ?? 'operation successful',
         status: 'success',
       });
     }
     return res?.ok;
   }
 
-  function toastError(message: string) {
+  function toastError(message?: string) {
     return void toast({
-      title: message,
+      title: message ?? 'Error process request',
       status: 'error',
     });
   }

@@ -1,4 +1,4 @@
-import { InstitutionUserType, TermType } from './types';
+import { InstitutionUserType, ManagerRole, Nullable, TermType } from './types';
 
 export interface Row {
   id: number;
@@ -21,6 +21,7 @@ export interface User extends Row {
   email: string;
   is_welfare: boolean;
   gender: string;
+  manager_role: ManagerRole;
 }
 
 export interface Institution extends Row {
@@ -101,7 +102,7 @@ export interface CourseResultInfo extends InstitutionRow {
   average: number;
   course?: Course;
   classification?: Classification;
-  academicSession?: AcademicSession;
+  academic_session?: AcademicSession;
 }
 
 export interface ClassResultInfo extends InstitutionRow {
@@ -116,7 +117,7 @@ export interface ClassResultInfo extends InstitutionRow {
   min_score: number;
   average: number;
   classification?: Classification;
-  academicSession?: AcademicSession;
+  academic_session?: AcademicSession;
 }
 
 export interface TermResult extends InstitutionRow {
@@ -127,12 +128,37 @@ export interface TermResult extends InstitutionRow {
   total_score: number;
   position: number;
   average: number;
-  // result_max: number;
-  // grade: string;
   remark: string;
   student?: Student;
   classification?: Classification;
-  academicSession?: AcademicSession;
+  academic_session?: AcademicSession;
+}
+
+export interface PinGenerator extends InstitutionRow {
+  user_id: number;
+  num_of_pins: number;
+  reference: string;
+  comment: string;
+  user?: User;
+}
+
+export interface Pin extends InstitutionRow {
+  pin: string;
+  used_at: string;
+  term_result_id: number;
+  pin_print_id: number;
+  pin_generator_id: number;
+  term_result?: TermResult;
+  pin_print?: PinPrint;
+  pin_generator: PinGenerator;
+}
+
+export interface PinPrint extends InstitutionRow {
+  user_id: number;
+  num_of_pins: number;
+  reference: string;
+  comment: string;
+  user?: User;
 }
 
 export interface SessionResult extends InstitutionRow {

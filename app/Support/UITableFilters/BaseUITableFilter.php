@@ -78,7 +78,7 @@ abstract class BaseUITableFilter
     return $this->requestData[$key] ?? null;
   }
 
-  protected function when($value = null, callable $callback): static
+  protected function when($value, callable $callback): static
   {
     if ($value) {
       $callback($this, $value);

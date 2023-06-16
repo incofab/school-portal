@@ -1,30 +1,17 @@
 import React from 'react';
-import {
-  FormControl,
-  Button,
-  FormErrorMessage,
-  HStack,
-  VStack,
-  Icon,
-} from '@chakra-ui/react';
+import { Button, HStack, VStack } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
-import FileDropper from '@/components/file-dropper';
 import FileObject from '@/components/file-dropper/file-object';
-import { FileDropperType } from '@/components/file-dropper/common';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '../forms/form-control-box';
 import ClassificationSelect from '../selectors/classification-select';
-import { BrandButton, LinkButton } from '../buttons';
-import { CloudArrowDownIcon } from '@heroicons/react/24/solid';
 import AcademicSessionSelect from '../selectors/academic-session-select';
 import EnumSelect from '../dropdown-select/enum-select';
 import { TermType } from '@/types/types';
 import CourseSelect from '../selectors/course-select';
 import { preventNativeSubmit } from '@/util/util';
-import { Inertia } from '@inertiajs/inertia';
-import route from '@/util/route';
 
 interface Props {
   isOpen: boolean;
@@ -44,7 +31,7 @@ export default function DownloadCourseResultModal({
     classification: '',
     academicSession: '',
     term: '',
-    course: ''
+    course: '',
   });
 
   function canDownloadSheet() {
@@ -58,7 +45,9 @@ export default function DownloadCourseResultModal({
 
   const onSubmit = async () => {
     if (!canDownloadSheet()) {
-      toastError('Select a class, subject, academic session and term before submitting');
+      toastError(
+        'Select a class, subject, academic session and term before submitting'
+      );
       return;
     }
     window.location.href = instRoute('course-results.download', [webForm.data]);
@@ -82,7 +71,9 @@ export default function DownloadCourseResultModal({
               selectValue={webForm.data.academicSession}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('academicSession', e.value)}
+              onChange={(e: any) =>
+                webForm.setValue('academicSession', e.value)
+              }
               required
             />
           </FormControlBox>
@@ -93,7 +84,7 @@ export default function DownloadCourseResultModal({
             isRequired
           >
             <EnumSelect
-            enumData={TermType}
+              enumData={TermType}
               selectValue={webForm.data.term}
               isMulti={false}
               isClearable={true}
@@ -114,11 +105,7 @@ export default function DownloadCourseResultModal({
               required
             />
           </FormControlBox>
-          <FormControlBox
-            form={webForm as any}
-            title="Course"
-            formKey="course"
-          >
+          <FormControlBox form={webForm as any} title="Course" formKey="course">
             <CourseSelect
               selectValue={webForm.data.course}
               isMulti={false}

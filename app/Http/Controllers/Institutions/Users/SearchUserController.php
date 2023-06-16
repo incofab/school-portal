@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Users;
+namespace App\Http\Controllers\Institutions\Users;
 
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;

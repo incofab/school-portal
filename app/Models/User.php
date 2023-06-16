@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Gender;
 use App\Enums\InstitutionUserType;
+use App\Enums\ManagerRole;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -37,7 +38,8 @@ class User extends Authenticatable
    * @var array
    */
   protected $casts = [
-    'email_verified_at' => 'datetime'
+    'email_verified_at' => 'datetime',
+    'manager_role' => ManagerRole::class
   ];
 
   public static function generalRule($userId = null, $prefix = '')
@@ -131,16 +133,6 @@ class User extends Authenticatable
     return $this->institutionUser()
       ->with('student.classification')
       ->first()?->student;
-    // return Student::query()
-    //   ->join(
-    //     'classifications',
-    //     'classifications.id',
-    //     '=',
-    //     'students.classification_id'
-    //   )
-    //   ->where('classifications.institution_id', currentInstitution()->id)
-    //   ->where('students.user_id', $this->id)
-    //   ->first();
   }
 
   function hasInstitutionRole(InstitutionUserType $role): bool
@@ -163,5 +155,10 @@ class User extends Authenticatable
   function isInstitutionStudent()
   {
     return $this->hasInstitutionRole(InstitutionUserType::Student);
+  }
+
+  function isManagerAdmin()
+  {
+    return $this->manager_role === ManagerRole::Admin;
   }
 }

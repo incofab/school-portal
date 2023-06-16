@@ -26,6 +26,21 @@ class StudentTermResultDetailController extends Controller
       403
     );
 
+    $termResult = $student
+      ->termResults()
+      ->where('classification_id', $classification->id)
+      ->where('academic_session_id', $academicSession->id)
+      ->where('term', $term)
+      ->first();
+
+    if (currentUser()->id == $student->user_id) {
+      abort_unless(
+        $termResult->is_activated,
+        403,
+        'This result is not activated'
+      );
+    }
+
     $courseResults = $student
       ->courseResults()
       ->where('classification_id', $classification->id)
@@ -33,12 +48,6 @@ class StudentTermResultDetailController extends Controller
       ->where('term', $term)
       ->with('course', 'teacher')
       ->get();
-
-    $termResult = TermResult::query()
-      ->where('classification_id', $classification->id)
-      ->where('academic_session_id', $academicSession->id)
-      ->where('term', $term)
-      ->first();
 
     return inertia('institutions/students/student-term-result-detail', [
       'courseResults' => $courseResults,

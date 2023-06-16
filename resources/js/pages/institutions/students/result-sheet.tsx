@@ -7,13 +7,14 @@ import {
   Student,
   TermResult,
 } from '@/types/models';
-import { Avatar, HStack, Spacer, Text, VStack } from '@chakra-ui/react';
+import { Avatar, HStack, Image, Spacer, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
 import useSharedProps from '@/hooks/use-shared-props';
 import '@/style/result-sheet.css';
+import ImagePaths from '@/util/images';
 
 interface Props {
   termResult: TermResult;
@@ -117,7 +118,7 @@ export default function ResultSheet({
             <Avatar
               size={'2xl'}
               name="Institution logo"
-              src={currentInstitution.phone}
+              src={currentInstitution.photo ?? ImagePaths.default_school_logo}
             />
             <VStack spacing={1} align={'stretch'} width={'full'}>
               <Text fontSize={'2xl'} fontWeight={'bold'} textAlign={'center'}>

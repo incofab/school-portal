@@ -55,6 +55,14 @@ class ViewResultSheetController extends Controller
       ->getQuery()
       ->first();
 
+    if (currentUser()->id == $student->user_id) {
+      abort_unless(
+        $termResult->is_activated,
+        403,
+        'This result is not activated'
+      );
+    }
+
     $courseResultInfo = CourseResultInfoUITableFilters::make(
       $params,
       CourseResultInfo::query()

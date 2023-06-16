@@ -9,12 +9,15 @@ class UserController extends Controller
   {
     $user = currentUser();
 
+    if ($user->manager_role) {
+      return redirect(route('managers.dashboard'));
+    }
+
     $institutions = $user->institutions()->get();
     if ($institutions->isEmpty()) {
       dd('You are not assigned to any institution yet');
     }
 
-    // dd($institutions->toArray());
     if ($institutions->count() === 1) {
       return redirect(route('institutions.dashboard', $institutions->first()));
     }
