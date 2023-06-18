@@ -2,8 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Institutions as Web;
+use App\Mail\InstitutionMessageMail;
 
 //Institution
+
+Route::get('dummy', function() {
+    // dd('dmoddsdsd');
+    return new InstitutionMessageMail('Welcome', 'This is a welcome message');
+});
 
 Route::get('/dashboard', [Web\InstitutionController::class, 'index'])
     ->name('dashboard');
@@ -106,6 +112,10 @@ Route::get('/term-results/index/{user?}', Web\ListTermResultController::class)
     ->name('term-results.index');
 
 Route::resource('/pin-prints', Web\Staff\PinPrintController::class)->only(['index', 'store', 'show']);
+
+Route::get('/fees/search', [Web\Payments\FeeController::class, 'search'])->name('fees.search');
+Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
+Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['edit', 'update']);
 
 
 

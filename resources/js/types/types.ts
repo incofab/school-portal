@@ -77,19 +77,8 @@ export interface SelectOptionType<T = string> {
   value: T;
 }
 
-// export enum FeePaymentInterval {
-//   // PerMonth = 'per-month',
-//   PerSemester = 'per-semester',
-//   PerSession = 'per-session',
-//   PerYear = 'per-year',
-// }
-
-// export enum PaymentDomain {
-//   Institution = 'institution',
-//   Welfare = 'welfare',
-// }
-
-// export enum FeePayers {
-//   Department = 'department',
-//   Faculty = 'faculty',
-// }
+export enum FeePaymentInterval {
+  termly = 'termly',
+  yearly = 'yearly',
+  monthly = 'monthly',
+}

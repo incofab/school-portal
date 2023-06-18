@@ -181,19 +181,32 @@ export interface CourseTeacher extends Row {
   classification?: Classification;
 }
 
-// export interface Fee extends Row {
-//   title: string;
-//   amount: number;
-//   payment_interval: string;
-//   feeable_type: string;
-//   feeable_id: number;
-//   domain: PaymentDomain;
-// }
+export interface Fee extends InstitutionRow {
+  title: string;
+  amount: number;
+  payment_interval: string;
+}
 
-// export interface FeePayment extends Row {
-//   fee_id: number;
-//   user_id: number;
-//   academic_session_id: number;
-//   semester: string;
-//   reference: string;
-// }
+export interface FeePayment extends Row {
+  fee_id: number;
+  user_id: number;
+  academic_session_id: number;
+  term: string;
+  fee_amount: number;
+  amount_paid: number;
+  amount_remaining: number;
+  fee?: Fee;
+  user?: User;
+  academic_session: AcademicSession;
+  fee_payment_tracks?: FeePaymentTrack[];
+}
+
+export interface FeePaymentTrack extends Row {
+  fee_payment_id: number;
+  confirmed_by_user_id: number;
+  amount: number;
+  reference: string;
+  method: string;
+  feePayment?: FeePayment;
+  confirmed_by?: User;
+}

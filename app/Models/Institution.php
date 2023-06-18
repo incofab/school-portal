@@ -108,4 +108,14 @@ class Institution extends Model
   {
     return $this->hasMany(PinPrint::class);
   }
+
+  function fees()
+  {
+    return $this->hasMany(Fee::class);
+  }
+
+  function feePayments()
+  {
+    return $this->hasMany(FeePayment::class);
+  }
 }

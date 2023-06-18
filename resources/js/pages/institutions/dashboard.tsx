@@ -7,6 +7,7 @@ import { PageTitle } from '@/components/page-header';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import {
   AcademicCapIcon,
+  BanknotesIcon,
   BuildingStorefrontIcon,
   ChartBarIcon,
   MapIcon,
@@ -102,7 +103,7 @@ function InstitutionDashboard() {
       icon: ChartBarIcon,
     },
     {
-      title: 'Results',
+      title: 'Classes',
       desc: 'List classes',
       route: instRoute('classifications.index'),
       icon: BuildingStorefrontIcon,
@@ -112,6 +113,14 @@ function InstitutionDashboard() {
       desc: 'Result activation pins',
       route: instRoute('pin-prints.index'),
       icon: MapIcon,
+      roles: [InstitutionUserType.Admin],
+    },
+    {
+      title: 'Payments',
+      desc: 'Show fee payments',
+      route: instRoute('fee-payments.index'),
+      icon: BanknotesIcon,
+      roles: [InstitutionUserType.Admin],
     },
   ];
 

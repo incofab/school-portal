@@ -38,11 +38,18 @@ export default function useQueryString() {
     return url;
   }
 
-  function clearQueryString({ visit = true }) {
+  function clearQueryString({ visit } = { visit: true }) {
     const url = new URL(window.location.href);
+
+    const params = {} as { [key: string]: string };
     url.searchParams.forEach((val, key) => {
+      params[key] = val;
+    });
+
+    Object.entries(params).map(([key, value]) => {
       url.searchParams.delete(key);
     });
+
     if (visit) {
       Inertia.visit(url.toString());
     } else {

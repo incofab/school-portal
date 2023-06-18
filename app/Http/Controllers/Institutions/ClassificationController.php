@@ -10,7 +10,7 @@ class ClassificationController extends Controller
 {
   function index()
   {
-    $query = Classification::query();
+    $query = Classification::query()->withCount('students');
     return inertia('institutions/classifications/list-classifications', [
       'classifications' => paginateFromRequest($query)
     ]);

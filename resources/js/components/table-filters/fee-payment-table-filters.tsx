@@ -1,0 +1,53 @@
+import React, { useState } from 'react';
+import useQueryString from '@/hooks/use-query-string';
+import BaseTableFilter from './base-table-filter';
+import FilterFormControlBox from './filter-form-control-box';
+import StaffSelect from '../selectors/staff-select';
+import { InstitutionUserType, TermType } from '@/types/types';
+import AcademicSessionSelect from '../selectors/academic-session-select';
+import EnumSelect from '../dropdown-select/enum-select';
+import FeeSelect from '../selectors/fee-select';
+
+interface Props {
+  isOpen: boolean;
+  onClose(): void;
+}
+
+export default function FeePaymentTableFilters({ isOpen, onClose }: Props) {
+  const { params } = useQueryString();
+  const [filters, setFilters] = useState(() => ({
+    fee: params.fee ?? '',
+    academicSession: params.academicSession ?? '',
+    user: params.user ?? '',
+    term: params.term ?? '',
+  }));
+
+  return (
+    <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
+      <FilterFormControlBox title="Fee">
+        <FeeSelect
+          onChange={(e: any) => setFilters({ ...filters, fee: e.value })}
+        />
+      </FilterFormControlBox>
+      <FilterFormControlBox title="Student">
+        <StaffSelect
+          rolesIn={[InstitutionUserType.Student]}
+          onChange={(e: any) => setFilters({ ...filters, user: e.value })}
+        />
+      </FilterFormControlBox>
+      <FilterFormControlBox title="Academic Session">
+        <AcademicSessionSelect
+          onChange={(e: any) =>
+            setFilters({ ...filters, academicSession: e.value })
+          }
+        />
+      </FilterFormControlBox>
+      <FilterFormControlBox title="Term">
+        <EnumSelect
+          enumData={TermType}
+          onChange={(e: any) => setFilters({ ...filters, term: e.value })}
+        />
+      </FilterFormControlBox>
+    </BaseTableFilter>
+  );
+}

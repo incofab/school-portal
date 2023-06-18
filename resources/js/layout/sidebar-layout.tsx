@@ -153,6 +153,27 @@ export default function SideBarLayout() {
       ],
     },
     {
+      label: 'Payments',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'List Fee Types',
+          route: instRoute('fees.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Add Fee Type',
+          route: instRoute('fees.create'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'List Fee Payments',
+          route: instRoute('fee-payments.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+    {
       label: 'Profile',
       route: instRoute('users.profile', [currentUser]),
     },

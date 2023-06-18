@@ -1,5 +1,5 @@
 import React from 'react';
-import { Classification } from '@/types/models';
+import { Fee } from '@/types/models';
 import { HStack, IconButton, Icon } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
@@ -18,53 +18,57 @@ import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
 
 interface Props {
-  classifications: PaginationResponse<Classification>;
+  fees: PaginationResponse<Fee>;
 }
 
-export default function ListClassification({ classifications }: Props) {
+export default function ListFees({ fees }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
 
-  async function deleteItem(obj: Classification) {
+  async function deleteItem(obj: Fee) {
     const res = await deleteForm.submit((data, web) =>
-      web.delete(instRoute('classifications.destroy', [obj.id]))
+      web.delete(instRoute('fees.destroy', [obj.id]))
     );
     handleResponseToast(res);
-    Inertia.reload({ only: ['classifications'] });
+    Inertia.reload({ only: ['fees'] });
   }
 
-  const headers: ServerPaginatedTableHeader<Classification>[] = [
+  const headers: ServerPaginatedTableHeader<Fee>[] = [
     {
       label: 'Title',
       value: 'title',
     },
     {
-      label: 'Num of Students',
-      value: 'students_count',
+      label: 'Amount',
+      value: 'amount',
+    },
+    {
+      label: 'Interval',
+      value: 'payment_interval',
     },
     ...(isAdmin
       ? [
           {
             label: 'Action',
-            render: (row: Classification) => (
+            render: (row: Fee) => (
               <HStack>
                 <IconButton
-                  aria-label={'Edit Class'}
+                  aria-label={'Edit Fee'}
                   icon={<Icon as={PencilIcon} />}
                   as={InertiaLink}
-                  href={instRoute('classifications.edit', [row.id])}
+                  href={instRoute('fees.edit', [row.id])}
                   variant={'ghost'}
                   colorScheme={'brand'}
                 />
                 <DestructivePopover
-                  label={'Delete this class'}
+                  label={'Delete this fee'}
                   onConfirm={() => deleteItem(row)}
                   isLoading={deleteForm.processing}
                 >
                   <IconButton
-                    aria-label={'Delete Class'}
+                    aria-label={'Delete fee'}
                     icon={<Icon as={TrashIcon} />}
                     variant={'ghost'}
                     colorScheme={'red'}
@@ -81,21 +85,18 @@ export default function ListClassification({ classifications }: Props) {
     <DashboardLayout>
       <Slab>
         <SlabHeading
-          title="List Classes"
+          title="List Fees"
           rightElement={
-            <LinkButton
-              href={instRoute('classifications.create')}
-              title={'New'}
-            />
+            <LinkButton href={instRoute('fees.create')} title={'New'} />
           }
         />
         <SlabBody>
           <ServerPaginatedTable
             scroll={true}
             headers={headers}
-            data={classifications.data}
+            data={fees.data}
             keyExtractor={(row) => row.id}
-            paginator={classifications}
+            paginator={fees}
           />
         </SlabBody>
       </Slab>
