@@ -19,6 +19,7 @@ export default function ListPrintedPins({ pins, resultCheckerUrl }: Props) {
           display={'inline-block'}
           width={'250px'}
           mx={1}
+          my={1}
           border={'1px solid #000'}
           p={2}
           key={pin.id}

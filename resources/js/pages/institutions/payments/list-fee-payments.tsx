@@ -57,7 +57,7 @@ export default function ListFeePayments({ feePayments, fees }: Props) {
       value: 'amount_paid',
     },
     {
-      label: 'Amount Remaining',
+      label: 'Balance',
       value: 'amount_remaining',
     },
     {

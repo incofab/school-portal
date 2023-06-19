@@ -93,6 +93,7 @@ class LoginController extends Controller
     return $this->apiRes(true, 'Login successful', $userIndex);
   }
 
+  /** @deprecated */
   public function logout()
   {
     Auth::logout();

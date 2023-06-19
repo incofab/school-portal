@@ -68,6 +68,8 @@ export default function ResultSheet({
         return 'Fair';
       case 'E':
         return 'Poor';
+      case 'F':
+        return 'Failed';
       default:
         return 'Unknown';
     }
@@ -111,7 +113,7 @@ export default function ResultSheet({
     backgroundColor: 'white',
   };
   return (
-    <Div style={backgroundStyle}>
+    <Div style={backgroundStyle} minHeight={'1170px'}>
       <Div mx={'auto'} width={'900px'} px={3}>
         <VStack align={'stretch'}>
           <HStack background={'#FAFAFA'} p={2}>

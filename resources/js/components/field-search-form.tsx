@@ -29,23 +29,20 @@ export default function FieldSearchForm({ fields, onChange }: Props) {
   const [searchField, setSearchField] = useState(
     params.searchField || (fields ? fields[0].value : '')
   );
-  // const searchFieldObj =
-  //   fields?.find((f) => f.value === searchField) || (fields ? fields[0] : '');
-
   function onSearch() {
     const url = new URL(window.location.href);
 
     if (!searchQuery) {
-      url.searchParams.delete('searchQuery');
-      url.searchParams.delete('searchField');
+      url.searchParams.delete('search');
+      // url.searchParams.delete('searchField');
     }
 
     if (searchQuery) {
-      url.searchParams.set('searchQuery', searchQuery);
+      url.searchParams.set('search', searchQuery);
     }
-    if (searchField) {
-      url.searchParams.set('searchField', searchField);
-    }
+    // if (searchField) {
+    //   url.searchParams.set('searchField', searchField);
+    // }
 
     Inertia.visit(url.toString());
   }
@@ -79,7 +76,7 @@ export default function FieldSearchForm({ fields, onChange }: Props) {
             onChange={(e) => {
               const query = e.currentTarget.value;
               setSearchQuery(query);
-              onChange(query);
+              // onChange(query);
             }}
           />
         </FormControl>

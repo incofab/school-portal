@@ -52,7 +52,7 @@ class FeePaymentController extends Controller
     $data = $request->validate([
       'reference' => [
         'required',
-        Rule::unique('fee_payments', 'id')->where(
+        Rule::unique('fee_payment_tracks', 'reference')->where(
           'institution_id',
           $institution->id
         )

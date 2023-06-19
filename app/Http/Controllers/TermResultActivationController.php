@@ -38,6 +38,7 @@ class TermResultActivationController extends Controller
     }
 
     $student = Student::query()
+      ->select('students.*')
       ->forInstitution($pin->institution_id)
       ->where('students.code', $data['student_code'])
       ->with('user')

@@ -94,12 +94,9 @@ function InstitutionDashboard() {
     {
       title: 'Results',
       desc: 'See your results',
-      route: () => {
-        if (isStaff) {
-          return instRoute('class-result-info.index');
-        }
-        return instRoute('students.term-results.index');
-      },
+      route: isStaff
+        ? instRoute('class-result-info.index')
+        : instRoute('students.term-results.index'),
       icon: ChartBarIcon,
     },
     {

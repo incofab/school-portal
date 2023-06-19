@@ -39,7 +39,7 @@ Route::group(['middleware' => ['guest']], function () {
     ->name('password.update');
 });
 
-Route::any('/logout', '\App\Http\Controllers\Auth\LoginController@logout')->name('logout');
+Route::any('/logout', [Web\AuthController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => ['auth']], function () {
   Route::get('/dashboard', [Web\Users\UserController::class, 'index'])->name('user.dashboard');

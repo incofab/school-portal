@@ -41,7 +41,7 @@ export default function ListPinGenerators({ pinGenerators }: Props) {
       render: (row) => (
         <LinkButton
           variant={'link'}
-          href={route('pins.index', [row.id])}
+          href={route('managers.pins.index', [row.id])}
           title="View Pins"
         />
       ),

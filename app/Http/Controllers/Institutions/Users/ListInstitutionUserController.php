@@ -27,9 +27,21 @@ class ListInstitutionUserController extends Controller
         $request->role,
         fn($q, $value) => $q->where('institution_users.role', $value)
       )
+      ->when(
+        $request->search,
+        fn($q, $value) => $q
+          ->join('users', 'users.id', 'institution_users.user_id')
+          ->where(
+            fn($q2) => $q2
+              ->where('users.last_name', 'like', "%$value%")
+              ->orWhere('users.first_name', 'like', "%$value%")
+              ->orWhere('users.other_names', 'like', "%$value%")
+          )
+      )
       ->with('user', 'student')
       ->latest('institution_users.id');
   }
+
   /**
    * Display a listing of the resource.
    */

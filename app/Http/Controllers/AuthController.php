@@ -95,8 +95,16 @@ class AuthController extends Controller
 
   public function logout()
   {
+    $currentUser = currentUser();
+    $isImpersonating = session()->has('impersonator_id');
+    $institutionUsers = $currentUser->institutionUsers()->get();
+
     auth()->logout();
     session()->remove('impersonator_id');
+
+    if (!$isImpersonating && $institutionUsers->first()?->isStudent()) {
+      return redirect()->route('student-login');
+    }
 
     return redirect()->route('login');
   }
