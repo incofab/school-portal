@@ -34,6 +34,10 @@ class ProcessTermResult
     $studentsTotal = $this->getTotalScoreByStudents($courseResults);
 
     $this->persistTermResult($studentsTotal);
+    ProcessSessionResult::run(
+      $this->classResultInfo->academicSession,
+      $this->classResultInfo->classification
+    );
   }
 
   private function getTotalScoreByStudents(Collection $courseResults)

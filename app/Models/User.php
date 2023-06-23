@@ -6,16 +6,16 @@ use App\Enums\Gender;
 use App\Enums\InstitutionUserType;
 use App\Enums\ManagerRole;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Validation\Rules\Enum;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-  use Notifiable, HasApiTokens, HasFactory;
+  use Notifiable, HasApiTokens, HasFactory, SoftDeletes;
 
   /**
    * The attributes that are mass assignable.

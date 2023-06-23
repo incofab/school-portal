@@ -28,18 +28,14 @@ class ProcessSessionResult
   private function execute()
   {
     $queryTermResults = TermResult::query()
-      ->where('academic_session_id', $this->academicSession->id)
-      ->where('classification_id', $this->classification->id);
+      ->where('classification_id', $this->classification->id)
+      ->where('academic_session_id', $this->academicSession->id);
 
-    $termsCount = $queryTermResults
-      ->groupBy('term')
-      ->get()
-      ->count();
-    $termResults = $queryTermResults->get();
-
+    $termResults = (clone $queryTermResults)->get();
+    $numOfTerms = (clone $queryTermResults)->groupBy('term')->count();
     $studentsTotal = $this->getTotalScoreByStudents($termResults);
 
-    $this->persistSessionResult($studentsTotal, $termsCount);
+    $this->persistSessionResult($studentsTotal, $numOfTerms);
   }
 
   private function getTotalScoreByStudents(Collection $termResults)
@@ -57,6 +53,10 @@ class ProcessSessionResult
     array $studentsTotalScore,
     int $numOfTerms
   ) {
+    if ($numOfTerms < 1) {
+      return;
+    }
+
     $bindingData = [
       'academic_session_id' => $this->academicSession->id,
       'institution_id' => $this->institution->id,

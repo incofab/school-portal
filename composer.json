@@ -60,7 +60,7 @@
         ],
         "ide-helper": [
           "@php artisan ide-helper:generate",
-          "sail artisan ide-helper:models --nowrite"
+          "@php artisan ide-helper:models --nowrite"
         ]
     },
     "extra": {

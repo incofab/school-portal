@@ -4,12 +4,12 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
-  useToast,
   Grid,
   GridItem,
   Text,
   Avatar,
   HStack,
+  Button,
 } from '@chakra-ui/react';
 import React, { ChangeEvent } from 'react';
 import {
@@ -24,39 +24,37 @@ import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import useWebForm, { useWeb } from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
-import { Student, User } from '@/types/models';
+import { InstitutionUser, User } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
 import Dt from '@/components/dt';
 import { SelectOptionType } from '@/types/types';
 import { BrandButton } from '@/components/buttons';
 import useIsAdmin from '@/hooks/use-is-admin';
 import DestructivePopover from '@/components/destructive-popover';
+import useModalToggle from '@/hooks/use-modal-toggle';
+import ChangeRoleModal from '@/components/modals/change-role-modal';
+import startCase from 'lodash/startCase';
 
 interface Props {
   user: User;
-  student: Student;
+  institutionUser: InstitutionUser;
 }
 
-export default function Profile({ user, student }: Props) {
+export default function Profile({ user, institutionUser }: Props) {
   const { currentUser } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
   const form = useWebForm({
-    first_name: user.first_name,
-    last_name: user.last_name,
-    other_names: user.other_names,
-    email: user.email,
-    phone: user.phone,
     photo: user.photo,
   });
-  const toast = useToast();
   const web = useWeb();
   const isAdmin = useIsAdmin();
+  const changeRoleModalToggle = useModalToggle();
   const extensions = FileDropperType.Image.extensionLabels;
 
   async function resetPassword(onClose: () => void) {
     const res = await form.submit((data, web) => {
-      return web.put(instRoute('users.reset-password', [user]), data);
+      return web.post(instRoute('users.reset-password', [user]), data);
     });
 
     if (!handleResponseToast(res)) return;
@@ -82,12 +80,14 @@ export default function Profile({ user, student }: Props) {
     Inertia.reload({ only: ['user'] });
   }
 
+  const student = institutionUser.student;
   const profileData: SelectOptionType[] = [
     { label: 'First name', value: user.first_name },
     { label: 'Last name', value: user.last_name },
     { label: 'Other names', value: user.other_names },
     { label: 'Email', value: user.email },
     { label: 'Phone', value: user.phone },
+    { label: 'User Type', value: startCase(institutionUser.role) },
     { label: 'Gender', value: user.gender },
     ...(student
       ? [
@@ -109,83 +109,26 @@ export default function Profile({ user, student }: Props) {
           }
         />
         <SlabBody>
-          {/* <form onSubmit={preventNativeSubmit(onSubmit)}> */}
           <Grid templateColumns={{ lg: 'repeat(3, 1fr)' }} gap={4}>
             <GridItem colSpan={{ lg: 2 }}>
               <Dt contentData={profileData} spacing={4} labelWidth={'150px'} />
-              {/* 
-                <VStack spacing={4}>
-                  <FormControl isInvalid={!!form.errors.first_name}>
-                    <FormLabel htmlFor="first_name">First Name</FormLabel>
-                    <Input
-                      id="first_name"
-                      value={form.data.first_name}
-                      onChange={(e) =>
-                        form.setValue('first_name', e.currentTarget.value)
-                      }
-                    />
-                    <FormErrorMessage>
-                      {form.errors.first_name}
-                    </FormErrorMessage>
-                  </FormControl>
-                  <FormControl isInvalid={!!form.errors.last_name}>
-                    <FormLabel htmlFor="last_name">Last Name</FormLabel>
-                    <Input
-                      id="last_name"
-                      value={form.data.last_name}
-                      onChange={(e) =>
-                        form.setValue('last_name', e.currentTarget.value)
-                      }
-                    />
-                    <FormErrorMessage>{form.errors.last_name}</FormErrorMessage>
-                  </FormControl>
-                  <FormControlBox
-                    form={form}
-                    title="Other Names"
-                    formKey="other_names"
-                  >
-                    <Input
-                      type="text"
-                      onChange={(e) =>
-                        form.setValue('other_names', e.currentTarget.value)
-                      }
-                      value={form.data.other_names}
-                    />
-                  </FormControlBox>
-                  <FormControl isInvalid={!!form.errors.phone}>
-                    <FormLabel htmlFor="phone">Phone</FormLabel>
-                    <Input
-                      type="phone"
-                      onChange={(e) =>
-                        form.setValue('phone', e.currentTarget.value)
-                      }
-                      value={form.data.phone}
-                    />
-                    <FormErrorMessage>{form.errors.phone}</FormErrorMessage>
-                  </FormControl>
-                  <FormControlBox form={form} title="Email" formKey="email">
-                    <Input
-                      type="email"
-                      onChange={(e) =>
-                        form.setValue('email', e.currentTarget.value)
-                      }
-                      value={form.data.email}
-                      required
-                    />
-                  </FormControlBox>
-                </VStack>
-                   */}
             </GridItem>
             <GridItem colSpan={{ lg: 1 }}>
               {currentUser.id !== user.id && isAdmin && (
                 <HStack>
+                  <BrandButton
+                    title="Change Role"
+                    onClick={changeRoleModalToggle.open}
+                  />
                   <DestructivePopover
                     label={`Reset user's password to default?`}
                     onConfirm={(onClose) => resetPassword(onClose)}
                     isLoading={form.processing}
                     positiveButtonLabel="Reset"
                   >
-                    <BrandButton title="Reset Password" />
+                    <Button colorScheme="brand" variant={'solid'} size={'sm'}>
+                      Reset Password
+                    </Button>
                   </DestructivePopover>
                 </HStack>
               )}
@@ -238,6 +181,11 @@ export default function Profile({ user, student }: Props) {
               </FormControl>
             </GridItem>
           </Grid>
+          <ChangeRoleModal
+            institutionUser={institutionUser}
+            {...changeRoleModalToggle.props}
+            onSuccess={() => Inertia.reload({ only: ['institutionUser'] })}
+          />
         </SlabBody>
       </Slab>
     </div>

@@ -99,6 +99,11 @@ class Institution extends Model
     return $this->hasMany(TermResult::class);
   }
 
+  function sessionResults()
+  {
+    return $this->hasMany(SessionResult::class);
+  }
+
   function pins()
   {
     return $this->hasMany(Pin::class);

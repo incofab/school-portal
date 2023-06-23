@@ -11,6 +11,8 @@ class SessionResult extends Model
 
   public $guarded = [];
 
+  protected $casts = ['term' => TermType::class];
+
   function institution()
   {
     return $this->belongsTo(Institution::class);

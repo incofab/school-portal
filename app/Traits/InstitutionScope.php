@@ -13,7 +13,8 @@ trait InstitutionScope
     static::addGlobalScope('institution', function (Builder $builder) {
       $institution = currentInstitution();
       if ($institution) {
-        $builder->where('institution_id', $institution->id);
+        $table = (new self())->getTable();
+        $builder->where($table . '.institution_id', $institution->id);
       }
     });
   }

@@ -150,6 +150,11 @@ export default function SideBarLayout() {
           route: instRoute('pin-prints.index'),
           roles: [InstitutionUserType.Admin],
         },
+        {
+          label: 'Cummulative Results',
+          route: instRoute('cummulative-result.index'),
+          roles: [InstitutionUserType.Admin],
+        },
       ],
     },
     {

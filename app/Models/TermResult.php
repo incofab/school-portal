@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Enums\TermType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +11,8 @@ class TermResult extends Model
   use HasFactory, InstitutionScope;
 
   public $guarded = [];
+
+  protected $casts = ['term' => TermType::class];
 
   function institution()
   {

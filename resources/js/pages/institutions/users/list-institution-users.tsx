@@ -12,9 +12,12 @@ import { ServerPaginatedTableHeader } from '@/components/server-paginated-table'
 import { InertiaLink } from '@inertiajs/inertia-react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import UsersTableFilters from '@/components/table-filters/users-table-filters';
-import { CloudArrowUpIcon } from '@heroicons/react/24/solid';
+import { CloudArrowUpIcon, TrashIcon } from '@heroicons/react/24/solid';
 import UploadStaffModal from '@/components/modals/upload-staff-modal';
 import { Inertia } from '@inertiajs/inertia';
+import DestructivePopover from '@/components/destructive-popover';
+import useWebForm from '@/hooks/use-web-form';
+import useMyToast from '@/hooks/use-my-toast';
 
 interface Props {
   institutionUsers: PaginationResponse<InstitutionUser>;
@@ -24,6 +27,17 @@ export default function ListStudents({ institutionUsers }: Props) {
   const { instRoute } = useInstitutionRoute();
   const userFilterToggle = useModalToggle();
   const staffUploadModalToggle = useModalToggle();
+
+  const deleteForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
+
+  async function deleteItem(obj: InstitutionUser) {
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(instRoute('users.destroy', [obj.user_id]))
+    );
+    handleResponseToast(res);
+    Inertia.reload({ only: ['institutionUsers'] });
+  }
 
   const headers: ServerPaginatedTableHeader<InstitutionUser>[] = [
     {
@@ -62,12 +76,18 @@ export default function ListStudents({ institutionUsers }: Props) {
             variant={'ghost'}
             colorScheme={'brand'}
           />
-          {/* <LinkButton
-            href={route('users.impersonate', [row.user_id])}
-            colorScheme={'red'}
-            variant={'link'}
-            title="Impersonate"
-          /> */}
+          <DestructivePopover
+            label={'Do you really want to delete this user? Be careful!!!'}
+            onConfirm={() => deleteItem(row)}
+            isLoading={deleteForm.processing}
+          >
+            <IconButton
+              aria-label={'Delete user'}
+              icon={<Icon as={TrashIcon} />}
+              variant={'ghost'}
+              colorScheme={'red'}
+            />
+          </DestructivePopover>
         </HStack>
       ),
     },

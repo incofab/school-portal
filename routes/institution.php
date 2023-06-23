@@ -60,7 +60,7 @@ Route::get('/users/index', [Web\Users\ListInstitutionUserController::class, 'ind
     ->name('users.index');
 Route::get('/users/search', [Web\Users\ListInstitutionUserController::class, 'search'])
     ->name('users.search');
-Route::get('/users/{user}/profile', [Web\Users\UpdateInstitutionUserController::class, 'edit'])
+Route::get('/users/{user}/profile', [Web\Users\UpdateInstitutionUserController::class, 'profile'])
     ->name('users.profile');
 Route::put('/users/{user}/update', [Web\Users\UpdateInstitutionUserController::class, 'update'])
     ->name('users.update');
@@ -72,6 +72,10 @@ Route::post('/users/{user}/upload-photo', [Web\Users\UpdateInstitutionUserContro
     ->name('users.upload-photo');
 Route::post('/users/{user}/reset-password', Web\Users\ResetUserPasswordController::class)
     ->name('users.reset-password');
+Route::delete('/users/{user}', Web\Users\DeleteUserController::class)
+    ->name('users.destroy');
+Route::post('/users/{suppliedInstitutionUser}/change-role', Web\Users\ChangeUserRoleController::class)
+    ->name('users.change-role');
 
 // Teacher courses
 Route::get('/course-teachers/index/{user?}', [Web\Staff\CourseTeachersController::class, 'index'])
@@ -110,6 +114,8 @@ Route::post('/class-result-info/recalculate/{classResultInfo}', [Web\Staff\Class
 
 Route::get('/term-results/index/{user?}', Web\ListTermResultController::class)
     ->name('term-results.index');
+Route::get('/cummulative-result/index', Web\Staff\CummulativeResultController::class)
+    ->name('cummulative-result.index');
 
 Route::resource('/pin-prints', Web\Staff\PinPrintController::class)->only(['index', 'store', 'show']);
 

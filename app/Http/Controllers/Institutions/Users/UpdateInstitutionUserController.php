@@ -10,12 +10,20 @@ use Storage;
 
 class UpdateInstitutionUserController extends Controller
 {
-  public function edit(Request $request, Institution $institution, User $user)
-  {
+  public function profile(
+    Request $request,
+    Institution $institution,
+    User $user
+  ) {
     $this->validateUser($user);
+    $institutionUser = $user
+      ->institutionUser()
+      ->with('student.classification')
+      ->first();
     return inertia('institutions/users/profile', [
       'user' => $user,
-      'student' => $user->institutionStudent()
+      'institutionUser' => $institutionUser,
+      'student' => $institutionUser?->student
     ]);
   }
 
