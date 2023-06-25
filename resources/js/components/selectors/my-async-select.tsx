@@ -23,6 +23,11 @@ export default function MyAsyncSelect<
   valueKey,
   ...props
 }: MyProps<T> & AsyncProps<Option, IsMulti, Group>) {
+  const refreshKey = params
+    ? Object.entries(params)
+        .map(([key, val]) => `${key} - ${val}`)
+        .join(',')
+    : '';
   const debouncedSearch = useMemo(() => {
     return debounce(async function (inputValue: string, callback: any) {
       const url = new URL(searchUrl);
@@ -34,6 +39,7 @@ export default function MyAsyncSelect<
           url.searchParams.set(label, String(value))
         );
       }
+
       const res = await web.get(url.toString());
       const result = res.data.result.data.map((item: T | any) => ({
         label: label(item),
@@ -41,7 +47,7 @@ export default function MyAsyncSelect<
       }));
       callback(result);
     }, 250);
-  }, []);
+  }, [refreshKey]);
 
   return (
     <AsyncSelect
@@ -53,6 +59,7 @@ export default function MyAsyncSelect<
          */
         debouncedSearch(inputValue, callback);
       }}
+      key={refreshKey}
       defaultOptions={true}
       {...props}
     />

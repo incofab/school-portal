@@ -50,14 +50,7 @@ export default function SideBarLayout() {
       sub_items: [
         {
           label: 'All Staff',
-          route: instRoute('users.index', [
-            {
-              roles_not_in: [
-                InstitutionUserType.Student,
-                InstitutionUserType.Alumni,
-              ],
-            },
-          ]),
+          route: instRoute('users.index', { staffOnly: true }),
           roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {

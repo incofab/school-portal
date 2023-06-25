@@ -28,23 +28,23 @@ class InstitutionUserController extends Controller
     return $this->ok();
   }
 
-  function edit(Institution $institution, InstitutionUser $editInstitutionUser)
-  {
-    abort_unless($institution->id == $editInstitutionUser->institution_id, 403);
-    return inertia('institutions/users/create-edit-user', [
-      'institutionUser' => $editInstitutionUser->load(['user', 'institution'])
-    ]);
-  }
+  // function edit(Institution $institution, InstitutionUser $editInstitutionUser)
+  // {
+  //   abort_unless($institution->id == $editInstitutionUser->institution_id, 403);
+  //   return inertia('institutions/users/create-edit-user', [
+  //     'institutionUser' => $editInstitutionUser->load(['user', 'institution'])
+  //   ]);
+  // }
 
-  function update(
-    CreateStaffRequest $request,
-    Institution $institution,
-    InstitutionUser $editInstitutionUser
-  ) {
-    abort_unless($institution->id == $editInstitutionUser->institution_id, 403);
-    RecordStaff::create($request->validated());
-    return $this->ok();
-  }
+  // function update(
+  //   CreateStaffRequest $request,
+  //   Institution $institution,
+  //   InstitutionUser $editInstitutionUser
+  // ) {
+  //   abort_unless($institution->id == $editInstitutionUser->institution_id, 403);
+  //   RecordStaff::create($request->validated());
+  //   return $this->ok();
+  // }
 
   public function downloadTemplate()
   {

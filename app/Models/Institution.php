@@ -39,6 +39,9 @@ class Institution extends Model
   public function resolveRouteBinding($value, $field = null)
   {
     $user = currentUser();
+    if (!$user) {
+      return null;
+    }
     $institutionModel = Institution::query()
       ->select('institutions.*')
       ->join(

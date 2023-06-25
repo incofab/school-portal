@@ -46,7 +46,8 @@ class ClassificationController extends Controller
           currentInstitution()->id
         )
       ],
-      'description' => ['nullable', 'string']
+      'description' => ['nullable', 'string'],
+      'has_equal_subjects' => ['nullable', 'boolean']
     ]);
 
     currentInstitution()
@@ -73,7 +74,8 @@ class ClassificationController extends Controller
           ->where('institution_id', $institution->id)
           ->ignore($classification->id, 'id')
       ],
-      'description' => ['nullable', 'string']
+      'description' => ['nullable', 'string'],
+      'has_equal_subjects' => ['nullable', 'boolean']
     ]);
 
     $classification->fill($data)->save();

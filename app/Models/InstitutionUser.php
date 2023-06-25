@@ -13,7 +13,9 @@ class InstitutionUser extends Model
   public $table = 'institution_users';
 
   protected $casts = [
-    'role' => InstitutionUserType::class
+    'role' => InstitutionUserType::class,
+    'institution_id' => 'integer',
+    'user_id' => 'integer'
   ];
 
   function hasRole(InstitutionUserType $role): bool

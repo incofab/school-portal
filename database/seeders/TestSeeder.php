@@ -23,7 +23,7 @@ class TestSeeder extends Seeder
   public function run()
   {
     $date = date('Y');
-    $term = TermType::Third;
+    // $term = TermType::Third;
     $academicSession = AcademicSession::query()->firstOrCreate([
       'title' => $date - 1 . '/' . $date
     ]);
@@ -65,27 +65,29 @@ class TestSeeder extends Seeder
       ]);
     }
 
-    foreach ($students as $key => $student) {
-      foreach ($courses as $key => $course) {
-        CourseResult::factory()->create([
-          'institution_id' => $institution->id,
-          'student_id' => $student->id,
-          'teacher_user_id' => $teacher->id,
-          'course_id' => $course->id,
-          'classification_id' => $classification->id,
-          'academic_session_id' => $academicSession->id,
-          'term' => $term
-        ]);
+    foreach (TermType::cases() as $key => $term) {
+      foreach ($students as $key => $student) {
+        foreach ($courses as $key => $course) {
+          CourseResult::factory()->create([
+            'institution_id' => $institution->id,
+            'student_id' => $student->id,
+            'teacher_user_id' => $teacher->id,
+            'course_id' => $course->id,
+            'classification_id' => $classification->id,
+            'academic_session_id' => $academicSession->id,
+            'term' => $term
+          ]);
+        }
       }
-    }
 
-    foreach ($courses as $key => $course) {
-      EvaluateCourseResultForClass::run(
-        $classification,
-        $course->id,
-        $academicSession->id,
-        $term->value
-      );
+      foreach ($courses as $key => $course) {
+        EvaluateCourseResultForClass::run(
+          $classification,
+          $course->id,
+          $academicSession->id,
+          $term->value
+        );
+      }
     }
   }
 

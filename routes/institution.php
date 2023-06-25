@@ -49,10 +49,14 @@ Route::get('/courses/search', [Web\CoursesController::class, 'search'])
     ->name('courses.search');
 Route::resource('/courses', Web\CoursesController::class);
 
-Route::get('/users/{editInstitutionUser}/edit', [Web\Users\InstitutionUserController::class, 'edit'])
+Route::get('/users/{user}/profile', [Web\Users\UpdateInstitutionUserController::class, 'profile'])
+    ->name('users.profile');
+Route::get('/users/{editInstitutionUser}/edit', [Web\Users\UpdateInstitutionUserController::class, 'edit'])
     ->name('users.edit');
-Route::put('/users/{editInstitutionUser}/edit', [Web\Users\InstitutionUserController::class, 'update'])
+Route::put('/users/{editInstitutionUser}/update', [Web\Users\UpdateInstitutionUserController::class, 'update'])
     ->name('users.update');
+Route::post('/users/{user}/upload-photo', [Web\Users\UpdateInstitutionUserController::class, 'uploadPhoto'])
+    ->name('users.upload-photo');
 Route::resource('/users', Web\Users\InstitutionUserController::class)
     ->only(['create', 'store']);
 
@@ -60,16 +64,10 @@ Route::get('/users/index', [Web\Users\ListInstitutionUserController::class, 'ind
     ->name('users.index');
 Route::get('/users/search', [Web\Users\ListInstitutionUserController::class, 'search'])
     ->name('users.search');
-Route::get('/users/{user}/profile', [Web\Users\UpdateInstitutionUserController::class, 'profile'])
-    ->name('users.profile');
-Route::put('/users/{user}/update', [Web\Users\UpdateInstitutionUserController::class, 'update'])
-    ->name('users.update');
 Route::get('/users/download-recording-template', [Web\Users\InstitutionUserController::class, 'downloadTemplate'])
     ->name('users.download-recording-template');
 Route::post('/users/upload', [Web\Users\InstitutionUserController::class, 'uploadStaff'])
     ->name('users.upload');
-Route::post('/users/{user}/upload-photo', [Web\Users\UpdateInstitutionUserController::class, 'uploadPhoto'])
-    ->name('users.upload-photo');
 Route::post('/users/{user}/reset-password', Web\Users\ResetUserPasswordController::class)
     ->name('users.reset-password');
 Route::delete('/users/{user}', Web\Users\DeleteUserController::class)

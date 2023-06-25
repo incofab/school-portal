@@ -43,7 +43,7 @@ export default function CreateOrUpdateStudent({ institutionUser }: Props) {
 
     if (!handleResponseToast(res)) return;
 
-    Inertia.visit(instRoute('users.index'));
+    Inertia.visit(instRoute('users.index', { staffOnly: true }));
   };
 
   return (

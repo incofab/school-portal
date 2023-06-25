@@ -38,14 +38,13 @@ class StudentUITableFilters extends UserUITableFilters
   protected function directQuery()
   {
     $this->joinUser()->when(
-      $this->requestGet('institution_id') ||
-        $this->requestGet('classification'),
+      $this->requestGet('institution_id'),
       fn(self $that) => $that->joinClassification()
     );
 
     parent::directQuery()->baseQuery->when(
       $this->requestGet('classification'),
-      fn($q, $value) => $q->where('classifications.id', $value)
+      fn($q, $value) => $q->where('students.classification_id', $value)
     );
 
     return $this;

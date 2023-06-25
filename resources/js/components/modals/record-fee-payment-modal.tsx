@@ -1,5 +1,11 @@
-import React from 'react';
-import { Button, HStack, VStack } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  HStack,
+  VStack,
+} from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
 import useMyToast from '@/hooks/use-my-toast';
@@ -11,9 +17,16 @@ import InputForm from '../forms/input-form';
 import { Fee } from '@/types/models';
 import FeeSelect from '../selectors/fee-select';
 import StaffSelect from '../selectors/staff-select';
-import { InstitutionUserType, SelectOptionType, TermType } from '@/types/types';
+import {
+  InstitutionUserType,
+  Nullable,
+  SelectOptionType,
+  TermType,
+} from '@/types/types';
 import AcademicSessionSelect from '../selectors/academic-session-select';
 import EnumSelect from '../dropdown-select/enum-select';
+import StudentSelect from '../selectors/student-select';
+import ClassificationSelect from '../selectors/classification-select';
 
 interface Props {
   fees: Fee[];
@@ -31,6 +44,7 @@ export default function RecordFeePaymentModal({
   const { handleResponseToast } = useMyToast();
   const { currentInstitution } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
+  const [classId, setClassId] = useState<undefined | number>(undefined);
   const webForm = useWebForm({
     fee_id: '',
     academic_session_id: '',
@@ -101,17 +115,26 @@ export default function RecordFeePaymentModal({
               onChange={(e: any) => webForm.setValue('term', e.value)}
             />
           </FormControlBox>
+          <FormControl>
+            <FormLabel>Class</FormLabel>
+            <ClassificationSelect
+              value={classId}
+              isMulti={false}
+              isClearable={true}
+              onChange={(e: any) => setClassId(e.value)}
+            />
+          </FormControl>
           <FormControlBox
             form={webForm as any}
             title="Student"
             formKey="student"
           >
-            <StaffSelect
+            <StudentSelect
               value={webForm.data.user_id}
-              rolesIn={[InstitutionUserType.Student]}
               isMulti={false}
               isClearable={true}
               onChange={(e: any) => webForm.setValue('user_id', e)}
+              classification={classId}
               required
             />
           </FormControlBox>

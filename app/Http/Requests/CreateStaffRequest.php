@@ -25,7 +25,7 @@ class CreateStaffRequest extends FormRequest
   public function rules(): array
   {
     return [
-      ...User::generalRule($this->institutionUser?->id),
+      ...User::generalRule($this->editInstitutionUser?->user_id),
       'role' => [
         'required',
         Rule::notIn([

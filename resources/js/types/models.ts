@@ -51,6 +51,7 @@ export interface InstitutionUser extends InstitutionRow {
 export interface Classification extends InstitutionRow {
   title: string;
   description: string;
+  has_equal_subjects: boolean;
 }
 
 export interface Course extends InstitutionRow {

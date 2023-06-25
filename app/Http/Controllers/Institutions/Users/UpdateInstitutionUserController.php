@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Institutions\Users;
 
+use App\Actions\RecordStaff;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateStaffRequest;
 use App\Models\Institution;
+use App\Models\InstitutionUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Storage;
@@ -27,14 +30,24 @@ class UpdateInstitutionUserController extends Controller
     ]);
   }
 
-  public function update(Request $request, Institution $institution, User $user)
+  function edit(Institution $institution, InstitutionUser $editInstitutionUser)
   {
-    $data = $request->validate(User::generalRule($user->id), $request->all());
-    $this->validateUser($user);
+    $editInstitutionUser->load(['user', 'institution']);
+    $this->validateUser($editInstitutionUser->user);
+    return inertia('institutions/users/create-edit-user', [
+      'institutionUser' => $editInstitutionUser
+    ]);
+  }
 
-    $user->fill($data)->save();
-
-    return response()->json(['user' => $user]);
+  // Mainly for staff, students are editted elsewhere
+  function update(
+    CreateStaffRequest $request,
+    Institution $institution,
+    InstitutionUser $editInstitutionUser
+  ) {
+    $this->validateUser($editInstitutionUser->user);
+    RecordStaff::create($request->validated());
+    return $this->ok();
   }
 
   public function uploadPhoto(

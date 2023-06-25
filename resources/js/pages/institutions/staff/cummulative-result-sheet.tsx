@@ -236,7 +236,7 @@ function ClassAndSessionSelector({
 }) {
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
-    term: term ?? '',
+    term: term ?? 'all',
     academicSession: academicSession?.id ?? '',
     classification: classification?.id ?? '',
   });
@@ -246,10 +246,18 @@ function ClassAndSessionSelector({
       instRoute('cummulative-result.index', {
         classification: webForm.data.classification,
         academicSession: webForm.data.academicSession,
-        term: webForm.data.term,
+        term: webForm.data.term === 'all' ? '' : webForm.data.term,
       })
     );
   };
+
+  const termTypes: { [key: string]: string } = {
+    All: 'all',
+  };
+
+  Object.entries(TermType).map(([key, val]) => {
+    termTypes[key] = val;
+  });
 
   return (
     <HStack
@@ -284,7 +292,7 @@ function ClassAndSessionSelector({
       </FormControlBox>
       <FormControlBox form={webForm as any} formKey={'term'} title="Term">
         <EnumSelect
-          enumData={TermType}
+          enumData={termTypes}
           selectValue={webForm.data.term}
           onChange={(e: any) => webForm.setValue('term', e.value)}
         />

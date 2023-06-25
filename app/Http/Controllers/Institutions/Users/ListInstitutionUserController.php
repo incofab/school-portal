@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Users;
 
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\InstitutionUser;
 use Illuminate\Http\Request;
@@ -12,11 +13,25 @@ class ListInstitutionUserController extends Controller
   private function getQuery()
   {
     $request = request();
+    $rolesIn = $request->roles_in;
+    if ($request->staffOnly) {
+      $rolesIn = [
+        InstitutionUserType::Admin->value,
+        InstitutionUserType::Teacher->value
+      ];
+    }
+    if ($request->studentsOnly) {
+      $rolesIn = [
+        InstitutionUserType::Student->value,
+        InstitutionUserType::Alumni->value
+      ];
+    }
+
     return InstitutionUser::query()
       ->select('institution_users.*')
       ->where('institution_users.institution_id', currentInstitution()->id)
       ->when(
-        $request->roles_in,
+        $rolesIn,
         fn($q, $value) => $q->whereIn('institution_users.role', $value)
       )
       ->when(

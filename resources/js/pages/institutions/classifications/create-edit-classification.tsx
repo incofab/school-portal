@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormControl, VStack } from '@chakra-ui/react';
+import { Checkbox, FormControl, VStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
@@ -7,7 +7,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { Classification } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
-import { FormButton, LinkButton } from '@/components/buttons';
+import { FormButton } from '@/components/buttons';
 import InputForm from '@/components/forms/input-form';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
@@ -24,6 +24,7 @@ export default function CreateOrUpdateClassification({
   const webForm = useWebForm({
     title: classification?.title ?? '',
     description: classification?.description ?? '',
+    has_equal_subjects: classification?.has_equal_subjects ?? true,
   });
 
   const submit = async () => {
@@ -60,6 +61,22 @@ export default function CreateOrUpdateClassification({
                 formKey="description"
                 title="Description [optional]"
               />
+
+              <FormControl>
+                <Checkbox
+                  isChecked={webForm.data.has_equal_subjects}
+                  onChange={(e) =>
+                    webForm.setValue(
+                      'has_equal_subjects',
+                      e.currentTarget.checked
+                    )
+                  }
+                  size={'md'}
+                  colorScheme="brand"
+                >
+                  All students offer the number of subjects
+                </Checkbox>
+              </FormControl>
 
               <FormControl>
                 <FormButton isLoading={webForm.processing} />
