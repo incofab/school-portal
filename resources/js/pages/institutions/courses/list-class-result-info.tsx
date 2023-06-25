@@ -102,6 +102,8 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
             href={route('institutions.term-results.index', {
               institution: currentInstitution.uuid,
               classification: row.classification_id,
+              academicSession: row.academic_session_id,
+              term: row.term,
             })}
             title="Student Results"
           />

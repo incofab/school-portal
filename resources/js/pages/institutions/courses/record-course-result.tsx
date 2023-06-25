@@ -57,6 +57,9 @@ export default function RecordCourseResult({
           {
             ...data.result,
             student_id: data.result.student_id?.value,
+            first_assessment: data.result.first_assessment ?? 0,
+            second_assessment: data.result.second_assessment ?? 0,
+            exam: data.result.exam ?? 0,
           },
         ],
       });

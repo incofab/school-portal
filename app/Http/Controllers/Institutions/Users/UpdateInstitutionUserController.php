@@ -46,7 +46,9 @@ class UpdateInstitutionUserController extends Controller
     InstitutionUser $editInstitutionUser
   ) {
     $this->validateUser($editInstitutionUser->user);
-    RecordStaff::create($request->validated());
+    RecordStaff::make($request->validated())->update(
+      $editInstitutionUser->user
+    );
     return $this->ok();
   }
 

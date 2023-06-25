@@ -60,10 +60,10 @@ class RecordCourseResultRequest extends FormRequest
   {
     $institution = currentInstitution();
     return [
-      $prefix . 'first_assessment' => ['nullable', 'numeric', 'min:0'],
-      $prefix . 'second_assessment' => ['nullable', 'numeric', 'min:0'],
+      $prefix . 'first_assessment' => ['sometimes', 'numeric', 'min:0'],
+      $prefix . 'second_assessment' => ['sometimes', 'numeric', 'min:0'],
       $prefix . 'exam' => [
-        'nullable',
+        'sometimes',
         'numeric',
         'min:0',
         function ($attr, $value, $fail) use ($data) {

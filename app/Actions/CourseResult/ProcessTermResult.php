@@ -81,12 +81,20 @@ class ProcessTermResult
       $this->classResultInfo->classification
     );
 
-    $studentsTotalAverageScores = array_map(
-      fn(ResultDetail $item) => [
-        $item->getStudentId() => $item->getAverageScore()
-      ],
-      $studentsResultDetails
-    );
+    // $studentsTotalAverageScores = array_map(
+    //   fn(ResultDetail $item) => [
+    //     $item->getStudentId() => $item->getAverageScore()
+    //   ],
+    //   $studentsResultDetails
+    // );
+
+    $studentsTotalAverageScores = [];
+    /** @var ResultDetail $item */
+    foreach ($studentsResultDetails as $key => $item) {
+      $studentsTotalAverageScores[
+        $item->getStudentId()
+      ] = $item->getAverageScore();
+    }
 
     // Sorts the students according to position
     arsort($studentsTotalAverageScores);

@@ -23,7 +23,7 @@ class InstitutionUserController extends Controller
 
   public function store(CreateStaffRequest $request)
   {
-    RecordStaff::create($request->validated());
+    RecordStaff::make($request->validated())->create();
 
     return $this->ok();
   }

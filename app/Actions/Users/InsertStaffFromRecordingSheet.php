@@ -61,7 +61,7 @@ class InsertStaffFromRecordingSheet
 
     DB::beginTransaction();
     foreach ($data as $teacherData) {
-      RecordStaff::create([...$teacherData, 'role' => $this->role]);
+      RecordStaff::make([...$teacherData, 'role' => $this->role])->create();
     }
     DB::commit();
   }

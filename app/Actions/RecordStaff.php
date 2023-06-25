@@ -1,34 +1,51 @@
 <?php
 namespace App\Actions;
 
-use App\Http\Requests\CreateStaffRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class RecordStaff
 {
-  // public static function createWithTransaction(array $data)
-  // {
+  function __construct(private array $userData)
+  {
+  }
 
-  // }
+  public static function make(array $userData)
+  {
+    return new self($userData);
+  }
 
-  public static function create(array $data)
+  public function create()
   {
     DB::beginTransaction();
 
     /** @var User $user */
-    $user = User::query()->updateOrCreate(
-      ['email' => $data['email']],
-      [...collect($data)->except('role'), 'password' => bcrypt('password')]
-    );
+    $user = User::query()->create([
+      ...collect($this->userData)->except('role'),
+      'password' => bcrypt('password')
+    ]);
 
+    $this->syncRole($user);
+
+    DB::commit();
+  }
+
+  function update(User $user)
+  {
+    DB::beginTransaction();
+
+    $user->fill($this->userData)->save();
+    $this->syncRole($user);
+    DB::commit();
+  }
+
+  function syncRole(User $user)
+  {
     $user
       ->institutions()
       ->syncWithPivotValues(
         [currentInstitution()->id],
-        ['role' => $data['role']]
+        ['role' => $this->userData['role']]
       );
-
-    DB::commit();
   }
 }
