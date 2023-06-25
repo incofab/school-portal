@@ -34,7 +34,13 @@ class RecordStaff
   {
     DB::beginTransaction();
 
-    $user->fill($this->userData)->save();
+    $user
+      ->fill(
+        collect($this->userData)
+          ->except('role')
+          ->toArray()
+      )
+      ->save();
     $this->syncRole($user);
     DB::commit();
   }
