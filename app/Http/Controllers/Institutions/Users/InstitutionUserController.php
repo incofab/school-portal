@@ -8,7 +8,6 @@ use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateStaffRequest;
 use App\Models\Institution;
-use App\Models\InstitutionUser;
 use App\Rules\ExcelRule;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -27,24 +26,6 @@ class InstitutionUserController extends Controller
 
     return $this->ok();
   }
-
-  // function edit(Institution $institution, InstitutionUser $editInstitutionUser)
-  // {
-  //   abort_unless($institution->id == $editInstitutionUser->institution_id, 403);
-  //   return inertia('institutions/users/create-edit-user', [
-  //     'institutionUser' => $editInstitutionUser->load(['user', 'institution'])
-  //   ]);
-  // }
-
-  // function update(
-  //   CreateStaffRequest $request,
-  //   Institution $institution,
-  //   InstitutionUser $editInstitutionUser
-  // ) {
-  //   abort_unless($institution->id == $editInstitutionUser->institution_id, 403);
-  //   RecordStaff::create($request->validated());
-  //   return $this->ok();
-  // }
 
   public function downloadTemplate()
   {

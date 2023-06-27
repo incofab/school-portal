@@ -41,7 +41,6 @@ class RecordStaff
           ->toArray()
       )
       ->save();
-    $this->syncRole($user);
     DB::commit();
   }
 

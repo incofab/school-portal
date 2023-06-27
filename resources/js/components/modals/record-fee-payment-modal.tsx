@@ -133,6 +133,7 @@ export default function RecordFeePaymentModal({
               value={webForm.data.user_id}
               isMulti={false}
               isClearable={true}
+              valueKey={'user_id'}
               onChange={(e: any) => webForm.setValue('user_id', e)}
               classification={classId}
               required

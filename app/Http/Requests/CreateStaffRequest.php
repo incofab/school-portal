@@ -27,7 +27,7 @@ class CreateStaffRequest extends FormRequest
     return [
       ...User::generalRule($this->editInstitutionUser?->user_id),
       'role' => [
-        'required',
+        Rule::requiredIf(empty($this->editInstitutionUser)),
         Rule::notIn([
           InstitutionUserType::Student->value,
           InstitutionUserType::Alumni->value

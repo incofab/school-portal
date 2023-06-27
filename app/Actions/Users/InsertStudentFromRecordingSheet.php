@@ -67,7 +67,8 @@ class InsertStudentFromRecordingSheet
 
     DB::beginTransaction();
     foreach ($data as $studentData) {
-      RecordStudent::make($studentData, $this->classification)->create();
+      $studentData['classification_id'] = $this->classification->id;
+      RecordStudent::make($studentData)->create();
     }
     DB::commit();
   }

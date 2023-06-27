@@ -20,7 +20,7 @@ class StudentController extends Controller
   {
     $query = Student::query()->select('students.*');
     StudentUITableFilters::make($request->all(), $query)->filterQuery();
-    
+
     return inertia('institutions/students/list-students', [
       'students' => paginateFromRequest(
         $query->with('user', 'classification')->latest('students.id')
@@ -37,10 +37,7 @@ class StudentController extends Controller
 
   public function store(CreateStudentRequest $request)
   {
-    RecordStudent::make(
-      $request->validated(),
-      $request->classification
-    )->create();
+    RecordStudent::make($request->validated())->create();
 
     return $this->ok();
   }
@@ -66,10 +63,7 @@ class StudentController extends Controller
     Institution $institution,
     Student $student
   ) {
-    RecordStudent::make(
-      $request->validated(),
-      $request->classification
-    )->update($student->user);
+    RecordStudent::make($request->validated())->update($student->user);
 
     return $this->ok();
   }

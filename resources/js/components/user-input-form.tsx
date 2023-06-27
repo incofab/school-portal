@@ -23,9 +23,10 @@ interface Props {
     // classification_id?: string;
     // guardian_phone?: string;
   }>;
+  forEdit?: boolean;
 }
 
-export default function UserInputForm({ webForm }: Props) {
+export default function UserInputForm({ webForm, forEdit }: Props) {
   const isAdmin = useIsAdmin();
   return (
     <>
@@ -94,8 +95,8 @@ export default function UserInputForm({ webForm }: Props) {
         />
         <FormErrorMessage>{webForm.errors.phone}</FormErrorMessage>
       </FormControl>
-
-      {isAdmin && (
+      {/* 
+      {!forEdit && isAdmin && (
         <>
           <FormControl isRequired isInvalid={!!webForm.errors.role}>
             <FormLabel>Role</FormLabel>
@@ -108,7 +109,7 @@ export default function UserInputForm({ webForm }: Props) {
             <FormErrorMessage>{webForm.errors.role}</FormErrorMessage>
           </FormControl>
         </>
-      )}
+      )} */}
     </>
   );
 }

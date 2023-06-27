@@ -14,7 +14,7 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
-/public/.DS_Store
+**/*.DS_Store
 
 
 # Ignore zipped files

@@ -15,12 +15,16 @@ class DeleteUserController extends Controller
     User $user
   ) {
     abort_unless(currentUser()->isInstitutionAdmin(), 403);
-    $institutionUser = $user->institutionUser()->first();
+    $institutionUser = $user
+      ->institutionUser()
+      ->with('student')
+      ->first();
 
     abort_unless($institutionUser, 403);
 
     $user->delete();
-    $institutionUser->student->delete();
+    $institutionUser->student?->delete();
+    $institutionUser->delete();
 
     return $this->ok();
   }

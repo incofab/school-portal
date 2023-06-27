@@ -5,12 +5,13 @@ namespace App\Http\Requests;
 use App\Models\Classification;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Str;
 
 class CreateStudentRequest extends FormRequest
 {
-  public Classification $classification;
+  public ?Classification $classification = null;
 
   protected function prepareForValidation()
   {
@@ -20,16 +21,19 @@ class CreateStudentRequest extends FormRequest
       $this->merge(['email' => Str::orderedUuid() . '@email.com']);
     }
 
-    $classification = Classification::where('id', $this->classification_id)
-      ->where('institution_id', $institution->id)
-      ->first();
+    // Class is only considered when we are creating a student not editing
+    if (empty($this->student)) {
+      $classification = Classification::where('id', $this->classification_id)
+        ->where('institution_id', $institution->id)
+        ->first();
 
-    if (!$classification) {
-      return throw ValidationException::withMessages([
-        'classification_id' => 'This class does not exists'
-      ]);
+      if (!$classification) {
+        return throw ValidationException::withMessages([
+          'classification_id' => 'This class does not exists'
+        ]);
+      }
+      $this->classification = $classification;
     }
-    $this->classification = $classification;
   }
 
   /**
@@ -49,7 +53,7 @@ class CreateStudentRequest extends FormRequest
   {
     return [
       ...User::generalRule($this->student?->user_id),
-      'classification_id' => ['required'],
+      'classification_id' => [Rule::requiredIf(empty($this->student))],
       'guardian_phone' => ['nullable', 'string']
     ];
   }

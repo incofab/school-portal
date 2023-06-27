@@ -2,7 +2,7 @@
 namespace App\Actions;
 
 use App\Enums\InstitutionUserType;
-use App\Models\Classification;
+use App\Models\Institution;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -10,18 +10,18 @@ use Illuminate\Support\Facades\DB;
 class RecordStudent
 {
   private $userData = [];
-  public function __construct(
-    private array $data,
-    private Classification $classification
-  ) {
+  private Institution $institution;
+  public function __construct(private array $data)
+  {
+    $this->institution = currentInstitution();
     $this->userData = collect($data)
       ->except('classification_id', 'role', 'guardian_phone')
       ->toArray();
   }
 
-  public static function make(array $data, Classification $classification)
+  public static function make(array $data)
   {
-    return new self($data, $classification);
+    return new self($data);
   }
 
   public function create()
@@ -39,20 +39,21 @@ class RecordStudent
     DB::commit();
   }
 
-  public function attach(User $user)
+  private function attach(User $user)
   {
     $institutionUser = $user->institutionUsers()->firstOrCreate(
       [
-        'institution_id' => $this->classification->institution_id
+        'institution_id' => $this->institution->id
       ],
       ['role' => InstitutionUserType::Student]
     );
 
     $this->createUpdateStudent($user, [
       'institution_user_id' => $institutionUser->id,
-      'classification_id' => $this->classification->id,
       'code' => Student::generateStudentID(),
-      'guardian_phone' => $this->data['guardian_phone'] ?? null
+      ...collect($this->data)
+        ->only('classification_id', 'guardian_phone')
+        ->toArray()
     ]);
   }
 
@@ -62,7 +63,7 @@ class RecordStudent
     $this->createUpdateStudent(
       $user,
       collect($this->data)
-        ->only(['classification_id', 'guardian_phone'])
+        ->only(['guardian_phone'])
         ->toArray()
     );
   }
