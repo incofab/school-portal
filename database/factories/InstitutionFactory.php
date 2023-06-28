@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\InstitutionUserType;
 use App\Models\Institution;
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -9,6 +10,18 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class InstitutionFactory extends Factory
 {
+  public function configure()
+  {
+    return $this->afterCreating(function (Institution $model) {
+      $model->createdBy
+        ->institutionUsers()
+        ->create([
+          'role' => InstitutionUserType::Admin,
+          'institution_id' => $model->id
+        ]);
+    });
+  }
+
   /**
    * Define the model's default state.
    *

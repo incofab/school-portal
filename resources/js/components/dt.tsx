@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  BoxProps,
   HStack,
   ResponsiveValue,
   StackProps,
@@ -10,7 +9,7 @@ import {
 import { SelectOptionType } from '@/types/types';
 
 interface Props {
-  contentData: SelectOptionType[];
+  contentData: SelectOptionType<string | React.ReactNode>[];
   labelWidth?: number | string | ResponsiveValue<number | 'px'>;
 }
 export default function Dt({

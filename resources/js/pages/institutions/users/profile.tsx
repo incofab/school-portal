@@ -10,6 +10,9 @@ import {
   Avatar,
   HStack,
   Button,
+  IconButton,
+  Tooltip,
+  Icon,
 } from '@chakra-ui/react';
 import React, { ChangeEvent } from 'react';
 import {
@@ -24,16 +27,18 @@ import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import useWebForm, { useWeb } from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
-import { InstitutionUser, User } from '@/types/models';
+import { InstitutionUser, Student, User } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
 import Dt from '@/components/dt';
-import { SelectOptionType } from '@/types/types';
+import { Nullable, SelectOptionType } from '@/types/types';
 import { BrandButton } from '@/components/buttons';
 import useIsAdmin from '@/hooks/use-is-admin';
 import DestructivePopover from '@/components/destructive-popover';
-import useModalToggle from '@/hooks/use-modal-toggle';
+import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import ChangeRoleModal from '@/components/modals/change-role-modal';
 import startCase from 'lodash/startCase';
+import ChangeStudentClassModal from '@/components/modals/change-student-class-modal';
+import { PencilSquareIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   user: User;
@@ -44,6 +49,7 @@ export default function Profile({ user, institutionUser }: Props) {
   const { currentUser } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
+  const changeClassModalToggle = useModalValueToggle<Nullable<Student>>();
   const form = useWebForm({
     photo: user.photo,
   });
@@ -81,7 +87,10 @@ export default function Profile({ user, institutionUser }: Props) {
   }
 
   const student = institutionUser.student;
-  const profileData: SelectOptionType[] = [
+  if (student) {
+    student.user = user;
+  }
+  const profileData: SelectOptionType<React.ReactNode>[] = [
     { label: 'First name', value: user.first_name },
     { label: 'Last name', value: user.last_name },
     { label: 'Other names', value: user.other_names },
@@ -93,7 +102,23 @@ export default function Profile({ user, institutionUser }: Props) {
       ? [
           { label: 'Student Id', value: student.code },
           { label: 'Guardian Phone', value: student.guardian_phone },
-          { label: 'Class', value: student.classification?.title ?? '' },
+          {
+            label: 'Class',
+            value: (
+              <HStack spacing={3}>
+                <Text>{student.classification?.title}</Text>
+                <Tooltip label={'Change class'} placement={'auto-start'}>
+                  <IconButton
+                    aria-label="Change class"
+                    onClick={() => changeClassModalToggle.open(student)}
+                    icon={<Icon as={PencilSquareIcon} />}
+                    colorScheme="brand"
+                    size={'sm'}
+                  />
+                </Tooltip>
+              </HStack>
+            ),
+          },
         ]
       : []),
   ];
@@ -186,6 +211,13 @@ export default function Profile({ user, institutionUser }: Props) {
             {...changeRoleModalToggle.props}
             onSuccess={() => Inertia.reload({ only: ['institutionUser'] })}
           />
+          {changeClassModalToggle.state && (
+            <ChangeStudentClassModal
+              student={changeClassModalToggle.state}
+              {...changeClassModalToggle.props}
+              onSuccess={() => Inertia.reload({ only: ['institutionUser'] })}
+            />
+          )}
         </SlabBody>
       </Slab>
     </div>

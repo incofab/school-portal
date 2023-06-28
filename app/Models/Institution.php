@@ -94,7 +94,7 @@ class Institution extends Model
 
   function createdBy()
   {
-    return $this->belongsTo(User::class);
+    return $this->belongsTo(User::class, 'user_id');
   }
 
   function termResults()

@@ -7,7 +7,7 @@ import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
-import { LinkButton } from '@/components/buttons';
+import { BrandButton, LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
@@ -16,6 +16,8 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
+import { useModalValueToggle } from '@/hooks/use-modal-toggle';
+import MigrateClassStudentsModal from '@/components/modals/migrate-class-students-modal';
 
 interface Props {
   classifications: PaginationResponse<Classification>;
@@ -26,6 +28,7 @@ export default function ListClassification({ classifications }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
+  const migrateClassStudentsModalToggle = useModalValueToggle<Classification>();
 
   async function deleteItem(obj: Classification) {
     const res = await deleteForm.submit((data, web) =>
@@ -49,7 +52,7 @@ export default function ListClassification({ classifications }: Props) {
           {
             label: 'Action',
             render: (row: Classification) => (
-              <HStack>
+              <HStack spacing={3}>
                 <IconButton
                   aria-label={'Edit Class'}
                   icon={<Icon as={PencilIcon} />}
@@ -57,6 +60,10 @@ export default function ListClassification({ classifications }: Props) {
                   href={instRoute('classifications.edit', [row.id])}
                   variant={'ghost'}
                   colorScheme={'brand'}
+                />
+                <BrandButton
+                  title="Move Students"
+                  onClick={() => migrateClassStudentsModalToggle.open(row)}
                 />
                 <DestructivePopover
                   label={'Delete this class'}
@@ -99,6 +106,13 @@ export default function ListClassification({ classifications }: Props) {
           />
         </SlabBody>
       </Slab>
+      {migrateClassStudentsModalToggle.state && (
+        <MigrateClassStudentsModal
+          {...migrateClassStudentsModalToggle.props}
+          Classification={migrateClassStudentsModalToggle.state}
+          onSuccess={() => Inertia.reload({ only: ['classifications'] })}
+        />
+      )}
     </DashboardLayout>
   );
 }

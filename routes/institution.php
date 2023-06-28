@@ -7,9 +7,9 @@ use App\Mail\InstitutionMessageMail;
 //Institution
 
 Route::get('dummy', function() {
-    // dd('dmoddsdsd');
+    dd('dmoddsdsd');
     return new InstitutionMessageMail('Welcome', 'This is a welcome message');
-});
+})->name('dummy');
 
 Route::get('/dashboard', [Web\InstitutionController::class, 'index'])
     ->name('dashboard');
@@ -22,6 +22,8 @@ Route::post('/upload-photo', [Web\InstitutionController::class, 'uploadPhoto'])
 
 Route::get('/classifications/search', [Web\ClassificationController::class, 'search'])
 ->name('classifications.search');
+Route::post('/classifications/{classification}/migrate-students', [Web\Students\UpdateStudentClassController::class, 'migrateClassStudents'])
+->name('classifications.migrate-students');
 Route::resource('/classifications', Web\ClassificationController::class)
     ->except(['show']);
     
@@ -44,6 +46,8 @@ Route::get(
 Route::resource('/students', Web\Students\StudentController::class)->except(['show', 'destroy']);
 Route::get('/students/term-results', Web\Students\ListStudentTermResultController::class)
     ->name('students.term-results.index');
+Route::post('/students/{student}/change-class', [Web\Students\UpdateStudentClassController::class, 'changeStudentClass'])
+    ->name('students.change-class');
 
 Route::get('/courses/search', [Web\CoursesController::class, 'search'])
     ->name('courses.search');

@@ -34,18 +34,25 @@ class StudentFactory extends Factory
     ];
   }
 
-  public function withInstitution(Institution $institution): static
-  {
-    return $this->state(function (array $attributes) use ($institution) {
+  public function withInstitution(
+    Institution $institution,
+    Classification $classification = null
+  ): static {
+    return $this->state(function (array $attributes) use (
+      $institution,
+      $classification
+    ) {
       $institutionUser = InstitutionUser::factory()
         ->withInstitution($institution)
         ->create(['role' => InstitutionUserType::Student]);
       return [
         'institution_user_id' => $institutionUser->id,
         'user_id' => $institutionUser->user_id,
-        'classification_id' => Classification::factory()->withInstitution(
-          $institutionUser->institution
-        )
+        'classification_id' =>
+          $classification ??
+          Classification::factory()->withInstitution(
+            $institutionUser->institution
+          )
       ];
     });
   }
