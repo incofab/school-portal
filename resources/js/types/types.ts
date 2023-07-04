@@ -82,3 +82,9 @@ export enum FeePaymentInterval {
   yearly = 'yearly',
   monthly = 'monthly',
 }
+
+export enum InstitutionSettingType {
+  ResultTemplate = 'result-template',
+  CurrentTerm = 'current-term',
+  CurrentAcademicSession = 'current-academic-session',
+}

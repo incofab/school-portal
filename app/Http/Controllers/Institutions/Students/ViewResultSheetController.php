@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Institutions\Students;
 
-use App\Actions\CourseResult\EvaluateCourseResultForClass;
-use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
 use App\Models\Classification;
@@ -11,10 +9,12 @@ use App\Models\ClassResultInfo;
 use App\Models\CourseResultInfo;
 use App\Models\Institution;
 use App\Models\Student;
+use App\Models\TermResult;
 use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use App\Support\UITableFilters\TermResultUITableFilters;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ViewResultSheetController extends Controller
 {
@@ -23,7 +23,7 @@ class ViewResultSheetController extends Controller
     Student $student,
     Classification $classification,
     AcademicSession $academicSession,
-    TermType $term
+    string $term
   ) {
     $institutionUser = currentInstitutionUser();
     abort_if(
@@ -83,7 +83,8 @@ class ViewResultSheetController extends Controller
       ->getQuery()
       ->first();
 
-    return inertia('institutions/students/result-sheet', [
+    $viewData = [
+      'institution' => currentInstitution(),
       'courseResults' => $courseResults,
       'student' => $student->load('user'),
       'classification' => $classification,
@@ -91,7 +92,41 @@ class ViewResultSheetController extends Controller
       'term' => $term,
       'termResult' => $termResult,
       'classResultInfo' => $classResultInfo,
-      'courseResultInfoData' => $courseResultInfoData
-    ]);
+      'courseResultInfoData' => $courseResultInfoData,
+      'resultDetails' => $this->getResultDetails($classResultInfo, $termResult)
+    ];
+
+    return inertia('institutions/result-sheets/template-1', $viewData);
+    // if (request('download')) {
+    //   return $this->downloadAsPDF($viewData);
+    // }
+    // return view('student-result-sheet', $viewData);
+  }
+
+  private function getResultDetails(
+    ClassResultInfo $classResultInfo,
+    TermResult $termResult
+  ) {
+    return [
+      ['label' => "Student's Total Score", 'value' => $termResult->total_score],
+      [
+        'label' => 'Maximum Total Score',
+        'value' => $classResultInfo->max_obtainable_score
+      ],
+      ['label' => "Student's Average Score", 'value' => $termResult->average],
+      ['label' => 'Class Average Score', 'value' => $classResultInfo->average]
+    ];
+  }
+
+  private function downloadAsPDF(array $viewData)
+  {
+    $student = $viewData['student'];
+    $academicSession = $viewData['academicSession'];
+    // dd('dksmdsd');
+    $pdf = Pdf::loadView('student-result-sheet', $viewData);
+    $filename = "{$student->user->full_name} {$academicSession->title} {$viewData['term']} term result.pdf";
+    $filename = str_replace(['/'], ['-'], $filename);
+    // dd($filename);
+    return $pdf->download($filename);
   }
 }

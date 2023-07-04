@@ -56,6 +56,13 @@ class EvaluateCourseResultForClass
       'classification_id' => $this->classification->id
     ];
 
+    if ($courseResults->isEmpty()) {
+      CourseResultInfo::query()
+        ->where($bindingData)
+        ->delete();
+      return;
+    }
+
     $numOfStudents = $courseResults->count();
     $data = [
       'num_of_students' => $numOfStudents,

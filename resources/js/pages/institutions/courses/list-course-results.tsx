@@ -4,7 +4,7 @@ import ServerPaginatedTable, {
 import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import { CourseResult, CourseTeacher } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
-import { Button, HStack, Icon, Text } from '@chakra-ui/react';
+import { Button, HStack, Icon, IconButton, Text } from '@chakra-ui/react';
 import { Inertia } from '@inertiajs/inertia';
 import startCase from 'lodash/startCase';
 import React from 'react';
@@ -18,6 +18,11 @@ import useQueryString from '@/hooks/use-query-string';
 import { CloudArrowDownIcon } from '@heroicons/react/24/outline';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useSharedProps from '@/hooks/use-shared-props';
+import DestructivePopover from '@/components/destructive-popover';
+import { TrashIcon } from '@heroicons/react/24/solid';
+import useWebForm from '@/hooks/use-web-form';
 
 interface Props {
   courseTeacher?: CourseTeacher;
@@ -32,10 +37,22 @@ export default function ListCourseResults({
     CourseTeacher | undefined
   >();
   const courseResultFilterToggle = useModalToggle();
+  const isStaff = useIsStaff();
+  const isAdmin = useIsAdmin();
+  const { currentUser } = useSharedProps();
   const { toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const { params } = useQueryString();
-  const isStaff = useIsStaff();
+  const deleteForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
+
+  async function deleteItem(obj: CourseResult) {
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(instRoute('course-results.destroy', [obj.id]))
+    );
+    handleResponseToast(res);
+    Inertia.reload({ only: ['courseResults'] });
+  }
 
   function canDownloadSheet() {
     return (
@@ -99,6 +116,33 @@ export default function ListCourseResults({
       label: 'Teacher',
       value: 'teacher.full_name',
     },
+    ...(isStaff
+      ? [
+          {
+            label: 'Action',
+            render: (row: CourseResult) => (
+              <>
+                {(isAdmin || currentUser.id === row.teacher_user_id) && (
+                  <DestructivePopover
+                    label={`Delete ${row.course?.title} result for ${
+                      row.student?.user!.full_name
+                    }?`}
+                    onConfirm={() => deleteItem(row)}
+                    isLoading={deleteForm.processing}
+                  >
+                    <IconButton
+                      aria-label={'Delete'}
+                      icon={<Icon as={TrashIcon} />}
+                      variant={'ghost'}
+                      colorScheme={'red'}
+                    />
+                  </DestructivePopover>
+                )}
+              </>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (

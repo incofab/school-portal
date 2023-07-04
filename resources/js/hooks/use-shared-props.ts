@@ -6,6 +6,8 @@ export interface SharedProps {
   shared__currentUser: User;
   shared__currentInstitution: Institution;
   shared__currentInstitutionUser: InstitutionUser;
+  shared__currentAcademicSession: number;
+  shared__currentTerm: string;
   shared__isImpersonating: boolean;
   shared__csrfToken: string;
   shared__message: Message;
@@ -22,5 +24,7 @@ export default function useSharedProps() {
     message: props.shared__message as Message,
     currentInstitution: props.shared__currentInstitution,
     currentInstitutionUser: props.shared__currentInstitutionUser,
+    currentTerm: props.shared__currentTerm,
+    currentAcademicSession: props.shared__currentAcademicSession,
   };
 }

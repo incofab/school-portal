@@ -57,6 +57,7 @@ class Institution extends Model
           ->where('institution_users.user_id', $user->id)
           ->with('student')
       )
+      ->with('institutionSettings')
       ->firstOrFail();
     return $institutionModel;
   }
@@ -125,5 +126,10 @@ class Institution extends Model
   function feePayments()
   {
     return $this->hasMany(FeePayment::class);
+  }
+
+  function institutionSettings()
+  {
+    return $this->hasMany(InstitutionSetting::class);
   }
 }

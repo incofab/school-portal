@@ -3,9 +3,8 @@ import { FormControl, VStack, Divider, Text, HStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
-import route from '@/util/route';
 import { Inertia } from '@inertiajs/inertia';
-import { Course, User } from '@/types/models';
+import { User } from '@/types/models';
 import { InstitutionUserType, Nullable, SelectOptionType } from '@/types/types';
 import { MultiValue } from 'react-select';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -19,17 +18,16 @@ import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface Props {
-  course?: Course;
   user?: User;
 }
 
-export default function RegisterCourseTeacher({ course, user }: Props) {
+export default function RegisterCourseTeacher({ user }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
 
   const webForm = useWebForm({
     user_id: user ? { label: user.full_name, value: user.id } : null,
-    course_id: course?.id,
+    course_ids: null as Nullable<MultiValue<SelectOptionType<number>>>,
     classification_ids: null as Nullable<MultiValue<SelectOptionType<number>>>,
   });
 
@@ -38,6 +36,7 @@ export default function RegisterCourseTeacher({ course, user }: Props) {
       web.post(instRoute('course-teachers.store', [data.user_id!.value]), {
         ...data,
         classification_ids: data.classification_ids?.map((item) => item.value),
+        course_ids: data.course_ids?.map((item) => item.value),
       })
     );
     if (!handleResponseToast(res)) return;
@@ -90,12 +89,12 @@ export default function RegisterCourseTeacher({ course, user }: Props) {
               <FormControlBox
                 form={webForm as any}
                 title="Subject"
-                formKey="course_id"
+                formKey="course_ids"
               >
                 <CourseSelect
-                  onChange={(e: any) => webForm.setValue('course_id', e.value)}
-                  selectValue={webForm.data.course_id}
-                  isMulti={false}
+                  onChange={(e: any) => webForm.setValue('course_ids', e)}
+                  value={webForm.data.course_ids}
+                  isMulti={true}
                   required
                 />
               </FormControlBox>

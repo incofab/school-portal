@@ -46,6 +46,10 @@ Route::get(
 Route::resource('/students', Web\Students\StudentController::class)->except(['show', 'destroy']);
 Route::get('/students/term-results', Web\Students\ListStudentTermResultController::class)
     ->name('students.term-results.index');
+Route::post('/term-results/{termResult}/teacher-comment', [Web\Staff\TermResultCommentController::class, 'teacherComment'])
+    ->name('term-results.teacher-comment');
+Route::post('/term-results/{termResult}/principal-comment', [Web\Staff\TermResultCommentController::class, 'principalComment'])
+    ->name('term-results.principal-comment');
 Route::post('/students/{student}/change-class', [Web\Students\UpdateStudentClassController::class, 'changeStudentClass'])
     ->name('students.change-class');
 
@@ -99,6 +103,8 @@ Route::get('/course-results/{courseResult}/edit', [Web\Staff\CourseResultsContro
     ->name('course-results.edit');
 Route::post('/course-results/store/{courseTeacher}', [Web\Staff\CourseResultsController::class, 'store'])
     ->name('course-results.store');
+Route::delete('/course-results/{courseResult}/destroy', [Web\Staff\CourseResultsController::class, 'destroy'])
+    ->name('course-results.destroy');
 Route::post('/course-results/upload/{courseTeacher}', [Web\Staff\CourseResultsController::class, 'upload'])
     ->name('course-results.upload');
 Route::get('/course-results/download', Web\Staff\DownloadCourseResultSheetController::class)
@@ -124,6 +130,8 @@ Route::resource('/pin-prints', Web\Staff\PinPrintController::class)->only(['inde
 Route::get('/fees/search', [Web\Payments\FeeController::class, 'search'])->name('fees.search');
 Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
 Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['edit', 'update']);
+Route::get('/settings/search', [Web\InstitutionSettingController::class, 'search'])->name('settings.search');
+Route::resource('/settings', Web\InstitutionSettingController::class)->only(['index', 'create', 'store']);
 
 
 

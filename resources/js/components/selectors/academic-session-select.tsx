@@ -3,6 +3,7 @@ import route from '@/util/route';
 import { AcademicSession } from '@/types/models';
 import { Props } from 'react-select';
 import SingleQuerySelect from '../dropdown-select/single-query-select';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface MyProps {
   selectValue?: number | string;
@@ -14,6 +15,11 @@ export default function AcademicSessionSelect({
   academicSessions,
   ...props
 }: MyProps & Props) {
+  if (!selectValue) {
+    const { currentAcademicSession } = useSharedProps();
+    selectValue = currentAcademicSession;
+  }
+
   return (
     <SingleQuerySelect
       {...props}
@@ -24,41 +30,3 @@ export default function AcademicSessionSelect({
     />
   );
 }
-/*
-export default function AcademicSessionSelect({
-  selectValue,
-  academicSessions,
-  ...props
-}: MyProps & Props) {
-  const [data, setData] = useState<AcademicSession[]>(academicSessions ?? []);
-  const [refreshKey, setRefreshKey] = useState<string>('');
-  const webForm = useWebForm({});
-
-  useEffect(() => {
-    if (academicSessions) {
-      return;
-    }
-    webForm
-      .submit((data, web) => {
-        return web.get(route('academic-sessions.search'));
-      })
-      .then(({ ok, data }) => {
-        if (!ok) {
-          return;
-        }
-        setData(data.academicSessions);
-        setRefreshKey(Math.random() + '');
-      });
-  }, []);
-
-  return (
-    <ReactSelect
-      {...props}
-      selectValue={selectValue}
-      data={{ main: data, label: 'title', value: 'id' }}
-      isLoading={webForm.processing}
-      refreshKey={refreshKey}
-    />
-  );
-}
-*/

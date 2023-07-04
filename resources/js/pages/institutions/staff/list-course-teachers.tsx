@@ -1,11 +1,9 @@
 import { CourseTeacher } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
-import route from '@/util/route';
 import { IconButton, Icon, HStack } from '@chakra-ui/react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { Inertia } from '@inertiajs/inertia';
 import React from 'react';
-import useIsAdmin from '@/hooks/use-is-admin';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import useWebForm from '@/hooks/use-web-form';
 import DestructivePopover from '@/components/destructive-popover';
@@ -17,13 +15,18 @@ import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
 import DateTimeDisplay from '@/components/date-time-display';
+import useIsStaff from '@/hooks/use-is-staff';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   courseTeachers: PaginationResponse<CourseTeacher>;
 }
 
 function ListLecturerCourses({ courseTeachers }: Props) {
+  const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
+  const { currentUser } = useSharedProps();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -53,31 +56,35 @@ function ListLecturerCourses({ courseTeachers }: Props) {
       label: 'Assigned On',
       render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
     },
-    ...(isAdmin
+    ...(isStaff
       ? [
           {
             label: 'Action',
             render: (row: CourseTeacher) => (
               <HStack>
-                <LinkButton
-                  title="Record Result"
-                  href={instRoute('course-results.create', [row])}
-                  variant={'link'}
-                />
-                <DestructivePopover
-                  label={`Delete ${row.course?.title} assignment from ${
-                    row.user!.full_name
-                  }?`}
-                  onConfirm={() => deleteItem(row)}
-                  isLoading={deleteForm.processing}
-                >
-                  <IconButton
-                    aria-label={'Delete'}
-                    icon={<Icon as={TrashIcon} />}
-                    variant={'ghost'}
-                    colorScheme={'red'}
-                  />
-                </DestructivePopover>
+                {(isAdmin || currentUser.id === row.user_id) && (
+                  <>
+                    <LinkButton
+                      title="Record Result"
+                      href={instRoute('course-results.create', [row])}
+                      variant={'link'}
+                    />
+                    <DestructivePopover
+                      label={`Delete ${row.course?.title} assignment from ${
+                        row.user!.full_name
+                      }?`}
+                      onConfirm={() => deleteItem(row)}
+                      isLoading={deleteForm.processing}
+                    >
+                      <IconButton
+                        aria-label={'Delete'}
+                        icon={<Icon as={TrashIcon} />}
+                        variant={'ghost'}
+                        colorScheme={'red'}
+                      />
+                    </DestructivePopover>
+                  </>
+                )}
               </HStack>
             ),
           },

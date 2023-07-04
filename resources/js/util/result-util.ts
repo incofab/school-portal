@@ -1,16 +1,18 @@
 const ResultUtil = {
   getPositionSuffix: function (position: number) {
     const lastChar = position % 10;
+    let suffix = '';
     switch (lastChar) {
       case 1:
-        return 'st';
+        suffix = 'st';
       case 2:
-        return 'nd';
+        suffix = 'nd';
       case 3:
-        return 'rd';
+        suffix = 'rd';
       default:
-        return 'th';
+        suffix = 'th';
     }
+    return position + suffix;
   },
 
   getRemark: function (grade: string) {
@@ -31,5 +33,22 @@ const ResultUtil = {
         return 'Unknown';
     }
   },
+
+  getClassSection: function (classTitle: string) {
+    classTitle = classTitle.toLowerCase().replaceAll(' ', '');
+    if (classTitle.indexOf('ss') >= 0 || classTitle.indexOf('ss') >= 0) {
+      return 'Senior Secondary Section';
+    } else if (
+      classTitle.indexOf('js') >= 0 ||
+      classTitle.indexOf('j.s') >= 0
+    ) {
+      return 'Junior Secondary Section';
+    } else if (classTitle.indexOf('primary')) {
+      return 'Primary Section';
+    } else {
+      return 'School Section';
+    }
+  },
 };
+
 export default ResultUtil;

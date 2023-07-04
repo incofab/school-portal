@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Staff;
 
+use App\Actions\CourseResult\EvaluateCourseResultForClass;
 use App\Actions\CourseResult\InsertResultFromRecordingSheet;
 use App\Actions\CourseResult\RecordCourseResult;
 use App\Enums\InstitutionUserType;
@@ -111,5 +112,29 @@ class CourseResultsController extends Controller
     );
 
     return response()->json(['ok' => true]);
+  }
+
+  public function destroy(
+    Request $request,
+    Institution $institution,
+    CourseResult $courseResult
+  ) {
+    $currentUser = currentUser();
+    abort_unless(
+      $currentUser->isInstitutionAdmin() ||
+        $courseResult->teacher_user_id == $currentUser->id,
+      403
+    );
+    $student = $courseResult->student;
+    $courseResult->delete();
+
+    EvaluateCourseResultForClass::run(
+      $student->classification,
+      $courseResult->course_id,
+      $courseResult->academic_session_id,
+      $courseResult->term->value
+    );
+
+    return $this->ok();
   }
 }

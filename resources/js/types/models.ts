@@ -28,6 +28,7 @@ export interface Institution extends Row {
   user_id: number;
   uuid: string;
   code: string;
+  sub_title: string;
   name: string;
   photo: string;
   address: string;
@@ -130,6 +131,9 @@ export interface TermResult extends InstitutionRow {
   position: number;
   average: number;
   remark: string;
+  teacher_comment: string;
+  principal_comment: string;
+  general_comment: string;
   student?: Student;
   classification?: Classification;
   academic_session?: AcademicSession;
@@ -210,4 +214,11 @@ export interface FeePaymentTrack extends Row {
   method: string;
   feePayment?: FeePayment;
   confirmed_by?: User;
+}
+
+export interface InstitutionSetting extends InstitutionRow {
+  key: string;
+  value: string;
+  display_name: string;
+  type: string;
 }

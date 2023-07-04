@@ -10,6 +10,7 @@ use App\Models\Institution;
 use App\Models\User;
 use App\Support\UITableFilters\CourseTeachersUITableFilters;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class CourseTeachersController extends Controller
@@ -86,22 +87,30 @@ class CourseTeachersController extends Controller
       'classification_ids.*' => [
         'required',
         'integer',
-        'exists:classifications,id'
+        'exists:classifications,id',
+        Rule::exists('classifications', 'id')->where(
+          'institution_id',
+          $institution->id
+        )
       ],
-      'course_id' => ['required', 'integer', 'exists:courses,id']
+      // 'course_id' => ['required', 'integer', 'exists:courses,id']
+      'course_ids' => ['required', 'array', 'min:1'],
+      'course_ids.*' => [
+        'required',
+        'integer',
+        Rule::exists('courses', 'id')->where('institution_id', $institution->id)
+      ]
     ]);
 
-    $filteredData = collect($data)
-      ->except('classification_ids')
-      ->toArray();
+    $courseIds = $data['course_ids'];
     $classificationIds = $data['classification_ids'];
-    foreach ($classificationIds as $key => $classificationId) {
-      $user
-        ->courseTeachers()
-        ->firstOrCreate([
-          ...$filteredData,
+    foreach ($courseIds as $key => $courseId) {
+      foreach ($classificationIds as $key => $classificationId) {
+        $user->courseTeachers()->firstOrCreate([
+          'course_id' => $courseId,
           'classification_id' => $classificationId
         ]);
+      }
     }
 
     return $this->ok();

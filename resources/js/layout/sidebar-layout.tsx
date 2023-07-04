@@ -172,6 +172,11 @@ export default function SideBarLayout() {
       ],
     },
     {
+      label: 'Settings',
+      route: instRoute('settings.create'),
+      roles: [InstitutionUserType.Admin],
+    },
+    {
       label: 'Profile',
       route: instRoute('users.profile', [currentUser]),
     },
