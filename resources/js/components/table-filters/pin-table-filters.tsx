@@ -6,6 +6,7 @@ import { TermType } from '@/types/types';
 import AcademicSessionSelect from '../selectors/academic-session-select';
 import EnumSelect from '../dropdown-select/enum-select';
 import InstitutionSelect from '../selectors/institution-select';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   isOpen: boolean;
@@ -14,10 +15,11 @@ interface Props {
 
 export default function PinsTableFilters({ isOpen, onClose }: Props) {
   const { params } = useQueryString();
+  const { currentAcademicSession, currentTerm } = useSharedProps();
   const [filters, setFilters] = useState(() => ({
-    term: params.term ?? '',
+    term: params.term ?? currentTerm,
+    academicSession: params.academicSession ?? currentAcademicSession,
     institution_id: params.institution ?? '',
-    academicSession: params.academicSession ?? '',
   }));
 
   return (

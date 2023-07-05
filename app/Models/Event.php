@@ -48,7 +48,7 @@ class Event extends Model
 
   static function getActiveEvents($institutionId)
   {
-    return static::where('status', STATUS_ACTIVE)
+    return static::where('status', 'active')
       ->where('institution_id', $institutionId)
       ->with('eventSubjects')
       ->get();

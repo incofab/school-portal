@@ -47,6 +47,10 @@ export default function ListClassification({ classifications }: Props) {
       label: 'Num of Students',
       value: 'students_count',
     },
+    {
+      label: 'Same Num of Subjects',
+      render: (row) => (row.has_equal_subjects ? 'Yes' : 'No'),
+    },
     ...(isAdmin
       ? [
           {

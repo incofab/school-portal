@@ -1,7 +1,5 @@
 <?php
-$title = "Admin - All Institutions | " . SITE_TITLE;
-
-?>
+$title = 'Admin - All Institutions | ' . SITE_TITLE; ?>
 @extends('admin.layout')
 
 @section('dashboard_content')
@@ -55,7 +53,7 @@ $title = "Admin - All Institutions | " . SITE_TITLE;
                             <div><small><i class='fa fa-hand-point-right'></i> <a href='{{route('institution.dashboard', [$record['id']])}}' class='btn btn-link'>Goto Page</a></small></div>
                             <div><small><i class='fa fa-edit'></i> <a href='{{route('admin.institution.edit', [$record['id']])}}' class='btn btn-link'>Edit</a></small></div>
                             {{--
-                            @if($record['status'] == STATUS_SUSPENDED)
+                            @if($record['status'] == 'suspended')
                                 <div><small><i class='fa fa-circle-o'></i> <a href='{{route('admin.institution.unsuspend', [$record['id']])}}' class='btn btn-link'>Unsuspend</a></small></div>
                             @else
                                 <div><small><i class='fa fa-circle-o'></i> <a href='{{route('admin.institution.suspend', [$record['id']])}}' class='btn btn-link'>Suspend</a></small></div>

@@ -3,6 +3,7 @@ namespace App\Actions;
 
 use App\Enums\InstitutionUserType;
 use App\Models\Institution;
+use App\Models\InstitutionUser;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -48,30 +49,42 @@ class RecordStudent
       ['role' => InstitutionUserType::Student]
     );
 
-    $this->createUpdateStudent($user, [
-      'institution_user_id' => $institutionUser->id,
-      'code' => Student::generateStudentID(),
-      ...collect($this->data)
-        ->only('classification_id', 'guardian_phone')
-        ->toArray()
-    ]);
+    $this->createUpdateStudent(
+      $user,
+      [
+        'institution_user_id' => $institutionUser->id,
+        'code' => Student::generateStudentID(),
+        ...collect($this->data)
+          ->only('classification_id', 'guardian_phone')
+          ->toArray()
+      ],
+      $institutionUser
+    );
   }
 
-  function update(User $user)
+  function update(Student $student)
   {
+    $student->load('user', 'institutionUser');
+    $user = $student->user;
+    $institutionUser = $student->institutionUser;
+
     $user->fill($this->userData)->save();
     $this->createUpdateStudent(
       $user,
       collect($this->data)
         ->only(['guardian_phone'])
-        ->toArray()
+        ->toArray(),
+      $institutionUser
     );
   }
 
-  private function createUpdateStudent(User $user, $data)
-  {
+  private function createUpdateStudent(
+    User $user,
+    $data,
+    InstitutionUser $institutionUser
+  ) {
     $user
       ->student()
-      ->updateOrCreate(['institution_user_id' => $user->id], $data);
+      ->updateOrCreate(['institution_user_id' => $institutionUser->id], $data);
   }
 }

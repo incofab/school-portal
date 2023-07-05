@@ -222,3 +222,24 @@ export interface InstitutionSetting extends InstitutionRow {
   display_name: string;
   type: string;
 }
+
+export interface AdmissionApplication extends Row {
+  first_name: string;
+  last_name: string;
+  other_names: string;
+  phone: string;
+  email: string;
+  gender: string;
+  fathers_name: string;
+  mothers_name: string;
+  fathers_occupation: string;
+  mothers_occupation: string;
+  guardian_phone: string;
+  photo: string;
+  address: string;
+  previous_school_attended: string;
+  dob: string;
+  nationality: string;
+  religion: string;
+  reference: string;
+}

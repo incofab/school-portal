@@ -36,7 +36,7 @@ class Exam extends Model
     }
 
     $post['exam_no'] = self::generateExamNo();
-    $post['status'] = STATUS_ACTIVE;
+    $post['status'] = 'active';
 
     $data = static::create($post);
 

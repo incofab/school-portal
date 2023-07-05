@@ -13,7 +13,7 @@ use App\Models\EventSubject;
 class EventController extends Controller
 {
   private $eventsHelper;
-  private $resultsDir = APP_DIR . '../public/';
+  private $resultsDir = '../public/';
 
   function __construct(\App\Helpers\EventHelper $eventsHelper)
   {
@@ -185,7 +185,7 @@ class EventController extends Controller
   {
     Event::whereId($table_id)
       ->whereInstitution_id($institutionId)
-      ->update(['status' => STATUS_ACTIVE]);
+      ->update(['status' => 'active']);
 
     return redirect(route('institution.event.index', $institutionId))->with(
       'message',

@@ -12,7 +12,12 @@ class CourseResult extends Model
   use HasFactory;
 
   protected $guarded = [];
-  protected $casts = ['term' => TermType::class];
+  protected $casts = [
+    'term' => TermType::class,
+    'teacher_user_id' => 'integer',
+    'course_id' => 'integer',
+    'student_id' => 'integer'
+  ];
   public function rule()
   {
     return [

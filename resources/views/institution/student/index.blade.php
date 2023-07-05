@@ -1,5 +1,5 @@
 <?php
-$title = "Institution - All Students | " . SITE_TITLE;
+$title = 'Institution - All Students | ' . SITE_TITLE;
 $confirmMsg = 'Are you sure?';
 ?>
 @extends('institution.layout')
@@ -78,7 +78,7 @@ $confirmMsg = 'Are you sure?';
                             <div><small><i class='fa fa-edit'></i> 
                             <a href='{{route('institution.student.edit', [$institution->id, $record['id']])}}' class='btn btn-link'>Edit</a></small></div>
                             {{--
-                            @if($record['status'] == STATUS_SUSPENDED)
+                            @if($record['status'] == 'suspended')
                                 <div><small><i class='fa fa-times'></i> 
                                 <a onclick='return confirmAction()'  href='{{route('institution.student.unsuspend', [$institution->id, $record['id']])}}' class='btn btn-link'>Unsuspend</a></small></div>
                             @else
@@ -99,7 +99,7 @@ $confirmMsg = 'Are you sure?';
 		@include('common.paginate')
 	<div class="my-2">
     	<button class="btn btn-danger disabled" id="btn-delete-selected"
-    		onclick="handleSubmit('{{STATUS_INVALID}}')" >
+    		onclick="handleSubmit('{{'invalid'}}')" >
     		<i class="fa fa-trash"></i> Delete Selected Students 
     	</button>
     </div>

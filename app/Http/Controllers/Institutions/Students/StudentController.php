@@ -63,7 +63,7 @@ class StudentController extends Controller
     Institution $institution,
     Student $student
   ) {
-    RecordStudent::make($request->validated())->update($student->user);
+    RecordStudent::make($request->validated())->update($student);
 
     return $this->ok();
   }

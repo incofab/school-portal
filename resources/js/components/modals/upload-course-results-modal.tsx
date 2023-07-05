@@ -22,6 +22,7 @@ import CourseTeacherSelect from '../selectors/course-teacher-select';
 import FormControlBox from '../forms/form-control-box';
 import AcademicSessionSelect from '../selectors/academic-session-select';
 import EnumSelect from '../dropdown-select/enum-select';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   isOpen: boolean;
@@ -39,14 +40,15 @@ export default function UploadCourseResultsModal({
   const isAdmin = useIsAdmin();
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
+  const { currentAcademicSession, currentTerm } = useSharedProps();
   const webForm = useWebForm({
+    academic_session_id: currentAcademicSession,
+    term: currentTerm,
     files: [] as FileObject[],
     course_teacher_id: {
       label: courseTeacher?.user?.full_name,
       value: courseTeacher?.id,
     } as Nullable<SelectOptionType<number>>,
-    academic_session_id: '',
-    term: '',
   });
 
   const onSubmit = async () => {
@@ -55,7 +57,7 @@ export default function UploadCourseResultsModal({
       const file = data.files[0] ?? null;
       formData.append('file', file?.file, file?.getNameWithExtension());
       // formData.append('user_id', data.course_teacher_id?.value + '');
-      formData.append('academic_session_id', data.academic_session_id);
+      formData.append('academic_session_id', String(data.academic_session_id));
       formData.append('term', data.term);
 
       return web.post(

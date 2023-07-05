@@ -55,7 +55,7 @@ class RouteServiceProvider extends ServiceProvider
         ->name('institutions.')
         ->group(base_path('routes/institution.php'));
 
-      Route::middleware(['web', 'manager'])
+      Route::middleware(['web', 'auth', 'manager'])
         ->prefix('manager')
         ->name('managers.')
         ->group(base_path('routes/manager.php'));

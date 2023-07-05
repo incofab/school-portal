@@ -11,7 +11,7 @@ import React, { useMemo } from 'react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Div } from '@/components/semantic';
 import useSharedProps from '@/hooks/use-shared-props';
-import '@/style/result-sheet.css';
+import '@/../../public/style/result-sheet.css';
 import { SelectOptionType, TermType } from '@/types/types';
 import ResultUtil from '@/util/result-util';
 import { PageTitle } from '@/components/page-header';

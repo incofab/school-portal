@@ -132,4 +132,9 @@ class Institution extends Model
   {
     return $this->hasMany(InstitutionSetting::class);
   }
+
+  function admissionApplications()
+  {
+    return $this->hasMany(AdmissionApplication::class);
+  }
 }

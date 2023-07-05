@@ -11,6 +11,10 @@ class Classification extends Model
   use HasFactory, InstitutionScope;
 
   public $guarded = [];
+  protected $casts = [
+    'institution_id' => 'integer',
+    'has_equal_subjects' => 'boolean'
+  ];
 
   function institution()
   {

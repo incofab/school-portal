@@ -16,13 +16,7 @@ import { generateRandomString } from '@/util/util';
 import InputForm from '../forms/input-form';
 import { Fee } from '@/types/models';
 import FeeSelect from '../selectors/fee-select';
-import StaffSelect from '../selectors/staff-select';
-import {
-  InstitutionUserType,
-  Nullable,
-  SelectOptionType,
-  TermType,
-} from '@/types/types';
+import { SelectOptionType, TermType } from '@/types/types';
 import AcademicSessionSelect from '../selectors/academic-session-select';
 import EnumSelect from '../dropdown-select/enum-select';
 import StudentSelect from '../selectors/student-select';
@@ -42,13 +36,14 @@ export default function RecordFeePaymentModal({
   fees,
 }: Props) {
   const { handleResponseToast } = useMyToast();
-  const { currentInstitution } = useSharedProps();
+  const { currentInstitution, currentAcademicSession, currentTerm } =
+    useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const [classId, setClassId] = useState<undefined | number>(undefined);
   const webForm = useWebForm({
+    academic_session_id: currentAcademicSession,
+    term: currentTerm,
     fee_id: '',
-    academic_session_id: '',
-    term: '',
     reference: `${currentInstitution.id} - ${generateRandomString(16)}`,
     user_id: {} as SelectOptionType<number>,
     amount: '',

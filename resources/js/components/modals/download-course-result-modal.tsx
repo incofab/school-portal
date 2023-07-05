@@ -12,6 +12,7 @@ import EnumSelect from '../dropdown-select/enum-select';
 import { TermType } from '@/types/types';
 import CourseSelect from '../selectors/course-select';
 import { preventNativeSubmit } from '@/util/util';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   isOpen: boolean;
@@ -26,11 +27,12 @@ export default function DownloadCourseResultModal({
 }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
+  const { currentAcademicSession, currentTerm } = useSharedProps();
   const webForm = useWebForm({
+    academicSession: currentAcademicSession,
+    term: currentTerm,
     files: [] as FileObject[],
     classification: '',
-    academicSession: '',
-    term: '',
     course: '',
   });
 

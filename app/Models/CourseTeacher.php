@@ -10,6 +10,11 @@ class CourseTeacher extends Model
   use HasFactory;
 
   protected $guarded = [];
+  protected $casts = [
+    'classification_id' => 'integer',
+    'user_id' => 'integer',
+    'course_id' => 'integer'
+  ];
 
   public function user()
   {

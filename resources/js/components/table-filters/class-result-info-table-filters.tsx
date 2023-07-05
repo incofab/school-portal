@@ -6,6 +6,7 @@ import ClassificationSelect from '../selectors/classification-select';
 import { TermType } from '@/types/types';
 import AcademicSessionSelect from '../selectors/academic-session-select';
 import EnumSelect from '../dropdown-select/enum-select';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   isOpen: boolean;
@@ -17,10 +18,11 @@ export default function ClassResultInfoTableFilters({
   onClose,
 }: Props) {
   const { params } = useQueryString();
+  const { currentAcademicSession, currentTerm } = useSharedProps();
   const [filters, setFilters] = useState(() => ({
+    academicSession: params.academicSession ?? currentAcademicSession,
+    term: params.term ?? currentTerm,
     classification: params.classification ?? '',
-    academicSession: params.academicSession ?? '',
-    term: params.term ?? '',
   }));
 
   return (

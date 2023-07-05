@@ -88,3 +88,14 @@ export enum InstitutionSettingType {
   CurrentTerm = 'current-term',
   CurrentAcademicSession = 'current-academic-session',
 }
+
+export enum Religion {
+  Christianity = 'christianity',
+  Islam = 'islam',
+  Others = 'others',
+}
+
+export enum Nationality {
+  Nigeria = 'nigeria',
+  Others = 'others',
+}

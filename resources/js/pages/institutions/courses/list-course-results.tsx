@@ -76,7 +76,7 @@ export default function ListCourseResults({
 
   const headers: ServerPaginatedTableHeader<CourseResult>[] = [
     {
-      label: 'User',
+      label: 'Student',
       value: 'student.user.full_name',
     },
     {

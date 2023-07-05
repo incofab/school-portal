@@ -29,7 +29,7 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
   const courseResultInfoFilterToggle = useModalToggle();
   const downloadCourseResultModalToggle = useModalToggle();
   const uploadCourseResultModalToggle = useModalValueToggle();
-  const {instRoute} = useInstitutionRoute();
+  const { instRoute } = useInstitutionRoute();
   const isStaff = useIsStaff();
 
   const headers: ServerPaginatedTableHeader<CourseResultInfo>[] = [
@@ -82,6 +82,8 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
             institution: currentInstitution.uuid,
             classification: row.classification_id,
             course: row.course_id,
+            term: row.term,
+            academicSession: row.academic_session_id,
           })}
           variant={'link'}
           title="Student Scores"
@@ -93,7 +95,9 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
   return (
     <DashboardLayout>
       <Slab>
-        <SlabHeading title="Recorded Result Detail" rightElement={
+        <SlabHeading
+          title="Recorded Result Detail"
+          rightElement={
             <HStack>
               {isStaff && (
                 <>
@@ -106,11 +110,13 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
                   <BrandButton
                     leftIcon={<Icon as={CloudArrowDownIcon} />}
                     onClick={downloadCourseResultModalToggle.open}
-                    title='Download'
+                    title="Download"
                   />
                 </>
               )}
-            </HStack>} />
+            </HStack>
+          }
+        />
         <SlabBody>
           <ServerPaginatedTable
             scroll={true}
@@ -131,7 +137,10 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
           {...uploadCourseResultModalToggle.props}
           onSuccess={() => Inertia.reload({ only: ['courseResultInfo'] })}
         />
-        <DownloadCourseResultModal {...downloadCourseResultModalToggle.props} onSuccess={() => Inertia.reload({only: ['courseResultInfo']})} />
+        <DownloadCourseResultModal
+          {...downloadCourseResultModalToggle.props}
+          onSuccess={() => Inertia.reload({ only: ['courseResultInfo'] })}
+        />
         <CourseResultInfoTableFilters {...courseResultInfoFilterToggle.props} />
       </Slab>
     </DashboardLayout>

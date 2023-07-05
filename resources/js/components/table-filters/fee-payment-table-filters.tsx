@@ -7,6 +7,7 @@ import { InstitutionUserType, TermType } from '@/types/types';
 import AcademicSessionSelect from '../selectors/academic-session-select';
 import EnumSelect from '../dropdown-select/enum-select';
 import FeeSelect from '../selectors/fee-select';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   isOpen: boolean;
@@ -15,11 +16,12 @@ interface Props {
 
 export default function FeePaymentTableFilters({ isOpen, onClose }: Props) {
   const { params } = useQueryString();
+  const { currentAcademicSession, currentTerm } = useSharedProps();
   const [filters, setFilters] = useState(() => ({
+    term: params.term ?? currentTerm,
+    academicSession: params.academicSession ?? currentAcademicSession,
     fee: params.fee ?? '',
-    academicSession: params.academicSession ?? '',
     user: params.user ?? '',
-    term: params.term ?? '',
   }));
 
   return (

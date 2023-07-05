@@ -55,8 +55,15 @@ class CourseResultsController extends Controller
   {
     $courseTeacher->load(['course', 'user', 'classification']);
     $this->validateUser($courseTeacher);
+    $courseResultQuery = CourseResult::query()
+      ->where('course_id', $courseTeacher->course_id)
+      ->where('teacher_user_id', $courseTeacher->user_id)
+      ->with('academicSession', 'course', 'student.user')
+      ->latest('updated_at');
+
     return Inertia::render('institutions/courses/record-course-result', [
-      'courseTeacher' => $courseTeacher
+      'courseTeacher' => $courseTeacher,
+      'courseResults' => paginateFromRequest($courseResultQuery)
     ]);
   }
 

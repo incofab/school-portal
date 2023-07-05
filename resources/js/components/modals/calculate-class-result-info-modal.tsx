@@ -10,6 +10,7 @@ import FormControlBox from '../forms/form-control-box';
 import AcademicSessionSelect from '../selectors/academic-session-select';
 import EnumSelect from '../dropdown-select/enum-select';
 import ClassificationSelect from '../selectors/classification-select';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   isOpen: boolean;
@@ -25,10 +26,11 @@ export default function CalculateClassResultInfoModal({
   const isAdmin = useIsAdmin();
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
+  const { currentAcademicSession, currentTerm } = useSharedProps();
   const webForm = useWebForm({
+    academic_session_id: currentAcademicSession,
+    term: currentTerm,
     classification: '',
-    academic_session_id: '',
-    term: '',
   });
 
   const onSubmit = async () => {

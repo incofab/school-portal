@@ -3,7 +3,6 @@ import route from '@/util/route';
 import { AcademicSession } from '@/types/models';
 import { Props } from 'react-select';
 import SingleQuerySelect from '../dropdown-select/single-query-select';
-import useSharedProps from '@/hooks/use-shared-props';
 
 interface MyProps {
   selectValue?: number | string;
@@ -15,11 +14,6 @@ export default function AcademicSessionSelect({
   academicSessions,
   ...props
 }: MyProps & Props) {
-  if (!selectValue) {
-    const { currentAcademicSession } = useSharedProps();
-    selectValue = currentAcademicSession;
-  }
-
   return (
     <SingleQuerySelect
       {...props}

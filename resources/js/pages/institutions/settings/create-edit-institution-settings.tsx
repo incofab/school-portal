@@ -29,13 +29,14 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const [activeSetting, setActiveSetting] = useState<string>('');
-  const { currentTerm } = useSharedProps();
+  const { currentTerm, currentAcademicSession } = useSharedProps();
 
   const webForm = useWebForm({
     [InstitutionSettingType.CurrentTerm]:
       settings[InstitutionSettingType.CurrentTerm]?.value ?? currentTerm,
     [InstitutionSettingType.CurrentAcademicSession]:
-      settings[InstitutionSettingType.CurrentAcademicSession]?.value ?? '',
+      settings[InstitutionSettingType.CurrentAcademicSession]?.value ??
+      currentAcademicSession,
     [InstitutionSettingType.ResultTemplate]:
       settings[InstitutionSettingType.ResultTemplate]?.value ?? '',
   });

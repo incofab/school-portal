@@ -32,7 +32,7 @@ class ExamSubject extends Model
     return [];
   }
 
-  const STATUSES = [STATUS_ACTIVE, STATUS_ENDED];
+  const STATUSES = ['active', 'ended'];
 
   function insert($postvalidatedPostData)
   {
@@ -40,7 +40,7 @@ class ExamSubject extends Model
     $arr['exam_no'] = $postvalidatedPostData['exam_no'];
     $arr['course_id'] = $postvalidatedPostData['course_id'];
     $arr['course_session_id'] = $postvalidatedPostData['course_session_id'];
-    $arr['status'] = STATUS_ACTIVE;
+    $arr['status'] = 'active';
 
     $data = $this->create($arr);
 
@@ -73,12 +73,12 @@ class ExamSubject extends Model
       $arr['exam_no'] = $exam['exam_no'];
       $arr['course_id'] = $eventSubject['course_id'];
       $arr['course_session_id'] = $eventSubject['course_session_id'];
-      $arr['status'] = STATUS_ACTIVE;
+      $arr['status'] = 'active';
 
       static::create($arr);
     }
 
-    return retS('Data recorded');
+    return successRes('Data recorded');
   }
 
   function exam()

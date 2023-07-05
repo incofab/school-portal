@@ -20,6 +20,15 @@ Route::get('result', [Web\TermResultActivationController::class, 'create'])
 Route::post('activate-result', [Web\TermResultActivationController::class, 'store'])
     ->name('activate-term-result.store');
 
+Route::group(['prefix' => '{institution}/admissions/'], function () {
+    Route::get('apply', [Web\Institutions\AdmissionApplicationController::class, 'create'])
+        ->name('institutions.admissions.create');
+    Route::post('apply', [Web\Institutions\AdmissionApplicationController::class, 'store'])
+        ->name('institutions.admissions.store');
+    Route::get('{admissionApplication}/application-success', [Web\Institutions\AdmissionApplicationController::class, 'successMessage'])
+        ->name('institutions.admissions.success');
+});
+
 Route::group(['middleware' => ['guest']], function () {
     Route::get('login', [Web\AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [Web\AuthController::class, 'login'])->name('login.store');
@@ -39,18 +48,18 @@ Route::group(['middleware' => ['guest']], function () {
     ->name('password.update');
 });
 
-Route::any('/logout', [Web\AuthController::class, 'logout'])->name('logout');
-
 Route::group(['middleware' => ['auth']], function () {
-  Route::get('/dashboard', [Web\Users\UserController::class, 'index'])->name('user.dashboard');
+    Route::get('/dashboard', [Web\Users\UserController::class, 'index'])->name('user.dashboard');
     
-  Route::get('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'edit'])
-  ->name('users.password.edit');
-  Route::put('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'update'])
-  ->name('users.password.update');
-
-  Route::get('impersonate/{user}', Web\Users\ImpersonateUserController::class)->name('users.impersonate');
-  Route::delete('impersonate/{user}', Web\Users\StopImpersonatingUserController::class)->name('users.impersonate.destroy');
+    Route::get('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'edit'])
+    ->name('users.password.edit');
+    Route::put('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'update'])
+    ->name('users.password.update');
+    
+    Route::get('impersonate/{user}', Web\Users\ImpersonateUserController::class)->name('users.impersonate');
+    Route::delete('impersonate/{user}', Web\Users\StopImpersonatingUserController::class)->name('users.impersonate.destroy');
+    
+    Route::any('/logout', [Web\AuthController::class, 'logout'])->name('logout');
 });
 
 

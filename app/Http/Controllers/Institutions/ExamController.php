@@ -298,7 +298,7 @@ class ExamController extends Controller
     $pausedTime = \Carbon\Carbon::parse($exam['pause_time']);
     $endTime = \Carbon\Carbon::parse($exam['end_time']);
 
-    if ($exam['status'] === STATUS_PAUSED) {
+    if ($exam['status'] === 'paused') {
       $timeElapsed = $startTime->diffInSeconds($pausedTime);
       $timeRemaining = $event['duration'] - $timeElapsed;
     } else {
@@ -323,7 +323,7 @@ class ExamController extends Controller
       ->with(['student', 'event'])
       ->firstOrFail();
 
-    if ($exam['status'] !== STATUS_PAUSED && empty($exam['end_time'])) {
+    if ($exam['status'] !== 'paused' && empty($exam['end_time'])) {
       return redirect(route('institution.exam.index', $institutionId))->with(
         'error',
         'Exam has not started'
