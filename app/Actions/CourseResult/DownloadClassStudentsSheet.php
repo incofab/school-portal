@@ -63,15 +63,15 @@ class DownloadClassStudentsSheet
     $this->workSheet
       ->getColumnDimension(ResultRecordingColumn::StudentName)
       ->setWidth(25);
-    $this->workSheet
-      ->getColumnDimension(ResultRecordingColumn::Assesment1Result)
-      ->setWidth(10);
-    $this->workSheet
-      ->getColumnDimension(ResultRecordingColumn::Assesment2Result)
-      ->setWidth(10);
-    $this->workSheet
-      ->getColumnDimension(ResultRecordingColumn::ExamResult)
-      ->setWidth(12);
+    // $this->workSheet
+    //   ->getColumnDimension(ResultRecordingColumn::Assesment1Result)
+    //   ->setWidth(10);
+    // $this->workSheet
+    //   ->getColumnDimension(ResultRecordingColumn::Assesment2Result)
+    //   ->setWidth(10);
+    // $this->workSheet
+    //   ->getColumnDimension(ResultRecordingColumn::ExamResult)
+    //   ->setWidth(12);
 
     $this->workSheet->setCellValue(
       ResultRecordingColumn::StudentID . $row,
@@ -82,18 +82,18 @@ class DownloadClassStudentsSheet
       ResultRecordingColumn::StudentName . $row,
       'Student'
     );
-    $this->workSheet->setCellValue(
-      ResultRecordingColumn::Assesment1Result . $row,
-      'Assesment 1'
-    );
-    $this->workSheet->setCellValue(
-      ResultRecordingColumn::Assesment2Result . $row,
-      'Assesment 2'
-    );
-    $this->workSheet->setCellValue(
-      ResultRecordingColumn::ExamResult . $row,
-      'Exam'
-    );
+    // $this->workSheet->setCellValue(
+    //   ResultRecordingColumn::Assesment1Result . $row,
+    //   'Assesment 1'
+    // );
+    // $this->workSheet->setCellValue(
+    //   ResultRecordingColumn::Assesment2Result . $row,
+    //   'Assesment 2'
+    // );
+    // $this->workSheet->setCellValue(
+    //   ResultRecordingColumn::ExamResult . $row,
+    //   'Exam'
+    // );
   }
 
   public function insert(Student $student, int $row)

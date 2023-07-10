@@ -48,7 +48,11 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
     {
       label: 'Term',
       value: 'term',
-      render: (row) => <Text>{startCase(row.term)}</Text>,
+      render: (row) => (
+        <Text>
+          {startCase(row.term)} {row.for_mid_term ? 'Mid-' : ''} Term
+        </Text>
+      ),
     },
     {
       label: 'Num of Students',
@@ -84,6 +88,7 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
             course: row.course_id,
             term: row.term,
             academicSession: row.academic_session_id,
+            forMidTerm: row.for_mid_term,
           })}
           variant={'link'}
           title="Student Scores"

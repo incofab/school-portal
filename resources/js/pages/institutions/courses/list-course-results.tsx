@@ -90,15 +90,19 @@ export default function ListCourseResults({
     {
       label: 'Term',
       value: 'term',
-      render: (row) => <Text>{startCase(row.term)}</Text>,
+      render: (row) => (
+        <Text>
+          {startCase(row.term)} {row.for_mid_term ? 'Mid-' : ''} Term
+        </Text>
+      ),
     },
     {
-      label: '1st CA',
-      value: 'first_assessment',
-    },
-    {
-      label: '2nd CA',
-      value: 'second_assessment',
+      label: 'Assessment',
+      render: function (row) {
+        return Object.entries(row.assessment_values ?? {})
+          .map(([key, val]) => `${startCase(key)} = ${val}`)
+          .join(',\n');
+      },
     },
     {
       label: 'Exam',

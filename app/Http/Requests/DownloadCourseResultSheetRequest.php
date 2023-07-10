@@ -60,7 +60,8 @@ class DownloadCourseResultSheetRequest extends FormRequest
       'academicSession' => ['required'],
       'classification' => ['required'],
       'term' => ['required', new Enum(TermType::class)],
-      'course' => ['required']
+      'course' => ['required'],
+      'forMidTerm' => ['required', 'boolean']
     ];
   }
 }

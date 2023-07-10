@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, HStack, VStack } from '@chakra-ui/react';
+import { Button, Checkbox, HStack, VStack } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
 import { TermType } from '@/types/types';
@@ -26,11 +26,13 @@ export default function CalculateClassResultInfoModal({
   const isAdmin = useIsAdmin();
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSession, currentTerm } = useSharedProps();
+  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+    useSharedProps();
   const webForm = useWebForm({
     academic_session_id: currentAcademicSession,
     term: currentTerm,
     classification: '',
+    for_mid_term: false,
   });
 
   const onSubmit = async () => {
@@ -95,6 +97,22 @@ export default function CalculateClassResultInfoModal({
               required
             />
           </FormControlBox>
+          {usesMidTermResult && (
+            <FormControlBox
+              form={webForm as any}
+              formKey="for_mid_term"
+              title=""
+            >
+              <Checkbox
+                isChecked={webForm.data.for_mid_term}
+                onChange={(e) =>
+                  webForm.setValue('for_mid_term', e.currentTarget.checked)
+                }
+              >
+                For Mid-Term Result
+              </Checkbox>
+            </FormControlBox>
+          )}
         </VStack>
       }
       footerContent={

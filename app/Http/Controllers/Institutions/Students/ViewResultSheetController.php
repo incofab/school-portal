@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Institutions\Students;
 
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
+use App\Models\Assessment;
 use App\Models\Classification;
 use App\Models\ClassResultInfo;
 use App\Models\CourseResultInfo;
@@ -83,6 +84,11 @@ class ViewResultSheetController extends Controller
       ->getQuery()
       ->first();
 
+    $assessments = Assessment::query()
+      ->forMidTerm($termResult->for_mid_term)
+      ->forTerm($term)
+      ->get();
+
     $viewData = [
       'institution' => currentInstitution(),
       'courseResults' => $courseResults,
@@ -93,10 +99,11 @@ class ViewResultSheetController extends Controller
       'termResult' => $termResult,
       'classResultInfo' => $classResultInfo,
       'courseResultInfoData' => $courseResultInfoData,
-      'resultDetails' => $this->getResultDetails($classResultInfo, $termResult)
+      'resultDetails' => $this->getResultDetails($classResultInfo, $termResult),
+      'assessments' => $assessments
     ];
 
-    return inertia('institutions/result-sheets/template-1', $viewData);
+    return inertia('institutions/result-sheets/template-2', $viewData);
     // if (request('download')) {
     //   return $this->downloadAsPDF($viewData);
     // }

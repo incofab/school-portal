@@ -1,10 +1,23 @@
-import React from 'react';
-import { Divider, FormControl, Input, Spacer, VStack } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import {
+  Checkbox,
+  Divider,
+  FormControl,
+  FormLabel,
+  Input,
+  Spacer,
+  VStack,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { AcademicSession, CourseResult, CourseTeacher } from '@/types/models';
+import {
+  AcademicSession,
+  Assessment,
+  CourseResult,
+  CourseTeacher,
+} from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -33,7 +46,9 @@ interface Props {
   courseResult?: CourseResult;
   academicSession?: AcademicSession;
   term?: TermType;
+  for_mid_term?: boolean;
   courseResults?: PaginationResponse<CourseResult>;
+  assessments: Assessment[];
 }
 
 export default function RecordCourseResult({
@@ -41,14 +56,22 @@ export default function RecordCourseResult({
   courseTeacher,
   academicSession,
   term,
+  for_mid_term,
   courseResults,
+  assessments,
 }: Props) {
   const { handleResponseToast } = useMyToast();
-  const { currentAcademicSession, currentTerm } = useSharedProps();
+  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+    useSharedProps();
   const { instRoute } = useInstitutionRoute();
+  const [assessmentValue, setAssessmentValue] = useState<{
+    [key: string]: number | string;
+  }>(courseResult?.assessment_values ?? {});
+
   const webForm = useWebForm({
     academic_session_id: academicSession?.id ?? currentAcademicSession,
     term: term ?? currentTerm,
+    for_mid_term: for_mid_term ?? false,
     result: {
       student_id: courseResult?.student
         ? {
@@ -56,8 +79,6 @@ export default function RecordCourseResult({
             value: courseResult.student_id,
           }
         : ({} as Nullable<SelectOptionType<number>>),
-      first_assessment: courseResult?.first_assessment ?? '',
-      second_assessment: courseResult?.second_assessment ?? '',
       exam: courseResult?.exam ?? '',
     },
   });
@@ -70,9 +91,8 @@ export default function RecordCourseResult({
           {
             ...data.result,
             student_id: data.result.student_id?.value,
-            first_assessment: data.result.first_assessment ?? 0,
-            second_assessment: data.result.second_assessment ?? 0,
             exam: data.result.exam ?? 0,
+            ass: assessmentValue,
           },
         ],
       });
@@ -83,12 +103,9 @@ export default function RecordCourseResult({
     if (courseResult) {
       Inertia.visit(instRoute('course-results.index'));
     } else {
-      webForm.setValue('result', {
-        student_id: {} as SelectOptionType<number>,
-        first_assessment: '',
-        second_assessment: '',
-        exam: '',
-      });
+      webForm.reset();
+      setAssessmentValue({});
+      Inertia.reload();
     }
   };
 
@@ -162,36 +179,28 @@ export default function RecordCourseResult({
                     required
                   />
                 </FormControlBox>
-                <FormControlBox
-                  form={webForm as any}
-                  formKey="result.first_assessment"
-                  title="Assessment 1"
-                >
-                  <Input
-                    value={webForm.data.result.first_assessment}
-                    onChange={(e) =>
-                      webForm.setValue('result', {
-                        ...webForm.data.result,
-                        first_assessment: e.currentTarget.value,
-                      })
-                    }
-                  />
-                </FormControlBox>
-                <FormControlBox
-                  form={webForm as any}
-                  formKey="result.second_assessment"
-                  title="Assessment 2"
-                >
-                  <Input
-                    value={webForm.data.result.second_assessment}
-                    onChange={(e) =>
-                      webForm.setValue('result', {
-                        ...webForm.data.result,
-                        second_assessment: e.currentTarget.value,
-                      })
-                    }
-                  />
-                </FormControlBox>
+                {assessments.map((assessment) => {
+                  if (
+                    assessment.term &&
+                    assessment.term === webForm.data.term
+                  ) {
+                    return null;
+                  }
+                  return (
+                    <FormControl key={assessment.title + webForm.data.term}>
+                      <FormLabel>{startCase(assessment.title)}</FormLabel>
+                      <Input
+                        value={assessmentValue[assessment.title] ?? ''}
+                        onChange={(e) =>
+                          setAssessmentValue({
+                            ...assessmentValue,
+                            [assessment.title]: e.currentTarget.value,
+                          })
+                        }
+                      />
+                    </FormControl>
+                  );
+                })}
                 <FormControlBox
                   form={webForm as any}
                   formKey="result.exam"
@@ -207,6 +216,25 @@ export default function RecordCourseResult({
                     }
                   />
                 </FormControlBox>
+                {usesMidTermResult && (
+                  <FormControlBox
+                    form={webForm as any}
+                    formKey="for_mid_term"
+                    title=""
+                  >
+                    <Checkbox
+                      isChecked={webForm.data.for_mid_term}
+                      onChange={(e) =>
+                        webForm.setValue(
+                          'for_mid_term',
+                          e.currentTarget.checked
+                        )
+                      }
+                    >
+                      For Mid-Term Result
+                    </Checkbox>
+                  </FormControlBox>
+                )}
                 <FormControl>
                   <FormButton isLoading={webForm.processing} />
                 </FormControl>
@@ -242,15 +270,17 @@ function ListTeachersCourseResults({
     {
       label: 'Session/Term',
       render: (row) =>
-        `${row.academic_session?.title} - ${startCase(row.term)}`,
+        `${row.academic_session?.title} - ${startCase(row.term)} ${
+          row.for_mid_term ? 'Mid Term' : ''
+        }`,
     },
     {
-      label: '1st CA',
-      value: 'first_assessment',
-    },
-    {
-      label: '2nd CA',
-      value: 'second_assessment',
+      label: 'Assessment',
+      render: function (row) {
+        return Object.entries(row.assessment_values ?? {})
+          .map(([key, val]) => `${startCase(key)} = ${val}`)
+          .join(',\n');
+      },
     },
     {
       label: 'Exam',

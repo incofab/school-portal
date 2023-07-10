@@ -12,7 +12,13 @@ class TermResult extends Model
 
   public $guarded = [];
 
-  protected $casts = ['term' => TermType::class];
+  protected $casts = [
+    'term' => TermType::class,
+    'teacher_user_id' => 'integer',
+    'student_id' => 'integer',
+    'institution_id' => 'integer',
+    'for_mid_term' => 'boolean'
+  ];
 
   function institution()
   {

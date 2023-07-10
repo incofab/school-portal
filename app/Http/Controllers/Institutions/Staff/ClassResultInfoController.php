@@ -45,13 +45,15 @@ class ClassResultInfoController extends Controller
   ) {
     $request->validate([
       'academic_session_id' => ['required', 'exists:academic_sessions,id'],
-      'term' => ['required', new Enum(TermType::class)]
+      'term' => ['required', new Enum(TermType::class)],
+      'for_mid_term' => ['required', 'boolean']
     ]);
 
     ClassResultInfoAction::make()->calculate(
       $classification,
       $request->academic_session_id,
-      $request->term
+      $request->term,
+      $request->for_mid_term
     );
     return $this->ok();
   }

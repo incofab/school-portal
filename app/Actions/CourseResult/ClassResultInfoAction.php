@@ -20,19 +20,22 @@ class ClassResultInfoAction
     return $this->calculate(
       $classResultInfo->classification,
       $classResultInfo->academic_session_id,
-      $classResultInfo->term
+      $classResultInfo->term,
+      $classResultInfo->for_mid_term
     );
   }
 
   public function calculate(
     Classification $classification,
     int $academicSessionId,
-    string|TermType $term
+    string|TermType $term,
+    bool $forMidTerm
   ): ClassResultInfo {
     $queryCourseResults = CourseResult::query()
       ->where('classification_id', $classification->id)
       ->where('academic_session_id', $academicSessionId)
-      ->where('term', $term);
+      ->where('term', $term)
+      ->where('for_mid_term', $forMidTerm);
 
     $classResultsGroupedByStudents = (clone $queryCourseResults)
       ->select('student_id')
@@ -60,8 +63,8 @@ class ClassResultInfoAction
     $bindingData = [
       'institution_id' => $classification->institution_id,
       'term' => $term,
+      'for_mid_term' => $forMidTerm,
       'academic_session_id' => $academicSessionId,
-      // 'course_id' => $this->courseResult->id,
       'classification_id' => $classification->id
     ];
 

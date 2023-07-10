@@ -144,6 +144,11 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin],
         },
         {
+          label: 'Assessments',
+          route: instRoute('assessments.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
           label: 'Cummulative Results',
           route: instRoute('cummulative-result.index'),
           roles: [InstitutionUserType.Admin],

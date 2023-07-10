@@ -16,7 +16,7 @@ import { setUrlFilterOptions } from '@/util/util';
 interface Props {
   isOpen: boolean;
   onClose(): void;
-  filters: { [key: string]: string | number | boolean };
+  filters: { [key: string]: string | number | boolean | undefined | null };
 }
 
 export default function BaseTableFilter({

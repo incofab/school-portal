@@ -1,5 +1,6 @@
 import {
   AcademicSession,
+  Assessment,
   ClassResultInfo,
   Classification,
   CourseResult,
@@ -16,7 +17,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React from 'react';
-import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
 import useSharedProps from '@/hooks/use-shared-props';
@@ -32,6 +32,7 @@ interface Props {
   academicSession: AcademicSession;
   classification: Classification;
   student: Student;
+  assessments: Assessment[];
 }
 
 export default function Template1({
@@ -42,6 +43,7 @@ export default function Template1({
   classification,
   student,
   courseResultInfoData,
+  assessments,
 }: Props) {
   const { currentInstitution } = useSharedProps();
 
@@ -112,8 +114,8 @@ export default function Template1({
                 textAlign={'center'}
                 fontSize={'18px'}
               >
-                {academicSession?.title} - {startCase(termResult.term)} Term
-                Result
+                {academicSession?.title} - {startCase(termResult.term)}{' '}
+                {termResult.for_mid_term ? 'Mid ' : ''}Term Result
               </Text>
             </VStack>
             <Avatar
@@ -145,12 +147,11 @@ export default function Template1({
               <thead>
                 <tr>
                   <th>Subjects</th>
-                  <th>
-                    <VerticalText text="Assessment 1" />
-                  </th>
-                  <th>
-                    <VerticalText text="Assessment 2" />
-                  </th>
+                  {assessments.map((assessment) => (
+                    <th>
+                      <VerticalText text={startCase(assessment.title)} />
+                    </th>
+                  ))}
                   <th>
                     <VerticalText text="Exam" />
                   </th>
@@ -173,8 +174,12 @@ export default function Template1({
                 {courseResults.map((courseResult) => (
                   <tr key={courseResult.id}>
                     <td>{courseResult.course?.title}</td>
-                    <td>{courseResult.first_assessment}</td>
-                    <td>{courseResult.second_assessment}</td>
+                    {assessments.map((assessment) => (
+                      <td>
+                        {courseResult.assessment_values[assessment.title] ??
+                          '-'}
+                      </td>
+                    ))}
                     <td>{courseResult.exam}</td>
                     <td>{courseResult.result}</td>
                     <td>{courseResult.grade}</td>

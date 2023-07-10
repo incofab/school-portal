@@ -17,6 +17,7 @@ return new class extends Migration {
       $table->unsignedBigInteger('institution_id');
       $table->unsignedBigInteger('user_id');
       $table->string('role');
+      $table->softDeletes();
 
       $table
         ->foreign('institution_id')

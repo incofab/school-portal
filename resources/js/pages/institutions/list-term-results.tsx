@@ -37,7 +37,11 @@ export default function ListTermResults({ termResults }: Props) {
     {
       label: 'Term',
       value: 'term',
-      render: (row) => <Text>{startCase(row.term)}</Text>,
+      render: (row) => (
+        <Text>
+          {startCase(row.term)} {row.for_mid_term ? 'Mid-' : ''}Term
+        </Text>
+      ),
     },
     {
       label: 'Position',

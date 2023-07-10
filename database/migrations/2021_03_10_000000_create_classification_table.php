@@ -18,6 +18,12 @@ return new class extends Migration {
       $table->unsignedBigInteger('institution_id');
       $table->string('title');
       $table->text('description')->nullable(true);
+      $table
+        ->boolean('has_equal_subjects')
+        ->comment(
+          'Indication to show if all students in the class offer the same number of subjects'
+        )
+        ->default(true);
       $table->timestamps();
 
       $table

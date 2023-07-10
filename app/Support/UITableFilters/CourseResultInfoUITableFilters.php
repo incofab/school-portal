@@ -17,6 +17,7 @@ class CourseResultInfoUITableFilters extends BaseUITableFilter
       'course' => ['sometimes', 'integer'],
       'classification' => ['sometimes', 'integer'],
       'academicSession' => ['sometimes', 'integer'],
+      'forMidTerm' => ['sometimes', 'boolean'],
       'term' => ['sometimes', new Enum(TermType::class)]
     ];
   }
@@ -66,6 +67,13 @@ class CourseResultInfoUITableFilters extends BaseUITableFilter
       ->when(
         $this->requestGet('term'),
         fn($q, $value) => $q->where('course_result_info.term', $value)
+      )
+      ->when(
+        $this->requestGet('forMidTerm') !== null,
+        fn($q, $value) => $q->where(
+          'course_result_info.for_mid_term',
+          $this->requestGet('forMidTerm')
+        )
       );
 
     return $this;

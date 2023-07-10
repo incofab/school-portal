@@ -6,7 +6,7 @@ import MyAsyncSelect from './my-async-select';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface Props {
-  classification?: number;
+  classification?: number | string;
 }
 
 export default function CourseTeacherSelect<
@@ -15,11 +15,15 @@ export default function CourseTeacherSelect<
   Group extends GroupBase<Option>
 >({ classification, ...props }: Props & AsyncProps<Option, IsMulti, Group>) {
   const { instRoute } = useInstitutionRoute();
+
+  const searchParams = {} as { [key: string]: any };
+  if (classification) {
+    searchParams.classification = classification;
+  }
+
   return (
     <MyAsyncSelect
-      searchUrl={instRoute('course-teachers.search', [
-        { classification: classification },
-      ])}
+      searchUrl={instRoute('course-teachers.search', searchParams)}
       label={(item: CourseTeacher) =>
         `${item.user!.full_name} - ${item.course?.title} - ${
           item.classification?.title

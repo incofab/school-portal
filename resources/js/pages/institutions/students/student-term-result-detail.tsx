@@ -2,6 +2,7 @@ import {
   AcademicSession,
   Classification,
   CourseResult,
+  Assessment,
   Student,
   TermResult,
 } from '@/types/models';
@@ -36,6 +37,7 @@ interface Props {
   classification: Classification;
   courseResults: CourseResult[];
   termResult: TermResult;
+  assessments?: Assessment[];
 }
 
 export default function StudentTermResultDetail({
@@ -45,6 +47,7 @@ export default function StudentTermResultDetail({
   classification,
   courseResults,
   termResult,
+  assessments,
 }: Props) {
   const { instRoute } = useInstitutionRoute();
   const teacherCommentModalToggle = useModalToggle();
@@ -54,14 +57,13 @@ export default function StudentTermResultDetail({
       label: 'Subject',
       value: 'course.title',
     },
-    {
-      label: '1st CA',
-      value: 'first_assessment',
-    },
-    {
-      label: '2nd CA',
-      value: 'second_assessment',
-    },
+    ...(assessments
+      ? assessments.map((item) => ({
+          label: startCase(item.title),
+          render: (row: CourseResult) =>
+            String(row.assessment_values[item.title] ?? 0),
+        }))
+      : []),
     {
       label: 'Exam',
       value: 'exam',
@@ -84,7 +86,10 @@ export default function StudentTermResultDetail({
     { label: 'Student', value: student.user?.full_name },
     { label: 'Class', value: classification.title },
     { label: 'Session', value: academicSession.title },
-    { label: 'Term', value: startCase(term) },
+    {
+      label: 'Term',
+      value: `${startCase(term)} ${termResult.for_mid_term ? 'Mid ' : ''}Term`,
+    },
     { label: 'Position', value: termResult.position },
     { label: 'Average', value: termResult.average },
   ];

@@ -39,6 +39,9 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
       currentAcademicSession,
     [InstitutionSettingType.ResultTemplate]:
       settings[InstitutionSettingType.ResultTemplate]?.value ?? '',
+    [InstitutionSettingType.UsesMidTermResult]: Boolean(
+      parseInt(settings[InstitutionSettingType.UsesMidTermResult]?.value)
+    ),
   });
 
   const submit = async (activeSetting: InstitutionSettingType) => {
@@ -113,6 +116,39 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   isLoading={
                     activeSetting ===
                       InstitutionSettingType.CurrentAcademicSession &&
+                    webForm.processing
+                  }
+                  size={'md'}
+                />
+              </HStack>
+              <Divider />
+              <Text>Uses Mid Term Results</Text>
+              <HStack align={'stretch'} spacing={2}>
+                <FormControl>
+                  <EnumSelect
+                    enumData={{ Yes: 'Yes', No: 'No' }}
+                    selectValue={
+                      webForm.data[InstitutionSettingType.UsesMidTermResult] ===
+                      true
+                        ? 'Yes'
+                        : 'No'
+                    }
+                    onChange={(e: any) =>
+                      webForm.setValue(
+                        InstitutionSettingType.UsesMidTermResult,
+                        e.value === 'Yes' ? true : false
+                      )
+                    }
+                  />
+                </FormControl>
+                <BrandButton
+                  title="Update"
+                  onClick={() =>
+                    submit(InstitutionSettingType.UsesMidTermResult)
+                  }
+                  isLoading={
+                    activeSetting ===
+                      InstitutionSettingType.UsesMidTermResult &&
                     webForm.processing
                   }
                   size={'md'}

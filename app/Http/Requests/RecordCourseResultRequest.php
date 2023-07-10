@@ -4,9 +4,8 @@ namespace App\Http\Requests;
 
 use App\Enums\TermType;
 use App\Models\Course;
+use App\Models\Assessment;
 use App\Models\Institution;
-use App\Rules\ExcelRule;
-use App\Rules\InstitutionStudentRule;
 use Arr;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
@@ -51,17 +50,16 @@ class RecordCourseResultRequest extends FormRequest
       'institution_id' => ['required'],
       'academic_session_id' => ['required', 'exists:academic_sessions,id'],
       'term' => ['required', new Enum(TermType::class)],
+      'for_mid_term' => ['required', 'boolean'],
       'result' => ['nullable', 'array', 'min:1'],
-      ...self::resultRule($this->all(), 'result.*.')
+      ...$this->resultRule($this->all(), 'result.*.')
     ];
   }
 
-  public static function resultRule($data, string $prefix = '')
+  public function resultRule($data, string $prefix = '')
   {
-    $institution = currentInstitution();
     return [
-      $prefix . 'first_assessment' => ['sometimes', 'numeric', 'min:0'],
-      $prefix . 'second_assessment' => ['sometimes', 'numeric', 'min:0'],
+      ...$this->assessmentValidationRule("{$prefix}ass."),
       $prefix . 'exam' => [
         'sometimes',
         'numeric',
@@ -69,22 +67,44 @@ class RecordCourseResultRequest extends FormRequest
         function ($attr, $value, $fail) use ($data) {
           $examPos = strrpos($attr, 'exam');
           $arrayPrefix = substr($attr, 0, $examPos);
-          $ca1 = floatval(
-            Arr::get($data, $arrayPrefix . 'first_assessment', 0)
-          );
-          $ca2 = floatval(
-            Arr::get($data, $arrayPrefix . 'second_assessment', 0)
-          );
+
+          $assessments = Arr::get($data, $arrayPrefix . 'ass', []);
+          $assessmentsTotalScore = array_sum($assessments);
+
           $exam = floatval(Arr::get($data, $arrayPrefix . 'exam', 0));
-          if ($ca1 + $ca2 + $exam > 100) {
+          if ($assessmentsTotalScore + $exam > 100) {
             $fail('Summation of scores cannot be more than 100');
           }
         }
       ],
-      $prefix . 'student_id' => [
-        'required'
-        // new InstitutionStudentRule($institution)
-      ]
+      $prefix . 'student_id' => ['required']
     ];
+  }
+
+  function assessmentValidationRule($prefix)
+  {
+    $assessments = Assessment::query()
+      ->forMidTerm($this->for_mid_term)
+      ->forTerm($this->term)
+      ->get();
+
+    $rules = [];
+
+    foreach ($assessments as $key => $assessment) {
+      $rules["{$prefix}{$assessment->title}"] = [
+        'sometimes',
+        'numeric',
+        'min:0',
+        function ($attr, $value, $fail) use ($assessment) {
+          if ($assessment->max && $value > $assessment->max) {
+            $fail(
+              "{$attr} is greater than the registered maximum ({$assessment->max})"
+            );
+            return;
+          }
+        }
+      ];
+    }
+    return $rules;
   }
 }

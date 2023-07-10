@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\SeedInitialAssessment;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
@@ -47,6 +48,7 @@ class RegistrationController extends Controller
         'uuid' => Str::orderedUuid(),
         'user_id' => $user->id
       ]);
+    SeedInitialAssessment::run($institution);
     DB::commit();
 
     Auth::login($user);

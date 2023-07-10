@@ -1,5 +1,6 @@
 import {
   AcademicSession,
+  Assessment,
   ClassResultInfo,
   Classification,
   CourseResult,
@@ -12,7 +13,6 @@ import {
   Divider,
   Flex,
   HStack,
-  SimpleGrid,
   Spacer,
   Text,
   VStack,
@@ -34,6 +34,7 @@ interface Props {
   academicSession: AcademicSession;
   classification: Classification;
   student: Student;
+  assessments: Assessment[];
 }
 
 export default function Template2({
@@ -44,6 +45,7 @@ export default function Template2({
   classification,
   student,
   courseResultInfoData,
+  assessments,
 }: Props) {
   const { currentInstitution } = useSharedProps();
 
@@ -79,6 +81,14 @@ export default function Template2({
     );
   }
 
+  function getAssessmentScore(courseResult: CourseResult) {
+    let total = 0;
+    Object.entries(courseResult.assessment_values).map(
+      ([key, val]) => (total += val)
+    );
+    return total;
+  }
+
   const svgCode = `<svg xmlns='http://www.w3.org/2000/svg' width='140' height='100' opacity='0.08' viewBox='0 0 100 100' transform='rotate(45)'><text x='0' y='50' font-size='18' fill='%23000'>${currentInstitution.name}</text></svg>`;
   const backgroundStyle = {
     backgroundImage: `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(
@@ -87,6 +97,7 @@ export default function Template2({
     backgroundRepeat: 'repeat',
     backgroundColor: 'white',
   };
+
   return (
     <Div style={backgroundStyle} minHeight={'1170px'}>
       <Div mx={'auto'} width={'900px'} px={3}>
@@ -160,13 +171,18 @@ export default function Template2({
               label="Class Population"
               text={classResultInfo.num_of_courses}
             />
-            <LabelText label="Term" text={termResult.term} />
+            <LabelText
+              label="Term"
+              text={`${startCase(termResult.term)} ${
+                termResult.for_mid_term ? 'Mid Term' : ''
+              }`}
+            />
             <LabelText label="Session" text={academicSession.title} />
           </Flex>
           <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
             <div className="table-container" style={{ flexGrow: 2 }}>
               <table className="result-table" width={'100%'}>
-                <thead style={{ background: 'red.800', color: 'whitesmoke' }}>
+                <thead style={{ background: 'red.800', color: '#3f3f3f' }}>
                   <tr>
                     <th>Subject</th>
                     <th>CA</th>
@@ -180,10 +196,7 @@ export default function Template2({
                   {courseResults.map((courseResult) => (
                     <tr key={courseResult.id}>
                       <td>{courseResult.course?.title}</td>
-                      <td>
-                        {courseResult.first_assessment +
-                          courseResult.second_assessment}
-                      </td>
+                      <td>{getAssessmentScore(courseResult)}</td>
                       <td>{courseResult.exam}</td>
                       <td>{courseResult.result}</td>
                       <td>{courseResult.position}</td>

@@ -19,13 +19,14 @@ return new class extends Migration {
       $table->unsignedBigInteger('classification_id');
       $table->unsignedBigInteger('academic_session_id')->nullable();
       $table->string('term')->nullable();
-      $table->float('first_assessment')->default(0);
-      $table->float('second_assessment')->default(0);
       $table->float('exam')->default(0);
+
+      $table->boolean('for_mid_term')->default(false);
+      $table->text('assessment_values')->nullable();
+
       $table->float('result');
       $table->unsignedInteger('position')->nullable();
-      // $table->float('average')->default(0);
-      // $table->unsignedInteger('result_max')->nullable();
+
       $table->string('grade')->nullable();
       $table->string('remark')->nullable();
 

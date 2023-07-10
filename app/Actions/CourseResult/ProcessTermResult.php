@@ -25,35 +25,23 @@ class ProcessTermResult
 
   private function execute()
   {
-    $queryCourseResults = CourseResult::query()
+    $courseResults = CourseResult::query()
       ->where('classification_id', $this->classResultInfo->classification_id)
       ->where(
         'academic_session_id',
         $this->classResultInfo->academic_session_id
       )
-      ->where('term', $this->classResultInfo->term);
+      ->where('term', $this->classResultInfo->term)
+      ->where('for_mid_term', $this->classResultInfo->for_mid_term)
+      ->get();
 
-    $courseResults = $queryCourseResults->get();
-    // $studentsTotal = $this->getTotalScoreByStudents($courseResults);
     $studentsResultDetails = $this->prepareStudentResult($courseResults);
 
-    // $this->persistTermResult($studentsTotal);
     $this->persistTermResult($studentsResultDetails);
     ProcessSessionResult::run(
       $this->classResultInfo->academicSession,
       $this->classResultInfo->classification
     );
-  }
-
-  private function getTotalScoreByStudents(Collection $courseResults)
-  {
-    $studentsTotal = [];
-    foreach ($courseResults as $key => $courseResult) {
-      $studentTotalResult = $studentsTotal[$courseResult->student_id] ?? 0;
-      $studentsTotal[$courseResult->student_id] =
-        $studentTotalResult + $courseResult->result;
-    }
-    return $studentsTotal;
   }
 
   /** @return array<string, ResultDetail> */
@@ -81,13 +69,6 @@ class ProcessTermResult
       $this->classResultInfo->classification
     );
 
-    // $studentsTotalAverageScores = array_map(
-    //   fn(ResultDetail $item) => [
-    //     $item->getStudentId() => $item->getAverageScore()
-    //   ],
-    //   $studentsResultDetails
-    // );
-
     $studentsTotalAverageScores = [];
     /** @var ResultDetail $item */
     foreach ($studentsResultDetails as $key => $item) {
@@ -103,7 +84,8 @@ class ProcessTermResult
       'institution_id' => $this->institution->id,
       'classification_id' => $this->classResultInfo->classification_id,
       'academic_session_id' => $this->classResultInfo->academic_session_id,
-      'term' => $this->classResultInfo->term
+      'term' => $this->classResultInfo->term,
+      'for_mid_term' => $this->classResultInfo->for_mid_term
     ];
 
     $index = 0;

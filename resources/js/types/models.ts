@@ -35,6 +35,7 @@ export interface Institution extends Row {
   email: string;
   phone: string;
   status: string;
+  institution_settings?: InstitutionSetting[];
 }
 
 interface InstitutionRow extends Row {
@@ -78,13 +79,15 @@ export interface CourseResult extends InstitutionRow {
   classification_id: number;
   academic_session_id: number;
   term: TermType;
-  first_assessment: number;
-  second_assessment: number;
+  // first_assessment: number;
+  // second_assessment: number;
   exam: number;
   result: number;
   position: number;
   grade: string;
   remark: string;
+  for_mid_term: boolean;
+  assessment_values: { [key: string]: number };
   teacher?: User;
   student?: Student;
   course?: Course;
@@ -101,6 +104,7 @@ export interface CourseResultInfo extends InstitutionRow {
   max_obtainable_score: number;
   max_score: number;
   min_score: number;
+  for_mid_term: boolean;
   average: number;
   course?: Course;
   classification?: Classification;
@@ -115,6 +119,7 @@ export interface ClassResultInfo extends InstitutionRow {
   num_of_courses: number;
   total_score: number;
   max_obtainable_score: number;
+  for_mid_term: boolean;
   max_score: number;
   min_score: number;
   average: number;
@@ -131,6 +136,7 @@ export interface TermResult extends InstitutionRow {
   position: number;
   average: number;
   remark: string;
+  for_mid_term: boolean;
   teacher_comment: string;
   principal_comment: string;
   general_comment: string;
@@ -242,4 +248,12 @@ export interface AdmissionApplication extends Row {
   nationality: string;
   religion: string;
   reference: string;
+}
+
+export interface Assessment extends InstitutionRow {
+  title: string;
+  description: number;
+  max: number;
+  term: string;
+  for_mid_term: boolean;
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Actions\SeedInitialAssessment;
 use App\Enums\InstitutionUserType;
 use App\Models\Institution;
 use App\Models\User;
@@ -13,12 +14,13 @@ class InstitutionFactory extends Factory
   public function configure()
   {
     return $this->afterCreating(function (Institution $model) {
-      $model->createdBy
-        ->institutionUsers()
-        ->create([
-          'role' => InstitutionUserType::Admin,
-          'institution_id' => $model->id
-        ]);
+      $model->createdBy->institutionUsers()->firstOrCreate(
+        ['institution_id' => $model->id],
+        [
+          'role' => InstitutionUserType::Admin
+        ]
+      );
+      SeedInitialAssessment::run($model);
     });
   }
 

@@ -64,7 +64,11 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
     {
       label: 'Term',
       value: 'term',
-      render: (row) => <Text>{startCase(row.term)}</Text>,
+      render: (row) => (
+        <Text>
+          {startCase(row.term)} {row.for_mid_term ? 'Mid-' : ''}Term
+        </Text>
+      ),
     },
     {
       label: 'Num of Students',
@@ -104,6 +108,7 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
               classification: row.classification_id,
               academicSession: row.academic_session_id,
               term: row.term,
+              forMidTerm: row.for_mid_term,
             })}
             title="Student Results"
           />

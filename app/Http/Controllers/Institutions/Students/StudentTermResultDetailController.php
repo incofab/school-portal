@@ -6,6 +6,7 @@ use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
 use App\Models\Classification;
+use App\Models\Assessment;
 use App\Models\Institution;
 use App\Models\Student;
 use App\Models\TermResult;
@@ -49,13 +50,19 @@ class StudentTermResultDetailController extends Controller
       ->with('course', 'teacher')
       ->get();
 
+    $assessments = Assessment::query()
+      ->forMidTerm($termResult->for_mid_term)
+      ->forTerm($term->value)
+      ->get();
+
     return inertia('institutions/students/student-term-result-detail', [
       'courseResults' => $courseResults,
       'student' => $student->load('user'),
       'classification' => $classification,
       'academicSession' => $academicSession,
       'term' => $term,
-      'termResult' => $termResult
+      'termResult' => $termResult,
+      'assessments' => $assessments
     ]);
   }
 }

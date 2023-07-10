@@ -8,6 +8,7 @@ use App\Actions\CourseResult\RecordCourseResult;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RecordCourseResultRequest;
+use App\Models\Assessment;
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;
 use App\Models\Institution;
@@ -42,6 +43,7 @@ class CourseResultsController extends Controller
   {
     $query = CourseResult::query()->select('course_results.*');
     CourseResultsUITableFilters::make($request->all(), $query)->filterQuery();
+
     return Inertia::render('institutions/courses/list-course-results', [
       'courseResults' => paginateFromRequest(
         $query
@@ -58,12 +60,14 @@ class CourseResultsController extends Controller
     $courseResultQuery = CourseResult::query()
       ->where('course_id', $courseTeacher->course_id)
       ->where('teacher_user_id', $courseTeacher->user_id)
+      ->where('classification_id', $courseTeacher->classification_id)
       ->with('academicSession', 'course', 'student.user')
       ->latest('updated_at');
 
     return Inertia::render('institutions/courses/record-course-result', [
       'courseTeacher' => $courseTeacher,
-      'courseResults' => paginateFromRequest($courseResultQuery)
+      'courseResults' => paginateFromRequest($courseResultQuery),
+      'assessments' => Assessment::query()->get()
     ]);
   }
 
@@ -81,7 +85,8 @@ class CourseResultsController extends Controller
       'courseTeacher' => $courseTeacher,
       'user' => $courseResult->user,
       'academicSession' => $courseResult->academicSession,
-      'student' => $courseResult->student
+      'student' => $courseResult->student,
+      'assessments' => Assessment::query()->get()
     ]);
   }
 
@@ -139,7 +144,8 @@ class CourseResultsController extends Controller
       $student->classification,
       $courseResult->course_id,
       $courseResult->academic_session_id,
-      $courseResult->term->value
+      $courseResult->term->value,
+      $courseResult->for_mid_term
     );
 
     return $this->ok();

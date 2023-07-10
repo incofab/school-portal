@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, HStack, VStack } from '@chakra-ui/react';
+import { Button, Checkbox, HStack, VStack } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
 import FileObject from '@/components/file-dropper/file-object';
@@ -27,13 +27,15 @@ export default function DownloadCourseResultModal({
 }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSession, currentTerm } = useSharedProps();
+  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+    useSharedProps();
   const webForm = useWebForm({
     academicSession: currentAcademicSession,
     term: currentTerm,
     files: [] as FileObject[],
     classification: '',
     course: '',
+    forMidTerm: false,
   });
 
   function canDownloadSheet() {
@@ -116,6 +118,18 @@ export default function DownloadCourseResultModal({
               required
             />
           </FormControlBox>
+          {usesMidTermResult && (
+            <FormControlBox form={webForm as any} formKey="forMidTerm" title="">
+              <Checkbox
+                isChecked={webForm.data.forMidTerm}
+                onChange={(e) =>
+                  webForm.setValue('forMidTerm', e.currentTarget.checked)
+                }
+              >
+                For Mid-Term Result
+              </Checkbox>
+            </FormControlBox>
+          )}
         </VStack>
       }
       footerContent={

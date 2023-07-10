@@ -13,7 +13,12 @@ class ClassResultInfo extends Model
   public $table = 'class_result_info';
 
   protected $guarded = [];
-  protected $casts = ['term' => TermType::class];
+  protected $casts = [
+    'term' => TermType::class,
+    'teacher_user_id' => 'integer',
+    'institution_id' => 'integer',
+    'for_mid_term' => 'boolean'
+  ];
 
   public function classification()
   {

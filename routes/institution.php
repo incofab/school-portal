@@ -109,6 +109,8 @@ Route::post('/course-results/upload/{courseTeacher}', [Web\Staff\CourseResultsCo
     ->name('course-results.upload');
 Route::get('/course-results/download', Web\Staff\DownloadCourseResultSheetController::class)
     ->name('course-results.download');
+Route::get('/download-result-recording-sheet', Web\Staff\DownloadResultRecordingSheetController::class)
+    ->name('download-result-recording-sheet');
 
 Route::get('/course-result-info/index', Web\Staff\ListCourseResultInfo::class)
     ->name('course-result-info.index');
@@ -133,5 +135,14 @@ Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->exce
 Route::get('/settings/search', [Web\InstitutionSettingController::class, 'search'])->name('settings.search');
 Route::resource('/settings', Web\InstitutionSettingController::class)->only(['index', 'create', 'store']);
 
+Route::get('/assessments/index/{assessment?}', [Web\Staff\AssessmentController::class, 'index'])->name('assessments.index');
+Route::get('/assessments/search', [Web\Staff\AssessmentController::class, 'search'])->name('assessments.search');
+Route::post('/assessments/store', [Web\Staff\AssessmentController::class, 'store'])->name('assessments.store');
+Route::put('/assessments/{assessment}/update', [Web\Staff\AssessmentController::class, 'update'])->name('assessments.update');
+Route::delete('/assessments/{assessment}/destroy', [Web\Staff\AssessmentController::class, 'destroy'])->name('assessments.destroy');
+Route::get('/assessments/{assessment}/insert-score-from-course-result', [Web\Staff\InjectAssessmentScoreFromTermResultController::class, 'create'])
+    ->name('assessments.insert-score-from-course-result.create');
+Route::post('/assessments/{assessment}/insert-score-from-course-result', [Web\Staff\InjectAssessmentScoreFromTermResultController::class, 'store'])
+    ->name('assessments.insert-score-from-course-result.store');
 
 

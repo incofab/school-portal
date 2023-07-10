@@ -7,6 +7,7 @@ use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\Course;
+use App\Models\CourseResult;
 use App\Models\Institution;
 use App\Models\Student;
 use App\Models\User;
@@ -17,6 +18,26 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class CourseResultFactory extends Factory
 {
+  public function configure()
+  {
+    return $this->afterCreating(function (CourseResult $courseResult) {
+      $result = $courseResult->result - $courseResult->exam;
+      $assessments = $courseResult->getAssessments();
+      $assessmentCount = $assessments->count();
+
+      $assessmentValues = [];
+      $assessments->map(function ($assessment) use (
+        $result,
+        $assessmentCount,
+        &$assessmentValues
+      ) {
+        return $assessmentValues[$assessment->title] =
+          $result / $assessmentCount;
+      });
+      $courseResult->fill(['assessment_values' => $assessmentValues])->save();
+    });
+  }
+
   /**
    * Define the model's default state.
    *
@@ -24,10 +45,10 @@ class CourseResultFactory extends Factory
    */
   public function definition(): array
   {
-    $ca1 = fake()->randomElement(range(1, 15));
-    $ca2 = fake()->randomElement(range(1, 15));
-    $exam = fake()->randomElement(range(1, 70));
-    $result = $ca1 + $ca2 + $exam;
+    // $ca1 = fake()->randomElement(range(1, 15));
+    // $ca2 = fake()->randomElement(range(1, 15));
+    $result = mt_rand(41, 80);
+    $exam = $result - mt_rand(10, 40);
 
     return [
       'institution_id' => Institution::factory(),
@@ -37,8 +58,8 @@ class CourseResultFactory extends Factory
       'classification_id' => Classification::factory(),
       'academic_session_id' => AcademicSession::factory(),
       'term' => fake()->randomElement(TermType::cases()),
-      'first_assessment' => $ca1,
-      'second_assessment' => $ca2,
+      // 'first_assessment' => $ca1,
+      // 'second_assessment' => $ca2,
       'exam' => $exam,
       'result' => $result,
       'grade' => GetGrade::run($result),

@@ -17,7 +17,7 @@ class UserController extends Controller
     if ($institutions->isEmpty()) {
       dd('You are not assigned to any institution yet');
     }
-
+    // dd($institutions?->toArray());
     if ($institutions->count() === 1) {
       return redirect(route('institutions.dashboard', $institutions->first()));
     }

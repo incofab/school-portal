@@ -3,7 +3,7 @@ import { Inertia } from '@inertiajs/inertia';
 export default function useQueryString() {
   const params = (() => {
     const url = new URL(window.location.href);
-    const params: { [key: string]: string } = {};
+    const params: { [key: string]: string | any } = {};
     url.searchParams.forEach((val, key) => {
       params[key] = val;
     });

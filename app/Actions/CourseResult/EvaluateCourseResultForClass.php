@@ -13,7 +13,8 @@ class EvaluateCourseResultForClass
     private Classification $classification,
     private $courseId,
     private $academicSessionId,
-    private string $term
+    private string $term,
+    private bool $forMidTerm
   ) {
   }
 
@@ -21,13 +22,15 @@ class EvaluateCourseResultForClass
     Classification $classification,
     $courseId,
     $academicSessionId,
-    string $term
+    string $term,
+    bool $forMidTerm = false
   ) {
     return (new self(
       $classification,
       $courseId,
       $academicSessionId,
-      $term
+      $term,
+      $forMidTerm
     ))->execute();
   }
 
@@ -39,6 +42,7 @@ class EvaluateCourseResultForClass
       ->where('classification_id', $this->classification->id)
       ->where('academic_session_id', $this->academicSessionId)
       ->where('term', $this->term)
+      ->where('for_mid_term', $this->forMidTerm)
       ->get();
 
     [
@@ -53,7 +57,8 @@ class EvaluateCourseResultForClass
       'term' => $this->term,
       'academic_session_id' => $this->academicSessionId,
       'course_id' => $this->courseId,
-      'classification_id' => $this->classification->id
+      'classification_id' => $this->classification->id,
+      'for_mid_term' => $this->forMidTerm
     ];
 
     if ($courseResults->isEmpty()) {
@@ -110,7 +115,8 @@ class EvaluateCourseResultForClass
       'term' => $this->term,
       'academic_session_id' => $this->academicSessionId,
       'course_id' => $this->courseId,
-      'classification_id' => $this->classification->id
+      'classification_id' => $this->classification->id,
+      'for_mid_term' => $this->forMidTerm
     ];
     $index = 0;
     foreach ($scoreByStudents as $studentId => $score) {

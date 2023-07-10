@@ -87,6 +87,7 @@ export enum InstitutionSettingType {
   ResultTemplate = 'result-template',
   CurrentTerm = 'current-term',
   CurrentAcademicSession = 'current-academic-session',
+  UsesMidTermResult = 'uses-mid-term-result',
 }
 
 export enum Religion {

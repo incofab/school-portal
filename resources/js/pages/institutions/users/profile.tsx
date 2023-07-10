@@ -39,6 +39,8 @@ import ChangeRoleModal from '@/components/modals/change-role-modal';
 import startCase from 'lodash/startCase';
 import ChangeStudentClassModal from '@/components/modals/change-student-class-modal';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import DownloadResultRecordingSheetModal from '@/components/modals/download-result-recording-sheet-modal';
+import useIsStaff from '@/hooks/use-is-staff';
 
 interface Props {
   user: User;
@@ -49,12 +51,14 @@ export default function Profile({ user, institutionUser }: Props) {
   const { currentUser } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
+  const downloadRecordingSheetModalToggle = useModalToggle();
   const changeClassModalToggle = useModalValueToggle<Nullable<Student>>();
   const form = useWebForm({
     photo: user.photo,
   });
   const web = useWeb();
   const isAdmin = useIsAdmin();
+  const isStaff = useIsStaff();
   const changeRoleModalToggle = useModalToggle();
   const extensions = FileDropperType.Image.extensionLabels;
 
@@ -125,6 +129,14 @@ export default function Profile({ user, institutionUser }: Props) {
 
   return (
     <div>
+      <HStack align={'stretch'} my={2}>
+        {isStaff && (
+          <BrandButton
+            title="Download Result Recording Sheet"
+            onClick={downloadRecordingSheetModalToggle.open}
+          />
+        )}
+      </HStack>
       <Slab>
         <SlabHeading
           title={
@@ -220,6 +232,10 @@ export default function Profile({ user, institutionUser }: Props) {
           )}
         </SlabBody>
       </Slab>
+      <DownloadResultRecordingSheetModal
+        {...downloadRecordingSheetModalToggle.props}
+        onSuccess={() => {}}
+      />
     </div>
   );
 }

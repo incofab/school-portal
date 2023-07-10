@@ -8,6 +8,7 @@ import AcademicSessionSelect from '../selectors/academic-session-select';
 import EnumSelect from '../dropdown-select/enum-select';
 import CourseSelect from '../selectors/course-select';
 import useSharedProps from '@/hooks/use-shared-props';
+import SelectMidTerm from './mid-term-select';
 
 interface Props {
   isOpen: boolean;
@@ -19,12 +20,14 @@ export default function CourseResultInfoTableFilters({
   onClose,
 }: Props) {
   const { params } = useQueryString();
-  const { currentAcademicSession, currentTerm } = useSharedProps();
+  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+    useSharedProps();
   const [filters, setFilters] = useState(() => ({
     term: params.term ?? currentTerm,
     academicSession: params.academicSession ?? currentAcademicSession,
     course: params.course ?? '',
     classification: params.classification ?? '',
+    forMidTerm: params.forMidTerm ?? '',
   }));
 
   return (
@@ -54,6 +57,15 @@ export default function CourseResultInfoTableFilters({
           onChange={(e: any) => setFilters({ ...filters, term: e.value })}
         />
       </FilterFormControlBox>
+      {usesMidTermResult && (
+        <FilterFormControlBox title="forMidTerm">
+          <SelectMidTerm
+            value={String(filters.forMidTerm) ?? undefined}
+            onChange={(e) => setFilters({ ...filters, forMidTerm: e })}
+            children={null}
+          />
+        </FilterFormControlBox>
+      )}
     </BaseTableFilter>
   );
 }

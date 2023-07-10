@@ -6,6 +6,7 @@ import { SelectOptionType } from '@/types/types';
 
 interface MyProps<T> {
   enumData: { [key: string]: string };
+  additionalEnumData?: { [key: string]: any };
   allowedEnum?: string[];
   selectValue?: T;
   refreshKey?: string;
@@ -13,18 +14,25 @@ interface MyProps<T> {
 
 export default function EnumSelect<T>({
   enumData,
+  additionalEnumData,
   selectValue,
   allowedEnum,
   refreshKey,
   ...props
 }: MyProps<T> & Props) {
+  const fullData = { ...(additionalEnumData ?? {}), ...enumData };
+  // if (additionalEnumData) {
+  //   Object.entries(additionalEnumData).map(
+  //     ([key, value]) => (enumData[key] = value)
+  //   );
+  // }
   return (
     <MySelect
       {...props}
       isMulti={false}
       selectValue={selectValue}
       getOptions={() =>
-        Object.entries(enumData)
+        Object.entries(fullData)
           .map(([key, value]) => {
             if (allowedEnum) {
               if (!allowedEnum.includes(value)) {

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Staff;
 
-use App\Actions\CourseResult\DownloadCourseResultSheet;
+use App\Actions\CourseResult\DownloadCourseResult;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DownloadCourseResultSheetRequest;
 use App\Models\CourseResult;
@@ -21,7 +21,11 @@ class DownloadCourseResultSheetController extends Controller
       ->oldest('course_results.student_id')
       ->get();
 
-    $excelWriter = DownloadCourseResultSheet::run($courseResults);
+    $excelWriter = DownloadCourseResult::run(
+      $courseResults,
+      $request->term,
+      $request->forMidTerm
+    );
 
     $filename =
       "{$request->courseObj->title}-{$request->classificationObj->title}" .
