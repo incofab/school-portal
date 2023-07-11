@@ -109,6 +109,10 @@ class ProcessTermResult
     array $studentsResultDetails,
     Classification $classification
   ) {
+    if (!$classification->has_equal_subjects) {
+      return true;
+    }
+
     $totalClassStudents = Student::query()
       ->where('classification_id', $classification->id)
       ->count();
@@ -119,9 +123,6 @@ class ProcessTermResult
       ]);
     }
 
-    if (!$classification->has_equal_subjects) {
-      return true;
-    }
     $hasUnequalNumOfSubjects = false;
     $numOfCourses = -1;
     /** @var ResultDetail $studentResultDetail */
