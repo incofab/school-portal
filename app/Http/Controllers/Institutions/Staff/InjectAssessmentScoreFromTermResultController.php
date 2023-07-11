@@ -99,7 +99,7 @@ class InjectAssessmentScoreFromTermResultController extends Controller
   ) {
     $result = $courseResult->result;
     return [
-      $assessment->title => round(($result / 100) * $assessment->max, 2)
+      $assessment->raw_title => round(($result / 100) * $assessment->max, 2)
     ];
   }
 }

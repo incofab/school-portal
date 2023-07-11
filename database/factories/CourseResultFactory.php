@@ -31,7 +31,7 @@ class CourseResultFactory extends Factory
         $assessmentCount,
         &$assessmentValues
       ) {
-        return $assessmentValues[$assessment->title] =
+        return $assessmentValues[$assessment->raw_title] =
           $result / $assessmentCount;
       });
       $courseResult->fill(['assessment_values' => $assessmentValues])->save();

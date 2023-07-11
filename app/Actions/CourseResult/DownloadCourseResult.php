@@ -121,13 +121,11 @@ class DownloadCourseResult
   {
     $this->workSheet->setCellValue(
       $this->columnIndex['student_id']->index . $row,
-      // ResultRecordingColumn::StudentID . $row,
       $courseResult->student_id
     );
 
     $this->workSheet->setCellValue(
       $this->columnIndex['student_name']->index . $row,
-      // ResultRecordingColumn::StudentName . $row,
       $courseResult->student->user->full_name
     );
 
@@ -136,13 +134,12 @@ class DownloadCourseResult
       $title = $assessment->columnTitle();
       $this->workSheet->setCellValue(
         $this->columnIndex[$title]->index . $row,
-        $assessmentValues[$assessment->title] ?? ''
+        $assessmentValues[$assessment->raw_title] ?? ''
       );
     }
 
     $this->workSheet->setCellValue(
       $this->columnIndex['exam']->index . $row,
-      // ResultRecordingColumn::StudentName . $row,
       $courseResult->exam
     );
   }

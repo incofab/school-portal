@@ -87,16 +87,7 @@ class DownloadResultRecordingSheet
     $row++;
 
     $students = Student::query()
-      // ->select('students.*')
       ->where('classification_id', $this->classification->id)
-      // ->with(
-      //   'courseResults',
-      //   fn($q) => $q
-      //     ->where('academic_session_id', $this->academicSession->id)
-      //     ->where('term', $this->term)
-      //     ->where('for_mid_term', $this->forMidTerm)
-      //     ->latest('id')
-      // )
       ->get();
 
     /** @var \App\Models\Student $student */
@@ -135,8 +126,6 @@ class DownloadResultRecordingSheet
 
   public function insert(Student $student, int $row)
   {
-    // $courseResult = $student->courseResults?->first();
-
     $this->workSheet->setCellValue(
       $this->columnIndex['student_id']->index . $row,
       $student->id
@@ -146,19 +135,5 @@ class DownloadResultRecordingSheet
       $this->columnIndex['student_name']->index . $row,
       $student->user->full_name
     );
-
-    // $assessmentValues = $courseResult?->assessment_values ?? [];
-    // foreach ($this->assessments as $key => $assessment) {
-    //   $title = $assessment->columnTitle();
-    //   $this->workSheet->setCellValue(
-    //     $this->columnIndex[$title]->index . $row,
-    //     $assessmentValues[$assessment->title] ?? ''
-    //   );
-    // }
-
-    // $this->workSheet->setCellValue(
-    //   $this->columnIndex['exam']->index . $row,
-    //   $courseResult?->exam
-    // );
   }
 }
