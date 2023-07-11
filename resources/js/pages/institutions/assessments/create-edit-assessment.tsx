@@ -6,6 +6,7 @@ import {
   Icon,
   IconButton,
   Spacer,
+  Text,
   VStack,
 } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
@@ -15,7 +16,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { Assessment } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
-import { FormButton } from '@/components/buttons';
+import { BrandButton, FormButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
@@ -26,9 +27,11 @@ import startCase from 'lodash/startCase';
 import InputForm from '@/components/forms/input-form';
 import SelectMidTerm from '@/components/table-filters/mid-term-select';
 import DataTable, { TableHeader } from '@/components/data-table';
-import { PencilIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import useSharedProps from '@/hooks/use-shared-props';
+import { useModalValueToggle } from '@/hooks/use-modal-toggle';
+import SetAssessmentDependencyModal from '@/components/modals/set-assessment-dependency-modal';
 
 interface Props {
   assessments: Assessment[];
@@ -134,7 +137,7 @@ export default function CreateUpdateAssessment({
 
 function ListAssessments({ assessments }: { assessments: Assessment[] }) {
   const { instRoute } = useInstitutionRoute();
-  // const createEditAssessmentModalToggle = useModalValueToggle<Assessment>();
+  const setDependencyModalToggle = useModalValueToggle<Assessment>();
   const headers: TableHeader<Assessment>[] = [
     {
       label: 'Title',
@@ -156,6 +159,19 @@ function ListAssessments({ assessments }: { assessments: Assessment[] }) {
         }`,
     },
     {
+      label: 'Reference',
+      render: (row) => (
+        <HStack spacing={2}>
+          {row.depends_on && <Text>{startCase(row.depends_on)}</Text>}
+          <BrandButton
+            variant={'link'}
+            title="Change"
+            onClick={() => setDependencyModalToggle.open(row)}
+          />
+        </HStack>
+      ),
+    },
+    {
       label: 'Action',
       render: (row) => (
         <HStack spacing={2}>
@@ -166,6 +182,7 @@ function ListAssessments({ assessments }: { assessments: Assessment[] }) {
             href={instRoute('assessments.index', [row])}
           />
           <Button
+            display={'none'}
             variant={'link'}
             colorScheme="brand"
             as={InertiaLink}
@@ -193,13 +210,13 @@ function ListAssessments({ assessments }: { assessments: Assessment[] }) {
           hideSearchField={true}
         />
       </SlabBody>
-      {/* {createEditAssessmentModalToggle.state && (
-        <InsertAssessmentScoreFromCourseResultModal
-          {...createEditAssessmentModalToggle.props}
-          assessment={createEditAssessmentModalToggle.state}
-          onSuccess={() => {}}
+      {setDependencyModalToggle.state && (
+        <SetAssessmentDependencyModal
+          {...setDependencyModalToggle.props}
+          assessment={setDependencyModalToggle.state}
+          onSuccess={() => Inertia.reload()}
         />
-      )} */}
+      )}
     </Slab>
   );
 }

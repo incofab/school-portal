@@ -182,19 +182,20 @@ export default function RecordCourseResult({
                 {assessments.map((assessment) => {
                   if (
                     assessment.term &&
-                    assessment.term === webForm.data.term
+                    assessment.term !== webForm.data.term
                   ) {
                     return null;
                   }
+
                   return (
-                    <FormControl key={assessment.title + webForm.data.term}>
-                      <FormLabel>{startCase(assessment.title)}</FormLabel>
+                    <FormControl key={assessment.raw_title + webForm.data.term}>
+                      <FormLabel>{startCase(assessment.raw_title)}</FormLabel>
                       <Input
-                        value={assessmentValue[assessment.title] ?? ''}
+                        value={assessmentValue[assessment.raw_title] ?? ''}
                         onChange={(e) =>
                           setAssessmentValue({
                             ...assessmentValue,
-                            [assessment.title]: e.currentTarget.value,
+                            [assessment.raw_title]: e.currentTarget.value,
                           })
                         }
                       />

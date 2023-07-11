@@ -43,6 +43,15 @@ export enum TermType {
   Third = 'third',
 }
 
+export enum FullTermType {
+  FirstMid = 'first-mid',
+  First = 'first',
+  SecondMid = 'second-mid',
+  Second = 'second',
+  ThirdMid = 'third-mid',
+  Third = 'third',
+}
+
 export enum Gender {
   Male = 'male',
   Female = 'female',

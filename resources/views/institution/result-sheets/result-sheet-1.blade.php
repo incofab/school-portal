@@ -1,5 +1,5 @@
 <?php
-use App\Actions\ResultSheetUtil; ?>
+use App\Actions\ResultUtil; ?>
 @extends('institution.result-sheets.result-layout')
 @section('content')
   <div style="min-height: 1170px;">
@@ -34,7 +34,7 @@ use App\Actions\ResultSheetUtil; ?>
           </div>
           <div class="horizontal-flex" style="margin-top: 8px; justify-content: space-between;">
             <div><span>Class: </span><span>{{$classification->title}}</span></div>
-            <div><span>Position: </span><span>{{$termResult->position . ResultSheetUtil::getPositionSuffix($termResult->position)}}</span></div>
+            <div><span>Position: </span><span>{{$termResult->position . ResultUtil::getPositionSuffix($termResult->position)}}</span></div>
             <div><span>Out of: </span><span>{{$classResultInfo->num_of_students}}</span></div>
           </div>
           <div class="table-container" style=" margin-top: 10px;">
@@ -79,7 +79,7 @@ use App\Actions\ResultSheetUtil; ?>
                           <td>
                               {{$courseResultInfoData[$courseResult->course_id]?->average}}
                           </td>
-                          <td>{{ResultSheetUtil::getRemark($courseResult->grade)}}</td>
+                          <td>{{ResultUtil::getRemark($courseResult->grade)}}</td>
                       </tr>
                   @endforeach
               </tbody>

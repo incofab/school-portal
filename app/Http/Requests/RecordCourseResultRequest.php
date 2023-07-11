@@ -91,7 +91,8 @@ class RecordCourseResultRequest extends FormRequest
     $rules = [];
 
     foreach ($assessments as $key => $assessment) {
-      $rules["{$prefix}{$assessment->title}"] = [
+      $title = $assessment->raw_title;
+      $rules["{$prefix}{$title}"] = [
         'sometimes',
         'numeric',
         'min:0',
@@ -105,6 +106,8 @@ class RecordCourseResultRequest extends FormRequest
         }
       ];
     }
+    // info('Ruless');
+    // info(json_encode($rules, JSON_PRETTY_PRINT));
     return $rules;
   }
 }

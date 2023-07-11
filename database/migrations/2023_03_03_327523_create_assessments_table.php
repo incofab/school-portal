@@ -20,7 +20,7 @@ return new class extends Migration {
       $table->float('max')->nullable();
       $table->string('term')->nullable();
       $table->boolean('for_mid_term')->nullable();
-      $table->boolean('depends_on')->nullable();
+      $table->string('depends_on')->nullable();
       $table->softDeletes();
 
       $table->timestamps();

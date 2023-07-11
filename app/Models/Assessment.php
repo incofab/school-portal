@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\FullTermType;
 use App\Support\Queries\AssessmentQueryBuilder;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -19,8 +20,11 @@ class Assessment extends Model
 
   public $casts = [
     'institution_id' => 'integer',
-    'for_mid_term' => 'boolean'
+    'for_mid_term' => 'boolean',
+    'depends_on' => FullTermType::class
   ];
+
+  protected $appends = ['raw_title'];
 
   public static function query(): AssessmentQueryBuilder
   {
@@ -44,6 +48,11 @@ class Assessment extends Model
   {
     return self::PREFIX .
       ($rawOriginal ? $this->getRawOriginal('title') : $this->title);
+  }
+
+  protected function rawTitle(): Attribute
+  {
+    return Attribute::make(get: fn() => $this->getRawOriginal('title'));
   }
 
   public function newEloquentBuilder($query)

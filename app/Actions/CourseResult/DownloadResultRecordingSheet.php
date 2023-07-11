@@ -87,14 +87,16 @@ class DownloadResultRecordingSheet
     $row++;
 
     $students = Student::query()
-      ->select('students.*')
-      ->join('course_results', 'students.id', 'course_results.student_id')
-      ->where('course_results.classification_id', $this->classification->id)
-      ->where('course_results.academic_session_id', $this->academicSession->id)
-      ->where('course_results.term', $this->term)
-      ->where('course_results.for_mid_term', $this->forMidTerm)
-      ->groupBy('students.id')
-      // ->with('courseResults')
+      // ->select('students.*')
+      ->where('classification_id', $this->classification->id)
+      // ->with(
+      //   'courseResults',
+      //   fn($q) => $q
+      //     ->where('academic_session_id', $this->academicSession->id)
+      //     ->where('term', $this->term)
+      //     ->where('for_mid_term', $this->forMidTerm)
+      //     ->latest('id')
+      // )
       ->get();
 
     /** @var \App\Models\Student $student */

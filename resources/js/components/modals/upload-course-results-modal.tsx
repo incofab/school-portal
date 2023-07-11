@@ -7,6 +7,7 @@ import {
   HStack,
   VStack,
   FormLabel,
+  Checkbox,
 } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
@@ -40,10 +41,12 @@ export default function UploadCourseResultsModal({
   const isAdmin = useIsAdmin();
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSession, currentTerm } = useSharedProps();
+  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+    useSharedProps();
   const webForm = useWebForm({
     academic_session_id: currentAcademicSession,
     term: currentTerm,
+    for_mid_term: false,
     files: [] as FileObject[],
     course_teacher_id: {
       label: courseTeacher?.user?.full_name,
@@ -59,6 +62,7 @@ export default function UploadCourseResultsModal({
       // formData.append('user_id', data.course_teacher_id?.value + '');
       formData.append('academic_session_id', String(data.academic_session_id));
       formData.append('term', data.term);
+      formData.append('for_mid_term', data.for_mid_term ? '1' : '0');
 
       return web.post(
         instRoute('course-results.upload', [data.course_teacher_id!.value]),
@@ -121,6 +125,22 @@ export default function UploadCourseResultsModal({
               required
             />
           </FormControlBox>
+          {usesMidTermResult && (
+            <FormControlBox
+              form={webForm as any}
+              formKey="for_mid_term"
+              title=""
+            >
+              <Checkbox
+                isChecked={webForm.data.for_mid_term}
+                onChange={(e) =>
+                  webForm.setValue('for_mid_term', e.currentTarget.checked)
+                }
+              >
+                For Mid-Term Result
+              </Checkbox>
+            </FormControlBox>
+          )}
           <FormControl isInvalid={!!webForm.errors.files}>
             <FileDropper
               files={webForm.data.files}

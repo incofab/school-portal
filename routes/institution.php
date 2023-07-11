@@ -142,6 +142,8 @@ Route::put('/assessments/{assessment}/update', [Web\Staff\AssessmentController::
 Route::delete('/assessments/{assessment}/destroy', [Web\Staff\AssessmentController::class, 'destroy'])->name('assessments.destroy');
 Route::get('/assessments/{assessment}/insert-score-from-course-result', [Web\Staff\InjectAssessmentScoreFromTermResultController::class, 'create'])
     ->name('assessments.insert-score-from-course-result.create');
+Route::post('/assessments/{assessment}/set-dependency', [Web\Staff\AssessmentController::class, 'setDependency'])
+    ->name('assessments.set-dependency');
 Route::post('/assessments/{assessment}/insert-score-from-course-result', [Web\Staff\InjectAssessmentScoreFromTermResultController::class, 'store'])
     ->name('assessments.insert-score-from-course-result.store');
 

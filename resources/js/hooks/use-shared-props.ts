@@ -34,7 +34,7 @@ export default function useSharedProps() {
     currentInstitutionUser: props.shared__currentInstitutionUser,
     currentTerm: props.shared__currentTerm,
     currentAcademicSession: props.shared__currentAcademicSession,
-    ...prepareSettings(currentInstitution.institution_settings),
+    ...prepareSettings(currentInstitution?.institution_settings),
   };
 }
 

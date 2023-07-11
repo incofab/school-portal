@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Staff;
 
+use App\Enums\FullTermType;
 use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
@@ -100,6 +101,18 @@ class AssessmentController extends Controller
 
     $assessment->fill($data)->save();
 
+    return $this->ok();
+  }
+
+  function setDependency(
+    Institution $institution,
+    Assessment $assessment,
+    Request $request
+  ) {
+    $data = $request->validate([
+      'depends_on' => ['required', 'nullable', new Enum(FullTermType::class)]
+    ]);
+    $assessment->fill($data)->save();
     return $this->ok();
   }
 

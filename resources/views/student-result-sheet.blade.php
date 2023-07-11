@@ -1,5 +1,5 @@
 <?php
-use App\Actions\ResultSheetUtil;
+use App\Actions\ResultUtil;
 
 $svgCode = "<svg xmlns='http://www.w3.org/2000/svg' width='140' height='100' opacity='0.08' viewBox='0 0 100 100' transform='rotate(45)'><text x='0' y='50' font-size='18' fill='%23000'>{$institution->name}</text></svg>";
 
@@ -76,7 +76,7 @@ $svgCode = 'data:image/svg+xml;base64,' . base64_encode($svgCode);
             </div>
             <div class="horizontal-flex" style="margin-top: 8px; justify-content: space-between;">
               <div><span>Class: </span><span>{{$classification->title}}</span></div>
-              <div><span>Position: </span><span>{{$termResult->position . ResultSheetUtil::getPositionSuffix($termResult->position)}}</span></div>
+              <div><span>Position: </span><span>{{$termResult->position . ResultUtil::getPositionSuffix($termResult->position)}}</span></div>
               <div><span>Out of: </span><span>{{$classResultInfo->num_of_students}}</span></div>
             </div>
             <div class="table-container" style=" margin-top: 10px;">
@@ -121,7 +121,7 @@ $svgCode = 'data:image/svg+xml;base64,' . base64_encode($svgCode);
                             <td>
                                 {{$courseResultInfoData[$courseResult->course_id]?->average}}
                             </td>
-                            <td>{{ResultSheetUtil::getRemark($courseResult->grade)}}</td>
+                            <td>{{ResultUtil::getRemark($courseResult->grade)}}</td>
                         </tr>
                     @endforeach
                 </tbody>
