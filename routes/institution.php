@@ -56,6 +56,8 @@ Route::post('/term-results/{termResult}/principal-comment', [Web\Staff\TermResul
     ->name('term-results.principal-comment');
 Route::post('/students/{student}/change-class', [Web\Students\UpdateStudentClassController::class, 'changeStudentClass'])
     ->name('students.change-class');
+Route::get('/classifications/{classification}/students', [Web\Students\StudentController::class, 'classStudentsTiles'])
+    ->name('classifications.students');
 
 Route::get('/courses/search', [Web\CoursesController::class, 'search'])
     ->name('courses.search');

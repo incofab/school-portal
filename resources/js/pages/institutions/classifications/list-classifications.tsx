@@ -83,6 +83,11 @@ export default function ListClassification({ classifications }: Props) {
                     colorScheme={'red'}
                   />
                 </DestructivePopover>
+                <LinkButton
+                  title="Student Tiles"
+                  href={instRoute('classifications.students', [row])}
+                  variant={'link'}
+                />
               </HStack>
             ),
           },

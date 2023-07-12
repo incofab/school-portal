@@ -28,6 +28,19 @@ class StudentController extends Controller
     ]);
   }
 
+  function classStudentsTiles(
+    Request $request,
+    Institution $institution,
+    Classification $classification
+  ) {
+    return inertia('institutions/students/class-students-tiles', [
+      'students' => $classification
+        ->students()
+        ->with('user')
+        ->get()
+    ]);
+  }
+
   public function create()
   {
     return inertia('institutions/students/create-edit-student', [
