@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Staff;
 
+use App\Actions\CourseResult\DownloadPins;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
@@ -10,6 +11,7 @@ use App\Models\PinPrint;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
+use Storage;
 
 class PinPrintController extends Controller
 {
@@ -70,5 +72,24 @@ class PinPrintController extends Controller
       'pins' => $pins,
       'resultCheckerUrl' => route('activate-term-result.create')
     ]);
+  }
+
+  public function downloadPins(
+    Request $request,
+    Institution $institution,
+    PinPrint $pinPrint
+  ) {
+    $pins = $pinPrint->pins()->get();
+
+    $excelWriter = DownloadPins::run($pins);
+
+    $filename = "{$institution->name}-pin-{$pinPrint->id}-prints.xlsx";
+
+    $filename = str_replace(['/', ' '], ['_', '-'], $filename);
+
+    // $path = 'result-record-sheet.xlsx';
+    $excelWriter->save(storage_path("app/$filename"));
+
+    return Storage::download($filename);
   }
 }

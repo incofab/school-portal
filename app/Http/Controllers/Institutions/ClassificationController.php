@@ -1,10 +1,14 @@
 <?php
 namespace App\Http\Controllers\Institutions;
 
+use App\Actions\ClassSheet;
 use App\Http\Controllers\Controller;
 use App\Models\Classification;
 use App\Models\Institution;
+use App\Rules\ExcelRule;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Storage;
 
 class ClassificationController extends Controller
 {
@@ -87,6 +91,30 @@ class ClassificationController extends Controller
     // $numOfStudents = $classification->students()->count('id');
     // abort_unless($numOfStudents > 0, 403, 'This class contains some students');
     $classification->delete();
+    return $this->ok();
+  }
+
+  public function download(Request $request, Institution $institution)
+  {
+    $classifications = $institution->classifications()->get();
+
+    $excelWriter = ClassSheet::make($institution)->download($classifications);
+
+    $filename = "{$institution->name}-classes.xlsx";
+
+    $filename = str_replace(['/', ' '], ['_', '-'], $filename);
+
+    $excelWriter->save(storage_path("app/$filename"));
+
+    return Storage::download($filename);
+  }
+
+  public function upload(Request $request, Institution $institution)
+  {
+    $request->validate([
+      'file' => ['required', 'file', new ExcelRule($request->file('file'))]
+    ]);
+    ClassSheet::make($institution)->upload($request->file);
     return $this->ok();
   }
 }

@@ -176,7 +176,7 @@ export default function Template1({
                     <td>{courseResult.course?.title}</td>
                     {assessments.map((assessment) => (
                       <td>
-                        {courseResult.assessment_values[assessment.title] ??
+                        {courseResult.assessment_values[assessment.raw_title] ??
                           '-'}
                       </td>
                     ))}

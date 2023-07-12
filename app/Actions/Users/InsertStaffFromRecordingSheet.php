@@ -8,6 +8,7 @@ use App\Enums\Sheet\StaffRecordingSheetColumn;
 use App\Models\User;
 use DB;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\ValidationException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -85,8 +86,23 @@ class InsertStaffFromRecordingSheet
 
   private function validate(array $data)
   {
+    $this->checkForDuplicateEmail($data);
     $validated = Validator::validate($data, User::generalRule(null, '*.'));
 
     return $validated;
+  }
+
+  private function checkForDuplicateEmail(array $data)
+  {
+    $emails = [];
+    foreach ($data as $key => $item) {
+      if (!in_array($item['email'], $emails)) {
+        $emails[] = $item['email'];
+        continue;
+      }
+      return throw ValidationException::withMessages([
+        'email' => 'This data contains duplicate emails'
+      ]);
+    }
   }
 }

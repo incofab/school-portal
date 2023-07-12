@@ -5,9 +5,11 @@ namespace App\Http\Requests;
 use App\Enums\TermType;
 use App\Models\Course;
 use App\Models\Assessment;
+use App\Models\CourseTeacher;
 use App\Models\Institution;
 use Arr;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
@@ -52,12 +54,15 @@ class RecordCourseResultRequest extends FormRequest
       'term' => ['required', new Enum(TermType::class)],
       'for_mid_term' => ['required', 'boolean'],
       'result' => ['nullable', 'array', 'min:1'],
-      ...$this->resultRule($this->all(), 'result.*.')
+      ...$this->resultRule($this->courseTeacher, $this->all(), 'result.*.')
     ];
   }
 
-  public function resultRule($data, string $prefix = '')
-  {
+  public function resultRule(
+    CourseTeacher $courseTeacher,
+    $data,
+    string $prefix = ''
+  ) {
     return [
       ...$this->assessmentValidationRule("{$prefix}ass."),
       $prefix . 'exam' => [
@@ -77,7 +82,13 @@ class RecordCourseResultRequest extends FormRequest
           }
         }
       ],
-      $prefix . 'student_id' => ['required']
+      $prefix . 'student_id' => [
+        'required',
+        Rule::exists('students', 'id')->where(
+          'classification_id',
+          $courseTeacher->classification_id
+        )
+      ]
     ];
   }
 

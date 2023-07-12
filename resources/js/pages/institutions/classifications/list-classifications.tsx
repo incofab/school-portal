@@ -1,6 +1,6 @@
 import React from 'react';
 import { Classification } from '@/types/models';
-import { HStack, IconButton, Icon } from '@chakra-ui/react';
+import { HStack, IconButton, Icon, Button } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -16,8 +16,9 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
-import { useModalValueToggle } from '@/hooks/use-modal-toggle';
+import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import MigrateClassStudentsModal from '@/components/modals/migrate-class-students-modal';
+import UploadClassificationModal from '@/components/modals/upload-classification-modal';
 
 interface Props {
   classifications: PaginationResponse<Classification>;
@@ -29,6 +30,7 @@ export default function ListClassification({ classifications }: Props) {
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
   const migrateClassStudentsModalToggle = useModalValueToggle<Classification>();
+  const uploadClassModalToggle = useModalToggle();
 
   async function deleteItem(obj: Classification) {
     const res = await deleteForm.submit((data, web) =>
@@ -94,10 +96,16 @@ export default function ListClassification({ classifications }: Props) {
         <SlabHeading
           title="List Classes"
           rightElement={
-            <LinkButton
-              href={instRoute('classifications.create')}
-              title={'New'}
-            />
+            <HStack>
+              <LinkButton
+                href={instRoute('classifications.create')}
+                title={'New'}
+              />
+              <BrandButton
+                title="Upload Classes"
+                onClick={uploadClassModalToggle.open}
+              />
+            </HStack>
           }
         />
         <SlabBody>
@@ -110,6 +118,10 @@ export default function ListClassification({ classifications }: Props) {
           />
         </SlabBody>
       </Slab>
+      <UploadClassificationModal
+        {...uploadClassModalToggle.props}
+        onSuccess={() => Inertia.reload()}
+      />
       {migrateClassStudentsModalToggle.state && (
         <MigrateClassStudentsModal
           {...migrateClassStudentsModalToggle.props}

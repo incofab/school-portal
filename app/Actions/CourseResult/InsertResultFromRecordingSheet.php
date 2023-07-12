@@ -124,7 +124,11 @@ class InsertResultFromRecordingSheet
   {
     $validated = Validator::validate(
       $data,
-      (new RecordCourseResultRequest())->resultRule($data, '*.')
+      (new RecordCourseResultRequest())->resultRule(
+        $this->courseTeacher,
+        $data,
+        '*.'
+      )
     );
     return $validated;
   }

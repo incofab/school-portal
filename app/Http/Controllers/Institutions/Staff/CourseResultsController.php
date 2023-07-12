@@ -137,15 +137,22 @@ class CourseResultsController extends Controller
         $courseResult->teacher_user_id == $currentUser->id,
       403
     );
-    $student = $courseResult->student;
+    $courseResult->load('student.classification');
+    $classification = $courseResult->student->classification;
+
+    $courseId = $courseResult->course_id;
+    $academicSessionId = $courseResult->academic_session_id;
+    $term = $courseResult->term->value;
+    $forMidTerm = $courseResult->for_mid_term;
+
     $courseResult->delete();
 
     EvaluateCourseResultForClass::run(
-      $student->classification,
-      $courseResult->course_id,
-      $courseResult->academic_session_id,
-      $courseResult->term->value,
-      $courseResult->for_mid_term
+      $classification,
+      $courseId,
+      $academicSessionId,
+      $term,
+      $forMidTerm
     );
 
     return $this->ok();

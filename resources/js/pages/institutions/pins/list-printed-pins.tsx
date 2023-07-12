@@ -11,6 +11,7 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import PinPrintModal from '@/components/modals/pin-print-modal';
 import DateTimeDisplay from '@/components/date-time-display';
+import { Button, HStack } from '@chakra-ui/react';
 
 interface Props {
   pinPrints: PaginationResponse<PinPrint>;
@@ -41,11 +42,22 @@ export default function ListPrintedPins({ pinPrints }: Props) {
     {
       label: 'Display Pins',
       render: (row) => (
-        <LinkButton
-          variant={'link'}
-          title="Display Pins"
-          href={instRoute('pin-prints.show', [row.id])}
-        />
+        <HStack spacing={2}>
+          <LinkButton
+            variant={'link'}
+            title="Display Pins"
+            href={instRoute('pin-prints.show', [row.id])}
+          />
+          <Button
+            as={'a'}
+            variant={'link'}
+            href={instRoute('pin-prints.download', [row.id])}
+            colorScheme="brand"
+            fontWeight={'normal'}
+          >
+            Download
+          </Button>
+        </HStack>
       ),
     },
   ];

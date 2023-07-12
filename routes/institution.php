@@ -24,6 +24,10 @@ Route::get('/classifications/search', [Web\ClassificationController::class, 'sea
 ->name('classifications.search');
 Route::post('/classifications/{classification}/migrate-students', [Web\Students\UpdateStudentClassController::class, 'migrateClassStudents'])
 ->name('classifications.migrate-students');
+Route::get('/classifications/download', [Web\ClassificationController::class, 'download'])
+    ->name('classifications.download');
+Route::post('/classifications/upload', [Web\ClassificationController::class, 'upload'])
+    ->name('classifications.upload');
 Route::resource('/classifications', Web\ClassificationController::class)
     ->except(['show']);
     
@@ -127,6 +131,8 @@ Route::get('/term-results/index/{user?}', Web\ListTermResultController::class)
 Route::get('/cummulative-result/index', Web\Staff\CummulativeResultController::class)
     ->name('cummulative-result.index');
 
+Route::get('/pin-prints/{pinPrint}/download', [Web\Staff\PinPrintController::class, 'downloadPins'])
+    ->name('pin-prints.download');
 Route::resource('/pin-prints', Web\Staff\PinPrintController::class)->only(['index', 'store', 'show']);
 
 Route::get('/fees/search', [Web\Payments\FeeController::class, 'search'])->name('fees.search');
