@@ -5,6 +5,7 @@ use App\Enums\Sheet\ResultRecordingColumn;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Collection;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -12,6 +13,9 @@ class DownloadClassStudentsSheet
 {
   private Worksheet $workSheet;
   private Spreadsheet $spreadsheet;
+  const COL_STUDENT_ID = 'A';
+  const COL_STUDENT_NAME = 'B';
+  const COL_STUDENT_CODE = 'C';
 
   function __construct(private Collection $students)
   {
@@ -37,75 +41,55 @@ class DownloadClassStudentsSheet
       $row++;
     }
 
-    $this->lockIdColumn($startingRow, $row);
-
     return new Xlsx($this->spreadsheet);
-  }
-
-  private function lockIdColumn(int $startingRow, int $entRow)
-  {
-    $this->workSheet->protectCells(
-      ResultRecordingColumn::StudentID .
-        $startingRow .
-        ':' .
-        ResultRecordingColumn::StudentID .
-        $entRow,
-      'password'
-    );
   }
 
   private function setHeaders(int $row)
   {
-    //Set column width first
     $this->workSheet
-      ->getColumnDimension(ResultRecordingColumn::StudentID)
+      ->setCellValue(self::COL_STUDENT_ID . $row, 'Serial')
+      ->getColumnDimension(self::COL_STUDENT_ID)
       ->setWidth(10);
     $this->workSheet
-      ->getColumnDimension(ResultRecordingColumn::StudentName)
+      ->setCellValue(self::COL_STUDENT_NAME . $row, 'Student Name')
+      ->getColumnDimension(self::COL_STUDENT_NAME)
+      ->setWidth(35);
+    $this->workSheet
+      ->setCellValue(self::COL_STUDENT_CODE . $row, 'Id')
+      ->getColumnDimension(self::COL_STUDENT_CODE)
       ->setWidth(25);
-    // $this->workSheet
-    //   ->getColumnDimension(ResultRecordingColumn::Assesment1Result)
-    //   ->setWidth(10);
-    // $this->workSheet
-    //   ->getColumnDimension(ResultRecordingColumn::Assesment2Result)
-    //   ->setWidth(10);
-    // $this->workSheet
-    //   ->getColumnDimension(ResultRecordingColumn::ExamResult)
-    //   ->setWidth(12);
 
-    $this->workSheet->setCellValue(
-      ResultRecordingColumn::StudentID . $row,
-      'Id'
-    );
+    $this->workSheet
+      ->getStyle(self::COL_STUDENT_ID)
+      ->getAlignment()
+      ->setHorizontal(Alignment::HORIZONTAL_LEFT);
+    $this->workSheet
+      ->getStyle(self::COL_STUDENT_NAME)
+      ->getAlignment()
+      ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    $this->workSheet
+      ->getStyle(self::COL_STUDENT_CODE)
+      ->getAlignment()
+      ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-    $this->workSheet->setCellValue(
-      ResultRecordingColumn::StudentName . $row,
-      'Student'
-    );
-    // $this->workSheet->setCellValue(
-    //   ResultRecordingColumn::Assesment1Result . $row,
-    //   'Assesment 1'
-    // );
-    // $this->workSheet->setCellValue(
-    //   ResultRecordingColumn::Assesment2Result . $row,
-    //   'Assesment 2'
-    // );
-    // $this->workSheet->setCellValue(
-    //   ResultRecordingColumn::ExamResult . $row,
-    //   'Exam'
-    // );
+    $this->workSheet
+      ->getStyle($row)
+      ->getFont()
+      ->setBold(true);
   }
 
   public function insert(Student $student, int $row)
   {
+    $this->workSheet->setCellValue(self::COL_STUDENT_ID . $row, $student->id);
+
     $this->workSheet->setCellValue(
-      ResultRecordingColumn::StudentID . $row,
-      $student->id
+      self::COL_STUDENT_NAME . $row,
+      $student->user->full_name
     );
 
     $this->workSheet->setCellValue(
-      ResultRecordingColumn::StudentName . $row,
-      $student->user->full_name
+      self::COL_STUDENT_CODE . $row,
+      $student->code
     );
   }
 }

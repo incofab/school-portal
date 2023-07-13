@@ -47,7 +47,7 @@ Route::get(
         '/students/result-sheet/{student}/{classification}/{academicSession}/{term}', 
         Web\Students\ViewResultSheetController::class
     )->name('students.result-sheet');
-Route::resource('/students', Web\Students\StudentController::class)->except(['show', 'destroy']);
+Route::resource('/students', Web\Students\StudentController::class)->except(['show']);
 Route::get('/students/term-results', Web\Students\ListStudentTermResultController::class)
     ->name('students.term-results.index');
 Route::post('/term-results/{termResult}/teacher-comment', [Web\Staff\TermResultCommentController::class, 'teacherComment'])

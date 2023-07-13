@@ -16,6 +16,7 @@ import StudentsTableFilters from '@/components/table-filters/students-table-filt
 import {
   CloudArrowDownIcon,
   CloudArrowUpIcon,
+  TrashIcon,
 } from '@heroicons/react/24/solid';
 import useIsStaff from '@/hooks/use-is-staff';
 import useQueryString from '@/hooks/use-query-string';
@@ -23,6 +24,9 @@ import useMyToast from '@/hooks/use-my-toast';
 import useSharedProps from '@/hooks/use-shared-props';
 import UploadStudentModal from '@/components/modals/upload-student-modal';
 import { Inertia } from '@inertiajs/inertia';
+import useIsAdmin from '@/hooks/use-is-admin';
+import DestructivePopover from '@/components/destructive-popover';
+import useWebForm from '@/hooks/use-web-form';
 
 interface Props {
   students: PaginationResponse<Student>;
@@ -32,10 +36,20 @@ function ListStudents({ students }: Props) {
   const { currentUser, currentInstitutionUser } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const isStaff = useIsStaff();
+  const isAdmin = useIsAdmin();
   const { params } = useQueryString();
-  const { toastError } = useMyToast();
+  const { toastError, handleResponseToast } = useMyToast();
   const studentFiltersModalToggle = useModalToggle();
   const studentUploadModalToggle = useModalToggle();
+  const deleteForm = useWebForm({});
+
+  async function deleteItem(obj: Student) {
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(instRoute('students.destroy', [obj.id]))
+    );
+    handleResponseToast(res);
+    Inertia.reload({ only: ['students'] });
+  }
 
   function canDownloadSheet() {
     return params.classification;
@@ -98,12 +112,20 @@ function ListStudents({ students }: Props) {
               title="Profile"
             />
           )}
-          {/* <LinkButton
-            href={route('users.impersonate', [row.user_id])}
-            colorScheme={'red'}
-            variant={'link'}
-            title="Impersonate"
-          /> */}
+          {isAdmin && (
+            <DestructivePopover
+              label={`Delete ${row.user?.full_name} from the student record. This is irreversible, be careful!!!`}
+              onConfirm={() => deleteItem(row)}
+              isLoading={deleteForm.processing}
+            >
+              <IconButton
+                aria-label={'Delete'}
+                icon={<Icon as={TrashIcon} />}
+                variant={'ghost'}
+                colorScheme={'red'}
+              />
+            </DestructivePopover>
+          )}
         </HStack>
       ),
     },
@@ -156,7 +178,7 @@ function ListStudents({ students }: Props) {
             data={students.data}
             keyExtractor={(row) => row.id}
             paginator={students}
-            validFilters={['clssification']}
+            validFilters={['classification']}
             onFilterButtonClick={studentFiltersModalToggle.open}
           />
         </SlabBody>

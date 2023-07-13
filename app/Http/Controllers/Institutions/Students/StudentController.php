@@ -92,4 +92,30 @@ class StudentController extends Controller
     InsertStudentFromRecordingSheet::run($request->file, $classification);
     return $this->ok();
   }
+
+  public function destroy(
+    Request $request,
+    Institution $institution,
+    Student $student
+  ) {
+    $currentUser = currentUser();
+    abort_unless($currentUser->isInstitutionAdmin(), 403);
+
+    $student->load('institutionUser', 'user');
+    $user = $student->user;
+    $institutionUser = $student->institutionUser;
+
+    $student->delete();
+    $institutionUser->delete();
+    if (
+      $user
+        ->institutionUsers()
+        ->get()
+        ->count() < 1
+    ) {
+      $user->delete();
+    }
+
+    return $this->ok();
+  }
 }
