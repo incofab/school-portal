@@ -120,7 +120,7 @@ export default function Template2({
                 textAlign={'center'}
                 color={'red'}
               >
-                {currentInstitution.sub_title}
+                {currentInstitution.subtitle}
               </Text>
               <Text
                 fontSize={'2xl'}
@@ -194,7 +194,7 @@ export default function Template2({
                 </thead>
                 <tbody>
                   {courseResults.map((courseResult) => (
-                    <tr key={courseResult.id}>
+                    <tr key={'results-' + courseResult.id}>
                       <td>{courseResult.course?.title}</td>
                       <td>{getAssessmentScore(courseResult)}</td>
                       <td>{courseResult.exam}</td>
@@ -237,7 +237,7 @@ export default function Template2({
             <table className="result-analysis-table">
               <tbody>
                 {resultDetail.map(({ label, value }) => (
-                  <tr key={label}>
+                  <tr key={'result analysis' + label}>
                     <td style={{ width: '250px' }}>{label}</td>
                     <td>{value}</td>
                   </tr>

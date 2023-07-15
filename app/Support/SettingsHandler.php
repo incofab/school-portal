@@ -33,9 +33,9 @@ class SettingsHandler
     return $this->settings[$key] ?? null;
   }
 
-  function getValue(string $key)
+  function getValue(string $key, $default = null)
   {
-    return $this->get($key)?->value;
+    return $this->get($key)?->value ?? $default;
   }
 
   function getCurrentTerm($default = null)

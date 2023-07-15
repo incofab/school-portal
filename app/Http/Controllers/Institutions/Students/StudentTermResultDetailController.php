@@ -9,7 +9,6 @@ use App\Models\Classification;
 use App\Models\Assessment;
 use App\Models\Institution;
 use App\Models\Student;
-use App\Models\TermResult;
 
 class StudentTermResultDetailController extends Controller
 {
@@ -18,7 +17,8 @@ class StudentTermResultDetailController extends Controller
     Student $student,
     Classification $classification,
     AcademicSession $academicSession,
-    TermType $term
+    TermType $term,
+    bool $forMidTerm
   ) {
     $institutionUser = currentInstitutionUser();
     abort_if(
@@ -32,6 +32,7 @@ class StudentTermResultDetailController extends Controller
       ->where('classification_id', $classification->id)
       ->where('academic_session_id', $academicSession->id)
       ->where('term', $term)
+      ->where('for_mid_term', $forMidTerm)
       ->first();
 
     if (currentUser()->id == $student->user_id) {

@@ -40,11 +40,11 @@ Route::get('/students/download-recording-template', [Web\Students\StudentControl
 Route::post('/students/upload/{classification}', [Web\Students\StudentController::class, 'uploadStudents'])
     ->name('students.upload');
 Route::get(
-        '/students/term-result-detail/{student}/{classification}/{academicSession}/{term}', 
+        '/students/term-result-detail/{student}/{classification}/{academicSession}/{term}/{forMidTerm}', 
         Web\Students\StudentTermResultDetailController::class
     )->name('students.term-result-detail');
 Route::get(
-        '/students/result-sheet/{student}/{classification}/{academicSession}/{term}', 
+        '/students/result-sheet/{student}/{classification}/{academicSession}/{term}/{forMidTerm}', 
         Web\Students\ViewResultSheetController::class
     )->name('students.result-sheet');
 Route::resource('/students', Web\Students\StudentController::class)->except(['show']);

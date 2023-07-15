@@ -137,7 +137,10 @@ export default function Template1({
             <Spacer />
             <LabelText
               label="Position"
-              text={ResultUtil.getPositionSuffix(termResult.position)}
+              text={
+                termResult.position +
+                ResultUtil.getPositionSuffix(termResult.position)
+              }
             />
             <Spacer />
             <LabelText label="Out of" text={classResultInfo.num_of_students} />

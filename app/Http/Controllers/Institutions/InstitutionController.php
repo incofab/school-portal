@@ -29,9 +29,12 @@ class InstitutionController extends Controller
     $data = $request->validate(
       [
         'name' => ['required', 'string'],
+        'subtitle' => ['nullable', 'string'],
+        'caption' => ['nullable', 'string'],
         'phone' => ['nullable', 'string'],
         'email' => ['nullable', 'string'],
-        'address' => ['nullable', 'string']
+        'address' => ['nullable', 'string'],
+        'website' => ['nullable', 'string']
       ],
       $request->all()
     );

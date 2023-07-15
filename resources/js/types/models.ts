@@ -28,7 +28,9 @@ export interface Institution extends Row {
   user_id: number;
   uuid: string;
   code: string;
-  sub_title: string;
+  subtitle: string;
+  caption: string;
+  website: string;
   name: string;
   photo: string;
   address: string;

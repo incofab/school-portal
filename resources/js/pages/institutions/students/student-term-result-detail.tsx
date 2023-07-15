@@ -61,7 +61,7 @@ export default function StudentTermResultDetail({
       ? assessments.map((item) => ({
           label: startCase(item.title),
           render: (row: CourseResult) =>
-            String(row.assessment_values[item.title] ?? 0),
+            String(row.assessment_values[item.raw_title] ?? 0),
         }))
       : []),
     {
@@ -110,6 +110,7 @@ export default function StudentTermResultDetail({
                 classification.id,
                 academicSession.id,
                 term,
+                termResult.for_mid_term ? 1 : 0,
               ])}
             />
           }

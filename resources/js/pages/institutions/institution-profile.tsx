@@ -20,7 +20,6 @@ import {
 } from '@/components/file-dropper/common';
 import { resizeImage } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import useSharedProps from '@/hooks/use-shared-props';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import FormControlBox from '@/components/forms/form-control-box';
 import useWebForm, { useWeb } from '@/hooks/use-web-form';
@@ -29,6 +28,7 @@ import useMyToast from '@/hooks/use-my-toast';
 import { Institution } from '@/types/models';
 import { preventNativeSubmit } from '@/util/util';
 import DashboardLayout from '@/layout/dashboard-layout';
+import InputForm from '@/components/forms/input-form';
 
 interface Props {
   institution: Institution;
@@ -42,6 +42,9 @@ export default function InstitutionProfile({ institution }: Props) {
     email: institution.email,
     address: institution.address,
     photo: institution.photo,
+    subtitle: institution.subtitle,
+    caption: institution.caption,
+    website: institution.website,
   });
 
   const toast = useToast();
@@ -95,6 +98,22 @@ export default function InstitutionProfile({ institution }: Props) {
                       }
                     />
                   </FormControlBox>
+                  <InputForm
+                    form={form as any}
+                    formKey="subtitle"
+                    title="Sub Title [optional]"
+                    onChange={(e) =>
+                      form.setValue('subtitle', e.currentTarget.value)
+                    }
+                  />
+                  <InputForm
+                    form={form as any}
+                    formKey="caption"
+                    title="Caption [optional]"
+                    onChange={(e) =>
+                      form.setValue('caption', e.currentTarget.value)
+                    }
+                  />
                   <FormControlBox form={form} formKey="phone" title="Phone">
                     <Input
                       id="phone"
@@ -122,6 +141,14 @@ export default function InstitutionProfile({ institution }: Props) {
                       }
                     />
                   </FormControlBox>
+                  <InputForm
+                    form={form as any}
+                    formKey="website"
+                    title="Website URL [optional]"
+                    onChange={(e) =>
+                      form.setValue('website', e.currentTarget.value)
+                    }
+                  />
                 </VStack>
               </GridItem>
               <GridItem colSpan={{ lg: 1 }}>

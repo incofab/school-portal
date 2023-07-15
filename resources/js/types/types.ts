@@ -99,6 +99,13 @@ export enum InstitutionSettingType {
   UsesMidTermResult = 'uses-mid-term-result',
 }
 
+export enum ResultTemplate {
+  Template1 = 'template-1',
+  Template2 = 'template-2',
+  Template3 = 'template-3',
+  Template4 = 'template-4',
+}
+
 export enum Religion {
   Christianity = 'christianity',
   Islam = 'islam',

@@ -17,7 +17,11 @@ import { BrandButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import EnumSelect from '@/components/dropdown-select/enum-select';
-import { InstitutionSettingType, TermType } from '@/types/types';
+import {
+  InstitutionSettingType,
+  ResultTemplate,
+  TermType,
+} from '@/types/types';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import useSharedProps from '@/hooks/use-shared-props';
 
@@ -149,6 +153,33 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   isLoading={
                     activeSetting ===
                       InstitutionSettingType.UsesMidTermResult &&
+                    webForm.processing
+                  }
+                  size={'md'}
+                />
+              </HStack>
+              <Text>Result Template</Text>
+              <HStack align={'stretch'} spacing={2}>
+                <FormControl>
+                  <EnumSelect
+                    enumData={ResultTemplate}
+                    selectValue={
+                      webForm.data[InstitutionSettingType.ResultTemplate] ??
+                      ResultTemplate.Template1
+                    }
+                    onChange={(e: any) =>
+                      webForm.setValue(
+                        InstitutionSettingType.ResultTemplate,
+                        e.value
+                      )
+                    }
+                  />
+                </FormControl>
+                <BrandButton
+                  title="Update"
+                  onClick={() => submit(InstitutionSettingType.ResultTemplate)}
+                  isLoading={
+                    activeSetting === InstitutionSettingType.ResultTemplate &&
                     webForm.processing
                   }
                   size={'md'}

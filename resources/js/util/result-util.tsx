@@ -1,3 +1,6 @@
+import { CourseResult } from '@/types/models';
+import { Text } from '@chakra-ui/react';
+
 const ResultUtil = {
   getPositionSuffix: function (position: number) {
     const lastChar = position % 10;
@@ -5,14 +8,27 @@ const ResultUtil = {
     switch (lastChar) {
       case 1:
         suffix = 'st';
+        break;
       case 2:
         suffix = 'nd';
+        break;
       case 3:
         suffix = 'rd';
+        break;
       default:
         suffix = 'th';
+        break;
     }
-    return position + suffix;
+    return suffix;
+  },
+
+  formatPosition: function (position: number) {
+    return (
+      <>
+        {position}
+        <sup>{this.getPositionSuffix(position)}</sup>
+      </>
+    );
   },
 
   getRemark: function (grade: string) {
@@ -48,6 +64,18 @@ const ResultUtil = {
     } else {
       return 'School Section';
     }
+  },
+
+  VerticalText: function ({ text }: { text: string }) {
+    return <Text className="vertical-header">{text}</Text>;
+  },
+
+  getAssessmentScore: function (courseResult: CourseResult) {
+    let total = 0;
+    Object.entries(courseResult.assessment_values).map(
+      ([key, val]) => (total += val)
+    );
+    return total;
   },
 };
 

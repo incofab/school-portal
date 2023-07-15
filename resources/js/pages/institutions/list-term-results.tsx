@@ -68,6 +68,7 @@ export default function ListTermResults({ termResults }: Props) {
             row.classification_id,
             row.academic_session_id,
             row.term,
+            row.for_mid_term ? 1 : 0,
           ])}
           title="Result Detail"
         />

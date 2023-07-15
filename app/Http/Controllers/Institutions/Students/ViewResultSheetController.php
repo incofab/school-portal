@@ -9,13 +9,14 @@ use App\Models\Classification;
 use App\Models\ClassResultInfo;
 use App\Models\CourseResultInfo;
 use App\Models\Institution;
+use App\Models\InstitutionUser;
 use App\Models\Student;
 use App\Models\TermResult;
+use App\Support\SettingsHandler;
 use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use App\Support\UITableFilters\TermResultUITableFilters;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class ViewResultSheetController extends Controller
 {
@@ -24,7 +25,8 @@ class ViewResultSheetController extends Controller
     Student $student,
     Classification $classification,
     AcademicSession $academicSession,
-    string $term
+    string $term,
+    bool $forMidTerm
   ) {
     $institutionUser = currentInstitutionUser();
     abort_if(
@@ -36,17 +38,9 @@ class ViewResultSheetController extends Controller
       'institution_id' => $institution->id,
       'classification' => $classification->id,
       'term' => $term,
-      'academicSession' => $academicSession->id
+      'academicSession' => $academicSession->id,
+      'forMidTerm' => $forMidTerm
     ];
-
-    $courseResults = CourseResultsUITableFilters::make(
-      $params,
-      $student->courseResults()->getQuery()
-    )
-      ->filterQuery()
-      ->getQuery()
-      ->with('course', 'teacher')
-      ->get();
 
     $termResult = TermResultUITableFilters::make(
       $params,
@@ -56,6 +50,8 @@ class ViewResultSheetController extends Controller
       ->getQuery()
       ->first();
 
+    abort_unless($termResult, 404, 'Result not found');
+
     if (currentUser()->id == $student->user_id) {
       abort_unless(
         $termResult->is_activated,
@@ -63,6 +59,15 @@ class ViewResultSheetController extends Controller
         'This result is not activated'
       );
     }
+
+    $courseResults = CourseResultsUITableFilters::make(
+      $params,
+      $student->courseResults()->getQuery()
+    )
+      ->filterQuery()
+      ->getQuery()
+      ->with('course', 'teacher')
+      ->get();
 
     $courseResultInfo = CourseResultInfoUITableFilters::make(
       $params,
@@ -103,7 +108,11 @@ class ViewResultSheetController extends Controller
       'assessments' => $assessments
     ];
 
-    return inertia('institutions/result-sheets/template-2', $viewData);
+    $setting = SettingsHandler::makeFromRoute();
+    return inertia(
+      "institutions/result-sheets/{$setting->getResultTemplate()}",
+      $viewData
+    );
     // if (request('download')) {
     //   return $this->downloadAsPDF($viewData);
     // }
@@ -125,15 +134,15 @@ class ViewResultSheetController extends Controller
     ];
   }
 
-  private function downloadAsPDF(array $viewData)
-  {
-    $student = $viewData['student'];
-    $academicSession = $viewData['academicSession'];
-    // dd('dksmdsd');
-    $pdf = Pdf::loadView('student-result-sheet', $viewData);
-    $filename = "{$student->user->full_name} {$academicSession->title} {$viewData['term']} term result.pdf";
-    $filename = str_replace(['/'], ['-'], $filename);
-    // dd($filename);
-    return $pdf->download($filename);
-  }
+  // private function downloadAsPDF(array $viewData)
+  // {
+  //   $student = $viewData['student'];
+  //   $academicSession = $viewData['academicSession'];
+  //   // dd('dksmdsd');
+  //   $pdf = Pdf::loadView('student-result-sheet', $viewData);
+  //   $filename = "{$student->user->full_name} {$academicSession->title} {$viewData['term']} term result.pdf";
+  //   $filename = str_replace(['/'], ['-'], $filename);
+  //   // dd($filename);
+  //   return $pdf->download($filename);
+  // }
 }
