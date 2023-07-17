@@ -9,7 +9,7 @@ export const SidebarHeader = ({ ...props }: BoxProps) => {
     <Div {...props} p={1}>
       <HStack height={'70px'} spacing={2} width={'full'}>
         <Avatar
-          src={currentUser.photo_url}
+          src={currentInstitution.photo}
           width={'50px'}
           height={'50px'}
           border={'2px solid #2a8864'}

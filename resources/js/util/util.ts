@@ -112,3 +112,16 @@ export function blurStr(str: string) {
   const convertedString = str.replace(/^(..).*(..)$/, '$1********$2');
   return convertedString;
 }
+
+export function range(start: number, end: number | undefined) {
+  if (!end || end < start) {
+    return [];
+  }
+  const arr = [];
+  let i = 0;
+  for (let j = start; j <= end; j++) {
+    arr[i] = j;
+    i++;
+  }
+  return arr;
+}

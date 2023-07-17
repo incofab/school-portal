@@ -5,6 +5,7 @@ import {
   Assessment,
   Student,
   TermResult,
+  LearningEvaluation,
 } from '@/types/models';
 import React from 'react';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -29,6 +30,7 @@ import useModalToggle from '@/hooks/use-modal-toggle';
 import TermResultTeacherCommentModal from '@/components/modals/term-result-teacher-comment-modal';
 import { Inertia } from '@inertiajs/inertia';
 import TermResultPrincipalCommentModal from '@/components/modals/term-result-principal-comment-modal';
+import SetTermResultEvaluation from '../learning-evaluations/set-term-result-evaluations-component';
 
 interface Props {
   term: string;
@@ -38,6 +40,7 @@ interface Props {
   courseResults: CourseResult[];
   termResult: TermResult;
   assessments?: Assessment[];
+  learningEvaluations?: LearningEvaluation[];
 }
 
 export default function StudentTermResultDetail({
@@ -48,6 +51,7 @@ export default function StudentTermResultDetail({
   courseResults,
   termResult,
   assessments,
+  learningEvaluations,
 }: Props) {
   const { instRoute } = useInstitutionRoute();
   const teacherCommentModalToggle = useModalToggle();
@@ -175,6 +179,13 @@ export default function StudentTermResultDetail({
           {...principalCommentModalToggle.props}
           onSuccess={() => Inertia.reload({ only: ['termResult'] })}
         />
+        <Spacer height={3} />
+        <Div maxWidth={'500px'} background={'#FAFAFA'} py={4} px={5}>
+          <SetTermResultEvaluation
+            termResult={termResult}
+            learningEvaluations={learningEvaluations}
+          />
+        </Div>
       </Slab>
     </DashboardLayout>
   );

@@ -105,7 +105,12 @@ class ViewResultSheetController extends Controller
       'classResultInfo' => $classResultInfo,
       'courseResultInfoData' => $courseResultInfoData,
       'resultDetails' => $this->getResultDetails($classResultInfo, $termResult),
-      'assessments' => $assessments
+      'assessments' => $assessments,
+      'learningEvaluations' => $institution
+        ->learningEvaluations()
+        ->with('learningEvaluationDomain')
+        ->orderBy('learning_evaluation_domain_id')
+        ->get()
     ];
 
     $setting = SettingsHandler::makeFromRoute();

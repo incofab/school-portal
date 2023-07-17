@@ -142,4 +142,14 @@ class Institution extends Model
   {
     return $this->hasMany(Assessment::class);
   }
+
+  function learningEvaluationDomains()
+  {
+    return $this->hasMany(LearningEvaluationDomain::class);
+  }
+
+  function learningEvaluations()
+  {
+    return $this->hasMany(LearningEvaluation::class);
+  }
 }

@@ -12,6 +12,9 @@ class Student extends Model
   use HasFactory, SoftDeletes;
 
   public $guarded = [];
+  protected $casts = [
+    'user_id' => 'integer'
+  ];
 
   public static function query(): StudentQueryBuilder
   {

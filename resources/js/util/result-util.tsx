@@ -1,4 +1,14 @@
-import { CourseResult } from '@/types/models';
+import {
+  AcademicSession,
+  Assessment,
+  ClassResultInfo,
+  Classification,
+  CourseResult,
+  CourseResultInfo,
+  LearningEvaluation,
+  Student,
+  TermResult,
+} from '@/types/models';
 import { Text } from '@chakra-ui/react';
 
 const ResultUtil = {
@@ -80,3 +90,15 @@ const ResultUtil = {
 };
 
 export default ResultUtil;
+
+export interface ResultProps {
+  termResult: TermResult;
+  courseResults: CourseResult[];
+  classResultInfo: ClassResultInfo;
+  courseResultInfoData: { [key: string | number]: CourseResultInfo };
+  academicSession: AcademicSession;
+  classification: Classification;
+  student: Student;
+  assessments: Assessment[];
+  learningEvaluations: LearningEvaluation[];
+}

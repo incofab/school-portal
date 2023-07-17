@@ -142,6 +142,7 @@ export interface TermResult extends InstitutionRow {
   teacher_comment: string;
   principal_comment: string;
   general_comment: string;
+  learning_evaluation: { [key: string]: string };
   student?: Student;
   classification?: Classification;
   academic_session?: AcademicSession;
@@ -260,4 +261,16 @@ export interface Assessment extends InstitutionRow {
   term: string;
   for_mid_term: boolean;
   depends_on: string;
+}
+
+export interface LearningEvaluationDomain extends InstitutionRow {
+  title: string;
+  type: string;
+  max: number;
+}
+
+export interface LearningEvaluation extends InstitutionRow {
+  learning_evaluation_domain_id: number;
+  title: string;
+  learning_evaluation_domain?: LearningEvaluationDomain;
 }

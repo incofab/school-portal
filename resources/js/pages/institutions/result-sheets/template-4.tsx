@@ -24,18 +24,8 @@ import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
 import '@/../../public/style/result/template-4.css';
 import ImagePaths from '@/util/images';
-import ResultUtil from '@/util/result-util';
-
-interface Props {
-  termResult: TermResult;
-  courseResults: CourseResult[];
-  classResultInfo: ClassResultInfo;
-  courseResultInfoData: { [key: string | number]: CourseResultInfo };
-  academicSession: AcademicSession;
-  classification: Classification;
-  student: Student;
-  assessments: Assessment[];
-}
+import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
+import { ResultProps } from '@/util/result-util';
 
 export default function Template4({
   termResult,
@@ -46,7 +36,8 @@ export default function Template4({
   student,
   courseResultInfoData,
   assessments,
-}: Props) {
+  learningEvaluations,
+}: ResultProps) {
   const { currentInstitution } = useSharedProps();
 
   const resultSummary1 = [
@@ -68,28 +59,28 @@ export default function Template4({
     let label = '';
     if (score < 40) {
       grade = 'F';
-      remark = 'Fail';
-      label = '00.0% - 39.0%';
+      remark = 'Progressing';
+      label = '1.0% - 39.0%';
       pointsGrade = 0;
-    } else if (score < 45) {
-      grade = 'E';
-      remark = 'Pass';
-      label = '40.0% - 44.0%';
-      pointsGrade = 1;
     } else if (score < 50) {
-      grade = 'D';
-      remark = 'Satisfactory';
-      label = '45.0% - 49.0%';
+      grade = 'E';
+      remark = 'Fair';
+      label = '40.0% - 49.0%';
       pointsGrade = 2;
     } else if (score < 60) {
-      grade = 'C';
-      remark = 'Good';
+      grade = 'D';
+      remark = 'Pass';
       label = '50.0% - 59.0%';
       pointsGrade = 3;
     } else if (score < 70) {
+      grade = 'C';
+      remark = 'Good';
+      label = '60.0% - 69.0%';
+      pointsGrade = 4;
+    } else if (score < 90) {
       grade = 'B';
       remark = 'Very Good';
-      label = '60.0% - 69.0%';
+      label = '70.0% - 89.0%';
       pointsGrade = 4;
     } else {
       grade = 'A';
@@ -99,6 +90,44 @@ export default function Template4({
     }
     return [grade, remark, label, pointsGrade];
   }
+  // function getGrade(score: number) {
+  //   let grade = '';
+  //   let pointsGrade = 0;
+  //   let remark = '';
+  //   let label = '';
+  //   if (score < 40) {
+  //     grade = 'F';
+  //     remark = 'Progressing';
+  //     label = '1.0% - 39.0%';
+  //     pointsGrade = 0;
+  //   } else if (score < 45) {
+  //     grade = 'E';
+  //     remark = 'Pass';
+  //     label = '40.0% - 44.0%';
+  //     pointsGrade = 1;
+  //   } else if (score < 50) {
+  //     grade = 'D';
+  //     remark = 'Satisfactory';
+  //     label = '45.0% - 49.0%';
+  //     pointsGrade = 2;
+  //   } else if (score < 60) {
+  //     grade = 'C';
+  //     remark = 'Good';
+  //     label = '50.0% - 59.0%';
+  //     pointsGrade = 3;
+  //   } else if (score < 70) {
+  //     grade = 'B';
+  //     remark = 'Very Good';
+  //     label = '60.0% - 69.0%';
+  //     pointsGrade = 4;
+  //   } else {
+  //     grade = 'A';
+  //     remark = 'Excellent';
+  //     label = '70.0% - Above';
+  //     pointsGrade = 5;
+  //   }
+  //   return [grade, remark, label, pointsGrade];
+  // }
 
   function LabelText({
     label,
@@ -184,12 +213,20 @@ export default function Template4({
           >
             <VStack spacing={2} align={'left'}>
               {resultSummary1.map((item) => (
-                <LabelText label={item.label} text={item.value} />
+                <LabelText
+                  label={item.label}
+                  text={item.value}
+                  key={'summary1' + item.label}
+                />
               ))}
             </VStack>
             <VStack spacing={2} align={'left'}>
               {resultSummary2.map((item) => (
-                <LabelText label={item.label} text={item.value} />
+                <LabelText
+                  label={item.label}
+                  text={item.value}
+                  key={'summary2' + item.label}
+                />
               ))}
             </VStack>
           </Flex>
@@ -217,6 +254,7 @@ export default function Template4({
                         border: '1px solid #FFF',
                         color: '#FFF',
                       }}
+                      key={'result-header' + assessment.title}
                     >
                       {startCase(assessment.title)}
                     </th>
@@ -242,7 +280,11 @@ export default function Template4({
                       {courseResult.course?.title}
                     </td>
                     {assessments.map((assessment) => (
-                      <td>
+                      <td
+                        key={
+                          'assessment-val' + courseResult.id + assessment.title
+                        }
+                      >
                         {courseResult.assessment_values[assessment.raw_title] ??
                           '-'}
                       </td>
@@ -252,7 +294,8 @@ export default function Template4({
                       {courseResult.result}
                     </td>
                     <td>{courseResult.position}</td>
-                    <td>{ResultUtil.getRemark(courseResult.grade)}</td>
+                    {/* <td>{ResultUtil.getRemark(courseResult.grade)}</td> */}
+                    <td>{getGrade(courseResult.result)[1]}</td>
                   </tr>
                 ))}
               </tbody>
@@ -279,32 +322,6 @@ export default function Template4({
               />
             </VStack>
           </Flex>
-          <br />
-          <div style={{ minWidth: '240px' }}>
-            <table className="keys-table" style={{ textAlign: 'center' }}>
-              <thead>
-                <tr>
-                  <th>Percentage Range</th>
-                  <th>Remark</th>
-                  <th>Letter Grade</th>
-                  <th>Point Grade</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[70, 69, 59, 49, 44, 39].map((item) => {
-                  const [grade, remark, label, pointsGrade] = getGrade(item);
-                  return (
-                    <tr>
-                      <td>{label}</td>
-                      <td>{grade}</td>
-                      <td>{remark}</td>
-                      <td>{pointsGrade}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
           <Spacer height={'10px'} />
           {termResult.teacher_comment && (
             <>
@@ -321,13 +338,50 @@ export default function Template4({
             <>
               <HStack align={'stretch'}>
                 <Text fontWeight={'semibold'} size={'xs'}>
-                  Principal's comment:{' '}
+                  Head Teacher's comment:{' '}
                 </Text>
                 <Text>{termResult.principal_comment}</Text>
               </HStack>
               <Divider />
             </>
           )}
+          <br />
+          <div
+            style={{
+              minWidth: '240px',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <table className="keys-table" style={{ textAlign: 'center' }}>
+              <thead>
+                <tr>
+                  <th>Percentage Range</th>
+                  <th>Remark</th>
+                  <th>Letter Grade</th>
+                  <th>Point Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[90, 89, 69, 59, 49, 39].map((item) => {
+                  const [grade, remark, label, pointsGrade] = getGrade(item);
+                  return (
+                    <tr key={item}>
+                      <td>{label}</td>
+                      <td>{grade}</td>
+                      <td>{remark}</td>
+                      <td>{pointsGrade}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <DisplayTermResultEvaluation
+              termResult={termResult}
+              learningEvaluations={learningEvaluations}
+            />
+          </div>
         </VStack>
       </Div>
     </Div>

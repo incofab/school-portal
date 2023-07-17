@@ -182,6 +182,22 @@ export default function SideBarLayout() {
       roles: [InstitutionUserType.Admin],
     },
     {
+      label: 'Evaluations',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'Evaluation Types',
+          route: instRoute('learning-evaluation-domains.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Evaluations',
+          route: instRoute('learning-evaluations.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+    {
       label: 'Profile',
       route: instRoute('users.profile', [currentUser]),
     },

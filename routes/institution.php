@@ -155,4 +155,18 @@ Route::post('/assessments/{assessment}/set-dependency', [Web\Staff\AssessmentCon
 Route::post('/assessments/{assessment}/insert-score-from-course-result', [Web\Staff\InjectAssessmentScoreFromTermResultController::class, 'store'])
     ->name('assessments.insert-score-from-course-result.store');
 
+Route::get('/learning-evaluation-domains/index/{learningEvaluationDomain?}', [Web\Staff\LearningEvaluationDomainController::class, 'index'])
+    ->name('learning-evaluation-domains.index');
+Route::post('/learning-evaluation-domains/store/{learningEvaluationDomain?}', [Web\Staff\LearningEvaluationDomainController::class, 'store'])
+    ->name('learning-evaluation-domains.store');
+Route::delete('/learning-evaluation-domains/destroy/{learningEvaluationDomain}', [Web\Staff\LearningEvaluationDomainController::class, 'destroy'])
+    ->name('learning-evaluation-domains.destroy');
 
+Route::get('/learning-evaluations/index/{learningEvaluation?}', [Web\Staff\LearningEvaluationController::class, 'index'])
+    ->name('learning-evaluations.index');
+Route::post('/learning-evaluations/store/{learningEvaluation?}', [Web\Staff\LearningEvaluationController::class, 'store'])
+    ->name('learning-evaluations.store');
+Route::delete('/learning-evaluations/destroy/{learningEvaluation}', [Web\Staff\LearningEvaluationController::class, 'destroy'])
+    ->name('learning-evaluations.destroy');
+Route::post('/set-term-result-learning-evaluation/{termResult?}', [Web\Staff\LearningEvaluationController::class, 'setTermResultEvaluation'])
+    ->name('set-term-result-learning-evaluation');

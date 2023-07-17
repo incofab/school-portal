@@ -48,6 +48,7 @@ class StudentTermResultDetailController extends Controller
       ->where('classification_id', $classification->id)
       ->where('academic_session_id', $academicSession->id)
       ->where('term', $term)
+      ->where('for_mid_term', $termResult->for_mid_term)
       ->with('course', 'teacher')
       ->get();
 
@@ -63,7 +64,12 @@ class StudentTermResultDetailController extends Controller
       'academicSession' => $academicSession,
       'term' => $term,
       'termResult' => $termResult,
-      'assessments' => $assessments
+      'assessments' => $assessments,
+      'learningEvaluations' => $institution
+        ->learningEvaluations()
+        ->with('learningEvaluationDomain')
+        ->orderBy('learning_evaluation_domain_id')
+        ->get()
     ]);
   }
 }

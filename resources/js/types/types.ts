@@ -57,6 +57,12 @@ export enum Gender {
   Female = 'female',
 }
 
+export enum LearningEvaluationDomainType {
+  Text = 'text',
+  Number = 'number',
+  YesOrNo = 'yes-or-no',
+}
+
 // export enum ProgrammeType {
 //   Regular = 'regular',
 //   Sandwich = 'sandwich',
