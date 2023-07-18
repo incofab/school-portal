@@ -53,6 +53,10 @@ export default function ListClassification({ classifications }: Props) {
       label: 'Same Num of Subjects',
       render: (row) => (row.has_equal_subjects ? 'Yes' : 'No'),
     },
+    {
+      label: 'Form Teacher',
+      render: (row) => row.form_teacher?.full_name ?? '',
+    },
     ...(isAdmin
       ? [
           {

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Institutions;
 
 use App\Actions\ClassSheet;
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Classification;
 use App\Models\Institution;
@@ -14,7 +15,9 @@ class ClassificationController extends Controller
 {
   function index()
   {
-    $query = Classification::query()->withCount('students');
+    $query = Classification::query()
+      ->with('formTeacher')
+      ->withCount('students');
     return inertia('institutions/classifications/list-classifications', [
       'classifications' => paginateFromRequest($query)
     ]);
@@ -38,7 +41,7 @@ class ClassificationController extends Controller
     return inertia('institutions/classifications/create-edit-classification');
   }
 
-  function store()
+  function store(Institution $institution)
   {
     $data = request()->validate([
       'title' => [
@@ -47,16 +50,21 @@ class ClassificationController extends Controller
         'max:100',
         Rule::unique('classifications', 'title')->where(
           'institution_id',
-          currentInstitution()->id
+          $institution->id
         )
       ],
       'description' => ['nullable', 'string'],
-      'has_equal_subjects' => ['nullable', 'boolean']
+      'has_equal_subjects' => ['nullable', 'boolean'],
+      'form_teacher_id' => [
+        'nullable',
+        'integer',
+        Rule::exists('institution_users', 'user_id')
+          ->where('institution_id', $institution->id)
+          ->where('role', InstitutionUserType::Teacher->value)
+      ]
     ]);
 
-    currentInstitution()
-      ->classifications()
-      ->create($data);
+    $institution->classifications()->create($data);
     return $this->ok();
   }
 
@@ -79,7 +87,14 @@ class ClassificationController extends Controller
           ->ignore($classification->id, 'id')
       ],
       'description' => ['nullable', 'string'],
-      'has_equal_subjects' => ['nullable', 'boolean']
+      'has_equal_subjects' => ['nullable', 'boolean'],
+      'form_teacher_id' => [
+        'nullable',
+        'integer',
+        Rule::exists('institution_users', 'user_id')
+          ->where('institution_id', $institution->id)
+          ->where('role', InstitutionUserType::Teacher->value)
+      ]
     ]);
 
     $classification->fill($data)->save();

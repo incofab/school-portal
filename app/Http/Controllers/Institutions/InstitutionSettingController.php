@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\InstitutionSetting;
 use App\Support\SettingsHandler;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
+use Storage;
 
 class InstitutionSettingController extends Controller
 {
@@ -44,21 +46,30 @@ class InstitutionSettingController extends Controller
     ]);
   }
 
-  function store(Institution $institution)
+  function store(Request $request, Institution $institution)
   {
-    $data = request()->validate([
+    $data = $request->validate([
       'key' => ['required', new Enum(InstitutionSettingType::class)],
       'value' => ['nullable'],
+      'photo' => ['nullable', 'image', 'mimes:jpg,png,jpeg', 'max:1024'],
       'display_name' => ['nullable', 'string'],
       'type' => ['nullable', 'string']
     ]);
+
+    if ($request->photo) {
+      $imagePath = $request->photo->store('avatars/settings', 's3_public');
+      $publicUrl = Storage::disk('s3_public')->url($imagePath);
+      $data['value'] = $publicUrl;
+    }
 
     InstitutionSetting::query()->updateOrCreate(
       [
         'institution_id' => $institution->id,
         'key' => $data['key']
       ],
-      $data
+      collect($data)
+        ->except('photo')
+        ->toArray()
     );
     return $this->ok();
   }

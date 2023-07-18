@@ -1,5 +1,5 @@
 // 4mb
-export const MAX_FILE_SIZE_BYTES = 4096 * 1000;
+export const MAX_FILE_SIZE_BYTES = 1096 * 1000;
 
 export function bytesToMb(size: number) {
   return size / 1_000_000;

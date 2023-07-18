@@ -9,14 +9,12 @@ import {
 } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit, range } from '@/util/util';
-import { Inertia } from '@inertiajs/inertia';
 import { LearningEvaluation, TermResult } from '@/types/models';
 import { FormButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
 import { LearningEvaluationDomainType } from '@/types/types';
-import EnumSelect from '@/components/dropdown-select/enum-select';
 import MySelect from '@/components/dropdown-select/my-select';
 import { Div } from '@/components/semantic';
 
@@ -75,6 +73,7 @@ export default function SetTermResultEvaluation({
           ) {
             return (
               <Checkbox
+                key={'display-evalauation' + item.id}
                 isChecked={Boolean(evaluation[item.id])}
                 onChange={(e) =>
                   setEvaluation({
@@ -96,6 +95,7 @@ export default function SetTermResultEvaluation({
                 form={webForm as any}
                 formKey=""
                 title={item.title}
+                key={'display-evalauation' + item.id}
               >
                 <MySelect
                   isMulti={false}
@@ -122,6 +122,7 @@ export default function SetTermResultEvaluation({
           }
           return (
             <Input
+              key={'display-evalauation' + item.id}
               value={evaluation[item.id]}
               onChange={(e) =>
                 setEvaluation({

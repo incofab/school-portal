@@ -1,18 +1,9 @@
 import {
-  AcademicSession,
-  Assessment,
-  ClassResultInfo,
-  Classification,
-  CourseResult,
-  CourseResultInfo,
-  Student,
-  TermResult,
-} from '@/types/models';
-import {
   Avatar,
   Divider,
   Flex,
   HStack,
+  Img,
   Spacer,
   Text,
   VStack,
@@ -38,7 +29,7 @@ export default function Template4({
   assessments,
   learningEvaluations,
 }: ResultProps) {
-  const { currentInstitution } = useSharedProps();
+  const { currentInstitution, stamp } = useSharedProps();
 
   const resultSummary1 = [
     { label: 'Name of Pupil', value: student.user?.full_name },
@@ -48,7 +39,9 @@ export default function Template4({
     { label: 'Class', value: classification.title },
     {
       label: 'Term',
-      value: `${termResult.term} Term, ${academicSession.title} Session`,
+      value: `${startCase(termResult.term)} Term, ${
+        academicSession.title
+      } Session`,
     },
   ];
 
@@ -85,7 +78,7 @@ export default function Template4({
     } else {
       grade = 'A';
       remark = 'Excellent';
-      label = '70.0% - Above';
+      label = '90.0% - Above';
       pointsGrade = 5;
     }
     return [grade, remark, label, pointsGrade];
@@ -159,7 +152,7 @@ export default function Template4({
 
   return (
     <Div style={backgroundStyle} minHeight={'1170px'}>
-      <Div mx={'auto'} width={'900px'} px={3}>
+      <Div mx={'auto'} width={'900px'} px={3} position={'relative'}>
         <VStack align={'stretch'}>
           <HStack background={'#FCFCFC'} p={2}>
             <Avatar
@@ -383,6 +376,9 @@ export default function Template4({
             />
           </div>
         </VStack>
+        <Div position={'absolute'} bottom={'150px'} right={0} opacity={0.55}>
+          <Img src={stamp} />
+        </Div>
       </Div>
     </Div>
   );

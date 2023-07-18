@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import {
+  Avatar,
   Divider,
   FormControl,
+  FormLabel,
   HStack,
+  Input,
   Spacer,
   Text,
   VStack,
@@ -24,6 +27,13 @@ import {
 } from '@/types/types';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import useSharedProps from '@/hooks/use-shared-props';
+import { Div } from '@/components/semantic';
+import {
+  FileDropperType,
+  MAX_FILE_SIZE_BYTES,
+  bytesToMb,
+} from '@/components/file-dropper/common';
+import { resizeImage } from '@/util/util';
 
 interface Props {
   settings: { [key: string]: InstitutionSetting };
@@ -46,7 +56,7 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
     [InstitutionSettingType.UsesMidTermResult]: Boolean(
       parseInt(settings[InstitutionSettingType.UsesMidTermResult]?.value)
     ),
-  });
+  } as { [key: string]: any });
 
   const submit = async (activeSetting: InstitutionSettingType) => {
     setActiveSetting(activeSetting);
@@ -185,11 +195,91 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   size={'md'}
                 />
               </HStack>
+              <UpdateStamp settings={settings} />
               <Spacer height={5} />
             </VStack>
           </SlabBody>
         </Slab>
       </CenteredBox>
     </DashboardLayout>
+  );
+}
+
+function UpdateStamp({ settings }: Props) {
+  const { instRoute } = useInstitutionRoute();
+  const { handleResponseToast } = useMyToast();
+
+  const webForm = useWebForm({
+    [InstitutionSettingType.Stamp]:
+      settings[InstitutionSettingType.Stamp]?.value,
+  } as { [key: string]: any });
+  const extensions = FileDropperType.Image.extensionLabels;
+
+  async function uploadImage(e: ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const { files } = e.target;
+    if (!files) {
+      return;
+    }
+    const file: File = files[0];
+    const imageBlob = await resizeImage(file, 300, 300);
+
+    const res = await webForm.submit(async (data, web) => {
+      const formData = new FormData();
+      formData.append('photo', imageBlob as Blob);
+      formData.append('key', InstitutionSettingType.Stamp);
+      return web.post(instRoute('settings.store'), formData);
+    });
+
+    if (!handleResponseToast(res)) return;
+    webForm.setValue('photo', res.data.url);
+    Inertia.reload();
+  }
+
+  return (
+    <Div
+      mt={{ lg: 4 }}
+      display={'flex'}
+      alignItems={'center'}
+      flexDirection={{ base: 'column' }}
+    >
+      <Div
+        display={'flex'}
+        alignItems={'center'}
+        justifyContent={'center'}
+        w={200}
+        h={200}
+        borderWidth={1}
+        borderColor={'gray.200'}
+      >
+        <Avatar size={'2xl'} src={webForm.data[InstitutionSettingType.Stamp]} />
+      </Div>
+      <Div mt={4} textAlign={'center'}>
+        <FormLabel
+          htmlFor="photo"
+          textColor={'brand.500'}
+          display={'inline-block'}
+          cursor={'pointer'}
+          m={0}
+          p={0}
+        >
+          <Input
+            type={'file'}
+            id="photo"
+            hidden
+            accept={'image/jpeg,image/png,image/jpg'}
+            onChange={(e) => uploadImage(e)}
+          />
+          Change School Stamp
+        </FormLabel>
+        <Text fontSize={'sm'} color={'blackAlpha.700'}>
+          Allowed extensions {extensions.join(', ')}
+        </Text>
+        <Text fontSize={'sm'} color={'blackAlpha.700'}>
+          Maximum size {Math.floor(bytesToMb(MAX_FILE_SIZE_BYTES))}
+          MB
+        </Text>
+      </Div>
+    </Div>
   );
 }

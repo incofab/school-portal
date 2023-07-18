@@ -12,4 +12,5 @@ enum InstitutionSettingType: string
   case CurrentTerm = 'current-term';
   case CurrentAcademicSession = 'current-academic-session';
   case UsesMidTermResult = 'uses-mid-term-result';
+  case Stamp = 'stamp';
 }

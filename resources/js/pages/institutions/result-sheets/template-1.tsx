@@ -221,7 +221,7 @@ export default function Template1({
               </thead>
               <tbody>
                 <tr>
-                  <td>0 - 39</td>
+                  <td>70 - 100</td>
                   <td>A</td>
                   <td>{ResultUtil.getRemark('A')}</td>
                 </tr>

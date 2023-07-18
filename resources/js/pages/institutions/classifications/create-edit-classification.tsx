@@ -11,6 +11,9 @@ import { FormButton } from '@/components/buttons';
 import InputForm from '@/components/forms/input-form';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import FormControlBox from '@/components/forms/form-control-box';
+import StaffSelect from '@/components/selectors/staff-select';
+import { InstitutionUserType } from '@/types/types';
 
 interface Props {
   classification?: Classification;
@@ -25,14 +28,27 @@ export default function CreateOrUpdateClassification({
     title: classification?.title ?? '',
     description: classification?.description ?? '',
     has_equal_subjects: classification?.has_equal_subjects ?? true,
+    form_teacher_id: classification?.form_teacher
+      ? {
+          label: classification.form_teacher.full_name,
+          value: classification.form_teacher_id,
+        }
+      : null,
   });
 
   const submit = async () => {
-    const res = await webForm.submit((data, web) =>
-      classification
-        ? web.put(instRoute('classifications.update', [classification]), data)
-        : web.post(instRoute('classifications.store'), data)
-    );
+    const res = await webForm.submit((data, web) => {
+      const postData = {
+        ...data,
+        form_teacher_id: data.form_teacher_id?.value,
+      };
+      return classification
+        ? web.put(
+            instRoute('classifications.update', [classification]),
+            postData
+          )
+        : web.post(instRoute('classifications.store'), postData);
+    });
     if (!handleResponseToast(res)) return;
     Inertia.visit(instRoute('classifications.index'));
   };
@@ -61,6 +77,20 @@ export default function CreateOrUpdateClassification({
                 formKey="description"
                 title="Description [optional]"
               />
+
+              <FormControlBox
+                title="Form Teacher"
+                form={webForm as any}
+                formKey="form_teacher_id"
+              >
+                <StaffSelect
+                  value={webForm.data.form_teacher_id}
+                  isClearable={true}
+                  rolesIn={[InstitutionUserType.Teacher]}
+                  onChange={(e) => webForm.setValue('form_teacher_id', e)}
+                  isMulti={false}
+                />
+              </FormControlBox>
 
               <FormControl>
                 <Checkbox

@@ -57,8 +57,9 @@ export default function DisplayTermResultEvaluation({
               <tr key={'row' + index}>
                 {Object.entries(headers).map(([columnHeader, item], index) => {
                   const evaluation = rowItem.column[columnHeader];
-                  const rowValue =
-                    termResult.learning_evaluation[evaluation?.id] ?? null;
+                  const rowValue = termResult.learning_evaluation
+                    ? termResult.learning_evaluation[evaluation?.id]
+                    : null;
                   return (
                     <td
                       style={{
@@ -99,17 +100,17 @@ function DisplayEvaluationValue({
   value: any;
   learningEvaluationDomain?: LearningEvaluationDomain;
 }) {
-  if (!value || !learningEvaluationDomain) {
-    return null;
-  }
+  // if (!value || !learningEvaluationDomain) {
+  //   return null;
+  // }
   let element = <></>;
-  switch (learningEvaluationDomain.type) {
+  switch (learningEvaluationDomain?.type) {
     case LearningEvaluationDomainType.Number:
     case LearningEvaluationDomainType.Text:
       element = <Text>{value}</Text>;
       break;
     case LearningEvaluationDomainType.YesOrNo:
-      element = <Icon as={CheckIcon} fontWeight={'bold'} />;
+      element = value ? <Icon as={CheckIcon} fontWeight={'bold'} /> : <></>;
       break;
   }
   return (

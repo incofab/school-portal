@@ -103,6 +103,7 @@ export enum InstitutionSettingType {
   CurrentTerm = 'current-term',
   CurrentAcademicSession = 'current-academic-session',
   UsesMidTermResult = 'uses-mid-term-result',
+  Stamp = 'stamp',
 }
 
 export enum ResultTemplate {
