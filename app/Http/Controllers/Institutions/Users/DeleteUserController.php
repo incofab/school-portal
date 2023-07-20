@@ -22,6 +22,7 @@ class DeleteUserController extends Controller
 
     abort_unless($institutionUser, 403);
 
+    $user->courseTeachers()->delete();
     $user->delete();
     $institutionUser->student?->delete();
     $institutionUser->delete();

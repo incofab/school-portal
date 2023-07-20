@@ -153,6 +153,9 @@ export default function Template4({
   return (
     <Div style={backgroundStyle} minHeight={'1170px'}>
       <Div mx={'auto'} width={'900px'} px={3} position={'relative'}>
+        <Div position={'absolute'} bottom={'150px'} right={0} opacity={0.65}>
+          <Img src={stamp} />
+        </Div>
         <VStack align={'stretch'}>
           <HStack background={'#FCFCFC'} p={2}>
             <Avatar
@@ -376,9 +379,6 @@ export default function Template4({
             />
           </div>
         </VStack>
-        <Div position={'absolute'} bottom={'150px'} right={0} opacity={0.55}>
-          <Img src={stamp} />
-        </Div>
       </Div>
     </Div>
   );

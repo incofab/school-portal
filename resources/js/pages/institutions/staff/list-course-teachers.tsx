@@ -70,9 +70,7 @@ function ListLecturerCourses({ courseTeachers }: Props) {
                       variant={'link'}
                     />
                     <DestructivePopover
-                      label={`Delete ${row.course?.title} assignment from ${
-                        row.user!.full_name
-                      }?`}
+                      label={`Delete ${row.course?.title} assignment from ${row.user?.full_name}?`}
                       onConfirm={() => deleteItem(row)}
                       isLoading={deleteForm.processing}
                     >

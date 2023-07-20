@@ -20,7 +20,7 @@ class CoursesController extends Controller
       'store',
       'edit',
       'update',
-      'delete'
+      'destroy'
     ]);
   }
 
@@ -59,6 +59,7 @@ class CoursesController extends Controller
 
   function destroy(Institution $institution, Course $course)
   {
+    $course->courseTeachers()->delete();
     $course->delete();
     return $this->ok();
   }
