@@ -186,6 +186,9 @@ export interface SessionResult extends InstitutionRow {
   result_max: number;
   grade: string;
   remark: string;
+  classification?: Classification;
+  academic_session?: AcademicSession;
+  student?: Student;
 }
 
 export interface CourseTeacher extends Row {

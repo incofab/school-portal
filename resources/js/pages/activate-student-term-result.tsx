@@ -16,7 +16,6 @@ import useWebForm from '@/hooks/use-web-form';
 import CenteredLayout from '@/components/centered-layout';
 import InputForm from '@/components/forms/input-form';
 import startCase from 'lodash/startCase';
-import { BrandButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 
@@ -29,7 +28,7 @@ export default function StudentTermResultActivation() {
   const [termResults, setTermResults] = useState([] as TermResult[]);
   const { toastError, toastSuccess } = useMyToast();
 
-  async function submitForm(termResultId?: number) {
+  async function submitForm(termResultId?: number, onClose?: () => void) {
     const res = await form.submit((data, web) => {
       return web.post(route('activate-term-result.store'), {
         ...data,
@@ -41,8 +40,12 @@ export default function StudentTermResultActivation() {
       return void toastError(res.message);
     }
 
+    if (onClose) {
+      onClose();
+    }
+
     if (!res.data.has_multiple_results) {
-      toastSuccess('Result activated');
+      toastSuccess('Result activated, please wait...');
       Inertia.visit(res.data.redirect_url);
       return;
     }
@@ -97,14 +100,13 @@ export default function StudentTermResultActivation() {
               <Spacer />
               <DestructivePopover
                 label={'Activate this result?'}
-                onConfirm={(onClose) => {
-                  submitForm(termResult.id);
-                  onClose();
-                }}
+                onConfirm={(onClose) => submitForm(termResult.id, onClose)}
                 isLoading={form.processing}
                 positiveButtonLabel="Yes"
               >
-                <BrandButton title="Activate" />
+                <Button variant={'solid'} colorScheme="brand">
+                  Activate
+                </Button>
               </DestructivePopover>
             </HStack>
           ))}

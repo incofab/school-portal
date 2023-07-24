@@ -60,6 +60,54 @@ const ResultUtil = {
     }
   },
 
+  getGrade: function (score: number) {
+    let grade = '';
+    let remark = '';
+    let label = '';
+    if (score < 40) {
+      grade = 'F';
+      remark = 'Fail';
+      label = '0 - 39';
+    } else if (score < 45) {
+      grade = 'E';
+      remark = 'Poor Pass';
+      label = '40 - 44';
+    } else if (score < 50) {
+      grade = 'D';
+      remark = 'Pass';
+      label = '45 - 49';
+    } else if (score < 55) {
+      grade = 'C6';
+      remark = 'Credit';
+      label = '50 - 54';
+    } else if (score < 60) {
+      grade = 'C4';
+      remark = 'Credit';
+      label = '55 - 59';
+    } else if (score < 65) {
+      grade = 'B3';
+      remark = 'Good';
+      label = '60 - 64';
+    } else if (score < 70) {
+      grade = 'B2';
+      remark = 'Very Good';
+      label = '65 - 69';
+    } else if (score < 80) {
+      grade = 'B1';
+      remark = 'Very Good';
+      label = '70 - 79';
+    } else if (score < 90) {
+      grade = 'A2';
+      remark = 'Excellent';
+      label = '80 - 89';
+    } else {
+      grade = 'A1';
+      remark = 'Distinction';
+      label = '90 - 100';
+    }
+    return [grade, remark, label];
+  },
+
   getClassSection: function (classTitle: string) {
     classTitle = classTitle.toLowerCase().replaceAll(' ', '');
     if (classTitle.indexOf('ss') >= 0 || classTitle.indexOf('ss') >= 0) {

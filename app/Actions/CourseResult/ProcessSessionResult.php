@@ -1,6 +1,7 @@
 <?php
 namespace App\Actions\CourseResult;
 
+use App\DTO\FullTermResult;
 use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\Institution;
@@ -28,32 +29,47 @@ class ProcessSessionResult
   private function execute()
   {
     $queryTermResults = TermResult::query()
+      ->select('term_results.*')
+      ->where('for_mid_term', false)
       ->where('classification_id', $this->classification->id)
       ->where('academic_session_id', $this->academicSession->id);
 
     $termResults = (clone $queryTermResults)->get();
-    $numOfTerms = (clone $queryTermResults)->groupBy('term')->count();
-    $studentsTotal = $this->getTotalScoreByStudents($termResults);
+    $numOfTerms = (clone $queryTermResults)->distinct('term')->count();
+    [$studentsTotal, $mappedTermResult] = $this->getTotalScoreByStudents(
+      $termResults
+    );
 
-    $this->persistSessionResult($studentsTotal, $numOfTerms);
+    $this->persistSessionResult($studentsTotal, $mappedTermResult, $numOfTerms);
   }
 
   private function getTotalScoreByStudents(Collection $termResults)
   {
     $studentsTotal = [];
+    $mappedTermResult = [];
+    /** @var TermResult $termResult */
     foreach ($termResults as $key => $termResult) {
       $studentTotalResult = $studentsTotal[$termResult->student_id] ?? 0;
       $studentsTotal[$termResult->student_id] =
-        $studentTotalResult + $termResult->result;
+        $studentTotalResult + $termResult->total_score;
+
+      $studentMappedTermResult =
+        $mappedTermResult[$termResult->student_id] ?? new FullTermResult();
+      $studentMappedTermResult->setTermResult($termResult);
+      $mappedTermResult[$termResult->student_id] = $studentMappedTermResult;
     }
-    return $studentsTotal;
+    return [$studentsTotal, $mappedTermResult];
   }
 
+  /**
+   * @param array<string, FullTermResult> $mappedTermResult
+   */
   private function persistSessionResult(
     array $studentsTotalScore,
+    array $mappedTermResult,
     int $numOfTerms
   ) {
-    if ($numOfTerms < 1) {
+    if ($numOfTerms !== 3) {
       return;
     }
 
@@ -62,11 +78,14 @@ class ProcessSessionResult
       'institution_id' => $this->institution->id,
       'classification_id' => $this->classification->id
     ];
+
     foreach ($studentsTotalScore as $studentId => $totalScore) {
+      $studentMappedTermResult = $mappedTermResult[$studentId];
       $bindingData['student_id'] = $studentId;
-      $average = $totalScore / $numOfTerms;
+      $average = $studentMappedTermResult->getAverage();
+
       $data = [
-        'result' => $totalScore,
+        'result' => $studentMappedTermResult->getTotal(),
         'average' => $average,
         'grade' => GetGrade::run($average)
       ];

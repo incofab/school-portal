@@ -135,10 +135,14 @@ class User extends Authenticatable
       ->first()?->student;
   }
 
-  function hasInstitutionRole(InstitutionUserType $role): bool
+  function hasInstitutionRole(InstitutionUserType|array $role): bool
   {
     return $this->institutionUser()
-      ->where('role', $role)
+      ->when(
+        is_array($role),
+        fn($q) => $q->whereIn('role', $role),
+        fn($q) => $q->where('role', $role)
+      )
       ->exists();
   }
 

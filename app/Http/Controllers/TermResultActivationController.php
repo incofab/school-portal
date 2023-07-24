@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Models\TermResult;
 use App\Models\User;
 use Auth;
+use File;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
@@ -17,6 +18,20 @@ class TermResultActivationController extends Controller
   public function create()
   {
     return inertia('activate-student-term-result');
+  }
+
+  public function showPdfResult(Student $student)
+  {
+    $fileFromPublicPath = "wisegate/{$student->code}.pdf";
+
+    if (request('download')) {
+      return response()->download(public_path($fileFromPublicPath));
+    }
+
+    return inertia('show-pdf-result', [
+      'path' => asset($fileFromPublicPath),
+      'student' => $student
+    ]);
   }
 
   public function store(Request $request)
@@ -47,6 +62,12 @@ class TermResultActivationController extends Controller
     if (!$student) {
       return throw ValidationException::withMessages([
         'student_code' => 'Invalid student ID'
+      ]);
+    }
+
+    if ($this->hasPdfResult($student, $pin)) {
+      return response()->json([
+        'redirect_url' => route('show-pdf-result', [$student])
       ]);
     }
 
@@ -107,5 +128,15 @@ class TermResultActivationController extends Controller
     if (!Auth::check()) {
       Auth::login($user);
     }
+  }
+
+  private function hasPdfResult(Student $student, Pin $pin)
+  {
+    $fileFromPublicPath = "wisegate/{$student->code}.pdf";
+    if (!File::exists(public_path($fileFromPublicPath))) {
+      return false;
+    }
+    $pin->fill(['used_at' => now()])->save();
+    return true;
   }
 }

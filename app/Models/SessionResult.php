@@ -18,6 +18,11 @@ class SessionResult extends Model
     return $this->belongsTo(Institution::class);
   }
 
+  function classification()
+  {
+    return $this->belongsTo(Classification::class);
+  }
+
   function student()
   {
     return $this->belongsTo(Student::class);

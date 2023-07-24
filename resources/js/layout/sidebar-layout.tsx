@@ -127,6 +127,11 @@ export default function SideBarLayout() {
           route: instRoute('class-result-info.index'),
           roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
+        {
+          label: 'Session Result',
+          route: instRoute('session-results.index'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
       ],
     },
     {

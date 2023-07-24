@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers as Web;
 
+Route::get('pdf-result/{student}', [Web\TermResultActivationController::class, 'showPdfResult'])
+    ->name('show-pdf-result');
+
 Route::group(['middleware' => ['institution.user']], function () {
     Route::get('/dummy1', function ()
     {

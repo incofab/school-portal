@@ -117,6 +117,12 @@ Route::get('/course-results/download', Web\Staff\DownloadCourseResultSheetContro
     ->name('course-results.download');
 Route::get('/download-result-recording-sheet', Web\Staff\DownloadResultRecordingSheetController::class)
     ->name('download-result-recording-sheet');
+Route::get('/session-results/index', [Web\Students\SessionResultController::class, 'index'])
+    ->name('session-results.index');
+Route::get('/session-results/{sessionResult}', [Web\Students\SessionResultController::class, 'show'])
+    ->name('session-results.show');
+Route::delete('/session-results/{sessionResult}', [Web\Students\SessionResultController::class, 'destroy'])
+    ->name('session-results.destroy');
 
 Route::get('/course-result-info/index', Web\Staff\ListCourseResultInfo::class)
     ->name('course-result-info.index');

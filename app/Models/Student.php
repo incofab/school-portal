@@ -63,4 +63,9 @@ class Student extends Model
   {
     return $this->hasMany(TermResult::class);
   }
+
+  function sessionResults()
+  {
+    return $this->hasMany(SessionResult::class);
+  }
 }
