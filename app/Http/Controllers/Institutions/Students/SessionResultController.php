@@ -66,15 +66,18 @@ class SessionResultController extends Controller
       ];
     }
 
-    return inertia('institutions/show-student-session-result', [
-      'sessionResult' => $sessionResult->load(
-        'student.user',
-        'academicSession',
-        'student',
-        'classification'
-      ),
-      'termResultDetails' => $termResultDetails
-    ]);
+    return inertia(
+      'institutions/session-result-sheets/session-result-template-1',
+      [
+        'sessionResult' => $sessionResult->load(
+          'student.user',
+          'academicSession',
+          'student',
+          'classification'
+        ),
+        'termResultDetails' => $termResultDetails
+      ]
+    );
   }
 
   function destroy(Institution $institution, SessionResult $sessionResult)

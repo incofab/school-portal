@@ -9,7 +9,6 @@ use App\Models\Classification;
 use App\Models\ClassResultInfo;
 use App\Models\CourseResultInfo;
 use App\Models\Institution;
-use App\Models\InstitutionUser;
 use App\Models\Student;
 use App\Models\TermResult;
 use App\Support\SettingsHandler;
@@ -31,7 +30,7 @@ class ViewResultSheetController extends Controller
     $institutionUser = currentInstitutionUser();
     abort_if(
       $institutionUser->user_id !== $student->user_id &&
-        !$institutionUser->isStaff(),
+        !$institutionUser->isAdmin(),
       403
     );
     $params = [

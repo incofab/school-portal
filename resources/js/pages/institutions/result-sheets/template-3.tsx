@@ -52,7 +52,7 @@ export default function Template3({
     { label: 'Student Id', value: student.code },
   ];
   const resultSummary2 = [
-    { label: 'Total Marks Id', value: termResult.total_score },
+    { label: 'Total Marks Obtained', value: termResult.total_score },
     { label: 'Class', value: classification.title },
     {
       label: 'Term',
@@ -243,32 +243,36 @@ export default function Template3({
                 </tr>
               </thead>
               <tbody>
-                {courseResults.map((courseResult) => (
-                  <tr key={courseResult.id}>
-                    <td style={{ fontWeight: 'bold' }}>
-                      {courseResult.course?.title}
-                    </td>
-                    {assessments.map((assessment) => (
-                      <td>
-                        {courseResult.assessment_values[assessment.raw_title] ??
-                          '-'}
+                {courseResults.map((courseResult) => {
+                  const [grade, remark, label] = getGrade(courseResult.result);
+                  return (
+                    <tr key={courseResult.id}>
+                      <td style={{ fontWeight: 'bold' }}>
+                        {courseResult.course?.title}
                       </td>
-                    ))}
-                    <td>{courseResult.exam}</td>
-                    <td style={{ fontWeight: 'bold' }}>
-                      {courseResult.result}
-                    </td>
-                    <td>{courseResult.position}</td>
-                    <td style={{ fontWeight: 'bold' }}>{courseResult.grade}</td>
-                    <td>
-                      {courseResultInfoData[courseResult.course_id].max_score}
-                    </td>
-                    <td>
-                      {courseResultInfoData[courseResult.course_id].min_score}
-                    </td>
-                    <td>{ResultUtil.getRemark(courseResult.grade)}</td>
-                  </tr>
-                ))}
+                      {assessments.map((assessment) => (
+                        <td>
+                          {courseResult.assessment_values[
+                            assessment.raw_title
+                          ] ?? '-'}
+                        </td>
+                      ))}
+                      <td>{courseResult.exam}</td>
+                      <td style={{ fontWeight: 'bold' }}>
+                        {courseResult.result}
+                      </td>
+                      <td>{courseResult.position}</td>
+                      <td style={{ fontWeight: 'bold' }}>{grade}</td>
+                      <td>
+                        {courseResultInfoData[courseResult.course_id].max_score}
+                      </td>
+                      <td>
+                        {courseResultInfoData[courseResult.course_id].min_score}
+                      </td>
+                      <td>{remark}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

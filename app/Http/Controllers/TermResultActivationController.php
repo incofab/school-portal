@@ -44,11 +44,10 @@ class TermResultActivationController extends Controller
 
     $pin = Pin::query()
       ->where('pin', $data['pin'])
-      ->used(false)
       ->with('institution')
       ->first();
 
-    if (!$pin) {
+    if (!$pin || $pin->isUsed()) {
       return throw ValidationException::withMessages(['pin' => 'Invalid pin']);
     }
 

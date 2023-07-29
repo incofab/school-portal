@@ -7,11 +7,23 @@ use App\Http\Controllers as Web;
 Route::get('pdf-result/{student}', [Web\TermResultActivationController::class, 'showPdfResult'])
     ->name('show-pdf-result');
 
-Route::group(['middleware' => ['institution.user']], function () {
-    Route::get('/dummy1', function ()
-    {
-        dd(',ksdmksdmds-12');
-    });
+Route::get('/dummy1', function ()
+{
+    $instUsers = \App\Models\InstitutionUser::where('institution_id', 1)
+    ->where('role', \App\Enums\InstitutionUserType::Student)
+    ->with('student.user', 'student.classification')
+    ->get();
+
+    $i = 0;
+    foreach ($instUsers as $key => $instUser) {
+        if(File::exists(public_path("wisegate/{$instUser->student->code}.pdf"))){
+            continue;
+        }
+        echo "Name = {$instUser->student->user->full_name}, Code={$instUser->student->code}, Class={$instUser->student->classification->title} <br><br>";
+        $i++;
+    }
+    
+    dd(',ksdmksdmds = '.$i);
 });
 
 Route::get('institutions/search', Web\SearchInstitutionController::class)

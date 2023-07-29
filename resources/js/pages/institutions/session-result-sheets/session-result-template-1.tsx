@@ -28,7 +28,7 @@ interface Props {
   };
 }
 
-export default function ShowSessionResult({
+export default function SessionResultTemplate1({
   sessionResult,
   termResultDetails,
 }: Props) {
@@ -59,15 +59,15 @@ export default function ShowSessionResult({
       Object.entries(termDetail.courseResults).map(
         ([courseId, courseResult]) => {
           const courseIdInt = parseInt(courseId);
-          rows[courseIdInt] = {
+          const row = rows[courseIdInt] ?? {
             course: courseResult.course!,
-            termCourseResult: {
-              [term]: {
-                courseResult: courseResult,
-                courseResultInfo: termDetail.courseResultInfo[courseIdInt],
-              },
-            },
+            termCourseResult: {},
           };
+          row.termCourseResult[term] = {
+            courseResult: courseResult,
+            courseResultInfo: termDetail.courseResultInfo[courseIdInt],
+          };
+          rows[courseIdInt] = row;
         }
       );
     });
@@ -78,13 +78,14 @@ export default function ShowSessionResult({
     let count = 0;
     let total = 0;
     Object.entries(courseDetail).map(([term, termRowObj]) => {
-      total += termRowObj.courseResult.result;
+      total += parseFloat(termRowObj.courseResult.result + '');
       count += 1;
     });
     if (count <= 0) {
       return [0, 0];
     }
-    return [total, total / count];
+    const average = Math.round((total / count) * 100) / 100;
+    return [total, average];
   }
 
   const student = sessionResult.student!;
@@ -106,7 +107,7 @@ export default function ShowSessionResult({
     <Div minHeight={'1170px'}>
       <Div mx={'auto'} width={'900px'} px={3}>
         <VStack align={'stretch'}>
-          <HStack background={'#FCFCFC'} p={2}>
+          {/* <HStack background={'#FCFCFC'} p={2}>
             <Avatar
               size={'2xl'}
               name="Institution logo"
@@ -122,8 +123,6 @@ export default function ShowSessionResult({
                 fontSize={'3xl'}
                 fontWeight={'extrabold'}
                 textAlign={'center'}
-                color={'#ff7900'}
-                textShadow={'3px 3px #000'}
                 textTransform={'uppercase'}
                 whiteSpace={'nowrap'}
               >
@@ -150,6 +149,39 @@ export default function ShowSessionResult({
                 {currentInstitution.subtitle}
               </Text>
             </VStack>
+          </HStack> */}
+          <HStack background={'#FAFAFA'} p={2}>
+            <Avatar
+              size={'2xl'}
+              name="Institution logo"
+              src={currentInstitution.photo ?? ImagePaths.default_school_logo}
+            />
+            <VStack spacing={1} align={'stretch'} width={'full'}>
+              <Text fontSize={'2xl'} fontWeight={'bold'} textAlign={'center'}>
+                {currentInstitution.name}
+              </Text>
+              <Text
+                textAlign={'center'}
+                fontSize={'18px'}
+                whiteSpace={'nowrap'}
+              >
+                {currentInstitution.address}
+                <br /> {currentInstitution.email}
+              </Text>
+              <Text
+                fontWeight={'semibold'}
+                textAlign={'center'}
+                fontSize={'18px'}
+              >
+                Annual Result for {academicSession?.title} Academic Session
+              </Text>
+            </VStack>
+            <Avatar
+              size={'2xl'}
+              name="Student logo"
+              src={student.user?.photo_url}
+              visibility={'hidden'}
+            />
           </HStack>
           <Flex
             flexDirection={'row'}

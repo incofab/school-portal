@@ -25,6 +25,11 @@ class Pin extends Model
     return $key;
   }
 
+  function isUsed()
+  {
+    return !empty($this->used_at);
+  }
+
   function scopeUsed($query, $forUsed = true)
   {
     return $forUsed

@@ -1,15 +1,11 @@
 
-.result-table thead{
-    background-color: #f2f2f2;
-}
-
-.result-table, .result-table th, .result-table td  {
+/* .result-table, .result-table th, .result-table td  {
     border: 1px solid transparent;
-}
+} */
 
-.result-table tr:nth-child(even) {
+/* .result-table tr:nth-child(even) {
     background-color: #d5deef;
-}
+} */
 
 .keys-table, .keys-table th, .keys-table td  {
     border: 1px solid #000;
