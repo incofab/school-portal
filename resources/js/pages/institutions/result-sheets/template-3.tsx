@@ -1,14 +1,13 @@
 import {
-  AcademicSession,
-  Assessment,
-  ClassResultInfo,
-  Classification,
-  CourseResult,
-  CourseResultInfo,
-  Student,
-  TermResult,
-} from '@/types/models';
-import { Avatar, Flex, HStack, Text, VStack } from '@chakra-ui/react';
+  Avatar,
+  Divider,
+  Flex,
+  HStack,
+  Img,
+  Spacer,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import React from 'react';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
@@ -16,18 +15,8 @@ import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
 import '@/../../public/style/result/template-3.css';
 import ImagePaths from '@/util/images';
-import ResultUtil from '@/util/result-util';
-
-interface Props {
-  termResult: TermResult;
-  courseResults: CourseResult[];
-  classResultInfo: ClassResultInfo;
-  courseResultInfoData: { [key: string | number]: CourseResultInfo };
-  academicSession: AcademicSession;
-  classification: Classification;
-  student: Student;
-  assessments: Assessment[];
-}
+import ResultUtil, { ResultProps } from '@/util/result-util';
+import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
 
 export default function Template3({
   termResult,
@@ -38,9 +27,11 @@ export default function Template3({
   student,
   courseResultInfoData,
   assessments,
-}: Props) {
-  const { currentInstitution } = useSharedProps();
-
+  learningEvaluations,
+}: ResultProps) {
+  const { currentInstitution, stamp } = useSharedProps();
+  const teachersComment =
+    termResult.teacher_comment ?? getGrade(termResult.average)[3];
   const resultSummary1 = [
     { label: 'Student Name', value: student.user?.full_name },
     { label: 'Number In Class', value: classResultInfo.num_of_students },
@@ -69,48 +60,63 @@ export default function Template3({
     let grade = '';
     let remark = '';
     let label = '';
+    let comment = '';
     if (score < 40) {
       grade = 'F';
       remark = 'Fail';
       label = '0 - 39';
+      comment = 'Progressing';
     } else if (score < 45) {
       grade = 'E';
       remark = 'Poor Pass';
       label = '40 - 44';
+      comment =
+        'Your performance has improved quite well. But you still have a lot of catching up to do';
     } else if (score < 50) {
       grade = 'D';
       remark = 'Pass';
       label = '45 - 49';
+      comment =
+        'You have a lot of potential within but only needs to be more serious and less playful. If you are more disciplined, I believe the grades will improve';
     } else if (score < 55) {
       grade = 'C6';
       remark = 'Credit';
       label = '50 - 54';
+      comment =
+        'I am impressed with the performance. It shows you are taking your studies seriously';
     } else if (score < 60) {
       grade = 'C4';
       remark = 'Credit';
       label = '55 - 59';
+      comment =
+        'I am impressed with this performance. It shows you are taking your studies seriously';
     } else if (score < 65) {
       grade = 'B3';
       remark = 'Good';
       label = '60 - 64';
+      comment = 'A good performance';
     } else if (score < 70) {
       grade = 'B2';
       remark = 'Very Good';
       label = '65 - 69';
+      comment = 'A very good performance';
     } else if (score < 80) {
       grade = 'B1';
       remark = 'Very Good';
       label = '70 - 79';
+      comment = 'A very good performance';
     } else if (score < 90) {
       grade = 'A2';
       remark = 'Excellent';
       label = '80 - 89';
+      comment = 'An intelligent and excellent performance';
     } else {
       grade = 'A1';
       remark = 'Distinction';
       label = '90 - 100';
+      comment = 'A very brilliant and clever performance';
     }
-    return [grade, remark, label];
+    return [grade, remark, label, comment];
   }
 
   function LabelText({
@@ -143,7 +149,10 @@ export default function Template3({
 
   return (
     <Div style={backgroundStyle} minHeight={'1170px'}>
-      <Div mx={'auto'} width={'900px'} px={3}>
+      <Div mx={'auto'} width={'900px'} px={3} position={'relative'}>
+        <Div position={'absolute'} bottom={'120px'} right={0} opacity={0.65}>
+          <Img src={stamp} />
+        </Div>
         <VStack align={'stretch'}>
           <HStack background={'#FCFCFC'} p={2}>
             <Avatar
@@ -158,11 +167,11 @@ export default function Template3({
               textAlign={'center'}
             >
               <Text
-                fontSize={'3xl'}
+                fontSize={'2xl'}
                 fontWeight={'extrabold'}
                 textAlign={'center'}
                 color={'#ff7900'}
-                textShadow={'3px 3px #000'}
+                textShadow={'2px 2px #000'}
                 textTransform={'uppercase'}
                 whiteSpace={'nowrap'}
               >
@@ -179,7 +188,7 @@ export default function Template3({
                 {currentInstitution.caption}
               </Text>
               <Text
-                fontSize={'3xl'}
+                fontSize={'2xl'}
                 fontWeight={'extrabold'}
                 textAlign={'center'}
                 color={'#0097df'}
@@ -193,14 +202,14 @@ export default function Template3({
           <Flex
             flexDirection={'row'}
             justifyContent={'space-between'}
-            fontSize={'lg'}
+            fontSize={'sm'}
           >
-            <VStack spacing={2} align={'left'}>
+            <VStack spacing={0} align={'left'}>
               {resultSummary1.map((item) => (
                 <LabelText label={item.label} text={item.value} />
               ))}
             </VStack>
-            <VStack spacing={2} align={'left'}>
+            <VStack spacing={0} align={'left'}>
               {resultSummary2.map((item) => (
                 <LabelText label={item.label} text={item.value} />
               ))}
@@ -276,30 +285,60 @@ export default function Template3({
               </tbody>
             </table>
           </div>
+          <Spacer height={'10px'} />
+          {teachersComment && (
+            <>
+              <HStack align={'stretch'}>
+                <Text fontWeight={'semibold'} size={'xs'}>
+                  Teacher's comment:{' '}
+                </Text>
+                <Text>{teachersComment}</Text>
+              </HStack>
+              <Divider />
+            </>
+          )}
+          {termResult.principal_comment && (
+            <>
+              <HStack align={'stretch'}>
+                <Text fontWeight={'semibold'} size={'xs'}>
+                  Head Teacher's comment:{' '}
+                </Text>
+                <Text>{termResult.principal_comment}</Text>
+              </HStack>
+              <Divider />
+            </>
+          )}
           <br />
-          <div style={{ minWidth: '240px' }}>
-            <table className="keys-table">
-              <thead>
-                <tr>
-                  <th colSpan={3}>
-                    <Text textAlign={'center'}>Key to Grades</Text>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {[100, 89, 79, 69, 64, 59, 54, 49, 44, 39].map((item) => {
-                  const [grade, remark, label] = getGrade(item);
-                  return (
-                    <tr>
-                      <td>{label}</td>
-                      <td>{grade}</td>
-                      <td>{remark}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <Flex flexDirection={'row'} justifyContent={'space-between'}>
+            <div style={{ minWidth: '240px' }}>
+              <table className="keys-table">
+                <thead>
+                  <tr>
+                    <th colSpan={3}>
+                      <Text textAlign={'center'}>Key to Grades</Text>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[100, 89, 79, 69, 64, 59, 54, 49, 44, 39].map((item) => {
+                    const [grade, remark, label] = getGrade(item);
+                    return (
+                      <tr>
+                        <td>{label}</td>
+                        <td>{grade}</td>
+                        <td>{remark}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <DisplayTermResultEvaluation
+              termResult={termResult}
+              learningEvaluations={learningEvaluations}
+            />
+          </Flex>
         </VStack>
       </Div>
     </Div>

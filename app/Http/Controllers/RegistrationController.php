@@ -7,7 +7,6 @@ use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +22,11 @@ class RegistrationController extends Controller
 
   public function store(Request $request)
   {
+    abort_unless(
+      strtolower($request->key) === 'master',
+      403,
+      'Access denied, contact admin'
+    );
     $data = $request->validate([
       ...User::generalRule(),
       'institution' => ['required', 'array'],

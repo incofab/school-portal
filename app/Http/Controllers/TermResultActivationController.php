@@ -47,8 +47,17 @@ class TermResultActivationController extends Controller
       ->with('institution')
       ->first();
 
-    if (!$pin || $pin->isUsed()) {
+    if (!$pin) {
       return throw ValidationException::withMessages(['pin' => 'Invalid pin']);
+    }
+
+    if ($pin->isUsed()) {
+      if ($pin->term_result_id) {
+        return $this->handleUsedPin($pin);
+      }
+      return throw ValidationException::withMessages([
+        'pin' => 'Pin has already been used'
+      ]);
     }
 
     $student = Student::query()
@@ -91,8 +100,11 @@ class TermResultActivationController extends Controller
 
     $count = $termResults->count();
     if ($count === 0) {
-      abort(Response::HTTP_BAD_REQUEST, 'No unactivated result found');
-      return;
+      return response()->json([
+        'redirect_url' => route('student-login'),
+        'message' =>
+          'No unactivated result found, Login to see already activated results'
+      ]);
     }
 
     if ($count === 1) {
@@ -129,13 +141,26 @@ class TermResultActivationController extends Controller
     }
   }
 
+  private function handleUsedPin(Pin $usedPin)
+  {
+    $termResult = TermResult::query()
+      ->where('id', $usedPin->term_result_id)
+      ->with('student.user')
+      ->first();
+    abort_unless($termResult, 403, 'Activated result not found');
+    if (!Auth::check()) {
+      Auth::login($termResult->student->user);
+    }
+    return $this->successRes($termResult->institution);
+  }
+
   private function hasPdfResult(Student $student, Pin $pin)
   {
     $fileFromPublicPath = "wisegate/{$student->code}.pdf";
     if (!File::exists(public_path($fileFromPublicPath))) {
       return false;
     }
-    $pin->fill(['used_at' => now()])->save();
+    //$pin->fill(['used_at' => now()])->save();
     return true;
   }
 }

@@ -48,7 +48,7 @@ export default function StudentLogin() {
         <FormControlBox
           form={form as any}
           formKey="student_code"
-          title="Student Code"
+          title="Student Id"
         >
           <Input
             value={form.data.student_code}

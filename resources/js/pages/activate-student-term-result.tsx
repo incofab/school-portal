@@ -45,7 +45,7 @@ export default function StudentTermResultActivation() {
     }
 
     if (!res.data.has_multiple_results) {
-      toastSuccess('Result activated, please wait...');
+      toastSuccess(res.message ?? 'Result activated, please wait...');
       Inertia.visit(res.data.redirect_url);
       return;
     }

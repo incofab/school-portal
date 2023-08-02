@@ -15,7 +15,7 @@ class StudentAuthController extends Controller
 
   public function login()
   {
-    $data = request()->validate([ 
+    $data = request()->validate([
       'student_code' => ['required', 'integer'],
       'password' => ['nullable', 'string']
     ]);
@@ -24,7 +24,7 @@ class StudentAuthController extends Controller
       ->with('user')
       ->first();
 
-    abort_unless($student, 'Invalid credentials', 403);
+    abort_unless($student, 403, 'Invalid credentials');
 
     $credentials = [
       'email' => $student->user->email,
