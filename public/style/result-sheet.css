@@ -9,6 +9,9 @@ body {
     * {
         -webkit-print-color-adjust: exact;
     }
+    #download-btn {
+      display: none;
+    }
 }
 .table-container {
     width: 100%;

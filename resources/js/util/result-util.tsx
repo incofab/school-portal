@@ -10,6 +10,7 @@ import {
   TermResult,
 } from '@/types/models';
 import { Text } from '@chakra-ui/react';
+import jsPDF from 'jspdf';
 
 const ResultUtil = {
   getPositionSuffix: function (position: number) {
@@ -134,6 +135,28 @@ const ResultUtil = {
       ([key, val]) => (total += val)
     );
     return total;
+  },
+
+  exportAsPdf: function (id: string, filename: string | undefined = undefined) {
+    const doc = new jsPDF('portrait', 'pt', 'a4');
+
+    const allowance = 40;
+    const htmlWidth = 900 + allowance;
+    const a4Width = 595;
+
+    doc.setFont('helvetica');
+    // @ts-ignore
+    doc.html(document.querySelector(`#${id}`) ?? '', {
+      x: 10,
+      y: 10,
+      html2canvas: {
+        scale: a4Width / htmlWidth, // default is window.devicePixelRatio
+      },
+      callback: function () {
+        doc.save(`${filename ?? 'result-sheet'}.pdf`);
+        // window.open(doc.output('bloburl')); // to debug
+      },
+    });
   },
 };
 

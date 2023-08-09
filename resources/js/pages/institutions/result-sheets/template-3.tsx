@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Button,
   Divider,
   Flex,
   HStack,
@@ -149,7 +150,27 @@ export default function Template3({
 
   return (
     <Div style={backgroundStyle} minHeight={'1170px'}>
-      <Div mx={'auto'} width={'900px'} px={3} position={'relative'}>
+      <Button
+        id={'download-btn'}
+        onClick={() =>
+          ResultUtil.exportAsPdf(
+            'result-sheet',
+            student.user?.full_name + '-result-sheet'
+          )
+        }
+        size={'sm'}
+        variant={'outline'}
+        colorScheme="brand"
+      >
+        Download
+      </Button>
+      <Div
+        mx={'auto'}
+        width={'900px'}
+        px={3}
+        position={'relative'}
+        id="result-sheet"
+      >
         <Div position={'absolute'} bottom={'120px'} right={0} opacity={0.65}>
           <Img src={stamp} />
         </Div>
