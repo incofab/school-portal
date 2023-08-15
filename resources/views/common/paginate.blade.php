@@ -1,31 +1,36 @@
 <?php
+use Illuminate\Support\Arr;
 
-if(!isset($count)) return;
-
-$__addr = Arr::get(parse_url($_SERVER['REQUEST_URI']), 'path') . '?';
-
-foreach ($_GET as $key => $value) 
-{
-    if($key == 'page') continue;
-    
-    $__addr .= "$key=$value&";
+if (!isset($paginatedData)) {
+  return;
 }
 
-$isPageEnd = ($count/$numPerPage) <= $page;
+$prevPageUrl = null;
+$nextPageUrl = null;
+$urlParams = [];
 
-$toPaginate = $count > $numPerPage;
+$query = Arr::get(parse_url($_SERVER['REQUEST_URI']), 'query', '');
+parse_str($query, $urlParams);
+$currentUrl = url()->current(); //
+
+if (!$paginatedData->onFirstPage()) {
+  $urlParams['page'] = $paginatedData->currentPage() - 1;
+  $prevPageUrl = $currentUrl . '?' . http_build_query($urlParams);
+}
+
+if ($paginatedData->hasMorePages()) {
+  $urlParams['page'] = $paginatedData->currentPage() + 1;
+  $nextPageUrl = $currentUrl . '?' . http_build_query($urlParams);
+}
 ?>
 
-@if($toPaginate)
 <div class="px-3 my-2 clearfix">
-	@if($page > 1)
-	<a href="{{$__addr . 'page=' . ($page - 1) }}" class="pull-left paginate paginate-previous">&laquo; Previous</a>
+	@if($prevPageUrl)
+	<a href="{{$prevPageUrl}}" 
+		class="float-start float-left paginate paginate-previous">&laquo; Previous</a>
 	@endif
-	@if(!$isPageEnd)
-	<a href="{{$__addr . 'page=' . ($page + 1) }}" class="pull-right paginate paginate-next">Next &raquo;</a>
+	@if($nextPageUrl)
+	<a href="{{$nextPageUrl}}" 
+		class="float-end float-right paginate paginate-next">Next &raquo;</a>
 	@endif
 </div>
-@endif
-
-
-

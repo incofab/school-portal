@@ -236,7 +236,7 @@ class CourseInstaller
 
     return [
       SUCCESSFUL => true,
-      MESSAGE => "{$course['course_code']} installed successfully"
+      MESSAGE => "{$course['code']} installed successfully"
     ];
   }
 

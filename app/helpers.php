@@ -1,5 +1,6 @@
 <?php
 
+use App\DTO\BreadCrumb;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\User;
@@ -88,5 +89,30 @@ if (!function_exists('dlog')) {
   function dlog($data)
   {
     info(json_encode($data, JSON_PRETTY_PRINT));
+  }
+}
+
+if (!function_exists('breadCrumb')) {
+  function breadCrumb(
+    string $title,
+    string $route = '',
+    string $icon = '',
+    bool $active = false
+  ) {
+    return new BreadCrumb($title, $route, $icon, $active);
+  }
+}
+
+if (!function_exists('instRoute')) {
+  function instRoute($routeSuffix, $moreParam = [])
+  {
+    $institution = currentInstitution();
+    $params = [$institution];
+    if (is_array($moreParam)) {
+      $params = array_merge($params, $moreParam);
+    } else {
+      $params[] = $moreParam;
+    }
+    return route("institutions.{$routeSuffix}", $params);
   }
 }

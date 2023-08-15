@@ -148,14 +148,14 @@ class ExamController extends BaseExamController
       $result[$examSubject['id']] = [
         'number_of_questions' => $numOfQuestions,
 
-        'course_title' => $course['course_title'] ?? $course['course_code'],
+        'course_title' => $course['title'] ?? $course['code'],
 
         'score' => $score,
 
         'score_percent' => $scorePercent
       ];
 
-      $subjectsCourseCode[] = $course['course_code'];
+      $subjectsCourseCode[] = $course['code'];
 
       $totalScorePercent += $scorePercent;
     }

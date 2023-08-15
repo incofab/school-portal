@@ -4,7 +4,7 @@ class FormatExam{
     questionNo = 0;
     questionIndex;
 
-    subject = { exam_subject_id:'', session_id:'', course_code:'', course_title:'',
+    subject = { exam_subject_id:'', session_id:'', :'', :'',
         year:'', general_instructions:'', instructions: [], passages: [],
         attempted_questions: [], questions: [this.currentQuestion],
     } 

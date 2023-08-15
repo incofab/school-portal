@@ -1,6 +1,5 @@
 <?php
-$title = "View Single Result | " . SITE_TITLE;
-?>
+$title = 'View Single Result | ' . SITE_TITLE; ?>
 
 @extends('vali_layout') 
 
@@ -32,7 +31,9 @@ hr.line{
 			<dd class="col-9 col-sm-10 mb-3">{{implode(', ', $subjectsCourseCode)}}</dd>
 			<dt class="col-3 col-sm-2 mb-3">Total Score</dt>
 			<dd class="col-9 col-sm-10 mb-3">
-				<?= $total_score_percent// \App\Core\Settings::getPercentage($totalScore, $totalNumOfQuestions, 0) ?>
+				<?= $total_score_percent
+// \App\Core\Settings::getPercentage($totalScore, $totalNumOfQuestions, 0)
+?>
 			</dd>
 		</dl>
 	</div>
@@ -44,7 +45,7 @@ hr.line{
 			@foreach($result_detail as $detail)
 			<li
 				class="list-group-item d-flex justify-content-between align-items-center">
-				{{$detail['course_title']}} 
+				{{$detail['']}} 
 				<span class="badge badge-primary badge-pill">
 					{{$detail['score_percent']}}
 				</span>

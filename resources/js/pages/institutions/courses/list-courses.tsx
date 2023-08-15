@@ -1,6 +1,6 @@
 import React from 'react';
 import { Course } from '@/types/models';
-import { HStack, IconButton, Icon } from '@chakra-ui/react';
+import { HStack, IconButton, Icon, Button } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -11,7 +11,7 @@ import { LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
-import { TrashIcon } from '@heroicons/react/24/solid';
+import { CloudArrowUpIcon, TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
@@ -46,6 +46,22 @@ export default function ListCourse({ courses }: Props) {
             label: 'Action',
             render: (row: Course) => (
               <HStack>
+                <Button
+                  as={'a'}
+                  href={instRoute('course-sessions.index', [row.id])}
+                  variant={'link'}
+                  colorScheme={'brand'}
+                >
+                  Questions
+                </Button>
+                <IconButton
+                  aria-label={'Upload Content'}
+                  icon={<Icon as={CloudArrowUpIcon} />}
+                  as={'a'}
+                  href={instRoute('courses.upload-content.create', [row.id])}
+                  variant={'ghost'}
+                  colorScheme={'brand'}
+                />
                 <IconButton
                   aria-label={'Edit Subject'}
                   icon={<Icon as={PencilIcon} />}

@@ -423,7 +423,7 @@ class EventController extends Controller
       $i = 8;
       $subjectsAndScores = $result['subjects_and_scores'];
       foreach ($eventSubjects as $eventSubject) {
-        $courseCode = $eventSubject->course->course_code;
+        $courseCode = $eventSubject->course->code;
 
         if (!empty($subjectsAndScores[$courseCode])) {
           $sheetData->setCellValueByColumnAndRow(

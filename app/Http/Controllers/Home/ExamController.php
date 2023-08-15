@@ -235,7 +235,7 @@ class ExamController extends Controller
     return view('home/exam/preview_exam_subject_result', [
       'year' => $sessionDetails['session'],
       //             'courseId' => $courseId,
-      'courseName' => $course['course_code'],
+      'courseName' => $course['code'],
       'course' => $course,
       'allCourseYearQuestions' => $allSessionQuestions,
       'year_id' => $session_id,

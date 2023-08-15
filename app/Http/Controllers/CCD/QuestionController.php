@@ -1,111 +1,104 @@
 <?php
 namespace App\Http\Controllers\CCD;
 
+use App\Http\Controllers\Controller;
 use App\Models\CourseSession;
+use App\Models\Institution;
 use App\Models\Question;
-use Illuminate\Http\Request;
-use App\Models\Student;
 
-class QuestionController extends BaseCCD
+class QuestionController extends Controller
 {
-    
-    function index($institutionId, $session_id)
-    {
-        $courseSession = CourseSession::whereId($session_id)->with('course', 'questions')->firstOrFail();
-        
-        return  $this->view('ccd.question.index', [
-            'questions' => $courseSession['questions'],
-            'course' => $courseSession['course'],
-            'session' => $courseSession
-        ]);
-        
-    }
-    
-    function create($institutionId, $session_id)
-    {
-        $courseSession = CourseSession::whereId($session_id)->with('course', 'questions')->firstOrFail();
-        
-        return $this->view('ccd.question.create', [
-            'questions' => $courseSession['questions'],
-            'course' => $courseSession['course'],
-            'session' => $courseSession
-        ]);
-    }
-    
-    function store($institutionId, $sessionId, Request $request)
-    {
-        $request->merge(['course_session_id' => $sessionId]);
-        
-        $ret = Question::insert($request->all());
-        
-        if(!$ret[SUCCESSFUL]) return $this->redirect(redirect()->back(), $ret);
-        
-        return redirect(route('ccd.question.index', [$institutionId, $sessionId]))->with('message', $ret[MESSAGE]);
-    }
-    
-    function apiCreate($institutionId, $sessionId, Request $request)
-    {
-        $request->merge(['course_session_id' => $sessionId]);
-        
-        $ret = Question::insert($request->all());
-        
-        return response()->json($ret);
-    }
-    
-    function edit($institutionId, $table_id)
-    {
-        $question = Question::whereId($table_id)->with('session', 'session.course')->firstOrFail();
-        
-        return $this->view('ccd.question.edit', [
-            'question' => $question,
-            'session' => $question['session'],
-            'course' => $question['session']['course']
-        ]);
-    }
-    
-    function update($institutionId, Request $request, Question $question)
-    {
-        $question->update($request->all());
-        
-        if($request->input('goto_next'))
-        {
-            $nextQuestion = Question::where('id', '>', $question->id)->first();
-            
-            if(!$nextQuestion){
-                return redirect(route('ccd.question.index', [$institutionId, $question->course_session_id]))
-                ->with('message', 'Question updated');
-            }
-            
-            return redirect(route('ccd.question.edit', [$institutionId, $nextQuestion->id]))
-            ->with('message', 'Question updated');
-        }
-        
-        return redirect(route('ccd.question.index', [$institutionId, $question->course_session_id]))
-        ->with('message', 'Question updated');
-    }
-    
-    function destroy($institutionId, $table_id)
-    {
-        $question = Question::whereId($table_id)->firstOrFail();
-        
-        $question->delete();
-        
-        return redirect(route('ccd.question.index', [$institutionId, $question->course_session_id]))
-        ->with('message', 'Question Deleted');
-    }
-    
-    function show($institutionId, $table_id)
-    {
-        $question = Question::whereId($table_id)->with(['session', 'session.course'])->firstOrFail();
-        
-        return $this->view('ccd.question.show', [
-            'session' => $question['session'],
-            'course' => $question['session']['course'],
-            'question' =>  $question,
-        ]);
-        
-    }
-    
-    
-    
+  function index(Institution $institution, CourseSession $courseSession)
+  {
+    $query = $courseSession->questions();
+
+    $courseSession->load('course');
+    return view('ccd/questions/index', [
+      'allRecords' => $query->with('topic')->paginate(100),
+      'courseSession' => $courseSession
+    ]);
+  }
+
+  function create(Institution $institution, CourseSession $courseSession)
+  {
+    $lastQuestion = $courseSession
+      ->questions()
+      ->latest('question_no')
+      ->first();
+    $questionNo = intval($lastQuestion?->question_no) + 1;
+
+    return view('ccd/questions/create-question', [
+      'edit' => null,
+      'questionNo' => $questionNo,
+      'courseSession' => $courseSession,
+      'topics' => $courseSession->course->topics()->get()
+    ]);
+  }
+
+  function storeApi(Institution $institution, CourseSession $courseSession)
+  {
+    $this->storeQuestion($institution, $courseSession);
+
+    return response()->json(['success' => true]);
+  }
+
+  function store(Institution $institution, CourseSession $courseSession)
+  {
+    $this->storeQuestion($institution, $courseSession);
+
+    return $this->res(
+      successRes('Question created'),
+      instRoute('questions.index', [$courseSession])
+    );
+  }
+
+  private function storeQuestion(
+    Institution $institution,
+    CourseSession $courseSession
+  ) {
+    $data = request()->validate(Question::createRule());
+
+    $question = $courseSession->questions()->updateOrCreate(
+      [
+        'question_no' => $data['question_no'],
+        'institution_id' => $institution->id
+      ],
+      $data
+    );
+
+    return $question;
+  }
+
+  function edit(Institution $institution, Question $question)
+  {
+    return view('admin/questions/create-question', [
+      'edit' => $question,
+      'courseSession' => $question->session,
+      'questionNo' => $question->question_no,
+      'topics' => $question->session->course->topics()->get()
+    ]);
+  }
+
+  function update(Institution $institution, Question $question)
+  {
+    $data = request()->validate(Question::createRule($question));
+
+    $question->fill($data)->save();
+
+    return $this->res(
+      successRes('Question record updated'),
+      instRoute('questions.index', [$question->course_session_id])
+    );
+  }
+
+  function destroy(Institution $institution, Question $question)
+  {
+    dd('Not implemented');
+    $question->delete();
+
+    return $this->res(
+      successRes('Question record deleted'),
+      instRoute('questions.index')
+    );
+  }
 }

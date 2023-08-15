@@ -27,7 +27,7 @@ const examTab = (props) => {
                 data-toggle="tab" id={'#nav-'+subject.exam_subject_id} role="tab"
                 onClick={tabSelected}
             >
-                {subject.course_title}
+                {subject.}
             </div>
         </li>
     ));

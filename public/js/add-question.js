@@ -9,7 +9,6 @@ if(window.openDatabase){
 	createTable();
 }
 ping();
-updateCount();
 /***** // Init ****/
 
 
@@ -17,11 +16,10 @@ function ping() {
 	setInterval(() => {
 		getQuestion(sendData);
 	}, PING_INTERVAL);
+	
 }
-
 $('form[name="record-question"]').on('submit', function(e) {
 	e.preventDefault();
-	
 	if(!confirm('Are you sure?')) return false;
 	tinyMCE.triggerSave();
 	
@@ -30,7 +28,7 @@ $('form[name="record-question"]').on('submit', function(e) {
 	currentQuestionNo++;
 	clearForm(currentQuestionNo);
 	$('body, html').animate({scrollTop: 0}, 800);
-	
+
 	return false;
 });
 
@@ -57,20 +55,18 @@ function sendData(data, id, questionNo) {
 
 function uploadFailed(data, id, questionNo) {	
 	saveQuestion(data, id, questionNo);
-	updateCount();
 }
 
 function uploadSuccessful(data, id, questionNo) {	
 	if(id)deleteQuestion(id);
-	updateCount();
 }
 
 function clearForm(currentQuestionNo) {
-	tinyMCE.editors.forEach(function(editor){
+	tinyMCE.get().forEach(function(editor){
 		editor.setContent('');
 	});
 	$('form[name="record-question"] .form-control').val('');
-	$('form[name="record-question"] #question-no').val(currentQuestionNo).trigger('change');
+	$('form[name="record-question"] input[name="question_no"]').val(currentQuestionNo).trigger('change');
 	if(window.resetDropDown) resetDropDown();
 }
 
@@ -101,13 +97,9 @@ function saveQuestion(data, id, questionNo)
 	db.transaction(function (transaction) {
 
 		var sql = `INSERT INTO ${QUESTIONS_TABLE}(course_session_id,question_no,content) VALUES(?,?,?)`;
-
 		var dataStr = JSON.stringify(data);
-
 		transaction.executeSql(sql, [window.courseSessionId, questionNo, dataStr], function () {
-		
 			console.log(`New item is added successfully, Question_no = ${questionNo}`);
-		
 		}, function (transaction, err) {
 			alert('Data not saved: '+err.message);
 		});
@@ -159,29 +151,6 @@ function deleteQuestion(id)
 			alert(err.message);
 		});
 
-	});
-}
-
-function updateCount(){
-
-	db.transaction(function(transaction){
-		var sql=`SELECT COUNT(id) AS count_query FROM ${QUESTIONS_TABLE}`;
-		transaction.executeSql(sql,undefined,function(transaction, result){
-			
-			if(!result.rows.length) return;
-
-			var len = result.rows[0].count_query;
-
-			if(len == 0){
-				$('#pending-questions').text("");
-				return;
-			}
-			
-			$('#pending-questions').text("Pending: "+len);
-			
-		}, function(transaction, err){
-			console.log('Database Count error: ', err.message);
-		});
 	});
 }
 

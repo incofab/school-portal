@@ -7,8 +7,8 @@ const demoData = {
 			{
 				"exam_subject_id": 1,
 				"session_id": 16,
-				"course_code": "ENG JSS",
-				"course_title": "English JSS",
+				"": "ENG JSS",
+				"": "English JSS",
 				"year": "2019",
                 'course_id': 4,
 				"general_instructions": "Answer all questions",
@@ -75,8 +75,8 @@ const demoData = {
 			{
 				"exam_subject_id": 2,
 				"session_id": 2,
-				"course_code": "ENG SSS",
-				"course_title": "English SSS",
+				"": "ENG SSS",
+				"": "English SSS",
 				"year": "2019",
 				"general_instructions": "Answer all questions",
 				"instructions": [],

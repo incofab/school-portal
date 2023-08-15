@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Arr;
 use App\Core\ErrorCodes;
 use App\Enums\InstitutionUserType;
+use App\Support\Res;
 use Illuminate\Routing\ControllerMiddlewareOptions;
 
 class Controller extends BaseController
@@ -99,5 +100,20 @@ class Controller extends BaseController
   protected function message(string $message)
   {
     return response()->json(['message' => $message]);
+  }
+
+  protected function res(
+    Res $res,
+    string $successRoute = null,
+    $failureRoute = null
+  ) {
+    if ($res->success && $successRoute) {
+      $obj = $successRoute ? redirect($successRoute) : redirect()->back();
+      return $obj->with('message', $res->message);
+    }
+
+    $obj = $failureRoute ? redirect($failureRoute) : redirect()->back();
+
+    return $obj->with('error', $res->message)->withInput();
   }
 }

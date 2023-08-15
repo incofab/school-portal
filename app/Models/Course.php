@@ -29,7 +29,7 @@ class Course extends Model
   //         return [SUCCESSFUL => false, MESSAGE => 'Validation failed: '.getFirstValue($val->errors()->toArray()), 'val' => $val ];
   //     }
 
-  //     if(Course::where('course_code', '=', $post['course_code'])
+  //     if(Course::where('', '=', $post[''])
   //         ->where('institution_id', '=', $post['institution_id'])->first()){
   //             return [SUCCESSFUL => false, MESSAGE => 'Error: Course code already exist'];
   //     }

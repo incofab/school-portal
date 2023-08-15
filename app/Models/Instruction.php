@@ -2,21 +2,47 @@
 
 namespace App\Models;
 
+use App\Support\Queries\InstructionQueryBuilder;
+use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Instruction extends Model
 {
-  use HasFactory;
+  use HasFactory, InstitutionScope;
 
-  protected $fillable = ['course_session_id', 'instruction', 'from', 'to'];
+  protected $guarded = [];
 
-  function session()
+  public function newEloquentBuilder($query)
   {
-    return $this->belongsTo(
-      \App\Models\CourseSession::class,
-      'course_session_id',
-      'id'
-    );
+    return new InstructionQueryBuilder($query);
+  }
+
+  static function createRule()
+  {
+    return [
+      'from' => ['required', 'integer'],
+      'to' => ['required', 'integer', 'gte:from'],
+      'instruction' => ['required', 'string']
+    ];
+  }
+
+  static function multiInsert(CourseSession $courseSession, array $instructions)
+  {
+    foreach ($instructions as $key => $instruction) {
+      $courseSession->instructions()->firstOrCreate(
+        [
+          'institution_id' => $courseSession->institution_id,
+          'from' => $instruction['from_'],
+          'to' => $instruction['to_']
+        ],
+        ['instruction' => $instruction['instruction']]
+      );
+    }
+  }
+
+  function courseable()
+  {
+    return $this->morphTo();
   }
 }
