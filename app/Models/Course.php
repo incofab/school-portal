@@ -81,30 +81,26 @@ class Course extends Model
 
   function institution()
   {
-    return $this->belongsTo(
-      \App\Models\Institution::class,
-      'institution_id',
-      'id'
-    );
+    return $this->belongsTo(Institution::class);
   }
 
   function sessions()
   {
-    return $this->hasMany(\App\Models\CourseSession::class, 'course_id', 'id');
+    return $this->hasMany(CourseSession::class);
   }
 
   function topics()
   {
-    return $this->hasMany(\App\Models\Topic::class, 'course_id', 'id');
+    return $this->hasMany(Topic::class);
   }
 
   function summaryChapters()
   {
-    return $this->hasMany(\App\Models\Summary::class, 'course_id', 'id');
+    return $this->hasMany(Summary::class);
   }
 
   function courseTeachers()
   {
-    return $this->hasMany(\App\Models\CourseTeacher::class);
+    return $this->hasMany(CourseTeacher::class);
   }
 }

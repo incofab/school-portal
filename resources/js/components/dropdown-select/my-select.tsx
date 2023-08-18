@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import Select, { Props } from 'react-select';
 
 interface MyProps<T> {
-  getOptions: () => SelectOptionType[];
+  getOptions: () => SelectOptionType<T | string | number>[];
   selectValue?: T;
   refreshKey?: string;
 }

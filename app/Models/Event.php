@@ -2,69 +2,42 @@
 
 namespace App\Models;
 
+use App\Traits\InstitutionScope;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-  use HasFactory;
+  use HasFactory, InstitutionScope;
 
-  protected $fillable = [
-    'institution_id',
-    'title',
-    'description',
-    'duration',
-    'num_of_activations',
-    'status'
-  ];
+  protected $guarded = [];
 
-  static function insert($post)
+  public function duration(): Attribute
   {
-    if (
-      $data = Event::where('institution_id', '=', $post['institution_id'])
-        ->where('title', '=', $post['title'])
-        ->first()
-    ) {
-      return retS('Title already Exists', $data);
-    }
-
-    $data = static::create($post);
-
-    if ($data) {
-      return retS('Data recorded', $data);
-    }
-
-    return retF('Error: Data entry failed');
+    return Attribute::make(
+      get: fn($value) => $value ? floor($value / 60) : null,
+      set: fn($value) => $value ? $value * 60 : null
+    );
   }
 
-  static function edit($post)
+  static function scopeActive($query, $status = 'active')
   {
-    $event = Event::where('id', '=', $post['id'])->firstOrFail();
-    //Fillable needs to be called
-    $event->update($post);
-
-    return retS('Data recorded', $event);
-  }
-
-  static function getActiveEvents($institutionId)
-  {
-    return static::where('status', 'active')
-      ->where('institution_id', $institutionId)
-      ->with('eventSubjects')
-      ->get();
+    return $query->where('status', $status);
   }
 
   function institution()
   {
-    return $this->belongsTo(
-      \App\Models\Institution::class,
-      'institution_id',
-      'id'
-    );
+    return $this->belongsTo(Institution::class);
   }
 
-  function eventSubjects()
+  function exams()
   {
-    return $this->hasMany(\App\Models\EventSubject::class, 'event_id', 'id');
+    return $this->hasMany(Exam::class);
+  }
+
+  function eventCourseables()
+  {
+    return $this->hasMany(EventCourseable::class);
   }
 }

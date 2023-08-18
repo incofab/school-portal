@@ -65,6 +65,7 @@ export interface Course extends InstitutionRow {
   code: string;
   category: string;
   description: string;
+  sessions: CourseSession[];
 }
 
 export interface Student extends Row {
@@ -278,4 +279,67 @@ export interface LearningEvaluation extends InstitutionRow {
   learning_evaluation_domain_id: number;
   title: string;
   learning_evaluation_domain?: LearningEvaluationDomain;
+}
+
+export interface Question extends InstitutionRow {
+  question_no: number;
+  question: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  option_e: string;
+}
+
+export interface CourseSession extends InstitutionRow {
+  course_id: number;
+  session: string;
+  category: string;
+  general_instruction: string;
+  course?: Course;
+  questions?: Question[];
+}
+
+export interface Event extends InstitutionRow {
+  title: string;
+  description: string;
+  duration: number;
+  status: number;
+  starts_at: string;
+  num_of_subjects: number;
+  event_courseables?: EventCourseable[];
+}
+
+export interface EventCourseable extends Row {
+  event_id: number;
+  courseable_type: string;
+  courseable_id: number;
+  status: string;
+  event?: Event;
+  courseable?: CourseSession;
+}
+
+export interface Exam extends InstitutionRow {
+  event_id: number;
+  student_id: number;
+  external_reference: string;
+  exam_no: string;
+  time_remaining: string;
+  start_time: string;
+  pause_time: string;
+  end_time: string;
+  score: number;
+  status: number;
+  student?: Student;
+  event?: Event;
+  exam_courseables?: ExamCourseable[];
+}
+
+export interface ExamCourseable extends Row {
+  exam_id: number;
+  courseable_type: string;
+  courseable_id: number;
+  status: string;
+  exam?: Exam;
+  courseable?: CourseSession;
 }

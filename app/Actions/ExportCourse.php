@@ -93,7 +93,7 @@ class ExportCourse
       \Carbon\Carbon::now()->toDateTimeString()
     );
 
-    $zipFilename = "{$this->baseDir}{$this->course->id}-{$this->course->}.$currentTime.zip";
+    $zipFilename = "{$this->baseDir}{$this->course->id}-{$this->course->code}.$currentTime.zip";
 
     \App\Core\Helper::zipContent($this->contentFolder, $zipFilename);
 

@@ -13,14 +13,16 @@ return new class extends Migration {
   public function up()
   {
     Schema::create('events', function (Blueprint $table) {
-      $table->bigIncrements('id');
+      $table->id();
 
       $table->unsignedBigInteger('institution_id');
       $table->string('title');
       $table->string('description')->nullable(true);
-      $table->string('duration');
+      $table->float('duration');
       $table->string('status')->default('active');
       $table->integer('num_of_activations', false, true)->default(0);
+      $table->dateTime('starts_at')->nullable();
+      $table->unsignedInteger('num_of_subjects');
 
       $table->timestamps();
 

@@ -176,3 +176,6 @@ Route::delete('/learning-evaluations/destroy/{learningEvaluation}', [Web\Staff\L
     ->name('learning-evaluations.destroy');
 Route::post('/set-term-result-learning-evaluation/{termResult?}', [Web\Staff\LearningEvaluationController::class, 'setTermResultEvaluation'])
     ->name('set-term-result-learning-evaluation');
+
+
+include base_path('routes/exam.php');

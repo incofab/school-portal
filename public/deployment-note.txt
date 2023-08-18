@@ -1,0 +1,3 @@
+- ALready done
+    - Delete event and event_subjects with the migrations
+    - Delete exam and exam subjects with the migrations

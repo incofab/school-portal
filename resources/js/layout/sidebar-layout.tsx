@@ -182,6 +182,11 @@ export default function SideBarLayout() {
       ],
     },
     {
+      label: 'Events',
+      route: instRoute('events.index'),
+      roles: [InstitutionUserType.Admin],
+    },
+    {
       label: 'Settings',
       route: instRoute('settings.create'),
       roles: [InstitutionUserType.Admin],

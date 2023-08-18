@@ -12,11 +12,11 @@ return new class extends Migration {
    */
   public function up()
   {
-    Schema::create('event_subjects', function (Blueprint $table) {
-      $table->bigIncrements('id');
+    Schema::create('event_courseables', function (Blueprint $table) {
+      $table->id();
 
       $table->unsignedBigInteger('event_id');
-      $table->unsignedBigInteger('course_session_id')->nullable(true);
+      $table->morphs('courseable');
 
       $table->string('status')->default('active');
       $table->timestamps();
@@ -25,12 +25,6 @@ return new class extends Migration {
         ->foreign('event_id')
         ->references('id')
         ->on('events')
-        ->cascadeOnDelete();
-
-      $table
-        ->foreign('course_session_id')
-        ->references('id')
-        ->on('course_sessions')
         ->cascadeOnDelete();
     });
   }
@@ -42,6 +36,6 @@ return new class extends Migration {
    */
   public function down()
   {
-    Schema::dropIfExists('event_subjects');
+    Schema::dropIfExists('event_courseables');
   }
 };

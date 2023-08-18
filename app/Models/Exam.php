@@ -2,50 +2,22 @@
 
 namespace App\Models;
 
+use App\Enums\ExamStatus;
+use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Exam extends Model
 {
-  use HasFactory;
+  use HasFactory, InstitutionScope;
 
-  public $fillable = [
-    'event_id',
-    'student_id',
-    'exam_no',
-    'start_time',
-    'duration',
-    'time_remaining',
-    'end_time',
-    'pause_time',
-    'status',
-    'num_of_questions',
-    'score'
+  public $guarded = [];
+  public $casts = [
+    'status' => ExamStatus::class,
+    'start_time' => 'datetime',
+    'pause_time' => 'datetime',
+    'end_time' => 'datetime'
   ];
-
-  static function insert($post)
-  {
-    if (
-      Exam::whereEvent_id($post['event_id'])
-        ->whereStudent_id($post['student_id'])
-        ->first()
-    ) {
-      return retF('Student already registered for this exam');
-    }
-
-    $post['exam_no'] = self::generateExamNo();
-    $post['status'] = 'active';
-
-    $data = static::create($post);
-
-    if (!$data) {
-      return retF('Error: Data entry failed');
-    }
-
-    return retS('Data recorded', $data);
-  }
 
   static function generateExamNo()
   {
@@ -58,23 +30,18 @@ class Exam extends Model
     return $key;
   }
 
-  function examSubjects()
+  function examCourseables()
   {
-    return $this->hasMany(\App\Models\ExamSubject::class, 'exam_no', 'exam_no');
+    return $this->hasMany(ExamCourseable::class);
   }
 
   function student()
   {
-    return $this->belongsTo(Student::class, 'student_id', 'student_id');
+    return $this->belongsTo(Student::class);
   }
 
   function event()
   {
-    return $this->belongsTo(Event::class, 'event_id', 'id');
-  }
-
-  function user()
-  {
-    return $this->belongsTo(User::class, 'user_id', 'id');
+    return $this->belongsTo(Event::class);
   }
 }

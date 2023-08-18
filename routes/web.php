@@ -77,7 +77,19 @@ Route::group(['middleware' => ['auth']], function () {
     Route::any('/logout', [Web\AuthController::class, 'logout'])->name('logout');
 });
 
-
+Route::group(['prefix' => '{institution}/my-exam/'], function () {
+    Route::get('/login', Web\Institutions\Exams\ExamPage\ExamLoginController::class)
+        ->name('exams.login');
+    Route::get('/display/{exam:exam_no}', Web\Institutions\Exams\ExamPage\DisplayExamPageController::class)
+        ->name('display-exam-page');
+    Route::post('/pause/{exam}', Web\Institutions\Exams\ExamPage\PauseExamController::class)
+        ->name('pause-exam');
+    Route::post('/end/{exam}', Web\Institutions\Exams\ExamPage\EndExamController::class)
+        ->name('end-exam');
+    // Route::get('/exam/completed/{examNo?}', [\App\Http\Controllers\Exam\ExamController::class, 'examCompleted'])->name('home.exam.completed');
+    // Route::get('/exam/view-result-form', [\App\Http\Controllers\Exam\ExamController::class, 'viewResultForm'])->name('home.exam.view-result-form');
+    // Route::get('/exam/view-result', [\App\Http\Controllers\Exam\ExamController::class, 'viewResult'])->name('home.exam.view-result');
+});
 
 
 
@@ -85,7 +97,3 @@ Route::group(['middleware' => ['auth']], function () {
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::any('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
 
-Route::get('/exam/start/{examNo?}', [\App\Http\Controllers\Exam\ExamController::class, 'startExam'])->name('home.exam.start');
-Route::get('/exam/completed/{examNo?}', [\App\Http\Controllers\Exam\ExamController::class, 'examCompleted'])->name('home.exam.completed');
-Route::get('/exam/view-result-form', [\App\Http\Controllers\Exam\ExamController::class, 'viewResultForm'])->name('home.exam.view-result-form');
-Route::get('/exam/view-result', [\App\Http\Controllers\Exam\ExamController::class, 'viewResult'])->name('home.exam.view-result');
