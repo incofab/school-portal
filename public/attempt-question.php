@@ -4,26 +4,29 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Content-Type, origin');
 header('Content-Type: application/json; charset=UTF-8');
 
-define('APP_DIR', __DIR__ . '/../app/');
-
-require 'Helpers/ExamHandler.php';
-$examHandler = new \App\Helpers\ExamHandler();
+require __DIR__ . '/../app/Helpers/ExamAttemptFileHandler.php';
 
 $input = @file_get_contents('php://input');
 $post = json_decode($input, true);
 
 //     dlog_22($post);
-$allAttempts = $post['attempts'];
-//     dlog_22($allAttempts);
+$allAttempts = $post['attempts'] ?? [];
+$eventId = $post['event_id'] ?? null;
+$examNo = $post['exam_no'] ?? null;
+// dlog_22($post);
 
-$ret = $examHandler->attemptQuestion(
-  $allAttempts,
-  $post['event_id'],
-  $post['exam_no']
-);
+if (empty($allAttempts) || !$eventId || !$examNo) {
+  dlog_22('Invalid data ' . json_encode($post, JSON_PRETTY_PRINT));
+  return;
+}
+
+$examHandler = new \App\Helpers\ExamAttemptFileHandler([
+  'event_id' => $eventId,
+  'exam_no' => $examNo
+]);
+$ret = $examHandler->attemptQuestion($allAttempts);
 
 //     dlog_22($ret);
-
 if ($ret['success'] !== true) {
   emitResponse($ret);
 }

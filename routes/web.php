@@ -79,21 +79,31 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::group(['prefix' => '{institution}/my-exam/'], function () {
     Route::get('/login', Web\Institutions\Exams\ExamPage\ExamLoginController::class)
-        ->name('exams.login');
+        ->name('institutions.exams.login');
     Route::get('/display/{exam:exam_no}', Web\Institutions\Exams\ExamPage\DisplayExamPageController::class)
-        ->name('display-exam-page');
+        ->name('institutions.display-exam-page');
     Route::post('/pause/{exam}', Web\Institutions\Exams\ExamPage\PauseExamController::class)
-        ->name('pause-exam');
+        ->name('institutions.pause-exam');
     Route::post('/end/{exam}', Web\Institutions\Exams\ExamPage\EndExamController::class)
-        ->name('end-exam');
+        ->name('institutions.end-exam');
     // Route::get('/exam/completed/{examNo?}', [\App\Http\Controllers\Exam\ExamController::class, 'examCompleted'])->name('home.exam.completed');
     // Route::get('/exam/view-result-form', [\App\Http\Controllers\Exam\ExamController::class, 'viewResultForm'])->name('home.exam.view-result-form');
     // Route::get('/exam/view-result', [\App\Http\Controllers\Exam\ExamController::class, 'viewResult'])->name('home.exam.view-result');
 });
 
-
-
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::any('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
+
+Route::group(['prefix' => 'external/{institution}/'], function () {
+    Route::post('/get-user-token', Web\Institutions\Exams\External\GetUserTokenController::class);
+    Route::get('/home', Web\Institutions\Exams\External\HomeExternalController::class)
+    ->name('institutions.external.home');
+
+    Route::get('/{event}/exams/create', [Web\Institutions\Exams\External\ExamExternalController::class, 'create'])
+    ->name('institutions.external.exams.create');
+    Route::post('/{event}/exams', [Web\Institutions\Exams\External\ExamExternalController::class, 'store'])
+    ->name('institutions.external.exams.store');
+    Route::get('/exam-result/{exam:exam_no}', Web\Institutions\Exams\ExamPage\ExamResultController::class)
+        ->name('institutions.external.exam-result');
+});
 

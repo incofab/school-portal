@@ -33,6 +33,7 @@ return new class extends Migration {
       $table->integer('score', false, true)->nullable(true);
       $table->integer('num_of_questions', false, true)->nullable(true);
       $table->string('status')->default(ExamStatus::Pending->value);
+      $table->text('attempts')->nullable();
 
       $table->timestamps();
 

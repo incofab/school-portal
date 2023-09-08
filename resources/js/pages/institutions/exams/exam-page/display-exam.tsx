@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Exam, ExamCourseable, Question } from '@/types/models';
-import { Div } from '@/components/semantic';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Exam, ExamCourseable, Question, TokenUser } from '@/types/models';
 import {
   Center,
   HStack,
+  Icon,
+  IconButton,
   Radio,
   Spacer,
   Tab,
@@ -17,23 +18,98 @@ import {
   WrapItem,
 } from '@chakra-ui/react';
 import ExamUtil from '@/util/exam/exam-util';
+import ExamLayout from '../exam-layout';
+import useModalToggle from '@/hooks/use-modal-toggle';
+import CalculatorModal from '@/components/modals/calculator-modal';
+import { CalculatorIcon } from '@heroicons/react/24/solid';
+import { BrandButton } from '@/components/buttons';
+import ExamTimer from '@/util/exam/exam-timer';
+import { formatTime } from '@/util/util';
+import { Inertia } from '@inertiajs/inertia';
+import useWebForm from '@/hooks/use-web-form';
+import useInstitutionRoute from '@/hooks/use-institution-route';
+import { ExamAttempt } from '@/types/types';
 
 interface Props {
   exam: Exam;
+  tokenUser: TokenUser;
+  timeRemaining: number;
+  existingAttempts: ExamAttempt;
 }
 
-export default function DisplayExam({ exam }: Props) {
+export default function DisplayExam({
+  exam,
+  tokenUser,
+  timeRemaining,
+  existingAttempts,
+}: Props) {
   const [key, setKey] = useState<string>('0');
+  const [timer, setTimer] = useState<string>('');
+  const webForm = useWebForm({});
+  const calculatorModalToggle = useModalToggle();
+  const { instRoute } = useInstitutionRoute();
   function updateExamUtil() {
     setKey(Math.random() + '');
   }
-  const [examUtil, setExamUtil] = useState<ExamUtil>(
-    new ExamUtil(updateExamUtil)
-  );
+
+  console.log('Display exam called');
+
+  const examUtil = useMemo(() => {
+    const examUtil = new ExamUtil(exam, existingAttempts, updateExamUtil);
+    // const examTimer = new ExamTimer(onTimerTick, onTimeElapsed, onIntervalPing);
+    // examTimer.start(timeRemaining);
+    return examUtil;
+  }, []);
+  useEffect(() => {
+    const examTimer = new ExamTimer(onTimerTick, onTimeElapsed, onIntervalPing);
+    examTimer.start(timeRemaining);
+    return () => examTimer.stop();
+  }, []);
+
+  function onTimerTick(timeRemaining: number) {
+    setTimer(formatTime(timeRemaining) + '');
+  }
+
+  async function onTimeElapsed() {
+    await examUtil.getAttemptManager().sendAttempts(webForm);
+    Inertia.visit(instRoute('external.exam-result', [exam.exam_no]));
+  }
+
+  function onIntervalPing() {
+    examUtil.getAttemptManager().sendAttempts(webForm);
+  }
+
+  async function submitExam() {
+    if (!confirm('Do you want to submit your exam?')) {
+      return;
+    }
+    await webForm.submit((data, web) => {
+      return web.post(instRoute('end-exam', [exam.id]));
+    });
+    Inertia.visit(instRoute('external.exam-result', [exam.exam_no]));
+  }
 
   return (
-    <Div>
-      <Tabs key={key} index={examUtil.getTabManager().getCurrentTabIndex()}>
+    <ExamLayout
+      title={`${tokenUser.name}`}
+      rightElement={
+        <HStack>
+          <IconButton
+            icon={<Icon as={CalculatorIcon} />}
+            aria-label="Calculator"
+            onClick={calculatorModalToggle.open}
+            variant={'ghost'}
+            fontSize={'2xl'}
+          />
+          <Text>{timer}</Text>
+        </HStack>
+      }
+    >
+      <Tabs
+        key={key}
+        index={examUtil.getTabManager().getCurrentTabIndex()}
+        mx={{ base: '10px', md: '30px' }}
+      >
         <TabList>
           {exam.exam_courseables?.map((item, index) => (
             <Tab
@@ -46,8 +122,9 @@ export default function DisplayExam({ exam }: Props) {
         </TabList>
         <TabPanels>
           {exam.exam_courseables?.map((examCourseable, index) => {
+            const tab = examUtil.getTabManager().getTab(index);
             examUtil.getTabManager().setTab(index, {
-              currentQuestionIndex: 0,
+              currentQuestionIndex: tab?.currentQuestionIndex ?? 0,
               exam_courseable_id: examCourseable.id,
             });
             return (
@@ -61,7 +138,39 @@ export default function DisplayExam({ exam }: Props) {
           })}
         </TabPanels>
       </Tabs>
-    </Div>
+      <CalculatorModal {...calculatorModalToggle.props} />
+      <HStack
+        justifyContent={'space-between'}
+        px={3}
+        py={2}
+        mt={2}
+        position={'absolute'}
+        bottom={0}
+        w={'full'}
+      >
+        <BrandButton
+          title="Previous"
+          onClick={() =>
+            examUtil
+              .getTabManager()
+              .setCurrentQuestion(
+                examUtil.getExamNavManager().getGoPreviousIndex()
+              )
+          }
+          width={'80px'}
+        />
+        <BrandButton title="Submit" onClick={submitExam} width={'80px'} />
+        <BrandButton
+          title="Next"
+          onClick={() =>
+            examUtil
+              .getTabManager()
+              .setCurrentQuestion(examUtil.getExamNavManager().getGoNextIndex())
+          }
+          width={'80px'}
+        />
+      </HStack>
+    </ExamLayout>
   );
 }
 
@@ -72,8 +181,11 @@ function DisplayQuestion({
   examCourseable: ExamCourseable;
   examUtil: ExamUtil;
 }) {
+  const attemptManager = examUtil.getAttemptManager();
   const questions = examCourseable.courseable!.questions!;
-  const question = questions[0];
+  const question =
+    questions[examUtil.getTabManager().getCurrentQuestionIndex()];
+
   return (
     <VStack align={'stretch'}>
       <Text fontWeight={'bold'}>
@@ -106,8 +218,18 @@ function DisplayQuestion({
               h="35px"
               cursor={'pointer'}
               border={'solid 1px'}
-              borderColor={'gray.500'}
+              borderColor={'gray.600'}
               rounded={'md'}
+              onClick={() => {
+                examUtil.getTabManager().setCurrentQuestion(index);
+              }}
+              backgroundColor={
+                item.id === question.id
+                  ? 'brand.500'
+                  : attemptManager.isAttempted(item.id)
+                  ? 'brand.100'
+                  : 'transparent'
+              }
             >
               {index + 1}
             </Center>

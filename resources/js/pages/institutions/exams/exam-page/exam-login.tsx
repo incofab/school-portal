@@ -12,18 +12,22 @@ import { useForm } from '@inertiajs/inertia-react';
 import React from 'react';
 import CenteredLayout from '@/components/centered-layout';
 import { Institution } from '@/types/models';
+import useInstitutionRoute from '@/hooks/use-institution-route';
 
 export default function ExamLogin({
   institution,
 }: {
   institution: Institution;
 }) {
+  const { instRoute } = useInstitutionRoute();
   const form = useForm({
     exam_no: '',
   });
 
   function onSubmit() {
-    form.get(route('display-exam-page', [institution.uuid, form.data.exam_no]));
+    form.get(
+      instRoute('display-exam-page', [institution.uuid, form.data.exam_no])
+    );
   }
 
   return (

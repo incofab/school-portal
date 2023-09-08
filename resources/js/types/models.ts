@@ -1,4 +1,10 @@
-import { InstitutionUserType, ManagerRole, Nullable, TermType } from './types';
+import {
+  ExamAttempt,
+  InstitutionUserType,
+  ManagerRole,
+  Nullable,
+  TermType,
+} from './types';
 
 export interface Row {
   id: number;
@@ -22,6 +28,14 @@ export interface User extends Row {
   is_welfare: boolean;
   gender: string;
   manager_role: ManagerRole;
+}
+
+export interface TokenUser {
+  user_id: string;
+  name: string;
+  reference: string;
+  email: string;
+  phone: string;
 }
 
 export interface Institution extends Row {
@@ -308,6 +322,7 @@ export interface Event extends InstitutionRow {
   starts_at: string;
   num_of_subjects: number;
   event_courseables?: EventCourseable[];
+  exams?: Exam[];
 }
 
 export interface EventCourseable extends Row {
@@ -324,15 +339,17 @@ export interface Exam extends InstitutionRow {
   student_id: number;
   external_reference: string;
   exam_no: string;
-  time_remaining: string;
+  time_remaining: number;
   start_time: string;
   pause_time: string;
   end_time: string;
   score: number;
-  status: number;
+  num_of_questions: number;
+  status: string;
   student?: Student;
   event?: Event;
   exam_courseables?: ExamCourseable[];
+  attempts: ExamAttempt;
 }
 
 export interface ExamCourseable extends Row {

@@ -39,9 +39,9 @@ class Institution extends Model
   public function resolveRouteBinding($value, $field = null)
   {
     $user = currentUser();
-    if (!$user) {
-      return null;
-    }
+    // if (!$user) {
+    //   return null;
+    // }
     $institutionModel = Institution::query()
       ->select('institutions.*')
       ->join(
@@ -50,13 +50,24 @@ class Institution extends Model
         'institutions.id'
       )
       ->where('uuid', $value)
-      ->where('institution_users.user_id', $user->id)
-      ->with(
-        'institutionUsers',
+      ->when(
+        $user,
         fn($q) => $q
           ->where('institution_users.user_id', $user->id)
-          ->with('student')
+          ->with(
+            'institutionUsers',
+            fn($q) => $q
+              ->where('institution_users.user_id', $user->id)
+              ->with('student')
+          )
       )
+      // ->where('institution_users.user_id', $user->id)
+      // ->with(
+      //   'institutionUsers',
+      //   fn($q) => $q
+      //     ->where('institution_users.user_id', $user->id)
+      //     ->with('student')
+      // )
       ->with('institutionSettings')
       ->firstOrFail();
     return $institutionModel;

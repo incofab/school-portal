@@ -123,3 +123,7 @@ export enum Nationality {
   Nigeria = 'nigeria',
   Others = 'others',
 }
+
+export interface ExamAttempt {
+  [questionId: string | number]: string;
+}

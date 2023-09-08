@@ -20,7 +20,10 @@ class Event extends Model
       set: fn($value) => $value ? $value * 60 : null
     );
   }
-
+  function getDurationInSeconds()
+  {
+    return $this->getRawOriginal('duration');
+  }
   static function scopeActive($query, $status = 'active')
   {
     return $query->where('status', $status);

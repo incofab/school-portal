@@ -2,8 +2,10 @@
 namespace App\Support;
 
 use App\Enums\ExamStatus;
+use App\Helpers\ExamAttemptFileHandler;
 use App\Models\Exam;
-use Illuminate\Validation\ValidationException;
+use App\Models\ExamCourseable;
+use DB;
 
 class ExamHandler
 {
@@ -45,12 +47,12 @@ class ExamHandler
     }
 
     if ($this->isStarted()) {
-      return;
+      return $this;
     }
 
     $duration = $this->isPaused()
       ? $this->exam->time_remaining
-      : $this->exam->event->duration;
+      : $this->exam->event->getDurationInSeconds(); //gets the duration in seconds
 
     $this->exam
       ->fill([
@@ -61,6 +63,22 @@ class ExamHandler
         'status' => ExamStatus::Active
       ])
       ->save();
+
+    ExamAttemptFileHandler::make(
+      $this->exam->only([
+        'id',
+        'event_id',
+        'exam_no',
+        'time_remaining',
+        'start_time',
+        'pause_time',
+        'end_time',
+        'status',
+        'num_of_questions'
+      ])
+    )->syncExamFile();
+
+    return $this;
   }
 
   function pauseExam()
@@ -91,14 +109,41 @@ class ExamHandler
     if ($this->isEnded()) {
       return;
     }
+    $this->exam->examCourseables;
+    $examAttemptFileHandler = ExamAttemptFileHandler::make($this->exam);
+    $totalScore = 0;
+    $totalNumOfQuestions = 0;
+    DB::beginTransaction();
+    /** @var ExamCourseable $examCourseable */
+    foreach ($this->exam->examCourseables as $key => $examCourseable) {
+      $questions = $examCourseable->courseable->questions()->get();
+      $scoreCalc = $examAttemptFileHandler->calculateScoreFromFile($questions);
+      $score = $scoreCalc['score'] ?? $examCourseable->score;
+      $numOfQuestions = $questions->count();
+
+      $examCourseable
+        ->fill([
+          'score' => $score,
+          'num_of_questions' => $numOfQuestions
+        ])
+        ->save();
+      $totalScore += $score;
+      $totalNumOfQuestions += $numOfQuestions;
+    }
+
     $this->exam
       ->fill([
         'pause_time' => null,
         'end_time' => null,
         'time_remaining' => 0,
-        'status' => ExamStatus::Ended
+        'status' => ExamStatus::Ended,
+        'score' => $totalScore,
+        'num_of_questions' => $totalNumOfQuestions,
+        'attempts' => $examAttemptFileHandler->getQuestionAttempts()
       ])
       ->save();
+    // $examAttemptFileHandler->deleteExamFile();
+    DB::commit();
   }
 
   function endAndAbort($reason = null)
@@ -109,8 +154,13 @@ class ExamHandler
 
   function hasSomeTimeRemaining()
   {
-    $timeRemaining = now()->diffInSeconds($this->exam->end_time, true);
+    $timeRemaining = $this->getTimeRemaining();
     return $timeRemaining > 5;
+  }
+
+  function getTimeRemaining()
+  {
+    return now()->diffInSeconds($this->exam->end_time, true);
   }
 
   function isPending()

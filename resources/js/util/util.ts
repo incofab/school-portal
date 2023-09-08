@@ -125,3 +125,29 @@ export function range(start: number, end: number | undefined) {
   }
   return arr;
 }
+
+export function formatTime(time_in_secs: number) {
+  if (isNaN(time_in_secs) || time_in_secs < 0) {
+    time_in_secs = 0;
+  }
+
+  var total_mins = time_in_secs / 60;
+  var hour: number | string = parseInt(total_mins / 60 + '');
+  var min: number | string = parseInt((total_mins % 60) + '');
+  var sec: number | string = parseInt((time_in_secs % 60) + '');
+  sec = sec < 10 ? '0' + sec : sec;
+
+  if (hour < 1 && min < 1) {
+    return sec;
+  }
+
+  min = min < 10 ? '0' + min : min;
+
+  if (hour < 1) {
+    return min + ':' + sec;
+  }
+
+  hour = hour < 10 ? '0' + hour : hour;
+
+  return hour + ':' + min + ':' + sec;
+}

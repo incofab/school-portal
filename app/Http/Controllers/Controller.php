@@ -93,6 +93,16 @@ class Controller extends BaseController
     });
   }
 
+  protected function getTokenUserFromCookie()
+  {
+    $token = \Cookie::get('token');
+    abort_unless($token, 403, 'Token not found');
+    $data = \App\Core\JWT::decode($token, config('services.jwt.secret-key'));
+    $tokenUser = new \App\DTO\TokenUser();
+    $tokenUser->setData((array) $data);
+    return $tokenUser;
+  }
+
   protected function ok($data = [])
   {
     return response()->json(['ok' => true, ...$data]);

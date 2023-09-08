@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ExamStatus;
 use App\Traits\InstitutionScope;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -16,7 +17,8 @@ class Exam extends Model
     'status' => ExamStatus::class,
     'start_time' => 'datetime',
     'pause_time' => 'datetime',
-    'end_time' => 'datetime'
+    'end_time' => 'datetime',
+    'attempts' => AsArrayObject::class
   ];
 
   static function generateExamNo()
