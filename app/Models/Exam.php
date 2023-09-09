@@ -42,6 +42,11 @@ class Exam extends Model
     return $this->belongsTo(Student::class);
   }
 
+  function institution()
+  {
+    return $this->belongsTo(Institution::class);
+  }
+
   function event()
   {
     return $this->belongsTo(Event::class);

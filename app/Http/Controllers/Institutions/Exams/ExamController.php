@@ -9,7 +9,6 @@ use App\Http\Requests\StoreExamRequest;
 use App\Models\Event;
 use App\Models\Exam;
 use App\Models\Institution;
-use DB;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 

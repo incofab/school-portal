@@ -21,4 +21,16 @@ class EventCourseableFactory extends Factory
       'courseable_id' => CourseSession::factory()
     ];
   }
+
+  public function event(Event $event): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'event_id' => $event->id,
+        'courseable_id' => CourseSession::factory()->institution(
+          $event->institution
+        )
+      ]
+    );
+  }
 }

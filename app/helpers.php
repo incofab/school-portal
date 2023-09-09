@@ -104,9 +104,9 @@ if (!function_exists('breadCrumb')) {
 }
 
 if (!function_exists('instRoute')) {
-  function instRoute($routeSuffix, $moreParam = [])
+  function instRoute($routeSuffix, $moreParam = [], $institution = null)
   {
-    $institution = currentInstitution();
+    $institution = $institution ?? currentInstitution();
     $params = [$institution];
     if (is_array($moreParam)) {
       $params = array_merge($params, $moreParam);

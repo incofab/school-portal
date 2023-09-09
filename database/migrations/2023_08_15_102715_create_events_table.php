@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\EventStatus;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -19,7 +20,7 @@ return new class extends Migration {
       $table->string('title');
       $table->string('description')->nullable(true);
       $table->float('duration');
-      $table->string('status')->default('active');
+      $table->string('status')->default(EventStatus::Active->value);
       $table->integer('num_of_activations', false, true)->default(0);
       $table->dateTime('starts_at')->nullable();
       $table->unsignedInteger('num_of_subjects');

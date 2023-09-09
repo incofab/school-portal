@@ -54,6 +54,8 @@ class MorphMap
     'student' => \App\Models\Student::class,
     'summary' => \App\Models\Summary::class,
     'term-result' => \App\Models\TermResult::class,
-    'topic' => \App\Models\Topic::class
+    'topic' => \App\Models\Topic::class,
+    'event-courseable' => \App\Models\EventCourseable::class,
+    'exam-courseable' => \App\Models\ExamCourseable::class
   ];
 }

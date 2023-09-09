@@ -75,7 +75,7 @@ class QuestionController extends Controller
       'edit' => $question,
       'courseSession' => $question->session,
       'questionNo' => $question->question_no,
-      'topics' => $question->session->course->topics()->get()
+      'topics' => $question->courseable->course->topics()->get()
     ]);
   }
 

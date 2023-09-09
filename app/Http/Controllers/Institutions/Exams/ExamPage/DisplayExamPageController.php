@@ -22,7 +22,7 @@ class DisplayExamPageController extends Controller
         fn($q) => $q->with('course', 'questions', 'passages', 'instructions')
       )
       ->first();
-    // dd('ndksd');
+
     $examHandler = ExamHandler::make($exam)->startExam();
     $examAttemptFileHandler = ExamAttemptFileHandler::make($exam);
     $tokenUser = $this->getTokenUserFromCookie();

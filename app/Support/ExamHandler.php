@@ -1,6 +1,7 @@
 <?php
 namespace App\Support;
 
+use App\Enums\EventStatus;
 use App\Enums\ExamStatus;
 use App\Helpers\ExamAttemptFileHandler;
 use App\Models\Exam;
@@ -20,6 +21,9 @@ class ExamHandler
 
   function canRun()
   {
+    if (!$this->isEventActive()) {
+      return false;
+    }
     if ($this->isPending()) {
       return true;
     }
@@ -160,7 +164,7 @@ class ExamHandler
 
   function getTimeRemaining()
   {
-    return now()->diffInSeconds($this->exam->end_time, true);
+    return now()->diffInSeconds($this->exam->end_time, false);
   }
 
   function isPending()
@@ -181,5 +185,17 @@ class ExamHandler
   function isEnded()
   {
     return $this->exam->status === ExamStatus::Ended;
+  }
+
+  function isEventActive()
+  {
+    $event = $this->exam->event;
+    if ($event->status === EventStatus::Ended) {
+      return false;
+    }
+    if (!$event->starts_at) {
+      return true;
+    }
+    return $event->starts_at->lessThanOrEqualTo(now());
   }
 }

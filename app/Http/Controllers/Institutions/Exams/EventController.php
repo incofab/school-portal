@@ -55,7 +55,8 @@ class EventController extends Controller
       'description' => ['nullable', 'string'],
       'duration' => ['required', 'numeric'],
       'starts_at' => ['required', 'date'],
-      'num_of_subjects' => ['required', 'integer']
+      'num_of_subjects' => ['required', 'integer'],
+      'num_of_activations' => ['nullable', 'integer']
     ]);
     $institution->events()->create($data);
     return $this->ok();
@@ -73,7 +74,9 @@ class EventController extends Controller
       ],
       'description' => ['nullable', 'string'],
       'duration' => ['required', 'numeric'],
-      'starts_at' => ['required', 'date']
+      'starts_at' => ['required', 'date'],
+      'num_of_subjects' => ['nullable', 'integer'],
+      'num_of_activations' => ['nullable', 'integer']
     ]);
     $event->fill($data)->save();
     return $this->ok();

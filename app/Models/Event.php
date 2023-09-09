@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EventStatus;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +13,10 @@ class Event extends Model
   use HasFactory, InstitutionScope;
 
   protected $guarded = [];
+  protected $casts = [
+    'status' => EventStatus::class,
+    'starts_at' => 'datetime'
+  ];
 
   public function duration(): Attribute
   {

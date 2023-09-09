@@ -29,6 +29,7 @@ import { Inertia } from '@inertiajs/inertia';
 import useWebForm from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { ExamAttempt } from '@/types/types';
+import QuestionImageHandler from '@/util/exam/question-image-handler';
 
 interface Props {
   exam: Exam;
@@ -44,31 +45,16 @@ export default function DisplayExam({
   existingAttempts,
 }: Props) {
   const [key, setKey] = useState<string>('0');
-  const [timer, setTimer] = useState<string>('');
   const webForm = useWebForm({});
   const calculatorModalToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
   function updateExamUtil() {
     setKey(Math.random() + '');
   }
-
-  console.log('Display exam called');
-
   const examUtil = useMemo(() => {
     const examUtil = new ExamUtil(exam, existingAttempts, updateExamUtil);
-    // const examTimer = new ExamTimer(onTimerTick, onTimeElapsed, onIntervalPing);
-    // examTimer.start(timeRemaining);
     return examUtil;
   }, []);
-  useEffect(() => {
-    const examTimer = new ExamTimer(onTimerTick, onTimeElapsed, onIntervalPing);
-    examTimer.start(timeRemaining);
-    return () => examTimer.stop();
-  }, []);
-
-  function onTimerTick(timeRemaining: number) {
-    setTimer(formatTime(timeRemaining) + '');
-  }
 
   async function onTimeElapsed() {
     await examUtil.getAttemptManager().sendAttempts(webForm);
@@ -101,7 +87,11 @@ export default function DisplayExam({
             variant={'ghost'}
             fontSize={'2xl'}
           />
-          <Text>{timer}</Text>
+          <TimerView
+            timeRemaining={timeRemaining}
+            onTimeElapsed={onTimeElapsed}
+            onIntervalPing={onIntervalPing}
+          />
         </HStack>
       }
     >
@@ -174,6 +164,29 @@ export default function DisplayExam({
   );
 }
 
+function TimerView({
+  timeRemaining,
+  onTimeElapsed,
+  onIntervalPing,
+}: {
+  timeRemaining: number;
+  onTimeElapsed: () => void;
+  onIntervalPing: () => void;
+}) {
+  const [timer, setTimer] = useState<string>('');
+
+  useEffect(() => {
+    const examTimer = new ExamTimer(onTimerTick, onTimeElapsed, onIntervalPing);
+    examTimer.start(timeRemaining);
+    return () => examTimer.stop();
+  }, []);
+
+  function onTimerTick(timeRemaining: number) {
+    setTimer(formatTime(timeRemaining) + '');
+  }
+  return <Text>{timer}</Text>;
+}
+
 function DisplayQuestion({
   examCourseable,
   examUtil,
@@ -185,20 +198,43 @@ function DisplayQuestion({
   const questions = examCourseable.courseable!.questions!;
   const question =
     questions[examUtil.getTabManager().getCurrentQuestionIndex()];
+  const questionImageHandler = new QuestionImageHandler(
+    examCourseable.courseable!
+  );
 
   return (
     <VStack align={'stretch'}>
       <Text fontWeight={'bold'}>
         Question {question.question_no} of {questions.length}
       </Text>
-      <Text my={2} dangerouslySetInnerHTML={{ __html: question.question }} />
+      <Text
+        my={2}
+        dangerouslySetInnerHTML={{
+          __html: questionImageHandler.handleImages(question.question),
+        }}
+      />
       <VStack align={'stretch'} spacing={1}>
         {[
-          { optionText: question.option_a, optionLetter: 'A' },
-          { optionText: question.option_b, optionLetter: 'B' },
-          { optionText: question.option_c, optionLetter: 'C' },
-          { optionText: question.option_d, optionLetter: 'D' },
-          { optionText: question.option_e, optionLetter: 'E' },
+          {
+            optionText: questionImageHandler.handleImages(question.option_a),
+            optionLetter: 'A',
+          },
+          {
+            optionText: questionImageHandler.handleImages(question.option_b),
+            optionLetter: 'B',
+          },
+          {
+            optionText: questionImageHandler.handleImages(question.option_c),
+            optionLetter: 'C',
+          },
+          {
+            optionText: questionImageHandler.handleImages(question.option_d),
+            optionLetter: 'D',
+          },
+          {
+            optionText: questionImageHandler.handleImages(question.option_e),
+            optionLetter: 'E',
+          },
         ].map((item) => (
           <DisplayOption
             key={item.optionLetter}

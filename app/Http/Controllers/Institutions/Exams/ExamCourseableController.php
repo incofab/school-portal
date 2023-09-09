@@ -42,7 +42,7 @@ class ExamCourseableController extends Controller
     ]);
   }
 
-  function store(Request $request, Exam $exam)
+  function store(Request $request, Institution $institution, Exam $exam)
   {
     $morphRule = new ValidateMorphRule('courseable');
     $data = $request->validate([

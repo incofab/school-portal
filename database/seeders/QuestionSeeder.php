@@ -15,6 +15,7 @@ class QuestionSeeder extends Seeder
   {
     Question::factory()
       ->count(1000)
+      ->forSeeding()
       ->create();
   }
 }

@@ -20,8 +20,20 @@ class ExamCourseableFactory extends Factory
       'exam_id' => Exam::factory(),
       'courseable_type' => (new CourseSession())->getMorphClass(),
       'courseable_id' => CourseSession::factory(),
-      'score' => fake()->randomNumber(10, 29),
+      'score' => fake()->randomNumber(2),
       'num_of_questions' => 30
     ];
+  }
+
+  public function exam(Exam $exam): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'exam_id' => $exam->id,
+        'courseable_id' => CourseSession::factory()->institution(
+          $exam->institution
+        )
+      ]
+    );
   }
 }
