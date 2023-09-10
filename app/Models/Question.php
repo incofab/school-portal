@@ -86,11 +86,6 @@ class Question extends Model
     return $this->belongsTo(Topic::class);
   }
 
-  function session()
-  {
-    return $this->morphTo();
-  }
-
   // CourseSession/CourseTerm
   function courseable()
   {

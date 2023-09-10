@@ -71,9 +71,9 @@ class QuestionController extends Controller
 
   function edit(Institution $institution, Question $question)
   {
-    return view('admin/questions/create-question', [
+    return view('ccd/questions/create-question', [
       'edit' => $question,
-      'courseSession' => $question->session,
+      'courseSession' => $question->courseable,
       'questionNo' => $question->question_no,
       'topics' => $question->courseable->course->topics()->get()
     ]);

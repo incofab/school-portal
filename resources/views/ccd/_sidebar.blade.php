@@ -32,7 +32,7 @@
     	</div>
 	</div>
 	<ul class="app-menu">
-		<li><a class="app-menu__item active" href="{{instRoute('dashboard', $currentInstitution)}}"><i
+		<li><a class="app-menu__item active" href="{{instRoute('dashboard')}}"><i
 				class="app-menu__icon fa fa-dashboard"></i><span
 				class="app-menu__label">Dashboard</span></a>
 		</li>
@@ -43,10 +43,10 @@
 			<li><a class="treeview-item" href="{{instRoute('exam-contents.index')}}"><i
 				class="icon fa fa-eye"></i> Exam Content/Body</a>
 			</li>
+			<li><a class="treeview-item" href="{{instRoute('course-sessions.index')}}"><i
+					class="icon fa fa-eye"></i> Sessions</a>
+			</li>
 		--}}
-		<li><a class="treeview-item" href="{{instRoute('course-sessions.index', $currentInstitution)}}"><i
-				class="icon fa fa-eye"></i> Sessions</a>
-		</li>
 		
 	</ul>
 </aside>

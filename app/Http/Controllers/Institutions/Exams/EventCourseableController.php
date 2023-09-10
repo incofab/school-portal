@@ -10,6 +10,7 @@ use App\Models\EventCourseable;
 use App\Models\Institution;
 use App\Rules\ValidateMorphRule;
 use App\Support\MorphMap;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -26,7 +27,11 @@ class EventCourseableController extends Controller
     $query = $event
       ->eventCourseables()
       ->getQuery()
-      ->with('courseable.course');
+      ->with([
+        'courseable' => function (MorphTo $morphTo) {
+          $morphTo->morphWith([CourseSession::class => ['course']]);
+        }
+      ]);
 
     return Inertia::render('institutions/exams/list-event-courseables', [
       'eventCourseables' => paginateFromRequest($query->latest('id')),

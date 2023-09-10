@@ -10,6 +10,7 @@ use App\Models\ExamCourseable;
 use App\Models\Institution;
 use App\Rules\ValidateMorphRule;
 use App\Support\MorphMap;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -23,7 +24,12 @@ class ExamCourseableController extends Controller
 
   function index(Institution $institution, Exam $exam)
   {
-    $query = $exam->examCourseables()->getQuery();
+    $query = $exam
+      ->examCourseables()
+      ->getQuery()
+      ->with('courseable', function (MorphTo $morphTo) {
+        $morphTo->morphWith([CourseSession::class => ['course']]);
+      });
 
     return Inertia::render('institutions/exams/list-exam-courseables', [
       'examCourseables' => paginateFromRequest($query->latest('id')),

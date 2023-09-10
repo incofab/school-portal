@@ -1,5 +1,5 @@
 import React from 'react';
-import { BoxProps, Text } from '@chakra-ui/react';
+import { BoxProps, Text, TextProps } from '@chakra-ui/react';
 import ResultUtil from '@/util/result-util';
 import { Div } from './semantic';
 
@@ -53,16 +53,25 @@ export const GradingTable = () => (
 export const LabelText = function ({
   label,
   text,
+  labelProps,
+  textProps,
 }: {
   label: string;
   text: string | number | undefined | React.ReactNode;
+  labelProps?: TextProps;
+  textProps?: TextProps;
 }) {
   return (
     <Div>
-      <Text as={'span'} fontWeight={'semibold'}>
+      <Text
+        as={'span'}
+        fontWeight={'semibold'}
+        display={'inline-block'}
+        {...labelProps}
+      >
         {label}:
       </Text>
-      <Text as={'span'} ml={3}>
+      <Text as={'span'} ml={3} {...textProps} display={'inline-block'}>
         {text}
       </Text>
     </Div>

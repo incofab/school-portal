@@ -357,6 +357,8 @@ export interface ExamCourseable extends Row {
   courseable_type: string;
   courseable_id: number;
   status: string;
+  score: number;
+  num_of_questions: number;
   exam?: Exam;
   courseable?: CourseSession;
 }
