@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Institutions\Exams\External;
 use App\Core\JWT;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
+use App\Models\TokenUser;
 use Illuminate\Http\Request;
 
 class HomeExternalController extends Controller
@@ -22,15 +23,15 @@ class HomeExternalController extends Controller
       ->active()
       ->with(
         'exams',
-        fn($q) => $q->where('external_reference', $tokenUser->getReference())
+        fn($q) => $q->where('external_reference', $tokenUser->reference)
       )
       ->get();
 
     $exams = $institution
       ->exams()
       ->getQuery()
-      ->where('external_reference', $tokenUser->getReference())
-      ->with('event')
+      ->where('external_reference', $tokenUser->reference)
+      ->with('event', 'examable')
       ->get();
 
     return inertia('institutions/exams/external/external-home', [
@@ -43,7 +44,11 @@ class HomeExternalController extends Controller
   private function useToken(string $token)
   {
     $data = JWT::decode($token, config('services.jwt.secret-key'));
-    return redirect(instRoute('external.home'))->withCookie('token', $token);
+    return redirect(instRoute('external.home'))->withCookie(
+      TokenUser::TOKEN_COOKIE_NAME,
+      $token
+    );
+
     $response = new \Illuminate\Http\Response();
     return $response
       ->cookie('token', $token)

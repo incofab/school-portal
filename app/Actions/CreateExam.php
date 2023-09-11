@@ -20,15 +20,17 @@ class CreateExam
 
   private function execute()
   {
-    $student = currentInstitutionUser()?->student;
+    // $student = currentInstitutionUser()?->student;
     $institution = currentInstitution();
     $examData = [
       'institution_id' => $institution->id,
       'event_id' => $this->event->id,
-      ...$student ? ['student_id' => $student->id] : [],
-      ...empty($this->post['external_reference'])
-        ? []
-        : ['external_reference' => $this->post['external_reference']]
+      'examable_type' => $this->post['examable_type'],
+      'examable_id' => $this->post['examable_id']
+      // ...$student ? ['student_id' => $student->id] : [],
+      // ...empty($this->post['external_reference'])
+      //   ? []
+      //   : ['external_reference' => $this->post['external_reference']]
     ];
 
     $checkExam = $this->event

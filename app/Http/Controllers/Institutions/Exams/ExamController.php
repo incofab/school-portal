@@ -9,6 +9,8 @@ use App\Http\Requests\StoreExamRequest;
 use App\Models\Event;
 use App\Models\Exam;
 use App\Models\Institution;
+use App\Models\User;
+use App\Support\MorphMap;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -24,6 +26,7 @@ class ExamController extends Controller
     $query = $event
       ->exams()
       ->getQuery()
+      ->with('examable')
       ->withCount('examCourseables');
 
     return Inertia::render('institutions/exams/list-exams', [
@@ -36,7 +39,9 @@ class ExamController extends Controller
   {
     return Inertia::render('institutions/exams/create-exam', [
       'event' => $event->load('eventCourseables.courseable.course'),
-      'external_reference' => request('reference')
+      'external_reference' => request('reference'),
+      'examable_type' => MorphMap::key(User::class),
+      'student' => currentInstitutionUser()?->student
     ]);
   }
 

@@ -30,8 +30,7 @@ export interface User extends Row {
   manager_role: ManagerRole;
 }
 
-export interface TokenUser {
-  user_id: string;
+export interface TokenUser extends Row {
   name: string;
   reference: string;
   email: string;
@@ -346,7 +345,9 @@ export interface Exam extends InstitutionRow {
   score: number;
   num_of_questions: number;
   status: string;
-  student?: Student;
+  examable_type: string;
+  examable_id: number;
+  examable: TokenUser | Student;
   event?: Event;
   exam_courseables?: ExamCourseable[];
   attempts: ExamAttempt;

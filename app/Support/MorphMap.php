@@ -26,6 +26,7 @@ class MorphMap
 
   const MAP = [
     'user' => \App\Models\User::class,
+    'token-user' => \App\Models\TokenUser::class,
     'course-session' => \App\Models\CourseSession::class,
     'question' => \App\Models\Question::class,
     'passage' => \App\Models\Passage::class,

@@ -3,7 +3,7 @@ import { Checkbox, FormControl, Spacer, Text, VStack } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { Event, EventCourseable, TokenUser } from '@/types/models';
+import { Event, EventCourseable, Student, TokenUser } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -14,10 +14,15 @@ import { LabelText } from '@/components/result-helper-components';
 
 interface Props {
   event: Event;
-  tokenUser: TokenUser;
+  examable: TokenUser | Student;
+  examable_type: string;
 }
 
-export default function CreateExamComponent({ event, tokenUser }: Props) {
+export default function CreateExamComponent({
+  event,
+  examable,
+  examable_type,
+}: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const [selectedEventCourseables, setSelectedEventCourseables] = useState<{
@@ -25,7 +30,8 @@ export default function CreateExamComponent({ event, tokenUser }: Props) {
   }>();
 
   const webForm = useWebForm({
-    external_reference: tokenUser.reference,
+    examable_id: examable.id,
+    examable_type: examable_type,
   });
 
   const submit = async () => {

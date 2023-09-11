@@ -18,14 +18,13 @@ return new class extends Migration {
 
       $table->unsignedBigInteger('institution_id');
       $table->unsignedBigInteger('event_id')->nullable(true);
-      $table->unsignedBigInteger('student_id')->nullable(true);
+      $table->morphs('examable');
       $table->string('external_reference')->nullable();
       $table
         ->string('exam_no')
         ->unique()
         ->index();
 
-      // $table->string('duration', 10);
       $table->float('time_remaining');
       $table->dateTime('start_time')->nullable(true);
       $table->dateTime('pause_time')->nullable(true);
@@ -47,11 +46,6 @@ return new class extends Migration {
         ->foreign('event_id')
         ->references('id')
         ->on('events')
-        ->cascadeOnDelete();
-      $table
-        ->foreign('student_id')
-        ->references('id')
-        ->on('students')
         ->cascadeOnDelete();
     });
   }

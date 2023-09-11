@@ -9,6 +9,7 @@ Route::get('pdf-result/{student}', [Web\TermResultActivationController::class, '
 
 Route::get('/dummy1', function ()
 {
+    // Checks Wisegate result files
     $instUsers = \App\Models\InstitutionUser::where('institution_id', 1)
     ->where('role', \App\Enums\InstitutionUserType::Student)
     ->with('student.user', 'student.classification')

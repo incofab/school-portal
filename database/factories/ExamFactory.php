@@ -5,7 +5,8 @@ namespace Database\Factories;
 use App\Enums\ExamStatus;
 use App\Models\Event;
 use App\Models\Institution;
-use App\Models\Student;
+use App\Models\TokenUser;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Str;
 
@@ -21,8 +22,9 @@ class ExamFactory extends Factory
     return [
       'institution_id' => Institution::factory(),
       'event_id' => Event::factory(),
-      // 'student_id' => Student::factory(),
-      'external_reference' => Str::uuid(),
+      // 'external_reference' => Str::uuid(),
+      'examable_type' => (new TokenUser())->getMorphClass(),
+      'examable_id' => TokenUser::factory(),
       'exam_no' => fake()
         ->unique()
         ->numerify('###########'),
@@ -84,8 +86,17 @@ class ExamFactory extends Factory
     return $this->state(
       fn(array $attributes) => [
         'event_id' => $event->id,
-        'institution_id' => $event->institution_id,
-        'student_id' => Student::factory()->withInstitution($event->institution)
+        'institution_id' => $event->institution_id
+      ]
+    );
+  }
+
+  public function examable(TokenUser|User $examable): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'examable_type' => $examable->getMorphClass(),
+        'examable_id' => $examable->id
       ]
     );
   }
@@ -95,8 +106,7 @@ class ExamFactory extends Factory
     return $this->state(
       fn(array $attributes) => [
         'institution_id' => $institution->id,
-        'event_id' => Event::factory()->institution($institution),
-        'student_id' => Student::factory()->withInstitution($institution)
+        'event_id' => Event::factory()->institution($institution)
       ]
     );
   }

@@ -12,6 +12,7 @@ use App\Models\Classification;
 use App\Models\Institution;
 use App\Rules\ExcelRule;
 use App\Support\UITableFilters\StudentUITableFilters;
+use DB;
 use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
@@ -105,6 +106,10 @@ class StudentController extends Controller
     $user = $student->user;
     $institutionUser = $student->institutionUser;
 
+    DB::beginTransaction();
+    $student->courseResults()->delete();
+    $student->termResults()->delete();
+    $student->sessionResults()->delete();
     $student->delete();
     $institutionUser->delete();
     if (
@@ -115,6 +120,7 @@ class StudentController extends Controller
     ) {
       $user->delete();
     }
+    DB::commit();
 
     return $this->ok();
   }

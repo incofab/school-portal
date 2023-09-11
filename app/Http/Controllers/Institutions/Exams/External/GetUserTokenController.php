@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Institutions\Exams\External;
 use App\Core\JWT;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
+use App\Models\TokenUser;
 use Illuminate\Http\Request;
 
 class GetUserTokenController extends Controller
@@ -17,8 +18,20 @@ class GetUserTokenController extends Controller
       'phone' => ['nullable', 'string'],
       'name' => ['nullable', 'string']
     ]);
-    $token = JWT::encode($data, config('services.jwt.secret-key'));
-    // return response()->json(['token' => $token]);
-    return $this->ok(['token' => $token]);
+
+    $tokenUser = TokenUser::query()->firstOrCreate(
+      ['reference' => $data['reference']],
+      $data
+    );
+
+    $token = JWT::encode(
+      [TokenUser::TOKEN_USER_ID => $tokenUser->id],
+      config('services.jwt.secret-key')
+    );
+
+    return $this->ok([
+      'token' => $token,
+      'token_url' => instRoute('external.home', ['token' => $token])
+    ]);
   }
 }

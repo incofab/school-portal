@@ -37,9 +37,10 @@ class Exam extends Model
     return $this->hasMany(ExamCourseable::class);
   }
 
-  function student()
+  // TokenUser|User
+  function examable()
   {
-    return $this->belongsTo(Student::class);
+    return $this->morphTo();
   }
 
   function institution()

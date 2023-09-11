@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Arr;
 use App\Core\ErrorCodes;
 use App\Enums\InstitutionUserType;
+use App\Models\TokenUser;
 use App\Support\Res;
 use Illuminate\Routing\ControllerMiddlewareOptions;
 
@@ -93,13 +94,14 @@ class Controller extends BaseController
     });
   }
 
-  protected function getTokenUserFromCookie()
+  protected function getTokenUserFromCookie(): TokenUser
   {
-    $token = \Cookie::get('token');
+    $token = \Cookie::get(TokenUser::TOKEN_COOKIE_NAME);
     abort_unless($token, 403, 'Token not found');
     $data = \App\Core\JWT::decode($token, config('services.jwt.secret-key'));
-    $tokenUser = new \App\DTO\TokenUser();
-    $tokenUser->setData((array) $data);
+    $tokenUser = TokenUser::query()->findOrFail(
+      $data[TokenUser::TOKEN_USER_ID]
+    );
     return $tokenUser;
   }
 

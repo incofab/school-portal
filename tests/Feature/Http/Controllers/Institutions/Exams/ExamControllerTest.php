@@ -44,7 +44,7 @@ it('displays the create exam form', function () {
     ->assertStatus(200);
 });
 
-it('deletes an event', function () {
+it('deletes an exam', function () {
   $exam = Exam::factory()
     ->event($this->event)
     ->create();
@@ -78,15 +78,15 @@ it('stores a new exam and exam courseables', function () {
     ])
     ->assertStatus(200);
 
-  $exam = Exam::where(
-    'external_reference',
-    $data['external_reference']
-  )->first();
+  $exam = Exam::where([
+    'examable_id' => $data['examable_id'],
+    'examable_type' => $data['examable_type']
+  ])->first();
 
   assertDatabaseHas(
     'exams',
     collect($data)
-      ->only('event_id', 'external_reference')
+      ->only('event_id', 'examable_id', 'examable_type')
       ->toArray()
   );
 

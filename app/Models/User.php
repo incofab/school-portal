@@ -135,6 +135,11 @@ class User extends Authenticatable
       ->first()?->student;
   }
 
+  function exams()
+  {
+    return $this->morphMany(Exam::class, 'examable');
+  }
+
   function hasInstitutionRole(InstitutionUserType|array $role): bool
   {
     return $this->institutionUser()

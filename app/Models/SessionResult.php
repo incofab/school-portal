@@ -11,7 +11,13 @@ class SessionResult extends Model
 
   public $guarded = [];
 
-  protected $casts = ['term' => TermType::class];
+  protected $casts = [
+    'term' => TermType::class,
+    'student_id' => 'integer',
+    'classification_id' => 'integer',
+    'academic_session_id' => 'integer',
+    'institution_id' => 'integer'
+  ];
 
   function institution()
   {
