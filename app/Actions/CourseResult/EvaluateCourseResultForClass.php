@@ -1,6 +1,7 @@
 <?php
 namespace App\Actions\CourseResult;
 
+use App\Actions\ResultUtil;
 use App\Models\Classification;
 use App\Models\CourseResult;
 use App\Models\CourseResultInfo;
@@ -109,7 +110,6 @@ class EvaluateCourseResultForClass
 
   private function recordCoursePosition(array $scoreByStudents)
   {
-    arsort($scoreByStudents);
     $bindingData = [
       'institution_id' => $this->classification->institution_id,
       'term' => $this->term,
@@ -118,14 +118,14 @@ class EvaluateCourseResultForClass
       'classification_id' => $this->classification->id,
       'for_mid_term' => $this->forMidTerm
     ];
-    $index = 0;
-    foreach ($scoreByStudents as $studentId => $score) {
-      $bindingData['student_id'] = $studentId;
+
+    $assignedPositions = ResultUtil::assignPositions($scoreByStudents);
+    foreach ($assignedPositions as $key => $assignedPosition) {
+      $bindingData['student_id'] = $assignedPosition->getId();
       $data = [
-        'position' => $index + 1
+        'position' => $assignedPosition->getPosition()
       ];
       CourseResult::query()->updateOrCreate($bindingData, $data);
-      $index += 1;
     }
   }
 }

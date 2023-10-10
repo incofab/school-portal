@@ -47,7 +47,13 @@ class CourseResultsController extends Controller
     return Inertia::render('institutions/courses/list-course-results', [
       'courseResults' => paginateFromRequest(
         $query
-          ->with('academicSession', 'student', 'teacher', 'course')
+          ->with(
+            'academicSession',
+            'student',
+            'teacher',
+            'course',
+            'classification'
+          )
           ->latest('course_results.id')
       )
     ]);

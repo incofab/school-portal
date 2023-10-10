@@ -1,6 +1,7 @@
 <?php
 namespace App\Actions;
 
+use App\DTO\AssignedPosition;
 use App\Enums\FullTermType;
 use App\Enums\TermType;
 use Exception;
@@ -75,5 +76,29 @@ class ResultUtil
         return throw new Exception("Invalid full term type ({$fullTerm})");
     }
     return [$term, $forMidTerm];
+  }
+
+  /**
+   * @param array<string|int, int|float> $arr
+   * @return AssignedPosition[] An array of Assigned positions.
+   */
+  static function assignPositions(array $scoresArray): array
+  {
+    arsort($scoresArray);
+    $positions = [];
+    $prevScore = null;
+    $prevPosition = null;
+    $i = 0;
+    foreach ($scoresArray as $id => $score) {
+      $i++;
+      $position = $i;
+      if ($prevScore === $score) {
+        $position = $prevPosition;
+      }
+      $positions[] = new AssignedPosition($id, $score, $position);
+      $prevScore = $score;
+      $prevPosition = $position;
+    }
+    return $positions;
   }
 }

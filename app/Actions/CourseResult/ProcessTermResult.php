@@ -1,6 +1,7 @@
 <?php
 namespace App\Actions\CourseResult;
 
+use App\Actions\ResultUtil;
 use App\Models\Classification;
 use App\Models\ClassResultInfo;
 use App\Models\CourseResult;
@@ -70,15 +71,11 @@ class ProcessTermResult
     );
 
     $studentsTotalAverageScores = [];
-    /** @var ResultDetail $item */
     foreach ($studentsResultDetails as $key => $item) {
       $studentsTotalAverageScores[
         $item->getStudentId()
       ] = $item->getAverageScore();
     }
-
-    // Sorts the students according to position
-    arsort($studentsTotalAverageScores);
 
     $bindingData = [
       'institution_id' => $this->institution->id,
@@ -88,19 +85,22 @@ class ProcessTermResult
       'for_mid_term' => $this->classResultInfo->for_mid_term
     ];
 
-    $index = 0;
-    foreach ($studentsTotalAverageScores as $studentId => $averageScore) {
+    // Sorts the students according to position
+    arsort($studentsTotalAverageScores);
+    $assignedPositions = ResultUtil::assignPositions(
+      $studentsTotalAverageScores
+    );
+    foreach ($assignedPositions as $key => $assignedPosition) {
       /** @var ResultDetail $resultDetail  */
-      $resultDetail = $studentsResultDetails[$studentId];
-      $bindingData['student_id'] = $studentId;
+      $resultDetail = $studentsResultDetails[$assignedPosition->getId()];
+      $bindingData['student_id'] = $assignedPosition->getId();
       $data = [
-        'position' => $index + 1,
+        'position' => $assignedPosition->getPosition(),
         'total_score' => $resultDetail->getTotalScore(),
         'average' => $resultDetail->getAverageScore()
         // 'remark' => '',
       ];
       TermResult::query()->updateOrCreate($bindingData, $data);
-      $index += 1;
     }
   }
 

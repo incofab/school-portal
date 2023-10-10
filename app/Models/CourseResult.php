@@ -19,6 +19,7 @@ class CourseResult extends Model
     'teacher_user_id' => 'integer',
     'course_id' => 'integer',
     'student_id' => 'integer',
+    'classification_id' => 'integer',
     'institution_id' => 'integer',
     'for_mid_term' => 'boolean'
   ];
@@ -68,6 +69,11 @@ class CourseResult extends Model
   public function course()
   {
     return $this->belongsTo(Course::class);
+  }
+
+  public function classification()
+  {
+    return $this->belongsTo(Classification::class);
   }
 
   public function academicSession()

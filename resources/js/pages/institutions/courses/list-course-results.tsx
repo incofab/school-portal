@@ -84,6 +84,10 @@ export default function ListCourseResults({
       value: 'course.title',
     },
     {
+      label: 'Class',
+      value: 'classification.title',
+    },
+    {
       label: 'Session',
       value: 'academic_session.title',
     },
