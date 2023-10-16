@@ -43,6 +43,7 @@ class MorphMap
     'Admission-application' => \App\Models\AdmissionApplication::class,
     'assessment' => \App\Models\Assessment::class,
     'classification' => \App\Models\Classification::class,
+    'classification-group' => \App\Models\ClassificationGroup::class,
     'class-result-info' => \App\Models\ClassResultInfo::class,
     'course-result' => \App\Models\CourseResult::class,
     'course-teacher' => \App\Models\CourseTeacher::class,

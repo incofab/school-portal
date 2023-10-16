@@ -21,6 +21,11 @@ class Classification extends Model
     return $this->belongsTo(Institution::class);
   }
 
+  function classificationGroup()
+  {
+    return $this->belongsTo(ClassificationGroup::class);
+  }
+
   function formTeacher()
   {
     return $this->belongsTo(User::class, 'form_teacher_id');
