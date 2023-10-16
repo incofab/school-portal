@@ -94,6 +94,11 @@ class Institution extends Model
     return $this->hasMany(Classification::class);
   }
 
+  function classificationGroups()
+  {
+    return $this->hasMany(ClassificationGroup::class);
+  }
+
   function users()
   {
     return $this->belongsToMany(User::class);

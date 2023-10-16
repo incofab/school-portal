@@ -123,6 +123,15 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin],
         },
         {
+          label: 'All Class Groups',
+          route: instRoute('classification-groups.index'),
+        },
+        {
+          label: 'Add Class Group',
+          route: instRoute('classification-groups.create'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
           label: 'Class Result',
           route: instRoute('class-result-info.index'),
           roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],

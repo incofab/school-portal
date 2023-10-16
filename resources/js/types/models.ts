@@ -71,6 +71,12 @@ export interface Classification extends InstitutionRow {
   has_equal_subjects: boolean;
   form_teacher_id: number;
   form_teacher?: User;
+  classification_group_id: number;
+  classification_group?: ClassificationGroup;
+}
+
+export interface ClassificationGroup extends InstitutionRow {
+  title: string;
 }
 
 export interface Course extends InstitutionRow {

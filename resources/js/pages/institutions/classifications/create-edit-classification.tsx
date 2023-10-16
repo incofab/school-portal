@@ -14,6 +14,7 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
 import StaffSelect from '@/components/selectors/staff-select';
 import { InstitutionUserType } from '@/types/types';
+import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
 
 interface Props {
   classification?: Classification;
@@ -34,6 +35,12 @@ export default function CreateOrUpdateClassification({
           value: classification.form_teacher_id,
         }
       : null,
+    classification_group_id: classification?.classification_group
+      ? {
+          label: classification.classification_group.title,
+          value: classification.classification_group_id,
+        }
+      : null,
   });
 
   const submit = async () => {
@@ -41,6 +48,7 @@ export default function CreateOrUpdateClassification({
       const postData = {
         ...data,
         form_teacher_id: data.form_teacher_id?.value,
+        classification_group_id: data.classification_group_id?.value,
       };
       return classification
         ? web.put(
@@ -66,10 +74,27 @@ export default function CreateOrUpdateClassification({
               as={'form'}
               onSubmit={preventNativeSubmit(submit)}
             >
+              <FormControlBox
+                title="Class Group"
+                form={webForm as any}
+                formKey="classification_group_id"
+              >
+                <ClassificationGroupSelect
+                  // selectValue={webForm.data.classification_group_id}
+                  value={webForm.data.classification_group_id}
+                  isMulti={false}
+                  isClearable={true}
+                  onChange={(e: any) =>
+                    webForm.setValue('classification_group_id', e.value)
+                  }
+                  required
+                />
+              </FormControlBox>
+
               <InputForm
                 form={webForm as any}
                 formKey="title"
-                title="Class title"
+                title="Class Title"
               />
 
               <InputForm

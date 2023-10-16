@@ -61,6 +61,11 @@ class ClassificationController extends Controller
         Rule::exists('institution_users', 'user_id')
           ->where('institution_id', $institution->id)
           ->where('role', InstitutionUserType::Teacher->value)
+      ],
+      'classification_group_id' => [
+        'required',
+        'string',
+        'max:10'
       ]
     ]);
 
@@ -94,6 +99,11 @@ class ClassificationController extends Controller
         Rule::exists('institution_users', 'user_id')
           ->where('institution_id', $institution->id)
           ->where('role', InstitutionUserType::Teacher->value)
+      ],
+      'classification_group_id' => [
+        'required',
+        'string',
+        'max:10'
       ]
     ]);
 

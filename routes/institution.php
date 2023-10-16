@@ -30,6 +30,11 @@ Route::post('/classifications/upload', [Web\ClassificationController::class, 'up
     ->name('classifications.upload');
 Route::resource('/classifications', Web\ClassificationController::class)
     ->except(['show']);
+
+Route::get('/classification-groups/search', [Web\ClassificationGroupController::class, 'search'])
+->name('classification-groups.search');
+Route::resource('/classification-groups', Web\ClassificationGroupController::class)
+    ->except(['show']);
     
 Route::get('/students/search', Web\Students\SearchStudentController::class)
     ->name('students.search');
