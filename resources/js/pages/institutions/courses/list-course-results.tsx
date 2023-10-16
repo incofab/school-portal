@@ -15,7 +15,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import CourseResultsTableFilters from '@/components/table-filters/course-result-table-filters';
 import UploadCourseResultsModal from '@/components/modals/upload-course-results-modal';
 import useQueryString from '@/hooks/use-query-string';
-import { CloudArrowDownIcon } from '@heroicons/react/24/outline';
+import { CloudArrowDownIcon, PencilIcon } from '@heroicons/react/24/outline';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
 import useIsAdmin from '@/hooks/use-is-admin';
@@ -23,6 +23,7 @@ import useSharedProps from '@/hooks/use-shared-props';
 import DestructivePopover from '@/components/destructive-popover';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
+import { InertiaLink } from '@inertiajs/inertia-react';
 
 interface Props {
   courseTeacher?: CourseTeacher;
@@ -129,24 +130,34 @@ export default function ListCourseResults({
           {
             label: 'Action',
             render: (row: CourseResult) => (
-              <>
+              <HStack>
                 {(isAdmin || currentUser.id === row.teacher_user_id) && (
-                  <DestructivePopover
-                    label={`Delete ${row.course?.title} result for ${
-                      row.student?.user!.full_name
-                    }?`}
-                    onConfirm={() => deleteItem(row)}
-                    isLoading={deleteForm.processing}
-                  >
+                  <>
                     <IconButton
-                      aria-label={'Delete'}
-                      icon={<Icon as={TrashIcon} />}
+                      as={InertiaLink}
+                      aria-label={'Edit'}
+                      icon={<Icon as={PencilIcon} />}
                       variant={'ghost'}
-                      colorScheme={'red'}
+                      colorScheme={'brand'}
+                      href={instRoute('course-results.edit', [row.id])}
                     />
-                  </DestructivePopover>
+                    <DestructivePopover
+                      label={`Delete ${row.course?.title} result for ${
+                        row.student?.user!.full_name
+                      }?`}
+                      onConfirm={() => deleteItem(row)}
+                      isLoading={deleteForm.processing}
+                    >
+                      <IconButton
+                        aria-label={'Delete'}
+                        icon={<Icon as={TrashIcon} />}
+                        variant={'ghost'}
+                        colorScheme={'red'}
+                      />
+                    </DestructivePopover>
+                  </>
                 )}
-              </>
+              </HStack>
             ),
           },
         ]

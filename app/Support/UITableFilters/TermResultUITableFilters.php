@@ -42,11 +42,11 @@ class TermResultUITableFilters extends BaseUITableFilter
         fn($q, $value) => $q->where('term_results.classification_id', $value)
       )
       ->when(
-        $this->requestGet('academicSession'),
+        $this->getAcademicSession(),
         fn($q, $value) => $q->where('term_results.academic_session_id', $value)
       )
       ->when(
-        $this->requestGet('term'),
+        $this->getTerm(),
         fn($q, $value) => $q->where('term_results.term', $value)
       )
       ->when(

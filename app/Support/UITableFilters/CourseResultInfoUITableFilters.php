@@ -58,14 +58,14 @@ class CourseResultInfoUITableFilters extends BaseUITableFilter
         fn($q, $value) => $q->where('course_result_info.course_id', $value)
       )
       ->when(
-        $this->requestGet('academicSession'),
+        $this->getAcademicSession(),
         fn($q, $value) => $q->where(
           'course_result_info.academic_session_id',
           $value
         )
       )
       ->when(
-        $this->requestGet('term'),
+        $this->getTerm(),
         fn($q, $value) => $q->where('course_result_info.term', $value)
       )
       ->when(

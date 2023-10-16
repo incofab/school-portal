@@ -71,6 +71,13 @@ export default function ListClassification({ classifications }: Props) {
                   variant={'ghost'}
                   colorScheme={'brand'}
                 />
+                <LinkButton
+                  title="Results"
+                  href={instRoute('class-result-info.index', {
+                    classification: row.id,
+                  })}
+                  variant={'link'}
+                />
                 <BrandButton
                   title="Move Students"
                   onClick={() => migrateClassStudentsModalToggle.open(row)}

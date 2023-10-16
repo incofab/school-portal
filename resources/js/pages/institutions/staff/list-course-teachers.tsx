@@ -18,6 +18,8 @@ import DateTimeDisplay from '@/components/date-time-display';
 import useIsStaff from '@/hooks/use-is-staff';
 import useIsAdmin from '@/hooks/use-is-admin';
 import useSharedProps from '@/hooks/use-shared-props';
+import CourseTeacherTableFilters from '@/components/table-filters/course-teacher-table-filters';
+import useModalToggle from '@/hooks/use-modal-toggle';
 
 interface Props {
   courseTeachers: PaginationResponse<CourseTeacher>;
@@ -30,6 +32,7 @@ function ListLecturerCourses({ courseTeachers }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
+  const courseTeacherFilterModalToggle = useModalToggle();
 
   async function deleteItem(obj: CourseTeacher) {
     const res = await deleteForm.submit((data, web) =>
@@ -109,9 +112,12 @@ function ListLecturerCourses({ courseTeachers }: Props) {
             data={courseTeachers.data}
             keyExtractor={(row) => row.id}
             paginator={courseTeachers}
+            validFilters={['classification', 'course', 'teacher']}
+            onFilterButtonClick={courseTeacherFilterModalToggle.open}
           />
         </SlabBody>
       </Slab>
+      <CourseTeacherTableFilters {...courseTeacherFilterModalToggle.props} />
     </DashboardLayout>
   );
 }

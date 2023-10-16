@@ -18,14 +18,19 @@ class SettingsHandler
     return $this->settings;
   }
 
-  static function makeFromRoute(): static
+  private static ?self $instance = null;
+  static function makeFromRoute(bool $refresh = false): static
   {
+    if (self::$instance && !$refresh) {
+      return self::$instance;
+    }
     $institutionSettings = currentInstitution()?->institutionSettings ?? [];
     $formatted = [];
     foreach ($institutionSettings as $key => $value) {
       $formatted[$value->key] = $value;
     }
-    return new self($formatted);
+    self::$instance = new self($formatted);
+    return self::$instance;
   }
 
   function get(string $key): InstitutionSetting|null
@@ -47,7 +52,7 @@ class SettingsHandler
       $default;
   }
 
-  function getCurrentAcadenicSession($default = 'fetch')
+  function getCurrentAcademicSession($default = 'fetch')
   {
     if ($default === 'fetch') {
       $default = AcademicSession::query()

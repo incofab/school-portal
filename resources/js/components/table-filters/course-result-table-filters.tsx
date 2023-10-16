@@ -40,7 +40,7 @@ export default function CourseResultsTableFilters({ isOpen, onClose }: Props) {
           }
         />
       </FilterFormControlBox>
-      <FilterFormControlBox title="Course">
+      <FilterFormControlBox title="Subject">
         <CourseSelect
           onChange={(e: any) => setFilters({ ...filters, course: e.value })}
         />

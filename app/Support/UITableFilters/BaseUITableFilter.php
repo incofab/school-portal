@@ -2,6 +2,7 @@
 
 namespace App\Support\UITableFilters;
 
+use App\Support\SettingsHandler;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
 
@@ -9,11 +10,13 @@ abstract class BaseUITableFilter
 {
   protected array $sortableColumns;
   private $calledFns = [];
+  private SettingsHandler $settingHandler;
 
   public function __construct(
     protected array $requestData,
     protected Builder $baseQuery
   ) {
+    $this->settingHandler = SettingsHandler::makeFromRoute();
     $this->validateRequestData();
   }
 
@@ -93,5 +96,17 @@ abstract class BaseUITableFilter
       $callback();
     }
     return $this;
+  }
+  protected function getTerm($default = null)
+  {
+    return $this->settingHandler->getCurrentTerm(
+      $default ?? $this->requestGet('term')
+    );
+  }
+  protected function getAcademicSession($default = null)
+  {
+    return $this->settingHandler->getCurrentAcademicSession(
+      $default ?? $this->requestGet('academicSession')
+    );
   }
 }

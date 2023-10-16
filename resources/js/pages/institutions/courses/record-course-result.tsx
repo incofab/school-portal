@@ -69,9 +69,12 @@ export default function RecordCourseResult({
   }>(courseResult?.assessment_values ?? {});
 
   const webForm = useWebForm({
-    academic_session_id: academicSession?.id ?? currentAcademicSession,
-    term: term ?? currentTerm,
-    for_mid_term: for_mid_term ?? false,
+    academic_session_id:
+      courseResult?.academic_session?.id ??
+      academicSession?.id ??
+      currentAcademicSession,
+    term: courseResult?.term ?? term ?? currentTerm,
+    for_mid_term: courseResult?.for_mid_term ?? for_mid_term ?? false,
     result: {
       student_id: courseResult?.student
         ? {
