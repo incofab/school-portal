@@ -77,6 +77,7 @@ export interface Classification extends InstitutionRow {
 
 export interface ClassificationGroup extends InstitutionRow {
   title: string;
+  classifications_count?: number;
 }
 
 export interface Course extends InstitutionRow {

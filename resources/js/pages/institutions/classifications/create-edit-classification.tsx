@@ -57,7 +57,9 @@ export default function CreateOrUpdateClassification({
           )
         : web.post(instRoute('classifications.store'), postData);
     });
-    if (!handleResponseToast(res)) return;
+    if (!handleResponseToast(res)) {
+      return;
+    }
     Inertia.visit(instRoute('classifications.index'));
   };
 
@@ -80,12 +82,11 @@ export default function CreateOrUpdateClassification({
                 formKey="classification_group_id"
               >
                 <ClassificationGroupSelect
-                  // selectValue={webForm.data.classification_group_id}
                   value={webForm.data.classification_group_id}
                   isMulti={false}
                   isClearable={true}
                   onChange={(e: any) =>
-                    webForm.setValue('classification_group_id', e.value)
+                    webForm.setValue('classification_group_id', e)
                   }
                   required
                 />

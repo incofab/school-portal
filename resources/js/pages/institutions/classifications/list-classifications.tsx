@@ -1,6 +1,6 @@
 import React from 'react';
 import { Classification } from '@/types/models';
-import { HStack, IconButton, Icon, Button } from '@chakra-ui/react';
+import { HStack, IconButton, Icon, Button, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -42,8 +42,13 @@ export default function ListClassification({ classifications }: Props) {
 
   const headers: ServerPaginatedTableHeader<Classification>[] = [
     {
+      label: 'Group',
+      value: 'classification_group.title',
+    },
+    {
       label: 'Title',
       value: 'title',
+      render: (row) => <Text whiteSpace={'nowrap'}>{row.title}</Text>,
     },
     {
       label: 'Num of Students',

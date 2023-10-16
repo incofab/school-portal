@@ -10,8 +10,6 @@ class ClassificationGroup extends Model
 {
   use HasFactory, InstitutionScope;
 
-  protected $table = 'classification_groups';
-
   public $guarded = [];
   protected $casts = [
     'institution_id' => 'integer'
