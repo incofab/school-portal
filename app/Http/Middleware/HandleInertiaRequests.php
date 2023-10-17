@@ -45,7 +45,7 @@ class HandleInertiaRequests extends Middleware
       'shared__currentInstitution' => fn() => currentInstitution(),
       'shared__currentInstitutionUser' => fn() => currentInstitutionUser(),
       'shared__currentTerm' => $settingHandler->getCurrentTerm(),
-      'shared__currentAcademicSession' => $settingHandler->getCurrentAcadenicSession()
+      'shared__currentAcademicSession' => $settingHandler->getCurrentAcademicSession()
     ]);
   }
 }

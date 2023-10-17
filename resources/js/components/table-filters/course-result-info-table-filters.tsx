@@ -32,7 +32,7 @@ export default function CourseResultInfoTableFilters({
 
   return (
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
-      <FilterFormControlBox title="Course">
+      <FilterFormControlBox title="Subject">
         <CourseSelect
           onChange={(e: any) => setFilters({ ...filters, course: e.value })}
         />

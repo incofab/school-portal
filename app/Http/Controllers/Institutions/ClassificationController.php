@@ -5,18 +5,24 @@ use App\Actions\ClassSheet;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Classification;
+use App\Models\ClassificationGroup;
 use App\Models\Institution;
 use App\Rules\ExcelRule;
+use App\Rules\ValidateExistsRule;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Storage;
 
 class ClassificationController extends Controller
 {
-  function index()
+  function index(Request $request)
   {
     $query = Classification::query()
-      ->with('formTeacher')
+      ->when(
+        $request->classification_group,
+        fn($q, $value) => $q->where('classification_group_id', $value)
+      )
+      ->with('formTeacher', 'classificationGroup')
       ->withCount('students');
     return inertia('institutions/classifications/list-classifications', [
       'classifications' => paginateFromRequest($query)
@@ -61,6 +67,10 @@ class ClassificationController extends Controller
         Rule::exists('institution_users', 'user_id')
           ->where('institution_id', $institution->id)
           ->where('role', InstitutionUserType::Teacher->value)
+      ],
+      'classification_group_id' => [
+        'required',
+        new ValidateExistsRule(ClassificationGroup::class)
       ]
     ]);
 
@@ -94,6 +104,10 @@ class ClassificationController extends Controller
         Rule::exists('institution_users', 'user_id')
           ->where('institution_id', $institution->id)
           ->where('role', InstitutionUserType::Teacher->value)
+      ],
+      'classification_group_id' => [
+        'required',
+        new ValidateExistsRule(ClassificationGroup::class)
       ]
     ]);
 

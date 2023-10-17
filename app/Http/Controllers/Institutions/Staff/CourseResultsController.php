@@ -89,9 +89,7 @@ class CourseResultsController extends Controller
 
     return Inertia::render('institutions/courses/record-course-result', [
       'courseTeacher' => $courseTeacher,
-      'user' => $courseResult->user,
-      'academicSession' => $courseResult->academicSession,
-      'student' => $courseResult->student,
+      'courseResult' => $courseResult,
       'assessments' => Assessment::query()->get()
     ]);
   }

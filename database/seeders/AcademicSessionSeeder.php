@@ -13,7 +13,7 @@ class AcademicSessionSeeder extends Seeder
    */
   public function run()
   {
-    $arr = [['title' => '2022/2023']];
+    $arr = [['title' => '2022/2023'], ['title' => '2023/2024']];
     foreach ($arr as $key => $item) {
       AcademicSession::query()->firstOrCreate($item);
     }
