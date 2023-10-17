@@ -6,8 +6,8 @@ import {
   FormControl,
   FormLabel,
   HStack,
+  Icon,
   Spacer,
-  Text,
   VStack,
 } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
@@ -16,7 +16,9 @@ import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Classification } from '@/types/models';
 import ClassificationSelect from '../selectors/classification-select';
-import Dt from '../dt';
+import { LinkButton } from '../buttons';
+import { Div } from '../semantic';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   Classification: Classification;
@@ -58,8 +60,17 @@ export default function MigrateClassStudentsModal({
       props={{ isOpen, onClose }}
       headerContent={'Migrate Class Students'}
       bodyContent={
-        <VStack spacing={2}>
-          {/* <Text>Move students in {Classification.title} Class</Text> */}
+        <VStack spacing={2} align={'stretch'}>
+          <Div>
+            <LinkButton
+              title={'Select Students'}
+              variant={'outline'}
+              href={instRoute('change-multi-student-class.create', [
+                Classification,
+              ])}
+              rightIcon={<Icon as={ArrowRightIcon} />}
+            />
+          </Div>
           <Divider />
           <Spacer height={3} />
           {!webForm.data.move_to_alumni && (
