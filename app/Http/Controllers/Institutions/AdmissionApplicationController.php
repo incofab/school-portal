@@ -13,25 +13,33 @@ class AdmissionApplicationController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin])->except([
-      'create',
-      'successMessage',
-      'store'
-    ]);
+    // $this->allowedRoles([InstitutionUserType::Admin])->except([
+    //   'create',
+    //   'successMessage',
+    //   'store'
+    // ]);
   }
 
-  public function index()
+  // public function index()
+  // {
+  //   $data = request()->validate(['search' => ['nullable', 'string']]);
+  //   $query = AdmissionApplication::query()->when(
+  //     $data['search'],
+  //     fn($q, $value) => $q->where(
+  //       fn($query) => $query
+  //         ->where('first_name', 'LIKE', "%$value%")
+  //         ->orWhere('last_name', 'LIKE', "%$value%")
+  //         ->orWhere('other_names', 'LIKE', "%$value%")
+  //     )
+  //   );
+  //   return Inertia::render('admissions/list-admission-applications', [
+  //     'admissionApplications' => paginateFromRequest($query)
+  //   ]);
+  // }
+
+  function index()
   {
-    $data = request()->validate(['search' => ['nullable', 'string']]);
-    $query = AdmissionApplication::query()->when(
-      $data['search'],
-      fn($q, $value) => $q->where(
-        fn($query) => $query
-          ->where('first_name', 'LIKE', "%$value%")
-          ->orWhere('last_name', 'LIKE', "%$value%")
-          ->orWhere('other_names', 'LIKE', "%$value%")
-      )
-    );
+    $query = AdmissionApplication::query();
     return Inertia::render('admissions/list-admission-applications', [
       'admissionApplications' => paginateFromRequest($query)
     ]);

@@ -43,6 +43,8 @@ Route::group(['prefix' => '{institution}/admissions/'], function () {
         ->name('institutions.admissions.store');
     Route::get('{admissionApplication}/application-success', [Web\Institutions\AdmissionApplicationController::class, 'successMessage'])
         ->name('institutions.admissions.success');
+    Route::resource('/', Web\Institutions\AdmissionApplicationController::class)
+        ->except(['show']);
 });
 
 Route::group(['middleware' => ['guest']], function () {
@@ -107,4 +109,3 @@ Route::group(['prefix' => 'external/{institution}/'], function () {
     Route::get('/exam-result/{exam:exam_no}', Web\Institutions\Exams\ExamPage\ExamResultController::class)
         ->name('institutions.external.exam-result');
 });
-

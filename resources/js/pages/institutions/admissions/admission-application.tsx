@@ -123,7 +123,7 @@ export default function AdmissionApplicationPage({ institution }: Props) {
               value={form.data.other_names}
             />
           </FormControlBox>
-          <FormControlBox form={form as any} title="Phone" formKey="phone">
+          {/* <FormControlBox form={form as any} title="Phone" formKey="phone">
             <Input
               type="phone"
               onChange={(e) => form.setValue('phone', e.currentTarget.value)}
@@ -137,7 +137,7 @@ export default function AdmissionApplicationPage({ institution }: Props) {
               value={form.data.email}
               required
             />
-          </FormControlBox>
+          </FormControlBox> */}
           <FormControlBox form={form as any} title="Gender" formKey="gender">
             <EnumSelect
               enumData={Gender}
@@ -145,43 +145,7 @@ export default function AdmissionApplicationPage({ institution }: Props) {
               required
             />
           </FormControlBox>
-          <HStack align={'stretch'}>
-            <InputForm
-              form={form as any}
-              title="Father's name"
-              formKey="fathers_name"
-            />
-            <Spacer />
-            <InputForm
-              form={form as any}
-              title="Father's Occupation"
-              formKey="fathers_occupation"
-            />
-          </HStack>
-          <HStack align={'stretch'}>
-            <InputForm
-              form={form as any}
-              title="Mother's name"
-              formKey="mothers_name"
-            />
-            <Spacer />
-            <InputForm
-              form={form as any}
-              title="Mother's Occupation"
-              formKey="mothers_occupation"
-            />
-          </HStack>
-          <InputForm
-            form={form as any}
-            title="Parents Phone"
-            formKey="guardian_phone"
-          />
-          <InputForm form={form as any} title="Address" formKey="address" />
-          <InputForm
-            form={form as any}
-            title="Previous School Attended"
-            formKey="previous_school_attended"
-          />
+
           <InputForm
             form={form as any}
             title="Date of Birth"
@@ -200,6 +164,14 @@ export default function AdmissionApplicationPage({ institution }: Props) {
               required
             />
           </FormControlBox>
+          <InputForm
+            form={form as any}
+            title="Local Govt. Area"
+            formKey="lga"
+          />
+
+          <InputForm form={form as any} title="State" formKey="state" />
+
           <FormControlBox
             form={form as any}
             title="Nationality"
@@ -211,6 +183,105 @@ export default function AdmissionApplicationPage({ institution }: Props) {
               required
             />
           </FormControlBox>
+
+          <InputForm
+            form={form as any}
+            title="Intended Class of Admission"
+            formKey="intended_class_of_admission"
+          />
+
+          <InputForm
+            form={form as any}
+            title="Previous School Attended"
+            formKey="previous_school_attended"
+          />
+
+          <HStack align={'stretch'}>
+            <InputForm
+              form={form as any}
+              title="Father's name"
+              formKey="fathers_name"
+            />
+            <Spacer />
+            <InputForm
+              form={form as any}
+              title="Father's Occupation"
+              formKey="fathers_occupation"
+            />
+          </HStack>
+          <HStack align={'stretch'}>
+            <InputForm
+              form={form as any}
+              title="Father's Phone"
+              formKey="fathers_phone"
+            />
+            <Spacer />
+            <InputForm
+              form={form as any}
+              title="Father's Email"
+              formKey="fathers_email"
+            />
+          </HStack>
+
+          <InputForm
+            form={form as any}
+            title="Father's Residential Address"
+            formKey="fathers_residential_address"
+          />
+
+          <InputForm
+            form={form as any}
+            title="Father's Office Address"
+            formKey="fathers_office_address"
+          />
+
+          <HStack align={'stretch'}>
+            <InputForm
+              form={form as any}
+              title="Mother's name"
+              formKey="mothers_name"
+            />
+            <Spacer />
+            <InputForm
+              form={form as any}
+              title="Mother's Occupation"
+              formKey="mothers_occupation"
+            />
+          </HStack>
+
+          <HStack align={'stretch'}>
+            <InputForm
+              form={form as any}
+              title="Mother's Phone"
+              formKey="mothers_phone"
+            />
+            <Spacer />
+            <InputForm
+              form={form as any}
+              title="Mother's Email"
+              formKey="mothers_email"
+            />
+          </HStack>
+
+          <InputForm
+            form={form as any}
+            title="Mother's Residential Address"
+            formKey="mothers_residential_address"
+          />
+
+          <InputForm
+            form={form as any}
+            title="Mother's Office Address"
+            formKey="mothers_office_address"
+          />
+
+          {/* <InputForm
+            form={form as any}
+            title="Parents Phone"
+            formKey="guardian_phone"
+          />
+          <InputForm form={form as any} title="Address" formKey="address" /> */}
+
           <FormControl>
             <FormButton isLoading={form.processing} title="Apply" />
           </FormControl>
