@@ -1,11 +1,11 @@
 import React from 'react';
-import { Classification } from '@/types/models';
+import { AdmissionApplication } from '@/types/models';
 import { HStack, IconButton, Icon, Button } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, EyeIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { BrandButton, LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
@@ -21,77 +21,70 @@ import MigrateClassStudentsModal from '@/components/modals/migrate-class-student
 import UploadClassificationModal from '@/components/modals/upload-classification-modal';
 
 interface Props {
-  classifications: PaginationResponse<Classification>;
+  admissionApplications: PaginationResponse<AdmissionApplication>;
 }
 
-export default function ListClassification({ classifications }: Props) {
+export default function ListAdmissionApplication({
+  admissionApplications,
+}: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
-  const migrateClassStudentsModalToggle = useModalValueToggle<Classification>();
-  const uploadClassModalToggle = useModalToggle();
+  // const migrateClassStudentsModalToggle = useModalValueToggle<Classification>();
+  // const uploadClassModalToggle = useModalToggle();
 
-  async function deleteItem(obj: Classification) {
+  async function deleteItem(obj: AdmissionApplication) {
     const res = await deleteForm.submit((data, web) =>
-      web.delete(instRoute('classifications.destroy', [obj.id]))
+      web.delete(instRoute('admissions.destroy', [obj.id]))
     );
     handleResponseToast(res);
-    Inertia.reload({ only: ['classifications'] });
+    Inertia.reload({ only: ['admissions'] });
   }
 
-  const headers: ServerPaginatedTableHeader<Classification>[] = [
+  const headers: ServerPaginatedTableHeader<AdmissionApplication>[] = [
     {
-      label: 'Title',
-      value: 'title',
+      label: 'First Name',
+      value: 'first_name',
     },
     {
-      label: 'Num of Students',
-      value: 'students_count',
+      label: 'Last Name',
+      value: 'last_name',
     },
     {
-      label: 'Same Num of Subjects',
-      render: (row) => (row.has_equal_subjects ? 'Yes' : 'No'),
+      label: 'Intended Class',
+      value: 'intended_class_of_admission',
     },
     {
-      label: 'Form Teacher',
-      render: (row) => row.form_teacher?.full_name ?? '',
+      label: 'Admission Status',
+      value: 'admission_status',
     },
-    ...(isAdmin
+    ...(isAdmin || null
       ? [
           {
             label: 'Action',
-            render: (row: Classification) => (
+            render: (row: AdmissionApplication) => (
               <HStack spacing={3}>
                 <IconButton
-                  aria-label={'Edit Class'}
-                  icon={<Icon as={PencilIcon} />}
+                  aria-label={'View Application'}
+                  icon={<Icon as={EyeIcon} />}
                   as={InertiaLink}
-                  href={instRoute('classifications.edit', [row.id])}
+                  href={instRoute('admissions.show', [row.id])}
                   variant={'ghost'}
                   colorScheme={'brand'}
                 />
-                <BrandButton
-                  title="Move Students"
-                  onClick={() => migrateClassStudentsModalToggle.open(row)}
-                />
                 <DestructivePopover
-                  label={'Delete this class'}
+                  label={'Delete this application'}
                   onConfirm={() => deleteItem(row)}
                   isLoading={deleteForm.processing}
                 >
                   <IconButton
-                    aria-label={'Delete Class'}
+                    aria-label={'Delete Application'}
                     icon={<Icon as={TrashIcon} />}
                     variant={'ghost'}
                     colorScheme={'red'}
                   />
                 </DestructivePopover>
-                <LinkButton
-                  title="Student Tiles"
-                  href={instRoute('classifications.students', [row])}
-                  variant={'link'}
-                />
               </HStack>
             ),
           },
@@ -102,42 +95,17 @@ export default function ListClassification({ classifications }: Props) {
   return (
     <DashboardLayout>
       <Slab>
-        <SlabHeading
-          title="List Classes"
-          rightElement={
-            <HStack>
-              <LinkButton
-                href={instRoute('classifications.create')}
-                title={'New'}
-              />
-              <BrandButton
-                title="Upload Classes"
-                onClick={uploadClassModalToggle.open}
-              />
-            </HStack>
-          }
-        />
+        <SlabHeading title="List Admission Applications" />
         <SlabBody>
           <ServerPaginatedTable
             scroll={true}
             headers={headers}
-            data={classifications.data}
+            data={admissionApplications.data}
             keyExtractor={(row) => row.id}
-            paginator={classifications}
+            paginator={admissionApplications}
           />
         </SlabBody>
       </Slab>
-      <UploadClassificationModal
-        {...uploadClassModalToggle.props}
-        onSuccess={() => Inertia.reload()}
-      />
-      {migrateClassStudentsModalToggle.state && (
-        <MigrateClassStudentsModal
-          {...migrateClassStudentsModalToggle.props}
-          Classification={migrateClassStudentsModalToggle.state}
-          onSuccess={() => Inertia.reload({ only: ['classifications'] })}
-        />
-      )}
     </DashboardLayout>
   );
 }

@@ -8,16 +8,18 @@ use App\Http\Requests\AdmissionApplicationRequest;
 use App\Models\AdmissionApplication;
 use App\Models\Institution;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Log;
 
 class AdmissionApplicationController extends Controller
 {
   public function __construct()
   {
-    // $this->allowedRoles([InstitutionUserType::Admin])->except([
-    //   'create',
-    //   'successMessage',
-    //   'store'
-    // ]);
+    $this->allowedRoles([InstitutionUserType::Admin])->except([
+      'create',
+      'successMessage',
+      'store'
+    ]);
   }
 
   // public function index()
@@ -40,7 +42,7 @@ class AdmissionApplicationController extends Controller
   function index()
   {
     $query = AdmissionApplication::query();
-    return Inertia::render('admissions/list-admission-applications', [
+    return Inertia::render('institutions/admissions/list-admission-applications', [
       'admissionApplications' => paginateFromRequest($query)
     ]);
   }
@@ -63,6 +65,23 @@ class AdmissionApplicationController extends Controller
     return $this->ok(['data' => $admissionApplication]);
   }
 
+  function edit(Institution $institution, AdmissionApplication $admissionApplication)
+  {
+    return inertia('institutions/admissions/admission-application', [
+      'admissionApplication' => $admissionApplication
+    ]);
+  }
+
+  public function updateStatus(Institution $institution, AdmissionApplication $admissionApplication)
+  {
+    $data = request()->validate([
+      'admission_status' => ['required', 'string']
+    ]);
+
+    $admissionApplication->fill($data)->save();
+    return $this->ok();
+  }
+
   public function successMessage(
     Institution $institution,
     AdmissionApplication $admissionApplication
@@ -78,12 +97,12 @@ class AdmissionApplicationController extends Controller
 
   public function show(
     Institution $institution,
-    AdmissionApplication $admissionApplication
+    AdmissionApplication $admission,
   ) {
     return Inertia::render(
       'institutions/admissions/show-admission-application',
       [
-        'admissionApplication' => $admissionApplication
+        'admissionApplication' => $admission
       ]
     );
   }

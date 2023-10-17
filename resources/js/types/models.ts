@@ -277,6 +277,18 @@ export interface AdmissionApplication extends Row {
   nationality: string;
   religion: string;
   reference: string;
+  lga: string;
+  state: string;
+  intended_class_of_admission: string;
+  fathers_phone: string;
+  fathers_email: string;
+  fathers_residential_address: string;
+  fathers_office_address: string;
+  mothers_phone: string;
+  mothers_email: string;
+  mothers_residential_address: string;
+  mothers_office_address: string;
+  admission_status: string;
 }
 
 export interface Assessment extends InstitutionRow {

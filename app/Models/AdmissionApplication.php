@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Traits\InstitutionScope;
@@ -11,6 +10,10 @@ class AdmissionApplication extends Model
   use HasFactory, InstitutionScope;
 
   public $guarded = [];
+  protected $casts = [
+    'institution_id' => 'integer',
+  ];
+
 
   function institution()
   {
