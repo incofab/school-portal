@@ -21,11 +21,6 @@ class VerifyInstitutionUser
   {
     $user = currentUser();
 
-    if (!$user) {
-      $message = 'You are not looged in.';
-      return $this->eject($request, $message);
-    }
-
     $institution = $request->route()->institution;
 
     if (!$institution) {
@@ -33,13 +28,13 @@ class VerifyInstitutionUser
       return $this->eject($request, $message);
     }
 
-    $request->route()->setParameter('institution', $institution);
-    $request
-      ->route()
-      ->setParameter(
-        'institutionUser',
-        $institution->institutionUsers->first()
-      );
+    // $request->route()->setParameter('institution', $institution);
+    // $request
+    //   ->route()
+    //   ->setParameter(
+    //     'institutionUser',
+    //     $institution->institutionUsers->first()
+    //   );
 
     View::share('institution', $institution);
 

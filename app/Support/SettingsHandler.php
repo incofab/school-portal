@@ -43,6 +43,26 @@ class SettingsHandler
     return $this->get($key)?->value ?? $default;
   }
 
+  function usesMidTerm()
+  {
+    return $this->getValue(
+      InstitutionSettingType::UsesMidTermResult->value,
+      false
+    );
+  }
+
+  /** Indicates whether the school is currently on Mid or Full term */
+  function isOnMidTerm()
+  {
+    if (!$this->usesMidTerm()) {
+      return false;
+    }
+    return $this->getValue(
+      InstitutionSettingType::CurrentlyOnMidTerm->value,
+      false
+    );
+  }
+
   function getCurrentTerm($default = null)
   {
     if (!$default) {
@@ -54,14 +74,14 @@ class SettingsHandler
 
   function getCurrentAcademicSession($default = 'fetch')
   {
-    if ($default === 'fetch') {
-      $default = AcademicSession::query()
-        ->latest('id')
-        ->first()?->id;
-    }
     return $this->getValue(
       InstitutionSettingType::CurrentAcademicSession->value
-    ) ?? $default;
+    ) ??
+      ($default === 'default'
+        ? AcademicSession::query()
+          ->latest('id')
+          ->first()?->id
+        : $default);
   }
 
   function getResultTemplate($default = null)
@@ -71,5 +91,23 @@ class SettingsHandler
     }
     return $this->getValue(InstitutionSettingType::ResultTemplate->value) ??
       $default;
+  }
+
+  function academicQueryData(
+    $table = '',
+    $academicSessionId = null,
+    $term = null,
+    $forMidTerm = null
+  ) {
+    if ($table) {
+      $table .= '.';
+    }
+    return [
+      "{$table}academic_session_id" =>
+        $academicSessionId ?? $this->getCurrentAcademicSession(),
+      "{$table}term" => $term ?? $this->getCurrentTerm(),
+      "{$table}for_mid_term" =>
+        $forMidTerm === null ? $this->isOnMidTerm() : $forMidTerm
+    ];
   }
 }

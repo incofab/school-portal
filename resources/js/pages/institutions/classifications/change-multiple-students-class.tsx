@@ -48,7 +48,7 @@ export default function ChangeMultipleStudentClass({ students }: Props) {
               align={'stretch'}
             >
               <FormControlBox
-                title="Class"
+                title="Destination Class"
                 form={webForm as any}
                 formKey="destination_class"
               >

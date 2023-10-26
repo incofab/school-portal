@@ -26,8 +26,7 @@ if (!function_exists('currentInstitution')) {
 if (!function_exists('currentInstitutionUser')) {
   function currentInstitutionUser(): InstitutionUser|null
   {
-    $institution = request()->route('institutionUser');
-    return $institution;
+    return currentInstitution()?->institutionUsers?->first();
   }
 }
 

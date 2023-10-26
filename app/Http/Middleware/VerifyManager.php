@@ -31,6 +31,6 @@ class VerifyManager
   {
     return $request->expectsJson()
       ? abort(403, $message)
-      : Redirect::guest(URL::route('login'));
+      : redirect()->route('user.dashboard'); //Redirect::guest(URL::route('login'));
   }
 }

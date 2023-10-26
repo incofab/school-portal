@@ -7,7 +7,7 @@ use App\Models\CourseResultInfo;
 use App\Models\Institution;
 use App\Support\UITableFilters\CourseResultInfoUITableFilters;
 
-class ListCourseResultInfo extends Controller
+class ListCourseResultInfoController extends Controller
 {
   public function __invoke(Institution $institution)
   {

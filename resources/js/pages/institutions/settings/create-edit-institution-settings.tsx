@@ -43,19 +43,21 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const [activeSetting, setActiveSetting] = useState<string>('');
-  const { currentTerm, currentAcademicSession } = useSharedProps();
+  const { currentTerm, currentAcademicSessionId } = useSharedProps();
 
   const webForm = useWebForm({
     [InstitutionSettingType.CurrentTerm]:
       settings[InstitutionSettingType.CurrentTerm]?.value ?? currentTerm,
     [InstitutionSettingType.CurrentAcademicSession]:
       settings[InstitutionSettingType.CurrentAcademicSession]?.value ??
-      currentAcademicSession,
+      currentAcademicSessionId,
     [InstitutionSettingType.ResultTemplate]:
       settings[InstitutionSettingType.ResultTemplate]?.value ?? '',
     [InstitutionSettingType.UsesMidTermResult]: Boolean(
       parseInt(settings[InstitutionSettingType.UsesMidTermResult]?.value)
     ),
+    [InstitutionSettingType.CurrentlyOnMidTerm]:
+      settings[InstitutionSettingType.CurrentlyOnMidTerm]?.value,
   } as { [key: string]: any });
 
   const submit = async (activeSetting: InstitutionSettingType) => {
@@ -168,6 +170,44 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   size={'md'}
                 />
               </HStack>
+              {webForm.data[InstitutionSettingType.UsesMidTermResult] && (
+                <>
+                  <Divider />
+                  <Text>Currently on Mid Term</Text>
+                  <HStack align={'stretch'} spacing={2}>
+                    <FormControl>
+                      <EnumSelect
+                        enumData={{ Yes: 'Yes', No: 'No' }}
+                        selectValue={
+                          webForm.data[
+                            InstitutionSettingType.CurrentlyOnMidTerm
+                          ] === true
+                            ? 'Yes'
+                            : 'No'
+                        }
+                        onChange={(e: any) =>
+                          webForm.setValue(
+                            InstitutionSettingType.CurrentlyOnMidTerm,
+                            e.value === 'Yes' ? true : false
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <BrandButton
+                      title="Update"
+                      onClick={() =>
+                        submit(InstitutionSettingType.CurrentlyOnMidTerm)
+                      }
+                      isLoading={
+                        activeSetting ===
+                          InstitutionSettingType.CurrentlyOnMidTerm &&
+                        webForm.processing
+                      }
+                      size={'md'}
+                    />
+                  </HStack>
+                </>
+              )}
               <Text>Result Template</Text>
               <HStack align={'stretch'} spacing={2}>
                 <FormControl>

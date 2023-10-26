@@ -133,7 +133,12 @@ Route::get('/session-results/{sessionResult}', [Web\Students\SessionResultContro
 Route::delete('/session-results/{sessionResult}', [Web\Students\SessionResultController::class, 'destroy'])
     ->name('session-results.destroy');
 
-Route::get('/course-result-info/index', Web\Staff\ListCourseResultInfo::class)
+Route::get('/record-class-results/{courseTeacher}', [Web\Staff\RecordClassResultController::class, 'create'])
+    ->name('record-class-results.create');
+Route::post('/record-class-results/{courseTeacher}', [Web\Staff\RecordClassResultController::class, 'store'])
+    ->name('record-class-results.store');
+
+Route::get('/course-result-info/index', Web\Staff\ListCourseResultInfoController::class)
     ->name('course-result-info.index');
 
 Route::get('/class-result-info/index', [Web\Staff\ClassResultInfoController::class, 'index'])

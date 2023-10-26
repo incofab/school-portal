@@ -25,10 +25,10 @@ export default function DownloadResultRecordingSheetModal({
 }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
     useSharedProps();
   const webForm = useWebForm({
-    academicSession: currentAcademicSession,
+    academicSession: currentAcademicSessionId,
     term: currentTerm,
     classification: '',
     forMidTerm: false,

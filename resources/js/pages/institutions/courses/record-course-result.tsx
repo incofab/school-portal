@@ -61,7 +61,7 @@ export default function RecordCourseResult({
   assessments,
 }: Props) {
   const { handleResponseToast } = useMyToast();
-  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
     useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const [assessmentValue, setAssessmentValue] = useState<{
@@ -72,7 +72,7 @@ export default function RecordCourseResult({
     academic_session_id:
       courseResult?.academic_session?.id ??
       academicSession?.id ??
-      currentAcademicSession,
+      currentAcademicSessionId,
     term: courseResult?.term ?? term ?? currentTerm,
     for_mid_term: courseResult?.for_mid_term ?? for_mid_term ?? false,
     result: {

@@ -32,17 +32,17 @@
 // }: Props) {
 //   const { handleResponseToast } = useMyToast();
 //   const { instRoute } = useInstitutionRoute();
-//   const { currentAcademicSession, currentTerm } = useSharedProps();
+//   const { currentAcademicSessionId, currentTerm } = useSharedProps();
 
 //   const [fromDate, setFromDate] = useState({
-//     academic_session_id: currentAcademicSession,
+//     academic_session_id: currentAcademicSessionId,
 //     term: currentTerm,
 //     classification_id: '',
 //     for_mid_term: false,
 //   });
 
 //   const [toDate, setToDate] = useState({
-//     academic_session_id: currentAcademicSession,
+//     academic_session_id: currentAcademicSessionId,
 //     term: currentTerm,
 //     classification_id: '',
 //     for_mid_term: false,

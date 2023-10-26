@@ -1,6 +1,15 @@
 import { CourseTeacher } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
-import { IconButton, Icon, HStack } from '@chakra-ui/react';
+import {
+  IconButton,
+  Icon,
+  HStack,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Button,
+} from '@chakra-ui/react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { Inertia } from '@inertiajs/inertia';
 import React from 'react';
@@ -20,6 +29,7 @@ import useIsAdmin from '@/hooks/use-is-admin';
 import useSharedProps from '@/hooks/use-shared-props';
 import CourseTeacherTableFilters from '@/components/table-filters/course-teacher-table-filters';
 import useModalToggle from '@/hooks/use-modal-toggle';
+import { InertiaLink } from '@inertiajs/inertia-react';
 
 interface Props {
   courseTeachers: PaginationResponse<CourseTeacher>;
@@ -67,11 +77,32 @@ function ListLecturerCourses({ courseTeachers }: Props) {
               <HStack>
                 {(isAdmin || currentUser.id === row.user_id) && (
                   <>
-                    <LinkButton
-                      title="Record Result"
-                      href={instRoute('course-results.create', [row])}
-                      variant={'link'}
-                    />
+                    <Menu>
+                      <MenuButton
+                        as={Button}
+                        variant={'link'}
+                        colorScheme={'brand'}
+                        fontWeight={'normal'}
+                      >
+                        Record Result
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem
+                          as={InertiaLink}
+                          href={instRoute('course-results.create', [row])}
+                          py={2}
+                        >
+                          Single Student
+                        </MenuItem>
+                        <MenuItem
+                          as={InertiaLink}
+                          href={instRoute('record-class-results.create', [row])}
+                          py={2}
+                        >
+                          All Class Students
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
                     <DestructivePopover
                       label={`Delete ${row.course?.title} assignment from ${row.user?.full_name}?`}
                       onConfirm={() => deleteItem(row)}

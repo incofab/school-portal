@@ -35,19 +35,19 @@ it('moves students in a class to another class', function () {
     ->withInstitution($this->institution, $classWithStudents)
     ->create();
 
-  echo 'Tests: requires destination_class when we are not moving the students to alumni\n';
+  // echo 'Tests: requires destination_class when we are not moving the students to alumni\n';
   $requestData = ['destination_class' => null, 'move_to_alumni' => false];
   actingAs($this->instAdmin)
     ->postJson($this->route, $requestData)
     ->assertJsonValidationErrorFor('destination_class');
 
-  echo 'Tests: Cannot move students to classes that already has a student\n';
+  // echo 'Tests: Cannot move students to classes that already has a student\n';
   $requestData = ['destination_class' => $classWithStudents->id];
   actingAs($this->instAdmin)
     ->postJson($this->route, $requestData)
     ->assertStatus(Response::HTTP_NOT_ACCEPTABLE);
 
-  echo 'Tests: Move student from one class to another\n';
+  // echo 'Tests: Move student from one class to another\n';
   $requestData = ['destination_class' => $destinationClass->id];
   actingAs($this->instAdmin)
     ->postJson($this->route, $requestData)
@@ -59,11 +59,10 @@ it('moves students in a class to another class', function () {
 
 it('moves students in a class to alumni', function () {
   $numOfStudents = 10;
-  Student::factory()
+  [$student1] = Student::factory()
     ->count($numOfStudents)
     ->withInstitution($this->institution, $this->classification)
     ->create();
-
   expect($this->classification->students()->count())->toBe($numOfStudents);
   $requestData = ['move_to_alumni' => true];
   actingAs($this->instAdmin)
@@ -71,6 +70,7 @@ it('moves students in a class to alumni', function () {
     ->assertOk();
 
   expect($this->classification->students()->count())->toBe(0);
+  expect($student1->fresh()->classification_id)->toBe(null);
 });
 
 it('changes student\'s class to another one', function () {
@@ -87,7 +87,7 @@ it('changes student\'s class to another one', function () {
   ]);
   //   expect($student->institutionUser->role)->toBe(InstitutionUserType::Student);
 
-  echo 'Tests: requires destination_class when we are not moving the student to alumni\n';
+  //echo 'Tests: requires destination_class when we are not moving the student to alumni\n';
   $requestData = ['destination_class' => null, 'move_to_alumni' => false];
   actingAs($this->instAdmin)
     ->postJson($changeStudentRoute, $requestData)

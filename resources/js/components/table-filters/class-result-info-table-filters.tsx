@@ -19,10 +19,10 @@ export default function ClassResultInfoTableFilters({
   onClose,
 }: Props) {
   const { params } = useQueryString();
-  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
     useSharedProps();
   const [filters, setFilters] = useState(() => ({
-    academicSession: params.academicSession ?? currentAcademicSession,
+    academicSession: params.academicSession ?? currentAcademicSessionId,
     term: params.term ?? currentTerm,
     classification: params.classification ?? '',
     forMidTerm: params.forMidTerm,
@@ -32,6 +32,7 @@ export default function ClassResultInfoTableFilters({
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
       <FilterFormControlBox title="Class">
         <ClassificationSelect
+          selectValue={filters.classification}
           onChange={(e: any) =>
             setFilters({ ...filters, classification: e.value })
           }
@@ -39,6 +40,7 @@ export default function ClassResultInfoTableFilters({
       </FilterFormControlBox>
       <FilterFormControlBox title="Academic Session">
         <AcademicSessionSelect
+          selectValue={filters.academicSession}
           onChange={(e: any) =>
             setFilters({ ...filters, academicSession: e.value })
           }
@@ -46,6 +48,7 @@ export default function ClassResultInfoTableFilters({
       </FilterFormControlBox>
       <FilterFormControlBox title="Term">
         <EnumSelect
+          selectValue={filters.term}
           enumData={TermType}
           onChange={(e: any) => setFilters({ ...filters, term: e.value })}
         />

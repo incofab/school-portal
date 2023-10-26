@@ -36,12 +36,12 @@ export default function RecordFeePaymentModal({
   fees,
 }: Props) {
   const { handleResponseToast } = useMyToast();
-  const { currentInstitution, currentAcademicSession, currentTerm } =
+  const { currentInstitution, currentAcademicSessionId, currentTerm } =
     useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const [classId, setClassId] = useState<undefined | number>(undefined);
   const webForm = useWebForm({
-    academic_session_id: currentAcademicSession,
+    academic_session_id: currentAcademicSessionId,
     term: currentTerm,
     fee_id: '',
     reference: `${currentInstitution.id} - ${generateRandomString(16)}`,

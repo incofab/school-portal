@@ -99,14 +99,12 @@ abstract class BaseUITableFilter
   }
   protected function getTerm($default = null)
   {
-    return $this->settingHandler->getCurrentTerm(
-      $default ?? $this->requestGet('term')
-    );
+    return $this->requestGet('term') ??
+      $this->settingHandler->getCurrentTerm($default);
   }
   protected function getAcademicSession($default = null)
   {
-    return $this->settingHandler->getCurrentAcademicSession(
-      $default ?? $this->requestGet('academicSession')
-    );
+    return $this->requestGet('academicSession') ??
+      $this->settingHandler->getCurrentAcademicSession($default);
   }
 }

@@ -31,6 +31,7 @@ export default function Login() {
     gender: '',
     password: '',
     password_confirmation: '',
+    key: '',
     institution: {
       name: '',
       phone: '',
@@ -210,6 +211,13 @@ export default function Login() {
               }
               value={form.data.institution.address}
               required
+            />
+          </FormControlBox>
+          <FormControlBox form={form} title="Access Key" formKey="key">
+            <Input
+              type="text"
+              onChange={(e) => form.setData('key', e.currentTarget.value)}
+              value={form.data.key}
             />
           </FormControlBox>
           <Spacer />

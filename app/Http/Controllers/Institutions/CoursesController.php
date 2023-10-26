@@ -38,7 +38,7 @@ class CoursesController extends Controller
   {
     $query = Course::query()->when(
       $request->search,
-      fn($q, $value) => $q->where('title', $value)
+      fn($q, $value) => $q->where('title', 'LIKE', "%$value%")
     );
     return response()->json([
       'result' => $query->latest('courses.id')->get()

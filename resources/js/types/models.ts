@@ -95,6 +95,7 @@ export interface Student extends Row {
   guardian_phone: string;
   classification?: Classification;
   user?: User;
+  course_results?: CourseResult[];
 }
 
 export interface CourseResult extends InstitutionRow {

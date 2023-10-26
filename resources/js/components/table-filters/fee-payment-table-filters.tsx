@@ -16,10 +16,10 @@ interface Props {
 
 export default function FeePaymentTableFilters({ isOpen, onClose }: Props) {
   const { params } = useQueryString();
-  const { currentAcademicSession, currentTerm } = useSharedProps();
+  const { currentAcademicSessionId, currentTerm } = useSharedProps();
   const [filters, setFilters] = useState(() => ({
     term: params.term ?? currentTerm,
-    academicSession: params.academicSession ?? currentAcademicSession,
+    academicSession: params.academicSession ?? currentAcademicSessionId,
     fee: params.fee ?? '',
     user: params.user ?? '',
   }));
@@ -28,6 +28,7 @@ export default function FeePaymentTableFilters({ isOpen, onClose }: Props) {
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
       <FilterFormControlBox title="Fee">
         <FeeSelect
+          selectValue={filters.fee}
           onChange={(e: any) => setFilters({ ...filters, fee: e.value })}
         />
       </FilterFormControlBox>
@@ -39,6 +40,7 @@ export default function FeePaymentTableFilters({ isOpen, onClose }: Props) {
       </FilterFormControlBox>
       <FilterFormControlBox title="Academic Session">
         <AcademicSessionSelect
+          selectValue={filters.academicSession}
           onChange={(e: any) =>
             setFilters({ ...filters, academicSession: e.value })
           }
@@ -46,6 +48,7 @@ export default function FeePaymentTableFilters({ isOpen, onClose }: Props) {
       </FilterFormControlBox>
       <FilterFormControlBox title="Term">
         <EnumSelect
+          selectValue={filters.term}
           enumData={TermType}
           onChange={(e: any) => setFilters({ ...filters, term: e.value })}
         />

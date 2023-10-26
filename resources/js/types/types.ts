@@ -63,30 +63,6 @@ export enum LearningEvaluationDomainType {
   YesOrNo = 'yes-or-no',
 }
 
-// export enum ProgrammeType {
-//   Regular = 'regular',
-//   Sandwich = 'sandwich',
-//   Certificate = 'certificate',
-//   Postgraduate = 'postgraduate',
-// }
-
-// export enum AdmissionYear {
-//   Y2023 = '2023',
-//   Y2022 = '2022',
-//   Y2021 = '2021',
-//   Y2020 = '2020',
-//   Y2019 = '2019',
-//   Y2018 = '2018',
-//   Y2017 = '2017',
-//   Y2016 = '2016',
-//   Y2015 = '2015',
-//   Y2014 = '2014',
-//   Y2013 = '2013',
-//   Y2012 = '2012',
-//   Y2011 = '2011',
-//   Y2010 = '2010',
-// }
-
 export interface SelectOptionType<T = string> {
   label: string;
   value: T;
@@ -103,6 +79,7 @@ export enum InstitutionSettingType {
   CurrentTerm = 'current-term',
   CurrentAcademicSession = 'current-academic-session',
   UsesMidTermResult = 'uses-mid-term-result',
+  CurrentlyOnMidTerm = 'currently-on-mid-term',
   Stamp = 'stamp',
 }
 
