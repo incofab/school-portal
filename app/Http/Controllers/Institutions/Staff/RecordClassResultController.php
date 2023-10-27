@@ -66,12 +66,11 @@ class RecordClassResultController extends Controller
     Institution $institution,
     CourseTeacher $courseTeacher
   ) {
-    dd('mkdsdmsk');
-    $baseData = $request->safe()->except('results');
-    $data = $request->safe()->results;
+    $baseData = $request->safe()->except('result');
+    $resultData = $request->safe()->result;
 
     DB::beginTransaction();
-    foreach ($data as $result) {
+    foreach ($resultData as $result) {
       RecordCourseResult::run([...$baseData, ...$result], $courseTeacher);
     }
     DB::commit();

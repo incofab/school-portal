@@ -26,7 +26,7 @@ class UpdateStudentClassController extends Controller
       'move_to_alumni' => ['nullable', 'boolean']
     ]);
 
-    $classMigration = StudentMigration::make();
+    $classMigration = StudentMigration::make(currentUser());
 
     if ($request->move_to_alumni) {
       $classMigration->migrateClass($classification);
@@ -62,7 +62,7 @@ class UpdateStudentClassController extends Controller
       ]
     ]);
 
-    $studentMigration = StudentMigration::make();
+    $studentMigration = StudentMigration::make(currentUser());
 
     if ($request->move_to_alumni) {
       $studentMigration->moveToAlumni([$student]);
@@ -111,7 +111,7 @@ class UpdateStudentClassController extends Controller
       ->get();
 
     abort_unless($students->count() > 0, 401, 'Students not found');
-    $studentMigration = StudentMigration::make();
+    $studentMigration = StudentMigration::make(currentUser());
 
     if ($request->move_to_alumni) {
       $studentMigration->moveToAlumni($students);

@@ -68,4 +68,9 @@ class Student extends Model
   {
     return $this->hasMany(SessionResult::class);
   }
+
+  function classMovement()
+  {
+    return $this->hasMany(StudentClassMovement::class);
+  }
 }
