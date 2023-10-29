@@ -98,8 +98,11 @@ class ClassificationGroupController extends Controller
     Institution $institution,
     ClassificationGroup $classificationGroup
   ) {
-    abort(401, 'Too Dangerous, edit instead');
-    dd('');
+    abort_if(
+      $classificationGroup->classifications()->count() > 0,
+      403,
+      'This class group contains some classes'
+    );
     $classificationGroup->delete();
     return $this->ok();
   }

@@ -33,8 +33,10 @@ export default function ListClassificationGroup({
     const res = await deleteForm.submit((data, web) =>
       web.delete(instRoute('classification-groups.destroy', [obj.id]))
     );
-    handleResponseToast(res);
-    Inertia.reload({ only: ['classification-groups'] });
+    if (!handleResponseToast(res)) {
+      return;
+    }
+    Inertia.reload();
   }
 
   const headers: ServerPaginatedTableHeader<ClassificationGroup>[] = [
