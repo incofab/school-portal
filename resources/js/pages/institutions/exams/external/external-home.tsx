@@ -8,6 +8,8 @@ import ExamLayout from '../exam-layout';
 import CenteredBox from '@/components/centered-box';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { intervalToDuration } from 'date-fns';
+import DateTimeDisplay from '@/components/date-time-display';
+import { InertiaLink } from '@inertiajs/inertia-react';
 
 interface Props {
   events: Event[];
@@ -33,15 +35,24 @@ export default function ExternalHome({ events, exams, tokenUser }: Props) {
                   return (
                     <Div key={ev.id}>
                       <HStack align={'stretch'} justify={'space-between'}>
-                        <Text>{ev.title}</Text>
+                        <Text
+                          as={InertiaLink}
+                          href={instRoute('external.events.show', [ev])}
+                          color={'brand.700'}
+                        >
+                          {ev.title}
+                        </Text>
                         <Spacer />
                         <Text>{ev.status}</Text>
                       </HStack>
                       <HStack mt={2}>
                         <Div>
                           <Text as={'span'}>Starts at: </Text>
-                          <Text as={'span'}>{ev.starts_at}</Text>
-                          {/* <DateTimeDisplay as={'span'} dateTime={ev.starts_at} /> */}
+                          {/* <Text as={'span'}>{ev.starts_at}</Text> */}
+                          <DateTimeDisplay
+                            as={'span'}
+                            dateTime={ev.starts_at}
+                          />
                         </Div>
                         <Spacer />
                         <Div>
@@ -51,6 +62,7 @@ export default function ExternalHome({ events, exams, tokenUser }: Props) {
                             {duration.minutes ? `${duration.minutes}mins` : ''}
                           </Text>
                         </Div>
+                        {/* 
                         <Spacer />
                         <Div>
                           {!ev.exams ||
@@ -60,7 +72,7 @@ export default function ExternalHome({ events, exams, tokenUser }: Props) {
                                 title="Take Exam"
                               />
                             ))}
-                        </Div>
+                        </Div> */}
                       </HStack>
                     </Div>
                   );

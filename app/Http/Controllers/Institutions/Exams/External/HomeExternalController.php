@@ -13,7 +13,7 @@ class HomeExternalController extends Controller
   public function __invoke(Request $request, Institution $institution)
   {
     if ($request->token) {
-      return $this->useToken($request->token);
+      return $this->useToken($request->token, $institution);
     }
     $tokenUser = $this->getTokenUserFromCookie();
 
@@ -41,17 +41,23 @@ class HomeExternalController extends Controller
     ]);
   }
 
-  private function useToken(string $token)
+  private function useToken(string $token, Institution $institution)
   {
-    $data = JWT::decode($token, config('services.jwt.secret-key'));
-    return redirect(instRoute('external.home'))->withCookie(
-      TokenUser::TOKEN_COOKIE_NAME,
-      $token
-    );
+    $activeEvents = $institution
+      ->events()
+      ->getQuery()
+      ->active()
+      ->get();
 
-    $response = new \Illuminate\Http\Response();
-    return $response
-      ->cookie('token', $token)
-      ->redirect(instRoute('external.home'));
+    $data = JWT::decode($token, config('services.jwt.secret-key'));
+    $route = instRoute('external.home');
+    if ($activeEvents->count() === 1) {
+      $route = instRoute('external.events.show', $activeEvents->first());
+    }
+    return redirect($route)->withCookie(TokenUser::TOKEN_COOKIE_NAME, $token);
+    //   $response = new \Illuminate\Http\Response();
+    //   return $response
+    //     ->cookie('token', $token)
+    //     ->redirect(instRoute('external.home'));
   }
 }

@@ -196,6 +196,8 @@ function DisplayQuestion({
 }) {
   const attemptManager = examUtil.getAttemptManager();
   const questions = examCourseable.courseable!.questions!;
+  // console.log('questions', examCourseable.courseable!.course?.code, questions);
+
   const question =
     questions[examUtil.getTabManager().getCurrentQuestionIndex()];
   const questionImageHandler = new QuestionImageHandler(

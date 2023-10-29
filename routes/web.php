@@ -48,8 +48,8 @@ Route::group(['prefix' => '{institution}/admissions/'], function () {
 Route::group(['middleware' => ['guest']], function () {
     Route::get('login', [Web\AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [Web\AuthController::class, 'login'])->name('login.store');
-    Route::get('register', [Web\RegistrationController::class, 'create'])->name('register.create');
-    Route::post('register', [Web\RegistrationController::class, 'store'])->name('register.store');
+    Route::get('register', [Web\InstitutionRegistrationController::class, 'create'])->name('register.create');
+    Route::post('register', [Web\InstitutionRegistrationController::class, 'store'])->name('register.store');
     
     Route::get('student/login', [Web\StudentAuthController::class, 'showLogin'])->name('student-login');
     Route::post('student/login', [Web\StudentAuthController::class, 'login'])->name('student-login.store');
@@ -99,6 +99,8 @@ Route::group(['prefix' => 'external/{institution}/'], function () {
     Route::post('/get-user-token', Web\Institutions\Exams\External\GetUserTokenController::class);
     Route::get('/home', Web\Institutions\Exams\External\HomeExternalController::class)
     ->name('institutions.external.home');
+    Route::get('/events/{event}', Web\Institutions\Exams\External\DisplayEventController::class)
+    ->name('institutions.external.events.show');
 
     Route::get('/{event}/exams/create', [Web\Institutions\Exams\External\ExamExternalController::class, 'create'])
     ->name('institutions.external.exams.create');

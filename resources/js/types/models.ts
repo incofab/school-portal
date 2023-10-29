@@ -325,8 +325,9 @@ export interface Event extends InstitutionRow {
   title: string;
   description: string;
   duration: number;
-  status: number;
+  status: string;
   starts_at: string;
+  friendly_start_date: string;
   num_of_subjects: number;
   event_courseables?: EventCourseable[];
   exams?: Exam[];

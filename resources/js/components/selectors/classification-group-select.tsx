@@ -6,7 +6,7 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface MyProps {
   selectValue?: number | string;
-  classificationGroups?: ClassificationGroup[];
+  classificationGroups: ClassificationGroup[];
 }
 
 export default function ClassificationGroupSelect({

@@ -44,7 +44,9 @@ class ClassificationController extends Controller
 
   function create()
   {
-    return inertia('institutions/classifications/create-edit-classification');
+    return inertia('institutions/classifications/create-edit-classification', [
+      'classificationGroups' => ClassificationGroup::all()
+    ]);
   }
 
   function store(Institution $institution)
@@ -81,7 +83,8 @@ class ClassificationController extends Controller
   function edit(Institution $institution, Classification $classification)
   {
     return inertia('institutions/classifications/create-edit-classification', [
-      'classification' => $classification
+      'classification' => $classification,
+      'classificationGroups' => ClassificationGroup::all()
     ]);
   }
 

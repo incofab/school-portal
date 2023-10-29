@@ -59,7 +59,10 @@ class Institution extends Model
           )
       )
       ->with('institutionSettings')
-      ->firstOrFail();
+      ->first();
+
+    abort_unless($institutionModel, 403, 'Institution not found for this user');
+
     return $institutionModel;
   }
 

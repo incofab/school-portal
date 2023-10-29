@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Str;
 
-class RegistrationController extends Controller
+class InstitutionRegistrationController extends Controller
 {
   public function create()
   {

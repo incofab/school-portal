@@ -96,6 +96,18 @@ export enum Religion {
   Others = 'others',
 }
 
+export enum EventStatus {
+  Active = 'active',
+  Ended = 'ended',
+}
+
+export enum ExamStatus {
+  Active = 'active',
+  Ended = 'ended',
+  Pending = 'pending',
+  Paused = 'paused',
+}
+
 export enum Nationality {
   Nigeria = 'nigeria',
   Others = 'others',

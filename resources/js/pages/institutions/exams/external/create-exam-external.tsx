@@ -15,7 +15,7 @@ export default function CreateExamExternal({
   examable_type,
 }: Props) {
   return (
-    <ExamLayout title={tokenUser.name}>
+    <ExamLayout title={event.title} rightElement={tokenUser.name}>
       <CreateExamComponent
         event={event}
         examable={tokenUser}

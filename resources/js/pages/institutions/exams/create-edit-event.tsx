@@ -36,7 +36,9 @@ export default function CreateOrUpdateEvent({ event }: Props) {
         ? web.put(instRoute('events.update', [event]), data)
         : web.post(instRoute('events.store'), data);
     });
-    if (!handleResponseToast(res)) return;
+    if (!handleResponseToast(res)) {
+      return;
+    }
     Inertia.visit(instRoute('events.index'));
   };
 

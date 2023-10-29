@@ -3,6 +3,7 @@ import { Resizer } from './image-file-resizer';
 import objectGet from 'lodash/get';
 
 export const dateFormat = 'yyyy-MM-dd';
+export const dateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
 
 type PreventDefault = Pick<React.FormEvent, 'preventDefault'>['preventDefault'];
 type StopPropagation = Pick<

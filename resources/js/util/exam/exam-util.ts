@@ -1,4 +1,4 @@
-import useWebForm, { WebForm } from '@/hooks/use-web-form';
+import { WebForm } from '@/hooks/use-web-form';
 import { Exam } from '@/types/models';
 import { ExamAttempt } from '@/types/types';
 

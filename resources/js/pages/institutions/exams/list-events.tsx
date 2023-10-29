@@ -16,6 +16,8 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
+import DateTimeDisplay from '@/components/date-time-display';
+import { dateTimeFormat } from '@/util/util';
 
 interface Props {
   events: PaginationResponse<Event>;
@@ -47,6 +49,12 @@ export default function ListEvents({ events }: Props) {
     {
       label: 'Starts at',
       value: 'starts_at',
+      render: (row) => (
+        <DateTimeDisplay
+          dateTime={row.starts_at}
+          dateTimeformat={dateTimeFormat}
+        />
+      ),
     },
     {
       label: 'Num of Subjects',

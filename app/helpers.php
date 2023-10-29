@@ -19,6 +19,9 @@ if (!function_exists('currentInstitution')) {
   function currentInstitution(): Institution|null
   {
     $institution = request()->route('institution');
+    if (!($institution instanceof Institution)) {
+      return null;
+    }
     return $institution;
   }
 }

@@ -95,17 +95,6 @@ class User extends Authenticatable
     )->withTimestamps();
   }
 
-  // private InstitutionUser $institutionUserData;
-  // function currentInstitutionUser(): InstitutionUser
-  // {
-  //   if ($this->institutionUserData) {
-  //     $this->institutionUserData = $this->institutionUsers()
-  //       ->where('institution_id', currentInstitution()->id)
-  //       ->first();
-  //   }
-  //   return $this->institutionUserData;
-  // }
-
   function institutionUsers()
   {
     return $this->hasMany(InstitutionUser::class);
