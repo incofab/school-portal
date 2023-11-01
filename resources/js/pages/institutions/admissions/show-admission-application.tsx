@@ -7,10 +7,12 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
 import { AdmissionApplication } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
+import useModalToggle from '@/hooks/use-modal-toggle';
 import Dt from '@/components/dt';
 import { SelectOptionType } from '@/types/types';
 import { BrandButton } from '@/components/buttons';
 import useIsAdmin from '@/hooks/use-is-admin';
+import AdmitStudentModal from '@/components/modals/admit-student-modal';
 
 interface Props {
   admissionApplication: AdmissionApplication;
@@ -19,6 +21,7 @@ interface Props {
 export default function Profile({ admissionApplication }: Props) {
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
+  const admitStudentModalToggle = useModalToggle();
 
   const form = useWebForm({
     admission_status: admissionApplication.admission_status,
@@ -91,11 +94,11 @@ export default function Profile({ admissionApplication }: Props) {
 
   return (
     <Div>
-      {isAdmin && admissionApplication.admission_status === 'pending' ? (
+      {isAdmin && admissionApplication.admission_status === 'pending' ? ( 
         <HStack align={'stretch'} my={2}>
           <BrandButton
-            title="Grant Admission"
-            onClick={() => updateStatus('admitted')}
+            title="Admit Student"
+            onClick={admitStudentModalToggle.open}
           />
           <BrandButton
             title="Deny Admission"
@@ -139,6 +142,11 @@ export default function Profile({ admissionApplication }: Props) {
           </Grid>
         </SlabBody>
       </Slab>
+      <AdmitStudentModal
+        {...admitStudentModalToggle.props}
+        onSuccess={() => {}}
+        admissionApplication={admissionApplication}
+      />
     </Div>
   );
 }

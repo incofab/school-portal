@@ -81,7 +81,7 @@ export default function InstitutionProfile({ institution }: Props) {
   }
 
   return (
-    <div>
+    <div> 
       <Slab>
         <SlabHeading title={`${institution.name}'s Profile`} />
         <SlabBody>

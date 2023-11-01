@@ -60,7 +60,7 @@ class InstitutionSettingController extends Controller
       $imagePath = $request->photo->store('avatars/settings', 's3_public');
       $publicUrl = Storage::disk('s3_public')->url($imagePath);
       $data['value'] = $publicUrl;
-    }
+    } 
 
     InstitutionSetting::query()->updateOrCreate(
       [

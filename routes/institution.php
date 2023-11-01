@@ -2,13 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Institutions as Web;
+use App\Mail\AdmissionLetterMail;
 use App\Mail\InstitutionMessageMail;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 //Institution
 
 Route::get('dummy', function () {
-  dd('dmoddsdsd');
-  return new InstitutionMessageMail('Welcome', 'This is a welcome message');
+  // dd('dmoddsdsd');
+  // Mail::to('email@email.com')->send(new AdmissionLetterMail(User::first()));
+  // Mail::to('email@email.com')->queue(new AdmissionLetterMail(User::first()));
+  // return new InstitutionMessageMail('Welcome', 'This is a welcome message');
+  $url = "https://texturl.com";
+  return new AdmissionLetterMail(User::first(), $url);
 })->name('dummy');
 
 Route::get('/dashboard', [Web\InstitutionController::class, 'index'])
@@ -182,8 +189,10 @@ Route::delete('/learning-evaluations/destroy/{learningEvaluation}', [Web\Staff\L
 Route::post('/set-term-result-learning-evaluation/{termResult?}', [Web\Staff\LearningEvaluationController::class, 'setTermResultEvaluation'])
   ->name('set-term-result-learning-evaluation');
 
-Route::resource('/admissions', Web\AdmissionApplicationController::class);
+Route::resource('/admissions', Web\AdmissionApplicationController::class)->except('store');
 Route::post('/admissions/{admissionApplication}/update-status', [Web\AdmissionApplicationController::class, 'updateStatus'])
   ->name('admissions.update-status');
+// Route::get('/admissions/letter/{admissionApplication}', [Web\AdmissionApplicationController::class, 'admissionLetter'])
+//   ->name('admissions.letter');
 
 include base_path('routes/exam.php');

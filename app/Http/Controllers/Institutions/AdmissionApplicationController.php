@@ -2,14 +2,22 @@
 
 namespace App\Http\Controllers\Institutions;
 
-use App\Enums\InstitutionUserType;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\AdmissionApplicationRequest;
-use App\Models\AdmissionApplication;
-use App\Models\Institution;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Request;
+use App\Models\Institution;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Actions\RecordStudent;
+use App\Enums\InstitutionUserType;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Models\AdmissionApplication;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\AdmissionApplicationRequest;
+use App\Mail\AdmissionLetterMail;
+use App\Models\Classification;
+use App\Models\Student;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 class AdmissionApplicationController extends Controller
 {
@@ -18,7 +26,8 @@ class AdmissionApplicationController extends Controller
     $this->allowedRoles([InstitutionUserType::Admin])->except([
       'create',
       'successMessage',
-      'store'
+      'store',
+      'admissionLetter'
     ]);
   }
 
@@ -42,9 +51,12 @@ class AdmissionApplicationController extends Controller
   function index()
   {
     $query = AdmissionApplication::query();
-    return Inertia::render('institutions/admissions/list-admission-applications', [
-      'admissionApplications' => paginateFromRequest($query)
-    ]);
+    return Inertia::render(
+      'institutions/admissions/list-admission-applications',
+      [
+        'admissionApplications' => paginateFromRequest($query)
+      ]
+    );
   }
 
   public function create(Institution $institution)
@@ -58,27 +70,83 @@ class AdmissionApplicationController extends Controller
     Institution $institution,
     AdmissionApplicationRequest $request
   ) {
+    $data = $request->validated();
+    info($institution->uuid);
+    if ($request->photo) {
+      $imagePath = $request->photo->store(
+        "{$institution->uuid}/admission",
+        's3_public'
+      );
+      $publicUrl = Storage::disk('s3_public')->url($imagePath);
+      $data['photo'] = $publicUrl;
+    }
+
     $admissionApplication = $institution
       ->admissionApplications()
-      ->create($request->validated());
+      ->create($data);
 
     return $this->ok(['data' => $admissionApplication]);
   }
 
-  function edit(Institution $institution, AdmissionApplication $admissionApplication)
-  {
+  function edit(
+    Institution $institution,
+    AdmissionApplication $admissionApplication
+  ) {
     return inertia('institutions/admissions/admission-application', [
       'admissionApplication' => $admissionApplication
     ]);
   }
 
-  public function updateStatus(Institution $institution, AdmissionApplication $admissionApplication)
-  {
+  public function updateStatus(
+    Institution $institution,
+    AdmissionApplication $admissionApplication
+  ) {
     $data = request()->validate([
-      'admission_status' => ['required', 'string']
+      'admission_status' => ['required', 'string'],
+      'classification' => ['nullable']
     ]);
 
-    $admissionApplication->fill($data)->save();
+    // $admissionApplication
+    //   ->fill([
+    //     'admission_status' => $data['admission_status']
+    //   ])
+    //   ->save();
+
+    if ($data['admission_status'] === 'admitted') {
+      $sourcePath = $admissionApplication->photo;
+
+      $parts = explode('/', $sourcePath);
+      $fileName = end($parts);
+      $destinationPath = 'avatars/users/' . $fileName;
+      $destinationUrl = $parts[0] . '//' . $parts[2] . '/' . env('AWS_BUCKET') . '/avatars/users/' . $fileName;
+
+      // Use the Storage facade to put the image in the S3 bucket
+      // Storage::disk('s3_public')->put(
+      //   $destinationPath,
+      //   file_get_contents($sourcePath)
+      // );
+
+      // RecordStudent::make([
+      //   // ...$admission->only('first_name', 'last_name', 'other_names', 'gender'),
+      //   'first_name' => $admissionApplication["first_name"],
+      //   'last_name' => $admissionApplication["last_name"],
+      //   'other_names' => $admissionApplication["other_names"],
+      //   'gender' => $admissionApplication["gender"],
+      //   'phone' => $admissionApplication["fathers_phone"],
+      //   'photo' => $destinationUrl,
+      //   'email' => Str::orderedUuid() . '@email.com',
+      //   'password' => 'password', //Default
+      //   'classification_id' => $data['classification']
+      // ])->create();
+
+      $dUrl = route('institutions.admissions.letter', [
+        'institution' => $institution->uuid,
+        'student' => 32, //Should not be a static value
+      ]);
+
+      Mail::to($admissionApplication->fathers_email)->queue(new AdmissionLetterMail(User::first(), $dUrl));
+    }
+
     return $this->ok();
   }
 
@@ -97,14 +165,28 @@ class AdmissionApplicationController extends Controller
 
   public function show(
     Institution $institution,
-    AdmissionApplication $admission,
+    AdmissionApplication $admission
   ) {
+    // dd($admission["first_name"]);
+
     return Inertia::render(
       'institutions/admissions/show-admission-application',
       [
         'admissionApplication' => $admission
       ]
     );
+  }
+
+  public function admissionLetter(
+    Institution $institution,
+    Student $student
+  ) {
+    // $data = $student->load('user.institutionUser', 'classification');
+    // dd($data);
+
+    return Inertia::render('institutions/admissions/show-admission-letter', [
+      'student' => $student->load('user.institutionUser', 'classification'),
+    ]);
   }
 
   public function destroy(

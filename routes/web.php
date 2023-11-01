@@ -7,24 +7,23 @@ use App\Http\Controllers as Web;
 Route::get('pdf-result/{student}', [Web\TermResultActivationController::class, 'showPdfResult'])
     ->name('show-pdf-result');
 
-Route::get('/dummy1', function ()
-{
+Route::get('/dummy1', function () {
     // Checks Wisegate result files
     $instUsers = \App\Models\InstitutionUser::where('institution_id', 1)
-    ->where('role', \App\Enums\InstitutionUserType::Student)
-    ->with('student.user', 'student.classification')
-    ->get();
+        ->where('role', \App\Enums\InstitutionUserType::Student)
+        ->with('student.user', 'student.classification')
+        ->get();
 
     $i = 0;
     foreach ($instUsers as $key => $instUser) {
-        if(File::exists(public_path("wisegate/{$instUser->student->code}.pdf"))){
+        if (File::exists(public_path("wisegate/{$instUser->student->code}.pdf"))) {
             continue;
         }
         echo "Name = {$instUser->student->user->full_name}, Code={$instUser->student->code}, Class={$instUser->student->classification->title} <br><br>";
         $i++;
     }
-    
-    dd(',ksdmksdmds = '.$i);
+
+    dd(',ksdmksdmds = ' . $i);
 });
 
 Route::get('institutions/search', Web\SearchInstitutionController::class)
@@ -43,6 +42,8 @@ Route::group(['prefix' => '{institution}/admissions/'], function () {
         ->name('institutions.admissions.store');
     Route::get('{admissionApplication}/application-success', [Web\Institutions\AdmissionApplicationController::class, 'successMessage'])
         ->name('institutions.admissions.success');
+    Route::get('letter/{student}', [Web\Institutions\AdmissionApplicationController::class, 'admissionLetter'])
+        ->name('institutions.admissions.letter');
 });
 
 Route::group(['middleware' => ['guest']], function () {
@@ -50,31 +51,31 @@ Route::group(['middleware' => ['guest']], function () {
     Route::post('login', [Web\AuthController::class, 'login'])->name('login.store');
     Route::get('register', [Web\RegistrationController::class, 'create'])->name('register.create');
     Route::post('register', [Web\RegistrationController::class, 'store'])->name('register.store');
-    
+
     Route::get('student/login', [Web\StudentAuthController::class, 'showLogin'])->name('student-login');
     Route::post('student/login', [Web\StudentAuthController::class, 'login'])->name('student-login.store');
 
     Route::get('forgot-password', [Web\AuthController::class, 'showForgotPassword'])
-    ->name('forgot-password');
+        ->name('forgot-password');
     Route::post('forgot-password', [Web\AuthController::class, 'forgotPassword'])
-    ->name('forgot-password.store');
+        ->name('forgot-password.store');
     Route::get('reset-password/{token}', [Web\AuthController::class, 'showResetPassword'])
-    ->name('password.reset');
+        ->name('password.reset');
     Route::post('reset-password', [Web\AuthController::class, 'resetPassword'])
-    ->name('password.update');
+        ->name('password.update');
 });
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard', [Web\Users\UserController::class, 'index'])->name('user.dashboard');
-    
+
     Route::get('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'edit'])
-    ->name('users.password.edit');
+        ->name('users.password.edit');
     Route::put('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'update'])
-    ->name('users.password.update');
-    
+        ->name('users.password.update');
+
     Route::get('impersonate/{user}', Web\Users\ImpersonateUserController::class)->name('users.impersonate');
     Route::delete('impersonate/{user}', Web\Users\StopImpersonatingUserController::class)->name('users.impersonate.destroy');
-    
+
     Route::any('/logout', [Web\AuthController::class, 'logout'])->name('logout');
 });
 
@@ -98,12 +99,12 @@ Route::any('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('p
 Route::group(['prefix' => 'external/{institution}/'], function () {
     Route::post('/get-user-token', Web\Institutions\Exams\External\GetUserTokenController::class);
     Route::get('/home', Web\Institutions\Exams\External\HomeExternalController::class)
-    ->name('institutions.external.home');
+        ->name('institutions.external.home');
 
     Route::get('/{event}/exams/create', [Web\Institutions\Exams\External\ExamExternalController::class, 'create'])
-    ->name('institutions.external.exams.create');
+        ->name('institutions.external.exams.create');
     Route::post('/{event}/exams', [Web\Institutions\Exams\External\ExamExternalController::class, 'store'])
-    ->name('institutions.external.exams.store');
+        ->name('institutions.external.exams.store');
     Route::get('/exam-result/{exam:exam_no}', Web\Institutions\Exams\ExamPage\ExamResultController::class)
         ->name('institutions.external.exam-result');
 });

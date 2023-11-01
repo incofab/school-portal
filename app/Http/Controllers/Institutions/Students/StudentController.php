@@ -60,7 +60,7 @@ class StudentController extends Controller
   {
     return inertia('institutions/students/create-edit-student', [
       'student' => $student->load('user.institutionUser', 'classification')
-    ]);
+    ]); 
   }
 
   public function downloadTemplate()

@@ -47,7 +47,7 @@ class AdmissionApplicationRequest extends FormRequest
       'mothers_email' => ['nullable', 'string'],
       'mothers_residential_address' => ['nullable', 'string'],
       'mothers_office_address' => ['nullable', 'string'],
-      'photo' => ['nullable', 'string'],
+      'photo' => ['nullable', 'image', 'mimes:jpg,png,jpeg', 'max:1024'],
       'reference' => ['required', 'unique:admission_applications,reference']
       // 'phone' => ['nullable', 'string', 'max:20'],
       // 'guardian_phone' => ['nullable', 'string'],
