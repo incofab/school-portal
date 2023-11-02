@@ -44,10 +44,7 @@ export default function ListStudentClassMovements({
   const studentClassFilterToggle = useModalToggle();
   const batchRevertModalToggle = useModalValueToggle<[string, boolean]>();
 
-  async function revertMovement(
-    studentClassMovement: StudentClassMovement,
-    onClose?: () => void
-  ) {
+  async function revertMovement(studentClassMovement: StudentClassMovement) {
     const isConfirmed = window.confirm(
       'Do you want to revert this class change'
     );
@@ -59,7 +56,6 @@ export default function ListStudentClassMovements({
         instRoute('student-class-movements.revert', [studentClassMovement.id])
       )
     );
-    // onClose();
     handleResponseToast(res);
     Inertia.reload({ only: ['studentClassMovements'] });
   }
@@ -81,7 +77,8 @@ export default function ListStudentClassMovements({
       label: 'Term/Session',
       render: (row) => (
         <Text>
-          {startCase(row.term) + ' Term'} <br /> {row.academic_session?.title}
+          {row.term ? startCase(row.term) + ' Term' : ''} <br />{' '}
+          {row.academic_session?.title}
         </Text>
       ),
     },
