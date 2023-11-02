@@ -16,6 +16,6 @@ class StopImpersonatingUserController extends Controller
 
     session(['impersonator_id' => null]);
 
-    return redirect(route('home'));
+    return redirect(route('managers.institutions.index'));
   }
 }

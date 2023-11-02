@@ -1,6 +1,6 @@
 import React from 'react';
 import { Institution } from '@/types/models';
-import { HStack } from '@chakra-ui/react';
+import { HStack, Icon, IconButton } from '@chakra-ui/react';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -8,12 +8,32 @@ import { LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import route from '@/util/route';
 import ManagerDashboardLayout from '@/layout/managers/manager-dashboard-layout';
+import useWebForm from '@/hooks/use-web-form';
+import useMyToast from '@/hooks/use-my-toast';
+import { Inertia } from '@inertiajs/inertia';
+import { TrashIcon } from '@heroicons/react/24/solid';
 
 interface Props {
   institutions: PaginationResponse<Institution>;
 }
 
 export default function ListInstitutions({ institutions }: Props) {
+  const deleteForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
+
+  async function deleteInstitution(institution: Institution) {
+    if (!window.confirm('Do you want to delete this institution?')) {
+      return;
+    }
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(route('managers.institutions.destroy', [institution.uuid]))
+    );
+    if (!handleResponseToast(res)) {
+      return;
+    }
+    Inertia.reload();
+  }
+
   const headers: ServerPaginatedTableHeader<Institution>[] = [
     {
       label: 'Name',
@@ -40,6 +60,12 @@ export default function ListInstitutions({ institutions }: Props) {
             colorScheme={'red'}
             variant={'link'}
             title="Impersonate"
+          />
+          <IconButton
+            aria-label="Delete institution"
+            colorScheme={'red'}
+            icon={<Icon as={TrashIcon} />}
+            onClick={() => deleteInstitution(row)}
           />
         </HStack>
       ),

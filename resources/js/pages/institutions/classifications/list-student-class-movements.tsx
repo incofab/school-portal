@@ -9,6 +9,7 @@ import {
   MenuItem,
   Text,
   Icon,
+  Badge,
 } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
@@ -24,9 +25,9 @@ import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import StudentClassMovementTableFilters from '@/components/table-filters/student-class-movement-table-filters';
 import ChangeStudentClassModal from '@/components/modals/change-student-class-modal';
 import RevertBatchStudentClassMovementModal from '@/components/modals/revert-batch-student-class-movement-modal';
-import DestructivePopover from '@/components/destructive-popover';
 import { ArrowPathIcon, ArrowUturnRightIcon } from '@heroicons/react/24/solid';
 import startCase from 'lodash/startCase';
+import ColorUtil from '@/util/color-util';
 
 interface Props {
   studentClassMovements: PaginationResponse<StudentClassMovement>;
@@ -45,10 +46,7 @@ export default function ListStudentClassMovements({
   const batchRevertModalToggle = useModalValueToggle<[string, boolean]>();
 
   async function revertMovement(studentClassMovement: StudentClassMovement) {
-    const isConfirmed = window.confirm(
-      'Do you want to revert this class change'
-    );
-    if (!isConfirmed) {
+    if (!window.confirm('Do you want to revert this class change')) {
       return;
     }
     const res = await revertForm.submit((data, web) =>
@@ -58,6 +56,14 @@ export default function ListStudentClassMovements({
     );
     handleResponseToast(res);
     Inertia.reload({ only: ['studentClassMovements'] });
+  }
+
+  const batchNoColors = {} as { [batchNo: string]: string };
+  function getBatchNoColor(batchNo: string) {
+    if (!batchNoColors[batchNo]) {
+      batchNoColors[batchNo] = ColorUtil.getRandomHexColor();
+    }
+    return batchNoColors[batchNo];
   }
 
   const headers: ServerPaginatedTableHeader<StudentClassMovement>[] = [
@@ -92,7 +98,17 @@ export default function ListStudentClassMovements({
     },
     {
       label: 'Batch',
-      value: 'batch_no',
+      render: (row) => {
+        const batchColor = getBatchNoColor(row.batch_no);
+        return (
+          <Badge
+            backgroundColor={batchColor}
+            color={ColorUtil.getContrastingColor(batchColor)}
+          >
+            {row.batch_no}
+          </Badge>
+        );
+      },
     },
     ...(isAdmin
       ? [

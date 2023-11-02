@@ -17,6 +17,8 @@ Route::post('/generate-pin', [Web\GeneratePinController::class, 'store'])
 
 Route::get('/institutions', [Web\InstitutionsController::class, 'index'])
     ->name('institutions.index');
+Route::delete('/institutions/{institution}/destroy', [Web\InstitutionsController::class, 'destroy'])
+    ->name('institutions.destroy');
 Route::get('/pins/{pinGenerator?}', [Web\PinController::class, 'index'])
     ->name('pins.index');
 Route::get('/pin-generators', [Web\PinGeneratorController::class, 'index'])

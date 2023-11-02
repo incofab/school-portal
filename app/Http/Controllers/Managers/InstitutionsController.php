@@ -17,4 +17,15 @@ class InstitutionsController extends Controller
       )
     ]);
   }
+
+  public function destroy(Request $request, Institution $institution)
+  {
+    abort_if(
+      $institution->classifications()->count() > 0,
+      403,
+      'This institution contains some classes'
+    );
+    $institution->delete();
+    return $this->ok();
+  }
 }

@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Support\Queries\InstitutionQueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Institution extends Model
 {
-  use HasFactory;
+  use HasFactory, SoftDeletes;
 
   protected $guarded = [];
   public static function generalRule($prefix = '')
@@ -48,7 +49,7 @@ class Institution extends Model
       )
       ->where('uuid', $value)
       ->when(
-        $user,
+        $user && !$user->isManagerAdmin(),
         fn($q) => $q
           ->where('institution_users.user_id', $user->id)
           ->with(
