@@ -83,7 +83,10 @@ class ClassificationController extends Controller
   function edit(Institution $institution, Classification $classification)
   {
     return inertia('institutions/classifications/create-edit-classification', [
-      'classification' => $classification,
+      'classification' => $classification->load(
+        'formTeacher',
+        'classificationGroup'
+      ),
       'classificationGroups' => ClassificationGroup::all()
     ]);
   }

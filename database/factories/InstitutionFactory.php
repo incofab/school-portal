@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Actions\SeedInitialAssessment;
 use App\Enums\InstitutionUserType;
 use App\Models\Institution;
+use App\Models\InstitutionSetting;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;

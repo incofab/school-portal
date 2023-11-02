@@ -5,7 +5,6 @@ use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\Student;
 use App\Models\StudentClassMovement;
-use Illuminate\Http\Response;
 
 use function Pest\Laravel\actingAs;
 
@@ -46,7 +45,7 @@ it('moves students in a class to another class', function () {
   $requestData = ['destination_class' => $classWithStudents->id];
   actingAs($this->instAdmin)
     ->postJson($this->route, $requestData)
-    ->assertStatus(Response::HTTP_NOT_ACCEPTABLE);
+    ->assertJsonValidationErrorFor('destination_class');
 
   // echo 'Tests: Move student from one class to another\n';
   $requestData = ['destination_class' => $destinationClass->id];

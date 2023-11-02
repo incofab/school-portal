@@ -80,6 +80,25 @@ export interface ClassificationGroup extends InstitutionRow {
   classifications_count?: number;
 }
 
+export interface StudentClassMovement extends InstitutionRow {
+  user_id: number;
+  source_classification_id: number;
+  destination_classification_id: number;
+  academic_session_id: number;
+  student_id: number;
+  revert_reference_id: number;
+  term: string;
+  batch_no: string;
+  reason: string;
+  note: string;
+  source_class?: Classification;
+  destination_class?: Classification;
+  student?: Student;
+  user?: User;
+  academic_session?: AcademicSession;
+  revert_reference?: StudentClassMovement;
+}
+
 export interface Course extends InstitutionRow {
   title: string;
   code: string;

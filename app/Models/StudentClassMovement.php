@@ -21,12 +21,25 @@ class StudentClassMovement extends Model
 
   public function sourceClass()
   {
-    return $this->belongsTo(Classification::class);
+    return $this->belongsTo(Classification::class, 'source_classification_id');
   }
 
   public function destinationClass()
   {
-    return $this->belongsTo(Classification::class);
+    return $this->belongsTo(
+      Classification::class,
+      'destination_classification_id'
+    );
+  }
+
+  function moveFromAlumni(): bool
+  {
+    return empty($this->source_classification_id);
+  }
+
+  function moveToAlumni(): bool
+  {
+    return empty($this->destination_classification_id);
   }
 
   public function user()
@@ -37,6 +50,16 @@ class StudentClassMovement extends Model
   public function student()
   {
     return $this->belongsTo(Student::class);
+  }
+
+  public function revertReference()
+  {
+    return $this->belongsTo(StudentClassMovement::class, 'revert_reference_id');
+  }
+
+  public function academicSession()
+  {
+    return $this->belongsTo(AcademicSession::class);
   }
 
   public function institution()

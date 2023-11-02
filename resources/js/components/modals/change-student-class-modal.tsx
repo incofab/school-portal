@@ -13,7 +13,7 @@ import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import { Student } from '@/types/models';
+import { Classification, Student } from '@/types/models';
 import ClassificationSelect from '../selectors/classification-select';
 import Dt from '../dt';
 
@@ -22,6 +22,7 @@ interface Props {
   isOpen: boolean;
   onClose(): void;
   onSuccess(): void;
+  studentClass?: Classification;
 }
 
 export default function ChangeStudentClassModal({
@@ -29,6 +30,7 @@ export default function ChangeStudentClassModal({
   onSuccess,
   onClose,
   student,
+  studentClass,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -60,7 +62,8 @@ export default function ChangeStudentClassModal({
               { label: 'Student Name', value: student.user?.full_name ?? '' },
               {
                 label: 'Student Class',
-                value: student.classification?.title ?? '',
+                value:
+                  studentClass?.title ?? student.classification?.title ?? '',
               },
             ]}
           />

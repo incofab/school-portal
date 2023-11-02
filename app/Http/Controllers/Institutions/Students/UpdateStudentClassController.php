@@ -7,7 +7,6 @@ use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Models\Classification;
 use App\Models\Institution;
-use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 
 class UpdateStudentClassController extends Controller
@@ -21,29 +20,27 @@ class UpdateStudentClassController extends Controller
       'destination_class' => [
         'nullable',
         'integer',
-        Rule::requiredIf(!$request->move_to_alumni)
+        Rule::requiredIf(!$request->move_to_alumni),
+        function ($attr, $value, $fail) {
+          if (Student::where('classification_id', $value)->exists()) {
+            $fail('The destination class already contains some students');
+          }
+        }
       ],
       'move_to_alumni' => ['nullable', 'boolean']
     ]);
 
-    $classMigration = StudentMigration::make(currentUser());
-
-    if ($request->move_to_alumni) {
-      $classMigration->migrateClass($classification);
-      return $this->ok();
+    $destinationClassification = null;
+    if ($request->destination_class) {
+      $destinationClassification = Classification::query()->findOrFail(
+        $data['destination_class']
+      );
     }
 
-    $destinationClassification = Classification::query()->findOrFail(
-      $data['destination_class']
+    StudentMigration::make(currentUser())->migrateClass(
+      $classification,
+      $destinationClassification
     );
-
-    abort_if(
-      $destinationClassification->students()->exists(),
-      Response::HTTP_NOT_ACCEPTABLE,
-      'The destination class already contains some students'
-    );
-
-    $classMigration->migrateClass($classification, $destinationClassification);
 
     return $this->ok();
   }
@@ -62,16 +59,18 @@ class UpdateStudentClassController extends Controller
       ]
     ]);
 
-    $studentMigration = StudentMigration::make(currentUser());
-
-    if ($request->move_to_alumni) {
-      $studentMigration->moveToAlumni([$student]);
-    } else {
+    $destinationClassification = null;
+    if ($request->destination_class) {
       $destinationClassification = Classification::query()->findOrFail(
         $data['destination_class']
       );
-      $studentMigration->migrateStudent($student, $destinationClassification);
     }
+
+    StudentMigration::make(currentUser())->migrateStudent(
+      $student,
+      $student->classification,
+      $destinationClassification
+    );
 
     return $this->ok();
   }
@@ -106,6 +105,7 @@ class UpdateStudentClassController extends Controller
         Rule::requiredIf(!$request->move_to_alumni)
       ]
     ]);
+
     $students = Student::query()
       ->whereIn('id', $data['students'])
       ->get();
@@ -113,13 +113,22 @@ class UpdateStudentClassController extends Controller
     abort_unless($students->count() > 0, 401, 'Students not found');
     $studentMigration = StudentMigration::make(currentUser());
 
-    if ($request->move_to_alumni) {
-      $studentMigration->moveToAlumni($students);
-    } else {
+    $destinationClassification = null;
+    if ($request->destination_class) {
       $destinationClassification = Classification::query()->findOrFail(
         $data['destination_class']
       );
-      $studentMigration->migrateStudents($students, $destinationClassification);
+    }
+
+    $batchNo = $studentMigration->generateBatchNo();
+    /** @var Student $student */
+    foreach ($students as $key => $student) {
+      $studentMigration->migrateStudent(
+        $student,
+        $student->classification,
+        $destinationClassification,
+        $batchNo
+      );
     }
 
     return $this->ok();

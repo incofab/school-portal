@@ -77,7 +77,7 @@ class SettingsHandler
     return $this->getValue(
       InstitutionSettingType::CurrentAcademicSession->value
     ) ??
-      ($default === 'default'
+      ($default === 'fetch'
         ? AcademicSession::query()
           ->latest('id')
           ->first()?->id

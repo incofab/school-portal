@@ -24,6 +24,16 @@ Route::get('/classifications/search', [Web\ClassificationController::class, 'sea
 ->name('classifications.search');
 Route::post('/classifications/{classification}/migrate-students', [Web\Students\UpdateStudentClassController::class, 'migrateClassStudents'])
 ->name('classifications.migrate-students');
+
+Route::get('/student-class-movements', [Web\Students\StudentClassMovementController::class, 'index'])
+->name('student-class-movements.index');
+Route::get('/student-class-movements/search', [Web\Students\StudentClassMovementController::class, 'search'])
+->name('student-class-movements.search');
+Route::post('/student-class-movements/batch-revert', [Web\Students\RevertStudentClassMovementController::class, 'revertBatchStudentClassMovement'])
+->name('student-class-movements.batch-revert');
+Route::post('/student-class-movements/{studentClassMovement}/revert', [Web\Students\RevertStudentClassMovementController::class, 'revertSingleStudentClassMovement'])
+->name('student-class-movements.revert');
+
 Route::get('/classifications/download', [Web\ClassificationController::class, 'download'])
     ->name('classifications.download');
 Route::post('/classifications/upload', [Web\ClassificationController::class, 'upload'])

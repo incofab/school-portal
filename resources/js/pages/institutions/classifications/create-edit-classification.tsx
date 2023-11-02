@@ -50,12 +50,7 @@ export default function CreateOrUpdateClassification({
           value: classification.form_teacher_id,
         }
       : null,
-    classification_group_id: classification?.classification_group
-      ? {
-          label: classification.classification_group.title,
-          value: classification.classification_group_id,
-        }
-      : null,
+    classification_group_id: classification?.classification_group_id ?? '',
   });
 
   const submit = async () => {
@@ -63,7 +58,6 @@ export default function CreateOrUpdateClassification({
       const postData = {
         ...data,
         form_teacher_id: data.form_teacher_id?.value,
-        classification_group_id: data.classification_group_id?.value,
       };
       return classification
         ? web.put(
@@ -100,7 +94,7 @@ export default function CreateOrUpdateClassification({
                   <Div width={'full'}>
                     <ClassificationGroupSelect
                       classificationGroups={classificationGroups}
-                      value={webForm.data.classification_group_id}
+                      selectValue={webForm.data.classification_group_id}
                       isMulti={false}
                       isClearable={true}
                       onChange={(e: any) =>
