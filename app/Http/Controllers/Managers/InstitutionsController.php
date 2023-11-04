@@ -13,7 +13,9 @@ class InstitutionsController extends Controller
   {
     return Inertia::render('managers/institutions/list-institutions', [
       'institutions' => paginateFromRequest(
-        Institution::query()->latest('institutions.id')
+        Institution::query()
+          ->withCount('classifications')
+          ->latest('institutions.id')
       )
     ]);
   }

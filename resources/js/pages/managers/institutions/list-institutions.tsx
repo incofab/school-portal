@@ -13,8 +13,11 @@ import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
 import { TrashIcon } from '@heroicons/react/24/solid';
 
+interface InstitutionWithMeta extends Institution {
+  classifications_count: number;
+}
 interface Props {
-  institutions: PaginationResponse<Institution>;
+  institutions: PaginationResponse<InstitutionWithMeta>;
 }
 
 export default function ListInstitutions({ institutions }: Props) {
@@ -34,10 +37,14 @@ export default function ListInstitutions({ institutions }: Props) {
     Inertia.reload();
   }
 
-  const headers: ServerPaginatedTableHeader<Institution>[] = [
+  const headers: ServerPaginatedTableHeader<InstitutionWithMeta>[] = [
     {
       label: 'Name',
       value: 'name',
+    },
+    {
+      label: 'Classes',
+      value: 'classifications_count',
     },
     {
       label: 'Email',
@@ -66,6 +73,7 @@ export default function ListInstitutions({ institutions }: Props) {
             colorScheme={'red'}
             icon={<Icon as={TrashIcon} />}
             onClick={() => deleteInstitution(row)}
+            isDisabled={row.classifications_count > 0}
           />
         </HStack>
       ),
