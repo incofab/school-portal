@@ -127,6 +127,11 @@ export function range(start: number, end: number | undefined) {
   return arr;
 }
 
+export function avatarUrl(name: string) {
+  // const encodedName = encodeURI(name);
+  return `https://ui-avatars.com/api/?name=${encodeURI(name)}`;
+}
+
 export function formatTime(time_in_secs: number) {
   if (isNaN(time_in_secs) || time_in_secs < 0) {
     time_in_secs = 0;

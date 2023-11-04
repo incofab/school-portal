@@ -162,6 +162,7 @@ function CreateEventCourseable({
         {selectCourse?.sessions && (
           <Div minW={'200px'}>
             <MySelect
+              refreshKey={String(selectCourse.id)}
               isMulti={false}
               selectValue={webForm.data.courseable_id}
               getOptions={() =>

@@ -108,5 +108,7 @@ Route::group(['prefix' => 'external/{institution}/'], function () {
     ->name('institutions.external.exams.store');
     Route::get('/exam-result/{exam:exam_no}', Web\Institutions\Exams\ExamPage\ExamResultController::class)
         ->name('institutions.external.exam-result');
+    Route::get('/leader-board', Web\Institutions\Exams\External\ShowLeaderBoardController::class)
+        ->name('institutions.external.leader-board');
 });
 

@@ -19,7 +19,10 @@ class EventController extends Controller
 
   function index(Request $request, Institution $institution)
   {
-    $query = $institution->events()->getQuery();
+    $query = $institution
+      ->events()
+      ->getQuery()
+      ->withCount('eventCourseables');
 
     return Inertia::render('institutions/exams/list-events', [
       'events' => paginateFromRequest($query->latest('id'))

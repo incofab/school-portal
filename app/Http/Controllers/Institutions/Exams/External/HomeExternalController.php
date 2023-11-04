@@ -23,20 +23,14 @@ class HomeExternalController extends Controller
       ->active()
       ->with(
         'exams',
-        fn($q) => $q->where('external_reference', $tokenUser->reference)
+        fn($q) => $q
+          ->where('examable_id', $tokenUser->id)
+          ->where('examable_type', $tokenUser->getMorphClass())
       )
-      ->get();
-
-    $exams = $institution
-      ->exams()
-      ->getQuery()
-      ->where('external_reference', $tokenUser->reference)
-      ->with('event', 'examable')
       ->get();
 
     return inertia('institutions/exams/external/external-home', [
       'events' => $activeEvents,
-      'exams' => $exams,
       'tokenUser' => $tokenUser
     ]);
   }

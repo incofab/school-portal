@@ -2,7 +2,7 @@ import React from 'react';
 import { FormControl, Input, VStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
-import { preventNativeSubmit } from '@/util/util';
+import { dateTimeFormat, preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
 import { Event } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -88,14 +88,15 @@ export default function CreateOrUpdateEvent({ event }: Props) {
                 <Input
                   type={'datetime-local'}
                   max={'9999-12-31'}
-                  value={webForm.data.starts_at ?? ''}
+                  value={
+                    webForm.data.starts_at
+                      ? format(new Date(webForm.data.starts_at), dateTimeFormat)
+                      : ''
+                  }
                   onChange={(e) =>
                     webForm.setValue(
                       'starts_at',
-                      format(
-                        new Date(e.currentTarget.value),
-                        'yyyy-MM-dd HH:mm:ss'
-                      )
+                      format(new Date(e.currentTarget.value), dateTimeFormat)
                     )
                   }
                 />

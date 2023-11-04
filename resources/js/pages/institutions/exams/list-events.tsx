@@ -57,6 +57,10 @@ export default function ListEvents({ events }: Props) {
       ),
     },
     {
+      label: 'Selectable Subjects',
+      value: 'event_courseables_count',
+    },
+    {
       label: 'Num of Subjects',
       value: 'num_of_subjects',
     },
