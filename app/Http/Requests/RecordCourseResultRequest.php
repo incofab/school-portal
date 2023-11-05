@@ -53,7 +53,7 @@ class RecordCourseResultRequest extends FormRequest
       'academic_session_id' => ['required', 'exists:academic_sessions,id'],
       'term' => ['required', new Enum(TermType::class)],
       'for_mid_term' => ['required', 'boolean'],
-      'result' => ['nullable', 'array', 'min:1'],
+      'result' => ['required', 'array', 'min:1'],
       ...$this->resultRule($this->courseTeacher, $this->all(), 'result.*.')
     ];
   }

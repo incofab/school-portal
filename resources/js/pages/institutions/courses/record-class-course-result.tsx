@@ -62,6 +62,10 @@ export default function RecordClassCourseResult({
   });
 
   const submit = async () => {
+    if (Object.keys(webForm.data.results).length < 1) {
+      Inertia.visit(instRoute('course-results.index'));
+      return;
+    }
     const res = await webForm.submit((data, web) => {
       return web.post(
         instRoute('record-class-results.store', [courseTeacher]),

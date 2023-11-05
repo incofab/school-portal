@@ -22,7 +22,12 @@ class GetUserTokenController extends Controller
 
     $tokenUser = TokenUser::query()->firstOrCreate(
       ['reference' => $data['reference'], 'institution_id' => $institution->id],
-      [...$data, 'meta' => ['vendor' => $data['vendor'] ?? 'examscholars']]
+      [
+        ...collect($data)
+          ->except('vendor')
+          ->toArray(),
+        'meta' => ['vendor' => $data['vendor'] ?? 'examscholars']
+      ]
     );
 
     $token = JWT::encode(
