@@ -67,7 +67,7 @@ class RecordClassResultController extends Controller
     CourseTeacher $courseTeacher
   ) {
     $baseData = $request->safe()->except('result');
-    $resultData = $request->safe()->result;
+    $resultData = $request->result ?? [];
 
     DB::beginTransaction();
     foreach ($resultData as $result) {

@@ -116,3 +116,8 @@ export enum Nationality {
 export interface ExamAttempt {
   [questionId: string | number]: string;
 }
+
+export interface BreadCrumbParam {
+  title: string;
+  href?: string;
+}

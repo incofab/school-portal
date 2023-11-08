@@ -100,7 +100,7 @@ export default function Login() {
           </FormControlBox>
           <FormControlBox form={form} title="Phone" formKey="phone">
             <Input
-              type="phone"
+              type="tel"
               onChange={(e) => form.setData('phone', e.currentTarget.value)}
               value={form.data.phone}
             />

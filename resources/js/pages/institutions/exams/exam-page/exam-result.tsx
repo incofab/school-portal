@@ -25,6 +25,7 @@ export default function ExamResult({ exam, tokenUser }: Props) {
   return (
     <ExamLayout
       title={exam.event?.title}
+      tokenUser={tokenUser}
       rightElement={
         <Div>
           <Text fontWeight={'bold'} color={'brand.100'}>
@@ -33,12 +34,18 @@ export default function ExamResult({ exam, tokenUser }: Props) {
           <Text>{`${tokenUser.name}`}</Text>
         </Div>
       }
+      breadCrumbItems={[
+        {
+          title: 'Event',
+          href: instRoute('external.events.show', [exam.event_id]),
+        },
+        {
+          title: 'Exam Result',
+        },
+      ]}
     >
       <CenteredBox>
         <VStack align={'stretch'} spacing={3}>
-          <Text fontWeight={'semibold'} fontSize={'3xl'} textAlign={'center'}>
-            {exam.event?.title}
-          </Text>
           <HStack justify={'space-between'} px={3}>
             <Icon as={AcademicCapIcon} fontSize={'7xl'} color={'brand.700'} />
             <Div

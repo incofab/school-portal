@@ -17,6 +17,10 @@ class HomeExternalController extends Controller
     }
     $tokenUser = $this->getTokenUserFromCookie();
 
+    if (!$tokenUser->name || !$tokenUser->phone) {
+      return redirect(instRoute('external.token-users.edit', [$tokenUser]));
+    }
+
     $activeEvents = $institution
       ->events()
       ->getQuery()

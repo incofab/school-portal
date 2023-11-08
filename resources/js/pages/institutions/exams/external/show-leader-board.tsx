@@ -12,29 +12,18 @@ interface LeaderBoard extends Exam {
   exam_count: number;
   examable: TokenUser;
 }
+
 interface Props {
   leaderBoardExams: LeaderBoard[];
-  exams: Exam[];
-  tokenUser: TokenUser;
 }
 
-export default function ShowLeaderBoard({
-  leaderBoardExams,
-  exams,
-  tokenUser,
-}: Props) {
+export default function ShowLeaderBoard({ leaderBoardExams }: Props) {
   return (
-    <ExamLayout title={`Leader Board`}>
+    <ExamLayout
+      title={`Leader Board`}
+      breadCrumbItems={[{ title: 'Leader Board' }]}
+    >
       <CenteredBox>
-        <Text
-          fontWeight={'bold'}
-          fontSize={'3xl'}
-          color={'brand.600'}
-          textAlign={'center'}
-        >
-          Leader Board
-        </Text>
-        <Divider my={2} />
         <VStack align={'stretch'} spacing={2} divider={<Divider />}>
           {leaderBoardExams.map((exam) => {
             return (

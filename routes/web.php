@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers as Web;
+use App\Http\Controllers\Institutions\Exams\External as External;
 
 Route::get('pdf-result/{student}', [Web\TermResultActivationController::class, 'showPdfResult'])
     ->name('show-pdf-result');
@@ -96,19 +97,25 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::any('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
 
 Route::group(['prefix' => 'external/{institution}/'], function () {
-    Route::post('/get-user-token', Web\Institutions\Exams\External\GetUserTokenController::class);
-    Route::get('/home', Web\Institutions\Exams\External\HomeExternalController::class)
-    ->name('institutions.external.home');
-    Route::get('/events/{event}', Web\Institutions\Exams\External\DisplayEventController::class)
-    ->name('institutions.external.events.show');
+    Route::post('/get-user-token', External\GetUserTokenController::class);
+    Route::get('/home', External\HomeExternalController::class)
+        ->name('institutions.external.home');
 
-    Route::get('/{event}/exams/create', [Web\Institutions\Exams\External\ExamExternalController::class, 'create'])
-    ->name('institutions.external.exams.create');
-    Route::post('/{event}/exams', [Web\Institutions\Exams\External\ExamExternalController::class, 'store'])
-    ->name('institutions.external.exams.store');
+    Route::get('/token-user/{tokenUser}/edit', [External\UpdateTokenUserProfileController::class, 'edit'])
+        ->name('institutions.external.token-users.edit');
+    Route::put('/token-user/{tokenUser}/update', [External\UpdateTokenUserProfileController::class, 'update'])
+        ->name('institutions.external.token-users.update');
+
+    Route::get('/events/{event}', External\DisplayEventController::class)
+        ->name('institutions.external.events.show');
+
+    Route::get('/{event}/exams/create', [External\ExamExternalController::class, 'create'])
+        ->name('institutions.external.exams.create');
+    Route::post('/{event}/exams', [External\ExamExternalController::class, 'store'])
+        ->name('institutions.external.exams.store');
     Route::get('/exam-result/{exam:exam_no}', Web\Institutions\Exams\ExamPage\ExamResultController::class)
         ->name('institutions.external.exam-result');
-    Route::get('/leader-board', Web\Institutions\Exams\External\ShowLeaderBoardController::class)
+    Route::get('/leader-board', External\ShowLeaderBoardController::class)
         ->name('institutions.external.leader-board');
 });
 

@@ -9,7 +9,6 @@ import { AcademicCapIcon } from '@heroicons/react/24/solid';
 import { LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { EventStatus, ExamStatus } from '@/types/types';
-import { dateTimeFormat } from '@/util/util';
 
 interface Props {
   event: Event;
@@ -57,12 +56,11 @@ export default function DisplayEvent({ event, tokenUser }: Props) {
     <ExamLayout
       title={event.title}
       rightElement={<Text>{tokenUser.name}</Text>}
+      breadCrumbItems={[{ title: 'Event', href: '#' }]}
+      tokenUser={tokenUser}
     >
       <CenteredBox>
         <Div textAlign={'center'}>
-          <Text fontSize={'3xl'} color={'brand.700'} fontWeight={'semibold'}>
-            {event.title}
-          </Text>
           <Text fontSize={'2xl'} color={'brand.900'} fontWeight={'semibold'}>
             Starts on {format(new Date(event.starts_at), 'PPPPpp')}
           </Text>
