@@ -6,6 +6,7 @@
         "lint": "eslint resources/js && tsc"
     },
     "devDependencies": {
+        "@chakra-ui/cli": "^2.4.1",
         "@prettier/plugin-php": "^0.19.3",
         "@types/lodash": "^4.14.191",
         "@types/react": "^18.0.28",

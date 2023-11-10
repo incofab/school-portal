@@ -1,4 +1,5 @@
 import { SelectOptionType } from '@/types/types';
+import { useColorModeValue } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
 import Select, { Props } from 'react-select';
 
@@ -26,7 +27,23 @@ export default function MySelect<T>({
     return result;
   }
 
+  const neutral0 = useColorModeValue('white', '#2d3748');
+  const primary25 = useColorModeValue('#cbd5e0', '#1a202c');
+
   return (
-    <Select {...props} value={getValue(selectValue)} options={optionsData} />
+    <Select
+      {...props}
+      value={getValue(selectValue)}
+      options={optionsData}
+      theme={(theme) => ({
+        ...theme,
+        borderRadius: 0,
+        colors: {
+          ...theme.colors,
+          primary25: primary25,
+          neutral0: neutral0,
+        },
+      })}
+    />
   );
 }

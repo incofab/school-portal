@@ -15,6 +15,7 @@ import {
   Icon,
   VStack,
   Divider,
+  BoxProps,
 } from '@chakra-ui/react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
@@ -59,7 +60,8 @@ export default function ExamLayout({
   children,
   breadCrumbItems,
   tokenUser,
-}: Props & PropsWithChildren) {
+  ...props
+}: Props & BoxProps & PropsWithChildren) {
   const { instRoute } = useInstitutionRoute();
   const { currentInstitution } = useSharedProps();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -70,7 +72,7 @@ export default function ExamLayout({
   ];
 
   return (
-    <Div background={'brand.50'} minH={'100vh'}>
+    <Div background={'brand.50'} minH={'100vh'} {...props}>
       <Div
         background={'brand.700'}
         color={'white'}

@@ -41,6 +41,7 @@ import ChangeStudentClassModal from '@/components/modals/change-student-class-mo
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import DownloadResultRecordingSheetModal from '@/components/modals/download-result-recording-sheet-modal';
 import useIsStaff from '@/hooks/use-is-staff';
+import { InertiaLink } from '@inertiajs/inertia-react';
 
 interface Props {
   user: User;
@@ -151,24 +152,35 @@ export default function Profile({ user, institutionUser }: Props) {
               <Dt contentData={profileData} spacing={4} labelWidth={'150px'} />
             </GridItem>
             <GridItem colSpan={{ lg: 1 }}>
-              {currentUser.id !== user.id && isAdmin && (
-                <HStack>
-                  <BrandButton
-                    title="Change Role"
-                    onClick={changeRoleModalToggle.open}
-                  />
-                  <DestructivePopover
-                    label={`Reset user's password to default?`}
-                    onConfirm={(onClose) => resetPassword(onClose)}
-                    isLoading={form.processing}
-                    positiveButtonLabel="Reset"
-                  >
-                    <Button colorScheme="brand" variant={'solid'} size={'sm'}>
-                      Reset Password
-                    </Button>
-                  </DestructivePopover>
-                </HStack>
-              )}
+              <HStack>
+                {currentUser.id !== user.id && isAdmin && (
+                  <>
+                    <BrandButton
+                      title="Change Role"
+                      onClick={changeRoleModalToggle.open}
+                    />
+                    <DestructivePopover
+                      label={`Reset user's password to default?`}
+                      onConfirm={(onClose) => resetPassword(onClose)}
+                      isLoading={form.processing}
+                      positiveButtonLabel="Reset"
+                    >
+                      <Button colorScheme="brand" variant={'solid'} size={'sm'}>
+                        Reset Password
+                      </Button>
+                    </DestructivePopover>
+                  </>
+                )}
+                <Button
+                  as={InertiaLink}
+                  href={instRoute('students.transcript', [student])}
+                  variant={'outline'}
+                  colorScheme="brand"
+                  size={'sm'}
+                >
+                  Transcript
+                </Button>
+              </HStack>
               <FormControl isInvalid={!!form.errors.photo}>
                 <Div
                   mt={{ lg: 4 }}

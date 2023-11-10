@@ -8,7 +8,7 @@ import {
   SubMenu,
   MenuItemStyles,
 } from 'react-pro-sidebar';
-import { SidebarHeader } from '../components/SidebarHeader';
+import { SidebarHeader } from '../components/sidebar-header';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import route from '@/util/route';
 import { Nullable, InstitutionUserType } from '@/types/types';

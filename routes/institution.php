@@ -62,6 +62,7 @@ Route::get(
         '/students/result-sheet/{student}/{classification}/{academicSession}/{term}/{forMidTerm}', 
         Web\Students\ViewResultSheetController::class
     )->name('students.result-sheet');
+Route::get('/students/{student}/transcript', Web\Students\ShowTranscriptController::class)->name('students.transcript');
 Route::resource('/students', Web\Students\StudentController::class)->except(['show']);
 Route::get('/students/term-results', Web\Students\ListStudentTermResultController::class)
     ->name('students.term-results.index');

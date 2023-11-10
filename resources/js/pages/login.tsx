@@ -7,6 +7,8 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  useColorMode,
+  useColorModeValue,
   useToast,
   VStack,
 } from '@chakra-ui/react';
@@ -19,6 +21,7 @@ import PasswordInput from '@/components/password-input';
 export default function Login() {
   const { message, csrfToken } = useSharedProps();
   const toast = useToast();
+  const { toggleColorMode } = useColorMode();
   const form = useForm({
     email: '',
     password: '',
@@ -29,6 +32,7 @@ export default function Login() {
   }
 
   useEffect(() => {
+    // toggleColorMode();
     message?.error &&
       toast({
         title: message.error,
@@ -68,9 +72,9 @@ export default function Login() {
   }, [csrfToken]);
 
   return (
-    <Div bg={'blue.50'} py={12} minH={'100vh'}>
+    <Div bg={useColorModeValue('blue.50', 'gray.900')} py={12} minH={'100vh'}>
       <Div
-        bg={'white'}
+        bg={useColorModeValue('white', 'gray.800')}
         p={6}
         mx={'auto'}
         w={'full'}

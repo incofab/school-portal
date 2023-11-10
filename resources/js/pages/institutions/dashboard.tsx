@@ -1,6 +1,12 @@
 import React from 'react';
 import DashboardLayout from '@/layout/dashboard-layout';
-import { Box, Icon, SimpleGrid, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Icon,
+  SimpleGrid,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import useSharedProps from '@/hooks/use-shared-props';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { PageTitle } from '@/components/page-header';
@@ -34,10 +40,10 @@ function DashboardItemCard(prop: ItemCardProps) {
     <Box
       border={'solid'}
       borderWidth={1}
-      borderColor={'gray.200'}
+      borderColor={useColorModeValue('gray.200', 'gray.500')}
       rounded={'lg'}
       boxShadow={'0px 2px 6px rgba(0, 0, 0, 0.1)'}
-      background={'white'}
+      background={useColorModeValue('white', 'gray.700')}
       as={InertiaLink}
       href={prop.route}
       display={'inline-block'}
@@ -50,7 +56,7 @@ function DashboardItemCard(prop: ItemCardProps) {
         size={'sm'}
         py={3}
         px={3}
-        backgroundColor={'brand.600'}
+        backgroundColor={useColorModeValue('brand.600', 'gray.800')}
         color={'white'}
         borderTop={'1px solid rgba(150,150,150,0.1)'}
         roundedBottom={'lg'}

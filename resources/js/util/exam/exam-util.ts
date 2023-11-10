@@ -74,6 +74,11 @@ class TabManager {
     };
     this.reRender();
   }
+  getCurrentQuestion() {
+    return this.getCurrentCourseableQuestions()?.[
+      this.getCurrentTab().currentQuestionIndex
+    ];
+  }
   getCurrentQuestionIndex() {
     return this.getCurrentTab().currentQuestionIndex;
   }

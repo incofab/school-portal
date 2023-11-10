@@ -51,6 +51,7 @@ export default function DisplayExam({
   function updateExamUtil() {
     setKey(Math.random() + '');
   }
+
   const examUtil = useMemo(() => {
     const examUtil = new ExamUtil(exam, existingAttempts, updateExamUtil);
     return examUtil;
@@ -75,6 +76,48 @@ export default function DisplayExam({
     Inertia.visit(instRoute('external.exam-result', [exam.exam_no]));
   }
 
+  function previousClicked() {
+    examUtil
+      .getTabManager()
+      .setCurrentQuestion(examUtil.getExamNavManager().getGoPreviousIndex());
+  }
+
+  function nextClicked() {
+    examUtil
+      .getTabManager()
+      .setCurrentQuestion(examUtil.getExamNavManager().getGoNextIndex());
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const pressedKey = event.key.toUpperCase() ?? '';
+    console.log('Key pressed:', event.key);
+    switch (pressedKey) {
+      case 'A':
+      case 'B':
+      case 'C':
+      case 'D':
+        // case 'E':
+        examUtil
+          .getAttemptManager()
+          .setAttempt(
+            examUtil.getTabManager().getCurrentQuestion()?.id,
+            pressedKey
+          );
+        break;
+      case 'N':
+        nextClicked();
+        break;
+      case 'P':
+        previousClicked();
+        break;
+      case 'S':
+        submitExam();
+        break;
+      case 'R':
+        break;
+    }
+  };
+
   return (
     <ExamLayout
       title={`${tokenUser.name}`}
@@ -94,6 +137,7 @@ export default function DisplayExam({
           />
         </HStack>
       }
+      onKeyDown={handleKeyDown}
     >
       <Tabs
         key={key}
@@ -140,25 +184,11 @@ export default function DisplayExam({
       >
         <BrandButton
           title="Previous"
-          onClick={() =>
-            examUtil
-              .getTabManager()
-              .setCurrentQuestion(
-                examUtil.getExamNavManager().getGoPreviousIndex()
-              )
-          }
+          onClick={previousClicked}
           width={'80px'}
         />
         <BrandButton title="Submit" onClick={submitExam} width={'80px'} />
-        <BrandButton
-          title="Next"
-          onClick={() =>
-            examUtil
-              .getTabManager()
-              .setCurrentQuestion(examUtil.getExamNavManager().getGoNextIndex())
-          }
-          width={'80px'}
-        />
+        <BrandButton title="Next" onClick={nextClicked} width={'80px'} />
       </HStack>
     </ExamLayout>
   );

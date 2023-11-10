@@ -7,8 +7,8 @@ import {
   Heading,
   HeadingProps,
   Spacer,
-  Text,
   VStack,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { PageTitle } from './page-header';
 
@@ -49,11 +49,11 @@ export default function Slab({ children, ...props }: BoxProps) {
     <Div
       border={'solid'}
       borderWidth={1}
-      borderColor={'gray.200'}
+      borderColor={useColorModeValue('gray.200', 'transparent')}
       rounded={'lg'}
       px={6}
       py={4}
-      background={'white'}
+      background={useColorModeValue('white', 'gray.800')}
       boxShadow={'0px 2px 6px rgba(0, 0, 0, 0.1)'}
       w={'full'}
       {...props}

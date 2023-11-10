@@ -1,4 +1,12 @@
-import { Divider, HStack, Icon, Spacer, Text, VStack } from '@chakra-ui/react';
+import {
+  BoxProps,
+  Divider,
+  HStack,
+  Icon,
+  Spacer,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { Event, TokenUser } from '@/types/models';
 import { Div } from '@/components/semantic';
@@ -9,6 +17,7 @@ import { AcademicCapIcon } from '@heroicons/react/24/solid';
 import { LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { EventStatus, ExamStatus } from '@/types/types';
+import '@/style/marquee.css';
 
 interface Props {
   event: Event;
@@ -59,6 +68,7 @@ export default function DisplayEvent({ event, tokenUser }: Props) {
       breadCrumbItems={[{ title: 'Event', href: '#' }]}
       tokenUser={tokenUser}
     >
+      {event.status === EventStatus.Active && <ActivatationReminder my={1} />}
       <CenteredBox>
         <Div textAlign={'center'}>
           <Text fontSize={'2xl'} color={'brand.900'} fontWeight={'semibold'}>
@@ -153,6 +163,23 @@ function CountDown({
       <Text as={'h2'}>Countdown To Exam</Text>
       <Text fontSize={'3xl'} fontWeight={'bold'}>
         {remainingTime}
+      </Text>
+    </Div>
+  );
+}
+
+function ActivatationReminder({ ...props }: BoxProps) {
+  return (
+    <Div
+      className="marquee-container"
+      width="100%"
+      whiteSpace="nowrap"
+      overflow="hidden"
+      {...props}
+    >
+      <Text className="marquee-text" color={'red.600'} fontSize={'16px'}>
+        Be sure to Activate your App on or before the exam day to be able to
+        take part in this Challenge
       </Text>
     </Div>
   );
