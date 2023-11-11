@@ -59,7 +59,7 @@ export default function ListSessionResults({ sessionResults }: Props) {
   return (
     <DashboardLayout>
       <Slab>
-        <SlabHeading title="Term Results" />
+        <SlabHeading title="Session Results" />
         <SlabBody>
           <ServerPaginatedTable
             scroll={true}

@@ -45,6 +45,11 @@ Route::get('/classification-groups/search', [Web\ClassificationGroupController::
 ->name('classification-groups.search');
 Route::resource('/classification-groups', Web\ClassificationGroupController::class)
     ->except(['show']);
+
+Route::get('/classification-groups/{classificationGroup}/promote-students/{destinationClassificatiinGroup?}', [Web\Students\PromoteStudentsController::class, 'create'])
+->name('classification-groups.promote-students.create');
+Route::post('/classification-groups/{classificationGroup}/promote-students', [Web\Students\PromoteStudentsController::class, 'store'])
+->name('classification-groups.promote-students.store');
     
 Route::get('/students/search', Web\Students\SearchStudentController::class)
     ->name('students.search');

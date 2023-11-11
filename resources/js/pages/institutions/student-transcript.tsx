@@ -21,7 +21,7 @@ import ImagePaths from '@/util/images';
 import { LabelText } from '@/components/result-helper-components';
 import '@/../../public/style/result-sheet.css';
 import '@/../../public/style/result/session-result.css';
-import TranscriptUtil, { TranscriptTerm } from '@/util/TranscriptUtil';
+import TranscriptUtil, { TranscriptSession } from '@/util/TranscriptUtil';
 import startCase from 'lodash/startCase';
 
 interface Props {
@@ -111,164 +111,94 @@ export default function StudentTranscript({
           </HStack>
         </VStack>
         <VStack align={'stretch'} spacing={4}>
-          {Object.entries(transcriptUtil.getTranscript()).map(
-            ([sessionId, transcriptSession]) => {
-              const sessionResult = transcriptSession.sessionResult;
-              return (
-                <Div mt={4}>
-                  <Text
-                    textAlign={'center'}
-                    fontSize={'3xl'}
-                    fontWeight={'semibold'}
-                  >{`${sessionResult.academic_session?.title} Session`}</Text>
-                  <Grid
-                    templateColumns={'repeat(2, 1fr)'}
-                    key={`session${sessionId}`}
-                    gap={2}
-                  >
-                    {Object.entries(transcriptSession.termResultDetail).map(
-                      ([term, transcriptTerm]) => (
-                        <GridItem>
-                          <DisplayTermResult transcriptTerm={transcriptTerm} />
-                        </GridItem>
-                      )
-                    )}
-                    <GridItem>
-                      <DisplaySessionResult sessionResult={sessionResult} />
-                    </GridItem>
-                  </Grid>
-                </Div>
-              );
-            }
-          )}
+          <Grid templateColumns={'repeat(2, 1fr)'} gap={3} mt={4}>
+            {Object.entries(transcriptUtil.getTranscript()).map(
+              ([sessionId, transcriptSession]) => {
+                return (
+                  <GridItem key={`session${sessionId}`}>
+                    <DisplaySessionResult
+                      transcriptSession={transcriptSession}
+                      transcriptUtil={transcriptUtil}
+                    />
+                  </GridItem>
+                );
+              }
+            )}
+          </Grid>
         </VStack>
       </Div>
     </Div>
   );
 }
 
-function DisplayTermResult({
-  transcriptTerm,
-}: {
-  transcriptTerm: TranscriptTerm;
-}) {
-  const { courseResults, termResult } = transcriptTerm;
-
-  const summary = [
-    { label: 'Total Score', value: termResult.total_score },
-    { label: 'Average', value: termResult.average },
-    { label: 'Position', value: termResult.position },
-    { label: 'Class', value: termResult.classification?.title },
-  ];
-
-  return (
-    <Div>
-      <table className="result-table">
-        <thead>
-          <tr>
-            <td colSpan={10} style={{ fontWeight: 'bold' }}>
-              <Text textAlign={'center'}>{`${
-                termResult.academic_session?.title
-              } - ${startCase(termResult.term)} Term Result`}</Text>
-            </td>
-          </tr>
-          <tr>
-            <th>Subject</th>
-            <th>Assessment</th>
-            <th>Exam</th>
-            <th>Result</th>
-            <th>Grade</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(courseResults).map(([courseId, courseResult]) => {
-            return (
-              <tr key={courseId}>
-                <td>
-                  <Text fontWeight={'semibold'}>
-                    {courseResult.course?.title}
-                  </Text>
-                </td>
-                <td style={{ maxWidth: '110px' }}>
-                  {Object.entries(courseResult.assessment_values).map(
-                    ([title, value]) => (
-                      <Text
-                        key={title}
-                        whiteSpace={'nowrap'}
-                        textAlign={'left'}
-                        as={'div'}
-                        size={'sm'}
-                      >
-                        <Text
-                          as={'span'}
-                          maxW={'70px'}
-                          textOverflow={'ellipsis'}
-                          size={'sm'}
-                        >
-                          {startCase(title.split('_')[0])}:
-                        </Text>
-                        <Text as={'span'} ml={2}>
-                          {value?.toFixed(1)}
-                        </Text>
-                      </Text>
-                    )
-                  )}
-                </td>
-                <td>{courseResult.exam}</td>
-                <td>{courseResult.result}</td>
-                <td>{ResultUtil.getGrade(courseResult.result)[1]}</td>
-              </tr>
-            );
-          })}
-          {summary.map(({ label, value }) => (
-            <tr key={label}>
-              <td colSpan={4}>
-                <Text fontWeight={'bold'}>{label}</Text>
-              </td>
-              <td>{value}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </Div>
-  );
-}
-
 function DisplaySessionResult({
-  sessionResult,
+  transcriptSession,
+  transcriptUtil,
 }: {
-  sessionResult: SessionResult;
+  transcriptSession: TranscriptSession;
+  transcriptUtil: TranscriptUtil;
 }) {
+  const { sessionResult, termResultDetail } = transcriptSession;
+  // console.log('termResultDetail', termResultDetail);
+
+  const subjects = transcriptUtil.getSessionSubjects(
+    sessionResult.academic_session_id
+  );
+  if (!subjects || Object.keys(subjects).length < 1) {
+    return null;
+  }
   if (!sessionResult || Object.keys(sessionResult).length < 1) {
     return null;
   }
-  const summary = [
-    { label: 'Total Score', value: sessionResult.result },
-    { label: 'Average', value: sessionResult.average },
-    { label: 'Grade', value: sessionResult.grade },
-    { label: 'Remark', value: sessionResult.remark },
-    { label: 'Class', value: sessionResult.classification?.title },
-  ];
 
   return (
     <Div>
+      <Text
+        fontWeight={'semibold'}
+        textAlign={'center'}
+      >{`${sessionResult.classification?.title} - ${sessionResult.academic_session?.title} Session`}</Text>
       <table className="result-table">
         <thead>
           <tr>
-            <th
-              colSpan={10}
-            >{`${sessionResult.academic_session?.title} Session Summary`}</th>
+            <th></th>
+            {Object.entries(termResultDetail).map(([term]) => (
+              <th colSpan={2} key={term}>
+                <Text fontSize={'small'}>{startCase(term)} Term</Text>
+              </th>
+            ))}
+          </tr>
+          <tr>
+            <th>Subjects</th>
+            {Object.entries(termResultDetail).map(([term, transcriptTerm]) => (
+              <React.Fragment key={`result${term}`}>
+                <th>Result</th>
+                <th>Grade</th>
+              </React.Fragment>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {summary.map(({ label, value }) => (
-            <tr key={label}>
-              <td>
-                <Text fontWeight={'semibold'}>{label}</Text>
-              </td>
-              <td>{value}</td>
-            </tr>
-          ))}
+          {Object.entries(subjects).map(([courseId, course]) => {
+            return (
+              <tr key={course.title}>
+                <td>
+                  <Text>{course.title}</Text>
+                </td>
+                {Object.entries(termResultDetail).map(
+                  ([term, transcriptTerm]) => {
+                    const courseResult =
+                      transcriptTerm.courseResults?.[course.id];
+                    return (
+                      <React.Fragment key={`result${term}`}>
+                        <td>{courseResult?.result}</td>
+                        <td>{ResultUtil.getGrade(courseResult?.result)[0]}</td>
+                      </React.Fragment>
+                    );
+                  }
+                )}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </Div>

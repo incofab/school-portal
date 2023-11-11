@@ -1,6 +1,6 @@
 import React from 'react';
 import { ClassificationGroup } from '@/types/models';
-import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
+import { HStack, IconButton, Icon, Text, Button } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -16,6 +16,8 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
+import SelectClassGroupModal from '@/components/modals/select-class-group-modal';
+import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 
 interface Props {
   classificationgroups: PaginationResponse<ClassificationGroup>;
@@ -28,6 +30,7 @@ export default function ListClassificationGroup({
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
+  const classGroupModal = useModalValueToggle<ClassificationGroup>();
 
   async function deleteItem(obj: ClassificationGroup) {
     const res = await deleteForm.submit((data, web) =>
@@ -85,6 +88,13 @@ export default function ListClassificationGroup({
                     colorScheme={'red'}
                   />
                 </DestructivePopover>
+                <Button
+                  variant={'link'}
+                  colorScheme={'brand'}
+                  onClick={() => classGroupModal.open(row)}
+                >
+                  Promote Student
+                </Button>
               </HStack>
             ),
           },
@@ -116,6 +126,20 @@ export default function ListClassificationGroup({
           />
         </SlabBody>
       </Slab>
+      {classGroupModal.state && (
+        <SelectClassGroupModal
+          {...classGroupModal.props}
+          classificationGroups={classificationgroups.data}
+          onSuccess={(classificationgroupId) =>
+            Inertia.visit(
+              instRoute('classification-groups.promote-students.create', [
+                classGroupModal.state,
+                classificationgroupId,
+              ])
+            )
+          }
+        />
+      )}
     </DashboardLayout>
   );
 }

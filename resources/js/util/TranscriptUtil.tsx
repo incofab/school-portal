@@ -3,6 +3,7 @@ import {
   Assessment,
   ClassResultInfo,
   Classification,
+  Course,
   CourseResult,
   CourseResultInfo,
   LearningEvaluation,
@@ -27,6 +28,11 @@ export interface TranscriptTerm {
 
 class TranscriptUtil {
   private transcript: Transcript;
+  private sessionSubjects: {
+    [sessionId: number]: {
+      [course_id: number]: Course;
+    };
+  } = {};
   constructor(
     private student: Student,
     private courseResults: CourseResult[],
@@ -39,10 +45,14 @@ class TranscriptUtil {
   getTranscript() {
     return this.transcript;
   }
+  getSessionSubjects(academic_session_id: number) {
+    return this.sessionSubjects?.[academic_session_id];
+  }
 
   private formatResult() {
     const transcript: Transcript = {} as Transcript;
     this.courseResults.map((courseResult) => {
+      this.setSessionSubjects(courseResult);
       const transcriptSession =
         transcript[courseResult.academic_session_id] ??
         ({} as TranscriptSession);
@@ -61,7 +71,7 @@ class TranscriptUtil {
           this.getTermResult(courseResult) ?? ({} as TermResult);
       }
       transcriptTerm.courseResults = transcriptTerm.courseResults ?? {};
-      transcriptTerm.courseResults[courseResult.id] = courseResult;
+      transcriptTerm.courseResults[courseResult.course_id] = courseResult;
 
       // build
       transcript[courseResult.academic_session_id] = {
@@ -73,6 +83,20 @@ class TranscriptUtil {
       };
     });
     return transcript;
+  }
+
+  private setSessionSubjects(courseResult: CourseResult) {
+    if (
+      this.sessionSubjects?.[courseResult.academic_session_id]?.[
+        courseResult.course_id
+      ]
+    ) {
+      return;
+    }
+    const session =
+      this.sessionSubjects[courseResult.academic_session_id] ?? {};
+    session[courseResult.course_id] = courseResult.course!;
+    this.sessionSubjects[courseResult.academic_session_id] = session;
   }
 
   getTermResult(courseResult: CourseResult) {

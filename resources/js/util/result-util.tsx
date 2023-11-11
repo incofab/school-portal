@@ -101,7 +101,7 @@ const ResultUtil = {
       grade = 'A2';
       remark = 'Excellent';
       label = '80 - 89';
-    } else {
+    } else if (score < 100) {
       grade = 'A1';
       remark = 'Distinction';
       label = '90 - 100';

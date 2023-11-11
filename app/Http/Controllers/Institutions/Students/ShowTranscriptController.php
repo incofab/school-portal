@@ -31,6 +31,12 @@ class ShowTranscriptController extends Controller
       ->with('classification', 'academicSession')
       ->get();
 
+    abort_if(
+      $sessionResults->isEmpty(),
+      403,
+      'This student has no Session Result yet'
+    );
+
     return inertia('institutions/student-transcript', [
       'student' => $student,
       'courseResults' => $courseResults,

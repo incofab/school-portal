@@ -27,8 +27,9 @@ export default function MySelect<T>({
     return result;
   }
 
-  const neutral0 = useColorModeValue('white', '#2d3748');
-  const primary25 = useColorModeValue('#cbd5e0', '#1a202c');
+  const backgroundColor = useColorModeValue('white', '#2d3748');
+  const hoverColor = useColorModeValue('#cbd5e0', '#1a202c');
+  const textColor = useColorModeValue('#44596e', '#cbd5e0');
 
   return (
     <Select
@@ -40,8 +41,9 @@ export default function MySelect<T>({
         borderRadius: 0,
         colors: {
           ...theme.colors,
-          primary25: primary25,
-          neutral0: neutral0,
+          primary25: hoverColor,
+          neutral0: backgroundColor,
+          neutral80: textColor,
         },
       })}
     />

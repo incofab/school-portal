@@ -171,15 +171,17 @@ export default function Profile({ user, institutionUser }: Props) {
                     </DestructivePopover>
                   </>
                 )}
-                <Button
-                  as={InertiaLink}
-                  href={instRoute('students.transcript', [student])}
-                  variant={'outline'}
-                  colorScheme="brand"
-                  size={'sm'}
-                >
-                  Transcript
-                </Button>
+                {student && (
+                  <Button
+                    as={InertiaLink}
+                    href={instRoute('students.transcript', [student])}
+                    variant={'outline'}
+                    colorScheme="brand"
+                    size={'sm'}
+                  >
+                    Transcript
+                  </Button>
+                )}
               </HStack>
               <FormControl isInvalid={!!form.errors.photo}>
                 <Div
