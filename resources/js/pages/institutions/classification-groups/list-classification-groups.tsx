@@ -30,7 +30,8 @@ export default function ListClassificationGroup({
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
-  const classGroupModal = useModalValueToggle<ClassificationGroup>();
+  const classGroupModal =
+    useModalValueToggle<[ClassificationGroup, string, string]>();
 
   async function deleteItem(obj: ClassificationGroup) {
     const res = await deleteForm.submit((data, web) =>
@@ -91,7 +92,13 @@ export default function ListClassificationGroup({
                 <Button
                   variant={'link'}
                   colorScheme={'brand'}
-                  onClick={() => classGroupModal.open(row)}
+                  onClick={() =>
+                    classGroupModal.open([
+                      row,
+                      'Select Destination Class',
+                      'Intended Destination Class',
+                    ])
+                  }
                 >
                   Promote Student
                 </Button>
@@ -133,11 +140,13 @@ export default function ListClassificationGroup({
           onSuccess={(classificationgroupId) =>
             Inertia.visit(
               instRoute('classification-groups.promote-students.create', [
-                classGroupModal.state,
+                classGroupModal.state![0],
                 classificationgroupId,
               ])
             )
           }
+          headerTitle={classGroupModal.state[1]}
+          label={classGroupModal.state[2]}
         />
       )}
     </DashboardLayout>
