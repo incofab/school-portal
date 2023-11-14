@@ -1,5 +1,11 @@
 import React from 'react';
-import { Checkbox, FormControl, Spacer, VStack } from '@chakra-ui/react';
+import {
+  Checkbox,
+  Divider,
+  FormControl,
+  Spacer,
+  VStack,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
@@ -23,6 +29,7 @@ export default function ChangeMultipleStudentClass({ students }: Props) {
   const webForm = useWebForm({
     students: [] as number[],
     destination_class: '',
+    move_to_alumni: false,
   });
 
   const submit = async () => {
@@ -47,21 +54,40 @@ export default function ChangeMultipleStudentClass({ students }: Props) {
               onSubmit={preventNativeSubmit(submit)}
               align={'stretch'}
             >
-              <FormControlBox
-                title="Destination Class"
-                form={webForm as any}
-                formKey="destination_class"
-              >
-                <ClassificationSelect
-                  value={webForm.data.destination_class}
-                  isMulti={false}
-                  isClearable={true}
-                  onChange={(e: any) =>
-                    webForm.setValue('destination_class', e.value)
+              {!webForm.data.move_to_alumni && (
+                <FormControlBox
+                  title="Destination Class"
+                  form={webForm as any}
+                  formKey="destination_class"
+                >
+                  <ClassificationSelect
+                    value={webForm.data.destination_class}
+                    isMulti={false}
+                    isClearable={true}
+                    onChange={(e: any) =>
+                      webForm.setValue('destination_class', e.value)
+                    }
+                    required
+                  />
+                </FormControlBox>
+              )}
+              <FormControl>
+                <Checkbox
+                  isChecked={webForm.data.move_to_alumni}
+                  onChange={(e) =>
+                    webForm.setData({
+                      ...webForm.data,
+                      move_to_alumni: e.currentTarget.checked,
+                      destination_class: '',
+                    })
                   }
-                  required
-                />
-              </FormControlBox>
+                  size={'md'}
+                  colorScheme="brand"
+                >
+                  Move selected students to alumni
+                </Checkbox>
+              </FormControl>
+              <Divider />
               <Spacer height={2} />
               {students.map((item) => (
                 <Checkbox
