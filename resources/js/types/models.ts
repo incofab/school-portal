@@ -14,6 +14,7 @@ export interface Row {
 
 export interface AcademicSession extends Row {
   title: string;
+  order_index: number;
 }
 
 export interface User extends Row {

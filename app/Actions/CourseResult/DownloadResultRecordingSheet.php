@@ -87,7 +87,11 @@ class DownloadResultRecordingSheet
     $row++;
 
     $students = Student::query()
+      ->select('students.*')
+      ->join('users', 'students.user_id', 'users.id')
       ->where('classification_id', $this->classification->id)
+      ->with('user')
+      ->oldest('users.last_name')
       ->get();
 
     /** @var \App\Models\Student $student */
@@ -133,7 +137,7 @@ class DownloadResultRecordingSheet
 
     $this->workSheet->setCellValue(
       $this->columnIndex['student_name']->index . $row,
-      $student->user->full_name
+      "{$student->user->last_name} {$student->user->first_name} {$student->user->other_names}"
     );
   }
 }

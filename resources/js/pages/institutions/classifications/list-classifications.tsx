@@ -1,6 +1,6 @@
 import React from 'react';
 import { Classification } from '@/types/models';
-import { HStack, IconButton, Icon, Button, Text } from '@chakra-ui/react';
+import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -19,6 +19,7 @@ import useIsAdmin from '@/hooks/use-is-admin';
 import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import MigrateClassStudentsModal from '@/components/modals/migrate-class-students-modal';
 import UploadClassificationModal from '@/components/modals/upload-classification-modal';
+import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 
 interface Props {
   classifications: PaginationResponse<Classification>;
@@ -60,7 +61,7 @@ export default function ListClassification({ classifications }: Props) {
     },
     {
       label: 'Form Teacher',
-      render: (row) => row.form_teacher?.full_name ?? '',
+      render: (row) => <DisplayUserFullname user={row.form_teacher} />,
     },
     ...(isAdmin
       ? [

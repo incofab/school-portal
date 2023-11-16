@@ -10,6 +10,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import SessionResultsTableFilters from '@/components/table-filters/session-result-table-filters';
 import { LinkButton } from '@/components/buttons';
+import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 
 interface Props {
   sessionResults: PaginationResponse<SessionResult>;
@@ -23,6 +24,7 @@ export default function ListSessionResults({ sessionResults }: Props) {
     {
       label: 'User',
       value: 'student.user.full_name',
+      render: (row) => <DisplayUserFullname user={row.student?.user} />,
     },
     {
       label: 'Class',

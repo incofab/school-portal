@@ -22,10 +22,13 @@ class DownloadClassStudentsController extends Controller
     StudentUITableFilters::make(
       [...$request->all(), 'classification' => $classification->id],
       $query
-    )->filterQuery();
+    )
+      ->joinUser()
+      ->filterQuery();
 
     $students = $query
       ->with('user')
+      ->oldest('users.last_name')
       ->oldest('students.id')
       ->get();
 

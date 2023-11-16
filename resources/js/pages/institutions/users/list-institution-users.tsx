@@ -18,6 +18,7 @@ import { Inertia } from '@inertiajs/inertia';
 import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
+import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 
 interface Props {
   institutionUsers: PaginationResponse<InstitutionUser>;
@@ -43,6 +44,7 @@ export default function ListStudents({ institutionUsers }: Props) {
     {
       label: 'Name',
       value: 'user.full_name',
+      render: (row) => <DisplayUserFullname user={row.user} />,
     },
     {
       label: 'Email',

@@ -27,6 +27,7 @@ import { Inertia } from '@inertiajs/inertia';
 import useIsAdmin from '@/hooks/use-is-admin';
 import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
+import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 
 interface Props {
   students: PaginationResponse<Student>;
@@ -68,6 +69,7 @@ function ListStudents({ students }: Props) {
     {
       label: 'Name',
       value: 'user.full_name',
+      render: (row) => <DisplayUserFullname user={row.user} />,
     },
     {
       label: 'Class',

@@ -2,6 +2,7 @@
 namespace App\Actions\CourseResult;
 
 use App\DTO\FullTermResult;
+use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\Institution;
@@ -35,12 +36,19 @@ class ProcessSessionResult
       ->where('academic_session_id', $this->academicSession->id);
 
     $termResults = (clone $queryTermResults)->get();
-    $numOfTerms = (clone $queryTermResults)->distinct('term')->count();
+    $availableTerms = (clone $queryTermResults)
+      ->groupBy('term')
+      ->pluck('term')
+      ->toArray();
     [$studentsTotal, $mappedTermResult] = $this->getTotalScoreByStudents(
       $termResults
     );
 
-    $this->persistSessionResult($studentsTotal, $mappedTermResult, $numOfTerms);
+    $this->persistSessionResult(
+      $studentsTotal,
+      $mappedTermResult,
+      $availableTerms
+    );
   }
 
   private function getTotalScoreByStudents(Collection $termResults)
@@ -67,9 +75,9 @@ class ProcessSessionResult
   private function persistSessionResult(
     array $studentsTotalScore,
     array $mappedTermResult,
-    int $numOfTerms
+    $availableTerms
   ) {
-    if ($numOfTerms !== 3) {
+    if (in_array(TermType::Third, $availableTerms)) {
       return;
     }
 

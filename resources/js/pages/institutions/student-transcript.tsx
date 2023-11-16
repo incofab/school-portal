@@ -112,18 +112,21 @@ export default function StudentTranscript({
         </VStack>
         <VStack align={'stretch'} spacing={4}>
           <Grid templateColumns={'repeat(2, 1fr)'} gap={3} mt={4}>
-            {Object.entries(transcriptUtil.getTranscript()).map(
-              ([sessionId, transcriptSession]) => {
+            {/* {Object.entries(transcriptUtil.getTranscript()).map( */}
+            {transcriptUtil
+              .getSortedTranscriptArr()
+              .map((transcriptSession) => {
                 return (
-                  <GridItem key={`session${sessionId}`}>
+                  <GridItem
+                    key={`session${transcriptSession.sessionResult.id}`}
+                  >
                     <DisplaySessionResult
                       transcriptSession={transcriptSession}
                       transcriptUtil={transcriptUtil}
                     />
                   </GridItem>
                 );
-              }
-            )}
+              })}
           </Grid>
         </VStack>
       </Div>

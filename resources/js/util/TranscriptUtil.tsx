@@ -45,6 +45,13 @@ class TranscriptUtil {
   getTranscript() {
     return this.transcript;
   }
+  getSortedTranscriptArr() {
+    return Object.values(this.transcript).sort(
+      (a, b) =>
+        a.sessionResult.academic_session!.order_index -
+        b.sessionResult.academic_session!.order_index
+    );
+  }
   getSessionSubjects(academic_session_id: number) {
     return this.sessionSubjects?.[academic_session_id];
   }

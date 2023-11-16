@@ -30,6 +30,7 @@ import useSharedProps from '@/hooks/use-shared-props';
 import CourseTeacherTableFilters from '@/components/table-filters/course-teacher-table-filters';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import { InertiaLink } from '@inertiajs/inertia-react';
+import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 
 interface Props {
   courseTeachers: PaginationResponse<CourseTeacher>;
@@ -56,6 +57,7 @@ function ListLecturerCourses({ courseTeachers }: Props) {
     {
       label: 'Teacher',
       value: 'user.full_name',
+      render: (row) => <DisplayUserFullname user={row.user} />,
     },
     {
       label: 'Subject',

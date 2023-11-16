@@ -13,7 +13,7 @@ class StudentUITableFilters extends UserUITableFilters
     ];
   }
 
-  private function joinUser(): static
+  function joinUser(): static
   {
     $this->callOnce(
       'joinUser',
