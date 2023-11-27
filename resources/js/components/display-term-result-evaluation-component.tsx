@@ -41,7 +41,7 @@ export default function DisplayTermResultEvaluation({
 
   return (
     <Div>
-      <table>
+      <table style={{ width: '100%', textAlign: 'left' }}>
         <thead>
           <tr style={{ fontWeight: 'bold' }}>
             {Object.entries(headers).map(([key, item]) => (

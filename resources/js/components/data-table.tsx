@@ -6,6 +6,7 @@ import {
   HStack,
   Spacer,
   Table,
+  TableProps,
   Tbody,
   Td,
   Text,
@@ -33,6 +34,8 @@ interface Props<T> {
   hideSearchField?: boolean;
   validFilters?: string[];
   onFilterButtonClick?: () => void;
+  //styles
+  tableProps?: TableProps;
 }
 
 export default function DataTable<T>({
@@ -44,6 +47,7 @@ export default function DataTable<T>({
   hideSearchField,
   validFilters,
   onFilterButtonClick,
+  tableProps,
 }: Props<T>) {
   function getNestedProperty(row: T, path: string): any {
     return objectGet(row, path, '');
@@ -68,7 +72,7 @@ export default function DataTable<T>({
         )}
       </HStack>
       <Divider my={2} />
-      <Table size={'sm'}>
+      <Table size={'sm'} {...tableProps}>
         <Thead>
           <Tr>
             {headers.map((header, i) => (

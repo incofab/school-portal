@@ -1,37 +1,40 @@
 body {
-    /* background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ctext x='0' y='50' font-size='12' fill='%23000'%3EOriginal Result%3C/text%3E%3C/svg%3E");
+  /* background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ctext x='0' y='50' font-size='12' fill='%23000'%3EOriginal Result%3C/text%3E%3C/svg%3E");
     background-repeat: repeat;
     background-color: white; */
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 }
 
 @media print {
-    * {
-        -webkit-print-color-adjust: exact;
-    }
-    #download-btn {
-      display: none;
-    }
+  * {
+    -webkit-print-color-adjust: exact;
+  }
+  #download-btn {
+    display: none;
+  }
 }
 .table-container {
-    width: 100%;
-    overflow-x: auto;
-    /* opacity: 0.4; */
+  width: 100%;
+  overflow-x: auto;
+  /* opacity: 0.4; */
 }
 /* .result-table {
     width: auto;
     border-collapse: collapse;
     width: 100%;
 } */
-.result-table thead{
-    background-color: #f2f2f2;
+.result-table thead {
+  background-color: #f2f2f2;
 }
-.result-table, .result-table th, .result-table td  {
-    border: 1px solid #000;
-    /* border: 2px solid #DFDFDF; */
-    border-collapse: collapse;
-    padding: 6px;
-    font-size: 14px;
+.result-table,
+.result-table th,
+.result-table td {
+  border: 1px solid #000;
+  /* border: 2px solid #DFDFDF; */
+  border-collapse: collapse;
+  padding: 6px;
+  font-size: 14px;
 }
 
 .result-table th:first-child,
@@ -44,18 +47,35 @@ body {
 }
 
 .vertical-header {
-    writing-mode: vertical-lr;
-    /* text-orientation: upright; */
-    height: 120px; /* Set the desired width for the header cells */
-    position: relative;
-    transform: translateX(-50%);
-    left: 50%;
+  writing-mode: vertical-lr;
+  /* text-orientation: upright; */
+  height: 120px; /* Set the desired width for the header cells */
+  position: relative;
+  transform: translateX(-50%);
+  left: 50%;
 }
 
-.result-analysis-table, .result-analysis-table td  {
-    border: 1px solid #000;
-    border-collapse: collapse;
-    padding: 8px;
-    font-weight: bold;
-    font-size: 16px;
+.result-analysis-table,
+.result-analysis-table td {
+  border: 1px solid #000;
+  border-collapse: collapse;
+  padding: 8px;
+  font-weight: bold;
+  font-size: 16px;
 }
+
+.bordered-table,
+.bordered-table th,
+.bordered-table td {
+  border: 1px solid #000;
+  padding: 4px 7px;
+  font-size: 10px;
+}
+
+.a4-page {
+  /* min-height: 650px; */
+  page-break-before: always;
+}
+/* .a4-page:last-child {
+  page-break-before: auto;
+} */

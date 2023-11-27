@@ -166,7 +166,7 @@ export interface ResultProps {
   termResult: TermResult;
   courseResults: CourseResult[];
   classResultInfo: ClassResultInfo;
-  courseResultInfoData: { [key: string | number]: CourseResultInfo };
+  courseResultInfoData: { [course_id: string | number]: CourseResultInfo };
   academicSession: AcademicSession;
   classification: Classification;
   student: Student;

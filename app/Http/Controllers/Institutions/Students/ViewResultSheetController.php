@@ -47,6 +47,7 @@ class ViewResultSheetController extends Controller
     )
       ->filterQuery()
       ->getQuery()
+      ->with('classification')
       ->first();
 
     abort_unless($termResult, 404, 'Result not found');
