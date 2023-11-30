@@ -24,7 +24,7 @@ class GetUserTokenController extends Controller
       ['reference' => $data['reference'], 'institution_id' => $institution->id],
       [
         ...collect($data)
-          ->except('vendor')
+          ->except('vendor', 'reference')
           ->toArray(),
         'meta' => ['vendor' => $data['vendor'] ?? 'examscholars']
       ]

@@ -158,6 +158,26 @@ const ResultUtil = {
       },
     });
   },
+
+  //https://stackoverflow.com/questions/18191893/generate-pdf-from-html-in-div-using-javascript#:~:text=No%20depenencies%2C%20pure%20JS
+  /*
+  function printDiv({divId, title}) {
+    let mywindow = window.open('', 'PRINT', 'height=650,width=900,top=100,left=150');
+  
+    mywindow.document.write(`<html><head><title>${title}</title>`);
+    mywindow.document.write('</head><body >');
+    mywindow.document.write(document.getElementById(divId).innerHTML);
+    mywindow.document.write('</body></html>');
+  
+    mywindow.document.close(); // necessary for IE >= 10
+    mywindow.focus(); // necessary for IE >= 10
+  
+    mywindow.print();
+    mywindow.close();
+  
+    return true;
+  }
+  */
 };
 
 export default ResultUtil;

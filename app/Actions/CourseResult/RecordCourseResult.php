@@ -5,6 +5,7 @@ use App\Actions\ResultUtil;
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;
 use App\Models\Assessment;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 
 class RecordCourseResult
 {
@@ -49,7 +50,7 @@ class RecordCourseResult
       ->first();
 
     [$result, $assessmentValues] = $this->getResultScore(
-      $courseResult?->assessment_values ?? []
+      (array) ($courseResult?->assessment_values ?? [])
     );
     CourseResult::query()->updateOrCreate($this->bindingData, [
       ...collect($this->data)

@@ -32,7 +32,7 @@ import startCase from 'lodash/startCase';
 
 interface ResultEntry {
   [studentId: string]: {
-    [key: string]: string | number;
+    ass: { [key: string]: string | number };
     exam: string;
     student_id: number;
   };
@@ -58,11 +58,11 @@ export default function RecordClassCourseResult({
     academic_session_id: currentAcademicSession.id,
     term: currentTerm,
     for_mid_term: currentlyOnMidTerm,
-    results: {} as ResultEntry,
+    result: {} as ResultEntry,
   });
 
   const submit = async () => {
-    if (Object.keys(webForm.data.results).length < 1) {
+    if (Object.keys(webForm.data.result).length < 1) {
       Inertia.visit(instRoute('course-results.index'));
       return;
     }
@@ -85,7 +85,7 @@ export default function RecordClassCourseResult({
     { label: 'Class', value: courseTeacher.classification?.title ?? '' },
     { label: 'Teacher', value: courseTeacher.user?.full_name ?? '' },
     { label: 'Session', value: currentAcademicSession.title },
-    { label: 'Term', value: String(currentTerm) },
+    { label: 'Term', value: startCase(String(currentTerm)) },
     ...(currentlyOnMidTerm ? [{ label: 'For Mid Term', value: 'Yes' }] : []),
   ];
 
@@ -103,9 +103,9 @@ export default function RecordClassCourseResult({
           {students.map((student) => {
             const existingResult =
               student['course_results']?.[0] ?? ({} as CourseResult);
-            const result = webForm.data.results[student.id] ?? {
+            const result = webForm.data.result[student.id] ?? {
               ...existingResult,
-              ...(existingResult?.assessment_values ?? {}),
+              ass: existingResult?.assessment_values ?? {},
             };
             result.student_id = student.id;
             return (
@@ -124,8 +124,8 @@ export default function RecordClassCourseResult({
                           value={result.exam}
                           type="number"
                           onChange={(e) =>
-                            webForm.setValue('results', {
-                              ...webForm.data.results,
+                            webForm.setValue('result', {
+                              ...webForm.data.result,
                               [student.id]: {
                                 ...result,
                                 exam: e.currentTarget.value,
@@ -156,15 +156,18 @@ export default function RecordClassCourseResult({
                               {startCase(assessment.raw_title)}
                             </FormLabel>
                             <Input
-                              value={result[assessment.raw_title] ?? ''}
+                              value={result['ass'][assessment.raw_title] ?? ''}
                               type="number"
                               onChange={(e) =>
-                                webForm.setValue('results', {
-                                  ...webForm.data.results,
+                                webForm.setValue('result', {
+                                  ...webForm.data.result,
                                   [student.id]: {
                                     ...result,
-                                    [assessment.raw_title]:
-                                      e.currentTarget.value,
+                                    ass: {
+                                      ...result.ass,
+                                      [assessment.raw_title]:
+                                        e.currentTarget.value,
+                                    },
                                   },
                                 })
                               }

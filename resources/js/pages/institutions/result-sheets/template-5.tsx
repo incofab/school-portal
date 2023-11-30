@@ -130,7 +130,7 @@ export default function Template5({
     ...assessments.map((assessment) => ({
       label: assessment.title,
       render: (courseResult: CourseResult) =>
-        String(courseResult.assessment_values[assessment.raw_title] ?? '-'),
+        String(courseResult.assessment_values[assessment.raw_title] ?? ''),
     })),
     {
       label: 'Exam',
