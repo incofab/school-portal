@@ -1,7 +1,9 @@
 <?php
 namespace App\Actions;
 
+use App\Enums\S3Folder;
 use App\Models\Course;
+use Illuminate\Database\Eloquent\Collection;
 
 class ExportCourse
 {
@@ -29,9 +31,10 @@ class ExportCourse
     ini_set('max_execution_time', 480);
 
     $this->course->load('examContent');
+    /** @var Collection|\App\Models\CourseSession[] $sessions */
     $sessions = $this->course
       ->sessions()
-      ->with('passages', 'instructions')
+      ->with('passages', 'instructions', 'institution')
       ->get();
     $summaries = $this->course->summaries()->get();
 
@@ -60,7 +63,6 @@ class ExportCourse
       );
     }
 
-    /** @var \App\Models\Session $session */
     foreach ($sessions as $session) {
       $question = $session
         ->questions()
@@ -76,7 +78,10 @@ class ExportCourse
     $imgBaseFolder = "{$this->contentFolder}/img";
     foreach ($sessions as $session) {
       AwsFileHelper::downloadFromS3(
-        "{$this->course->id}/{$session->id}",
+        $session->institution->folder(
+          S3Folder::CCD,
+          "{$this->course->id}/{$session->id}"
+        ),
         "$imgBaseFolder/{$session->id}"
       );
     }

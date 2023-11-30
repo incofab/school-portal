@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Institutions;
 
+use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use Illuminate\Http\Request;
@@ -50,7 +51,10 @@ class InstitutionController extends Controller
     $request->validate([
       'photo' => ['required', 'image', 'mimes:jpg,png,jpeg', 'max:2048']
     ]);
-    $imagePath = $request->photo->store('avatars/institution', 's3_public');
+    $imagePath = $request->photo->store(
+      $institution->folder(S3Folder::Base),
+      's3_public'
+    );
     $publicUrl = Storage::disk('s3_public')->url($imagePath);
 
     $institution->fill(['photo' => $publicUrl])->save();

@@ -1,6 +1,7 @@
 <?php
 namespace App\Actions;
 
+use App\Enums\S3Folder;
 use App\Models\Course;
 use App\Models\CourseSession;
 use App\Models\Instruction;
@@ -96,7 +97,10 @@ class UploadCourseContent
     if (!file_exists($sessionImagesFolder)) {
       return;
     }
-    $destinationFolder = "{$destinationCourseSession->course_id}/{$destinationCourseSession->id}";
+    $destinationFolder = $destinationCourseSession->institution->folder(
+      S3Folder::CCD,
+      "{$destinationCourseSession->course_id}/{$destinationCourseSession->id}"
+    );
 
     AwsFileHelper::uploadDirectory($sessionImagesFolder, $destinationFolder);
   }

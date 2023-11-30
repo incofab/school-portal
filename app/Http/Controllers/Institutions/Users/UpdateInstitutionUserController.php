@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions\Users;
 
 use App\Actions\RecordStaff;
+use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateStaffRequest;
 use App\Models\Institution;
@@ -61,7 +62,10 @@ class UpdateInstitutionUserController extends Controller
     $request->validate([
       'photo' => ['required', 'image', 'mimes:jpg,png,jpeg', 'max:2048']
     ]);
-    $imagePath = $request->photo->store('avatars/users', 's3_public');
+    $imagePath = $request->photo->store(
+      S3Folder::UserAvartars->value,
+      's3_public'
+    );
     $publicUrl = Storage::disk('s3_public')->url($imagePath);
 
     $user->fill(['photo' => $publicUrl])->save();

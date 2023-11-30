@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Institutions;
 
 use App\Enums\InstitutionSettingType;
 use App\Enums\InstitutionUserType;
+use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\InstitutionSetting;
@@ -57,7 +58,10 @@ class InstitutionSettingController extends Controller
     ]);
 
     if ($request->photo) {
-      $imagePath = $request->photo->store('avatars/settings', 's3_public');
+      $imagePath = $request->photo->store(
+        $institution->folder(S3Folder::Settings),
+        's3_public'
+      );
       $publicUrl = Storage::disk('s3_public')->url($imagePath);
       $data['value'] = $publicUrl;
     }

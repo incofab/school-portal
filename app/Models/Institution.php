@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\S3Folder;
 use App\Support\Queries\InstitutionQueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -65,6 +66,13 @@ class Institution extends Model
     abort_unless($institutionModel, 403, 'Institution not found for this user');
 
     return $institutionModel;
+  }
+
+  /** Return the institution folder without a leading or preceding slash */
+  function folder(S3Folder $s3Folder = S3Folder::Base, $append = '')
+  {
+    $dir = "institutions/{$this->id}/{$s3Folder->value}";
+    return $append ? "$dir/$append" : $dir;
   }
 
   static function generateInstitutionCode()
@@ -171,5 +179,10 @@ class Institution extends Model
   function exams()
   {
     return $this->hasMany(Exam::class);
+  }
+
+  function tokenUsers()
+  {
+    return $this->hasMany(TokenUser::class);
   }
 }
