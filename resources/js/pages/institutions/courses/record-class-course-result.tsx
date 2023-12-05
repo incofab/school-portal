@@ -50,7 +50,7 @@ export default function RecordClassCourseResult({
   students,
   assessments,
 }: Props) {
-  const { handleResponseToast } = useMyToast();
+  const { handleResponseToast, toastError } = useMyToast();
   const { currentAcademicSession, currentTerm, currentlyOnMidTerm } =
     useSharedProps();
   const { instRoute } = useInstitutionRoute();
@@ -101,6 +101,19 @@ export default function RecordClassCourseResult({
     });
     const totalScore = score + Number(result.exam);
     return isNaN(totalScore) ? '' : totalScore;
+  }
+
+  function isValidScore(score: number | string, maxScore: number) {
+    score = Number(score);
+    if (isNaN(score)) {
+      toastError(`Score invalid. It must be a number`);
+      return false;
+    }
+    if (score > maxScore) {
+      toastError(`Score cannot be greater than ${maxScore}`);
+      return false;
+    }
+    return true;
   }
 
   return (
@@ -156,15 +169,25 @@ export default function RecordClassCourseResult({
                         <Input
                           value={result.exam}
                           type="number"
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            if (
+                              !isValidScore(
+                                e.currentTarget.value,
+                                100 -
+                                  (Number(studentTotalScore) -
+                                    Number(result.exam))
+                              )
+                            ) {
+                              return;
+                            }
                             webForm.setValue('result', {
                               ...webForm.data.result,
                               [student.id]: {
                                 ...result,
                                 exam: e.currentTarget.value,
                               },
-                            })
-                          }
+                            });
+                          }}
                         />
                       </FormControl>
                     </WrapItem>
@@ -199,7 +222,15 @@ export default function RecordClassCourseResult({
                             <Input
                               value={result['ass'][assessment.raw_title] ?? ''}
                               type="number"
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                if (
+                                  !isValidScore(
+                                    e.currentTarget.value,
+                                    assessment.max
+                                  )
+                                ) {
+                                  return;
+                                }
                                 webForm.setValue('result', {
                                   ...webForm.data.result,
                                   [student.id]: {
@@ -210,8 +241,8 @@ export default function RecordClassCourseResult({
                                         e.currentTarget.value,
                                     },
                                   },
-                                })
-                              }
+                                });
+                              }}
                             />
                           </FormControl>
                         </WrapItem>

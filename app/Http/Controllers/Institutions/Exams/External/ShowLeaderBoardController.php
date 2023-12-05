@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Exams\External;
 
+use App\Enums\ExamStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Institution;
@@ -21,6 +22,7 @@ class ShowLeaderBoardController extends Controller
         DB::raw('COUNT(id) AS exam_count')
       )
       ->where('institution_id', $institution->id)
+      ->where('exams.status', ExamStatus::Ended)
       ->with('examable')
       ->groupBy('examable_id', 'examable_type')
       ->orderBy('total_score', 'desc')

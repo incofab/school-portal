@@ -155,21 +155,23 @@ export default function ExamLayout({
           ...(breadCrumbItems ?? []),
         ]}
       />
-      {title && (
-        <>
-          <Text
-            fontWeight={'bold'}
-            fontSize={'3xl'}
-            color={'brand.600'}
-            textAlign={'center'}
-            mt={3}
-          >
-            {title}
-          </Text>
-          <Divider my={2} />{' '}
-        </>
-      )}
-      <Div py={'20px'}>{children}</Div>
+      <Div px={'8px'}>
+        {title && (
+          <>
+            <Text
+              fontWeight={'bold'}
+              fontSize={'3xl'}
+              color={'brand.600'}
+              textAlign={'center'}
+              mt={3}
+            >
+              {title}
+            </Text>
+            <Divider my={2} />{' '}
+          </>
+        )}
+        <Div py={'20px'}>{children}</Div>
+      </Div>
     </Div>
   );
 }

@@ -31,12 +31,12 @@ export default function ShowLeaderBoard({ leaderBoardExams }: Props) {
                 <HStack justify={'space-between'}>
                   <HStack>
                     <Avatar
-                      src={avatarUrl(exam.examable.name)}
+                      src={avatarUrl(exam.examable?.name)}
                       width={'40px'}
                       height={'40px'}
                       border={'2px solid #2a8864'}
                     />
-                    <Text fontSize={'2xl'}>{exam.examable.name}</Text>
+                    <Text fontSize={'2xl'}>{exam.examable?.name}</Text>
                   </HStack>
                   <HStack>
                     <Icon

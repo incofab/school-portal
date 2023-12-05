@@ -143,9 +143,9 @@ export default function DisplayExam({
       <Tabs
         key={key}
         index={examUtil.getTabManager().getCurrentTabIndex()}
-        mx={{ base: '10px', md: '30px' }}
+        mx={{ base: '5px', md: '30px' }}
       >
-        <TabList>
+        <TabList overflowX={'auto'}>
           {exam.exam_courseables?.map((item, index) => (
             <Tab
               key={item.id}
