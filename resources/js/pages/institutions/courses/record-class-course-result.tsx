@@ -4,6 +4,7 @@ import {
   CardBody,
   FormControl,
   FormLabel,
+  HStack,
   Input,
   Spacer,
   Text,
@@ -89,6 +90,19 @@ export default function RecordClassCourseResult({
     ...(currentlyOnMidTerm ? [{ label: 'For Mid Term', value: 'Yes' }] : []),
   ];
 
+  function getStudentTotal(result: {
+    ass: { [key: string]: string | number };
+    exam: string;
+    student_id: number;
+  }) {
+    let score = 0;
+    Object.entries(result.ass).forEach(([, assScore]) => {
+      score += Number(assScore);
+    });
+    const totalScore = score + Number(result.exam);
+    return isNaN(totalScore) ? '' : totalScore;
+  }
+
   return (
     <DashboardLayout>
       <Div>
@@ -108,16 +122,35 @@ export default function RecordClassCourseResult({
               ass: existingResult?.assessment_values ?? {},
             };
             result.student_id = student.id;
+            const studentTotalScore = getStudentTotal(result);
             return (
               <Card key={student.id + 'exam' + webForm.data.term} mt={2}>
                 <CardBody>
-                  <Text display={'block'} fontWeight={'semibold'} mb={3}>
-                    {student.user!.full_name}
-                  </Text>
+                  <HStack align={'stretch'}>
+                    <Text display={'block'} fontWeight={'semibold'} mb={3}>
+                      {student.user!.full_name}
+                    </Text>
+                    <Spacer />
+                    <Text
+                      color={'brand.700'}
+                      fontSize={'sm'}
+                      // fontWeight={'semibold'}
+                      display={studentTotalScore ? undefined : 'none'}
+                    >
+                      Total {studentTotalScore}
+                    </Text>
+                  </HStack>
                   <Wrap spacing={3}>
-                    <WrapItem mt={2}>
+                    <WrapItem mt={2} width={'120px'}>
                       <FormControl>
-                        <FormLabel fontWeight={'normal'} m={0}>
+                        <FormLabel
+                          fontWeight={'normal'}
+                          m={0}
+                          whiteSpace={'nowrap'}
+                          textOverflow={'ellipsis'}
+                          overflow={'hidden'}
+                          fontSize={'sm'}
+                        >
                           Exam
                         </FormLabel>
                         <Input
@@ -145,6 +178,7 @@ export default function RecordClassCourseResult({
                       return (
                         <WrapItem
                           mt={2}
+                          width={'120px'}
                           key={
                             student.id +
                             assessment.raw_title +
@@ -152,7 +186,14 @@ export default function RecordClassCourseResult({
                           }
                         >
                           <FormControl>
-                            <FormLabel fontWeight={'normal'} m={0}>
+                            <FormLabel
+                              fontWeight={'normal'}
+                              m={0}
+                              whiteSpace={'nowrap'}
+                              textOverflow={'ellipsis'}
+                              overflow={'hidden'}
+                              fontSize={'sm'}
+                            >
                               {startCase(assessment.raw_title)}
                             </FormLabel>
                             <Input

@@ -7,7 +7,8 @@ class QuestionImageHandler {
 
   getQuestionBaseUrl() {
     return (
-      this.IMG_BASE_URL + `/${this.courseable.course_id}/${this.courseable.id}/`
+      this.IMG_BASE_URL +
+      `/institutions/${this.courseable.institution_id}/ccd/${this.courseable.course_id}/${this.courseable.id}/`
     );
   }
 

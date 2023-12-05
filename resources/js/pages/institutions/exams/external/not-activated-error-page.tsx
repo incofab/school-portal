@@ -26,7 +26,7 @@ export default function NotActivatedErrorPage({}: Props) {
           App Not Activated!!!
         </Text>
         <br />
-        <Text fontSize={'18px'} my={3}>
+        <Text fontSize={'18px'} my={3} lineHeight={'30px'} px={2}>
           You can not take part in this UTME challenge because your JAMB/UTME
           practice app is not activated. Quickly ACTIVATE your app to be
           eligible to be part of this challenge and win exciting prices.

@@ -40,6 +40,9 @@ class UploadCourseContent
     $sessionsArr = json_decode(file_get_contents($sessionsFile), true);
 
     foreach ($sessionsArr as $key => $sessionData) {
+      // if ($sessionData['session'] != '2000') {
+      //   continue;
+      // }
       $createdCourseSession = $course->sessions()->firstOrCreate(
         [
           'session' => $sessionData['session'],

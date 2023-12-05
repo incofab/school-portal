@@ -51,6 +51,7 @@ export interface Institution extends Row {
   email: string;
   phone: string;
   status: string;
+  initials: string;
   institution_settings?: InstitutionSetting[];
 }
 
@@ -112,6 +113,7 @@ export interface Student extends Row {
   user_id: number;
   classification_id: number;
   code: string;
+  full_code: string;
   guardian_phone: string;
   classification?: Classification;
   user?: User;

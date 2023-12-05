@@ -78,9 +78,9 @@ export default function ExamResult({ exam, tokenUser }: Props) {
               justify={'space-between'}
               fontWeight={'bold'}
             >
-              <Text>Subject(s)</Text>
-              <Text>Num of Questions</Text>
-              <Text>Score</Text>
+              <Text flex={1}>Subject(s)</Text>
+              <Text flex={1}>Num of Questions</Text>
+              <Text flex={1}>Score</Text>
             </HStack>
             {exam.exam_courseables?.map((examCoursable) => {
               return (
@@ -89,11 +89,11 @@ export default function ExamResult({ exam, tokenUser }: Props) {
                   justify={'space-between'}
                   key={examCoursable.id}
                 >
-                  <Text>{examCoursable.courseable?.course?.title}</Text>
-                  <Text textAlign={'center'}>
-                    {examCoursable.num_of_questions}
+                  <Text flex={1}>
+                    {examCoursable.courseable?.course?.title}
                   </Text>
-                  <Text textAlign={'center'}>{examCoursable.score}</Text>
+                  <Text flex={1}>{examCoursable.num_of_questions}</Text>
+                  <Text flex={1}>{examCoursable.score}</Text>
                 </HStack>
               );
             })}

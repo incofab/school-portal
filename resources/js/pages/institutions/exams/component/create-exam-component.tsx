@@ -75,13 +75,23 @@ export default function CreateExamComponent({
                     selectedEventCourseables &&
                     Boolean(selectedEventCourseables[eventCourseable.id])
                   }
-                  onChange={(e) =>
-                    setSelectedEventCourseables({
-                      ...selectedEventCourseables,
-                      [eventCourseable.id]: eventCourseable,
-                    })
-                  }
-                >{`${eventCourseable.courseable?.course?.title} - ${eventCourseable.courseable?.session}`}</Checkbox>
+                  onChange={(e) => {
+                    if (e.currentTarget.checked) {
+                      setSelectedEventCourseables({
+                        ...selectedEventCourseables,
+                        [eventCourseable.id]: eventCourseable,
+                      });
+                    } else {
+                      const updatedEventCourseables = {
+                        ...(delete selectedEventCourseables?.[
+                          eventCourseable.id
+                        ] && selectedEventCourseables),
+                      };
+                      setSelectedEventCourseables(updatedEventCourseables);
+                    }
+                  }}
+                >{`${eventCourseable.courseable?.course?.title}`}</Checkbox>
+                // >{`${eventCourseable.courseable?.course?.title} - ${eventCourseable.courseable?.session}`}</Checkbox>
               ))}
               <FormControl>
                 <FormButton isLoading={webForm.processing} />

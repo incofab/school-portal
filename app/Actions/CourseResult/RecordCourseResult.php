@@ -82,7 +82,7 @@ class RecordCourseResult
       ->forTerm($term)
       ->get();
 
-    $result = $this->data['exam'];
+    $result = $this->data['exam'] ?? 0;
 
     $allAssessmentValues = [
       ...$existingAssessmentValues,

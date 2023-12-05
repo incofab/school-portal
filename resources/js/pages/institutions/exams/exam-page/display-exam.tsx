@@ -120,7 +120,8 @@ export default function DisplayExam({
 
   return (
     <ExamLayout
-      title={`${tokenUser.name}`}
+      title={''}
+      breadCrumbItems={[{ title: `${tokenUser.name}`, href: '#' }]}
       rightElement={
         <HStack>
           <IconButton
@@ -150,7 +151,8 @@ export default function DisplayExam({
               key={item.id}
               onClick={() => examUtil.getTabManager().setCurrentTabIndex(index)}
             >
-              {item.courseable?.course?.title} {item.courseable?.session}
+              {item.courseable?.course?.title}
+              {/* {item.courseable?.course?.title} {item.courseable?.session} */}
             </Tab>
           ))}
         </TabList>
@@ -233,7 +235,9 @@ function DisplayQuestion({
   const questionImageHandler = new QuestionImageHandler(
     examCourseable.courseable!
   );
-
+  if (!question) {
+    return null;
+  }
   return (
     <VStack align={'stretch'}>
       <Text fontWeight={'bold'}>

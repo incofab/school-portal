@@ -96,7 +96,7 @@ Route::group(['prefix' => '{institution}/my-exam/'], function () {
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::any('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
 
-Route::get('/app-not-activate', External\NotActivatedErrorController::class);
+Route::get('/app-not-activated', External\NotActivatedErrorController::class);
 Route::group(['prefix' => 'external/{institution}/'], function () {
     Route::post('/get-user-token', External\GetUserTokenController::class);
     Route::get('/home', External\HomeExternalController::class)
