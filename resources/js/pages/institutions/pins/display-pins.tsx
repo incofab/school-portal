@@ -17,7 +17,7 @@ export default function ListPrintedPins({ pins, resultCheckerUrl }: Props) {
       {pins.map((pin) => (
         <Div
           display={'inline-block'}
-          width={'250px'}
+          width={'300px'}
           mx={1}
           my={1}
           border={'1px solid #000'}
@@ -42,14 +42,17 @@ export default function ListPrintedPins({ pins, resultCheckerUrl }: Props) {
               </Text>
             </Div>
           </HStack>
-          <Text fontSize={'lg'} fontWeight={'bold'}>
+          <Text fontSize={'lg'} fontWeight={'bold'} letterSpacing={1}>
             {pin.pin}
           </Text>
           <Text fontSize={'sm'} lineHeight={'14px'} mt={1}>
-            To check your result, visit{' '}
+            Visit{' '}
             <Text as={'span'} fontWeight={'bold'}>
               {resultCheckerUrl}
             </Text>
+          </Text>
+          <Text fontSize={'sm'} lineHeight={'14px'} mt={1}>
+            Then, enter your Student ID and this Pin
           </Text>
         </Div>
       ))}

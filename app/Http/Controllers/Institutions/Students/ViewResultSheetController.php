@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Students;
 
+use App\Enums\ResultCommentTemplateType;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
 use App\Models\Assessment;
@@ -9,6 +10,7 @@ use App\Models\Classification;
 use App\Models\ClassResultInfo;
 use App\Models\CourseResultInfo;
 use App\Models\Institution;
+use App\Models\ResultCommentTemplate;
 use App\Models\Student;
 use App\Models\TermResult;
 use App\Support\SettingsHandler;
@@ -93,6 +95,18 @@ class ViewResultSheetController extends Controller
       ->forMidTerm($termResult->for_mid_term)
       ->forTerm($term)
       ->get();
+    $resultCommentTemplate = ResultCommentTemplate::query()
+      ->where(
+        fn($q) => $q
+          ->whereNull('type')
+          ->orWhere(
+            'type',
+            $forMidTerm
+              ? ResultCommentTemplateType::MidTermResult
+              : ResultCommentTemplateType::FullTermResult
+          )
+      )
+      ->get();
 
     $viewData = [
       'institution' => currentInstitution(),
@@ -106,6 +120,7 @@ class ViewResultSheetController extends Controller
       'courseResultInfoData' => $courseResultInfoData,
       'resultDetails' => $this->getResultDetails($classResultInfo, $termResult),
       'assessments' => $assessments,
+      'resultCommentTemplate' => $resultCommentTemplate,
       'learningEvaluations' => $institution
         ->learningEvaluations()
         ->with('learningEvaluationDomain')

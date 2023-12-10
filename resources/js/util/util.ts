@@ -157,3 +157,8 @@ export function formatTime(time_in_secs: number) {
 
   return hour + ':' + min + ':' + sec;
 }
+
+export function stripInitials(studentCode: string) {
+  const pos = studentCode.indexOf('/');
+  return studentCode.substring(pos < 0 ? 0 : pos);
+}

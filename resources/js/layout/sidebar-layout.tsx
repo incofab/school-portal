@@ -167,6 +167,11 @@ export default function SideBarLayout() {
           route: instRoute('cummulative-result.index'),
           roles: [InstitutionUserType.Admin],
         },
+        {
+          label: 'Result Comments',
+          route: instRoute('result-comment-templates.index'),
+          roles: [InstitutionUserType.Admin],
+        },
       ],
     },
     {

@@ -171,6 +171,11 @@ class Institution extends Model
     return $this->hasMany(LearningEvaluation::class);
   }
 
+  function resultCommentTemplates()
+  {
+    return $this->hasMany(ResultCommentTemplate::class);
+  }
+
   function events()
   {
     return $this->hasMany(Event::class);

@@ -171,6 +171,7 @@ export interface ClassResultInfo extends InstitutionRow {
   max_score: number;
   min_score: number;
   average: number;
+  next_term_resumption_date: string;
   classification?: Classification;
   academic_session?: AcademicSession;
 }
@@ -322,6 +323,15 @@ export interface LearningEvaluation extends InstitutionRow {
   learning_evaluation_domain_id: number;
   title: string;
   learning_evaluation_domain?: LearningEvaluationDomain;
+}
+
+export interface ResultCommentTemplate extends InstitutionRow {
+  comment: string;
+  grade: string;
+  grade_label: string;
+  type: string;
+  min: number;
+  max: number;
 }
 
 export interface Question extends InstitutionRow {

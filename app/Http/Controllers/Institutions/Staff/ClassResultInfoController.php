@@ -7,10 +7,12 @@ use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\Classification;
+use App\Models\ClassificationGroup;
 use App\Models\ClassResultInfo;
 use App\Models\Institution;
 use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Inertia\Inertia;
 
@@ -30,6 +32,7 @@ class ClassResultInfoController extends Controller
     ClassResultInfoUITableFilters::make($request->all(), $query)->filterQuery();
 
     return Inertia::render('institutions/courses/list-class-result-info', [
+      'classificationGroups' => Classification::query()->get(),
       'classResultInfo' => paginateFromRequest(
         $query
           ->with('academicSession', 'classification')
@@ -63,6 +66,61 @@ class ClassResultInfoController extends Controller
     ClassResultInfo $classResultInfo
   ) {
     ClassResultInfoAction::make()->reCalculate($classResultInfo);
+    return $this->ok();
+  }
+
+  function setNextTermResumptionDate(
+    Institution $institution,
+    Request $request,
+    ClassificationGroup $classificationGroup = null
+  ) {
+    $data = $request->validate([
+      'next_term_resumption_date' => ['required', 'date'],
+      'term' => ['required', new Enum(TermType::class)],
+      'academic_session_id' => ['required', 'integer'],
+      'for_all_classes' => [
+        'nullable',
+        'boolean',
+        Rule::requiredIf(empty($classificationGroup)),
+        function ($attr, $value, $fail) use ($classificationGroup) {
+          if (!$value && !$classificationGroup) {
+            $fail(
+              'You must supply a class group if date is not to be applied to all classes'
+            );
+          }
+        }
+      ]
+    ]);
+
+    $query = ClassResultInfo::query()
+      ->select('class_result_info.*')
+      ->when(
+        $classificationGroup,
+        fn($q) => $q
+          ->join(
+            'classifications',
+            'classifications.id',
+            'class_result_info.classification_id'
+          )
+          ->where(
+            'classifications.classification_group_id',
+            $classificationGroup->id
+          )
+      )
+      ->where('for_mid_term', false)
+      ->where('term', $data['term'])
+      ->where('academic_session_id', $data['academic_session_id']);
+
+    abort_if(
+      (clone $query)->get()->isEmpty(),
+      403,
+      'Results have not been recorded for this class in the specified term and session'
+    );
+
+    $query->update([
+      'next_term_resumption_date' => $data['next_term_resumption_date']
+    ]);
+
     return $this->ok();
   }
 }

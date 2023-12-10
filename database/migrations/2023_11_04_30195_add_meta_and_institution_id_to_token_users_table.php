@@ -29,7 +29,7 @@ return new class extends Migration {
     Schema::table('token_users', function (Blueprint $table) {
       $table->dropForeign(['institution_id']);
       $table->dropForeign(['user_id']);
-      $table->dropColumn(['institution_id, user_id']);
+      $table->dropColumn(['institution_id', 'user_id', 'meta']);
     });
   }
 };

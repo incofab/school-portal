@@ -6,6 +6,7 @@ import {
   CourseResult,
   CourseResultInfo,
   LearningEvaluation,
+  ResultCommentTemplate,
   Student,
   TermResult,
 } from '@/types/models';
@@ -178,6 +179,16 @@ const ResultUtil = {
     return true;
   }
   */
+
+  getCommentFromTemplate: function (
+    score: number,
+    commentTemplate: ResultCommentTemplate[]
+  ) {
+    const comment = commentTemplate.find(
+      (item) => item.min <= score && item.max >= score
+    );
+    return comment;
+  },
 };
 
 export default ResultUtil;
@@ -192,4 +203,5 @@ export interface ResultProps {
   student: Student;
   assessments: Assessment[];
   learningEvaluations: LearningEvaluation[];
+  resultCommentTemplate: ResultCommentTemplate[];
 }

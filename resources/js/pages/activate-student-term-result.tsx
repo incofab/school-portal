@@ -11,7 +11,7 @@ import { Div } from '@/components/semantic';
 import route from '@/util/route';
 import { Inertia } from '@inertiajs/inertia';
 import { TermResult } from '@/types/models';
-import { preventNativeSubmit } from '@/util/util';
+import { preventNativeSubmit, stripInitials } from '@/util/util';
 import useWebForm from '@/hooks/use-web-form';
 import CenteredLayout from '@/components/centered-layout';
 import InputForm from '@/components/forms/input-form';
@@ -33,6 +33,7 @@ export default function StudentTermResultActivation() {
       return web.post(route('activate-term-result.store'), {
         ...data,
         term_result_id: termResultId,
+        student_code: stripInitials(data.student_code),
       });
     });
 

@@ -163,6 +163,8 @@ Route::post('/class-result-info/calculate/{classification}', [Web\Staff\ClassRes
     ->name('class-result-info.calculate');
 Route::post('/class-result-info/recalculate/{classResultInfo}', [Web\Staff\ClassResultInfoController::class, 'reCalculate'])
     ->name('class-result-info.recalculate');
+Route::post('/class-result-info/set-resumption-date/{classificationGroup?}', [Web\Staff\ClassResultInfoController::class, 'setNextTermResumptionDate'])
+    ->name('class-result-info.set-resumption-date');
 
 Route::get('/term-results/index/{user?}', Web\ListTermResultController::class)
     ->name('term-results.index');
@@ -190,6 +192,13 @@ Route::post('/assessments/{assessment}/set-dependency', [Web\Staff\AssessmentCon
     ->name('assessments.set-dependency');
 Route::post('/assessments/{assessment}/insert-score-from-course-result', [Web\Staff\InjectAssessmentScoreFromTermResultController::class, 'store'])
     ->name('assessments.insert-score-from-course-result.store');
+
+Route::get('/result-comment-templates/index/{resultCommentTemplate?}', [Web\Staff\ResultCommentTemplateController::class, 'index'])
+    ->name('result-comment-templates.index');
+Route::post('/result-comment-templates/store/{resultCommentTemplate?}', [Web\Staff\ResultCommentTemplateController::class, 'store'])
+    ->name('result-comment-templates.store');
+Route::delete('/result-comment-templates/destroy/{resultCommentTemplate}', [Web\Staff\ResultCommentTemplateController::class, 'destroy'])
+    ->name('result-comment-templates.destroy');
 
 Route::get('/learning-evaluation-domains/index/{learningEvaluationDomain?}', [Web\Staff\LearningEvaluationDomainController::class, 'index'])
     ->name('learning-evaluation-domains.index');

@@ -23,13 +23,13 @@ Route::middleware('auth:sanctum')->any('/user', function (Request $request) {
 
 Route::group(['middleware' => []], function() {
     
-    Route::any('/exam/pause', [\App\Http\Controllers\Exam\ExamController::class, 'pauseExam']);
-    Route::any('/exam/end', [\App\Http\Controllers\Exam\ExamController::class, 'endExam']);
-    Route::any('/exam/submit', [\App\Http\Controllers\Exam\ExamController::class, 'submitExam']);
+    // Route::any('/exam/pause', [\App\Http\Controllers\Exam\ExamController::class, 'pauseExam']);
+    // Route::any('/exam/end', [\App\Http\Controllers\Exam\ExamController::class, 'endExam']);
+    // Route::any('/exam/submit', [\App\Http\Controllers\Exam\ExamController::class, 'submitExam']);
 
-    Route::any('/institution/event/index', [\App\Http\Controllers\API\EventController::class, 'index']);
-    Route::any('/institution/event/download', [\App\Http\Controllers\API\EventController::class, 'downloadEventContent']);
-    Route::any('/institution/event/upload', [\App\Http\Controllers\API\EventController::class, 'uploadEventResult']);
+    // Route::any('/institution/event/index', [\App\Http\Controllers\API\EventController::class, 'index']);
+    // Route::any('/institution/event/download', [\App\Http\Controllers\API\EventController::class, 'downloadEventContent']);
+    // Route::any('/institution/event/upload', [\App\Http\Controllers\API\EventController::class, 'uploadEventResult']);
     
 });
 

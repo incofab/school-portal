@@ -114,6 +114,22 @@ export enum Nationality {
   Others = 'others',
 }
 
+export enum ResultCommentTemplateType {
+  All = '',
+  MidTermResult = 'mid-term-result',
+  FullTermResult = 'term-result',
+  SessionResult = 'session-result',
+}
+
+export enum Grade {
+  A = 'A',
+  B = 'B',
+  C = 'C',
+  D = 'D',
+  E = 'E',
+  F = 'F',
+}
+
 export interface ExamAttempt {
   [questionId: string | number]: string;
 }

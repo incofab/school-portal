@@ -27,11 +27,11 @@ export default function Template5({
   courseResults,
   classResultInfo,
   academicSession,
-  classification,
   student,
   courseResultInfoData,
   assessments,
   learningEvaluations,
+  resultCommentTemplate,
 }: ResultProps) {
   const { currentInstitution, stamp } = useSharedProps();
 
@@ -52,7 +52,10 @@ export default function Template5({
     },
     { label: 'Session', value: academicSession.title },
     { label: 'Student Id', value: student.code },
-    { label: 'Next Term begins', value: '' },
+    {
+      label: 'Next Term begins',
+      value: classResultInfo.next_term_resumption_date,
+    },
   ];
 
   function getGrade(score: number) {
@@ -121,6 +124,11 @@ export default function Template5({
     backgroundRepeat: 'repeat',
     backgroundColor: 'white',
   };
+
+  const principalComment =
+    termResult.principal_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment;
 
   const resultTableHeaders: TableHeader<CourseResult>[] = [
     {
@@ -355,7 +363,7 @@ export default function Template5({
                     <Divider />
                   </>
                 )}
-                {termResult.principal_comment && (
+                {principalComment && (
                   <>
                     <HStack align={'stretch'}>
                       <Text fontWeight={'semibold'} size={'xs'}>

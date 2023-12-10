@@ -6,6 +6,7 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  HStack,
   Input,
   useColorMode,
   useColorModeValue,
@@ -107,7 +108,16 @@ export default function Login() {
             />
             <FormErrorMessage>{form.errors.password}</FormErrorMessage>
           </FormControl>
-          <FormControl>
+          <HStack align={'stretch'} justify={'space-between'}>
+            <Button
+              as={InertiaLink}
+              href={route('student-login')}
+              colorScheme={'brand'}
+              variant={'link'}
+              float={'right'}
+            >
+              Student Login
+            </Button>
             <Button
               as={InertiaLink}
               href={route('forgot-password')}
@@ -117,7 +127,18 @@ export default function Login() {
             >
               Forgot Password?
             </Button>
-          </FormControl>
+          </HStack>
+          {/* <FormControl>
+            <Button
+              as={InertiaLink}
+              href={route('forgot-password')}
+              colorScheme={'brand'}
+              variant={'link'}
+              float={'right'}
+            >
+              Forgot Password?
+            </Button>
+          </FormControl> */}
           <Button
             isLoading={form.processing}
             loadingText="Logging in"

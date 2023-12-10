@@ -49,6 +49,13 @@ class Student extends Model
     return Attribute::make(get: fn() => "{$prefix}{$this->code}");
   }
 
+  static function stripInitials(string $studentCode)
+  {
+    $pos = strpos($studentCode, '/') ?? 0;
+
+    return substr($studentCode, $pos);
+  }
+
   function classification()
   {
     return $this->belongsTo(Classification::class);
