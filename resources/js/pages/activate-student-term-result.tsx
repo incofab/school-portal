@@ -5,6 +5,7 @@ import {
   Spacer,
   Text,
   VStack,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Div } from '@/components/semantic';
@@ -81,7 +82,7 @@ export default function StudentTermResultActivation() {
         </VStack>
       ) : (
         <VStack
-          background={'white'}
+          background={useColorModeValue('white', 'gray.800')}
           divider={<Divider />}
           spacing={3}
           width={'full'}

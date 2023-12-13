@@ -18,6 +18,7 @@ import '@/../../public/style/result/template-3.css';
 import ImagePaths from '@/util/images';
 import ResultUtil, { ResultProps } from '@/util/result-util';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
+import ResultSheetLayout from './result-sheet-layout';
 
 export default function Template3({
   termResult,
@@ -149,204 +150,165 @@ export default function Template3({
   };
 
   return (
-    <Div style={backgroundStyle} minHeight={'1170px'}>
-      <Button
-        id={'download-btn'}
-        onClick={() =>
-          ResultUtil.exportAsPdf(
-            'result-sheet',
-            student.user?.full_name + '-result-sheet'
-          )
-        }
-        size={'sm'}
-        variant={'outline'}
-        colorScheme="brand"
-      >
-        Download
-      </Button>
-      <Div
-        mx={'auto'}
-        width={'900px'}
-        px={3}
-        position={'relative'}
-        id="result-sheet"
-      >
-        <Div position={'absolute'} bottom={'120px'} right={0} opacity={0.65}>
-          <Img src={stamp} />
-        </Div>
-        <VStack align={'stretch'}>
-          <HStack background={'#FCFCFC'} p={2}>
-            <Avatar
-              size={'2xl'}
-              name="Institution logo"
-              src={currentInstitution.photo ?? ImagePaths.default_school_logo}
-            />
-            <VStack
-              spacing={1}
-              align={'stretch'}
-              width={'full'}
-              textAlign={'center'}
-            >
-              <Text
-                fontSize={'2xl'}
-                fontWeight={'extrabold'}
+    <ResultSheetLayout>
+      <Div style={backgroundStyle} minHeight={'1170px'}>
+        <Button
+          id={'download-btn'}
+          onClick={() =>
+            ResultUtil.exportAsPdf(
+              'result-sheet',
+              student.user?.full_name + '-result-sheet'
+            )
+          }
+          size={'sm'}
+          variant={'outline'}
+          colorScheme="brand"
+        >
+          Download
+        </Button>
+        <Div
+          mx={'auto'}
+          width={'900px'}
+          px={3}
+          position={'relative'}
+          id="result-sheet"
+        >
+          <Div position={'absolute'} bottom={'120px'} right={0} opacity={0.65}>
+            <Img src={stamp} />
+          </Div>
+          <VStack align={'stretch'}>
+            <HStack background={'#FCFCFC'} p={2}>
+              <Avatar
+                size={'2xl'}
+                name="Institution logo"
+                src={currentInstitution.photo ?? ImagePaths.default_school_logo}
+              />
+              <VStack
+                spacing={1}
+                align={'stretch'}
+                width={'full'}
                 textAlign={'center'}
-                color={'#ff7900'}
-                textShadow={'2px 2px #000'}
-                textTransform={'uppercase'}
-                whiteSpace={'nowrap'}
               >
-                {currentInstitution.name}
-              </Text>
-              <Text
-                fontSize={'md'}
-                fontWeight={'bold'}
-                textAlign={'center'}
-                color={'black'}
-                textTransform={'uppercase'}
-                whiteSpace={'nowrap'}
-              >
-                {currentInstitution.caption}
-              </Text>
-              <Text
-                fontSize={'2xl'}
-                fontWeight={'extrabold'}
-                textAlign={'center'}
-                color={'#0097df'}
-                textTransform={'uppercase'}
-                whiteSpace={'nowrap'}
-              >
-                {currentInstitution.subtitle}
-              </Text>
-            </VStack>
-          </HStack>
-          <Flex
-            flexDirection={'row'}
-            justifyContent={'space-between'}
-            fontSize={'sm'}
-          >
-            <VStack spacing={0} align={'left'}>
-              {resultSummary1.map((item) => (
-                <LabelText label={item.label} text={item.value} />
-              ))}
-            </VStack>
-            <VStack spacing={0} align={'left'}>
-              {resultSummary2.map((item) => (
-                <LabelText label={item.label} text={item.value} />
-              ))}
-            </VStack>
-          </Flex>
-          <div className="table-container">
-            <table
-              className="result-table"
-              width={'100%'}
-              style={{ borderColor: '#5b9bd5' }}
-            >
-              <thead
-                style={{
-                  background: 'red.800',
-                  color: '#3f3f3f',
-                  fontWeight: 'bold',
-                  textTransform: 'uppercase',
-                  fontSize: '14px',
-                }}
-              >
-                <tr>
-                  <th
-                    style={{
-                      background: '#5b9bd5',
-                      color: '#fff',
-                    }}
-                  >
-                    Subject
-                  </th>
-                  {assessments.map((assessment) => (
-                    <th>{startCase(assessment.title)}</th>
-                  ))}
-                  <th>Exam</th>
-                  <th>Total</th>
-                  <th>Subject Position</th>
-                  <th>Grade</th>
-                  <th>Highest Score</th>
-                  <th>Lowest Score</th>
-                  <th>Remark</th>
-                </tr>
-              </thead>
-              <tbody>
-                {courseResults.map((courseResult) => {
-                  const [grade, remark, label] = getGrade(courseResult.result);
-                  return (
-                    <tr key={courseResult.id}>
-                      <td style={{ fontWeight: 'bold' }}>
-                        {courseResult.course?.title}
-                      </td>
-                      {assessments.map((assessment) => (
-                        <td>
-                          {courseResult.assessment_values[
-                            assessment.raw_title
-                          ] ?? '-'}
-                        </td>
-                      ))}
-                      <td>{courseResult.exam}</td>
-                      <td style={{ fontWeight: 'bold' }}>
-                        {courseResult.result}
-                      </td>
-                      <td>{courseResult.position}</td>
-                      <td style={{ fontWeight: 'bold' }}>{grade}</td>
-                      <td>
-                        {courseResultInfoData[courseResult.course_id].max_score}
-                      </td>
-                      <td>
-                        {courseResultInfoData[courseResult.course_id].min_score}
-                      </td>
-                      <td>{remark}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <Spacer height={'10px'} />
-          {teachersComment && (
-            <>
-              <HStack align={'stretch'}>
-                <Text fontWeight={'semibold'} size={'xs'}>
-                  Teacher's comment:{' '}
+                <Text
+                  fontSize={'2xl'}
+                  fontWeight={'extrabold'}
+                  textAlign={'center'}
+                  color={'#ff7900'}
+                  textShadow={'2px 2px #000'}
+                  textTransform={'uppercase'}
+                  whiteSpace={'nowrap'}
+                >
+                  {currentInstitution.name}
                 </Text>
-                <Text>{teachersComment}</Text>
-              </HStack>
-              <Divider />
-            </>
-          )}
-          {termResult.principal_comment && (
-            <>
-              <HStack align={'stretch'}>
-                <Text fontWeight={'semibold'} size={'xs'}>
-                  Head Teacher's comment:{' '}
+                <Text
+                  fontSize={'md'}
+                  fontWeight={'bold'}
+                  textAlign={'center'}
+                  color={'black'}
+                  textTransform={'uppercase'}
+                  whiteSpace={'nowrap'}
+                >
+                  {currentInstitution.caption}
                 </Text>
-                <Text>{termResult.principal_comment}</Text>
-              </HStack>
-              <Divider />
-            </>
-          )}
-          <br />
-          <Flex flexDirection={'row'} justifyContent={'space-between'}>
-            <div style={{ minWidth: '240px' }}>
-              <table className="keys-table">
-                <thead>
+                <Text
+                  fontSize={'2xl'}
+                  fontWeight={'extrabold'}
+                  textAlign={'center'}
+                  color={'#0097df'}
+                  textTransform={'uppercase'}
+                  whiteSpace={'nowrap'}
+                >
+                  {currentInstitution.subtitle}
+                </Text>
+              </VStack>
+            </HStack>
+            <Flex
+              flexDirection={'row'}
+              justifyContent={'space-between'}
+              fontSize={'sm'}
+            >
+              <VStack spacing={0} align={'left'}>
+                {resultSummary1.map((item) => (
+                  <LabelText label={item.label} text={item.value} />
+                ))}
+              </VStack>
+              <VStack spacing={0} align={'left'}>
+                {resultSummary2.map((item) => (
+                  <LabelText label={item.label} text={item.value} />
+                ))}
+              </VStack>
+            </Flex>
+            <div className="table-container">
+              <table
+                className="result-table"
+                width={'100%'}
+                style={{ borderColor: '#5b9bd5' }}
+              >
+                <thead
+                  style={{
+                    background: 'red.800',
+                    color: '#3f3f3f',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    fontSize: '14px',
+                  }}
+                >
                   <tr>
-                    <th colSpan={3}>
-                      <Text textAlign={'center'}>Key to Grades</Text>
+                    <th
+                      style={{
+                        background: '#5b9bd5',
+                        color: '#fff',
+                      }}
+                    >
+                      Subject
                     </th>
+                    {assessments.map((assessment) => (
+                      <th>{startCase(assessment.title)}</th>
+                    ))}
+                    <th>Exam</th>
+                    <th>Total</th>
+                    <th>Subject Position</th>
+                    <th>Grade</th>
+                    <th>Highest Score</th>
+                    <th>Lowest Score</th>
+                    <th>Remark</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {[100, 89, 79, 69, 64, 59, 54, 49, 44, 39].map((item) => {
-                    const [grade, remark, label] = getGrade(item);
+                  {courseResults.map((courseResult) => {
+                    const [grade, remark, label] = getGrade(
+                      courseResult.result
+                    );
                     return (
-                      <tr>
-                        <td>{label}</td>
-                        <td>{grade}</td>
+                      <tr key={courseResult.id}>
+                        <td style={{ fontWeight: 'bold' }}>
+                          {courseResult.course?.title}
+                        </td>
+                        {assessments.map((assessment) => (
+                          <td>
+                            {courseResult.assessment_values[
+                              assessment.raw_title
+                            ] ?? '-'}
+                          </td>
+                        ))}
+                        <td>{courseResult.exam}</td>
+                        <td style={{ fontWeight: 'bold' }}>
+                          {courseResult.result}
+                        </td>
+                        <td>{courseResult.position}</td>
+                        <td style={{ fontWeight: 'bold' }}>{grade}</td>
+                        <td>
+                          {
+                            courseResultInfoData[courseResult.course_id]
+                              .max_score
+                          }
+                        </td>
+                        <td>
+                          {
+                            courseResultInfoData[courseResult.course_id]
+                              .min_score
+                          }
+                        </td>
                         <td>{remark}</td>
                       </tr>
                     );
@@ -354,14 +316,63 @@ export default function Template3({
                 </tbody>
               </table>
             </div>
+            <Spacer height={'10px'} />
+            {teachersComment && (
+              <>
+                <HStack align={'stretch'}>
+                  <Text fontWeight={'semibold'} size={'xs'}>
+                    Teacher's comment:{' '}
+                  </Text>
+                  <Text>{teachersComment}</Text>
+                </HStack>
+                <Divider />
+              </>
+            )}
+            {termResult.principal_comment && (
+              <>
+                <HStack align={'stretch'}>
+                  <Text fontWeight={'semibold'} size={'xs'}>
+                    Head Teacher's comment:{' '}
+                  </Text>
+                  <Text>{termResult.principal_comment}</Text>
+                </HStack>
+                <Divider />
+              </>
+            )}
+            <br />
+            <Flex flexDirection={'row'} justifyContent={'space-between'}>
+              <div style={{ minWidth: '240px' }}>
+                <table className="keys-table">
+                  <thead>
+                    <tr>
+                      <th colSpan={3}>
+                        <Text textAlign={'center'}>Key to Grades</Text>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[100, 89, 79, 69, 64, 59, 54, 49, 44, 39].map((item) => {
+                      const [grade, remark, label] = getGrade(item);
+                      return (
+                        <tr>
+                          <td>{label}</td>
+                          <td>{grade}</td>
+                          <td>{remark}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
-            <DisplayTermResultEvaluation
-              termResult={termResult}
-              learningEvaluations={learningEvaluations}
-            />
-          </Flex>
-        </VStack>
+              <DisplayTermResultEvaluation
+                termResult={termResult}
+                learningEvaluations={learningEvaluations}
+              />
+            </Flex>
+          </VStack>
+        </Div>
       </Div>
-    </Div>
+    </ResultSheetLayout>
   );
 }

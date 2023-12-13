@@ -21,6 +21,7 @@ import DisplayTermResultEvaluation from '@/components/display-term-result-evalua
 import ResultUtil, { ResultProps } from '@/util/result-util';
 import DataTable, { TableHeader } from '@/components/data-table';
 import { CourseResult } from '@/types/models';
+import ResultSheetLayout from './result-sheet-layout';
 
 export default function Template5({
   termResult,
@@ -274,7 +275,7 @@ export default function Template5({
   }
 
   return (
-    <>
+    <ResultSheetLayout>
       <Div style={backgroundStyle} minHeight={'1170px'}>
         <Button
           id={'download-btn'}
@@ -379,6 +380,6 @@ export default function Template5({
           </Div>
         </Div>
       </Div>
-    </>
+    </ResultSheetLayout>
   );
 }

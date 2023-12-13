@@ -19,6 +19,7 @@ import ImagePaths from '@/util/images';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
 import ResultUtil, { ResultProps } from '@/util/result-util';
 import jsPDF from 'jspdf';
+import ResultSheetLayout from './result-sheet-layout';
 
 export default function Template4({
   termResult,
@@ -153,7 +154,7 @@ export default function Template4({
   };
 
   return (
-    <>
+    <ResultSheetLayout>
       <Div style={backgroundStyle} minHeight={'1170px'}>
         <Button
           id={'download-btn'}
@@ -410,6 +411,6 @@ export default function Template4({
           </VStack>
         </Div>
       </Div>
-    </>
+    </ResultSheetLayout>
   );
 }
