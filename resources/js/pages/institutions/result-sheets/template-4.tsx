@@ -17,9 +17,10 @@ import '@/../../public/style/result-sheet.css';
 import '@/../../public/style/result/template-4.css';
 import ImagePaths from '@/util/images';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
-import ResultUtil, { ResultProps } from '@/util/result-util';
-import jsPDF from 'jspdf';
+import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import ResultSheetLayout from './result-sheet-layout';
+import DateTimeDisplay from '@/components/date-time-display';
+import { dateFormat } from '@/util/util';
 
 export default function Template4({
   termResult,
@@ -33,19 +34,42 @@ export default function Template4({
   learningEvaluations,
 }: ResultProps) {
   const { currentInstitution, stamp } = useSharedProps();
+  const { hidePosition, showGrade } = useResultSetting();
 
   const resultSummary1 = [
     { label: 'Name of Pupil', value: student.user?.full_name },
     { label: 'Student Id', value: student.code },
+    ...(hidePosition
+      ? []
+      : [
+          {
+            label: 'Position',
+            value: showGrade
+              ? getGrade(termResult.average)[0]
+              : ResultUtil.formatPosition(termResult.position),
+          },
+        ]),
   ];
   const resultSummary2 = [
     { label: 'Class', value: classification.title },
     {
       label: 'Term',
-      value: `${startCase(termResult.term)} Term, ${
-        academicSession.title
-      } Session`,
+      value: `${startCase(termResult.term)} Term, ${academicSession.title}`,
     },
+    ...(classResultInfo.next_term_resumption_date
+      ? [
+          {
+            label: 'Next Term Begins',
+            value: (
+              <DateTimeDisplay
+                as={'span'}
+                dateTime={classResultInfo.next_term_resumption_date}
+                dateTimeformat={dateFormat}
+              />
+            ),
+          },
+        ]
+      : []),
   ];
 
   function getGrade(score: number) {
@@ -86,44 +110,6 @@ export default function Template4({
     }
     return [grade, remark, label, pointsGrade];
   }
-  // function getGrade(score: number) {
-  //   let grade = '';
-  //   let pointsGrade = 0;
-  //   let remark = '';
-  //   let label = '';
-  //   if (score < 40) {
-  //     grade = 'F';
-  //     remark = 'Progressing';
-  //     label = '1.0% - 39.0%';
-  //     pointsGrade = 0;
-  //   } else if (score < 45) {
-  //     grade = 'E';
-  //     remark = 'Pass';
-  //     label = '40.0% - 44.0%';
-  //     pointsGrade = 1;
-  //   } else if (score < 50) {
-  //     grade = 'D';
-  //     remark = 'Satisfactory';
-  //     label = '45.0% - 49.0%';
-  //     pointsGrade = 2;
-  //   } else if (score < 60) {
-  //     grade = 'C';
-  //     remark = 'Good';
-  //     label = '50.0% - 59.0%';
-  //     pointsGrade = 3;
-  //   } else if (score < 70) {
-  //     grade = 'B';
-  //     remark = 'Very Good';
-  //     label = '60.0% - 69.0%';
-  //     pointsGrade = 4;
-  //   } else {
-  //     grade = 'A';
-  //     remark = 'Excellent';
-  //     label = '70.0% - Above';
-  //     pointsGrade = 5;
-  //   }
-  //   return [grade, remark, label, pointsGrade];
-  // }
 
   function LabelText({
     label,
@@ -224,6 +210,12 @@ export default function Template4({
                 >
                   {currentInstitution.subtitle}
                 </Text>
+                <Text textAlign={'center'}>
+                  {[currentInstitution.website, currentInstitution.email]
+                    .filter((item) => Boolean(item))
+                    .join(' | ')
+                    .trim()}
+                </Text>
               </VStack>
             </HStack>
             <Flex
@@ -250,6 +242,7 @@ export default function Template4({
                 ))}
               </VStack>
             </Flex>
+            <Spacer height={3} />
             <div className="table-container">
               <table
                 className="result-table"
@@ -316,7 +309,11 @@ export default function Template4({
                       <td style={{ fontWeight: 'bold' }}>
                         {courseResult.result}
                       </td>
-                      <td>{courseResult.position}</td>
+                      <td>
+                        {showGrade
+                          ? getGrade(courseResult.result)[0]
+                          : ResultUtil.formatPosition(courseResult.position)}
+                      </td>
                       {/* <td>{ResultUtil.getRemark(courseResult.grade)}</td> */}
                       <td>{getGrade(courseResult.result)[1]}</td>
                     </tr>

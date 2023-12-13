@@ -1,4 +1,5 @@
 export type Nullable<T> = T | null;
+export type KeyValue<T = string> = { [key: string]: T };
 
 export interface PaginationResponse<T> {
   total: number;
@@ -75,12 +76,23 @@ export enum FeePaymentInterval {
 }
 
 export enum InstitutionSettingType {
-  ResultTemplate = 'result-template',
+  Result = 'result',
   CurrentTerm = 'current-term',
   CurrentAcademicSession = 'current-academic-session',
   UsesMidTermResult = 'uses-mid-term-result',
   CurrentlyOnMidTerm = 'currently-on-mid-term',
   Stamp = 'stamp',
+}
+
+export enum ResultSettingType {
+  Template = 'template',
+  PositionDisplayType = 'position-display-type',
+}
+
+export enum PositionDisplayType {
+  Hidden = 'hidden',
+  Position = 'position',
+  Grade = 'grade',
 }
 
 export enum ResultTemplate {

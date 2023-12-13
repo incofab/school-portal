@@ -14,7 +14,11 @@ class ListTermResultController extends Controller
   public function __invoke(Request $request, User $user = null)
   {
     $query = $this->getQuery($user)->select('term_results.*');
-    TermResultUITableFilters::make($request->all(), $query)->filterQuery();
+    TermResultUITableFilters::make($request->all(), $query)
+      ->joinStudent()
+      ->filterQuery()
+      ->getQuery()
+      ->oldest('users.last_name');
 
     return Inertia::render('institutions/list-term-results', [
       'termResults' => paginateFromRequest(

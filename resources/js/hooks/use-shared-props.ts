@@ -1,4 +1,8 @@
-import { InstitutionSettingType, Message } from '@/types/types';
+import {
+  InstitutionSettingType,
+  Message,
+  ResultSettingType,
+} from '@/types/types';
 import {
   AcademicSession,
   Institution,
@@ -59,7 +63,9 @@ function prepareSettings(institutionSettings?: InstitutionSetting[]) {
     currentlyOnMidTerm: Boolean(
       parseInt(settings[InstitutionSettingType.CurrentlyOnMidTerm]?.value)
     ),
-    resultTemplate: settings[InstitutionSettingType.ResultTemplate]?.value,
+    resultSetting: settings[InstitutionSettingType.Result]?.value as {
+      [key: string]: string;
+    },
     stamp: settings[InstitutionSettingType.Stamp]?.value,
   };
 }

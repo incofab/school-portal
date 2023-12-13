@@ -277,7 +277,7 @@ export interface FeePaymentTrack extends Row {
 
 export interface InstitutionSetting extends InstitutionRow {
   key: string;
-  value: string;
+  value: string | any;
   display_name: string;
   type: string;
 }

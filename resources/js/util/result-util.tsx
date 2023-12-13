@@ -1,3 +1,4 @@
+import useSharedProps from '@/hooks/use-shared-props';
 import {
   AcademicSession,
   Assessment,
@@ -10,6 +11,12 @@ import {
   Student,
   TermResult,
 } from '@/types/models';
+import {
+  KeyValue,
+  PositionDisplayType,
+  ResultSettingType,
+  SelectOptionType,
+} from '@/types/types';
 import { Text } from '@chakra-ui/react';
 import jsPDF from 'jspdf';
 
@@ -192,6 +199,21 @@ const ResultUtil = {
 };
 
 export default ResultUtil;
+
+export function useResultSetting() {
+  const { resultSetting } = useSharedProps();
+  const hidePosition =
+    resultSetting[ResultSettingType.PositionDisplayType] ===
+    PositionDisplayType.Hidden;
+  const showGrade =
+    resultSetting[ResultSettingType.PositionDisplayType] ===
+    PositionDisplayType.Grade;
+  const showPosition =
+    resultSetting[ResultSettingType.PositionDisplayType] ===
+    PositionDisplayType.Position;
+
+  return { hidePosition, showGrade, showPosition };
+}
 
 export interface ResultProps {
   termResult: TermResult;

@@ -65,6 +65,10 @@ class InstitutionSettingController extends Controller
       $publicUrl = Storage::disk('s3_public')->url($imagePath);
       $data['value'] = $publicUrl;
     }
+    $data['value'] =
+      $request->type === 'array'
+        ? json_encode($request->value)
+        : $request->value;
 
     InstitutionSetting::query()->updateOrCreate(
       [

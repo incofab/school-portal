@@ -34,6 +34,7 @@ import {
   bytesToMb,
 } from '@/components/file-dropper/common';
 import { resizeImage } from '@/util/util';
+import ResultSettings from './result-settings';
 
 interface Props {
   settings: { [key: string]: InstitutionSetting };
@@ -51,8 +52,8 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
     [InstitutionSettingType.CurrentAcademicSession]:
       settings[InstitutionSettingType.CurrentAcademicSession]?.value ??
       currentAcademicSessionId,
-    [InstitutionSettingType.ResultTemplate]:
-      settings[InstitutionSettingType.ResultTemplate]?.value ?? '',
+    // [InstitutionSettingType.ResultTemplate]:
+    //   settings[InstitutionSettingType.ResultTemplate]?.value ?? '',
     [InstitutionSettingType.UsesMidTermResult]: Boolean(
       parseInt(settings[InstitutionSettingType.UsesMidTermResult]?.value)
     ),
@@ -208,6 +209,7 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   </HStack>
                 </>
               )}
+              {/* 
               <Text>Result Template</Text>
               <HStack align={'stretch'} spacing={2}>
                 <FormControl>
@@ -234,7 +236,8 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   }
                   size={'md'}
                 />
-              </HStack>
+              </HStack> */}
+              <ResultSettings />
               <UpdateStamp settings={settings} />
               <Spacer height={5} />
             </VStack>

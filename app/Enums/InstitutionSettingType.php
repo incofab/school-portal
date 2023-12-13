@@ -8,7 +8,7 @@ enum InstitutionSettingType: string
 {
   use EnumToArray;
 
-  case ResultTemplate = 'result-template';
+  case Result = 'result';
   case CurrentTerm = 'current-term';
   case CurrentAcademicSession = 'current-academic-session';
   case CurrentlyOnMidTerm = 'currently-on-mid-term';

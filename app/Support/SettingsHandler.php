@@ -27,6 +27,9 @@ class SettingsHandler
     $institutionSettings = currentInstitution()?->institutionSettings ?? [];
     $formatted = [];
     foreach ($institutionSettings as $key => $value) {
+      if ($value['type'] === 'array') {
+        $value['value'] = json_decode($value->value, true);
+      }
       $formatted[$value->key] = $value;
     }
     self::$instance = new self($formatted);
@@ -89,8 +92,9 @@ class SettingsHandler
     if (!$default) {
       $default = ResultTemplateType::Template1->value;
     }
-    return $this->getValue(InstitutionSettingType::ResultTemplate->value) ??
-      $default;
+    $resultSetting = $this->getValue(InstitutionSettingType::Result->value);
+    return $resultSetting['template'] ?? $default;
+    // return $this->getValue(InstitutionSettingType::Result->value) ?? $default;
   }
 
   function academicQueryData(

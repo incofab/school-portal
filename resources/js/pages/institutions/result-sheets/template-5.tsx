@@ -18,10 +18,12 @@ import '@/../../public/style/result-sheet.css';
 import '@/style/template-5.css';
 import ImagePaths from '@/util/images';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
-import ResultUtil, { ResultProps } from '@/util/result-util';
+import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import DataTable, { TableHeader } from '@/components/data-table';
 import { CourseResult } from '@/types/models';
 import ResultSheetLayout from './result-sheet-layout';
+import DateTimeDisplay from '@/components/date-time-display';
+import { dateFormat } from '@/util/util';
 
 export default function Template5({
   termResult,
@@ -35,16 +37,23 @@ export default function Template5({
   resultCommentTemplate,
 }: ResultProps) {
   const { currentInstitution, stamp } = useSharedProps();
+  const { hidePosition, showGrade } = useResultSetting();
 
   const resultSummary1 = [
     { label: 'Student Name', value: student.user?.full_name },
     { label: 'Class', value: termResult.classification?.title },
     { label: 'No in Class', value: classResultInfo.num_of_students },
     { label: 'Average Score', value: termResult.average },
-    {
-      label: 'Position in Class',
-      value: ResultUtil.formatPosition(termResult.position),
-    },
+    ...(hidePosition
+      ? []
+      : [
+          {
+            label: 'Position in Class',
+            value: showGrade
+              ? getGrade(termResult.average)[0]
+              : ResultUtil.formatPosition(termResult.position),
+          },
+        ]),
   ];
   const resultSummary2 = [
     {
@@ -53,10 +62,20 @@ export default function Template5({
     },
     { label: 'Session', value: academicSession.title },
     { label: 'Student Id', value: student.code },
-    {
-      label: 'Next Term begins',
-      value: classResultInfo.next_term_resumption_date,
-    },
+    ...(classResultInfo.next_term_resumption_date
+      ? [
+          {
+            label: 'Next Term Begins',
+            value: (
+              <DateTimeDisplay
+                as={'span'}
+                dateTime={classResultInfo.next_term_resumption_date}
+                dateTimeformat={dateFormat}
+              />
+            ),
+          },
+        ]
+      : []),
   ];
 
   function getGrade(score: number) {
