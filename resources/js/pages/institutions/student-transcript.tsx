@@ -194,7 +194,9 @@ function DisplaySessionResult({
                     return (
                       <React.Fragment key={`result${term}`}>
                         <td>{courseResult?.result}</td>
-                        <td>{ResultUtil.getGrade(courseResult?.result)[0]}</td>
+                        <td>
+                          {ResultUtil.getGrade(courseResult?.result).grade}
+                        </td>
                       </React.Fragment>
                     );
                   }

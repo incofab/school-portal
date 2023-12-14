@@ -216,7 +216,7 @@ function DisplayTermResult({
                 </td>
                 <td>{courseResult.exam}</td>
                 <td>{courseResult.result}</td>
-                <td>{ResultUtil.getGrade(courseResult.result)[1]}</td>
+                <td>{ResultUtil.getGrade(courseResult.result).remark}</td>
               </tr>
             );
           })}

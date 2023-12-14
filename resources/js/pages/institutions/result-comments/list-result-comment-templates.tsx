@@ -53,7 +53,7 @@ export default function ListResultCommentTemplates({
   const headers: TableHeader<ResultCommentTemplate>[] = [
     {
       label: 'Type',
-      render: (row) => startCase(row.type),
+      render: (row) => startCase(row.type ?? 'All'),
     },
     {
       label: 'Comment',

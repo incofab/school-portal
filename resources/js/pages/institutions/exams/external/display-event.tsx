@@ -37,7 +37,8 @@ export default function DisplayEvent({ event, tokenUser }: Props) {
       return null;
     }
     const myExam = event.exams?.find(
-      (item) => item.external_reference === tokenUser.reference
+      (item) =>
+        item.examable_type === 'token-user' && item.examable_id === tokenUser.id
     );
 
     if (!myExam) {

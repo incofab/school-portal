@@ -11,12 +11,7 @@ import {
   Student,
   TermResult,
 } from '@/types/models';
-import {
-  KeyValue,
-  PositionDisplayType,
-  ResultSettingType,
-  SelectOptionType,
-} from '@/types/types';
+import { PositionDisplayType, ResultSettingType } from '@/types/types';
 import { Text } from '@chakra-ui/react';
 import jsPDF from 'jspdf';
 
@@ -69,52 +64,58 @@ const ResultUtil = {
     }
   },
 
-  getGrade: function (score: number) {
+  getGrade: function (
+    score: number,
+    resultCommentTemplate?: ResultCommentTemplate[]
+  ) {
     let grade = '';
+    let pointsGrade = 0;
     let remark = '';
-    let label = '';
+    let range = '';
+
     if (score < 40) {
       grade = 'F';
-      remark = 'Fail';
-      label = '0 - 39';
-    } else if (score < 45) {
-      grade = 'E';
-      remark = 'Poor Pass';
-      label = '40 - 44';
+      remark = 'Progressing';
+      range = '1.0% - 39.0%';
+      pointsGrade = 0;
     } else if (score < 50) {
+      grade = 'E';
+      remark = 'Fair';
+      range = '40.0% - 49.0%';
+      pointsGrade = 2;
+    } else if (score < 60) {
       grade = 'D';
       remark = 'Pass';
-      label = '45 - 49';
-    } else if (score < 55) {
-      grade = 'C6';
-      remark = 'Credit';
-      label = '50 - 54';
-    } else if (score < 60) {
-      grade = 'C4';
-      remark = 'Credit';
-      label = '55 - 59';
-    } else if (score < 65) {
-      grade = 'B3';
-      remark = 'Good';
-      label = '60 - 64';
+      range = '50.0% - 59.0%';
+      pointsGrade = 3;
     } else if (score < 70) {
-      grade = 'B2';
-      remark = 'Very Good';
-      label = '65 - 69';
-    } else if (score < 80) {
-      grade = 'B1';
-      remark = 'Very Good';
-      label = '70 - 79';
+      grade = 'C';
+      remark = 'Good';
+      range = '60.0% - 69.0%';
+      pointsGrade = 4;
     } else if (score < 90) {
-      grade = 'A2';
+      grade = 'B';
+      remark = 'Very Good';
+      range = '70.0% - 89.0%';
+      pointsGrade = 4;
+    } else {
+      grade = 'A';
       remark = 'Excellent';
-      label = '80 - 89';
-    } else if (score < 100) {
-      grade = 'A1';
-      remark = 'Distinction';
-      label = '90 - 100';
+      range = '90.0% - Above';
+      pointsGrade = 5;
     }
-    return [grade, remark, label];
+
+    const comment = ResultUtil.getCommentFromTemplate(
+      score,
+      resultCommentTemplate
+    );
+
+    if (comment) {
+      grade = comment.grade;
+      remark = comment.grade_label;
+      range = `${comment.min} - ${comment.max}`;
+    }
+    return { grade, remark, range, pointsGrade };
   },
 
   getClassSection: function (classTitle: string) {
@@ -189,8 +190,11 @@ const ResultUtil = {
 
   getCommentFromTemplate: function (
     score: number,
-    commentTemplate: ResultCommentTemplate[]
+    commentTemplate?: ResultCommentTemplate[]
   ) {
+    if (!commentTemplate) {
+      return undefined;
+    }
     const comment = commentTemplate.find(
       (item) => item.min <= score && item.max >= score
     );

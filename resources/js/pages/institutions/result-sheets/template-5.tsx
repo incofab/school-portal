@@ -50,7 +50,8 @@ export default function Template5({
           {
             label: 'Position in Class',
             value: showGrade
-              ? getGrade(termResult.average)[0]
+              ? ResultUtil.getGrade(termResult.average, resultCommentTemplate)
+                  .grade
               : ResultUtil.formatPosition(termResult.position),
           },
         ]),
@@ -78,44 +79,55 @@ export default function Template5({
       : []),
   ];
 
-  function getGrade(score: number) {
-    let grade = '';
-    let pointsGrade = 0;
-    let remark = '';
-    let label = '';
-    if (score < 40) {
-      grade = 'F';
-      remark = 'Progressing';
-      label = '1.0% - 39.0%';
-      pointsGrade = 0;
-    } else if (score < 50) {
-      grade = 'E';
-      remark = 'Fair';
-      label = '40.0% - 49.0%';
-      pointsGrade = 2;
-    } else if (score < 60) {
-      grade = 'D';
-      remark = 'Pass';
-      label = '50.0% - 59.0%';
-      pointsGrade = 3;
-    } else if (score < 70) {
-      grade = 'C';
-      remark = 'Good';
-      label = '60.0% - 69.0%';
-      pointsGrade = 4;
-    } else if (score < 90) {
-      grade = 'B';
-      remark = 'Very Good';
-      label = '70.0% - 89.0%';
-      pointsGrade = 4;
-    } else {
-      grade = 'A';
-      remark = 'Excellent';
-      label = '90.0% - Above';
-      pointsGrade = 5;
-    }
-    return [grade, remark, label, pointsGrade];
-  }
+  // function getGrade(score: number) {
+  //   const comment = ResultUtil.getCommentFromTemplate(
+  //     score,
+  //     resultCommentTemplate
+  //   );
+  //   let grade = '';
+  //   let pointsGrade = 0;
+  //   let remark = '';
+  //   let label = '';
+  //   if (comment) {
+  //     grade = comment.grade;
+  //     pointsGrade = 0;
+  //     remark = comment.comment;
+  //     label = comment.grade_label;
+  //   } else {
+  //     if (score < 40) {
+  //       grade = 'F';
+  //       remark = 'Progressing';
+  //       label = '1.0% - 39.0%';
+  //       pointsGrade = 0;
+  //     } else if (score < 50) {
+  //       grade = 'E';
+  //       remark = 'Fair';
+  //       label = '40.0% - 49.0%';
+  //       pointsGrade = 2;
+  //     } else if (score < 60) {
+  //       grade = 'D';
+  //       remark = 'Pass';
+  //       label = '50.0% - 59.0%';
+  //       pointsGrade = 3;
+  //     } else if (score < 70) {
+  //       grade = 'C';
+  //       remark = 'Good';
+  //       label = '60.0% - 69.0%';
+  //       pointsGrade = 4;
+  //     } else if (score < 90) {
+  //       grade = 'B';
+  //       remark = 'Very Good';
+  //       label = '70.0% - 89.0%';
+  //       pointsGrade = 4;
+  //     } else {
+  //       grade = 'A';
+  //       remark = 'Excellent';
+  //       label = '90.0% - Above';
+  //       pointsGrade = 5;
+  //     }
+  //   }
+  //   return [grade, remark, label, pointsGrade];
+  // }
 
   function LabelText({
     label,
@@ -170,7 +182,10 @@ export default function Template5({
     },
     {
       label: 'Grade',
-      render: (courseResult) => String(getGrade(courseResult.result)[0]),
+      render: (courseResult) =>
+        String(
+          ResultUtil.getGrade(courseResult.result, resultCommentTemplate).grade
+        ),
     },
     {
       label: 'Position',
@@ -194,7 +209,10 @@ export default function Template5({
     },
     {
       label: 'Remark',
-      render: (courseResult) => String(getGrade(courseResult.result)[1]),
+      render: (courseResult) =>
+        String(
+          ResultUtil.getGrade(courseResult.result, resultCommentTemplate).remark
+        ),
     },
   ];
   function Header() {
@@ -359,11 +377,11 @@ export default function Template5({
                   </thead>
                   <tbody>
                     {[90, 89, 69, 59, 49, 39].map((item) => {
-                      const [grade, remark, label, pointsGrade] =
-                        getGrade(item);
+                      const { grade, remark, range, pointsGrade } =
+                        ResultUtil.getGrade(item, resultCommentTemplate);
                       return (
                         <tr key={item}>
-                          <td>{label}</td>
+                          <td>{range}</td>
                           <td>{grade}</td>
                           <td>{remark}</td>
                           <td>{pointsGrade}</td>

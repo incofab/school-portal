@@ -18,11 +18,13 @@ class DisplayEventController extends Controller
 
     $event->load([
       'eventCourseables.courseable.course',
-      'exams' => fn($q) => $q->where(
-        'external_reference',
-        $tokenUser->reference
-      )
+      'exams' => fn($q) => $q
+        ->where('examable_type', $tokenUser->getMorphClass())
+        ->where('examable_id', $tokenUser->id)
     ]);
+    if ($event->exams?->count() > 0) {
+      return redirect(instRoute('external.home'));
+    }
     return inertia('institutions/exams/external/display-event', [
       'event' => $event,
       'tokenUser' => $tokenUser
