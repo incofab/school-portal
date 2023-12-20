@@ -121,16 +121,24 @@ export default function SetTermResultEvaluation({
             );
           }
           return (
-            <Input
+            <FormControlBox
+              form={webForm as any}
+              formKey=""
+              title={item.title}
               key={'display-evalauation' + item.id}
-              value={evaluation[item.id]}
-              onChange={(e) =>
-                setEvaluation({
-                  ...evaluation,
-                  [item.id]: e.currentTarget.value,
-                })
-              }
-            />
+            >
+              <Input
+                key={'display-evalauation' + item.id}
+                value={evaluation[item.id]}
+                placeholder={'Enter ' + item.title}
+                onChange={(e) =>
+                  setEvaluation({
+                    ...evaluation,
+                    [item.id]: e.currentTarget.value,
+                  })
+                }
+              />
+            </FormControlBox>
           );
         })}
         <FormControl>

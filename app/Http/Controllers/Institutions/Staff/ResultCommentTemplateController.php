@@ -45,9 +45,9 @@ class ResultCommentTemplateController extends Controller
     ResultCommentTemplate $resultCommentTemplate = null
   ) {
     $data = $request->validate([
-      'comment' => ['string'],
-      'grade' => ['string'],
-      'grade_label' => ['string'],
+      'comment' => ['nullable', 'string'],
+      'grade' => ['nullable', 'string'],
+      'grade_label' => ['nullable', 'string'],
       'min' => ['required', 'numeric'],
       'max' => ['required', 'numeric', 'gte:min'],
       'type' => ['nullable', new Enum(ResultCommentTemplateType::class)]

@@ -390,28 +390,38 @@ export default function Template5({
                     })}
                   </tbody>
                 </table>
-                {termResult.teacher_comment && (
-                  <>
-                    <HStack align={'stretch'}>
-                      <Text fontWeight={'semibold'} size={'xs'}>
-                        Teacher's comment:{' '}
-                      </Text>
-                      <Text>{termResult.teacher_comment}</Text>
-                    </HStack>
-                    <Divider />
-                  </>
-                )}
-                {principalComment && (
-                  <>
-                    <HStack align={'stretch'}>
-                      <Text fontWeight={'semibold'} size={'xs'}>
-                        Head Teacher's comment:{' '}
-                      </Text>
-                      <Text>{termResult.principal_comment}</Text>
-                    </HStack>
-                    <Divider />
-                  </>
-                )}
+                <Div ml={3} width={'full'}>
+                  {termResult.teacher_comment && (
+                    <>
+                      <HStack align={'stretch'} width={'full'}>
+                        <Text
+                          fontWeight={'semibold'}
+                          size={'xs'}
+                          whiteSpace={'nowrap'}
+                        >
+                          Teacher's comment:{' '}
+                        </Text>
+                        <Text>{termResult.teacher_comment}</Text>
+                      </HStack>
+                      <Divider />
+                    </>
+                  )}
+                  {principalComment && (
+                    <>
+                      <HStack align={'stretch'} width={'full'}>
+                        <Text
+                          fontWeight={'semibold'}
+                          size={'xs'}
+                          whiteSpace={'nowrap'}
+                        >
+                          Head Teacher's comment:{' '}
+                        </Text>
+                        <Text>{principalComment}</Text>
+                      </HStack>
+                      <Divider />
+                    </>
+                  )}
+                </Div>
               </div>
             </A4Page>
           </Div>

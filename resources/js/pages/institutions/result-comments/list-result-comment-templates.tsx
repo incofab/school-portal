@@ -4,6 +4,7 @@ import {
   HStack,
   Icon,
   IconButton,
+  Input,
   Spacer,
   Textarea,
   VStack,
@@ -161,6 +162,18 @@ function CreateUpdateResultCommentTemplates({
     Inertia.visit(instRoute('result-comment-templates.index'));
   };
 
+  const grades = Object.keys(Grade).concat([
+    'A1',
+    'B2',
+    'B3',
+    'C4',
+    'C5',
+    'C6',
+    'D7',
+    'E8',
+    'F9',
+  ]);
+
   return (
     <CenteredBox>
       <Slab>
@@ -198,17 +211,33 @@ function CreateUpdateResultCommentTemplates({
                 formKey="grade"
                 title="Grade"
               >
+                <Input
+                  value={webForm.data.grade}
+                  list="grade-options"
+                  type="text"
+                  placeholder="Eg: A,A1,B,B2,B3..."
+                  onChange={(e) =>
+                    webForm.setValue('grade', e.currentTarget.value)
+                  }
+                />
+                <datalist id="grade-options">
+                  {grades.map((option) => (
+                    <option key={option} value={option} />
+                  ))}
+                </datalist>
+                {/*                 
                 <EnumSelect
                   selectValue={webForm.data.type}
                   enumData={Grade}
                   isMulti={false}
                   onChange={(e: any) => webForm.setValue('grade', e.value)}
-                />
+                /> */}
               </FormControlBox>
               <InputForm
                 form={webForm as any}
                 formKey="grade_label"
                 title="Label [optional]"
+                placeholder="Eg. Excellent,Fail..."
               />
             </HStack>
             <FormControlBox

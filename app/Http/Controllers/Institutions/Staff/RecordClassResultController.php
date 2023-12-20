@@ -43,6 +43,8 @@ class RecordClassResultController extends Controller
 
     $setting = SettingsHandler::makeFromRoute();
     $students = Student::query()
+      ->select('students.*')
+      ->join('users', 'users.id', 'students.user_id')
       ->where('classification_id', $courseTeacher->classification_id)
       ->with(
         'courseResults',
@@ -53,6 +55,7 @@ class RecordClassResultController extends Controller
         ])
       )
       ->with('user')
+      ->latest('users.last_name')
       ->get();
     return Inertia::render('institutions/courses/record-class-course-result', [
       'courseTeacher' => $courseTeacher,
