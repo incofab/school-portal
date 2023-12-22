@@ -29,6 +29,10 @@ return [
     'region' => env('AWS_DEFAULT_REGION', 'us-east-1')
   ],
 
+  'pdf' => [
+    'url' => env('VITE_PDF_URL')
+  ],
+
   'jwt' => [
     'secret-key' => env('JWT_SECRET_KEY')
   ]

@@ -19,6 +19,7 @@ use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use App\Support\UITableFilters\TermResultUITableFilters;
+use Http;
 use Illuminate\Http\Request;
 use URL;
 
@@ -104,6 +105,21 @@ class ViewResultSheetController extends Controller
       "institutions/result-sheets/{$setting->getResultTemplate()}",
       $viewData
     );
+  }
+
+  function pdfBridge(Request $request)
+  {
+    $data = $request->validate([
+      'url' => ['required', 'string'],
+      'filename' => ['required', 'string']
+    ]);
+    $res = Http::post(config('services.pdf.url'), $data);
+    abort_unless(
+      $res->ok(),
+      401,
+      'Initial PDF error encountered, Alternative means will be used'
+    );
+    return $this->ok(['filename' => $request->filename]);
   }
 
   /** @deprecated */

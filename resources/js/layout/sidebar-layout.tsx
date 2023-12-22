@@ -96,11 +96,7 @@ export default function SideBarLayout() {
         {
           label: 'Subject Teachers',
           route: instRoute('course-teachers.index'),
-          roles: [
-            InstitutionUserType.Student,
-            InstitutionUserType.Admin,
-            InstitutionUserType.Teacher,
-          ],
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Recorded Results',
@@ -116,6 +112,7 @@ export default function SideBarLayout() {
         {
           label: 'All Classes',
           route: instRoute('classifications.index'),
+          roles: staffOnly,
         },
         {
           label: 'Add Class',
@@ -125,6 +122,7 @@ export default function SideBarLayout() {
         {
           label: 'All Class Groups',
           route: instRoute('classification-groups.index'),
+          roles: staffOnly,
         },
         {
           label: 'Student Class Changes',

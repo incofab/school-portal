@@ -26,6 +26,7 @@ import DateTimeDisplay from '@/components/date-time-display';
 import { dateFormat } from '@/util/util';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
+import route from '@/util/route';
 
 const PDF_URL = import.meta.env.VITE_PDF_URL;
 export default function Template5({
@@ -91,7 +92,7 @@ export default function Template5({
     }
     const filename = `${student.user?.full_name}-result-${termResult.term}-${termResult.id}.pdf`;
     const res = await downloadPdfForm.submit((data, web) =>
-      web.post(PDF_URL, {
+      web.post(route('pdf-bridge'), {
         url: signed_url,
         filename: filename,
       })
@@ -325,9 +326,9 @@ export default function Template5({
           position={'relative'}
           id={'result-sheet'}
         >
-          <Div position={'absolute'} bottom={'130px'} right={0} opacity={0.65}>
-            <Img src={stamp} />
-          </Div>
+          {/* <Div position={'absolute'} bottom={'130px'} right={0} opacity={0.65}>
+            <Img src={stamp} alt="School stamp" />
+          </Div> */}
           <Div>
             <A4Page>
               <div className="table-container">
@@ -357,10 +358,13 @@ export default function Template5({
                 }}
               >
                 {resultCommentTemplate && (
-                  <table className="keys-table" style={{ textAlign: 'center' }}>
+                  <table
+                    className="keys-table"
+                    style={{ textAlign: 'center', minWidth: '300px' }}
+                  >
                     <thead>
                       <tr>
-                        <th>Percentage Range</th>
+                        <th>Range (%)</th>
                         <th>Remark</th>
                         <th>Letter Grade</th>
                         {/* <th>Point Grade</th> */}
@@ -413,6 +417,15 @@ export default function Template5({
                       </HStack>
                       <Divider />
                     </>
+                  )}
+                  {stamp && (
+                    <Div textAlign={'end'}>
+                      <Img
+                        src={stamp}
+                        alt="School stamp"
+                        display={'inline-block'}
+                      />
+                    </Div>
                   )}
                 </Div>
               </div>

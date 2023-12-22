@@ -112,15 +112,17 @@ export default function Profile({ user, institutionUser }: Props) {
             value: (
               <HStack spacing={3}>
                 <Text>{student.classification?.title}</Text>
-                <Tooltip label={'Change class'} placement={'auto-start'}>
-                  <IconButton
-                    aria-label="Change class"
-                    onClick={() => changeClassModalToggle.open(student)}
-                    icon={<Icon as={PencilSquareIcon} />}
-                    colorScheme="brand"
-                    size={'sm'}
-                  />
-                </Tooltip>
+                {isStaff && (
+                  <Tooltip label={'Change class'} placement={'auto-start'}>
+                    <IconButton
+                      aria-label="Change class"
+                      onClick={() => changeClassModalToggle.open(student)}
+                      icon={<Icon as={PencilSquareIcon} />}
+                      colorScheme="brand"
+                      size={'sm'}
+                    />
+                  </Tooltip>
+                )}
               </HStack>
             ),
           },
@@ -171,7 +173,7 @@ export default function Profile({ user, institutionUser }: Props) {
                     </DestructivePopover>
                   </>
                 )}
-                {student && (
+                {isStaff && (
                   <Button
                     as={InertiaLink}
                     href={instRoute('students.transcript', [student])}

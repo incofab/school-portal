@@ -57,6 +57,11 @@ class InstitutionSettingController extends Controller
       'type' => ['nullable', 'string']
     ]);
 
+    $data['value'] =
+      $request->type === 'array'
+        ? json_encode($request->value)
+        : $request->value;
+
     if ($request->photo) {
       $imagePath = $request->photo->store(
         $institution->folder(S3Folder::Settings),
@@ -65,10 +70,6 @@ class InstitutionSettingController extends Controller
       $publicUrl = Storage::disk('s3_public')->url($imagePath);
       $data['value'] = $publicUrl;
     }
-    $data['value'] =
-      $request->type === 'array'
-        ? json_encode($request->value)
-        : $request->value;
 
     InstitutionSetting::query()->updateOrCreate(
       [
