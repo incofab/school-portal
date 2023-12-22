@@ -195,6 +195,7 @@ const ResultUtil = {
     if (!commentTemplate) {
       return undefined;
     }
+    score = Math.round(score);
     const comment = commentTemplate.find(
       (item) => Number(item.min) <= score && Number(item.max) >= score
     );

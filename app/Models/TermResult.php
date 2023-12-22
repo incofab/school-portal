@@ -22,6 +22,7 @@ class TermResult extends Model
     'classification_id' => 'integer',
     'for_mid_term' => 'boolean',
     'next_term_resumption_date' => 'date',
+    'average' => 'float',
     'learning_evaluation' => AsArrayObject::class
   ];
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Institution;
 use App\Models\Pin;
 use App\Models\Student;
 use App\Models\TermResult;
@@ -90,7 +91,7 @@ class TermResultActivationController extends Controller
         ->first();
       if ($termResult) {
         $this->activateResult($termResult, $pin, $student->user);
-        return $this->successRes($pin->institution);
+        return $this->successRes($pin->institution, $termResult);
       }
     }
 
@@ -109,7 +110,7 @@ class TermResultActivationController extends Controller
 
     if ($count === 1) {
       $this->activateResult($termResults->first(), $pin, $student->user);
-      return $this->successRes($pin->institution);
+      return $this->successRes($pin->institution, $termResults->first());
     }
 
     return response()->json([
@@ -118,12 +119,22 @@ class TermResultActivationController extends Controller
     ]);
   }
 
-  private function successRes($institution)
+  private function successRes(Institution $institution, TermResult $termResult)
   {
+    $route = route('institutions.students.result-sheet', [
+      $institution->uuid,
+      $termResult->student_id,
+      $termResult->classification_id,
+      $termResult->academic_session_id,
+      $termResult->term,
+      $termResult->for_mid_term ? 1 : 0
+    ]);
+
     return response()->json([
-      'redirect_url' => route('institutions.students.term-results.index', [
-        $institution->uuid
-      ])
+      'redirect_url' => $route
+      // route('institutions.students.term-results.index', [237764964824,20238750
+      //   $institution->uuid
+      // ])
     ]);
   }
 
@@ -151,7 +162,7 @@ class TermResultActivationController extends Controller
     if (!Auth::check()) {
       Auth::login($termResult->student->user);
     }
-    return $this->successRes($termResult->institution);
+    return $this->successRes($termResult->institution, $termResult);
   }
 
   private function hasPdfResult(Student $student, Pin $pin)

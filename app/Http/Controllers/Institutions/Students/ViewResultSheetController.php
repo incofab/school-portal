@@ -113,6 +113,12 @@ class ViewResultSheetController extends Controller
       'url' => ['required', 'string'],
       'filename' => ['required', 'string']
     ]);
+
+    $filePath = storage_path(self::STORAGE_PATH . $request->filename);
+    if (file_exists($filePath)) {
+      return $this->ok(['filename' => $request->filename]);
+    }
+
     $res = Http::post(config('services.pdf.url'), $data);
     abort_unless(
       $res->ok(),
@@ -122,14 +128,39 @@ class ViewResultSheetController extends Controller
     return $this->ok(['filename' => $request->filename]);
   }
 
+  const STORAGE_PATH = 'app/public/result-pdf/';
   function pdfBridgeDownload(Request $request)
   {
     $data = $request->validate([
       'filename' => ['required', 'string']
     ]);
-    return redirect(
-      config('services.pdf.url') . '/download?' . http_build_query($data)
-    );
+
+    $filename = $request->filename;
+    $filePath = storage_path(self::STORAGE_PATH . $filename);
+
+    if (!file_exists($filePath)) {
+      $downloadUrl =
+        config('services.pdf.url') . '/download?' . http_build_query($data);
+      $this->downloadFile($downloadUrl, $filename);
+    }
+
+    // Headers for forcing download
+    $headers = [
+      'Content-Type' => 'application/pdf',
+      'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+    ];
+    return response()->download($filePath, $filename, $headers);
+  }
+
+  private function downloadFile(string $url, string $filename)
+  {
+    $savePath = storage_path(self::STORAGE_PATH); // Adjust the path as needed
+    if (!file_exists($savePath)) {
+      mkdir($savePath, 0777, true);
+    }
+
+    $fileContent = file_get_contents($url);
+    file_put_contents("$savePath$filename", $fileContent);
   }
 
   /** @deprecated */

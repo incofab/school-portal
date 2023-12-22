@@ -6,7 +6,6 @@ use App\Enums\ResultCommentTemplateType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ResultCommentTemplate extends Model
 {
@@ -15,6 +14,8 @@ class ResultCommentTemplate extends Model
   public $guarded = [];
   protected $casts = [
     'institution_id' => 'integer',
+    'min' => 'float',
+    'max' => 'float',
     'type' => ResultCommentTemplateType::class
   ];
 

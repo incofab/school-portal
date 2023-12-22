@@ -16,7 +16,11 @@ class InstitutionController extends Controller
 
   public function profile(Request $request, Institution $institution)
   {
-    abort_unless(currentUser()->isInstitutionAdmin(), 403, 'Access denied');
+    abort_unless(
+      currentUser()->isInstitutionAdmin(),
+      403,
+      'View Profile: Access denied'
+    );
 
     return inertia('institutions/institution-profile', [
       'institution' => $institution
@@ -25,7 +29,11 @@ class InstitutionController extends Controller
 
   public function update(Request $request, Institution $institution)
   {
-    abort_unless(currentUser()->isInstitutionAdmin(), 403, 'Access denied');
+    abort_unless(
+      currentUser()->isInstitutionAdmin(),
+      403,
+      'Update Profile: Access denied'
+    );
 
     $data = $request->validate(
       [
@@ -47,7 +55,11 @@ class InstitutionController extends Controller
 
   public function uploadPhoto(Request $request, Institution $institution)
   {
-    abort_unless(currentUser()->isInstitutionAdmin(), 403, 'Access denied');
+    abort_unless(
+      currentUser()->isInstitutionAdmin(),
+      403,
+      'Upload Photo: Access denied'
+    );
     $request->validate([
       'photo' => ['required', 'image', 'mimes:jpg,png,jpeg', 'max:2048']
     ]);

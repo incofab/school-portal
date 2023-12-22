@@ -44,8 +44,6 @@ Route::get('institutions/search', Web\SearchInstitutionController::class)
     ->name('institutions.search');
 Route::get('academic-sessions/search', [Web\AcademicSessionController::class, 'search'])
     ->name('academic-sessions.search');
-Route::get('result', [Web\TermResultActivationController::class, 'create'])
-    ->name('activate-term-result.create');
 Route::post('activate-result', [Web\TermResultActivationController::class, 'store'])
     ->name('activate-term-result.store');
 
@@ -64,6 +62,8 @@ Route::group(['middleware' => ['guest']], function () {
     Route::get('register', [Web\InstitutionRegistrationController::class, 'create'])->name('register.create');
     Route::post('register', [Web\InstitutionRegistrationController::class, 'store'])->name('register.store');
     
+    Route::get('result', [Web\TermResultActivationController::class, 'create'])->name('activate-term-result.create');
+
     Route::get('student/login', [Web\StudentAuthController::class, 'showLogin'])->name('student-login');
     Route::post('student/login', [Web\StudentAuthController::class, 'login'])->name('student-login.store');
 
