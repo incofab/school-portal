@@ -162,3 +162,13 @@ export function stripInitials(studentCode: string) {
   const pos = studentCode.indexOf('/');
   return studentCode.substring(pos < 0 ? 0 : pos);
 }
+
+export function validFilename(input?: string): string {
+  // Remove invalid characters and replace them with underscores
+  const sanitizedString = input?.replace(/[^a-zA-Z0-9.-]/g, '_');
+  // Ensure the string is not empty after sanitization
+  if (!sanitizedString?.trim()) {
+    return '';
+  }
+  return sanitizedString;
+}

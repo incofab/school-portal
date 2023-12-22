@@ -15,6 +15,10 @@ Route::any(
         'pdf-bridge', 
         [Web\Institutions\Students\ViewResultSheetController::class, 'pdfBridge']
     )->name('pdf-bridge');
+Route::any(
+        'pdf-bridge-download', 
+        [Web\Institutions\Students\ViewResultSheetController::class, 'pdfBridgeDownload']
+    )->name('pdf-bridge-download');
 
 Route::get('/dummy1', function ()
 {

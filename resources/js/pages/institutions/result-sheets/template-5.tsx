@@ -23,7 +23,7 @@ import DataTable, { TableHeader } from '@/components/data-table';
 import { CourseResult } from '@/types/models';
 import ResultSheetLayout from './result-sheet-layout';
 import DateTimeDisplay from '@/components/date-time-display';
-import { dateFormat } from '@/util/util';
+import { dateFormat, validFilename } from '@/util/util';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import route from '@/util/route';
@@ -90,7 +90,9 @@ export default function Template5({
     if (!confirm('Do you want to download this result?')) {
       return;
     }
-    const filename = `${student.user?.full_name}-result-${termResult.term}-${termResult.id}.pdf`;
+    const filename = `${validFilename(student.user?.full_name)}-result-${
+      termResult.term
+    }-${termResult.id}.pdf`;
     const res = await downloadPdfForm.submit((data, web) =>
       web.post(route('pdf-bridge'), {
         url: signed_url,
@@ -102,9 +104,11 @@ export default function Template5({
       exportPdf();
       return;
     }
-    const url = new URL(`${PDF_URL}/download`);
-    url.searchParams.set('filename', filename);
-    window.location.href = url.toString();
+    window.location.href = route('pdf-bridge-download', { filename });
+    // const url = new URL(`${PDF_URL}/download`);
+    // url.searchParams.set('filename', filename);
+    // // window.location.href = url.toString();
+    // window.open(url.toString(), '_blank');
   }
 
   function exportPdf() {

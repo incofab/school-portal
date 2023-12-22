@@ -122,6 +122,16 @@ class ViewResultSheetController extends Controller
     return $this->ok(['filename' => $request->filename]);
   }
 
+  function pdfBridgeDownload(Request $request)
+  {
+    $data = $request->validate([
+      'filename' => ['required', 'string']
+    ]);
+    return redirect(
+      config('services.pdf.url') . '/download?' . http_build_query($data)
+    );
+  }
+
   /** @deprecated */
   public function deprecated(
     Institution $institution,
