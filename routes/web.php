@@ -7,6 +7,10 @@ use App\Http\Controllers\Institutions\Exams\External as External;
 
 Route::get('pdf-result/{student}', [Web\TermResultActivationController::class, 'showPdfResult'])
     ->name('show-pdf-result');
+Route::get(
+        '{institution}/students/signed-result-sheet/{student}/{classification}/{academicSession}/{term}/{forMidTerm}', 
+        [Web\Institutions\Students\ViewResultSheetController::class, 'viewResultSigned']
+    )->name('institutions.students.result-sheet.signed');
 
 Route::get('/dummy1', function ()
 {

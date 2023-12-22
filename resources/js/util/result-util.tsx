@@ -196,7 +196,7 @@ const ResultUtil = {
       return undefined;
     }
     const comment = commentTemplate.find(
-      (item) => item.min <= score && item.max >= score
+      (item) => Number(item.min) <= score && Number(item.max) >= score
     );
     return comment;
   },
@@ -230,4 +230,5 @@ export interface ResultProps {
   assessments: Assessment[];
   learningEvaluations: LearningEvaluation[];
   resultCommentTemplate: ResultCommentTemplate[];
+  signed_url: ResultCommentTemplate[];
 }

@@ -139,8 +139,8 @@ function DisplayEvaluationValue({
 }
 
 function wiseGate(learningEvaluation?: LearningEvaluation) {
-  const forA = ['Cooperation'];
-  const forC = ['Reliability'];
+  const forA: string[] = ['Cooperation', 'Reliability'];
+  const forC: string[] = [];
   let element = '';
   // console.log('title', learningEvaluation?.title, learningEvaluation);
 

@@ -24,7 +24,10 @@ import { CourseResult } from '@/types/models';
 import ResultSheetLayout from './result-sheet-layout';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateFormat } from '@/util/util';
+import useWebForm from '@/hooks/use-web-form';
+import useMyToast from '@/hooks/use-my-toast';
 
+const PDF_URL = import.meta.env.VITE_PDF_URL;
 export default function Template5({
   termResult,
   courseResults,
@@ -35,9 +38,12 @@ export default function Template5({
   assessments,
   learningEvaluations,
   resultCommentTemplate,
+  signed_url,
 }: ResultProps) {
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const downloadPdfForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
 
   const resultSummary1 = [
     { label: 'Student Name', value: student.user?.full_name },
@@ -79,55 +85,33 @@ export default function Template5({
       : []),
   ];
 
-  // function getGrade(score: number) {
-  //   const comment = ResultUtil.getCommentFromTemplate(
-  //     score,
-  //     resultCommentTemplate
-  //   );
-  //   let grade = '';
-  //   let pointsGrade = 0;
-  //   let remark = '';
-  //   let label = '';
-  //   if (comment) {
-  //     grade = comment.grade;
-  //     pointsGrade = 0;
-  //     remark = comment.comment;
-  //     label = comment.grade_label;
-  //   } else {
-  //     if (score < 40) {
-  //       grade = 'F';
-  //       remark = 'Progressing';
-  //       label = '1.0% - 39.0%';
-  //       pointsGrade = 0;
-  //     } else if (score < 50) {
-  //       grade = 'E';
-  //       remark = 'Fair';
-  //       label = '40.0% - 49.0%';
-  //       pointsGrade = 2;
-  //     } else if (score < 60) {
-  //       grade = 'D';
-  //       remark = 'Pass';
-  //       label = '50.0% - 59.0%';
-  //       pointsGrade = 3;
-  //     } else if (score < 70) {
-  //       grade = 'C';
-  //       remark = 'Good';
-  //       label = '60.0% - 69.0%';
-  //       pointsGrade = 4;
-  //     } else if (score < 90) {
-  //       grade = 'B';
-  //       remark = 'Very Good';
-  //       label = '70.0% - 89.0%';
-  //       pointsGrade = 4;
-  //     } else {
-  //       grade = 'A';
-  //       remark = 'Excellent';
-  //       label = '90.0% - Above';
-  //       pointsGrade = 5;
-  //     }
-  //   }
-  //   return [grade, remark, label, pointsGrade];
-  // }
+  async function downloadAsPdf() {
+    if (!confirm('Do you want to download this result?')) {
+      return;
+    }
+    const filename = `${student.user?.full_name}-result-${termResult.term}-${termResult.id}.pdf`;
+    const res = await downloadPdfForm.submit((data, web) =>
+      web.post(PDF_URL, {
+        url: signed_url,
+        filename: filename,
+      })
+    );
+
+    if (!handleResponseToast(res)) {
+      exportPdf();
+      return;
+    }
+    const url = new URL(`${PDF_URL}/download`);
+    url.searchParams.set('filename', filename);
+    window.location.href = url.toString();
+  }
+
+  function exportPdf() {
+    ResultUtil.exportAsPdf(
+      'result-sheet',
+      student.user?.full_name + 'result-sheet'
+    );
+  }
 
   function LabelText({
     label,
@@ -187,11 +171,15 @@ export default function Template5({
           ResultUtil.getGrade(courseResult.result, resultCommentTemplate).grade
         ),
     },
-    {
-      label: 'Position',
-      render: (courseResult) =>
-        ResultUtil.formatPosition(courseResult.position),
-    },
+    ...(hidePosition
+      ? []
+      : [
+          {
+            label: 'Position',
+            render: (courseResult: CourseResult) =>
+              ResultUtil.formatPosition(courseResult.position),
+          },
+        ]),
     {
       label: 'Average',
       render: (courseResult) =>
@@ -316,12 +304,14 @@ export default function Template5({
       <Div style={backgroundStyle} minHeight={'1170px'}>
         <Button
           id={'download-btn'}
-          onClick={() =>
-            ResultUtil.exportAsPdf(
-              'result-sheet',
-              student.user?.full_name + 'result-sheet'
-            )
-          }
+          onClick={() => {
+            downloadAsPdf();
+            // ResultUtil.exportAsPdf(
+            //   'result-sheet',
+            //   student.user?.full_name + 'result-sheet'
+            // );
+          }}
+          isLoading={downloadPdfForm.processing}
           size={'sm'}
           variant={'outline'}
           colorScheme="brand"
@@ -366,30 +356,33 @@ export default function Template5({
                   justifyContent: 'space-between',
                 }}
               >
-                <table className="keys-table" style={{ textAlign: 'center' }}>
-                  <thead>
-                    <tr>
-                      <th>Percentage Range</th>
-                      <th>Remark</th>
-                      <th>Letter Grade</th>
-                      <th>Point Grade</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[90, 89, 69, 59, 49, 39].map((item) => {
-                      const { grade, remark, range, pointsGrade } =
-                        ResultUtil.getGrade(item, resultCommentTemplate);
-                      return (
-                        <tr key={item}>
-                          <td>{range}</td>
-                          <td>{grade}</td>
-                          <td>{remark}</td>
-                          <td>{pointsGrade}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                {resultCommentTemplate && (
+                  <table className="keys-table" style={{ textAlign: 'center' }}>
+                    <thead>
+                      <tr>
+                        <th>Percentage Range</th>
+                        <th>Remark</th>
+                        <th>Letter Grade</th>
+                        {/* <th>Point Grade</th> */}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* {[90, 89, 69, 59, 49, 39].map((item) => { */}
+                      {resultCommentTemplate.map((item) => {
+                        const { grade, grade_label } = item;
+                        // ResultUtil.getGrade(item, resultCommentTemplate);
+                        return (
+                          <tr key={grade}>
+                            <td>{`${item.min} - ${item.max}`}</td>
+                            <td>{grade_label}</td>
+                            <td>{grade}</td>
+                            {/* <td>{pointsGrade}</td> */}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
                 <Div ml={3} width={'full'}>
                   {termResult.teacher_comment && (
                     <>

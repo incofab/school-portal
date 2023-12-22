@@ -359,30 +359,34 @@ export default function Template4({
                 justifyContent: 'space-between',
               }}
             >
-              <table className="keys-table" style={{ textAlign: 'center' }}>
-                <thead>
-                  <tr>
-                    <th>Percentage Range</th>
-                    <th>Remark</th>
-                    <th>Letter Grade</th>
-                    <th>Point Grade</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[90, 89, 69, 59, 49, 39].map((item) => {
-                    const { grade, remark, range, pointsGrade } =
-                      ResultUtil.getGrade(item, resultCommentTemplate);
-                    return (
-                      <tr key={item}>
-                        <td>{range}</td>
-                        <td>{grade}</td>
-                        <td>{remark}</td>
-                        <td>{pointsGrade}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              {resultCommentTemplate && (
+                <table className="keys-table" style={{ textAlign: 'center' }}>
+                  <thead>
+                    <tr>
+                      <th>Percentage Range</th>
+                      <th>Remark</th>
+                      <th>Letter Grade</th>
+                      {/* <th>Point Grade</th> */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* {[90, 89, 69, 59, 49, 39].map((item) => { */}
+                    {resultCommentTemplate.map((item) => {
+                      const { grade, grade_label } = item;
+                      // const { grade, remark, range, pointsGrade } =
+                      //   ResultUtil.getGrade(item, resultCommentTemplate);
+                      return (
+                        <tr key={grade}>
+                          <td>{`${item.min} - ${item.max}`}</td>
+                          <td>{grade_label}</td>
+                          <td>{grade}</td>
+                          {/* <td>{pointsGrade}</td> */}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
               <DisplayTermResultEvaluation
                 termResult={termResult}
                 learningEvaluations={learningEvaluations}

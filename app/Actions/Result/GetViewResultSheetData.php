@@ -1,10 +1,7 @@
 <?php
+namespace App\Actions\Result;
 
-namespace App\Http\Controllers\Institutions\Students;
-
-use App\Actions\Result\GetViewResultSheetData;
 use App\Enums\ResultCommentTemplateType;
-use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
 use App\Models\Assessment;
 use App\Models\Classification;
@@ -14,17 +11,14 @@ use App\Models\Institution;
 use App\Models\ResultCommentTemplate;
 use App\Models\Student;
 use App\Models\TermResult;
-use App\Support\SettingsHandler;
 use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use App\Support\UITableFilters\TermResultUITableFilters;
-use Illuminate\Http\Request;
-use URL;
 
-class ViewResultSheetController extends Controller
+class GetViewResultSheetData
 {
-  public function viewResult(
+  public static function run(
     Institution $institution,
     Student $student,
     Classification $classification,
@@ -32,95 +26,6 @@ class ViewResultSheetController extends Controller
     string $term,
     bool $forMidTerm
   ) {
-    $institutionUser = currentInstitutionUser();
-    abort_if(
-      $institutionUser->user_id !== $student->user_id &&
-        !$institutionUser->isAdmin(),
-      403
-    );
-
-    $viewData = GetViewResultSheetData::run(
-      $institution,
-      $student,
-      $classification,
-      $academicSession,
-      $term,
-      $forMidTerm
-    );
-
-    $termResult = $viewData['termResult'] ?? null;
-    abort_unless($termResult, 404, 'Result not found');
-
-    if (currentUser()->id == $student->user_id) {
-      abort_unless(
-        $termResult->is_activated,
-        403,
-        'This result is not activated'
-      );
-    }
-
-    $viewData['signed_url'] = URL::temporarySignedRoute(
-      'institutions.students.result-sheet.signed',
-      now()->addHour(),
-      [
-        $institution->uuid,
-        $student,
-        $classification,
-        $academicSession,
-        $term,
-        $forMidTerm ? 1 : 0
-      ]
-    );
-
-    return $this->display($viewData);
-  }
-
-  public function viewResultSigned(
-    Request $request,
-    Institution $institution,
-    Student $student,
-    Classification $classification,
-    AcademicSession $academicSession,
-    string $term,
-    bool $forMidTerm
-  ) {
-    abort_unless($request->hasValidSignature(), 403, 'Access denied');
-
-    $viewData = GetViewResultSheetData::run(
-      $institution,
-      $student,
-      $classification,
-      $academicSession,
-      $term,
-      $forMidTerm
-    );
-    return $this->display($viewData);
-  }
-
-  private function display(array $viewData)
-  {
-    $setting = SettingsHandler::makeFromRoute();
-    return inertia(
-      "institutions/result-sheets/{$setting->getResultTemplate()}",
-      $viewData
-    );
-  }
-
-  /** @deprecated */
-  public function deprecated(
-    Institution $institution,
-    Student $student,
-    Classification $classification,
-    AcademicSession $academicSession,
-    string $term,
-    bool $forMidTerm
-  ) {
-    $institutionUser = currentInstitutionUser();
-    abort_if(
-      $institutionUser->user_id !== $student->user_id &&
-        !$institutionUser->isAdmin(),
-      403
-    );
     $params = [
       'institution_id' => $institution->id,
       'classification' => $classification->id,
@@ -138,15 +43,15 @@ class ViewResultSheetController extends Controller
       ->with('classification')
       ->first();
 
-    abort_unless($termResult, 404, 'Result not found');
+    // abort_unless($termResult, 404, 'Result not found');
 
-    if (currentUser()->id == $student->user_id) {
-      abort_unless(
-        $termResult->is_activated,
-        403,
-        'This result is not activated'
-      );
-    }
+    // if (currentUser()->id == $student->user_id) {
+    //   abort_unless(
+    //     $termResult->is_activated,
+    //     403,
+    //     'This result is not activated'
+    //   );
+    // }
 
     $courseResults = CourseResultsUITableFilters::make(
       $params,
@@ -204,7 +109,7 @@ class ViewResultSheetController extends Controller
       'termResult' => $termResult,
       'classResultInfo' => $classResultInfo,
       'courseResultInfoData' => $courseResultInfoData,
-      'resultDetails' => $this->getResultDetails($classResultInfo, $termResult),
+      'resultDetails' => self::getResultDetails($classResultInfo, $termResult),
       'assessments' => $assessments,
       'resultCommentTemplate' => $resultCommentTemplate,
       'learningEvaluations' => $institution
@@ -213,20 +118,10 @@ class ViewResultSheetController extends Controller
         ->orderBy('learning_evaluation_domain_id')
         ->get()
     ];
-
-    $setting = SettingsHandler::makeFromRoute();
-    return inertia(
-      "institutions/result-sheets/{$setting->getResultTemplate()}",
-      $viewData
-    );
-    // if (request('download')) {
-    //   return $this->downloadAsPDF($viewData);
-    // }
-    // return view('student-result-sheet', $viewData);
+    return $viewData;
   }
 
-  /** @deprecated */
-  private function getResultDetails(
+  private static function getResultDetails(
     ClassResultInfo $classResultInfo,
     TermResult $termResult
   ) {
