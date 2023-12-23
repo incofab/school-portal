@@ -173,9 +173,6 @@ export default function Template3({
           position={'relative'}
           id="result-sheet"
         >
-          <Div position={'absolute'} bottom={'120px'} right={0} opacity={0.65}>
-            <Img src={stamp} />
-          </Div>
           <VStack align={'stretch'}>
             <HStack background={'#FCFCFC'} p={2}>
               <Avatar
@@ -364,7 +361,9 @@ export default function Template3({
                   </tbody>
                 </table>
               </div>
-
+              <Div textAlign={'center'} mx={2}>
+                <Img src={stamp} alt="School stamp" display={'inline-block'} />
+              </Div>
               <DisplayTermResultEvaluation
                 termResult={termResult}
                 learningEvaluations={learningEvaluations}

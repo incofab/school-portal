@@ -27,6 +27,7 @@ import { dateFormat, validFilename } from '@/util/util';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import route from '@/util/route';
+import ResultDownloadButton from './result-download-button';
 
 const PDF_URL = import.meta.env.VITE_PDF_URL;
 export default function Template5({
@@ -86,37 +87,37 @@ export default function Template5({
       : []),
   ];
 
-  async function downloadAsPdf() {
-    if (!confirm('Do you want to download this result?')) {
-      return;
-    }
-    const filename = `${validFilename(student.user?.full_name)}-result-${
-      termResult.term
-    }-${termResult.id}.pdf`;
-    const res = await downloadPdfForm.submit((data, web) =>
-      web.post(route('pdf-bridge'), {
-        url: signed_url,
-        filename: filename,
-      })
-    );
+  // async function downloadAsPdf() {
+  //   if (!confirm('Do you want to download this result?')) {
+  //     return;
+  //   }
+  //   const filename = `${validFilename(student.user?.full_name)}-result-${
+  //     termResult.term
+  //   }-${termResult.id}.pdf`;
+  //   const res = await downloadPdfForm.submit((data, web) =>
+  //     web.post(route('pdf-bridge'), {
+  //       url: signed_url,
+  //       filename: filename,
+  //     })
+  //   );
 
-    if (!handleResponseToast(res)) {
-      exportPdf();
-      return;
-    }
-    window.location.href = route('pdf-bridge-download', { filename });
-    // const url = new URL(`${PDF_URL}/download`);
-    // url.searchParams.set('filename', filename);
-    // // window.location.href = url.toString();
-    // window.open(url.toString(), '_blank');
-  }
+  //   if (!handleResponseToast(res)) {
+  //     exportPdf();
+  //     return;
+  //   }
+  //   window.location.href = route('pdf-bridge-download', { filename });
+  //   // const url = new URL(`${PDF_URL}/download`);
+  //   // url.searchParams.set('filename', filename);
+  //   // // window.location.href = url.toString();
+  //   // window.open(url.toString(), '_blank');
+  // }
 
-  function exportPdf() {
-    ResultUtil.exportAsPdf(
-      'result-sheet',
-      student.user?.full_name + 'result-sheet'
-    );
-  }
+  // function exportPdf() {
+  //   ResultUtil.exportAsPdf(
+  //     'result-sheet',
+  //     student.user?.full_name + 'result-sheet'
+  //   );
+  // }
 
   function LabelText({
     label,
@@ -307,22 +308,11 @@ export default function Template5({
   return (
     <ResultSheetLayout>
       <Div style={backgroundStyle} minHeight={'1170px'}>
-        <Button
-          id={'download-btn'}
-          onClick={() => {
-            downloadAsPdf();
-            // ResultUtil.exportAsPdf(
-            //   'result-sheet',
-            //   student.user?.full_name + 'result-sheet'
-            // );
-          }}
-          isLoading={downloadPdfForm.processing}
-          size={'sm'}
-          variant={'outline'}
-          colorScheme="brand"
-        >
-          Download
-        </Button>
+        <ResultDownloadButton
+          signed_url={signed_url}
+          student={student}
+          termResult={termResult}
+        />
         <Div
           mx={'auto'}
           width={'900px'}
@@ -330,9 +320,6 @@ export default function Template5({
           position={'relative'}
           id={'result-sheet'}
         >
-          {/* <Div position={'absolute'} bottom={'130px'} right={0} opacity={0.65}>
-            <Img src={stamp} alt="School stamp" />
-          </Div> */}
           <Div>
             <A4Page>
               <div className="table-container">

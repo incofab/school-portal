@@ -231,5 +231,5 @@ export interface ResultProps {
   assessments: Assessment[];
   learningEvaluations: LearningEvaluation[];
   resultCommentTemplate: ResultCommentTemplate[];
-  signed_url: ResultCommentTemplate[];
+  signed_url: string;
 }

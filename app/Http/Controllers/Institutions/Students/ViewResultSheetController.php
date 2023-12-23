@@ -19,7 +19,6 @@ use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use App\Support\UITableFilters\TermResultUITableFilters;
-use Http;
 use Illuminate\Http\Request;
 use URL;
 
@@ -114,21 +113,25 @@ class ViewResultSheetController extends Controller
       'filename' => ['required', 'string']
     ]);
 
+    $filename = $request->filename;
     $filePath = storage_path(self::STORAGE_PATH . $request->filename);
-    if (file_exists($filePath)) {
-      return $this->ok(['filename' => $request->filename]);
+    if (!file_exists($filePath)) {
+      $downloadUrl = config('services.pdf.url') . '?' . http_build_query($data);
+      $this->downloadFile($downloadUrl, $filename);
     }
+    return $this->responseDownload($filePath, $filename);
 
-    $res = Http::post(config('services.pdf.url'), $data);
-    abort_unless(
-      $res->ok(),
-      401,
-      'Initial PDF error encountered, Alternative means will be used'
-    );
-    return $this->ok(['filename' => $request->filename]);
+    // $res = Http::post(config('services.pdf.url'), $data);
+    // abort_unless(
+    //   $res->ok(),
+    //   401,
+    //   'Initial PDF error encountered, Alternative means will be used'
+    // );
+    // return $this->ok(['filename' => $request->filename]);
   }
 
   const STORAGE_PATH = 'app/public/result-pdf/';
+  /** @deprecated */
   function pdfBridgeDownload(Request $request)
   {
     $data = $request->validate([
@@ -143,8 +146,11 @@ class ViewResultSheetController extends Controller
         config('services.pdf.url') . '/download?' . http_build_query($data);
       $this->downloadFile($downloadUrl, $filename);
     }
+    return $this->responseDownload($filePath, $filename);
+  }
 
-    // Headers for forcing download
+  private function responseDownload(string $filePath, string $filename)
+  {
     $headers = [
       'Content-Type' => 'application/pdf',
       'Content-Disposition' => 'attachment; filename="' . $filename . '"'
@@ -158,7 +164,6 @@ class ViewResultSheetController extends Controller
     if (!file_exists($savePath)) {
       mkdir($savePath, 0777, true);
     }
-
     $fileContent = file_get_contents($url);
     file_put_contents("$savePath$filename", $fileContent);
   }

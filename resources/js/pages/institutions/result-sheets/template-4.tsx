@@ -21,6 +21,7 @@ import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import ResultSheetLayout from './result-sheet-layout';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateFormat } from '@/util/util';
+import ResultDownloadButton from './result-download-button';
 
 export default function Template4({
   termResult,
@@ -33,6 +34,7 @@ export default function Template4({
   assessments,
   learningEvaluations,
   resultCommentTemplate,
+  signed_url,
 }: ResultProps) {
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
@@ -105,7 +107,7 @@ export default function Template4({
   return (
     <ResultSheetLayout>
       <Div style={backgroundStyle} minHeight={'1170px'}>
-        <Button
+        {/* <Button
           id={'download-btn'}
           onClick={() =>
             ResultUtil.exportAsPdf(
@@ -118,7 +120,12 @@ export default function Template4({
           colorScheme="brand"
         >
           Download
-        </Button>
+        </Button> */}
+        <ResultDownloadButton
+          signed_url={signed_url}
+          student={student}
+          termResult={termResult}
+        />
         <Div
           mx={'auto'}
           width={'900px'}
@@ -126,9 +133,6 @@ export default function Template4({
           position={'relative'}
           id={'result-sheet'}
         >
-          {/* <Div position={'absolute'} bottom={'130px'} right={0} opacity={0.65}>
-            <Img src={stamp} />
-          </Div> */}
           <VStack align={'stretch'}>
             <HStack background={'#FCFCFC'} p={2}>
               <Avatar
