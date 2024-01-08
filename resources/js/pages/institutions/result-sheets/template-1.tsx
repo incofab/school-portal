@@ -12,6 +12,7 @@ import {
   Avatar,
   Divider,
   HStack,
+  Img,
   Spacer,
   Text,
   VStack,
@@ -22,8 +23,9 @@ import startCase from 'lodash/startCase';
 import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
 import ImagePaths from '@/util/images';
-import ResultUtil from '@/util/result-util';
+import ResultUtil, { ResultProps } from '@/util/result-util';
 import ResultSheetLayout from './result-sheet-layout';
+import ResultDownloadButton from './result-download-button';
 
 interface Props {
   termResult: TermResult;
@@ -45,8 +47,15 @@ export default function Template1({
   student,
   courseResultInfoData,
   assessments,
-}: Props) {
-  const { currentInstitution } = useSharedProps();
+  resultCommentTemplate,
+  signed_url,
+}: ResultProps) {
+  const { currentInstitution, stamp } = useSharedProps();
+
+  const principalComment =
+    termResult.principal_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment;
 
   function VerticalText({ text }: { text: string }) {
     return <Text className="vertical-header">{text}</Text>;
@@ -91,6 +100,11 @@ export default function Template1({
   return (
     <ResultSheetLayout>
       <Div style={backgroundStyle} minHeight={'1170px'}>
+        <ResultDownloadButton
+          signed_url={signed_url}
+          student={student}
+          termResult={termResult}
+        />
         <Div mx={'auto'} width={'900px'} px={3}>
           <VStack align={'stretch'}>
             <HStack background={'#FAFAFA'} p={2}>
@@ -202,7 +216,33 @@ export default function Template1({
                 </tbody>
               </table>
             </div>
-            <HStack align={'stretch'}>
+            <Spacer height={'10px'} />
+            <Div>
+              {termResult.teacher_comment && (
+                <>
+                  <HStack align={'stretch'}>
+                    <Text fontWeight={'semibold'} size={'xs'}>
+                      Teacher's comment:{' '}
+                    </Text>
+                    <Text>{termResult.teacher_comment}</Text>
+                  </HStack>
+                  <Divider />
+                </>
+              )}
+              {principalComment && (
+                <>
+                  <HStack align={'stretch'}>
+                    <Text fontWeight={'semibold'} size={'xs'}>
+                      Principal's comment:{' '}
+                    </Text>
+                    <Text>{principalComment}</Text>
+                  </HStack>
+                  <Divider />
+                </>
+              )}
+            </Div>
+            <Spacer height={'10px'} />
+            <HStack align={'stretch'} justify={'space-between'}>
               <table className="result-analysis-table">
                 <tbody>
                   {resultDetail.map(({ label, value }) => (
@@ -213,7 +253,14 @@ export default function Template1({
                   ))}
                 </tbody>
               </table>
-              <Spacer />
+              <Div textAlign={'center'}>
+                <Img
+                  src={stamp}
+                  alt="School stamp"
+                  display={'inline-block'}
+                  mt={3}
+                />
+              </Div>
               <table className="result-analysis-table">
                 <thead>
                   <tr>
@@ -259,29 +306,6 @@ export default function Template1({
                 </tbody>
               </table>
             </HStack>
-            <Spacer height={'10px'} />
-            {termResult.teacher_comment && (
-              <>
-                <HStack align={'stretch'}>
-                  <Text fontWeight={'semibold'} size={'xs'}>
-                    Teacher's comment:{' '}
-                  </Text>
-                  <Text>{termResult.teacher_comment}</Text>
-                </HStack>
-                <Divider />
-              </>
-            )}
-            {termResult.principal_comment && (
-              <>
-                <HStack align={'stretch'}>
-                  <Text fontWeight={'semibold'} size={'xs'}>
-                    Principal's comment:{' '}
-                  </Text>
-                  <Text>{termResult.principal_comment}</Text>
-                </HStack>
-                <Divider />
-              </>
-            )}
           </VStack>
         </Div>
       </Div>
