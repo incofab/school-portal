@@ -33,6 +33,9 @@ const ResultUtil = {
         suffix = 'th';
         break;
     }
+    if (position >= 11 && position <= 20) {
+      suffix = 'th';
+    }
     return suffix;
   },
 

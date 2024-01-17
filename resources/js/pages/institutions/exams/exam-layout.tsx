@@ -16,6 +16,7 @@ import {
   VStack,
   Divider,
   BoxProps,
+  useColorMode,
 } from '@chakra-ui/react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
@@ -66,6 +67,10 @@ export default function ExamLayout({
   const { currentInstitution } = useSharedProps();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const { colorMode, setColorMode } = useColorMode();
+  if (colorMode !== 'light') {
+    setColorMode('light');
+  }
   const Links = [
     { title: 'Home', href: instRoute('external.home') },
     { title: 'Leader Board', href: instRoute('external.leader-board') },
