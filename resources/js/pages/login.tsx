@@ -149,11 +149,11 @@ export default function Login() {
             Login
           </Button>
           <Div textAlign={'center'}>
-            <InertiaLink href={route('register.create')}>
+            {/* <InertiaLink href={route('register.create')}>
               <Button colorScheme={'brand'} variant={'link'}>
                 Need an account?
               </Button>
-            </InertiaLink>
+            </InertiaLink> */}
           </Div>
         </VStack>
       </Div>

@@ -27,11 +27,14 @@ class UserSeeder extends Seeder
       'other_names' => '',
       'phone' => '08033334444',
       'email_verified_at' => now(),
-      'manager_role' => ManagerRole::Admin,
       'password' =>
         '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi' // password
     ];
 
-    User::firstOrCreate(['email' => $adminEmail], $data);
+    $admin = User::firstOrCreate(['email' => $adminEmail], $data);
+
+    if (!$admin->hasRole(ManagerRole::Admin)) {
+      $admin->syncRoles(ManagerRole::Admin);
+    }
   }
 }

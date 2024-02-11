@@ -175,7 +175,9 @@ export default function ExamLayout({
             <Divider my={2} />{' '}
           </>
         )}
-        <Div py={'20px'}>{children}</Div>
+        <Div py={'20px'} mx={{ base: '5px', md: '30px' }}>
+          {children}
+        </Div>
       </Div>
     </Div>
   );

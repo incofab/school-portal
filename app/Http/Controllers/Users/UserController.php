@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Users;
 
+use App\Enums\ManagerRole;
 use App\Http\Controllers\Controller;
 
 class UserController extends Controller
@@ -9,7 +10,7 @@ class UserController extends Controller
   {
     $user = currentUser();
 
-    if ($user->manager_role) {
+    if ($user->isManager()) {
       return redirect(route('managers.dashboard'));
     }
 

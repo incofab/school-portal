@@ -56,6 +56,10 @@ export default function Template1({
     termResult.principal_comment ??
     ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
       ?.comment;
+  const teacherComment =
+    termResult.teacher_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment_2;
 
   function VerticalText({ text }: { text: string }) {
     return <Text className="vertical-header">{text}</Text>;
@@ -218,13 +222,13 @@ export default function Template1({
             </div>
             <Spacer height={'10px'} />
             <Div>
-              {termResult.teacher_comment && (
+              {teacherComment && (
                 <>
                   <HStack align={'stretch'}>
                     <Text fontWeight={'semibold'} size={'xs'}>
                       Teacher's comment:{' '}
                     </Text>
-                    <Text>{termResult.teacher_comment}</Text>
+                    <Text>{teacherComment}</Text>
                   </HStack>
                   <Divider />
                 </>

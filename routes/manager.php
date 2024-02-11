@@ -7,19 +7,41 @@ Route::get('/dummy', function () {
     dd('dskmsdsf');    
 });
 
-Route::get('/', [Web\ManagerController::class, 'index'])
+Route::get('/', [Web\ManagerController::class, 'dashboard'])
     ->name('dashboard');
 
-Route::get('/generate-pin', [Web\GeneratePinController::class, 'create'])
-    ->name('generate-pin.create');
-Route::post('/generate-pin', [Web\GeneratePinController::class, 'store'])
-    ->name('generate-pin.store');
-
-Route::get('/institutions', [Web\InstitutionsController::class, 'index'])
+Route::get('institutions/create', [Web\Institutions\InstitutionRegistrationController::class, 'create'])
+->name('institutions.create');
+Route::post('institutions/store', [Web\Institutions\InstitutionRegistrationController::class, 'store'])
+    ->name('institutions.store');
+Route::get('/institutions', Web\Institutions\ListInstitutionsController::class)
     ->name('institutions.index');
-Route::delete('/institutions/{institution}/destroy', [Web\InstitutionsController::class, 'destroy'])
+Route::delete('/institutions/{institution}/destroy', Web\Institutions\DeleteInstitutionController::class)
     ->name('institutions.destroy');
-Route::get('/pins/{pinGenerator?}', [Web\PinController::class, 'index'])
-    ->name('pins.index');
-Route::get('/pin-generators', [Web\PinGeneratorController::class, 'index'])
-    ->name('pin-generators.index');
+
+Route::get('/institution-groups/search', [Web\InstitutionGroups\InstitutionGroupsController::class, 'search'])
+    ->name('institution-groups.search');
+Route::resource('institution-groups', Web\InstitutionGroups\InstitutionGroupsController::class)
+    ->except('show');
+
+//Admin section
+Route::group(['middleware' => 'admin'], function(){
+    Route::get('/generate-pin', [Web\GeneratePinController::class, 'create'])
+        ->name('generate-pin.create');
+    Route::post('/generate-pin', [Web\GeneratePinController::class, 'store'])
+        ->name('generate-pin.store');
+    
+    Route::get('/pins/{pinGenerator?}', [Web\PinController::class, 'index'])
+        ->name('pins.index');
+    Route::get('/pin-generators', [Web\PinGeneratorController::class, 'index'])
+        ->name('pin-generators.index');
+
+    Route::get('/index', [Web\ManagerController::class, 'index'])
+    ->name('index');
+    Route::get('/create', [Web\ManagerController::class, 'create'])
+    ->name('create');
+    Route::post('/store', [Web\ManagerController::class, 'store'])
+    ->name('store');;
+    Route::delete('/destroy/{user}', [Web\ManagerController::class, 'destroy'])
+    ->name('destroy');
+});

@@ -23,6 +23,7 @@ export interface Message {
 
 export enum ManagerRole {
   Admin = 'admin',
+  Partner = 'partner',
 }
 
 export enum InstitutionUserType {

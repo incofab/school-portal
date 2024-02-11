@@ -118,11 +118,11 @@ export default function ResetPassword({ email, token }: Props) {
 
           <Box ml={5}>
             <ul>
-              <li>
+              {/* <li>
                 <Link href={route('register.create')} className="authPgLink">
                   No Account? - Register
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href={route('login')} className="authPgLink">
                   Already Registered? - Login

@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Users;
+namespace App\Http\Controllers\Impersonate;
 
-use App\Enums\ManagerRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 
@@ -10,7 +9,7 @@ class ImpersonateUserController extends Controller
 {
   public function __invoke(User $user)
   {
-    abort_unless(currentUser()->manager_role === ManagerRole::Admin, 403);
+    abort_unless(currentUser()->isAdmin(), 403);
 
     session(['impersonator_id' => currentUser()->id]);
 

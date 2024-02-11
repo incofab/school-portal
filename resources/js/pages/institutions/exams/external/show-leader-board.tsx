@@ -1,31 +1,77 @@
-import { Avatar, Divider, HStack, Icon, Text, VStack } from '@chakra-ui/react';
-import React from 'react';
-import { Exam, TokenUser } from '@/types/models';
+import {
+  Avatar,
+  Button,
+  Divider,
+  HStack,
+  Icon,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { Event, Exam, TokenUser } from '@/types/models';
 import { Div } from '@/components/semantic';
 import ExamLayout from '../exam-layout';
 import CenteredBox from '@/components/centered-box';
 import { avatarUrl } from '@/util/util';
 import { AcademicCapIcon } from '@heroicons/react/24/solid';
+import { PaginationResponse } from '@/types/types';
+import MySelect from '@/components/dropdown-select/my-select';
+import { InertiaLink } from '@inertiajs/inertia-react';
+import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface LeaderBoard extends Exam {
-  total_score: number;
-  exam_count: number;
+  // total_score: number;
+  // exam_count: number;
   examable: TokenUser;
 }
 
 interface Props {
-  leaderBoardExams: LeaderBoard[];
+  leaderBoardExams: PaginationResponse<LeaderBoard>;
+  event: Event;
+  events: Event[];
 }
 
-export default function ShowLeaderBoard({ leaderBoardExams }: Props) {
+export default function ShowLeaderBoard({
+  leaderBoardExams,
+  event,
+  events,
+}: Props) {
+  const [eventId, setEventId] = useState(event.id);
+  const { instRoute } = useInstitutionRoute();
   return (
     <ExamLayout
       title={`Leader Board`}
       breadCrumbItems={[{ title: 'Leader Board' }]}
     >
       <CenteredBox>
-        <VStack align={'stretch'} spacing={2} divider={<Divider />}>
-          {leaderBoardExams.map((exam) => {
+        <HStack align={'stretch'}>
+          <Div width={'full'}>
+            <MySelect
+              isMulti={false}
+              selectValue={eventId}
+              getOptions={() =>
+                events.map((event) => {
+                  return {
+                    label: event.title,
+                    value: event.id,
+                  };
+                })
+              }
+              onChange={(e: any) => setEventId(e.value)}
+            />
+          </Div>
+          <Button
+            as={InertiaLink}
+            colorScheme="brand"
+            variant={'solid'}
+            size={'md'}
+            href={instRoute('external.leader-board', [eventId])}
+          >
+            Go
+          </Button>
+        </HStack>
+        <VStack align={'stretch'} spacing={2} divider={<Divider />} mt={2}>
+          {leaderBoardExams.data.map((exam) => {
             return (
               <Div key={exam.id} py={2}>
                 <HStack justify={'space-between'}>
@@ -45,7 +91,7 @@ export default function ShowLeaderBoard({ leaderBoardExams }: Props) {
                       color={'teal.700'}
                     />
                     <Text fontWeight={'bold'} fontSize={'2xl'}>
-                      {Math.floor(exam.total_score / exam.exam_count)}
+                      {Math.floor(exam.score)}
                     </Text>
                   </HStack>
                 </HStack>

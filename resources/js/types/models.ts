@@ -17,6 +17,9 @@ export interface AcademicSession extends Row {
   order_index: number;
 }
 
+export interface Role extends Row {
+  name: ManagerRole;
+}
 export interface User extends Row {
   first_name: string;
   last_name: string;
@@ -28,7 +31,7 @@ export interface User extends Row {
   email: string;
   is_welfare: boolean;
   gender: string;
-  manager_role: ManagerRole;
+  roles?: Role[];
 }
 
 export interface TokenUser extends Row {
@@ -38,8 +41,12 @@ export interface TokenUser extends Row {
   phone: string;
 }
 
+export interface InstitutionGroup extends Row {
+  name: string;
+}
 export interface Institution extends Row {
   user_id: number;
+  institution_group_id: number;
   uuid: string;
   code: string;
   subtitle: string;
@@ -53,6 +60,7 @@ export interface Institution extends Row {
   status: string;
   initials: string;
   institution_settings?: InstitutionSetting[];
+  institution_group: InstitutionGroup;
 }
 
 interface InstitutionRow extends Row {
@@ -327,6 +335,7 @@ export interface LearningEvaluation extends InstitutionRow {
 
 export interface ResultCommentTemplate extends InstitutionRow {
   comment: string;
+  comment_2: string;
   grade: string;
   grade_label: string;
   type: string;

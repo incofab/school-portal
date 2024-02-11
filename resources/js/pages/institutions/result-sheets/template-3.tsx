@@ -30,10 +30,22 @@ export default function Template3({
   courseResultInfoData,
   assessments,
   learningEvaluations,
+  resultCommentTemplate,
 }: ResultProps) {
   const { currentInstitution, stamp } = useSharedProps();
-  const teachersComment =
-    termResult.teacher_comment ?? getGrade(termResult.average)[3];
+  // const teachersComment =
+  //   termResult.teacher_comment ?? getGrade(termResult.average)[3];
+
+  const principalComment =
+    termResult.principal_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment;
+  const teacherComment =
+    termResult.teacher_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment_2 ??
+    getGrade(termResult.average)[3];
+
   const resultSummary1 = [
     { label: 'Student Name', value: student.user?.full_name },
     { label: 'Number In Class', value: classResultInfo.num_of_students },
@@ -314,24 +326,24 @@ export default function Template3({
               </table>
             </div>
             <Spacer height={'10px'} />
-            {teachersComment && (
+            {teacherComment && (
               <>
                 <HStack align={'stretch'}>
                   <Text fontWeight={'semibold'} size={'xs'}>
                     Teacher's comment:{' '}
                   </Text>
-                  <Text>{teachersComment}</Text>
+                  <Text>{teacherComment}</Text>
                 </HStack>
                 <Divider />
               </>
             )}
-            {termResult.principal_comment && (
+            {principalComment && (
               <>
                 <HStack align={'stretch'}>
                   <Text fontWeight={'semibold'} size={'xs'}>
                     Head Teacher's comment:{' '}
                   </Text>
-                  <Text>{termResult.principal_comment}</Text>
+                  <Text>{principalComment}</Text>
                 </HStack>
                 <Divider />
               </>

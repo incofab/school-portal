@@ -17,7 +17,11 @@ class InstitutionRegistrationController extends Controller
 {
   public function create()
   {
-    return inertia('register', []);
+    return inertia('register', [
+      'institutionGroups' => currentUser()
+        ->institutionGroups()
+        ->get()
+    ]);
   }
 
   public function store(Request $request)

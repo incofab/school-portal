@@ -151,6 +151,10 @@ export default function Template5({
     termResult.principal_comment ??
     ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
       ?.comment;
+  const teacherComment =
+    termResult.teacher_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment_2;
 
   const resultTableHeaders: TableHeader<CourseResult>[] = [
     {
@@ -379,7 +383,7 @@ export default function Template5({
                   </table>
                 )}
                 <Div ml={3} width={'full'}>
-                  {termResult.teacher_comment && (
+                  {teacherComment && (
                     <>
                       <HStack align={'stretch'} width={'full'}>
                         <Text
@@ -389,7 +393,7 @@ export default function Template5({
                         >
                           Teacher's comment:{' '}
                         </Text>
-                        <Text>{termResult.teacher_comment}</Text>
+                        <Text>{teacherComment}</Text>
                       </HStack>
                       <Divider />
                     </>

@@ -59,8 +59,8 @@ Route::group(['prefix' => '{institution}/admissions/'], function () {
 Route::group(['middleware' => ['guest']], function () {
     Route::get('login', [Web\AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [Web\AuthController::class, 'login'])->name('login.store');
-    Route::get('register', [Web\InstitutionRegistrationController::class, 'create'])->name('register.create');
-    Route::post('register', [Web\InstitutionRegistrationController::class, 'store'])->name('register.store');
+    // Route::get('register', [Web\InstitutionRegistrationController::class, 'create'])->name('register.create');
+    // Route::post('register', [Web\InstitutionRegistrationController::class, 'store'])->name('register.store');
     
     Route::get('result', [Web\TermResultActivationController::class, 'create'])->name('activate-term-result.create');
 
@@ -85,12 +85,16 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'update'])
     ->name('users.password.update');
     
-    Route::get('impersonate/{user}', Web\Users\ImpersonateUserController::class)->name('users.impersonate');
-    Route::delete('impersonate/{user}', Web\Users\StopImpersonatingUserController::class)->name('users.impersonate.destroy');
+    Route::group(['middleware' => ['manager']], function(){
+        Route::get('impersonate/users/{user}', Web\Impersonate\ImpersonateUserController::class)->name('users.impersonate');
+        Route::get('impersonate/institutions/{institution}', Web\Impersonate\ImpersonateInstitutionController::class)->name('institutions.impersonate');
+    });
+    Route::delete('impersonate/{user}', Web\Impersonate\StopImpersonatingUserController::class)->name('users.impersonate.destroy');
     
     Route::any('/logout', [Web\AuthController::class, 'logout'])->name('logout');
 });
 
+Route::get('/{institution}/my-exam/test-display/{exam:exam_no}', Web\Institutions\Exams\ExamPage\TestDisplayExamPageController::class);
 Route::group(['prefix' => '{institution}/my-exam/'], function () {
     Route::get('/login', Web\Institutions\Exams\ExamPage\ExamLoginController::class)
         ->name('institutions.exams.login');
@@ -128,7 +132,7 @@ Route::group(['prefix' => 'external/{institution}/'], function () {
         ->name('institutions.external.exams.store');
     Route::get('/exam-result/{exam:exam_no}', Web\Institutions\Exams\ExamPage\ExamResultController::class)
         ->name('institutions.external.exam-result');
-    Route::get('/leader-board', External\ShowLeaderBoardController::class)
+    Route::get('/leader-board/{event?}', External\ShowLeaderBoardController::class)
         ->name('institutions.external.leader-board');
 });
 

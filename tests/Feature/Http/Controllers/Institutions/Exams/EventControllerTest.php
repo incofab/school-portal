@@ -1,5 +1,4 @@
 <?php
-use App\Enums\InstitutionUserType;
 use App\Models\Event;
 use App\Models\Institution;
 use App\Models\User;

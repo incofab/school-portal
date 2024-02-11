@@ -30,6 +30,7 @@ import useWebForm from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { ExamAttempt } from '@/types/types';
 import QuestionImageHandler from '@/util/exam/question-image-handler';
+import '@/style/exam-display.css';
 
 interface Props {
   exam: Exam;
@@ -140,11 +141,7 @@ export default function DisplayExam({
       }
       onKeyDown={handleKeyDown}
     >
-      <Tabs
-        key={key}
-        index={examUtil.getTabManager().getCurrentTabIndex()}
-        mx={{ base: '5px', md: '30px' }}
-      >
+      <Tabs key={key} index={examUtil.getTabManager().getCurrentTabIndex()}>
         <TabList overflowX={'auto'}>
           {exam.exam_courseables?.map((item, index) => (
             <Tab
@@ -239,7 +236,7 @@ function DisplayQuestion({
     return null;
   }
   return (
-    <VStack align={'stretch'}>
+    <VStack align={'stretch'} className="question-container">
       <Text fontWeight={'bold'}>
         Question {question.question_no} of {questions.length}
       </Text>

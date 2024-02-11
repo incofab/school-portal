@@ -12,10 +12,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Validation\Rules\Enum;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-  use Notifiable, HasApiTokens, HasFactory, SoftDeletes;
+  use Notifiable, HasApiTokens, HasFactory, SoftDeletes, HasRoles;
 
   /**
    * The attributes that are mass assignable.
@@ -38,8 +39,7 @@ class User extends Authenticatable
    * @var array
    */
   protected $casts = [
-    'email_verified_at' => 'datetime',
-    'manager_role' => ManagerRole::class
+    'email_verified_at' => 'datetime'
   ];
 
   public static function generalRule($userId = null, $prefix = '')
@@ -155,8 +155,25 @@ class User extends Authenticatable
     return $this->hasInstitutionRole(InstitutionUserType::Student);
   }
 
-  function isManagerAdmin()
+  function isAdmin()
   {
-    return $this->manager_role === ManagerRole::Admin;
+    return $this->hasRole(ManagerRole::Admin);
+  }
+  function isPartner()
+  {
+    return $this->hasRole(ManagerRole::Partner);
+  }
+  function isManager()
+  {
+    return $this->hasRole([ManagerRole::Admin, ManagerRole::Partner]);
+  }
+
+  function institutionGroups()
+  {
+    return $this->hasMany(InstitutionGroup::class);
+  }
+  function partnerInstitutionGroups()
+  {
+    return $this->hasMany(InstitutionGroup::class, 'partner_user_id');
   }
 }

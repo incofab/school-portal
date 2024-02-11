@@ -76,6 +76,15 @@ export default function Template4({
       : []),
   ];
 
+  const principalComment =
+    termResult.principal_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment;
+  const teacherComment =
+    termResult.teacher_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment_2;
+
   function LabelText({
     label,
     text,
@@ -332,24 +341,24 @@ export default function Template4({
               </VStack>
             </Flex>
             <Spacer height={'10px'} />
-            {termResult.teacher_comment && (
+            {teacherComment && (
               <>
                 <HStack align={'stretch'}>
                   <Text fontWeight={'semibold'} size={'xs'}>
                     Teacher's comment:{' '}
                   </Text>
-                  <Text>{termResult.teacher_comment}</Text>
+                  <Text>{teacherComment}</Text>
                 </HStack>
                 <Divider />
               </>
             )}
-            {termResult.principal_comment && (
+            {principalComment && (
               <>
                 <HStack align={'stretch'}>
                   <Text fontWeight={'semibold'} size={'xs'}>
                     Head Teacher's comment:{' '}
                   </Text>
-                  <Text>{termResult.principal_comment}</Text>
+                  <Text>{principalComment}</Text>
                 </HStack>
                 <Divider />
               </>

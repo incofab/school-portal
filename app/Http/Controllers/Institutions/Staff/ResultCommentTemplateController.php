@@ -46,6 +46,7 @@ class ResultCommentTemplateController extends Controller
   ) {
     $data = $request->validate([
       'comment' => ['nullable', 'string'],
+      'comment_2' => ['nullable', 'string'],
       'grade' => ['nullable', 'string'],
       'grade_label' => ['nullable', 'string'],
       'min' => ['required', 'numeric'],

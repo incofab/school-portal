@@ -49,7 +49,10 @@ class HomeExternalController extends Controller
 
     $data = JWT::decode($token, config('services.jwt.secret-key'));
     $route = instRoute('external.home');
-    if ($activeEvents->count() === 1) {
+    $eventsCount = $activeEvents->count();
+    if ($eventsCount === 0) {
+      $route = instRoute('external.leader-board');
+    } elseif ($eventsCount === 1) {
       $route = instRoute('external.events.show', $activeEvents->first());
     }
     return redirect($route)->withCookie(TokenUser::TOKEN_COOKIE_NAME, $token);

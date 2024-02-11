@@ -13,10 +13,16 @@ class Institution extends Model
   use HasFactory, SoftDeletes;
 
   protected $guarded = [];
+  public $casts = ['institution_group_id' => 'integer', 'user_id' => 'integer'];
+
   public static function generalRule($prefix = '')
   {
     return [
       $prefix . 'name' => ['required', 'string'],
+      $prefix . 'institution_group_id' => [
+        'required',
+        'exists:institution_groups,id'
+      ],
       $prefix . 'phone' => ['nullable', 'string'],
       $prefix . 'email' => ['nullable', 'string'],
       $prefix . 'address' => ['nullable', 'string']
@@ -50,7 +56,7 @@ class Institution extends Model
       )
       ->where('uuid', $value)
       ->when(
-        $user && !$user->isManagerAdmin(),
+        $user && !$user->isManager(),
         fn($q) => $q
           ->where('institution_users.user_id', $user->id)
           ->with(
@@ -189,5 +195,15 @@ class Institution extends Model
   function tokenUsers()
   {
     return $this->hasMany(TokenUser::class);
+  }
+
+  function user()
+  {
+    return $this->belongsTo(User::class);
+  }
+
+  function institutionGroup()
+  {
+    return $this->belongsTo(InstitutionGroup::class);
   }
 }

@@ -63,7 +63,7 @@ export default function ListInstitutions({ institutions }: Props) {
       render: (row) => (
         <HStack>
           <LinkButton
-            href={route('users.impersonate', [row.user_id])}
+            href={route('institutions.impersonate', [row.uuid])}
             colorScheme={'red'}
             variant={'link'}
             title="Impersonate"
@@ -71,6 +71,7 @@ export default function ListInstitutions({ institutions }: Props) {
           <IconButton
             aria-label="Delete institution"
             colorScheme={'red'}
+            size={'sm'}
             icon={<Icon as={TrashIcon} />}
             onClick={() => deleteInstitution(row)}
             isDisabled={row.classifications_count > 0}

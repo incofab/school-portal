@@ -23,20 +23,9 @@ import startCase from 'lodash/startCase';
 import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
 import ImagePaths from '@/util/images';
-import ResultUtil from '@/util/result-util';
+import ResultUtil, { ResultProps } from '@/util/result-util';
 import { GradingTable } from '@/components/result-helper-components';
 import ResultSheetLayout from './result-sheet-layout';
-
-interface Props {
-  termResult: TermResult;
-  courseResults: CourseResult[];
-  classResultInfo: ClassResultInfo;
-  courseResultInfoData: { [key: string | number]: CourseResultInfo };
-  academicSession: AcademicSession;
-  classification: Classification;
-  student: Student;
-  assessments: Assessment[];
-}
 
 export default function Template2({
   termResult,
@@ -47,7 +36,8 @@ export default function Template2({
   student,
   courseResultInfoData,
   assessments,
-}: Props) {
+  resultCommentTemplate,
+}: ResultProps) {
   const { currentInstitution } = useSharedProps();
 
   function VerticalText({ text }: { text: string }) {
@@ -62,6 +52,15 @@ export default function Template2({
     { label: "Student's Average Score", value: termResult.average },
     { label: 'Class Average Score', value: classResultInfo.average },
   ];
+
+  const principalComment =
+    termResult.principal_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment;
+  const teacherComment =
+    termResult.teacher_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment_2;
 
   function LabelText({
     label,
@@ -247,24 +246,24 @@ export default function Template2({
                 </tbody>
               </table>
             </div>
-            {termResult.teacher_comment && (
+            {teacherComment && (
               <>
                 <HStack align={'stretch'}>
                   <Text fontWeight={'semibold'} size={'xs'}>
                     Teacher's comment:{' '}
                   </Text>
-                  <Text>{termResult.teacher_comment}</Text>
+                  <Text>{teacherComment}</Text>
                 </HStack>
                 <Divider />
               </>
             )}
-            {termResult.principal_comment && (
+            {principalComment && (
               <>
                 <HStack align={'stretch'}>
                   <Text fontWeight={'semibold'} size={'xs'}>
                     Principal's comment:{' '}
                   </Text>
-                  <Text>{termResult.principal_comment}</Text>
+                  <Text>{principalComment}</Text>
                 </HStack>
                 <Divider />
               </>

@@ -57,7 +57,7 @@ export default function ListResultCommentTemplates({
       render: (row) => startCase(row.type ?? 'All'),
     },
     {
-      label: 'Comment',
+      label: 'Comment (Principal)',
       value: 'comment',
     },
     {
@@ -71,6 +71,10 @@ export default function ListResultCommentTemplates({
     {
       label: 'Range',
       render: (row) => `${row.min} - ${row.max}`,
+    },
+    {
+      label: 'Comment (Teacher)',
+      value: 'comment_2',
     },
     {
       label: 'Action',
@@ -138,6 +142,7 @@ function CreateUpdateResultCommentTemplates({
 
   const webForm = useWebForm({
     comment: resultCommentTemplate?.comment ?? '',
+    comment_2: resultCommentTemplate?.comment_2 ?? '',
     grade: resultCommentTemplate?.grade ?? '',
     grade_label: resultCommentTemplate?.grade_label ?? '',
     type: resultCommentTemplate?.type ?? '',
@@ -243,12 +248,24 @@ function CreateUpdateResultCommentTemplates({
             <FormControlBox
               form={webForm as any}
               formKey="comment"
-              title="Comment"
+              title="Comment (Principal)"
             >
               <Textarea
                 value={webForm.data.comment}
                 onChange={(e) =>
                   webForm.setValue('comment', e.currentTarget.value)
+                }
+              />
+            </FormControlBox>
+            <FormControlBox
+              form={webForm as any}
+              formKey="comment_2"
+              title="Comment (Teacher)"
+            >
+              <Textarea
+                value={webForm.data.comment_2}
+                onChange={(e) =>
+                  webForm.setValue('comment_2', e.currentTarget.value)
                 }
               />
             </FormControlBox>
