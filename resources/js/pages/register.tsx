@@ -1,5 +1,5 @@
 import { Div } from '@/components/semantic';
-import { preventNativeSubmit } from '@/util/util';
+import { generateRandomString, preventNativeSubmit } from '@/util/util';
 import route from '@/util/route';
 import {
   Button,
@@ -18,8 +18,9 @@ import useSharedProps from '@/hooks/use-shared-props';
 import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Gender } from '@/types/types';
+import { User } from '@/types/models';
 
-export default function Login() {
+export default function Register({ user }: { user?: User }) {
   const { message } = useSharedProps();
   const toast = useToast();
   const form = useForm({
@@ -31,17 +32,17 @@ export default function Login() {
     gender: '',
     password: '',
     password_confirmation: '',
-    key: '',
     institution: {
       name: '',
       phone: '',
       email: '',
       address: '',
     },
+    reference: Date.now().toPrecision() + generateRandomString(15),
   });
 
   function onSubmit() {
-    form.post(route('register.store'));
+    form.post(route('registration-requests.store', user ? [user.id] : []));
   }
 
   useEffect(() => {
@@ -211,13 +212,6 @@ export default function Login() {
               }
               value={form.data.institution.address}
               required
-            />
-          </FormControlBox>
-          <FormControlBox form={form} title="Access Key" formKey="key">
-            <Input
-              type="text"
-              onChange={(e) => form.setData('key', e.currentTarget.value)}
-              value={form.data.key}
             />
           </FormControlBox>
           <Spacer />

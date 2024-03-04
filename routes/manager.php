@@ -24,6 +24,17 @@ Route::get('/institution-groups/search', [Web\InstitutionGroups\InstitutionGroup
 Route::resource('institution-groups', Web\InstitutionGroups\InstitutionGroupsController::class)
     ->except('show');
 
+Route::get('/registration-requests/search', [Web\RegistrationRequests\RegistrationRequestsController::class, 'search'])
+->name('registration-requests.search');
+Route::get('/registration-requests', [Web\RegistrationRequests\RegistrationRequestsController::class, 'index'])
+->name('registration-requests.index');
+Route::post('/registration-requests/create-institution-group/{registrationRequest}', [Web\RegistrationRequests\RegistrationRequestsController::class, 'createInstitutionGroup'])
+->name('registration-requests.institution-groups.store');
+Route::post('/registration-requests/create-institution/{institutionGroup}/{registrationRequest}', [Web\RegistrationRequests\RegistrationRequestsController::class, 'createInstitution'])
+->name('registration-requests.institutions.store');
+Route::delete('/registration-requests/{registrationRequest}', [Web\RegistrationRequests\RegistrationRequestsController::class, 'destroy'])
+->name('registration-requests.destroy');
+
 //Admin section
 Route::group(['middleware' => 'admin'], function(){
     Route::get('/generate-pin', [Web\GeneratePinController::class, 'create'])

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\InstitutionUserType;
+use App\Enums\ManagerRole;
 use App\Models\Institution;
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -54,6 +55,19 @@ class UserFactory extends Factory
         'institution_id' => $institution->id ?? Institution::factory(),
         'role' => $role
       ])
+    );
+  }
+
+  public function adminManager(): static
+  {
+    return $this->afterCreating(
+      fn(User $user) => $user->syncRoles(ManagerRole::Admin)
+    );
+  }
+  public function partnerManager(): static
+  {
+    return $this->afterCreating(
+      fn(User $user) => $user->syncRoles(ManagerRole::Partner)
     );
   }
 }

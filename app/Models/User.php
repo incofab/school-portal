@@ -176,4 +176,8 @@ class User extends Authenticatable
   {
     return $this->hasMany(InstitutionGroup::class, 'partner_user_id');
   }
+  function registrationRequests()
+  {
+    return $this->hasMany(RegistrationRequest::class, 'partner_user_id');
+  }
 }

@@ -52,6 +52,11 @@ export default function ManagerSideBarLayout() {
       route: route('managers.institutions.index'),
     },
     {
+      label: 'Registration Requests',
+      roles: [ManagerRole.Partner, ManagerRole.Admin],
+      route: route('managers.registration-requests.index'),
+    },
+    {
       label: 'Pins',
       roles: [ManagerRole.Admin],
       sub_items: [

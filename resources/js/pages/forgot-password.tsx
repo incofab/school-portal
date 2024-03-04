@@ -75,11 +75,14 @@ export default function ForgotPassword() {
 
           <Box ml={5}>
             <ul>
-              {/* <li>
-                <Link href={route('register.create')} className="authPgLink">
+              <li>
+                <Link
+                  href={route('registration-requests.create')}
+                  className="authPgLink"
+                >
                   No Account? - Register
                 </Link>
-              </li> */}
+              </li>
               <li>
                 <Link href={route('login')} className="authPgLink">
                   Already Registered? - Login

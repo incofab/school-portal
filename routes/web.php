@@ -59,8 +59,10 @@ Route::group(['prefix' => '{institution}/admissions/'], function () {
 Route::group(['middleware' => ['guest']], function () {
     Route::get('login', [Web\AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [Web\AuthController::class, 'login'])->name('login.store');
-    // Route::get('register', [Web\InstitutionRegistrationController::class, 'create'])->name('register.create');
-    // Route::post('register', [Web\InstitutionRegistrationController::class, 'store'])->name('register.store');
+    Route::get('register/{partner?}', [Web\InstitutionRegistrationRequestController::class, 'create'])->name('registration-requests.create');
+    Route::post('register/{partner?}', [Web\InstitutionRegistrationRequestController::class, 'store'])->name('registration-requests.store');
+    Route::get('registration-completed/{registrationRequest}', [Web\InstitutionRegistrationRequestController::class, 'registrationCompleted'])
+    ->name('registration-requests.completed-message');
     
     Route::get('result', [Web\TermResultActivationController::class, 'create'])->name('activate-term-result.create');
 

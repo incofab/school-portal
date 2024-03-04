@@ -1,5 +1,5 @@
 import React from 'react';
-import { Institution } from '@/types/models';
+import { Institution, InstitutionGroup } from '@/types/models';
 import { HStack, Icon, IconButton } from '@chakra-ui/react';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
@@ -15,6 +15,7 @@ import { TrashIcon } from '@heroicons/react/24/solid';
 
 interface InstitutionWithMeta extends Institution {
   classifications_count: number;
+  institution_group: InstitutionGroup;
 }
 interface Props {
   institutions: PaginationResponse<InstitutionWithMeta>;
@@ -41,6 +42,10 @@ export default function ListInstitutions({ institutions }: Props) {
     {
       label: 'Name',
       value: 'name',
+    },
+    {
+      label: 'Group',
+      value: 'institution_group.name',
     },
     {
       label: 'Classes',

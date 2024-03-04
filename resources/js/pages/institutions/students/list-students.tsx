@@ -104,7 +104,7 @@ function ListStudents({ students }: Props) {
             variant={'ghost'}
             colorScheme={'brand'}
           />
-          {(row.user_id === currentUser.id ||
+          {/* {(row.user_id === currentUser.id ||
             currentInstitutionUser.role === InstitutionUserType.Admin ||
             currentInstitutionUser.role === InstitutionUserType.Teacher) && (
             <LinkButton
@@ -113,7 +113,7 @@ function ListStudents({ students }: Props) {
               variant={'link'}
               title="Profile"
             />
-          )}
+          )} */}
           {isAdmin && (
             <DestructivePopover
               label={`Delete ${row.user?.full_name} from the student record. This is irreversible, be careful!!!`}

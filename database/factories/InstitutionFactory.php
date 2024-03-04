@@ -5,7 +5,7 @@ namespace Database\Factories;
 use App\Actions\SeedInitialAssessment;
 use App\Enums\InstitutionUserType;
 use App\Models\Institution;
-use App\Models\InstitutionSetting;
+use App\Models\InstitutionGroup;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -33,6 +33,7 @@ class InstitutionFactory extends Factory
   public function definition(): array
   {
     return [
+      'institution_group_id' => InstitutionGroup::factory(),
       'uuid' => Str::orderedUuid(),
       'code' => Institution::generateInstitutionCode(),
       'user_id' => User::factory(),

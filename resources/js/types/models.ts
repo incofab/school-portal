@@ -343,6 +343,15 @@ export interface ResultCommentTemplate extends InstitutionRow {
   max: number;
 }
 
+export interface RegistrationRequest extends Row {
+  partner_user_id: number;
+  reference: string;
+  data: { [key: string]: string };
+  institution_registered_at: string;
+  institution_group_registered_at: string;
+  partner: User;
+}
+
 export interface Question extends InstitutionRow {
   question_no: number;
   question: string;

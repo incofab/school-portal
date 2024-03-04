@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Managers\InstitutionGroups;
 
+use App\Actions\RegisterInstitutionGroup;
 use App\Http\Controllers\Controller;
 use App\Models\InstitutionGroup;
 use App\Models\User;
@@ -50,17 +51,26 @@ class InstitutionGroupsController extends Controller
       'institution_group.name' => ['required', 'string', 'max:255']
     ]);
 
-    DB::beginTransaction();
-    $user = User::query()->create([
+    $userData = [
       ...collect($data)
         ->except('institution_group')
         ->toArray(),
       'password' => bcrypt($data['password'])
-    ]);
-    currentUser()
-      ->partnerInstitutionGroups()
-      ->create([...$data['institution_group'], 'user_id' => $user->id]);
-    DB::commit();
+    ];
+    $institutionGroupData = $data['institution_group'];
+
+    RegisterInstitutionGroup::run(
+      currentUser(),
+      $userData,
+      $institutionGroupData
+    );
+
+    // DB::beginTransaction();
+    // $user = User::query()->create($userData);
+    // currentUser()
+    //   ->partnerInstitutionGroups()
+    //   ->create([...$institutionGroupData, 'user_id' => $user->id]);
+    // DB::commit();
 
     return $this->ok();
   }

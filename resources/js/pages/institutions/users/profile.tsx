@@ -173,7 +173,7 @@ export default function Profile({ user, institutionUser }: Props) {
                     </DestructivePopover>
                   </>
                 )}
-                {isStaff && (
+                {isStaff && student && (
                   <Button
                     as={InertiaLink}
                     href={instRoute('students.transcript', [student])}

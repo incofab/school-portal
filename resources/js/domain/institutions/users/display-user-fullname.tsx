@@ -25,7 +25,7 @@ export default function DisplayUserFullname({
       fontWeight={'normal'}
       variant={'link'}
       href={instRoute('users.profile', [user.id])}
-      color={'brand.700'}
+      color={'brand.600'}
     >
       {user.full_name}
     </Button>
