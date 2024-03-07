@@ -1,8 +1,101 @@
 <?php
 $name = 'Edumanager';
-$phone = '';
+$phone = '08133744803';
 $email = 'support@edumanager.ng';
 $address = 'Lagos Nigeria';
+
+$faqList = [
+  [
+    'question' => 'What is Edumanager?',
+    'answer' =>
+      'Edumanager is a comprehensive school management software that provides a wide range of features and functionalities to streamline various tasks within educational institutions.'
+  ],
+  [
+    'question' => 'What are the key features of Edumanager?',
+    'answer' =>
+      'Edumanager includes features such as student enrollment/Admission Application, grade management, communication tools, school fees management, Online CBT exams, and more. It aims to cover all aspects of school administration.'
+  ],
+  [
+    'question' => 'How can I get started with Edumanager?',
+    'answer' =>
+      'To get started with Edumanager, Click on <a href="' .
+      route('registration-requests.create') .
+      '">Sign up for an account</a>  and one of our staff will contact you and help setup your school'
+  ],
+  [
+    'question' =>
+      'Is Edumanager suitable for all types of educational institutions?',
+    'answer' =>
+      'Yes, Edumanager is designed to cater to the needs of various educational institutions, including nursery, primary, secondary and other institutions of learning.'
+  ],
+  [
+    'question' => 'Can Edumanager handle multiple campuses or school branches?',
+    'answer' =>
+      'Yes, Edumanager is equipped to manage multiple campuses or branches. It allows you to efficiently organize and coordinate activities across different locations.'
+  ],
+  [
+    'question' => 'How does Edumanager handle student information and records?',
+    'answer' =>
+      'Edumanager facilitates the storage and management of student information, including enrollment details, grades, and other relevant data. It ensures data security and easy retrieval when needed.'
+  ],
+  [
+    'question' => 'What communication tools are available in Edumanager?',
+    'answer' =>
+      'Edumanager provides communication tools such as messaging systems and announcement features to facilitate efficient communication between administrators, teachers, and students.'
+  ],
+  [
+    'question' => 'Can parents access information through Edumanager?',
+    'answer' =>
+      'Yes, Edumanager offers a parent portal that allows parents to access information about their child\'s academic progress, and other relevant updates.'
+  ],
+  [
+    'question' => 'Is Edumanager customizable to suit our specific needs?',
+    'answer' =>
+      'Yes, Edumanager is designed with flexibility in mind. It offers customization options to adapt to the specific requirements and workflows of your educational institution.'
+  ],
+  [
+    'question' => 'How can we receive support for any issues or queries?',
+    'answer' =>
+      'If you encounter any issues or have queries, you can contact our support team through the provided contact channels. We are committed to providing timely assistance.'
+  ]
+];
+$testimonials = [
+  [
+    'name' => 'Ademoyega Kudirat',
+    'position' => 'Principal',
+    'school' => 'Greater Heights Secondary School',
+    'testimony' =>
+      'Edumanager has significantly improved our school administration. The intuitive interface and robust features have made tasks such as attendance tracking and grade management much more efficient. Our staff and students appreciate the streamlined communication tools as well.'
+  ],
+  [
+    'name' => 'Alice Johnson',
+    'position' => 'Head Teacher',
+    'school' => 'Later Rain Primary School',
+    'testimony' =>
+      'We\'ve been using Edumanager for over a year, and it has simplified our daily operations. The ability to customize the system to fit our school\'s unique needs has been a game-changer. The parent portal has strengthened the school-home connection, and the support from the Edumanager team has been exceptional.'
+  ],
+  [
+    'name' => 'Tobi Brown',
+    'position' => 'Administrator',
+    'school' => 'Global Scholars Internation School',
+    'testimony' =>
+      'Edumanager has exceeded our expectations in terms of functionality and ease of use. Managing multiple campuses is now a seamless process, and the centralized data management ensures accuracy and consistency. We highly recommend Edumanager to other educational institutions.'
+  ],
+  [
+    'name' => 'Sarah Okechukwu',
+    'position' => 'IT Coordinator',
+    'school' => 'Bright Minds Academy',
+    'testimony' =>
+      'As the IT coordinator, I appreciate the flexibility and scalability of Edumanager. The system\'s adaptability to our evolving technological needs has been impressive. The regular updates and prompt customer support demonstrate Edumanager\'s commitment to delivering a top-notch solution.'
+  ],
+  [
+    'name' => 'Abdusalam Mohammed',
+    'position' => 'Director',
+    'school' => 'Destiny Child Academy',
+    'testimony' =>
+      'Edumanager has revolutionized our university\'s administrative processes. From admissions to academic management, the software has proven to be a reliable companion. The comprehensive reporting tools have also empowered my teachers in identifying the areas our students are lagging behind'
+  ]
+];
 ?>
 
 <!DOCTYPE html>
@@ -423,7 +516,7 @@ $address = 'Lagos Nigeria';
     </section><!-- End Our Services Section -->
 
     <!-- ======= How it Works Section ======= -->
-    <section id="how-it-works" class="how-it-works">
+    <section id="how-it-works" class="how-it-works d-none">
       <div class="container" data-aos="fade-up">
         <div class="section-header">
           <h2>How it Works</h2>
@@ -438,20 +531,25 @@ $address = 'Lagos Nigeria';
 
         <div class="section-header">
           <h2>Testimonials</h2>
-          <p>Voluptatem quibusdam ut ullam perferendis repellat non ut consequuntur est eveniet deleniti fignissimos eos quam</p>
+          <p>Our solution is already serving a lot of schools across the country, take a look at they have to say about their experience with Edumanager.</p>
         </div>
 
         <div class="slides-3 swiper" data-aos="fade-up" data-aos-delay="100">
           <div class="swiper-wrapper">
 
+            <?php foreach ($testimonials as $key => $testimonial): ?>
             <div class="swiper-slide">
               <div class="testimonial-wrap">
                 <div class="testimonial-item">
                   <div class="d-flex align-items-center">
-                    <img src="<?= $basePath ?>assets/img/testimonials/testimonials-1.jpg" class="testimonial-img flex-shrink-0" alt="">
+                    <img src="<?= asset(
+                      'img/portrait.jpeg'
+                    ) ?>" class="testimonial-img flex-shrink-0" alt="">
                     <div>
-                      <h3>Saul Goodman</h3>
-                      <h4>Ceo &amp; Founder</h4>
+                      <h3><?= $testimonial['name'] ?></h3>
+                      <h4><?= $testimonial['position'] ?> | <?= $testimonial[
+   'school'
+ ] ?></h4>
                       <div class="stars">
                         <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                       </div>
@@ -459,13 +557,15 @@ $address = 'Lagos Nigeria';
                   </div>
                   <p>
                     <i class="bi bi-quote quote-icon-left"></i>
-                    Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
+                    <?= $testimonial['testimony'] ?>
                     <i class="bi bi-quote quote-icon-right"></i>
                   </p>
                 </div>
               </div>
             </div><!-- End testimonial item -->
+            <?php endforeach; ?>
 
+            <!--
             <div class="swiper-slide">
               <div class="testimonial-wrap">
                 <div class="testimonial-item">
@@ -486,7 +586,7 @@ $address = 'Lagos Nigeria';
                   </p>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
+            </div>< !-- End testimonial item -- >
 
             <div class="swiper-slide">
               <div class="testimonial-wrap">
@@ -508,7 +608,7 @@ $address = 'Lagos Nigeria';
                   </p>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
+            </div>< !-- End testimonial item -- >
 
             <div class="swiper-slide">
               <div class="testimonial-wrap">
@@ -530,7 +630,7 @@ $address = 'Lagos Nigeria';
                   </p>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
+            </div>< !-- End testimonial item -- >
 
             <div class="swiper-slide">
               <div class="testimonial-wrap">
@@ -552,7 +652,7 @@ $address = 'Lagos Nigeria';
                   </p>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
+            </div>< !-- End testimonial item -->
 
           </div>
           <div class="swiper-pagination"></div>
@@ -714,7 +814,7 @@ $address = 'Lagos Nigeria';
             <div class="content px-xl-5">
               <h3>Frequently Asked <strong>Questions</strong></h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Duis aute irure dolor in reprehenderit
+              Explore frequently asked questions about Edumanager to gain a better understanding of our school management software. Find answers to common queries and learn how Edumanager can enhance the efficiency of your institution.
               </p>
             </div>
           </div>
@@ -723,20 +823,22 @@ $address = 'Lagos Nigeria';
 
             <div class="accordion accordion-flush" id="faqlist" data-aos="fade-up" data-aos-delay="100">
 
-              <div class="accordion-item">
-                <h3 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-1">
-                    <span class="num">1.</span>
-                    Non consectetur a erat nam at lectus urna duis?
-                  </button>
-                </h3>
-                <div id="faq-content-1" class="accordion-collapse collapse" data-bs-parent="#faqlist">
-                  <div class="accordion-body">
-                    Feugiat pretium nibh ipsum consequat. Tempus iaculis urna id volutpat lacus laoreet non curabitur gravida. Venenatis lectus magna fringilla urna porttitor rhoncus dolor purus non.
+              <?php foreach ($faqList as $key => $faq): ?>
+                <div class="accordion-item">
+                  <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-<?= $key ?>">
+                      <span class="num"><?= $key + 1 ?>.</span>
+                      <?= $faq['question'] ?>
+                    </button>
+                  </h3>
+                  <div id="faq-content-<?= $key ?>" class="accordion-collapse collapse" data-bs-parent="#faqlist">
+                    <div class="accordion-body">
+                      <?= $faq['answer'] ?>
+                    </div>
                   </div>
-                </div>
-              </div><!-- # Faq item-->
-
+                </div><!-- # Faq item-->
+              <?php endforeach; ?>
+                <!-- 
               <div class="accordion-item">
                 <h3 class="accordion-header">
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-2">
@@ -749,7 +851,7 @@ $address = 'Lagos Nigeria';
                     Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim. Mauris ultrices eros in cursus turpis massa tincidunt dui.
                   </div>
                 </div>
-              </div><!-- # Faq item-->
+              </div>< !-- # Faq item 
 
               <div class="accordion-item">
                 <h3 class="accordion-header">
@@ -763,7 +865,7 @@ $address = 'Lagos Nigeria';
                     Eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci. Faucibus pulvinar elementum integer enim. Sem nulla pharetra diam sit amet nisl suscipit. Rutrum tellus pellentesque eu tincidunt. Lectus urna duis convallis convallis tellus. Urna molestie at elementum eu facilisis sed odio morbi quis
                   </div>
                 </div>
-              </div><!-- # Faq item-->
+              </div>< !-- # Faq item-- >
 
               <div class="accordion-item">
                 <h3 class="accordion-header">
@@ -777,7 +879,7 @@ $address = 'Lagos Nigeria';
                     Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim. Mauris ultrices eros in cursus turpis massa tincidunt dui.
                   </div>
                 </div>
-              </div><!-- # Faq item-->
+              </div>< !-- # Faq item-- >
 
               <div class="accordion-item">
                 <h3 class="accordion-header">
@@ -791,7 +893,7 @@ $address = 'Lagos Nigeria';
                     Molestie a iaculis at erat pellentesque adipiscing commodo. Dignissim suspendisse in est ante in. Nunc vel risus commodo viverra maecenas accumsan. Sit amet nisl suscipit adipiscing bibendum est. Purus gravida quis blandit turpis cursus in
                   </div>
                 </div>
-              </div><!-- # Faq item-->
+              </div>< !-- # Faq item-->
 
             </div>
 
