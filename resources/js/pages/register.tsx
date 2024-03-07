@@ -19,6 +19,7 @@ import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Gender } from '@/types/types';
 import { User } from '@/types/models';
+import Slab, { SlabBody } from '@/components/slab';
 
 export default function Register({ user }: { user?: User }) {
   const { message } = useSharedProps();
@@ -65,13 +66,25 @@ export default function Register({ user }: { user?: User }) {
         bg={'white'}
         mx={'auto'}
         w={'full'}
-        maxW={'md'}
+        maxW={'lg'}
         shadow={'md'}
         rounded={'md'}
         as={'form'}
         onSubmit={preventNativeSubmit(onSubmit)}
       >
         <VStack spacing={4} align={'stretch'} p={6}>
+          <Slab>
+            <SlabBody>
+              <Text as={'span'} color={'brand.500'} fontWeight={'semibold'}>
+                Thank you
+              </Text>{' '}
+              for your interest in Edumanager, This is the best School
+              Management Solution for your School at a very cheap rate.
+              <br />
+              Kindly fill the form with your personal and school information and
+              one of our staff will contact you.
+            </SlabBody>
+          </Slab>
           <FormControlBox form={form} title="First Name" formKey="first_name">
             <Input
               type="text"
