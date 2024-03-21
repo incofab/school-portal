@@ -5,10 +5,12 @@ import { PageTitle } from './page-header';
 
 interface Props {
   title?: string;
+  boxProps?: BoxProps;
 }
 export default function CenteredLayout({
   children,
   title,
+  boxProps,
   ...props
 }: Props & BoxProps) {
   return (
@@ -26,6 +28,7 @@ export default function CenteredLayout({
         maxW={'md'}
         shadow={'md'}
         rounded={'md'}
+        {...boxProps}
       >
         {title && (
           <>

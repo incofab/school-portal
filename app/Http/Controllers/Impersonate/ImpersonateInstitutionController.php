@@ -16,6 +16,6 @@ class ImpersonateInstitutionController extends Controller
     session(['impersonator_id' => $user->id]);
     auth()->login($institution->user);
 
-    return redirect(route('home'));
+    return redirect(route('user.dashboard'));
   }
 }

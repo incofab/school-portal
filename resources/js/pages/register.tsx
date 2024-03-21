@@ -20,6 +20,7 @@ import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Gender } from '@/types/types';
 import { User } from '@/types/models';
 import Slab, { SlabBody } from '@/components/slab';
+import CenteredLayout from '@/components/centered-layout';
 
 export default function Register({ user }: { user?: User }) {
   const { message } = useSharedProps();
@@ -61,18 +62,9 @@ export default function Register({ user }: { user?: User }) {
   }, [message]);
 
   return (
-    <Div bg={'blue.50'} py={12} minH={'100vh'}>
-      <Div
-        bg={'white'}
-        mx={'auto'}
-        w={'full'}
-        maxW={'lg'}
-        shadow={'md'}
-        rounded={'md'}
-        as={'form'}
-        onSubmit={preventNativeSubmit(onSubmit)}
-      >
-        <VStack spacing={4} align={'stretch'} p={6}>
+    <CenteredLayout title="Join Us" boxProps={{ maxW: 'lg' }}>
+      <Div w={'full'} as={'form'} onSubmit={preventNativeSubmit(onSubmit)}>
+        <VStack spacing={4} align={'stretch'} px={6} pb={6}>
           <Slab>
             <SlabBody>
               <Text as={'span'} color={'brand.500'} fontWeight={'semibold'}>
@@ -85,6 +77,7 @@ export default function Register({ user }: { user?: User }) {
               one of our staff will contact you.
             </SlabBody>
           </Slab>
+          <br />
           <FormControlBox form={form} title="First Name" formKey="first_name">
             <Input
               type="text"
@@ -246,6 +239,6 @@ export default function Register({ user }: { user?: User }) {
           </Div>
         </VStack>
       </Div>
-    </Div>
+    </CenteredLayout>
   );
 }

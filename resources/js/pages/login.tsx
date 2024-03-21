@@ -8,8 +8,6 @@ import {
   FormLabel,
   HStack,
   Input,
-  useColorMode,
-  useColorModeValue,
   useToast,
   VStack,
 } from '@chakra-ui/react';
@@ -18,11 +16,12 @@ import React, { useEffect, useRef } from 'react';
 import useSharedProps from '@/hooks/use-shared-props';
 import { Inertia } from '@inertiajs/inertia';
 import PasswordInput from '@/components/password-input';
+import CenteredLayout from '@/components/centered-layout';
+import { Institution } from '@/types/models';
 
-export default function Login() {
+export default function Login({ institution }: { institution?: Institution }) {
   const { message, csrfToken } = useSharedProps();
   const toast = useToast();
-  const { toggleColorMode } = useColorMode();
   const form = useForm({
     email: '',
     password: '',
@@ -33,7 +32,6 @@ export default function Login() {
   }
 
   useEffect(() => {
-    // toggleColorMode();
     message?.error &&
       toast({
         title: message.error,
@@ -73,62 +71,53 @@ export default function Login() {
   }, [csrfToken]);
 
   return (
-    <Div bg={useColorModeValue('blue.50', 'gray.900')} py={12} minH={'100vh'}>
-      <Div
-        bg={useColorModeValue('white', 'gray.800')}
-        p={6}
-        mx={'auto'}
-        w={'full'}
-        maxW={'md'}
-        shadow={'md'}
-        rounded={'md'}
+    <CenteredLayout title="Login">
+      <VStack
+        spacing={4}
+        align={'stretch'}
+        as={'form'}
+        onSubmit={preventNativeSubmit(onSubmit)}
       >
-        <VStack
-          spacing={4}
-          align={'stretch'}
-          as={'form'}
-          onSubmit={preventNativeSubmit(onSubmit)}
-        >
-          <FormControl isInvalid={!!form.errors.email}>
-            <FormLabel htmlFor="email">Email address</FormLabel>
-            <Input
-              id="email"
-              type="text"
-              value={form.data.email}
-              onChange={(e) => form.setData('email', e.currentTarget.value)}
-            />
-            <FormErrorMessage>{form.errors.email}</FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!form.errors.password}>
-            <FormLabel htmlFor="password">Password</FormLabel>
-            <PasswordInput
-              id={'password'}
-              value={form.data.password}
-              onChange={(e) => form.setData('password', e.currentTarget.value)}
-            />
-            <FormErrorMessage>{form.errors.password}</FormErrorMessage>
-          </FormControl>
-          <HStack align={'stretch'} justify={'space-between'}>
-            <Button
-              as={InertiaLink}
-              href={route('student-login')}
-              colorScheme={'brand'}
-              variant={'link'}
-              float={'right'}
-            >
-              Student Login
-            </Button>
-            <Button
-              as={InertiaLink}
-              href={route('forgot-password')}
-              colorScheme={'brand'}
-              variant={'link'}
-              float={'right'}
-            >
-              Forgot Password?
-            </Button>
-          </HStack>
-          {/* <FormControl>
+        <FormControl isInvalid={!!form.errors.email}>
+          <FormLabel htmlFor="email">Email address</FormLabel>
+          <Input
+            id="email"
+            type="text"
+            value={form.data.email}
+            onChange={(e) => form.setData('email', e.currentTarget.value)}
+          />
+          <FormErrorMessage>{form.errors.email}</FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!form.errors.password}>
+          <FormLabel htmlFor="password">Password</FormLabel>
+          <PasswordInput
+            id={'password'}
+            value={form.data.password}
+            onChange={(e) => form.setData('password', e.currentTarget.value)}
+          />
+          <FormErrorMessage>{form.errors.password}</FormErrorMessage>
+        </FormControl>
+        <HStack align={'stretch'} justify={'space-between'}>
+          <Button
+            as={InertiaLink}
+            href={route('student-login')}
+            colorScheme={'brand'}
+            variant={'link'}
+            float={'right'}
+          >
+            Student Login
+          </Button>
+          <Button
+            as={InertiaLink}
+            href={route('forgot-password')}
+            colorScheme={'brand'}
+            variant={'link'}
+            float={'right'}
+          >
+            Forgot Password?
+          </Button>
+        </HStack>
+        {/* <FormControl>
             <Button
               as={InertiaLink}
               href={route('forgot-password')}
@@ -139,15 +128,16 @@ export default function Login() {
               Forgot Password?
             </Button>
           </FormControl> */}
-          <Button
-            isLoading={form.processing}
-            loadingText="Logging in"
-            type="submit"
-            colorScheme={'brand'}
-            id="login"
-          >
-            Login
-          </Button>
+        <Button
+          isLoading={form.processing}
+          loadingText="Logging in"
+          type="submit"
+          colorScheme={'brand'}
+          id="login"
+        >
+          Login
+        </Button>
+        {!institution && (
           <Div textAlign={'center'}>
             <InertiaLink href={route('registration-requests.create')}>
               <Button colorScheme={'brand'} variant={'link'}>
@@ -155,8 +145,8 @@ export default function Login() {
               </Button>
             </InertiaLink>
           </Div>
-        </VStack>
-      </Div>
-    </Div>
+        )}
+      </VStack>
+    </CenteredLayout>
   );
 }

@@ -39,7 +39,7 @@ class RegistrationRequestsController extends Controller
 
   private function getQuery(User $user)
   {
-    if (!$user->isAdmin()) {
+    if ($user->isAdmin()) {
       return RegistrationRequest::query();
     }
     return $user->registrationRequests()->getQuery();
