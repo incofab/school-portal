@@ -49,7 +49,7 @@ interface Props {
 }
 
 export default function Profile({ user, institutionUser }: Props) {
-  const { currentUser } = useSharedProps();
+  const { currentUser, currentAcademicSession, currentTerm } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
   const downloadRecordingSheetModalToggle = useModalToggle();
@@ -89,6 +89,27 @@ export default function Profile({ user, institutionUser }: Props) {
     if (!handleResponseToast(res)) return;
     form.setValue('photo', res.data.url);
     Inertia.reload({ only: ['user'] });
+  }
+
+  async function generateResultPin(student: Student) {
+    if (
+      !window.confirm(
+        `Generate result checker pins for the ${currentAcademicSession.title} Session and ${currentTerm} Term`
+      )
+    ) {
+      return;
+    }
+    const res = await form.submit((data, web) =>
+      web.post(instRoute('pins.students.store', [student]), data)
+    );
+
+    if (!handleResponseToast(res)) return;
+
+    Inertia.visit(
+      instRoute('pins.classification.student-pin-tiles', [
+        student.classification_id,
+      ])
+    );
   }
 
   const student = institutionUser.student;
@@ -174,15 +195,21 @@ export default function Profile({ user, institutionUser }: Props) {
                   </>
                 )}
                 {isStaff && student && (
-                  <Button
-                    as={InertiaLink}
-                    href={instRoute('students.transcript', [student])}
-                    variant={'outline'}
-                    colorScheme="brand"
-                    size={'sm'}
-                  >
-                    Transcript
-                  </Button>
+                  <>
+                    <Button
+                      as={InertiaLink}
+                      href={instRoute('students.transcript', [student])}
+                      variant={'outline'}
+                      colorScheme="brand"
+                      size={'sm'}
+                    >
+                      Transcript
+                    </Button>
+                    <BrandButton
+                      title="Generate Result Pin"
+                      onClick={() => generateResultPin(student)}
+                    />
+                  </>
                 )}
               </HStack>
               <FormControl isInvalid={!!form.errors.photo}>

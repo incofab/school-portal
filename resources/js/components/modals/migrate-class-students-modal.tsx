@@ -21,7 +21,7 @@ import { Div } from '../semantic';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 interface Props {
-  Classification: Classification;
+  classification: Classification;
   isOpen: boolean;
   onClose(): void;
   onSuccess(): void;
@@ -31,7 +31,7 @@ export default function MigrateClassStudentsModal({
   isOpen,
   onSuccess,
   onClose,
-  Classification,
+  classification,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -43,7 +43,7 @@ export default function MigrateClassStudentsModal({
   const onSubmit = async () => {
     const res = await webForm.submit((data, web) =>
       web.post(
-        instRoute('classifications.migrate-students', [Classification]),
+        instRoute('classifications.migrate-students', [classification]),
         data
       )
     );
@@ -66,7 +66,7 @@ export default function MigrateClassStudentsModal({
               title={'Select Students'}
               variant={'outline'}
               href={instRoute('change-multi-student-class.create', [
-                Classification,
+                classification,
               ])}
               rightIcon={<Icon as={ArrowRightIcon} />}
             />
@@ -96,7 +96,7 @@ export default function MigrateClassStudentsModal({
               size={'md'}
               colorScheme="brand"
             >
-              Move students in {Classification.title} to alumni
+              Move students in {classification.title} to alumni
             </Checkbox>
           </FormControl>
         </VStack>

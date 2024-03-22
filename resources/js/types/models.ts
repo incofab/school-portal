@@ -217,9 +217,14 @@ export interface Pin extends InstitutionRow {
   term_result_id: number;
   pin_print_id: number;
   pin_generator_id: number;
+  student_id: number;
+  academic_session_id: number;
+  term: string;
   term_result?: TermResult;
   pin_print?: PinPrint;
   pin_generator: PinGenerator;
+  student?: Student;
+  academic_session?: AcademicSession;
 }
 
 export interface PinPrint extends InstitutionRow {

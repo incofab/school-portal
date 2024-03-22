@@ -175,6 +175,13 @@ Route::get('/pin-prints/{pinPrint}/download', [Web\Staff\PinPrintController::cla
     ->name('pin-prints.download');
 Route::resource('/pin-prints', Web\Staff\PinPrintController::class)->only(['index', 'store', 'show']);
 
+Route::get('/pins/classifications/{classification}/tiles', [Web\Staff\Pins\StudentPinController::class, 'indexTiles'])
+    ->name('pins.classification.student-pin-tiles');
+Route::post('/pins/students/{student}', [Web\Staff\Pins\StudentPinController::class, 'storeStudentPin'])
+    ->name('pins.students.store');
+Route::post('/pins/classifications/{classification}', [Web\Staff\Pins\StudentPinController::class, 'storeClassStudentPin'])
+    ->name('pins.classifications.store');
+
 Route::get('/fees/search', [Web\Payments\FeeController::class, 'search'])->name('fees.search');
 Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
 Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['edit', 'update']);
