@@ -113,15 +113,27 @@ abstract class BaseUITableFilter
     return $this;
   }
 
+  private $useCurrentTerm = true;
+  /** Should be called before the filter query is called */
+  public function dontUseCurrentTerm()
+  {
+    $this->useCurrentTerm = false;
+    return $this;
+  }
+
   protected function getTerm($default = null)
   {
     return $this->requestGet('term') ??
-      $this->settingHandler->getCurrentTerm($default);
+      ($this->useCurrentTerm
+        ? $this->settingHandler->getCurrentTerm($default)
+        : null);
   }
 
   protected function getAcademicSession($default = null)
   {
     return $this->requestGet('academicSession') ??
-      $this->settingHandler->getCurrentAcademicSession($default);
+      ($this->useCurrentTerm
+        ? $this->settingHandler->getCurrentAcademicSession($default)
+        : null);
   }
 }

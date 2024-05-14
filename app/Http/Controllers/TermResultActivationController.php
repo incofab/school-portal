@@ -51,15 +51,6 @@ class TermResultActivationController extends Controller
       return throw ValidationException::withMessages(['pin' => 'Invalid pin']);
     }
 
-    if ($pin->isUsed()) {
-      if ($pin->term_result_id) {
-        return $this->handleUsedPin($pin);
-      }
-      return throw ValidationException::withMessages([
-        'pin' => 'Pin has already been used'
-      ]);
-    }
-
     $student = Student::query()
       ->select('students.*')
       ->forInstitution($pin->institution_id)
@@ -70,6 +61,15 @@ class TermResultActivationController extends Controller
     if (!$student) {
       return throw ValidationException::withMessages([
         'student_code' => 'Invalid student ID'
+      ]);
+    }
+
+    if ($pin->isUsed()) {
+      if ($pin->term_result_id) {
+        return $this->handleUsedPin($pin, $student);
+      }
+      return throw ValidationException::withMessages([
+        'pin' => 'Pin has already been used'
       ]);
     }
 
@@ -157,8 +157,18 @@ class TermResultActivationController extends Controller
     }
   }
 
-  private function handleUsedPin(Pin $usedPin)
+  private function handleUsedPin(Pin $usedPin, Student $student)
   {
+    if (!Auth::check()) {
+      Auth::login($student->user);
+    }
+    $route = route('institutions.term-results.index', [
+      $usedPin->institution->uuid,
+      $student->user
+    ]);
+
+    return response()->json(['redirect_url' => $route]);
+    /*
     $termResult = TermResult::query()
       ->where('id', $usedPin->term_result_id)
       ->with('student.user')
@@ -168,6 +178,7 @@ class TermResultActivationController extends Controller
       Auth::login($termResult->student->user);
     }
     return $this->successRes($termResult->institution, $termResult);
+    */
   }
 
   private function hasPdfResult(Student $student, Pin $pin)

@@ -46,6 +46,11 @@ class UserFactory extends Factory
     return $this->institutionUser($institution, InstitutionUserType::Admin);
   }
 
+  public function guardian(Institution $institution = null): static
+  {
+    return $this->institutionUser($institution, InstitutionUserType::Guardian);
+  }
+
   public function institutionUser(
     Institution $institution = null,
     $role = InstitutionUserType::Admin

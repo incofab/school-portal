@@ -125,6 +125,13 @@ function InstitutionDashboard() {
       icon: BanknotesIcon,
       roles: [InstitutionUserType.Admin],
     },
+    {
+      title: 'Students', // Dependents
+      desc: 'Shows your children/Wards',
+      route: instRoute('guardians.list-dependents'),
+      icon: UsersIcon,
+      roles: [InstitutionUserType.Guardian],
+    },
   ];
 
   return (

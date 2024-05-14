@@ -155,6 +155,11 @@ class User extends Authenticatable
     return $this->hasInstitutionRole(InstitutionUserType::Student);
   }
 
+  function isInstitutionGuardian()
+  {
+    return $this->hasInstitutionRole(InstitutionUserType::Guardian);
+  }
+
   function isAdmin()
   {
     return $this->hasRole(ManagerRole::Admin);
@@ -179,5 +184,21 @@ class User extends Authenticatable
   function registrationRequests()
   {
     return $this->hasMany(RegistrationRequest::class, 'partner_user_id');
+  }
+  /** Children/wards of a parent */
+  function dependents()
+  {
+    return $this->hasManyThrough(
+      Student::class,
+      GuardianStudent::class,
+      'guardian_user_id',
+      'id',
+      'id',
+      'student_id'
+    );
+  }
+  function guardianStudents()
+  {
+    return $this->hasMany(GuardianStudent::class, 'guardian_user_id', 'id');
   }
 }

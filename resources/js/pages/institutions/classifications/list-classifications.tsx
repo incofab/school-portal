@@ -169,6 +169,14 @@ export default function ListClassification({ classifications }: Props) {
                     >
                       View Result Pins
                     </MenuItem>
+                    <MenuItem
+                      as={InertiaLink}
+                      href={instRoute('guardians.classifications.create', [
+                        row,
+                      ])}
+                    >
+                      Record Guardians
+                    </MenuItem>
                   </MenuList>
                 </Menu>
               </HStack>

@@ -70,6 +70,11 @@ export default function SideBarLayout() {
           roles: staffOnly,
         },
         {
+          label: 'Guardians',
+          route: instRoute('guardians.index'),
+          roles: staffOnly,
+        },
+        {
           label: 'Add Student',
           route: instRoute('students.create'),
           roles: [InstitutionUserType.Admin],
@@ -78,6 +83,11 @@ export default function SideBarLayout() {
     },
     {
       label: 'Subject',
+      roles: [
+        InstitutionUserType.Student,
+        InstitutionUserType.Admin,
+        InstitutionUserType.Teacher,
+      ],
       sub_items: [
         {
           label: 'All Subject',

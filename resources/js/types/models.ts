@@ -126,6 +126,7 @@ export interface Student extends Row {
   classification?: Classification;
   user?: User;
   course_results?: CourseResult[];
+  guardian?: User;
 }
 
 export interface CourseResult extends InstitutionRow {
@@ -346,6 +347,14 @@ export interface ResultCommentTemplate extends InstitutionRow {
   type: string;
   min: number;
   max: number;
+}
+
+export interface GuardianStudent extends InstitutionRow {
+  guardian_user_id: number;
+  student_id: number;
+  relationship: string;
+  guardian?: User;
+  student?: Student;
 }
 
 export interface RegistrationRequest extends Row {

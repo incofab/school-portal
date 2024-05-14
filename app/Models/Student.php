@@ -90,4 +90,16 @@ class Student extends Model
   {
     return $this->hasMany(StudentClassMovement::class);
   }
+
+  function guardian()
+  {
+    return $this->hasOneThrough(
+      User::class,
+      GuardianStudent::class,
+      'student_id',
+      'id',
+      'id',
+      'guardian_user_id'
+    );
+  }
 }

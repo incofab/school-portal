@@ -10,6 +10,7 @@ use App\Models\Assessment;
 use App\Models\Classification;
 use App\Models\ClassResultInfo;
 use App\Models\CourseResultInfo;
+use App\Models\GuardianStudent;
 use App\Models\Institution;
 use App\Models\ResultCommentTemplate;
 use App\Models\Student;
@@ -24,6 +25,28 @@ use URL;
 
 class ViewResultSheetController extends Controller
 {
+  private function validateStudent(Student $student)
+  {
+    $institutionUser = currentInstitutionUser();
+    if ($institutionUser->isAdmin()) {
+      return;
+    }
+    if ($institutionUser->user_id == $student->user_id) {
+      return;
+    }
+
+    if (
+      GuardianStudent::isGuardianOfStudent(
+        $institutionUser->user_id,
+        $student->id
+      )
+    ) {
+      return;
+    }
+
+    abort(403, 'You are not authorized to view this result');
+  }
+
   public function viewResult(
     Institution $institution,
     Student $student,
@@ -32,12 +55,13 @@ class ViewResultSheetController extends Controller
     string $term,
     bool $forMidTerm
   ) {
-    $institutionUser = currentInstitutionUser();
-    abort_if(
-      $institutionUser->user_id !== $student->user_id &&
-        !$institutionUser->isAdmin(),
-      403
-    );
+    $this->validateStudent($student);
+    // $institutionUser = currentInstitutionUser();
+    // abort_if(
+    //   $institutionUser->user_id !== $student->user_id &&
+    //     !$institutionUser->isAdmin(),
+    //   403
+    // );
 
     $viewData = GetViewResultSheetData::run(
       $institution,

@@ -31,6 +31,7 @@ export enum InstitutionUserType {
   Student = 'student',
   Teacher = 'teacher',
   Alumni = 'alumni',
+  Guardian = 'guardian',
 }
 
 export enum UserRoleType {
@@ -57,6 +58,14 @@ export enum FullTermType {
 export enum Gender {
   Male = 'male',
   Female = 'female',
+}
+
+export enum GuardianRelationship {
+  Parent = 'parent',
+  Sibling = 'sibling',
+  Guardian = 'guardian',
+  Nibling = 'nibling',
+  Pibling = 'pibling',
 }
 
 export enum LearningEvaluationDomainType {

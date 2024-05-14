@@ -12,4 +12,5 @@ enum InstitutionUserType: string
   case Student = 'student';
   case Teacher = 'teacher';
   case Alumni = 'alumni';
+  case Guardian = 'guardian';
 }

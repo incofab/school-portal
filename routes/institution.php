@@ -84,6 +84,17 @@ Route::post('/change-multi-student-class', [Web\Students\UpdateStudentClassContr
 Route::get('/classifications/{classification}/students', [Web\Students\StudentController::class, 'classStudentsTiles'])
     ->name('classifications.students');
 
+Route::get('/guardians', [Web\Staff\GuardianManagementController::class, 'index'])
+    ->name('guardians.index');
+Route::get('/guardians/classifications/{classification}/create', [Web\Staff\GuardianManagementController::class, 'create'])
+    ->name('guardians.classifications.create');
+Route::post('/guardians/classifications/{classification}/store', [Web\Staff\GuardianManagementController::class, 'store'])
+    ->name('guardians.classifications.store');
+Route::get('/guardians/list-dependents', Web\Guardians\ListDependentsController::class)
+    ->name('guardians.list-dependents');
+Route::delete('/guardians/remove-dependent/{student}', Web\Guardians\RemoveDependentController::class)
+    ->name('guardians.remove-dependent');
+
 Route::get('/courses/search', [Web\CoursesController::class, 'search'])
     ->name('courses.search');
 Route::resource('/courses', Web\CoursesController::class);
