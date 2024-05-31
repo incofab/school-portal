@@ -2,14 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\PaymentInterval;
-use App\Models\ReceiptType;
-use App\Rules\ValidateExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Enum;
 
-class CreateFeeRequest extends FormRequest
+class CreateReceiptTypeRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -31,16 +27,11 @@ class CreateFeeRequest extends FormRequest
         'required',
         'string',
         'max:255',
-        Rule::unique('fees', 'title')
+        Rule::unique('receipt_types', 'title')
           ->where('institution_id', currentInstitution()->id)
-          ->ignore($this->fee?->id, 'id')
+          ->ignore($this->receiptType?->id, 'id')
       ],
-      'amount' => ['required', 'numeric', 'min:1'],
-      'payment_interval' => ['nullable', new Enum(PaymentInterval::class)],
-      'receipt_type_id' => [
-        'required',
-        new ValidateExistsRule(ReceiptType::class)
-      ]
+      'descriptions' => ['nullable', 'string']
     ];
   }
 }

@@ -4,7 +4,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { Fee } from '@/types/models';
+import { Fee, ReceiptType } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -14,16 +14,19 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { FeePaymentInterval } from '@/types/types';
+import ReceiptTypeSelect from '@/components/selectors/receipt-type-select';
 
 interface Props {
   fee?: Fee;
+  receiptTypes: ReceiptType[];
 }
 
-export default function CreateOrUpdateFee({ fee }: Props) {
+export default function CreateOrUpdateFee({ fee, receiptTypes }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
     title: fee?.title ?? '',
+    receipt_type_id: fee?.receipt_type_id ?? '',
     amount: fee?.amount ?? '',
     payment_interval: fee?.payment_interval ?? FeePaymentInterval.termly,
   });
@@ -71,6 +74,23 @@ export default function CreateOrUpdateFee({ fee }: Props) {
                   onChange={(e: any) =>
                     webForm.setValue('payment_interval', e.value)
                   }
+                />
+              </FormControlBox>
+
+              <FormControlBox
+                form={webForm as any}
+                title="Fee Category"
+                formKey="receipt_type_id"
+              >
+                <ReceiptTypeSelect
+                  value={webForm.data.receipt_type_id}
+                  isMulti={false}
+                  isClearable={true}
+                  onChange={(e: any) =>
+                    webForm.setValue('receipt_type_id', e.value)
+                  }
+                  receiptTypes={receiptTypes}
+                  required
                 />
               </FormControlBox>
 

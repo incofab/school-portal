@@ -21,6 +21,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { InstitutionUserType } from '@/types/types';
 import useIsStaff from '@/hooks/use-is-staff';
+import useIsStudent from '@/hooks/use-is-student';
 
 interface ItemCardProps {
   route: string;
@@ -79,8 +80,9 @@ function DashboardItemCard(prop: ItemCardProps) {
 }
 
 function InstitutionDashboard() {
-  const { currentInstitutionUser } = useSharedProps();
+  const { currentInstitutionUser, currentUser } = useSharedProps();
   const isStaff = useIsStaff();
+  const isStudent = useIsStudent();
   const { instRoute } = useInstitutionRoute();
   const staffOnly = [InstitutionUserType.Admin, InstitutionUserType.Teacher];
   const items: ItemCardProps[] = [
@@ -124,6 +126,15 @@ function InstitutionDashboard() {
       route: instRoute('fee-payments.index'),
       icon: BanknotesIcon,
       roles: [InstitutionUserType.Admin],
+    },
+    {
+      title: 'Receipts',
+      desc: 'Payments receipts',
+      route: isStaff
+        ? instRoute('fee-payments.index')
+        : instRoute('users.receipts.index'),
+      icon: BanknotesIcon,
+      roles: [InstitutionUserType.Student],
     },
     {
       title: 'Students', // Dependents

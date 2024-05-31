@@ -259,15 +259,41 @@ export interface CourseTeacher extends Row {
   classification?: Classification;
 }
 
+export interface ReceiptType extends InstitutionRow {
+  title: string;
+  descriptions: string;
+}
+
 export interface Fee extends InstitutionRow {
   title: string;
   amount: number;
   payment_interval: string;
+  receipt_type_id: number;
+  receipt_type?: ReceiptType;
 }
 
-export interface FeePayment extends Row {
+export interface Receipt extends InstitutionRow {
+  receipt_type_id: number;
+  user_id: number;
+  academic_session_id: number;
+  term: string;
+  reference: string;
+  title: string;
+  classification_id: number;
+  classification_group_id: number;
+  total_amount: number;
+  approved_at: string;
+  approved_by_user_id: number;
+  receipt_type?: ReceiptType;
+  user?: User;
+  academic_session: AcademicSession;
+  fee_payments?: FeePayment[];
+}
+
+export interface FeePayment extends InstitutionRow {
   fee_id: number;
   user_id: number;
+  receipt_id: number;
   academic_session_id: number;
   term: string;
   fee_amount: number;
@@ -275,6 +301,7 @@ export interface FeePayment extends Row {
   amount_remaining: number;
   fee?: Fee;
   user?: User;
+  recorded_by_user_id: number;
   academic_session: AcademicSession;
   fee_payment_tracks?: FeePaymentTrack[];
 }

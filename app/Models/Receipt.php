@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\TermType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FeePayment extends Model
+class Receipt extends Model
 {
   use HasFactory, InstitutionScope, SoftDeletes;
 
@@ -15,31 +16,25 @@ class FeePayment extends Model
   public $casts = [
     'institution_id' => 'integer',
     'user_id' => 'integer',
-    'fee_id' => 'integer',
+    'receipt_type_id' => 'integer',
     'academic_session_id' => 'integer',
-    'receipt_id' => 'integer',
-    'recorded_by_user_id' => 'integer'
+    'classification_id' => 'integer',
+    'classification_group_id' => 'integer',
+    'approved_by_user_id' => 'integer',
+    'term' => TermType::class
   ];
 
-  function fee()
+  function receiptType()
   {
-    return $this->belongsTo(Fee::class);
+    return $this->belongsTo(Fee::class, 'receipt_type_id');
   }
   function user()
   {
     return $this->belongsTo(User::class);
   }
-  function receipt()
+  function approvedBy()
   {
-    return $this->belongsTo(Receipt::class);
-  }
-  function recordedBy()
-  {
-    return $this->belongsTo(User::class, 'recorded_by_user_id');
-  }
-  function feePaymentTracks()
-  {
-    return $this->hasMany(FeePaymentTrack::class);
+    return $this->belongsTo(User::class, 'approved_by_user_id');
   }
   function academicSession()
   {
@@ -48,5 +43,9 @@ class FeePayment extends Model
   function institution()
   {
     return $this->belongsTo(Institution::class);
+  }
+  function feePayments()
+  {
+    return $this->hasMany(FeePayment::class);
   }
 }
