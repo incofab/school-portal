@@ -13,6 +13,11 @@ class Fee extends Model
 
   public $guarded = [];
 
+  function receiptType()
+  {
+    return $this->belongsTo(ReceiptType::class);
+  }
+
   function institution()
   {
     return $this->belongsTo(Institution::class);

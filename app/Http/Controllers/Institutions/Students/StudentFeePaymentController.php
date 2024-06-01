@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Institutions\Students;
 
 use App\Http\Controllers\Controller;
 use App\Models\Fee;
+use App\Models\Institution;
 use App\Models\Receipt;
 use App\Models\ReceiptType;
 use App\Models\Student;
@@ -12,7 +13,7 @@ use App\Support\UITableFilters\ReceiptUITableFilters;
 
 class StudentFeePaymentController extends Controller
 {
-  function index(User $user, Receipt $receipt)
+  function index(Institution $institution, User $user, Receipt $receipt)
   {
     $receipt->load('receiptType');
     $query = FeePaymentUITableFilters::make(
@@ -32,7 +33,7 @@ class StudentFeePaymentController extends Controller
     ]);
   }
 
-  function receipts(User $user)
+  function receipts(Institution $institution, User $user)
   {
     $query = ReceiptUITableFilters::make(
       request()->all(),
@@ -54,7 +55,7 @@ class StudentFeePaymentController extends Controller
     ]);
   }
 
-  function showReceipt(Receipt $receipt)
+  function showReceipt(Institution $institution, Receipt $receipt)
   {
     $receipt->load(
       'feePayments.fee',
@@ -65,7 +66,7 @@ class StudentFeePaymentController extends Controller
       'user'
     );
 
-    return inertia('institutions/students/payments/display-receipt', [
+    return inertia('institutions/students/payments/show-receipt', [
       'receipt' => $receipt,
       'student' => Student::where('user_id', $receipt->user_id)->firstOrFail()
     ]);

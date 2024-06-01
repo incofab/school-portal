@@ -187,7 +187,7 @@ export default function SideBarLayout() {
       roles: [InstitutionUserType.Admin],
       sub_items: [
         {
-          label: 'List Fee Types',
+          label: 'Fee Types',
           route: instRoute('fees.index'),
           roles: [InstitutionUserType.Admin],
         },
@@ -197,8 +197,18 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin],
         },
         {
-          label: 'List Fee Payments',
+          label: 'Payments',
           route: instRoute('fee-payments.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Receipts',
+          route: instRoute('receipts.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Receipt Types',
+          route: instRoute('receipt-types.index'),
           roles: [InstitutionUserType.Admin],
         },
       ],

@@ -1,7 +1,7 @@
 <?php
 namespace App\DTO;
 
-class ResultSheetColumnIndex
+class SheetColumnIndex
 {
   function __construct(
     public string $index,

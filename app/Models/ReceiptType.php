@@ -14,6 +14,10 @@ class ReceiptType extends Model
   public $guarded = [];
   public $casts = ['institution_id' => 'integer'];
 
+  function fees()
+  {
+    return $this->hasMany(Fee::class);
+  }
   function institution()
   {
     return $this->belongsTo(Institution::class);

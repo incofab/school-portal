@@ -287,6 +287,8 @@ export interface Receipt extends InstitutionRow {
   receipt_type?: ReceiptType;
   user?: User;
   academic_session: AcademicSession;
+  classification?: Classification;
+  classificationGroup?: ClassificationGroup;
   fee_payments?: FeePayment[];
 }
 

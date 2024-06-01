@@ -40,7 +40,7 @@ class ValidateExistsRule implements ValidationRule
     $this->model = $model;
   }
 
-  function getModel(): Model
+  function getModel(): ?Model
   {
     return $this->model;
   }

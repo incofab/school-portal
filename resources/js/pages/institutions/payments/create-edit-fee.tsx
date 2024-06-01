@@ -70,6 +70,7 @@ export default function CreateOrUpdateFee({ fee, receiptTypes }: Props) {
                 title="Payment Interval"
               >
                 <EnumSelect
+                  selectValue={webForm.data.payment_interval}
                   enumData={FeePaymentInterval}
                   onChange={(e: any) =>
                     webForm.setValue('payment_interval', e.value)
@@ -83,7 +84,7 @@ export default function CreateOrUpdateFee({ fee, receiptTypes }: Props) {
                 formKey="receipt_type_id"
               >
                 <ReceiptTypeSelect
-                  value={webForm.data.receipt_type_id}
+                  selectValue={webForm.data.receipt_type_id}
                   isMulti={false}
                   isClearable={true}
                   onChange={(e: any) =>

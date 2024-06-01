@@ -39,18 +39,18 @@ export default function ListStudentReceiptTypes({ receipts }: Props) {
     {
       label: 'Actions',
       render: (row: Receipt) => (
-        <HStack spacing={3}>
+        <HStack spacing={1}>
           <LinkButton
             variant={'ghost'}
             href={instRoute('users.fee-payments.index', [row.user_id, row.id])}
             colorScheme={'brand'}
-            label="Payments"
+            title="Payments"
           />
           <LinkButton
             variant={'ghost'}
             href={instRoute('receipts.show', [row.reference])}
             colorScheme={'brand'}
-            label="View"
+            title="View"
           />
         </HStack>
       ),

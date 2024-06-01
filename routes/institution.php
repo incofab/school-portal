@@ -198,7 +198,7 @@ Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
 Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['edit', 'update']);
 Route::get('/receipt-types/search', [Web\Payments\ReceiptTypeController::class, 'search'])->name('receipt-types.search');
 Route::resource('/receipt-types', Web\Payments\ReceiptTypeController::class)->except(['edit', 'create']);
-Route::get('/receipts', [Web\Payments\ReceiptTypeController::class, 'search'])->name('receipt-types.search');
+Route::get('/receipts', [Web\Payments\ReceiptController::class, 'index'])->name('receipts.index');
 
 Route::get('/users/{user}/fee-payments/{receipt}', [Web\Students\StudentFeePaymentController::class, 'index'])->name('users.fee-payments.index');
 Route::get('/users/{user}/receipts', [Web\Students\StudentFeePaymentController::class, 'receipts'])->name('users.receipts.index');

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, HStack, VStack } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
@@ -26,6 +26,8 @@ export default function CreateEditReceiptTypeModal({
   const webForm = useWebForm({
     title: receiptType?.title ?? '',
   });
+  console.log('receiptType = ' + receiptType);
+  console.log('title = ' + receiptType?.title);
 
   const onSubmit = async () => {
     const res = await webForm.submit((data, web) =>
@@ -43,10 +45,16 @@ export default function CreateEditReceiptTypeModal({
     onSuccess();
   };
 
+  // useEffect(() => {
+  //   console.log('Refresh page = ' + receiptType?.title);
+  // }, [receiptType?.title]);
+
   return (
     <GenericModal
       props={{ isOpen, onClose }}
-      headerContent={`${receiptType == null ? 'Create' : 'Edit'} Fee Category`}
+      headerContent={`${
+        receiptType == null ? 'Create' : 'Edit'
+      } Receipt Category`}
       bodyContent={
         <VStack spacing={2}>
           <InputForm form={webForm as any} formKey="title" title=" Title" />

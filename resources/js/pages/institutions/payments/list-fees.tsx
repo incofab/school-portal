@@ -41,6 +41,10 @@ export default function ListFees({ fees }: Props) {
       value: 'title',
     },
     {
+      label: 'Receipt Category',
+      value: 'receipt_type.title',
+    },
+    {
       label: 'Amount',
       value: 'amount',
     },

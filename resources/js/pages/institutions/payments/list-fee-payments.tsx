@@ -17,6 +17,7 @@ import useIsAdmin from '@/hooks/use-is-admin';
 import RecordFeePaymentModal from '@/components/modals/record-fee-payment-modal';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import FeePaymentTableFilters from '@/components/table-filters/fee-payment-table-filters';
+import startCase from 'lodash/startCase';
 
 interface Props {
   feePayments: PaginationResponse<FeePayment>;
@@ -71,6 +72,7 @@ export default function ListFeePayments({ feePayments, fees }: Props) {
     {
       label: 'Term',
       value: 'term',
+      render: (row) => startCase(row.term),
     },
     ...(isAdmin
       ? [

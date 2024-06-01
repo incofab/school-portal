@@ -40,6 +40,14 @@ class Receipt extends Model
   {
     return $this->belongsTo(AcademicSession::class);
   }
+  function classification()
+  {
+    return $this->belongsTo(Classification::class);
+  }
+  function classificationGroup()
+  {
+    return $this->belongsTo(ClassificationGroup::class);
+  }
   function institution()
   {
     return $this->belongsTo(Institution::class);

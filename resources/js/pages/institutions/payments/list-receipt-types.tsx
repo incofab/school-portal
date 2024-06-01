@@ -83,41 +83,42 @@ export default function ListReceiptTypes({ receiptTypes }: Props) {
 
   return (
     <DashboardLayout>
-      <div>
-        <HStack align={'stretch'} my={2}>
-          <BrandButton
-            title="Add New"
-            onClick={() => createReceiptTypeModal.open(null)}
+      <Slab>
+        <SlabHeading
+          title="List Receipt Categories"
+          rightElement={
+            <HStack>
+              <BrandButton
+                title="Add New"
+                onClick={() => createReceiptTypeModal.open(null)}
+              />
+            </HStack>
+          }
+        />
+        <SlabBody>
+          <ServerPaginatedTable
+            scroll={true}
+            headers={headers}
+            data={receiptTypes.data}
+            keyExtractor={(row) => row.id}
+            paginator={receiptTypes}
           />
-        </HStack>
-        <Slab>
-          <SlabHeading
-            title="List Class Groups"
-            rightElement={
-              <HStack>
-                <LinkButton
-                  href={instRoute('classification-groups.create')}
-                  title={'New'}
-                />
-              </HStack>
-            }
-          />
-          <SlabBody>
-            <ServerPaginatedTable
-              scroll={true}
-              headers={headers}
-              data={receiptTypes.data}
-              keyExtractor={(row) => row.id}
-              paginator={receiptTypes}
-            />
-          </SlabBody>
-        </Slab>
+        </SlabBody>
+      </Slab>
+      {createReceiptTypeModal.state && (
         <CreateEditReceiptTypeModal
           {...createReceiptTypeModal.props}
           receiptType={createReceiptTypeModal.state}
           onSuccess={() => Inertia.reload({ only: ['receiptTypes'] })}
         />
-      </div>
+      )}
+      {createReceiptTypeModal.state == null && (
+        <CreateEditReceiptTypeModal
+          {...createReceiptTypeModal.props}
+          receiptType={createReceiptTypeModal.state}
+          onSuccess={() => Inertia.reload({ only: ['receiptTypes'] })}
+        />
+      )}
     </DashboardLayout>
   );
 }

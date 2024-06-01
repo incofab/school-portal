@@ -6,12 +6,16 @@ import { PaginationResponse } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
+import { HStack } from '@chakra-ui/react';
+import { LinkButton } from '@/components/buttons';
+import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface Props {
   receipts: PaginationResponse<Receipt>;
 }
 
 export default function ListReceiptTypes({ receipts }: Props) {
+  const { instRoute } = useInstitutionRoute();
   const headers: ServerPaginatedTableHeader<Receipt>[] = [
     {
       label: 'Student',
@@ -20,7 +24,7 @@ export default function ListReceiptTypes({ receipts }: Props) {
     },
     {
       label: 'Category',
-      value: 'receiptType.title',
+      value: 'receipt_type.title',
     },
     {
       label: 'Term',
@@ -33,6 +37,25 @@ export default function ListReceiptTypes({ receipts }: Props) {
     {
       label: 'Amount',
       value: 'total_amount',
+    },
+    {
+      label: 'Actions',
+      render: (row: Receipt) => (
+        <HStack spacing={1}>
+          <LinkButton
+            variant={'ghost'}
+            href={instRoute('users.fee-payments.index', [row.user_id, row.id])}
+            colorScheme={'brand'}
+            title="Payments"
+          />
+          <LinkButton
+            variant={'ghost'}
+            href={instRoute('receipts.show', [row.reference])}
+            colorScheme={'brand'}
+            title="View"
+          />
+        </HStack>
+      ),
     },
   ];
 

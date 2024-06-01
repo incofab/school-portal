@@ -152,6 +152,11 @@ class Institution extends Model
     return $this->hasMany(ReceiptType::class);
   }
 
+  function receipts()
+  {
+    return $this->hasMany(Receipt::class);
+  }
+
   function feePayments()
   {
     return $this->hasMany(FeePayment::class);

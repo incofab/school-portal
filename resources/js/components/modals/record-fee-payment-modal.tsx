@@ -93,7 +93,7 @@ export default function RecordFeePaymentModal({
             formKey="academic_session_id"
           >
             <AcademicSessionSelect
-              value={webForm.data.academic_session_id}
+              selectValue={webForm.data.academic_session_id}
               isMulti={false}
               isClearable={true}
               onChange={(e: any) =>
@@ -103,7 +103,7 @@ export default function RecordFeePaymentModal({
           </FormControlBox>
           <FormControlBox form={webForm as any} title="Term" formKey="term">
             <EnumSelect
-              value={webForm.data.term}
+              selectValue={webForm.data.term}
               enumData={TermType}
               isMulti={false}
               isClearable={true}
@@ -113,7 +113,7 @@ export default function RecordFeePaymentModal({
           <FormControl>
             <FormLabel>Class</FormLabel>
             <ClassificationSelect
-              value={classId}
+              selectValue={classId}
               isMulti={false}
               isClearable={true}
               onChange={(e: any) => setClassId(e.value)}

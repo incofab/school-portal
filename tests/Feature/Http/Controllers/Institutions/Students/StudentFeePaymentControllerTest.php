@@ -48,7 +48,6 @@ it('can load the index page for receipts', function () {
     ->assertInertia(
       fn($page) => $page
         ->component('institutions/students/payments/list-student-receipts')
-        ->has('receipt')
         ->has('receipts.data')
     );
 });

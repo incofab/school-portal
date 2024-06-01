@@ -19,7 +19,7 @@ class FeeController extends Controller
 
   function index()
   {
-    $query = Fee::query();
+    $query = Fee::query()->with('receiptType');
     return inertia('institutions/payments/list-fees', [
       'fees' => paginateFromRequest($query)
     ]);
