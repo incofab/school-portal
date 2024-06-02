@@ -303,7 +303,6 @@ export interface FeePayment extends InstitutionRow {
   amount_remaining: number;
   fee?: Fee;
   user?: User;
-  recorded_by_user_id: number;
   academic_session: AcademicSession;
   fee_payment_tracks?: FeePaymentTrack[];
 }

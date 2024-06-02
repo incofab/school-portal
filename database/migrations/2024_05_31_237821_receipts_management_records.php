@@ -93,16 +93,10 @@ return new class extends Migration {
     // Add payment receipts id to fee payments table
     Schema::table('fee_payments', function (Blueprint $table) {
       $table->unsignedBigInteger('receipt_id')->nullable();
-      $table->unsignedBigInteger('recorded_by_user_id')->nullable();
       $table
         ->foreign('receipt_id')
         ->references('id')
         ->on('receipts')
-        ->cascadeOnDelete();
-      $table
-        ->foreign('recorded_by_user_id')
-        ->references('id')
-        ->on('users')
         ->cascadeOnDelete();
     });
 
@@ -130,8 +124,7 @@ return new class extends Migration {
     // Remove receipts id from fee payments table
     Schema::table('fee_payments', function (Blueprint $table) {
       $table->dropForeign(['receipt_id']);
-      $table->dropForeign(['recorded_by_user_id']);
-      $table->dropColumn(['receipt_id', 'recorded_by_user_id']);
+      $table->dropColumn(['receipt_id']);
     });
     Schema::dropIfExists('receipts');
 

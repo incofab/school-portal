@@ -17,8 +17,7 @@ class FeePayment extends Model
     'user_id' => 'integer',
     'fee_id' => 'integer',
     'academic_session_id' => 'integer',
-    'receipt_id' => 'integer',
-    'recorded_by_user_id' => 'integer'
+    'receipt_id' => 'integer'
   ];
 
   function fee()
@@ -32,10 +31,6 @@ class FeePayment extends Model
   function receipt()
   {
     return $this->belongsTo(Receipt::class);
-  }
-  function recordedBy()
-  {
-    return $this->belongsTo(User::class, 'recorded_by_user_id');
   }
   function feePaymentTracks()
   {
