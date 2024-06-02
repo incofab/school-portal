@@ -10,5 +10,5 @@ enum PaymentInterval: string
 
   case Termly = 'termly';
   case Yearly = 'yearly';
-  case Monthly = 'monthly';
+  // case Monthly = 'monthly';
 }

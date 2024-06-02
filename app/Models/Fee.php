@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentInterval;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,7 @@ class Fee extends Model
   use HasFactory, InstitutionScope, SoftDeletes;
 
   public $guarded = [];
+  public $casts = ['payment_interval' => PaymentInterval::class];
 
   function receiptType()
   {

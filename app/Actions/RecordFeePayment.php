@@ -1,6 +1,7 @@
 <?php
 namespace App\Actions;
 
+use App\Enums\PaymentInterval;
 use App\Models\Fee;
 use App\Models\FeePayment;
 use App\Models\Institution;
@@ -42,13 +43,21 @@ class RecordFeePayment
 
   private function execute()
   {
+    /** @var Fee $fee */
     $fee = Fee::query()->findOrFail($this->data['fee_id']);
     $bindingData = collect($this->data)
-      ->only(['fee_id', 'user_id', 'academic_session_id', 'term'])
+      ->only([
+        'fee_id',
+        'user_id',
+        'academic_session_id',
+        ...$fee->payment_interval === PaymentInterval::Termly ? ['term'] : []
+      ])
       ->toArray();
     $bindingData['institution_id'] = $fee->institution_id;
 
-    $feePayment = FeePayment::query()->where($bindingData);
+    $feePayment = FeePayment::query()
+      ->where($bindingData)
+      ->first();
 
     // If payment is already completed, abort
     if ($feePayment && $feePayment->amount_remaining < 1) {
@@ -74,7 +83,7 @@ class RecordFeePayment
       'method' => $this->data['method'] ?? null
     ]);
 
-    $this->updateReceiptRecords($receipt);
+    self::updateReceiptRecords($receipt);
 
     DB::commit();
 
@@ -104,7 +113,7 @@ class RecordFeePayment
     return $receipt;
   }
 
-  private function updateReceiptRecords(Receipt $receipt)
+  static function updateReceiptRecords(Receipt $receipt)
   {
     $totalAmount = $receipt
       ->feePayments()

@@ -1,8 +1,8 @@
 <?php
 namespace App\Http\Controllers\Institutions\Payments;
 
-use App\Actions\InsertFeePaymentFromSheet;
-use App\Actions\PrepareFeePaymentRecordingSheet;
+use App\Actions\Payments\InsertFeePaymentFromSheet;
+use App\Actions\Payments\PrepareFeePaymentRecordingSheet;
 use App\Actions\RecordFeePayment;
 use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
@@ -44,6 +44,7 @@ class FeePaymentController extends Controller
       ->withCount('feePaymentTracks');
     return inertia('institutions/payments/list-fee-payments', [
       'fees' => Fee::query()->get(),
+      'receiptTypes' => ReceiptType::query()->get(),
       'feePayments' => paginateFromRequest($query->latest('id'))
     ]);
   }
@@ -125,7 +126,7 @@ class FeePaymentController extends Controller
   {
     $academicSessionExistsRule = new ValidateExistsRule(AcademicSession::class);
     $receiptTypeExistsRule = new ValidateExistsRule(ReceiptType::class);
-    $request->validate([
+    $data = $request->validate([
       'file' => ['required', 'file', new ExcelRule($request->file('file'))],
       'term' => ['nullable', new Enum(TermType::class)],
       'academic_session_id' => ['nullable', $academicSessionExistsRule],
@@ -144,7 +145,9 @@ class FeePaymentController extends Controller
 
   function destroy(Institution $institution, FeePayment $feePayment)
   {
+    $receipt = $feePayment->receipt;
     $feePayment->delete();
+    RecordFeePayment::updateReceiptRecords($receipt);
     return $this->ok();
   }
 }

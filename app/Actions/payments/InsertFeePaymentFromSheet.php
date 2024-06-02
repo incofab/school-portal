@@ -1,6 +1,7 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\Payments;
 
+use App\Actions\RecordFeePayment;
 use App\Models\Institution;
 use App\Models\ReceiptType;
 use App\Models\Student;
@@ -60,7 +61,6 @@ class InsertFeePaymentFromSheet
       if (!$student || $value < 1) {
         continue;
       }
-
       RecordFeePayment::run(
         [
           'user_id' => $student->user_id,
@@ -86,12 +86,29 @@ class InsertFeePaymentFromSheet
     $feeColumnMap = [];
     foreach ($columns as $key => $column) {
       $title = $sheetData->getCell($column . $titleRow)->getValue();
+      if (empty($title)) {
+        continue;
+      }
       $fee = $this->receiptType
         ->fees()
-        ->where('title', $title)
-        ->firstOrFail();
+        ->where('title', $this->stripAmountFromTitle($title))
+        ->first();
+      if (!$fee) {
+        continue;
+      }
       $feeColumnMap[$column] = $fee;
     }
     return $feeColumnMap;
+  }
+
+  private function stripAmountFromTitle($title)
+  {
+    $lastParenPos = strrpos($title, '(');
+    $result = substr(
+      $title,
+      0,
+      $lastParenPos == false ? strlen($title) : $lastParenPos
+    );
+    return trim($result);
   }
 }

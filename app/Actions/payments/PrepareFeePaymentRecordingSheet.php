@@ -1,5 +1,5 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\Payments;
 
 use App\DTO\SheetColumnIndex;
 use App\Models\Classification;
@@ -46,15 +46,19 @@ class PrepareFeePaymentRecordingSheet
   private function getColumnSheetIndex()
   {
     $initialColumns = [
-      new SheetColumnIndex(self::COL_STUDENT_ID, 'Student Id', 10),
-      new SheetColumnIndex(self::COL_STUDENT_NAME, 'Names', 25)
+      new SheetColumnIndex(self::COL_STUDENT_ID, 'Student Id', 15),
+      new SheetColumnIndex(self::COL_STUDENT_NAME, 'Names', 30)
     ];
     $letters = range('C', 'Z');
     $arr = [];
     for ($i = 0; $i < $this->fees->count(); $i++) {
       /** @var Fee $fee */
       $fee = $this->fees[$i];
-      $arr[] = new SheetColumnIndex($letters[$i], $fee->title, 20);
+      $arr[] = new SheetColumnIndex(
+        $letters[$i],
+        "$fee->title (" . number_format($fee->amount) . ')',
+        25
+      );
     }
     return array_merge($initialColumns, $arr);
   }
@@ -74,8 +78,8 @@ class PrepareFeePaymentRecordingSheet
 
     foreach ($sheetIndices as $key => $sheetIndex) {
       $workSheet
-        ->setCellValue("{$sheetIndex->index}$row", 'Name')
-        ->getColumnDimension($sheetIndex->title)
+        ->setCellValue("{$sheetIndex->index}$row", $sheetIndex->title)
+        ->getColumnDimension($sheetIndex->index)
         ->setWidth($sheetIndex->width);
     }
   }
