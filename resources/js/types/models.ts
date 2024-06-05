@@ -269,14 +269,18 @@ export interface Fee extends InstitutionRow {
   amount: number;
   payment_interval: string;
   receipt_type_id: number;
+  classification_group_id?: number;
+  classification_id?: number;
   receipt_type?: ReceiptType;
+  classification?: Classification;
+  classificationGroup?: ClassificationGroup;
 }
 
 export interface Receipt extends InstitutionRow {
   receipt_type_id: number;
   user_id: number;
-  academic_session_id: number;
-  term: string;
+  academic_session_id?: number;
+  term?: string;
   reference: string;
   title: string;
   classification_id: number;
@@ -312,7 +316,8 @@ export interface FeePaymentTrack extends Row {
   confirmed_by_user_id: number;
   amount: number;
   reference: string;
-  method: string;
+  method?: string;
+  transaction_reference?: string;
   feePayment?: FeePayment;
   confirmed_by?: User;
 }

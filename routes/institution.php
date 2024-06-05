@@ -195,6 +195,8 @@ Route::post('/pins/classifications/{classification}', [Web\Staff\Pins\StudentPin
 
 Route::get('/fees/search', [Web\Payments\FeeController::class, 'search'])->name('fees.search');
 Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
+Route::get('/fee-payments/multi', [Web\Payments\MultiFeePaymentController::class, 'create'])->name('fee-payments.multi-fee-payment.create');
+Route::post('/fee-payments/multi', [Web\Payments\MultiFeePaymentController::class, 'store'])->name('fee-payments.multi-fee-payment.store');
 Route::get('/fee-payments/download/{classification}/{receiptType}', [Web\Payments\FeePaymentController::class, 'download'])->name('fee-payments.download');
 Route::post('/fee-payments/upload', [Web\Payments\FeePaymentController::class, 'upload'])->name('fee-payments.upload');
 Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['edit', 'update']);

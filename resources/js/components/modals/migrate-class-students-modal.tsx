@@ -81,7 +81,7 @@ export default function MigrateClassStudentsModal({
                 isMulti={false}
                 isClearable={true}
                 onChange={(e: any) =>
-                  webForm.setValue('destination_class', e.value)
+                  webForm.setValue('destination_class', e?.value)
                 }
               />
             </FormControl>

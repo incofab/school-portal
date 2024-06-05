@@ -8,7 +8,8 @@ enum PaymentInterval: string
 {
   use EnumToArray;
 
+  case OneTime = 'one-time';
   case Termly = 'termly';
-  case Yearly = 'yearly';
+  case Sessional = 'sessional';
   // case Monthly = 'monthly';
 }

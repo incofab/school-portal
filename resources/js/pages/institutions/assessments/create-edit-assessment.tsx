@@ -91,7 +91,10 @@ export default function CreateUpdateAssessment({
                     isMulti={false}
                     isClearable={true}
                     onChange={(e: any) =>
-                      webForm.setValue('term', e.value === 'all' ? '' : e.value)
+                      webForm.setValue(
+                        'term',
+                        e.value === 'all' ? '' : e?.value
+                      )
                     }
                   />
                 </FormControlBox>

@@ -80,7 +80,9 @@ export default function UploadStudentModal({
               selectValue={webForm.data.classification}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('classification', e.value)}
+              onChange={(e: any) =>
+                webForm.setValue('classification', e?.value)
+              }
               required
             />
           </FormControlBox>

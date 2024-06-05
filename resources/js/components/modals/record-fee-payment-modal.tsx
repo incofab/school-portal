@@ -48,6 +48,7 @@ export default function RecordFeePaymentModal({
     user_id: {} as SelectOptionType<number>,
     amount: '',
     method: '',
+    transaction_reference: '',
   });
 
   const onSubmit = async () => {
@@ -82,7 +83,7 @@ export default function RecordFeePaymentModal({
               value={webForm.data.fee_id}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('fee_id', e.value)}
+              onChange={(e: any) => webForm.setValue('fee_id', e?.value)}
               fees={fees}
               required
             />
@@ -97,7 +98,7 @@ export default function RecordFeePaymentModal({
               isMulti={false}
               isClearable={true}
               onChange={(e: any) =>
-                webForm.setValue('academic_session_id', e.value)
+                webForm.setValue('academic_session_id', e?.value)
               }
             />
           </FormControlBox>
@@ -107,7 +108,7 @@ export default function RecordFeePaymentModal({
               enumData={TermType}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('term', e.value)}
+              onChange={(e: any) => webForm.setValue('term', e?.value)}
             />
           </FormControlBox>
           <FormControl>
@@ -116,7 +117,7 @@ export default function RecordFeePaymentModal({
               selectValue={classId}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => setClassId(e.value)}
+              onChange={(e: any) => setClassId(e?.value)}
             />
           </FormControl>
           <FormControlBox
@@ -139,6 +140,11 @@ export default function RecordFeePaymentModal({
             formKey="amount"
             title="Amount"
             isRequired
+          />
+          <InputForm
+            form={webForm as any}
+            formKey="transaction_reference"
+            title="Transaction Id / Receipt No / Teller No etc..."
           />
         </VStack>
       }

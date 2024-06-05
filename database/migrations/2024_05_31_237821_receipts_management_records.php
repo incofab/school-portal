@@ -30,10 +30,22 @@ return new class extends Migration {
     // Add receipt_type_id to fees table
     Schema::table('fees', function (Blueprint $table) {
       $table->unsignedBigInteger('receipt_type_id')->nullable();
+      $table->unsignedBigInteger('classification_group_id')->nullable();
+      $table->unsignedBigInteger('classification_id')->nullable();
       $table
         ->foreign('receipt_type_id')
         ->references('id')
         ->on('receipt_types')
+        ->cascadeOnDelete();
+      $table
+        ->foreign('classification_group_id')
+        ->references('id')
+        ->on('classification_groups')
+        ->cascadeOnDelete();
+      $table
+        ->foreign('classification_id')
+        ->references('id')
+        ->on('classifications')
         ->cascadeOnDelete();
     });
 
@@ -100,6 +112,11 @@ return new class extends Migration {
         ->cascadeOnDelete();
     });
 
+    // Add transaction_reference to fee payment tracks table
+    Schema::table('fee_payment_tracks', function (Blueprint $table) {
+      $table->string('transaction_reference')->nullable();
+    });
+
     $this->seedReceiptType();
   }
 
@@ -122,6 +139,10 @@ return new class extends Migration {
   public function down(): void
   {
     // Remove receipts id from fee payments table
+    Schema::table('fee_payment_tracks', function (Blueprint $table) {
+      $table->dropColumn(['transaction_reference']);
+    });
+    // Remove receipts id from fee payments table
     Schema::table('fee_payments', function (Blueprint $table) {
       $table->dropForeign(['receipt_id']);
       $table->dropColumn(['receipt_id']);
@@ -131,7 +152,13 @@ return new class extends Migration {
     // Remove receipt_type_id from fee table
     Schema::table('fees', function (Blueprint $table) {
       $table->dropForeign(['receipt_type_id']);
-      $table->dropColumn('receipt_type_id');
+      $table->dropForeign(['classification_group_id']);
+      $table->dropForeign(['classification_id']);
+      $table->dropColumn([
+        'receipt_type_id',
+        'classification_group_id',
+        'classification_id'
+      ]);
     });
     Schema::dropIfExists('receipt_types');
   }

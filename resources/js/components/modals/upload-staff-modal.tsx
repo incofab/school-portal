@@ -82,7 +82,7 @@ export default function UploadStaffModal({
               selectValue={webForm.data.role}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('role', e.value)}
+              onChange={(e: any) => webForm.setValue('role', e?.value)}
               required
             />
           </FormControlBox>

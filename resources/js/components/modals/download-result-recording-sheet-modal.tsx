@@ -73,7 +73,7 @@ export default function DownloadResultRecordingSheetModal({
               isMulti={false}
               isClearable={true}
               onChange={(e: any) =>
-                webForm.setValue('academicSession', e.value)
+                webForm.setValue('academicSession', e?.value)
               }
               required
             />
@@ -89,7 +89,7 @@ export default function DownloadResultRecordingSheetModal({
               selectValue={webForm.data.term}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('term', e.value)}
+              onChange={(e: any) => webForm.setValue('term', e?.value)}
               required
             />
           </FormControlBox>
@@ -102,7 +102,9 @@ export default function DownloadResultRecordingSheetModal({
               selectValue={webForm.data.classification}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('classification', e.value)}
+              onChange={(e: any) =>
+                webForm.setValue('classification', e?.value)
+              }
               required
             />
           </FormControlBox>

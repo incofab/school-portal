@@ -26,9 +26,6 @@ export default function CreateEditReceiptTypeModal({
   const webForm = useWebForm({
     title: receiptType?.title ?? '',
   });
-  console.log('receiptType = ' + receiptType);
-  console.log('title = ' + receiptType?.title);
-
   const onSubmit = async () => {
     const res = await webForm.submit((data, web) =>
       receiptType

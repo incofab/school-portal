@@ -171,7 +171,7 @@ function CreateUpdateLearningEvaluationDomain({
                 selectValue={webForm.data.type}
                 isMulti={false}
                 isClearable={true}
-                onChange={(e: any) => webForm.setValue('type', e.value)}
+                onChange={(e: any) => webForm.setValue('type', e?.value)}
               />
             </FormControlBox>
             {webForm.data.type === LearningEvaluationDomainType.Number && (

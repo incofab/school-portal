@@ -144,7 +144,7 @@ export default function RecordCourseResult({
                     isMulti={false}
                     isClearable={true}
                     onChange={(e: any) =>
-                      webForm.setValue('academic_session_id', e.value)
+                      webForm.setValue('academic_session_id', e?.value)
                     }
                     required
                   />
@@ -159,7 +159,7 @@ export default function RecordCourseResult({
                     selectValue={webForm.data.term}
                     isMulti={false}
                     isClearable={true}
-                    onChange={(e: any) => webForm.setValue('term', e.value)}
+                    onChange={(e: any) => webForm.setValue('term', e?.value)}
                     required
                   />
                 </FormControlBox>

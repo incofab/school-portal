@@ -46,7 +46,7 @@ export default function SelectClassGroupModal({
             value={classificationGroupId}
             isMulti={false}
             isClearable={true}
-            onChange={(e: any) => setClassificationGroupId(e.value)}
+            onChange={(e: any) => setClassificationGroupId(e?.value)}
           />
         </FormControl>
       }

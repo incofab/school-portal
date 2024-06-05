@@ -24,6 +24,14 @@ class Receipt extends Model
     'term' => TermType::class
   ];
 
+  static function generateReference()
+  {
+    do {
+      $randomNumber = randomDigits(12);
+    } while (self::where('reference', $randomNumber)->exists());
+    return $randomNumber;
+  }
+
   function receiptType()
   {
     return $this->belongsTo(Fee::class, 'receipt_type_id');

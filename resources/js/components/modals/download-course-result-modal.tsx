@@ -76,7 +76,7 @@ export default function DownloadCourseResultModal({
               isMulti={false}
               isClearable={true}
               onChange={(e: any) =>
-                webForm.setValue('academicSession', e.value)
+                webForm.setValue('academicSession', e?.value)
               }
               required
             />
@@ -92,7 +92,7 @@ export default function DownloadCourseResultModal({
               selectValue={webForm.data.term}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('term', e.value)}
+              onChange={(e: any) => webForm.setValue('term', e?.value)}
               required
             />
           </FormControlBox>
@@ -105,7 +105,9 @@ export default function DownloadCourseResultModal({
               selectValue={webForm.data.classification}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('classification', e.value)}
+              onChange={(e: any) =>
+                webForm.setValue('classification', e?.value)
+              }
               required
             />
           </FormControlBox>
@@ -114,7 +116,7 @@ export default function DownloadCourseResultModal({
               selectValue={webForm.data.course}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('course', e.value)}
+              onChange={(e: any) => webForm.setValue('course', e?.value)}
               required
             />
           </FormControlBox>

@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Enums\PaymentInterval;
+use App\Models\Classification;
+use App\Models\ClassificationGroup;
 use App\Models\ReceiptType;
 use App\Rules\ValidateExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -40,6 +42,14 @@ class CreateFeeRequest extends FormRequest
       'receipt_type_id' => [
         'required',
         new ValidateExistsRule(ReceiptType::class)
+      ],
+      'classification_group_id' => [
+        'nullable',
+        new ValidateExistsRule(ClassificationGroup::class)
+      ],
+      'classification_id' => [
+        'nullable',
+        new ValidateExistsRule(Classification::class)
       ]
     ];
   }

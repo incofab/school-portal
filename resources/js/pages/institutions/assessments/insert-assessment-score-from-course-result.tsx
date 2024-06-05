@@ -108,7 +108,7 @@ export default function InsertAssessmentScoreFromCourseResult({
                   isMulti={false}
                   isClearable={true}
                   onChange={(e: any) =>
-                    setFromDate({ ...fromDate, academic_session_id: e.value })
+                    setFromDate({ ...fromDate, academic_session_id: e?.value })
                   }
                   required
                 />
@@ -123,7 +123,7 @@ export default function InsertAssessmentScoreFromCourseResult({
                   selectValue={fromDate.term}
                   isClearable={true}
                   onChange={(e: any) =>
-                    setFromDate({ ...fromDate, term: e.value })
+                    setFromDate({ ...fromDate, term: e?.value })
                   }
                   required
                 />
@@ -191,7 +191,7 @@ export default function InsertAssessmentScoreFromCourseResult({
                   isMulti={false}
                   isClearable={true}
                   onChange={(e: any) =>
-                    setToDate({ ...toDate, academic_session_id: e.value })
+                    setToDate({ ...toDate, academic_session_id: e?.value })
                   }
                   required
                 />
@@ -205,7 +205,9 @@ export default function InsertAssessmentScoreFromCourseResult({
                   enumData={TermType}
                   selectValue={toDate.term}
                   isClearable={true}
-                  onChange={(e: any) => setToDate({ ...toDate, term: e.value })}
+                  onChange={(e: any) =>
+                    setToDate({ ...toDate, term: e?.value })
+                  }
                   required
                 />
               </FormControlBox>

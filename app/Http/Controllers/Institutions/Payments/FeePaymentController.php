@@ -79,7 +79,8 @@ class FeePaymentController extends Controller
       'amount' => ['required', 'numeric', 'min:1'],
       'academic_session_id' => ['nullable', 'exists:academic_sessions,id'],
       'term' => ['nullable', new Enum(TermType::class)],
-      'method' => ['nullable', 'string']
+      'method' => ['nullable', 'string'],
+      'transaction_reference' => ['nullable', 'string']
     ]);
 
     [$feePayment] = RecordFeePayment::run($data, $institution);

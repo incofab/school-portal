@@ -111,7 +111,10 @@ export default function RevertBatchStudentClassMovementModal({
                     isMulti={false}
                     isClearable={true}
                     onChange={(e: any) =>
-                      webForm.setValue('destination_classification_id', e.value)
+                      webForm.setValue(
+                        'destination_classification_id',
+                        e?.value
+                      )
                     }
                     required
                   />

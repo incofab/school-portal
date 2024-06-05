@@ -63,7 +63,7 @@ export default function RegisterInstitutionFromRequestModal({
               isMulti={false}
               isClearable={true}
               onChange={(e: any) =>
-                webForm.setValue('institution_group_id', e.value)
+                webForm.setValue('institution_group_id', e?.value)
               }
               institutionGroups={institutionGroups}
               required

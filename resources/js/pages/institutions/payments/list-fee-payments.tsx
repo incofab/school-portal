@@ -1,6 +1,6 @@
 import React from 'react';
 import { Fee, FeePayment, ReceiptType } from '@/types/models';
-import { HStack, IconButton, Icon } from '@chakra-ui/react';
+import { HStack, IconButton, Icon, Button } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -19,6 +19,7 @@ import useModalToggle from '@/hooks/use-modal-toggle';
 import FeePaymentTableFilters from '@/components/table-filters/fee-payment-table-filters';
 import startCase from 'lodash/startCase';
 import UploadFeePaymentModal from '@/components/modals/upload-fee-payment-modal';
+import { InertiaLink } from '@inertiajs/inertia-react';
 
 interface Props {
   feePayments: PaginationResponse<FeePayment>;
@@ -122,8 +123,17 @@ export default function ListFeePayments({
                 title={'Upload Payment'}
                 onClick={uploadPaymentModalToggle.open}
               />
+              <Button
+                variant={'solid'}
+                colorScheme="brand"
+                as={InertiaLink}
+                href={instRoute('fee-payments.multi-fee-payment.create')}
+                size={'sm'}
+              >
+                Multi Record Payment
+              </Button>
               <BrandButton
-                title={'Record Payment'}
+                title={'Record Single Payment'}
                 onClick={recordFeePaymentModalToggle.open}
               />
             </HStack>

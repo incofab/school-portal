@@ -80,9 +80,9 @@ export interface SelectOptionType<T = string> {
 }
 
 export enum FeePaymentInterval {
-  termly = 'termly',
-  yearly = 'yearly',
-  // monthly = 'monthly',
+  OneTime = 'one-time',
+  Termly = 'termly',
+  Sessional = 'sessional',
 }
 
 export enum InstitutionSettingType {

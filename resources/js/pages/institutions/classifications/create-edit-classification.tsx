@@ -98,7 +98,7 @@ export default function CreateOrUpdateClassification({
                       isMulti={false}
                       isClearable={true}
                       onChange={(e: any) =>
-                        webForm.setValue('classification_group_id', e.value)
+                        webForm.setValue('classification_group_id', e?.value)
                       }
                       required
                     />

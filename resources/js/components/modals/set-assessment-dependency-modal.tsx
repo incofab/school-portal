@@ -62,7 +62,7 @@ export default function SetAssessmentDependencyModal({
               selectValue={webForm.data.depends_on}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('depends_on', e.value)}
+              onChange={(e: any) => webForm.setValue('depends_on', e?.value)}
               required
             />
           </FormControlBox>

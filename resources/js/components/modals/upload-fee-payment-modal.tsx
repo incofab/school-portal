@@ -87,7 +87,7 @@ export default function UploadFeePaymentModal({
               isClearable={true}
               required
               onChange={(e: any) =>
-                webForm.setValue('receipt_type_id', e.value)
+                webForm.setValue('receipt_type_id', e?.value)
               }
             />
           </FormControlBox>
@@ -108,7 +108,7 @@ export default function UploadFeePaymentModal({
                 isClearable={true}
                 required
                 onChange={(e: any) =>
-                  webForm.setValue('classification_id', e.value)
+                  webForm.setValue('classification_id', e?.value)
                 }
               />
             </FormControlBox>
@@ -143,7 +143,7 @@ export default function UploadFeePaymentModal({
               isMulti={false}
               isClearable={true}
               onChange={(e: any) =>
-                webForm.setValue('academic_session_id', e.value)
+                webForm.setValue('academic_session_id', e?.value)
               }
             />
           </FormControlBox>
@@ -152,7 +152,7 @@ export default function UploadFeePaymentModal({
               enumData={TermType}
               selectValue={webForm.data.term}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('term', e.value)}
+              onChange={(e: any) => webForm.setValue('term', e?.value)}
             />
           </FormControlBox>
           <FormControl isInvalid={!!webForm.errors.files}>

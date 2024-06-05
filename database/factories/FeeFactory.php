@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Enums\PaymentInterval;
+use App\Models\Classification;
+use App\Models\ClassificationGroup;
 use App\Models\Institution;
 use App\Models\ReceiptType;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,6 +22,16 @@ class FeeFactory extends Factory
       'institution_id' => Institution::factory(),
       'receipt_type_id' => fn($attr) => ReceiptType::factory()->institution(
         Institution::find($attr['institution_id'])
+      ),
+      'classification_group_id' => fn(
+        $attr
+      ) => ClassificationGroup::factory()->withInstitution(
+        Institution::find($attr['institution_id'])
+      ),
+      'classification_id' => fn(
+        $attr
+      ) => Classification::factory()->classificationGroup(
+        ClassificationGroup::find($attr['classification_group_id'])
       ),
       'title' => fake()
         ->unique()
@@ -45,6 +57,25 @@ class FeeFactory extends Factory
       fn(array $attributes) => [
         'receipt_type_id' => $receiptType->id,
         'institution_id' => $receiptType->institution_id
+      ]
+    );
+  }
+
+  public function classification(Classification $classification): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'classification_id' => $classification->id
+      ]
+    );
+  }
+
+  public function classificationGroup(
+    ClassificationGroup $classificationGroup
+  ): static {
+    return $this->state(
+      fn(array $attributes) => [
+        'classification_group_id' => $classificationGroup->id
       ]
     );
   }

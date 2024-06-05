@@ -65,7 +65,7 @@ export default function ChangeMultipleStudentClass({ students }: Props) {
                     isMulti={false}
                     isClearable={true}
                     onChange={(e: any) =>
-                      webForm.setValue('destination_class', e.value)
+                      webForm.setValue('destination_class', e?.value)
                     }
                     required
                   />

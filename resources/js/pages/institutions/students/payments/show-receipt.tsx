@@ -15,6 +15,8 @@ import { dateTimeFormat, formatAsCurrency } from '@/util/util';
 import { LabelText } from '@/components/result-helper-components';
 import ImagePaths from '@/util/images';
 import { format } from 'date-fns';
+import ResultSheetLayout from '../../result-sheets/result-sheet-layout';
+import startCase from 'lodash/startCase';
 
 interface Props {
   receipt: Receipt;
@@ -41,24 +43,34 @@ export default function ShowReceipt({ receipt, student }: Props) {
       label: 'Amount Rem.',
       value: 'amount_remaining',
     },
+    // {
+    //   label: 'Reference',
+    //   value: 'reference',
+    // },
   ];
   const details = [
-    { label: 'Receipt Number', value: receipt.reference },
     {
       label: 'Date',
       value: format(new Date(receipt.created_at), dateTimeFormat),
     },
     { label: 'Student Name', value: receipt.user?.full_name },
     { label: 'Class', value: receipt.classification?.title },
+    ...(receipt.academic_session
+      ? [{ label: 'Session', value: receipt.academic_session.title }]
+      : []),
+    ...(receipt.term
+      ? [{ label: 'Term', value: startCase(receipt.term) }]
+      : []),
+    { label: 'Reference', value: receipt.reference },
   ];
 
   return (
-    <Div>
+    <ResultSheetLayout>
       <br />
       <br />
       <br />
       <Div
-        maxWidth="600px"
+        width={'800px'}
         margin="auto"
         p={6}
         boxShadow="md"
@@ -71,7 +83,7 @@ export default function ShowReceipt({ receipt, student }: Props) {
             name="Institution logo"
             src={currentInstitution.photo ?? ImagePaths.default_school_logo}
           />
-          <Div textAlign={'center'}>
+          <Div textAlign={'center'} width={'full'}>
             <Heading mb={2} fontSize={'x-large'} noOfLines={1}>
               {currentInstitution.name}
             </Heading>
@@ -114,6 +126,6 @@ export default function ShowReceipt({ receipt, student }: Props) {
         <Divider my={4} />
         <Text textAlign="center">Thank you for your payment!</Text>
       </Div>
-    </Div>
+    </ResultSheetLayout>
   );
 }

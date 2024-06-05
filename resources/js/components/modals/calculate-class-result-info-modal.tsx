@@ -67,7 +67,7 @@ export default function CalculateClassResultInfoModal({
                 isMulti={false}
                 isClearable={true}
                 onChange={(e: any) =>
-                  webForm.setValue('classification', e.value)
+                  webForm.setValue('classification', e?.value)
                 }
                 required
               />
@@ -83,7 +83,7 @@ export default function CalculateClassResultInfoModal({
               isMulti={false}
               isClearable={true}
               onChange={(e: any) =>
-                webForm.setValue('academic_session_id', e.value)
+                webForm.setValue('academic_session_id', e?.value)
               }
               required
             />
@@ -93,7 +93,7 @@ export default function CalculateClassResultInfoModal({
               enumData={TermType}
               selectValue={webForm.data.term}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('term', e.value)}
+              onChange={(e: any) => webForm.setValue('term', e?.value)}
               required
             />
           </FormControlBox>

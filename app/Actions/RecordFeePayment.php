@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 class RecordFeePayment
 {
   private $userId;
+  private $feeId;
   private $academicSessionId;
   private $term;
   public function __construct(
@@ -20,6 +21,7 @@ class RecordFeePayment
     private Institution $institution
   ) {
     $this->userId = $data['user_id'];
+    $this->feeId = $data['fee_id'];
     $this->academicSessionId = $data['academic_session_id'] ?? null;
     $this->term = $data['term'] ?? null;
   }
@@ -34,6 +36,7 @@ class RecordFeePayment
    *     academic_session_id?: int|null,
    *     term?: string|null,
    *     method?: string|null
+   *     transaction_reference?: string|null
    * } $data
    */
   public static function run(array $data, Institution $institution)
@@ -44,16 +47,16 @@ class RecordFeePayment
   private function execute()
   {
     /** @var Fee $fee */
-    $fee = Fee::query()->findOrFail($this->data['fee_id']);
-    $bindingData = collect($this->data)
-      ->only([
-        'fee_id',
-        'user_id',
-        'academic_session_id',
-        ...$fee->payment_interval === PaymentInterval::Termly ? ['term'] : []
-      ])
-      ->toArray();
-    $bindingData['institution_id'] = $fee->institution_id;
+    $fee = Fee::query()->findOrFail($this->feeId);
+    $bindingData = [
+      'fee_id' => $this->feeId,
+      'user_id' => $this->userId,
+      'academic_session_id' => $fee->isSessional()
+        ? $this->academicSessionId
+        : null,
+      'term' => $fee->isTermly() ? $this->term : null,
+      'institution_id' => $fee->institution_id
+    ];
 
     $feePayment = FeePayment::query()
       ->where($bindingData)
@@ -80,7 +83,8 @@ class RecordFeePayment
       'reference' => $this->data['reference'],
       'amount' => $this->data['amount'],
       'confirmed_by_user_id' => currentUser()->id,
-      'method' => $this->data['method'] ?? null
+      'method' => $this->data['method'] ?? null,
+      'transaction_reference' => $this->data['transaction_reference'] ?? null
     ]);
 
     self::updateReceiptRecords($receipt);
@@ -103,7 +107,7 @@ class RecordFeePayment
     ];
     /** @var Receipt $receipt */
     $receipt = Receipt::query()->firstOrCreate($bindingData, [
-      'reference' => Str::uuid(),
+      'reference' => Receipt::generateReference(),
       'academic_session_id' => $this->academicSessionId,
       'term' => $this->term,
       'classification_group_id' =>

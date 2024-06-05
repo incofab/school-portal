@@ -111,7 +111,7 @@ export default function UploadCourseResultsModal({
               isMulti={false}
               isClearable={true}
               onChange={(e: any) =>
-                webForm.setValue('academic_session_id', e.value)
+                webForm.setValue('academic_session_id', e?.value)
               }
               required
             />
@@ -121,7 +121,7 @@ export default function UploadCourseResultsModal({
               enumData={TermType}
               selectValue={webForm.data.term}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('term', e.value)}
+              onChange={(e: any) => webForm.setValue('term', e?.value)}
               required
             />
           </FormControlBox>

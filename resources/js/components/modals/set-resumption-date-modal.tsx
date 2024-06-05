@@ -93,7 +93,7 @@ export default function SetResumptionDateModal({
                 isMulti={false}
                 isClearable={true}
                 onChange={(e: any) =>
-                  webForm.setValue('academic_session_id', e.value)
+                  webForm.setValue('academic_session_id', e?.value)
                 }
                 required
               />
@@ -109,7 +109,7 @@ export default function SetResumptionDateModal({
                 selectValue={webForm.data.term}
                 isMulti={false}
                 isClearable={true}
-                onChange={(e: any) => webForm.setValue('term', e.value)}
+                onChange={(e: any) => webForm.setValue('term', e?.value)}
                 required
               />
             </FormControlBox>
@@ -125,7 +125,7 @@ export default function SetResumptionDateModal({
                 isMulti={false}
                 isClearable={true}
                 onChange={(e: any) =>
-                  webForm.setValue('classificationGroup', e.value)
+                  webForm.setValue('classificationGroup', e?.value)
                 }
                 classificationGroups={classificationGroups}
                 required

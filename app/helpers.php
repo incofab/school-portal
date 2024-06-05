@@ -118,3 +118,14 @@ if (!function_exists('instRoute')) {
     return route("institutions.{$routeSuffix}", $params);
   }
 }
+
+if (!function_exists('randomDigits')) {
+  function randomDigits($length)
+  {
+    $result = '';
+    for ($i = 0; $i < $length; $i++) {
+      $result .= random_int(0, 9);
+    }
+    return $result;
+  }
+}
