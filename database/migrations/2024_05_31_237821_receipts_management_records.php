@@ -122,7 +122,11 @@ return new class extends Migration {
 
   private function seedReceiptType()
   {
-    $types = [['title' => 'Term Receipt']];
+    $types = [
+      ['title' => 'Term Receipt'],
+      ['title' => 'Session Receipt'],
+      ['title' => 'Entry Fee']
+    ];
     $institutions = Institution::all();
     foreach ($institutions as $key => $institution) {
       foreach ($types as $key => $type) {

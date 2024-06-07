@@ -20,7 +20,10 @@ class MultiFeePaymentController extends Controller
 {
   function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin]);
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Accountant
+    ]);
   }
 
   function create()

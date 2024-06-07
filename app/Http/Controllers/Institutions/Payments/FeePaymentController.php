@@ -25,11 +25,10 @@ class FeePaymentController extends Controller
 {
   function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin])->except([
-      'index',
-      'search',
-      'show'
-    ]);
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Accountant
+    ])->except(['index', 'search', 'show']);
   }
 
   function index()
@@ -39,13 +38,21 @@ class FeePaymentController extends Controller
       FeePayment::query()
     )
       ->filterQuery()
-      ->getQuery()
+      ->getQuery();
+
+    $numOfPayments = (clone $query)->count('fee_payments.id');
+    $totalAmountPaid = (clone $query)->sum('fee_payments.amount_paid');
+    $pendingAmount = (clone $query)->sum('fee_payments.amount_remaining');
+    $query
       ->with('user', 'academicSession', 'fee')
       ->withCount('feePaymentTracks');
     return inertia('institutions/payments/list-fee-payments', [
       'fees' => Fee::query()->get(),
       'receiptTypes' => ReceiptType::query()->get(),
-      'feePayments' => paginateFromRequest($query->latest('id'))
+      'feePayments' => paginateFromRequest($query->latest('id')),
+      'num_of_payments' => $numOfPayments,
+      'total_amount_paid' => $totalAmountPaid,
+      'pending_amount' => $pendingAmount
     ]);
   }
 

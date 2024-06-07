@@ -17,7 +17,8 @@ class ListInstitutionUserController extends Controller
     if ($request->staffOnly) {
       $rolesIn = [
         InstitutionUserType::Admin->value,
-        InstitutionUserType::Teacher->value
+        InstitutionUserType::Teacher->value,
+        InstitutionUserType::Accountant->value
       ];
     }
     if ($request->studentsOnly) {

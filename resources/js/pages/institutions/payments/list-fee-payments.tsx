@@ -1,6 +1,13 @@
 import React from 'react';
 import { Fee, FeePayment, ReceiptType } from '@/types/models';
-import { HStack, IconButton, Icon, Button } from '@chakra-ui/react';
+import {
+  HStack,
+  IconButton,
+  Icon,
+  Button,
+  VStack,
+  Divider,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -20,17 +27,25 @@ import FeePaymentTableFilters from '@/components/table-filters/fee-payment-table
 import startCase from 'lodash/startCase';
 import UploadFeePaymentModal from '@/components/modals/upload-fee-payment-modal';
 import { InertiaLink } from '@inertiajs/inertia-react';
+import { LabelText } from '@/components/result-helper-components';
+import { formatAsCurrency } from '@/util/util';
 
 interface Props {
   feePayments: PaginationResponse<FeePayment>;
   receiptTypes: ReceiptType[];
   fees: Fee[];
+  num_of_payments?: number;
+  total_amount_paid?: number;
+  pending_amount?: number;
 }
 
 export default function ListFeePayments({
   feePayments,
   fees,
   receiptTypes,
+  num_of_payments,
+  total_amount_paid,
+  pending_amount,
 }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
@@ -140,6 +155,18 @@ export default function ListFeePayments({
           }
         />
         <SlabBody>
+          <VStack align={'stretch'}>
+            <LabelText label="Number of Payments" text={num_of_payments} />
+            <LabelText
+              label="Total Amount Paid"
+              text={formatAsCurrency(total_amount_paid ?? 0)}
+            />
+            <LabelText
+              label="Total Pending Payment"
+              text={formatAsCurrency(pending_amount ?? 0)}
+            />
+          </VStack>
+          <Divider my={3} />
           <ServerPaginatedTable
             scroll={true}
             headers={headers}

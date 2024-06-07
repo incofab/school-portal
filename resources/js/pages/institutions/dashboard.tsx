@@ -21,7 +21,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { InstitutionUserType } from '@/types/types';
 import useIsStaff from '@/hooks/use-is-staff';
-import useIsStudent from '@/hooks/use-is-student';
+import useInstitutionRole from '@/hooks/use-institution-role';
 
 interface ItemCardProps {
   route: string;
@@ -80,11 +80,13 @@ function DashboardItemCard(prop: ItemCardProps) {
 }
 
 function InstitutionDashboard() {
-  const { currentInstitutionUser, currentUser } = useSharedProps();
-  const isStaff = useIsStaff();
-  const isStudent = useIsStudent();
+  const { currentInstitutionUser } = useSharedProps();
+  const { forTeacher } = useInstitutionRole();
   const { instRoute } = useInstitutionRoute();
-  const staffOnly = [InstitutionUserType.Admin, InstitutionUserType.Teacher];
+  const accountant = [
+    InstitutionUserType.Admin,
+    InstitutionUserType.Accountant,
+  ];
   const items: ItemCardProps[] = [
     {
       title: 'Users',
@@ -102,10 +104,16 @@ function InstitutionDashboard() {
     {
       title: 'Results',
       desc: 'See your results',
-      route: isStaff
+      route: forTeacher
         ? instRoute('class-result-info.index')
         : instRoute('students.term-results.index'),
       icon: ChartBarIcon,
+      roles: [
+        InstitutionUserType.Admin,
+        InstitutionUserType.Alumni,
+        InstitutionUserType.Student,
+        InstitutionUserType.Guardian,
+      ],
     },
     {
       title: 'Classes',
@@ -125,14 +133,14 @@ function InstitutionDashboard() {
       desc: 'Show fee payments',
       route: instRoute('fee-payments.index'),
       icon: BanknotesIcon,
-      roles: [InstitutionUserType.Admin],
+      roles: accountant,
     },
     {
       title: 'Receipts',
       desc: 'Payments receipts',
-      route: isStaff
-        ? instRoute('fee-payments.index')
-        : instRoute('users.receipts.index'),
+      route: instRoute('users.receipts.index', [
+        currentInstitutionUser.user_id,
+      ]),
       icon: BanknotesIcon,
       roles: [InstitutionUserType.Student],
     },

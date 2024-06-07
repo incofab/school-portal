@@ -16,6 +16,7 @@ class ReceiptUITableFilters extends BaseUITableFilter
     return [
       'user' => ['sometimes', 'integer'],
       'receiptType' => ['sometimes', 'integer'],
+      'studentClass' => ['sometimes', 'integer'],
       'classification' => ['sometimes', 'integer'],
       'classificationGroup' => ['sometimes', 'integer'],
       'academicSession' => ['sometimes', 'integer'],
@@ -28,8 +29,24 @@ class ReceiptUITableFilters extends BaseUITableFilter
   {
   }
 
+  /** Important for sorting list by student names */
+  public function joinStudent(): static
+  {
+    $this->callOnce(
+      'joinStudent',
+      fn() => $this->baseQuery
+        ->join('users', 'users.id', 'receipts.user_id')
+        ->join('students', 'students.user_id', 'users.id')
+    );
+    return $this;
+  }
+
   protected function directQuery()
   {
+    if ($this->requestGet('studentClass')) {
+      $this->joinStudent();
+    }
+
     $this->baseQuery
       ->when(
         $this->requestGet('institution_id'),
@@ -42,6 +59,10 @@ class ReceiptUITableFilters extends BaseUITableFilter
       ->when(
         $this->requestGet('user'),
         fn($q, $value) => $q->where('user_id', $value)
+      )
+      ->when(
+        $this->requestGet('studentClass'),
+        fn($q, $value) => $q->where('students.classification_id', $value)
       )
       ->when(
         $this->requestGet('classification'),

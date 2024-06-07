@@ -81,6 +81,7 @@ export default function CreateOrUpdateStudent({ institutionUser }: Props) {
                       allowedEnum={[
                         InstitutionUserType.Admin,
                         InstitutionUserType.Teacher,
+                        InstitutionUserType.Accountant,
                       ]}
                       onChange={(e: any) => webForm.setValue('role', e.value)}
                       selectValue={webForm.data.role}

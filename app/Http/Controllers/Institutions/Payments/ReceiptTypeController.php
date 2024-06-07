@@ -11,10 +11,10 @@ class ReceiptTypeController extends Controller
 {
   function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin])->except([
-      'index',
-      'search'
-    ]);
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Accountant
+    ])->except(['index', 'search']);
   }
 
   function index()

@@ -18,12 +18,19 @@ class ReceiptController extends Controller
   {
     $query = ReceiptUITableFilters::make(request()->all(), Receipt::query())
       ->filterQuery()
-      ->getQuery()
+      ->getQuery();
+
+    $numOfPayments = (clone $query)->count('receipts.id');
+    $totalAmountPaid = (clone $query)->sum('receipts.total_amount');
+
+    $query
       ->with('user', 'academicSession', 'approvedBy', 'receiptType')
       ->withCount('feePayments');
     return inertia('institutions/payments/list-receipts', [
       'receiptTypes' => ReceiptType::query()->get(),
-      'receipts' => paginateFromRequest($query->latest('id'))
+      'receipts' => paginateFromRequest($query->latest('id')),
+      'num_of_payments' => $numOfPayments,
+      'total_amount_paid' => $totalAmountPaid
     ]);
   }
 }

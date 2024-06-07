@@ -29,6 +29,7 @@ export enum ManagerRole {
 export enum InstitutionUserType {
   Admin = 'admin',
   Student = 'student',
+  Accountant = 'accountant',
   Teacher = 'teacher',
   Alumni = 'alumni',
   Guardian = 'guardian',

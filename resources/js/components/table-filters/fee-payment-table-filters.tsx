@@ -29,28 +29,32 @@ export default function FeePaymentTableFilters({ isOpen, onClose }: Props) {
       <FilterFormControlBox title="Fee">
         <FeeSelect
           selectValue={filters.fee}
-          onChange={(e: any) => setFilters({ ...filters, fee: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, fee: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Student">
         <StaffSelect
           rolesIn={[InstitutionUserType.Student]}
-          onChange={(e: any) => setFilters({ ...filters, user: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, user: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Academic Session">
         <AcademicSessionSelect
           selectValue={filters.academicSession}
           onChange={(e: any) =>
-            setFilters({ ...filters, academicSession: e.value })
+            setFilters({ ...filters, academicSession: e?.value })
           }
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Term">
         <EnumSelect
           selectValue={filters.term}
           enumData={TermType}
-          onChange={(e: any) => setFilters({ ...filters, term: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, term: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
     </BaseTableFilter>

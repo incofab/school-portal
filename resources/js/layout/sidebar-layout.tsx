@@ -13,7 +13,6 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 import route from '@/util/route';
 import { Nullable, InstitutionUserType } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
-import useIsAdmin from '@/hooks/use-is-admin';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface MenuType {
@@ -28,11 +27,13 @@ interface MenuListType extends MenuType {
 }
 
 export default function SideBarLayout() {
-  const { currentUser, currentInstitution, currentInstitutionUser } =
-    useSharedProps();
-  const isAdmin = useIsAdmin();
+  const { currentUser, currentInstitutionUser } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
-  const staffOnly = [InstitutionUserType.Admin, InstitutionUserType.Teacher];
+  const teachers = [InstitutionUserType.Admin, InstitutionUserType.Teacher];
+  const accountant = [
+    InstitutionUserType.Admin,
+    InstitutionUserType.Accountant,
+  ];
 
   const menus: MenuListType[] = [
     {
@@ -51,7 +52,7 @@ export default function SideBarLayout() {
         {
           label: 'All Staff',
           route: instRoute('users.index', { staffOnly: true }),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          roles: teachers,
         },
         {
           label: 'Add Staff',
@@ -62,17 +63,17 @@ export default function SideBarLayout() {
     },
     {
       label: 'Students',
-      roles: staffOnly,
+      roles: teachers,
       sub_items: [
         {
           label: 'All Students',
           route: instRoute('students.index'),
-          roles: staffOnly,
+          roles: teachers,
         },
         {
           label: 'Guardians',
           route: instRoute('guardians.index'),
-          roles: staffOnly,
+          roles: teachers,
         },
         {
           label: 'Add Student',
@@ -106,23 +107,23 @@ export default function SideBarLayout() {
         {
           label: 'Subject Teachers',
           route: instRoute('course-teachers.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          roles: teachers,
         },
         {
           label: 'Recorded Results',
           route: instRoute('course-result-info.index'),
-          roles: staffOnly,
+          roles: teachers,
         },
       ],
     },
     {
       label: 'Classes',
-      roles: staffOnly,
+      roles: teachers,
       sub_items: [
         {
           label: 'All Classes',
           route: instRoute('classifications.index'),
-          roles: staffOnly,
+          roles: teachers,
         },
         {
           label: 'Add Class',
@@ -132,22 +133,22 @@ export default function SideBarLayout() {
         {
           label: 'All Class Groups',
           route: instRoute('classification-groups.index'),
-          roles: staffOnly,
+          roles: teachers,
         },
         {
           label: 'Student Class Changes',
           route: instRoute('student-class-movements.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          roles: teachers,
         },
         {
           label: 'Class Result',
           route: instRoute('class-result-info.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          roles: teachers,
         },
         {
           label: 'Session Result',
           route: instRoute('session-results.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          roles: teachers,
         },
       ],
     },
@@ -184,32 +185,32 @@ export default function SideBarLayout() {
     },
     {
       label: 'Payments',
-      roles: [InstitutionUserType.Admin],
+      roles: accountant,
       sub_items: [
         {
           label: 'Fee Types',
           route: instRoute('fees.index'),
-          roles: [InstitutionUserType.Admin],
+          roles: accountant,
         },
         {
           label: 'Add Fee Type',
           route: instRoute('fees.create'),
-          roles: [InstitutionUserType.Admin],
+          roles: accountant,
         },
         {
           label: 'Payments',
           route: instRoute('fee-payments.index'),
-          roles: [InstitutionUserType.Admin],
+          roles: accountant,
         },
         {
           label: 'Receipts',
           route: instRoute('receipts.index'),
-          roles: [InstitutionUserType.Admin],
+          roles: accountant,
         },
         {
           label: 'Receipt Types',
           route: instRoute('receipt-types.index'),
-          roles: [InstitutionUserType.Admin],
+          roles: accountant,
         },
       ],
     },
