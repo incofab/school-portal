@@ -19,7 +19,7 @@ export default function ShowFeePayment({ feePayment }: Props) {
   const contentData: SelectOptionType<string>[] = [
     { label: 'Student', value: feePayment.user!.full_name },
     { label: 'Fee Type', value: feePayment.fee!.title },
-    { label: 'Academic Session', value: feePayment.academic_session!.title },
+    { label: 'Academic Session', value: feePayment.academic_session?.title },
     { label: 'Term', value: startCase(feePayment.term) },
     { label: 'Amount', value: String(feePayment.fee_amount) },
     { label: 'Amount Paid', value: String(feePayment.amount_paid) },

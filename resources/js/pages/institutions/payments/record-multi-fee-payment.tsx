@@ -245,7 +245,8 @@ function FeeBoxSelector({
     }
     return true;
   });
-  const allSelected = filteredFees.length === selected_fee_ids.length;
+  const allSelected =
+    filteredFees.length > 0 && filteredFees.length === selected_fee_ids.length;
   return (
     <VStack spacing={2} align={'stretch'}>
       <Checkbox
