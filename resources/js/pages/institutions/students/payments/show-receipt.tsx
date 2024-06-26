@@ -43,6 +43,13 @@ export default function ShowReceipt({ receipt, student }: Props) {
       label: 'Amount Rem.',
       value: 'amount_remaining',
     },
+    {
+      label: 'Teller No',
+      render: (feePayment) =>
+        (feePayment.fee_payment_tracks
+          ? feePayment.fee_payment_tracks[0]?.transaction_reference
+          : '') ?? '',
+    },
     // {
     //   label: 'Reference',
     //   value: 'reference',
@@ -55,12 +62,19 @@ export default function ShowReceipt({ receipt, student }: Props) {
     },
     { label: 'Student Name', value: receipt.user?.full_name },
     { label: 'Class', value: receipt.classification?.title },
-    ...(receipt.academic_session
-      ? [{ label: 'Session', value: receipt.academic_session.title }]
+    ...(receipt.academic_session || receipt.term
+      ? [
+          {
+            label: 'Session',
+            value: `${
+              receipt.term ? `${startCase(receipt.term)} Term, ` : ''
+            } ${receipt.academic_session?.title}`,
+          },
+        ]
       : []),
-    ...(receipt.term
-      ? [{ label: 'Term', value: startCase(receipt.term) }]
-      : []),
+    // ...(receipt.term
+    //   ? [{ label: 'Term', value: startCase(receipt.term) }]
+    //   : []),
     { label: 'Reference', value: receipt.reference },
   ];
 
@@ -91,7 +105,7 @@ export default function ShowReceipt({ receipt, student }: Props) {
               {currentInstitution.address}
             </Text>
             <Text fontWeight={'bold'} fontSize={'lg'}>
-              {receipt.receipt_type?.title}
+              {receipt.title}
             </Text>
           </Div>
         </HStack>

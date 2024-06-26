@@ -15,9 +15,11 @@ export default function MySelect<T>({
   refreshKey,
   ...props
 }: MyProps<T> & Props) {
-  const optionsData = useMemo(() => {
-    return getOptions();
-  }, [refreshKey]);
+  // Todo: For some reasons, useMemo is not returning new data when refreshKey changes
+  // const optionsData = useMemo(() => {
+  //   return getOptions();
+  // }, [refreshKey]);
+  const optionsData = getOptions();
 
   function getValue(param: T | undefined) {
     if (param === undefined) {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Checkbox, Divider, FormControl, Text, VStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
@@ -24,6 +24,7 @@ import InputForm from '@/components/forms/input-form';
 import StudentSelect from '@/components/selectors/student-select';
 import useSharedProps from '@/hooks/use-shared-props';
 import ClassificationSelect from '@/components/selectors/classification-select';
+import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
 
 interface Props {
   fees: Fee[];
@@ -32,7 +33,12 @@ interface Props {
   classifications: Classification[];
 }
 
-export default function RecordMultiFeePayment({ fees, receiptTypes }: Props) {
+export default function RecordMultiFeePayment({
+  fees,
+  receiptTypes,
+  classificationGroups,
+  classifications,
+}: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const { currentAcademicSessionId, currentTerm } = useSharedProps();
@@ -46,6 +52,7 @@ export default function RecordMultiFeePayment({ fees, receiptTypes }: Props) {
     transaction_reference: '',
     method: '',
     classification_id: '', // Not used, just to keep track
+    classification_group_id: '', // Also, not used, just to keep track
   });
 
   const submit = async () => {
@@ -121,18 +128,41 @@ export default function RecordMultiFeePayment({ fees, receiptTypes }: Props) {
               </FormControlBox>
               <FormControlBox
                 form={webForm as any}
-                title="Class"
-                formKey="classification_id"
+                title="Class Group"
+                formKey="classification_group_id"
               >
-                <ClassificationSelect
-                  value={webForm.data.user_id}
+                <ClassificationGroupSelect
+                  selectValue={webForm.data.classification_group_id}
                   isMulti={false}
                   isClearable={true}
+                  classificationGroups={classificationGroups}
                   onChange={(e: any) =>
-                    webForm.setValue('classification_id', e?.value)
+                    webForm.setData({
+                      ...webForm.data,
+                      classification_group_id: e?.value,
+                      classification_id: '',
+                    })
                   }
                 />
               </FormControlBox>
+              {webForm.data.classification_group_id && (
+                <FormControlBox
+                  form={webForm as any}
+                  title="Class"
+                  formKey="classification_id"
+                >
+                  <ClassificationSelect
+                    selectValue={webForm.data.classification_id}
+                    classifications={classifications}
+                    classGroupId={webForm.data.classification_group_id}
+                    isMulti={false}
+                    isClearable={true}
+                    onChange={(e: any) =>
+                      webForm.setValue('classification_id', e?.value)
+                    }
+                  />
+                </FormControlBox>
+              )}
               <FormControlBox
                 form={webForm as any}
                 title="Student"
@@ -164,6 +194,10 @@ export default function RecordMultiFeePayment({ fees, receiptTypes }: Props) {
                   webForm.setValue('fee_ids', feeIds)
                 }
                 receipt_type_id={parseInt(webForm.data.receipt_type_id)}
+                classification_group_id={parseInt(
+                  webForm.data.classification_group_id
+                )}
+                classification_id={parseInt(webForm.data.classification_id)}
               />
               <FormControl>
                 <FormButton isLoading={webForm.processing} />
@@ -194,11 +228,16 @@ function FeeBoxSelector({
   let filteredFees = fees.filter((fee) => {
     if (
       classification_group_id &&
+      fee.classification_group_id &&
       fee.classification_group_id !== classification_group_id
     ) {
       return false;
     }
-    if (classification_id && fee.classification_id !== classification_id) {
+    if (
+      classification_id &&
+      fee.classification_id &&
+      fee.classification_id !== classification_id
+    ) {
       return false;
     }
     if (receipt_type_id && fee.receipt_type_id !== receipt_type_id) {
@@ -206,8 +245,22 @@ function FeeBoxSelector({
     }
     return true;
   });
+  const allSelected = filteredFees.length === selected_fee_ids.length;
   return (
     <VStack spacing={2} align={'stretch'}>
+      <Checkbox
+        isChecked={allSelected}
+        onChange={(e) => {
+          updateSelection(
+            e.currentTarget.checked ? filteredFees.map((fee) => fee.id) : []
+          );
+        }}
+        size={'md'}
+        colorScheme="brand"
+      >
+        Select All
+      </Checkbox>
+      <Divider my={2} />
       {filteredFees.map((fee) => {
         return (
           <Checkbox

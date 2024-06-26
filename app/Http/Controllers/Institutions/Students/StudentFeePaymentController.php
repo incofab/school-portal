@@ -59,6 +59,7 @@ class StudentFeePaymentController extends Controller
   {
     $receipt->load(
       'feePayments.fee',
+      'feePayments.feePaymentTracks',
       'classification',
       'classificationGroup',
       'academicSession',

@@ -143,7 +143,6 @@ export default function CreateOrUpdateFee({
                   onChange={(e: any) =>
                     webForm.setData({
                       ...webForm.data,
-                      classification_group_id: '',
                       classification_id: e?.value,
                     })
                   }

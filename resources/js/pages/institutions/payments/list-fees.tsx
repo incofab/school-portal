@@ -49,6 +49,14 @@ export default function ListFees({ fees }: Props) {
       value: 'amount',
     },
     {
+      label: 'Class Group',
+      value: 'classification_group.title',
+    },
+    {
+      label: 'Class',
+      value: 'classification.title',
+    },
+    {
       label: 'Interval',
       value: 'payment_interval',
     },

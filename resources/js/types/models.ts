@@ -273,7 +273,7 @@ export interface Fee extends InstitutionRow {
   classification_id?: number;
   receipt_type?: ReceiptType;
   classification?: Classification;
-  classificationGroup?: ClassificationGroup;
+  classification_group?: ClassificationGroup;
 }
 
 export interface Receipt extends InstitutionRow {
@@ -292,7 +292,7 @@ export interface Receipt extends InstitutionRow {
   user?: User;
   academic_session: AcademicSession;
   classification?: Classification;
-  classificationGroup?: ClassificationGroup;
+  classification_group?: ClassificationGroup;
   fee_payments?: FeePayment[];
 }
 
@@ -318,7 +318,7 @@ export interface FeePaymentTrack extends Row {
   reference: string;
   method?: string;
   transaction_reference?: string;
-  feePayment?: FeePayment;
+  fee_payment?: FeePayment;
   confirmed_by?: User;
 }
 
