@@ -118,7 +118,11 @@ export default function SideBarLayout() {
     },
     {
       label: 'Classes',
-      roles: teachers,
+      roles: [
+        ...teachers,
+        InstitutionUserType.Student,
+        InstitutionUserType.Alumni,
+      ],
       sub_items: [
         {
           label: 'All Classes',
@@ -148,7 +152,11 @@ export default function SideBarLayout() {
         {
           label: 'Session Result',
           route: instRoute('session-results.index'),
-          roles: teachers,
+          roles: [
+            ...teachers,
+            InstitutionUserType.Student,
+            InstitutionUserType.Alumni,
+          ],
         },
       ],
     },

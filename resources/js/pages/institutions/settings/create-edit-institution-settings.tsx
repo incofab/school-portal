@@ -171,6 +171,7 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   size={'md'}
                 />
               </HStack>
+              {/* 
               {webForm.data[InstitutionSettingType.UsesMidTermResult] && (
                 <>
                   <Divider />
@@ -209,34 +210,7 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   </HStack>
                 </>
               )}
-              {/* 
-              <Text>Result Template</Text>
-              <HStack align={'stretch'} spacing={2}>
-                <FormControl>
-                  <EnumSelect
-                    enumData={ResultTemplate}
-                    selectValue={
-                      webForm.data[InstitutionSettingType.ResultTemplate] ??
-                      ResultTemplate.Template1
-                    }
-                    onChange={(e: any) =>
-                      webForm.setValue(
-                        InstitutionSettingType.ResultTemplate,
-                        e.value
-                      )
-                    }
-                  />
-                </FormControl>
-                <BrandButton
-                  title="Update"
-                  onClick={() => submit(InstitutionSettingType.ResultTemplate)}
-                  isLoading={
-                    activeSetting === InstitutionSettingType.ResultTemplate &&
-                    webForm.processing
-                  }
-                  size={'md'}
-                />
-              </HStack> */}
+              */}
               <ResultSettings />
               <UpdateStamp settings={settings} />
               <Spacer height={5} />

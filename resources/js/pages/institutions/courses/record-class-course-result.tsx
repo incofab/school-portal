@@ -51,14 +51,14 @@ export default function RecordClassCourseResult({
   assessments,
 }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
-  const { currentAcademicSession, currentTerm, currentlyOnMidTerm } =
+  const { currentAcademicSession, currentTerm, usesMidTermResult } =
     useSharedProps();
   const { instRoute } = useInstitutionRoute();
 
   const webForm = useWebForm({
     academic_session_id: currentAcademicSession.id,
     term: currentTerm,
-    for_mid_term: currentlyOnMidTerm,
+    for_mid_term: usesMidTermResult, //currentlyOnMidTerm,
     result: {} as ResultEntry,
   });
 
@@ -87,7 +87,7 @@ export default function RecordClassCourseResult({
     { label: 'Teacher', value: courseTeacher.user?.full_name ?? '' },
     { label: 'Session', value: currentAcademicSession.title },
     { label: 'Term', value: startCase(String(currentTerm)) },
-    ...(currentlyOnMidTerm ? [{ label: 'For Mid Term', value: 'Yes' }] : []),
+    ...(usesMidTermResult ? [{ label: 'For Mid Term', value: 'Yes' }] : []),
   ];
 
   function getStudentTotal(result: {

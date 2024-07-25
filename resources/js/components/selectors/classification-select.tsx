@@ -30,7 +30,7 @@ export default function ClassificationSelect({
     <SingleQuerySelect
       {...props}
       selectValue={selectValue}
-      dataList={dataFilter(classifications ?? [])}
+      dataList={classifications ? dataFilter(classifications) : undefined}
       dataFilter={dataFilter}
       searchUrl={instRoute('classifications.search')}
       label={'title'}

@@ -56,13 +56,16 @@ function prepareSettings(institutionSettings?: InstitutionSetting[]) {
     return instSetting;
   }, []);
 
+  const usesMidTermResult = Boolean(
+    parseInt(settings[InstitutionSettingType.UsesMidTermResult]?.value)
+  );
   return {
-    usesMidTermResult: Boolean(
-      parseInt(settings[InstitutionSettingType.UsesMidTermResult]?.value)
-    ),
-    currentlyOnMidTerm: Boolean(
-      parseInt(settings[InstitutionSettingType.CurrentlyOnMidTerm]?.value)
-    ),
+    usesMidTermResult: usesMidTermResult,
+    currentlyOnMidTerm:
+      usesMidTermResult &&
+      Boolean(
+        parseInt(settings[InstitutionSettingType.CurrentlyOnMidTerm]?.value)
+      ),
     resultSetting: settings[InstitutionSettingType.Result]?.value as {
       [key: string]: string;
     },
