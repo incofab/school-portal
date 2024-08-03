@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Home as Home;
 use App\Http\Controllers as Web;
 use App\Http\Controllers\Institutions\Exams\External as External;
+use App\Models\Institution;
 
 Route::get('pdf-result/{student}', [Web\TermResultActivationController::class, 'showPdfResult'])
     ->name('show-pdf-result');
@@ -22,6 +23,12 @@ Route::any(
 
 Route::get('/dummy1', function ()
 {
+    // Top Notchers activate result
+    $institution = \App\Models\Institution::where('uuid', '9a668567-156c-4f8f-a6c6-dbd6443c34ac')->first();
+    $result = \App\Models\TermResult::query()->where('institution_id', $institution->id)->where('is_activated', false)
+    ->update(['is_activated' => true]);
+    dd("Result = $result");
+    
     // Checks Wisegate result files
     $instUsers = \App\Models\InstitutionUser::where('institution_id', 1)
     ->where('role', \App\Enums\InstitutionUserType::Student)
