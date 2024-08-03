@@ -204,9 +204,11 @@ Route::get('/receipt-types/search', [Web\Payments\ReceiptTypeController::class, 
 Route::resource('/receipt-types', Web\Payments\ReceiptTypeController::class)->except(['edit', 'create']);
 Route::get('/receipts', [Web\Payments\ReceiptController::class, 'index'])->name('receipts.index');
 
-Route::get('/users/{user}/fee-payments/{receipt}', [Web\Students\StudentFeePaymentController::class, 'index'])->name('users.fee-payments.index');
 Route::get('/users/{user}/receipts', [Web\Students\StudentFeePaymentController::class, 'receipts'])->name('users.receipts.index');
+Route::get('/users/{user}/fee-payments/{receipt}', [Web\Students\StudentFeePaymentController::class, 'index'])->name('users.fee-payments.index');
 Route::get('/receipts/{receipt:reference}/show', [Web\Students\StudentFeePaymentController::class, 'showReceipt'])->name('receipts.show');
+Route::get('/students/{student}/fee-payments/create', [Web\Students\StudentFeePaymentController::class, 'feePaymentView'])->name('students.fee-payments.create');
+Route::post('/students/{student}/fee-payments/store', [Web\Students\StudentFeePaymentController::class, 'feePaymentStore'])->name('students.fee-payments.store');
 
 Route::get('/settings/search', [Web\InstitutionSettingController::class, 'search'])->name('settings.search');
 Route::resource('/settings', Web\InstitutionSettingController::class)->only(['index', 'create', 'store']);

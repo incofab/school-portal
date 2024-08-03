@@ -35,6 +35,7 @@ import {
 } from '@/components/file-dropper/common';
 import { resizeImage } from '@/util/util';
 import ResultSettings from './result-settings';
+import PaymentKeysSettings from './payment-keys-settings';
 
 interface Props {
   settings: { [key: string]: InstitutionSetting };
@@ -212,6 +213,7 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
               )}
               */}
               <ResultSettings />
+              <PaymentKeysSettings />
               <UpdateStamp settings={settings} />
               <Spacer height={5} />
             </VStack>

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Enums;
+namespace App\Enums\Payments;
 
 enum PaymentStatus: string
 {
   case Pending = 'pending';
-  case Success = 'success';
+  case Confirmed = 'confirmed';
   case Processing = 'processing';
 }

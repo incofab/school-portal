@@ -1,5 +1,5 @@
 import React from 'react';
-import { Receipt } from '@/types/models';
+import { Receipt, Student } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
@@ -11,9 +11,10 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface Props {
   receipts: PaginationResponse<Receipt>;
+  student: Student;
 }
 
-export default function ListStudentReceiptTypes({ receipts }: Props) {
+export default function ListStudentReceiptTypes({ receipts, student }: Props) {
   const { instRoute } = useInstitutionRoute();
   const headers: ServerPaginatedTableHeader<Receipt>[] = [
     {
@@ -61,7 +62,15 @@ export default function ListStudentReceiptTypes({ receipts }: Props) {
     <DashboardLayout>
       <div>
         <Slab>
-          <SlabHeading title="My Receipts Receipts" />
+          <SlabHeading
+            title="My Receipts Receipts"
+            rightElement={
+              <LinkButton
+                href={instRoute('students.fee-payments.create', [student])}
+                title={'Pay Fees'}
+              />
+            }
+          />
           <SlabBody>
             <ServerPaginatedTable
               scroll={true}

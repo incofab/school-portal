@@ -49,21 +49,33 @@ class InstitutionSettingController extends Controller
 
   function store(Request $request, Institution $institution)
   {
-    $data = $request->validate([
-      'key' => ['required', new Enum(InstitutionSettingType::class)],
-      'value' => ['nullable'],
-      'photo' => ['nullable', 'image', 'mimes:jpg,png,jpeg', 'max:1024'],
-      'display_name' => ['nullable', 'string'],
-      'type' => ['nullable', 'string']
+    $data = $request->validate(InstitutionSetting::storeRule());
+
+    $this->saveRecord($institution, $data);
+    return $this->ok();
+  }
+
+  function storeMultiple(Institution $institution)
+  {
+    $data = request()->validate([
+      'settings' => ['required', 'array', 'min:1'],
+      ...InstitutionSetting::storeRule('settings.')
     ]);
 
-    $data['value'] =
-      $request->type === 'array'
-        ? json_encode($request->value)
-        : $request->value;
+    foreach ($data as $key => $setting) {
+      $this->saveRecord($institution, $setting);
+    }
 
-    if ($request->photo) {
-      $imagePath = $request->photo->store(
+    return $this->ok();
+  }
+
+  private function saveRecord(Institution $institution, array $data)
+  {
+    $data['value'] =
+      $data['type'] === 'array' ? json_encode($data['value']) : $data['value'];
+
+    if (!empty($data['photo'])) {
+      $imagePath = $data['photo']->store(
         $institution->folder(S3Folder::Settings),
         's3_public'
       );
@@ -80,29 +92,5 @@ class InstitutionSettingController extends Controller
         ->except('photo')
         ->toArray()
     );
-    return $this->ok();
-  }
-
-  function storeMultiple(Institution $institution)
-  {
-    $data = request()->validate([
-      'settings' => ['required', 'array', 'min:1'],
-      'settings.key' => ['required', new Enum(InstitutionSettingType::class)],
-      'settings.value' => ['nullable', 'string'],
-      'settings.display_name' => ['nullable', 'string'],
-      'settings.type' => ['nullable', 'string']
-    ]);
-
-    foreach ($data as $key => $setting) {
-      InstitutionSetting::query()->updateOrCreate(
-        [
-          'institution_id' => $institution->id,
-          'key' => $setting['key']
-        ],
-        $setting
-      );
-    }
-
-    return $this->ok();
   }
 }

@@ -22,10 +22,14 @@ export default function Dt({
     <VStack spacing={1} align={'stretch'} {...props}>
       {contentData.map(({ label, value }) => (
         <HStack my={1} key={label} align={'stretch'} spacing={2}>
-          <Text width={labelWidth ?? '120px'} fontWeight={'semibold'}>
+          <Text
+            as={'div'}
+            width={labelWidth ?? '120px'}
+            fontWeight={'semibold'}
+          >
             {label}
           </Text>
-          <Text>{value}</Text>
+          <Text as={'div'}>{value}</Text>
         </HStack>
       ))}
     </VStack>

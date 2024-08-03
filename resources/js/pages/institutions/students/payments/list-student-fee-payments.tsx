@@ -20,7 +20,7 @@ function ListStudentFeePayments({ feePayments, receipt }: Props) {
     },
     {
       label: 'Session',
-      value: 'academicSession.title',
+      value: 'academic_session.title',
     },
     {
       label: 'Term',

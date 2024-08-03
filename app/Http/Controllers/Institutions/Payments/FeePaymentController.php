@@ -3,7 +3,7 @@ namespace App\Http\Controllers\Institutions\Payments;
 
 use App\Actions\Payments\InsertFeePaymentFromSheet;
 use App\Actions\Payments\PrepareFeePaymentRecordingSheet;
-use App\Actions\RecordFeePayment;
+use App\Actions\Payments\RecordFeePayment;
 use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;

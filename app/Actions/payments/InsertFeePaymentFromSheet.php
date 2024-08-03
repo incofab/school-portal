@@ -1,7 +1,7 @@
 <?php
 namespace App\Actions\Payments;
 
-use App\Actions\RecordFeePayment;
+use App\Actions\Payments\RecordFeePayment;
 use App\Models\Institution;
 use App\Models\ReceiptType;
 use App\Models\Student;

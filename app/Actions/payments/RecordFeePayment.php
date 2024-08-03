@@ -1,14 +1,12 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\Payments;
 
-use App\Enums\PaymentInterval;
 use App\Models\Fee;
 use App\Models\FeePayment;
 use App\Models\Institution;
 use App\Models\Receipt;
 use App\Models\Student;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class RecordFeePayment
 {

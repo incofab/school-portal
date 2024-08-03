@@ -4,14 +4,18 @@ use App\Models\Institution;
 use App\Models\ReceiptType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use function Pest\Laravel\{actingAs, assertDatabaseHas, assertDatabaseMissing};
+use function Pest\Laravel\{actingAs, assertDatabaseHas, assertSoftDeleted};
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
   $this->institution = Institution::factory()->create();
-  $this->user = User::factory()->admin($this->institution);
-  $this->receiptType = ReceiptType::factory()->institution($this->institution);
+  $this->user = User::factory()
+    ->admin($this->institution)
+    ->create();
+  $this->receiptType = ReceiptType::factory()
+    ->institution($this->institution)
+    ->create();
 });
 
 test('index method returns receipt types', function () {
@@ -68,8 +72,8 @@ test('update method updates an existing receipt type', function () {
   actingAs($this->user)
     ->put(
       route('institutions.receipt-types.update', [
-        'institution' => $this->institution->uuid,
-        'receiptType' => $this->receiptType->id
+        $this->institution->uuid,
+        $this->receiptType->id
       ]),
       $data
     )
@@ -82,11 +86,11 @@ test('destroy method deletes a receipt type', function () {
   actingAs($this->user)
     ->delete(
       route('institutions.receipt-types.destroy', [
-        'institution' => $this->institution->uuid,
-        'receiptType' => $this->receiptType->id
+        $this->institution->uuid,
+        $this->receiptType->id
       ])
     )
     ->assertStatus(200);
 
-  assertDatabaseMissing('receipt_types', ['id' => $this->receiptType->id]);
+  assertSoftDeleted('receipt_types', ['id' => $this->receiptType->id]);
 });

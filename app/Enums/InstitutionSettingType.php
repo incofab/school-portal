@@ -15,4 +15,5 @@ enum InstitutionSettingType: string
   case CurrentlyOnMidTerm = 'currently-on-mid-term';
   case UsesMidTermResult = 'uses-mid-term-result';
   case Stamp = 'stamp';
+  case PaymentKeys = 'payment-keys';
 }

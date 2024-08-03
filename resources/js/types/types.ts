@@ -93,6 +93,7 @@ export enum InstitutionSettingType {
   UsesMidTermResult = 'uses-mid-term-result',
   CurrentlyOnMidTerm = 'currently-on-mid-term',
   Stamp = 'stamp',
+  PaymentKeys = 'payment-keys',
 }
 
 export enum ResultSettingType {
@@ -160,4 +161,9 @@ export interface ExamAttempt {
 export interface BreadCrumbParam {
   title: string;
   href?: string;
+}
+
+export interface PaymentKey {
+  private_key: string;
+  public_key: string;
 }

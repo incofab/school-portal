@@ -1,6 +1,7 @@
 import {
   InstitutionSettingType,
   Message,
+  PaymentKey,
   ResultSettingType,
 } from '@/types/types';
 import {
@@ -70,5 +71,8 @@ function prepareSettings(institutionSettings?: InstitutionSetting[]) {
       [key: string]: string;
     },
     stamp: settings[InstitutionSettingType.Stamp]?.value,
+    paymentKeys: settings[InstitutionSettingType.PaymentKeys]?.value as {
+      [key: string]: PaymentKey;
+    },
   };
 }

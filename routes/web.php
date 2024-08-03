@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Home as Home;
 use App\Http\Controllers as Web;
 use App\Http\Controllers\Institutions\Exams\External as External;
 
@@ -111,8 +111,11 @@ Route::group(['prefix' => '{institution}/my-exam/'], function () {
     // Route::get('/exam/view-result', [\App\Http\Controllers\Exam\ExamController::class, 'viewResult'])->name('home.exam.view-result');
 });
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::any('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::get('/', [Home\HomeController::class, 'index'])->name('home');
+Route::any('/privacy-policy', [Home\HomeController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::any('/paystack/callback', [Home\PaystackController::class, 'callback'])->name('paystack.callback');
+Route::any('/paystack/verify-reference', [Home\PaystackController::class, 'verifyReference'])->name('paystack.verify-reference');
+Route::any('/paystack/webhook', [Home\PaystackController::class, 'webhook'])->name('paystack.webhook');
 
 Route::get('/app-not-activated', External\NotActivatedErrorController::class);
 Route::group(['prefix' => 'external/{institution}/'], function () {

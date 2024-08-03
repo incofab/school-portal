@@ -18,15 +18,14 @@ beforeEach(function () {
   $this->admin = User::factory()
     ->admin($this->institution)
     ->create();
+  $this->nonAdminUser = User::factory()
+    ->student($this->institution)
+    ->create();
 });
 
 it('only allows admins to access the controller', function () {
-  $nonAdminUser = User::factory()
-    ->student($this->institution)
-    ->create();
-
   // Attempt to access the controller as a non-admin
-  actingAs($nonAdminUser)
+  actingAs($this->nonAdminUser)
     ->getJson(instRoute('exams.index', [$this->event], $this->institution))
     ->assertStatus(403);
 

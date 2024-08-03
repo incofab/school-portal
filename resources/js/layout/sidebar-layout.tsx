@@ -29,10 +29,15 @@ interface MenuListType extends MenuType {
 export default function SideBarLayout() {
   const { currentUser, currentInstitutionUser } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
+  const student = currentInstitutionUser.student;
   const teachers = [InstitutionUserType.Admin, InstitutionUserType.Teacher];
   const accountant = [
     InstitutionUserType.Admin,
     InstitutionUserType.Accountant,
+  ];
+  const studentOrAlumni = [
+    InstitutionUserType.Student,
+    InstitutionUserType.Alumni,
   ];
 
   const menus: MenuListType[] = [
@@ -193,7 +198,7 @@ export default function SideBarLayout() {
     },
     {
       label: 'Payments',
-      roles: accountant,
+      roles: [...accountant, ...studentOrAlumni],
       sub_items: [
         {
           label: 'Fee Types',
@@ -215,6 +220,20 @@ export default function SideBarLayout() {
           route: instRoute('receipts.index'),
           roles: accountant,
         },
+        {
+          label: 'Receipts',
+          route: instRoute('users.receipts.index', [currentUser]),
+          roles: studentOrAlumni,
+        },
+        ...(student
+          ? [
+              {
+                label: 'Pay Fees',
+                route: instRoute('students.fee-payments.create', [currentUser]),
+                roles: studentOrAlumni,
+              },
+            ]
+          : []),
         {
           label: 'Receipt Types',
           route: instRoute('receipt-types.index'),

@@ -1,6 +1,7 @@
 <?php
 namespace App\Support;
 
+use App\DTO\PaymentKeyDto;
 use App\Enums\InstitutionSettingType;
 use App\Enums\ResultTemplateType;
 use App\Enums\TermType;
@@ -25,15 +26,23 @@ class SettingsHandler
       return self::$instance;
     }
     $institutionSettings = currentInstitution()?->institutionSettings ?? [];
+    self::$instance = self::make($institutionSettings);
+    return self::$instance;
+  }
+
+  /**
+   * @param \Illuminate\Database\Eloquent\Collection<int, InstitutionSetting>|array $institutionSettings
+   */
+  static function make($institutionSettings): static
+  {
     $formatted = [];
     foreach ($institutionSettings as $key => $value) {
-      if ($value['type'] === 'array') {
+      if ($value['type'] === 'array' && is_string($value->value)) {
         $value['value'] = json_decode($value->value, true);
       }
       $formatted[$value->key] = $value;
     }
-    self::$instance = new self($formatted);
-    return self::$instance;
+    return new self($formatted);
   }
 
   function get(string $key): InstitutionSetting|null
@@ -113,5 +122,19 @@ class SettingsHandler
       "{$table}for_mid_term" =>
         $forMidTerm === null ? $this->isOnMidTerm() : $forMidTerm
     ];
+  }
+
+  function getPaystackKeys(): PaymentKeyDto
+  {
+    $paymentSetting = $this->getValue(
+      InstitutionSettingType::PaymentKeys->value,
+      []
+    );
+
+    $paystack = $paymentSetting['paystack'] ?? [];
+    return new PaymentKeyDto(
+      $paystack['public_key'] ?? '',
+      $paystack['private_key'] ?? ''
+    );
   }
 }

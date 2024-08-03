@@ -1,5 +1,5 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\Payments;
 
 use App\Models\Fee;
 use App\Models\Institution;

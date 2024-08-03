@@ -34,7 +34,7 @@ class Receipt extends Model
 
   function receiptType()
   {
-    return $this->belongsTo(Fee::class, 'receipt_type_id');
+    return $this->belongsTo(ReceiptType::class);
   }
   function user()
   {

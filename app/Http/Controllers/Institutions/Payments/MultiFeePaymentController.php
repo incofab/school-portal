@@ -1,8 +1,7 @@
 <?php
 namespace App\Http\Controllers\Institutions\Payments;
 
-use App\Actions\RecordFeePayment;
-use App\Actions\RecordMultiFeePayments;
+use App\Actions\Payments\RecordMultiFeePayments;
 use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
