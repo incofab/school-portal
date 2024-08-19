@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Institutions\Students;
+namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;

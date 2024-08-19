@@ -81,6 +81,7 @@ function DashboardItemCard(prop: ItemCardProps) {
 
 function InstitutionDashboard() {
   const { currentInstitutionUser } = useSharedProps();
+  const student = currentInstitutionUser.student;
   const { forTeacher } = useInstitutionRole();
   const { instRoute } = useInstitutionRoute();
   const accountant = [
@@ -106,13 +107,15 @@ function InstitutionDashboard() {
       desc: 'See your results',
       route: forTeacher
         ? instRoute('class-result-info.index')
-        : instRoute('students.term-results.index'),
+        : student
+        ? instRoute('students.term-results.index')
+        : '',
       icon: ChartBarIcon,
       roles: [
         InstitutionUserType.Admin,
         InstitutionUserType.Alumni,
         InstitutionUserType.Student,
-        InstitutionUserType.Guardian,
+        // InstitutionUserType.Guardian,
       ],
     },
     {
@@ -135,15 +138,17 @@ function InstitutionDashboard() {
       icon: BanknotesIcon,
       roles: accountant,
     },
-    {
-      title: 'Receipts',
-      desc: 'Payments receipts',
-      route: instRoute('users.receipts.index', [
-        currentInstitutionUser.user_id,
-      ]),
-      icon: BanknotesIcon,
-      roles: [InstitutionUserType.Student],
-    },
+    ...(student
+      ? [
+          {
+            title: 'Receipts',
+            desc: 'Payments receipts',
+            route: instRoute('students.receipts.index', [student.id]),
+            icon: BanknotesIcon,
+            roles: [InstitutionUserType.Student],
+          },
+        ]
+      : []),
     {
       title: 'Students', // Dependents
       desc: 'Shows your children/Wards',

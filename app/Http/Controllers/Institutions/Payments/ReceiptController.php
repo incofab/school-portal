@@ -24,7 +24,12 @@ class ReceiptController extends Controller
     $totalAmountPaid = (clone $query)->sum('receipts.total_amount');
 
     $query
-      ->with('user', 'academicSession', 'approvedBy', 'receiptType')
+      ->with(
+        'user.institutionUser.student',
+        'academicSession',
+        'approvedBy',
+        'receiptType'
+      )
       ->withCount('feePayments');
     return inertia('institutions/payments/list-receipts', [
       'receiptTypes' => ReceiptType::query()->get(),

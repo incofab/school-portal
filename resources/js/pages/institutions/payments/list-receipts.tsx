@@ -55,7 +55,10 @@ export default function ListReceiptTypes({
         <HStack spacing={1}>
           <LinkButton
             variant={'ghost'}
-            href={instRoute('users.fee-payments.index', [row.user_id, row.id])}
+            href={instRoute('students.fee-payments.index', [
+              row.user?.institution_user?.student?.id,
+              row.id,
+            ])}
             colorScheme={'brand'}
             title="Payments"
           />

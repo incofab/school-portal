@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Institutions;
+namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Http\Controllers\Controller;
 use App\Models\Institution;

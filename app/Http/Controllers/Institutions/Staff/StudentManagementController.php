@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Institutions\Students;
+namespace App\Http\Controllers\Institutions\Staff;
 
 use App\Actions\Users\DownloadStudentRecordingSheet;
 use App\Actions\Users\InsertStudentFromRecordingSheet;
@@ -15,7 +15,7 @@ use App\Support\UITableFilters\StudentUITableFilters;
 use DB;
 use Illuminate\Support\Facades\Storage;
 
-class StudentController extends Controller
+class StudentManagementController extends Controller
 {
   function index(Request $request)
   {

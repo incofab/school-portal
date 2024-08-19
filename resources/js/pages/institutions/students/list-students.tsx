@@ -155,7 +155,7 @@ function ListStudents({ students }: Props) {
                     as={'a'}
                     href={
                       params.classification
-                        ? instRoute('students.download', [
+                        ? instRoute('classifications.students-download', [
                             params.classification,
                           ])
                         : '#'

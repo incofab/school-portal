@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Institutions\Students;
+namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Actions\StudentMigration;
 use App\Enums\InstitutionUserType;

@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Institutions;
+namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Actions\ClassSheet;
 use App\Enums\InstitutionUserType;

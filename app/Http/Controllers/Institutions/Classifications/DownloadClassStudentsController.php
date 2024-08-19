@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Institutions\Students;
+namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Actions\CourseResult\DownloadClassStudentsSheet;
 use App\Http\Controllers\Controller;

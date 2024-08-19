@@ -45,11 +45,15 @@ export default function SideBarLayout() {
       label: 'Dashboard',
       route: instRoute('dashboard'),
     },
-    {
-      label: 'My Results',
-      route: instRoute('students.term-results.index'),
-      roles: [InstitutionUserType.Student],
-    },
+    ...(student
+      ? [
+          {
+            label: 'My Results',
+            route: instRoute('students.term-results.index', [student]),
+            roles: [InstitutionUserType.Student],
+          },
+        ]
+      : []),
     {
       label: 'Staff',
       roles: [InstitutionUserType.Admin],
@@ -220,13 +224,13 @@ export default function SideBarLayout() {
           route: instRoute('receipts.index'),
           roles: accountant,
         },
-        {
-          label: 'Receipts',
-          route: instRoute('users.receipts.index', [currentUser]),
-          roles: studentOrAlumni,
-        },
         ...(student
           ? [
+              {
+                label: 'Receipts',
+                route: instRoute('students.receipts.index', [student]),
+                roles: studentOrAlumni,
+              },
               {
                 label: 'Pay Fees',
                 route: instRoute('students.fee-payments.create', [currentUser]),

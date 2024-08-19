@@ -32,6 +32,7 @@ export interface User extends Row {
   is_welfare: boolean;
   gender: string;
   roles?: Role[];
+  institution_user?: InstitutionUser;
 }
 
 export interface TokenUser extends Row {

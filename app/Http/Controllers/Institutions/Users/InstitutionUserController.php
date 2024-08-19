@@ -20,9 +20,9 @@ class InstitutionUserController extends Controller
     return inertia('institutions/users/create-edit-user');
   }
 
-  public function store(CreateStaffRequest $request)
+  public function store(Institution $institution, CreateStaffRequest $request)
   {
-    RecordStaff::make($request->validated())->create();
+    RecordStaff::make($institution, $request->validated())->create();
 
     return $this->ok();
   }
@@ -48,7 +48,11 @@ class InstitutionUserController extends Controller
         ])
       ]
     ]);
-    InsertStaffFromRecordingSheet::run($request->file, $request->role);
+    InsertStaffFromRecordingSheet::run(
+      $institution,
+      $request->file,
+      $request->role
+    );
     return $this->ok();
   }
 }

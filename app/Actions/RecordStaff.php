@@ -1,18 +1,21 @@
 <?php
 namespace App\Actions;
 
+use App\Models\Institution;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class RecordStaff
 {
-  function __construct(private array $userData)
-  {
+  function __construct(
+    private Institution $institution,
+    private array $userData
+  ) {
   }
 
-  public static function make(array $userData)
+  public static function make(Institution $institution, array $userData)
   {
-    return new self($userData);
+    return new self($institution, $userData);
   }
 
   public function create()
@@ -49,7 +52,7 @@ class RecordStaff
     $user
       ->institutions()
       ->syncWithPivotValues(
-        [currentInstitution()->id],
+        [$this->institution->id],
         ['role' => $this->userData['role']]
       );
   }

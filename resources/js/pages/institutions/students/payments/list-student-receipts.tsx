@@ -43,7 +43,10 @@ export default function ListStudentReceiptTypes({ receipts, student }: Props) {
         <HStack spacing={1}>
           <LinkButton
             variant={'ghost'}
-            href={instRoute('users.fee-payments.index', [row.user_id, row.id])}
+            href={instRoute('students.fee-payments.index', [
+              student.id,
+              row.id,
+            ])}
             colorScheme={'brand'}
             title="Payments"
           />

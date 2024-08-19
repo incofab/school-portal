@@ -3,8 +3,8 @@ namespace App\Actions\Users;
 
 use App\Actions\RecordStaff;
 use App\Enums\Gender;
-use App\Enums\InstitutionUserType;
 use App\Enums\Sheet\StaffRecordingSheetColumn;
+use App\Models\Institution;
 use App\Models\User;
 use DB;
 use Illuminate\Http\UploadedFile;
@@ -19,15 +19,21 @@ class InsertStaffFromRecordingSheet
   private Spreadsheet $spreadsheet;
   private Worksheet $sheetData;
 
-  function __construct(private UploadedFile $file, private string $role)
-  {
+  function __construct(
+    private Institution $institution,
+    private UploadedFile $file,
+    private string $role
+  ) {
     $this->spreadsheet = IOFactory::load($this->file->getRealPath());
     $this->sheetData = $this->spreadsheet->getActiveSheet();
   }
 
-  public static function run(UploadedFile $file, string $role)
-  {
-    $obj = new self($file, $role);
+  public static function run(
+    Institution $institution,
+    UploadedFile $file,
+    string $role
+  ) {
+    $obj = new self($institution, $file, $role);
     return $obj->execute();
   }
 
@@ -62,7 +68,10 @@ class InsertStaffFromRecordingSheet
 
     DB::beginTransaction();
     foreach ($data as $teacherData) {
-      RecordStaff::make([...$teacherData, 'role' => $this->role])->create();
+      RecordStaff::make($this->institution, [
+        ...$teacherData,
+        'role' => $this->role
+      ])->create();
     }
     DB::commit();
   }

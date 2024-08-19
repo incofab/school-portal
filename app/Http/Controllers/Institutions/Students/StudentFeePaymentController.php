@@ -15,7 +15,6 @@ use App\Models\ReceiptType;
 use App\Models\Student;
 use App\Models\User;
 use App\Rules\ValidateExistsRule;
-use App\Support\SettingsHandler;
 use App\Support\UITableFilters\FeePaymentUITableFilters;
 use App\Support\UITableFilters\ReceiptUITableFilters;
 use Illuminate\Http\Request;
@@ -24,7 +23,7 @@ use Illuminate\Validation\Rules\Enum;
 
 class StudentFeePaymentController extends Controller
 {
-  function index(Institution $institution, User $user, Receipt $receipt)
+  function index(Institution $institution, Student $student, Receipt $receipt)
   {
     $receipt->load('receiptType');
     $query = FeePaymentUITableFilters::make(
@@ -32,7 +31,7 @@ class StudentFeePaymentController extends Controller
       $receipt
         ->feePayments()
         ->getQuery()
-        ->where('user_id', $user->id)
+        ->where('user_id', $student->user_id)
     )
       ->filterQuery()
       ->getQuery()
@@ -41,15 +40,15 @@ class StudentFeePaymentController extends Controller
     return inertia('institutions/students/payments/list-student-fee-payments', [
       'receipt' => $receipt,
       'feePayments' => paginateFromRequest($query->latest('id')),
-      'student' => $user->institutionStudent()
+      'student' => $student
     ]);
   }
 
-  function receipts(Institution $institution, User $user)
+  function receipts(Institution $institution, Student $student)
   {
     $query = ReceiptUITableFilters::make(
       request()->all(),
-      Receipt::query()->where('user_id', $user->id)
+      Receipt::query()->where('user_id', $student->user_id)
     )
       ->filterQuery()
       ->getQuery()
@@ -64,7 +63,7 @@ class StudentFeePaymentController extends Controller
       'fees' => Fee::query()->get(),
       'receiptTypes' => ReceiptType::query()->get(),
       'receipts' => paginateFromRequest($query->latest('id')),
-      'student' => $user->institutionStudent()
+      'student' => $student
     ]);
   }
 
@@ -147,7 +146,7 @@ class StudentFeePaymentController extends Controller
       'purpose' => PaymentPurpose::Fee->value,
       'meta' => $data,
       'reference' => $reference,
-      'redirect_url' => instRoute('users.receipts.index', $user->id)
+      'redirect_url' => instRoute('students.receipts.index', $student->id)
     ]);
 
     $res = (new PaystackHelper($institution))->initialize(
@@ -156,7 +155,6 @@ class StudentFeePaymentController extends Controller
       route('paystack.callback'),
       $reference
     );
-    info(['ok' => true, ...$res->toArray()]);
     return $this->ok($res->toArray());
   }
 }

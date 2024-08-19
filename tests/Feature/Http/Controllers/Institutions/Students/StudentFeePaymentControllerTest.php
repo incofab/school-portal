@@ -25,9 +25,9 @@ it('can load the index page with fee payments and receipt', function () {
   FeePayment::factory(3)->receipt($this->receipt);
   actingAs($this->admin)
     ->get(
-      route('institutions.users.fee-payments.index', [
+      route('institutions.students.fee-payments.index', [
         'institution' => $this->institution->uuid,
-        'user' => $this->student->user_id,
+        'student' => $this->student->id,
         'receipt' => $this->receipt
       ])
     )
@@ -42,9 +42,9 @@ it('can load the index page with fee payments and receipt', function () {
 it('can load the index page for receipts', function () {
   actingAs($this->admin)
     ->get(
-      route('institutions.users.receipts.index', [
+      route('institutions.students.receipts.index', [
         'institution' => $this->institution->uuid,
-        'user' => $this->student->user_id
+        'student' => $this->student->id
       ])
     )
     ->assertInertia(
