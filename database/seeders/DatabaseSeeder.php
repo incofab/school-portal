@@ -15,10 +15,10 @@ class DatabaseSeeder extends Seeder
     $this->call([
       UserSeeder::class,
       AcademicSessionSeeder::class
-      //             CourseSeeder::class,
-      //             TopicSeeder::class,
-      //             CourseSessionSeeder::class,
-      //             QuestionSeeder::class,
+      //  CourseSeeder::class,
+      //  TopicSeeder::class,
+      //  CourseSessionSeeder::class,
+      //  QuestionSeeder::class,
     ]);
   }
 }
