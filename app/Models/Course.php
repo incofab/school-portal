@@ -10,6 +10,9 @@ class Course extends Model
 {
   use HasFactory, InstitutionScope;
 
+  protected $casts = [
+    'institution_id' => 'integer'
+  ];
   protected $fillable = [
     'code',
     'category',

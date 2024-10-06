@@ -35,7 +35,7 @@ export default function FormControlBox({
 
   return (
     <FormControl isInvalid={!!form.errors[formKey]} {...props}>
-      <FormLabel>{title}</FormLabel>
+      <FormLabel mb={0}>{title}</FormLabel>
       {children}
       <FormErrorMessage>{form.errors[formKey]}</FormErrorMessage>
     </FormControl>

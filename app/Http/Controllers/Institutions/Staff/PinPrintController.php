@@ -70,7 +70,9 @@ class PinPrintController extends Controller
 
     return inertia('institutions/pins/display-pins', [
       'pins' => $pins,
-      'resultCheckerUrl' => route('activate-term-result.create')
+      'resultCheckerUrl' => $institution->website
+        ? "{$institution->website}/result"
+        : route('activate-term-result.create')
     ]);
   }
 

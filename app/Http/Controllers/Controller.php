@@ -100,7 +100,7 @@ class Controller extends BaseController
     abort_unless($token, 403, 'Token not found');
     $data = \App\Core\JWT::decode($token, config('services.jwt.secret-key'));
     $tokenUser = TokenUser::query()->findOrFail(
-      $data[TokenUser::TOKEN_USER_ID]
+      $data->{TokenUser::TOKEN_USER_ID}
     );
     return $tokenUser;
   }

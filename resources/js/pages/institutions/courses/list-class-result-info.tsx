@@ -2,7 +2,7 @@ import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
 import useModalToggle from '@/hooks/use-modal-toggle';
-import { ClassResultInfo } from '@/types/models';
+import { ClassResultInfo, ClassificationGroup } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
 import { HStack, Icon, IconButton, Text } from '@chakra-ui/react';
 import { Inertia } from '@inertiajs/inertia';
@@ -21,18 +21,25 @@ import useMyToast from '@/hooks/use-my-toast';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import route from '@/util/route';
 import useSharedProps from '@/hooks/use-shared-props';
+import SetResumptionDateModal from '@/components/modals/set-resumption-date-modal';
+import { Div } from '@/components/semantic';
 
 interface Props {
   classResultInfo: PaginationResponse<ClassResultInfo>;
+  classificationgroups: ClassificationGroup[];
 }
 
-export default function ListClassResultInfo({ classResultInfo }: Props) {
+export default function ListClassResultInfo({
+  classResultInfo,
+  classificationgroups,
+}: Props) {
   const webForm = useWebForm({});
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
   const { currentInstitution } = useSharedProps();
   const calculateClassResultInfoToggle = useModalToggle();
   const classResultInfoFilterToggle = useModalToggle();
+  const setResumptionDateModalToggle = useModalToggle();
   const isStaff = useIsStaff();
 
   const recalculateClassResultInfo = async (
@@ -132,35 +139,47 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
 
   return (
     <DashboardLayout>
-      <Slab>
-        <SlabHeading
-          title="Class Result Analysis"
-          rightElement={
-            isStaff && (
-              <BrandButton
-                onClick={calculateClassResultInfoToggle.open}
-                title="Calculate"
-              />
-            )
-          }
+      <Div>
+        <BrandButton
+          title="Set Resumption Date"
+          onClick={setResumptionDateModalToggle.open}
+          my={2}
         />
-        <SlabBody>
-          <ServerPaginatedTable
-            scroll={true}
-            headers={headers}
-            data={classResultInfo.data}
-            keyExtractor={(row) => row.id}
-            paginator={classResultInfo}
-            validFilters={['classification', 'academicSession', 'term']}
-            onFilterButtonClick={classResultInfoFilterToggle.open}
+        <Slab>
+          <SlabHeading
+            title="Class Result Analysis"
+            rightElement={
+              isStaff && (
+                <BrandButton
+                  onClick={calculateClassResultInfoToggle.open}
+                  title="Calculate"
+                />
+              )
+            }
           />
-        </SlabBody>
-        <CalculateClassResultInfoModal
-          {...calculateClassResultInfoToggle.props}
-          onSuccess={() => Inertia.reload({ only: ['classResultInfo'] })}
-        />
-        <ClassResultInfoTableFilters {...classResultInfoFilterToggle.props} />
-      </Slab>
+          <SlabBody>
+            <ServerPaginatedTable
+              scroll={true}
+              headers={headers}
+              data={classResultInfo.data}
+              keyExtractor={(row) => row.id}
+              paginator={classResultInfo}
+              validFilters={['classification', 'academicSession', 'term']}
+              onFilterButtonClick={classResultInfoFilterToggle.open}
+            />
+          </SlabBody>
+          <CalculateClassResultInfoModal
+            {...calculateClassResultInfoToggle.props}
+            onSuccess={() => Inertia.reload({ only: ['classResultInfo'] })}
+          />
+          <ClassResultInfoTableFilters {...classResultInfoFilterToggle.props} />
+          <SetResumptionDateModal
+            {...setResumptionDateModalToggle.props}
+            classificationGroups={classificationgroups}
+            onSuccess={() => {}}
+          />
+        </Slab>
+      </Div>
     </DashboardLayout>
   );
 }

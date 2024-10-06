@@ -47,7 +47,7 @@ class ClassResultInfoUITableFilters extends BaseUITableFilter
         )
       )
       ->when(
-        $this->getTerm(),
+        $this->requestGet('term'),
         fn($q, $value) => $q->where('class_result_info.term', $value)
       )
       ->when(

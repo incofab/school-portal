@@ -1,7 +1,7 @@
 <?php
 namespace App\Actions\CourseResult;
 
-use App\DTO\ResultSheetColumnIndex;
+use App\DTO\SheetColumnIndex;
 use App\Enums\Sheet\ResultRecordingColumn;
 use App\Models\AcademicSession;
 use App\Models\Assessment;
@@ -15,7 +15,7 @@ class DownloadResultRecordingSheet
 {
   private Worksheet $workSheet;
   private Spreadsheet $spreadsheet;
-  /** @var array<string, ResultSheetColumnIndex> $columnIndex  */
+  /** @var array<string, SheetColumnIndex> $columnIndex  */
   private array $columnIndex = [];
   /** @var array<string, Assessment> $assessments  */
   private $assessments;
@@ -41,13 +41,13 @@ class DownloadResultRecordingSheet
   {
     $alphabets = range('A', 'Z');
     $index = -1;
-    $this->columnIndex['student_id'] = new ResultSheetColumnIndex(
+    $this->columnIndex['student_id'] = new SheetColumnIndex(
       $alphabets[++$index],
       'ID',
       7
     );
 
-    $this->columnIndex['student_name'] = new ResultSheetColumnIndex(
+    $this->columnIndex['student_name'] = new SheetColumnIndex(
       $alphabets[++$index],
       'Student',
       30
@@ -55,14 +55,14 @@ class DownloadResultRecordingSheet
 
     foreach ($this->assessments as $key => $assessment) {
       $title = $assessment->columnTitle();
-      $this->columnIndex[$title] = new ResultSheetColumnIndex(
+      $this->columnIndex[$title] = new SheetColumnIndex(
         $alphabets[++$index],
         $title,
         20
       );
     }
 
-    $this->columnIndex['exam'] = new ResultSheetColumnIndex(
+    $this->columnIndex['exam'] = new SheetColumnIndex(
       $alphabets[++$index],
       'exam',
       15
@@ -87,7 +87,11 @@ class DownloadResultRecordingSheet
     $row++;
 
     $students = Student::query()
+      ->select('students.*')
+      ->join('users', 'students.user_id', 'users.id')
       ->where('classification_id', $this->classification->id)
+      ->with('user')
+      ->oldest('users.last_name')
       ->get();
 
     /** @var \App\Models\Student $student */
@@ -133,7 +137,7 @@ class DownloadResultRecordingSheet
 
     $this->workSheet->setCellValue(
       $this->columnIndex['student_name']->index . $row,
-      $student->user->full_name
+      "{$student->user->last_name} {$student->user->first_name} {$student->user->other_names}"
     );
   }
 }

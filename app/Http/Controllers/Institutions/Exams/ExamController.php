@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions\Exams;
 
 use App\Actions\CreateExam;
+use App\Enums\EventStatus;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExamRequest;
@@ -35,8 +36,15 @@ class ExamController extends Controller
     ]);
   }
 
+  private function validateCreateExam(Event $event)
+  {
+    [$status, $message] = $event->canCreateExamCheck();
+    abort_unless($status, 400, $message);
+  }
+
   function create(Institution $institution, Event $event)
   {
+    $this->validateCreateExam($event);
     return Inertia::render('institutions/exams/create-exam', [
       'event' => $event->load('eventCourseables.courseable.course'),
       'external_reference' => request('reference'),
@@ -50,6 +58,7 @@ class ExamController extends Controller
     Institution $institution,
     Event $event
   ) {
+    $this->validateCreateExam($event);
     $exam = CreateExam::run($event, $request->validated());
     return $this->ok(['exam' => $exam]);
   }

@@ -3,6 +3,7 @@ import { Fee } from '@/types/models';
 import { Props } from 'react-select';
 import SingleQuerySelect from '../dropdown-select/single-query-select';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import { formatAsCurrency } from '@/util/util';
 
 interface MyProps {
   selectValue?: number | string;
@@ -21,7 +22,7 @@ export default function FeeSelect({
       selectValue={selectValue}
       dataList={fees}
       searchUrl={instRoute('fees.search')}
-      label={'title'}
+      label={(fee) => `${fee.title} - ${formatAsCurrency(fee.amount)}`}
     />
   );
 }

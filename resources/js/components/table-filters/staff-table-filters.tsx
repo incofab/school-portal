@@ -20,6 +20,7 @@ export default function StaffTableFilters({ isOpen, onClose }: Props) {
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
       <FilterFormControlBox title="Role">
         <EnumSelect
+          selectValue={filters.role}
           enumData={InstitutionUserType}
           onChange={(e: any) =>
             setFilters({ ...filters, role: e.currentTarget.value })

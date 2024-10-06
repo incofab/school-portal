@@ -34,6 +34,24 @@ class Event extends Model
     return $query->where('status', $status);
   }
 
+  function canCreateExamCheck()
+  {
+    if ($this->status !== EventStatus::Active) {
+      return [false, 'Event is not active'];
+    }
+    if ($this->starts_at->greaterThan(now())) {
+      return [false, "It's not yet time"];
+    }
+
+    if ($this->eventCourseables()->count() < $this->num_of_subjects) {
+      return [
+        false,
+        'Event is not ready yet. It does not contain enough subjects'
+      ];
+    }
+    return [true, ''];
+  }
+
   function institution()
   {
     return $this->belongsTo(Institution::class);

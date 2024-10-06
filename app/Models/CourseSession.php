@@ -11,6 +11,11 @@ class CourseSession extends Model
   use HasFactory, InstitutionScope;
 
   protected $guarded = [];
+  protected $casts = [
+    'institution_id' => 'integer',
+    'course_id' => 'integer'
+  ];
+
   static function createRule($editUser = null)
   {
     return [
@@ -18,6 +23,11 @@ class CourseSession extends Model
       'category' => ['nullable', 'string'],
       'general_instructions' => ['nullable', 'string']
     ];
+  }
+
+  function institution()
+  {
+    return $this->belongsTo(Institution::class);
   }
 
   function course()

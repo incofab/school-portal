@@ -1,4 +1,4 @@
-import { preventNativeSubmit } from '@/util/util';
+import { preventNativeSubmit, stripInitials } from '@/util/util';
 import route from '@/util/route';
 import { Input, Spacer, VStack } from '@chakra-ui/react';
 import React, { useState } from 'react';
@@ -20,7 +20,12 @@ export default function StudentLogin() {
 
   async function onSubmit() {
     const res = await form.submit((data, web) => {
-      return web.post(route('student-login.store', data));
+      return web.post(
+        route('student-login.store', {
+          ...data,
+          student_code: stripInitials(data.student_code),
+        })
+      );
     });
     if (!res.ok) {
       return void toastError(res.message ?? 'Invalid credentials');

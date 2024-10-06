@@ -41,10 +41,10 @@ export default function UploadCourseResultsModal({
   const isAdmin = useIsAdmin();
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
     useSharedProps();
   const webForm = useWebForm({
-    academic_session_id: currentAcademicSession,
+    academic_session_id: currentAcademicSessionId,
     term: currentTerm,
     for_mid_term: false,
     files: [] as FileObject[],
@@ -111,7 +111,7 @@ export default function UploadCourseResultsModal({
               isMulti={false}
               isClearable={true}
               onChange={(e: any) =>
-                webForm.setValue('academic_session_id', e.value)
+                webForm.setValue('academic_session_id', e?.value)
               }
               required
             />
@@ -121,7 +121,7 @@ export default function UploadCourseResultsModal({
               enumData={TermType}
               selectValue={webForm.data.term}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('term', e.value)}
+              onChange={(e: any) => webForm.setValue('term', e?.value)}
               required
             />
           </FormControlBox>

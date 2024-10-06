@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TermType;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -20,8 +20,10 @@ class CourseResult extends Model
     'course_id' => 'integer',
     'student_id' => 'integer',
     'classification_id' => 'integer',
+    'academic_session_id' => 'integer',
     'institution_id' => 'integer',
-    'for_mid_term' => 'boolean'
+    'for_mid_term' => 'boolean',
+    'assessment_values' => AsArrayObject::class
   ];
   public function rule()
   {
@@ -30,13 +32,13 @@ class CourseResult extends Model
     ];
   }
 
-  protected function assessmentValues(): Attribute
-  {
-    return Attribute::make(
-      get: fn(string $value) => json_decode($value, true),
-      set: fn(array|null $value) => json_encode($value)
-    );
-  }
+  // protected function assessmentValues(): Attribute
+  // {
+  //   return Attribute::make(
+  //     get: fn(string $value) => json_decode($value, true),
+  //     set: fn(array|null $value) => json_encode($value)
+  //   );
+  // }
 
   /** @return Collection<integer, Assessment> */
   function getAssessments()

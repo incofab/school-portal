@@ -18,6 +18,8 @@ class CourseResultInfo extends Model
     'teacher_user_id' => 'integer',
     'course_id' => 'integer',
     'institution_id' => 'integer',
+    'classification_id' => 'integer',
+    'academic_session_id' => 'integer',
     'for_mid_term' => 'boolean'
   ];
 

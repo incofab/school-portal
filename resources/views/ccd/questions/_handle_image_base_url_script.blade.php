@@ -1,7 +1,11 @@
 <?php
 $questionImgUrl =
   config('filesystems.disks.s3_public.url') .
-  "/{$courseSession->course_id}/{$courseSession->id}/"; ?>
+  '/' .
+  $institution->folder(
+    \App\Enums\S3Folder::CCD,
+    "{$courseSession->course_id}/{$courseSession->id}/"
+  ); ?>
 <script>
 	function getImageBaseUrl(src, alt) {
 		let filename = getUrlLastPath(src) ?? '';

@@ -1,6 +1,12 @@
 import React from 'react';
 import DashboardLayout from '@/layout/dashboard-layout';
-import { Box, Icon, SimpleGrid, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Icon,
+  SimpleGrid,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import useSharedProps from '@/hooks/use-shared-props';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { PageTitle } from '@/components/page-header';
@@ -15,6 +21,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { InstitutionUserType } from '@/types/types';
 import useIsStaff from '@/hooks/use-is-staff';
+import useInstitutionRole from '@/hooks/use-institution-role';
 
 interface ItemCardProps {
   route: string;
@@ -34,10 +41,10 @@ function DashboardItemCard(prop: ItemCardProps) {
     <Box
       border={'solid'}
       borderWidth={1}
-      borderColor={'gray.200'}
+      borderColor={useColorModeValue('gray.200', 'gray.500')}
       rounded={'lg'}
       boxShadow={'0px 2px 6px rgba(0, 0, 0, 0.1)'}
-      background={'white'}
+      background={useColorModeValue('white', 'gray.700')}
       as={InertiaLink}
       href={prop.route}
       display={'inline-block'}
@@ -50,7 +57,7 @@ function DashboardItemCard(prop: ItemCardProps) {
         size={'sm'}
         py={3}
         px={3}
-        backgroundColor={'brand.600'}
+        backgroundColor={useColorModeValue('brand.600', 'gray.800')}
         color={'white'}
         borderTop={'1px solid rgba(150,150,150,0.1)'}
         roundedBottom={'lg'}
@@ -74,9 +81,13 @@ function DashboardItemCard(prop: ItemCardProps) {
 
 function InstitutionDashboard() {
   const { currentInstitutionUser } = useSharedProps();
-  const isStaff = useIsStaff();
+  const student = currentInstitutionUser.student;
+  const { forTeacher } = useInstitutionRole();
   const { instRoute } = useInstitutionRoute();
-  const staffOnly = [InstitutionUserType.Admin, InstitutionUserType.Teacher];
+  const accountant = [
+    InstitutionUserType.Admin,
+    InstitutionUserType.Accountant,
+  ];
   const items: ItemCardProps[] = [
     {
       title: 'Users',
@@ -94,10 +105,18 @@ function InstitutionDashboard() {
     {
       title: 'Results',
       desc: 'See your results',
-      route: isStaff
+      route: forTeacher
         ? instRoute('class-result-info.index')
-        : instRoute('students.term-results.index'),
+        : student
+        ? instRoute('students.term-results.index')
+        : '',
       icon: ChartBarIcon,
+      roles: [
+        InstitutionUserType.Admin,
+        InstitutionUserType.Alumni,
+        InstitutionUserType.Student,
+        // InstitutionUserType.Guardian,
+      ],
     },
     {
       title: 'Classes',
@@ -117,7 +136,25 @@ function InstitutionDashboard() {
       desc: 'Show fee payments',
       route: instRoute('fee-payments.index'),
       icon: BanknotesIcon,
-      roles: [InstitutionUserType.Admin],
+      roles: accountant,
+    },
+    ...(student
+      ? [
+          {
+            title: 'Receipts',
+            desc: 'Payments receipts',
+            route: instRoute('students.receipts.index', [student.id]),
+            icon: BanknotesIcon,
+            roles: [InstitutionUserType.Student],
+          },
+        ]
+      : []),
+    {
+      title: 'Students', // Dependents
+      desc: 'Shows your children/Wards',
+      route: instRoute('guardians.list-dependents'),
+      icon: UsersIcon,
+      roles: [InstitutionUserType.Guardian],
     },
   ];
 

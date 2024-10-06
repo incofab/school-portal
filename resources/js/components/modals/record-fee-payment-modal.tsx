@@ -36,18 +36,19 @@ export default function RecordFeePaymentModal({
   fees,
 }: Props) {
   const { handleResponseToast } = useMyToast();
-  const { currentInstitution, currentAcademicSession, currentTerm } =
+  const { currentInstitution, currentAcademicSessionId, currentTerm } =
     useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const [classId, setClassId] = useState<undefined | number>(undefined);
   const webForm = useWebForm({
-    academic_session_id: currentAcademicSession,
+    academic_session_id: currentAcademicSessionId,
     term: currentTerm,
     fee_id: '',
     reference: `${currentInstitution.id} - ${generateRandomString(16)}`,
     user_id: {} as SelectOptionType<number>,
     amount: '',
     method: '',
+    transaction_reference: '',
   });
 
   const onSubmit = async () => {
@@ -82,7 +83,7 @@ export default function RecordFeePaymentModal({
               value={webForm.data.fee_id}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('fee_id', e.value)}
+              onChange={(e: any) => webForm.setValue('fee_id', e?.value)}
               fees={fees}
               required
             />
@@ -93,30 +94,30 @@ export default function RecordFeePaymentModal({
             formKey="academic_session_id"
           >
             <AcademicSessionSelect
-              value={webForm.data.academic_session_id}
+              selectValue={webForm.data.academic_session_id}
               isMulti={false}
               isClearable={true}
               onChange={(e: any) =>
-                webForm.setValue('academic_session_id', e.value)
+                webForm.setValue('academic_session_id', e?.value)
               }
             />
           </FormControlBox>
           <FormControlBox form={webForm as any} title="Term" formKey="term">
             <EnumSelect
-              value={webForm.data.term}
+              selectValue={webForm.data.term}
               enumData={TermType}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('term', e.value)}
+              onChange={(e: any) => webForm.setValue('term', e?.value)}
             />
           </FormControlBox>
           <FormControl>
             <FormLabel>Class</FormLabel>
             <ClassificationSelect
-              value={classId}
+              selectValue={classId}
               isMulti={false}
               isClearable={true}
-              onChange={(e: any) => setClassId(e.value)}
+              onChange={(e: any) => setClassId(e?.value)}
             />
           </FormControl>
           <FormControlBox
@@ -139,6 +140,11 @@ export default function RecordFeePaymentModal({
             formKey="amount"
             title="Amount"
             isRequired
+          />
+          <InputForm
+            form={webForm as any}
+            formKey="transaction_reference"
+            title="Transaction Id / Receipt No / Teller No etc..."
           />
         </VStack>
       }

@@ -41,6 +41,7 @@ import ChangeStudentClassModal from '@/components/modals/change-student-class-mo
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import DownloadResultRecordingSheetModal from '@/components/modals/download-result-recording-sheet-modal';
 import useIsStaff from '@/hooks/use-is-staff';
+import { InertiaLink } from '@inertiajs/inertia-react';
 
 interface Props {
   user: User;
@@ -48,7 +49,7 @@ interface Props {
 }
 
 export default function Profile({ user, institutionUser }: Props) {
-  const { currentUser } = useSharedProps();
+  const { currentUser, currentAcademicSession, currentTerm } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
   const downloadRecordingSheetModalToggle = useModalToggle();
@@ -90,6 +91,27 @@ export default function Profile({ user, institutionUser }: Props) {
     Inertia.reload({ only: ['user'] });
   }
 
+  async function generateResultPin(student: Student) {
+    if (
+      !window.confirm(
+        `Generate result checker pins for the ${currentAcademicSession.title} Session and ${currentTerm} Term`
+      )
+    ) {
+      return;
+    }
+    const res = await form.submit((data, web) =>
+      web.post(instRoute('pins.students.store', [student]), data)
+    );
+
+    if (!handleResponseToast(res)) return;
+
+    Inertia.visit(
+      instRoute('pins.classification.student-pin-tiles', [
+        student.classification_id,
+      ])
+    );
+  }
+
   const student = institutionUser.student;
   if (student) {
     student.user = user;
@@ -111,15 +133,17 @@ export default function Profile({ user, institutionUser }: Props) {
             value: (
               <HStack spacing={3}>
                 <Text>{student.classification?.title}</Text>
-                <Tooltip label={'Change class'} placement={'auto-start'}>
-                  <IconButton
-                    aria-label="Change class"
-                    onClick={() => changeClassModalToggle.open(student)}
-                    icon={<Icon as={PencilSquareIcon} />}
-                    colorScheme="brand"
-                    size={'sm'}
-                  />
-                </Tooltip>
+                {isStaff && (
+                  <Tooltip label={'Change class'} placement={'auto-start'}>
+                    <IconButton
+                      aria-label="Change class"
+                      onClick={() => changeClassModalToggle.open(student)}
+                      icon={<Icon as={PencilSquareIcon} />}
+                      colorScheme="brand"
+                      size={'sm'}
+                    />
+                  </Tooltip>
+                )}
               </HStack>
             ),
           },
@@ -151,24 +175,43 @@ export default function Profile({ user, institutionUser }: Props) {
               <Dt contentData={profileData} spacing={4} labelWidth={'150px'} />
             </GridItem>
             <GridItem colSpan={{ lg: 1 }}>
-              {currentUser.id !== user.id && isAdmin && (
-                <HStack>
-                  <BrandButton
-                    title="Change Role"
-                    onClick={changeRoleModalToggle.open}
-                  />
-                  <DestructivePopover
-                    label={`Reset user's password to default?`}
-                    onConfirm={(onClose) => resetPassword(onClose)}
-                    isLoading={form.processing}
-                    positiveButtonLabel="Reset"
-                  >
-                    <Button colorScheme="brand" variant={'solid'} size={'sm'}>
-                      Reset Password
+              <HStack>
+                {currentUser.id !== user.id && isAdmin && (
+                  <>
+                    <BrandButton
+                      title="Change Role"
+                      onClick={changeRoleModalToggle.open}
+                    />
+                    <DestructivePopover
+                      label={`Reset user's password to default?`}
+                      onConfirm={(onClose) => resetPassword(onClose)}
+                      isLoading={form.processing}
+                      positiveButtonLabel="Reset"
+                    >
+                      <Button colorScheme="brand" variant={'solid'} size={'sm'}>
+                        Reset Password
+                      </Button>
+                    </DestructivePopover>
+                  </>
+                )}
+                {isStaff && student && (
+                  <>
+                    <Button
+                      as={InertiaLink}
+                      href={instRoute('students.transcript', [student])}
+                      variant={'outline'}
+                      colorScheme="brand"
+                      size={'sm'}
+                    >
+                      Transcript
                     </Button>
-                  </DestructivePopover>
-                </HStack>
-              )}
+                    <BrandButton
+                      title="Generate Result Pin"
+                      onClick={() => generateResultPin(student)}
+                    />
+                  </>
+                )}
+              </HStack>
               <FormControl isInvalid={!!form.errors.photo}>
                 <Div
                   mt={{ lg: 4 }}

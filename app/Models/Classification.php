@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use App\Traits\InstitutionScope;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,6 +12,7 @@ class Classification extends Model
   public $guarded = [];
   protected $casts = [
     'institution_id' => 'integer',
+    'classification_group_id' => 'integer',
     'has_equal_subjects' => 'boolean'
   ];
 

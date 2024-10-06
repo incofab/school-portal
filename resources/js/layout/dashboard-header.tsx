@@ -15,10 +15,14 @@ import {
   MenuList,
   MenuItem,
   Button,
+  useColorModeValue,
+  useColorMode,
 } from '@chakra-ui/react';
 import {
   BellIcon,
   MagnifyingGlassIcon,
+  MoonIcon,
+  SunIcon,
   UserIcon,
 } from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
@@ -26,9 +30,10 @@ import route from '@/util/route';
 
 export default function DashboardHeader() {
   const { currentUser } = useSharedProps();
+  const { colorMode, toggleColorMode } = useColorMode();
   return (
     <HStack
-      background={'white'}
+      background={useColorModeValue('white', 'gray.700')}
       py={1}
       boxShadow={'0px 2px 6px rgba(0, 0, 0, 0.1)'}
     >
@@ -46,6 +51,12 @@ export default function DashboardHeader() {
         <Input type="text" placeholder="Search..." />
       </InputGroup>
       <Spacer />
+      <IconButton
+        aria-label={'Toggle light and dark moon'}
+        icon={<Icon as={colorMode === 'dark' ? SunIcon : MoonIcon} />}
+        variant={'ghost'}
+        onClick={toggleColorMode}
+      />
       <IconButton
         aria-label={'notifications'}
         icon={<Icon as={BellIcon} />}

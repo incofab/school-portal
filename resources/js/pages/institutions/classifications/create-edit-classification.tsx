@@ -1,10 +1,17 @@
 import React from 'react';
-import { Checkbox, FormControl, VStack } from '@chakra-ui/react';
+import {
+  Checkbox,
+  FormControl,
+  HStack,
+  Icon,
+  IconButton,
+  VStack,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { Classification } from '@/types/models';
+import { Classification, ClassificationGroup } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -15,16 +22,24 @@ import FormControlBox from '@/components/forms/form-control-box';
 import StaffSelect from '@/components/selectors/staff-select';
 import { InstitutionUserType } from '@/types/types';
 import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
+import useModalToggle from '@/hooks/use-modal-toggle';
+import CreateEditClassGroupModal from '@/components/modals/create-edit-class-group-modal';
+import { PlusIcon } from '@heroicons/react/24/solid';
+import { Div } from '@/components/semantic';
 
 interface Props {
   classification?: Classification;
+  classificationGroups: ClassificationGroup[];
 }
 
 export default function CreateOrUpdateClassification({
   classification,
+  classificationGroups,
 }: Props) {
   const { handleResponseToast } = useMyToast();
+  const createClassGroupModal = useModalToggle();
   const { instRoute } = useInstitutionRoute();
+
   const webForm = useWebForm({
     title: classification?.title ?? '',
     description: classification?.description ?? '',
@@ -35,12 +50,7 @@ export default function CreateOrUpdateClassification({
           value: classification.form_teacher_id,
         }
       : null,
-    classification_group_id: classification?.classification_group
-      ? {
-          label: classification.classification_group.title,
-          value: classification.classification_group_id,
-        }
-      : null,
+    classification_group_id: classification?.classification_group_id ?? '',
   });
 
   const submit = async () => {
@@ -48,7 +58,6 @@ export default function CreateOrUpdateClassification({
       const postData = {
         ...data,
         form_teacher_id: data.form_teacher_id?.value,
-        classification_group_id: data.classification_group_id?.value,
       };
       return classification
         ? web.put(
@@ -81,15 +90,26 @@ export default function CreateOrUpdateClassification({
                 form={webForm as any}
                 formKey="classification_group_id"
               >
-                <ClassificationGroupSelect
-                  value={webForm.data.classification_group_id}
-                  isMulti={false}
-                  isClearable={true}
-                  onChange={(e: any) =>
-                    webForm.setValue('classification_group_id', e)
-                  }
-                  required
-                />
+                <HStack align={'stretch'}>
+                  <Div width={'full'}>
+                    <ClassificationGroupSelect
+                      classificationGroups={classificationGroups}
+                      selectValue={webForm.data.classification_group_id}
+                      isMulti={false}
+                      isClearable={true}
+                      onChange={(e: any) =>
+                        webForm.setValue('classification_group_id', e?.value)
+                      }
+                      required
+                    />
+                  </Div>
+                  <IconButton
+                    aria-label="Add class group"
+                    icon={<Icon as={PlusIcon} />}
+                    onClick={createClassGroupModal.open}
+                    colorScheme="brand"
+                  />
+                </HStack>
               </FormControlBox>
 
               <InputForm
@@ -141,6 +161,10 @@ export default function CreateOrUpdateClassification({
           </SlabBody>
         </Slab>
       </CenteredBox>
+      <CreateEditClassGroupModal
+        {...createClassGroupModal.props}
+        onSuccess={() => window.location.reload()}
+      />
     </DashboardLayout>
   );
 }

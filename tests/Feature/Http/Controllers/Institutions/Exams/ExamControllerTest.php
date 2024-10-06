@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\CourseSession;
 use App\Models\Event;
 use App\Models\EventCourseable;
 use App\Models\Exam;
@@ -8,7 +7,6 @@ use App\Models\Institution;
 use App\Models\User;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
 
@@ -20,15 +18,14 @@ beforeEach(function () {
   $this->admin = User::factory()
     ->admin($this->institution)
     ->create();
+  $this->nonAdminUser = User::factory()
+    ->student($this->institution)
+    ->create();
 });
 
 it('only allows admins to access the controller', function () {
-  $nonAdminUser = User::factory()
-    ->student($this->institution)
-    ->create();
-
   // Attempt to access the controller as a non-admin
-  actingAs($nonAdminUser)
+  actingAs($this->nonAdminUser)
     ->getJson(instRoute('exams.index', [$this->event], $this->institution))
     ->assertStatus(403);
 
@@ -41,7 +38,16 @@ it('only allows admins to access the controller', function () {
 it('displays the create exam form', function () {
   actingAs($this->admin)
     ->getJson(instRoute('exams.create', [$this->event], $this->institution))
-    ->assertStatus(200);
+    ->assertStatus(400);
+
+  EventCourseable::factory()
+    ->count($this->event->num_of_subjects)
+    ->event($this->event)
+    ->create();
+
+  actingAs($this->admin)
+    ->getJson(instRoute('exams.create', [$this->event], $this->institution))
+    ->assertOk();
 });
 
 it('deletes an exam', function () {
@@ -57,7 +63,7 @@ it('deletes an exam', function () {
 
 it('stores a new exam and exam courseables', function () {
   $eventCourseables = EventCourseable::factory()
-    ->count(3)
+    ->count($this->event->num_of_subjects)
     ->event($this->event)
     ->create();
   $data = Exam::factory()

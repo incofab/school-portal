@@ -41,6 +41,18 @@ class CourseResultsUITableFilters extends BaseUITableFilter
     return $this;
   }
 
+  /** Important for sorting list by student names */
+  public function joinStudent(): static
+  {
+    $this->callOnce(
+      'joinStudent',
+      fn() => $this->baseQuery
+        ->join('students', 'students.id', 'course_results.student_id')
+        ->join('users', 'users.id', 'students.user_id')
+    );
+    return $this;
+  }
+
   protected function directQuery()
   {
     $this->when(

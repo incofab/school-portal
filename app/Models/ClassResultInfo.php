@@ -17,7 +17,10 @@ class ClassResultInfo extends Model
     'term' => TermType::class,
     'teacher_user_id' => 'integer',
     'institution_id' => 'integer',
-    'for_mid_term' => 'boolean'
+    'academic_session_id' => 'integer',
+    'classification_id' => 'integer',
+    'for_mid_term' => 'boolean',
+    'next_term_resumption_date' => 'date'
   ];
 
   public function classification()

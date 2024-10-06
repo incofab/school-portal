@@ -27,6 +27,7 @@ import { Inertia } from '@inertiajs/inertia';
 import useIsAdmin from '@/hooks/use-is-admin';
 import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
+import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 
 interface Props {
   students: PaginationResponse<Student>;
@@ -68,6 +69,7 @@ function ListStudents({ students }: Props) {
     {
       label: 'Name',
       value: 'user.full_name',
+      render: (row) => <DisplayUserFullname user={row.user} />,
     },
     {
       label: 'Class',
@@ -102,7 +104,7 @@ function ListStudents({ students }: Props) {
             variant={'ghost'}
             colorScheme={'brand'}
           />
-          {(row.user_id === currentUser.id ||
+          {/* {(row.user_id === currentUser.id ||
             currentInstitutionUser.role === InstitutionUserType.Admin ||
             currentInstitutionUser.role === InstitutionUserType.Teacher) && (
             <LinkButton
@@ -111,7 +113,7 @@ function ListStudents({ students }: Props) {
               variant={'link'}
               title="Profile"
             />
-          )}
+          )} */}
           {isAdmin && (
             <DestructivePopover
               label={`Delete ${row.user?.full_name} from the student record. This is irreversible, be careful!!!`}
@@ -153,7 +155,7 @@ function ListStudents({ students }: Props) {
                     as={'a'}
                     href={
                       params.classification
-                        ? instRoute('students.download', [
+                        ? instRoute('classifications.students-download', [
                             params.classification,
                           ])
                         : '#'

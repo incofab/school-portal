@@ -49,6 +49,7 @@ export default function UsersTableFilters({ isOpen, onClose }: Props) {
             <FormControl>
               <FormLabel>Role</FormLabel>
               <EnumSelect
+                selectValue={filters.role}
                 enumData={UserRoleType}
                 value={filters.role}
                 onChange={(e: any) =>

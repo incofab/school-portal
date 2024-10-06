@@ -1,6 +1,13 @@
 import React from 'react';
-import { Fee, FeePayment } from '@/types/models';
-import { HStack, IconButton, Icon } from '@chakra-ui/react';
+import { Fee, FeePayment, ReceiptType } from '@/types/models';
+import {
+  HStack,
+  IconButton,
+  Icon,
+  Button,
+  VStack,
+  Divider,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -17,17 +24,34 @@ import useIsAdmin from '@/hooks/use-is-admin';
 import RecordFeePaymentModal from '@/components/modals/record-fee-payment-modal';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import FeePaymentTableFilters from '@/components/table-filters/fee-payment-table-filters';
+import startCase from 'lodash/startCase';
+import UploadFeePaymentModal from '@/components/modals/upload-fee-payment-modal';
+import { InertiaLink } from '@inertiajs/inertia-react';
+import { LabelText } from '@/components/result-helper-components';
+import { formatAsCurrency } from '@/util/util';
 
 interface Props {
   feePayments: PaginationResponse<FeePayment>;
+  receiptTypes: ReceiptType[];
   fees: Fee[];
+  num_of_payments?: number;
+  total_amount_paid?: number;
+  pending_amount?: number;
 }
 
-export default function ListFeePayments({ feePayments, fees }: Props) {
+export default function ListFeePayments({
+  feePayments,
+  fees,
+  receiptTypes,
+  num_of_payments,
+  total_amount_paid,
+  pending_amount,
+}: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const recordFeePaymentModalToggle = useModalToggle();
+  const uploadPaymentModalToggle = useModalToggle();
   const feePaymentFilterToggle = useModalToggle();
   const isAdmin = useIsAdmin();
 
@@ -71,6 +95,7 @@ export default function ListFeePayments({ feePayments, fees }: Props) {
     {
       label: 'Term',
       value: 'term',
+      render: (row) => startCase(row.term),
     },
     ...(isAdmin
       ? [
@@ -108,13 +133,40 @@ export default function ListFeePayments({ feePayments, fees }: Props) {
         <SlabHeading
           title="List Fees"
           rightElement={
-            <BrandButton
-              title={'Record Payment'}
-              onClick={recordFeePaymentModalToggle.open}
-            />
+            <HStack>
+              <BrandButton
+                title={'Upload Payment'}
+                onClick={uploadPaymentModalToggle.open}
+              />
+              <Button
+                variant={'solid'}
+                colorScheme="brand"
+                as={InertiaLink}
+                href={instRoute('fee-payments.multi-fee-payment.create')}
+                size={'sm'}
+              >
+                Multi Record Payment
+              </Button>
+              <BrandButton
+                title={'Record Single Payment'}
+                onClick={recordFeePaymentModalToggle.open}
+              />
+            </HStack>
           }
         />
         <SlabBody>
+          <VStack align={'stretch'}>
+            <LabelText label="Number of Payments" text={num_of_payments} />
+            <LabelText
+              label="Total Amount Paid"
+              text={formatAsCurrency(total_amount_paid ?? 0)}
+            />
+            <LabelText
+              label="Total Pending Payment"
+              text={formatAsCurrency(pending_amount ?? 0)}
+            />
+          </VStack>
+          <Divider my={3} />
           <ServerPaginatedTable
             scroll={true}
             headers={headers}
@@ -129,6 +181,11 @@ export default function ListFeePayments({ feePayments, fees }: Props) {
       <RecordFeePaymentModal
         fees={fees}
         {...recordFeePaymentModalToggle.props}
+        onSuccess={() => Inertia.reload({ only: ['feePayments'] })}
+      />
+      <UploadFeePaymentModal
+        receiptTypes={receiptTypes}
+        {...uploadPaymentModalToggle.props}
         onSuccess={() => Inertia.reload({ only: ['feePayments'] })}
       />
       <FeePaymentTableFilters {...feePaymentFilterToggle.props} />

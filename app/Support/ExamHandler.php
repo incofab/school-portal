@@ -19,7 +19,7 @@ class ExamHandler
     return new self($exam);
   }
 
-  function canRun()
+  function canRun(bool $canAbort = true)
   {
     if (!$this->isEventActive()) {
       return false;
@@ -38,8 +38,9 @@ class ExamHandler
     if ($this->hasSomeTimeRemaining()) {
       return true;
     }
-
-    $this->endAndAbort('Time Elapsed');
+    if ($canAbort) {
+      $this->endAndAbort('Time Elapsed');
+    }
     return false;
   }
 

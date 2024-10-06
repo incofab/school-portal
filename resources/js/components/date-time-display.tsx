@@ -5,10 +5,13 @@ import { dateFormat } from '@/util/util';
 
 export default function DateTimeDisplay({
   dateTime,
+  dateTimeformat,
   ...props
-}: { dateTime: string } & TextProps) {
+}: { dateTime: string; dateTimeformat?: string } & TextProps) {
   return dateTime ? (
-    <Text {...props}>{format(new Date(dateTime), dateFormat)}</Text>
+    <Text {...props}>
+      {format(new Date(dateTime), dateTimeformat ?? dateFormat)}
+    </Text>
   ) : (
     <></>
   );

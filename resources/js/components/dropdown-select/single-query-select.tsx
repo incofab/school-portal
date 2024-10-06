@@ -8,6 +8,8 @@ interface MyProps<T> {
   dataList?: T[];
   searchUrl: string;
   label: string | ((data: T) => string);
+  dataFilter?: (data: T[]) => T[];
+  refreshKey?: string;
 }
 
 export default function SingleQuerySelect<T extends { [key: string]: any }>({
@@ -15,36 +17,50 @@ export default function SingleQuerySelect<T extends { [key: string]: any }>({
   dataList,
   searchUrl,
   label,
+  dataFilter,
+  refreshKey,
   ...props
 }: MyProps<T> & Props) {
   const [data, setData] = useState<T[]>(dataList ?? []);
-  const [refreshKey, setRefreshKey] = useState<string>('');
+  const [_refreshKey, setRefreshKey] = useState<string>('');
   const webForm = useWebForm({});
 
-  useEffect(() => {
-    if (dataList) {
-      return;
-    }
-    webForm
-      .submit((data, web) => {
-        return web.get(searchUrl);
-      })
-      .then(({ ok, data }) => {
-        if (!ok) {
-          return;
-        }
-        setData(data.result);
-        setRefreshKey(Math.random() + '');
-      });
-  }, []);
+  if (refreshKey && refreshKey != _refreshKey) {
+    setRefreshKey(refreshKey);
+  }
+
+  useEffect(
+    () => {
+      if (dataList) {
+        setData(dataList);
+        return;
+      }
+      webForm
+        .submit((data, web) => {
+          return web.get(searchUrl);
+        })
+        .then(({ ok, data }) => {
+          if (!ok) {
+            return;
+          }
+          setData(data.result);
+          setRefreshKey(Math.random() + '');
+        });
+    },
+    refreshKey ? [refreshKey] : []
+  );
 
   return (
     <DataSelect
       {...props}
       selectValue={selectValue}
-      data={{ main: data, label: label, value: 'id' }}
+      data={{
+        main: dataFilter ? dataFilter(data) : data,
+        label: label,
+        value: 'id',
+      }}
       isLoading={webForm.processing}
-      refreshKey={refreshKey}
+      refreshKey={_refreshKey}
     />
   );
 }

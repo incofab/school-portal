@@ -1,26 +1,34 @@
 import React from 'react';
 import { Div } from '@/components/semantic';
-import { BoxProps, Divider } from '@chakra-ui/react';
+import { BoxProps, Divider, useColorModeValue } from '@chakra-ui/react';
 import { PageTitle } from './page-header';
 
 interface Props {
   title?: string;
+  boxProps?: BoxProps;
 }
 export default function CenteredLayout({
   children,
   title,
+  boxProps,
   ...props
 }: Props & BoxProps) {
   return (
-    <Div bg={'blue.50'} py={12} minH={'100vh'} {...props}>
+    <Div
+      bg={useColorModeValue('blue.50', 'gray.900')}
+      py={12}
+      minH={'100vh'}
+      {...props}
+    >
       <Div
-        bg={'white'}
+        bg={useColorModeValue('white', 'gray.800')}
         p={6}
         mx={'auto'}
         w={'full'}
         maxW={'md'}
         shadow={'md'}
         rounded={'md'}
+        {...boxProps}
       >
         {title && (
           <>

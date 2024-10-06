@@ -1,6 +1,13 @@
 import { Div } from '@/components/semantic';
 import route from '@/util/route';
-import { Avatar, Divider, Text, Wrap, WrapItem } from '@chakra-ui/react';
+import {
+  Avatar,
+  Divider,
+  Text,
+  Wrap,
+  WrapItem,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import React from 'react';
 import useSharedProps from '@/hooks/use-shared-props';
 import { Institution } from '@/types/models';
@@ -12,7 +19,7 @@ export default function SelectInstitution({ institutions }: Props) {
   const { currentUser } = useSharedProps();
 
   return (
-    <Div bg={'blue.50'} py={12} minH={'100vh'}>
+    <Div bg={useColorModeValue('blue.50', 'gray.900')} py={12} minH={'100vh'}>
       <Text fontSize={'lg'} textAlign={'center'} mb={4} fontWeight={'bold'}>
         Welcome {currentUser.first_name}, Select Institution
       </Text>

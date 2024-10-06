@@ -15,10 +15,10 @@ interface Props {
 
 export default function PinsTableFilters({ isOpen, onClose }: Props) {
   const { params } = useQueryString();
-  const { currentAcademicSession, currentTerm } = useSharedProps();
+  const { currentAcademicSessionId, currentTerm } = useSharedProps();
   const [filters, setFilters] = useState(() => ({
     term: params.term ?? currentTerm,
-    academicSession: params.academicSession ?? currentAcademicSession,
+    academicSession: params.academicSession ?? currentAcademicSessionId,
     institution_id: params.institution ?? '',
   }));
 
@@ -33,6 +33,7 @@ export default function PinsTableFilters({ isOpen, onClose }: Props) {
       </FilterFormControlBox>
       <FilterFormControlBox title="Academic Session">
         <AcademicSessionSelect
+          selectValue={filters.academicSession}
           onChange={(e: any) =>
             setFilters({ ...filters, academicSession: e.value })
           }
@@ -40,6 +41,7 @@ export default function PinsTableFilters({ isOpen, onClose }: Props) {
       </FilterFormControlBox>
       <FilterFormControlBox title="Term">
         <EnumSelect
+          selectValue={filters.term}
           enumData={TermType}
           onChange={(e: any) => setFilters({ ...filters, term: e.value })}
         />

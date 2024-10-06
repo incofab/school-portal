@@ -14,6 +14,7 @@ return new class extends Migration {
       $table->string('subtitle')->nullable();
       $table->string('caption')->nullable();
       $table->string('website')->nullable();
+      $table->string('initials')->nullable();
     });
   }
 
@@ -23,7 +24,7 @@ return new class extends Migration {
   public function down(): void
   {
     Schema::table('institutions', function (Blueprint $table) {
-      $table->dropColumn(['caption', 'subtitle', 'website']);
+      $table->dropColumn(['caption', 'subtitle', 'website', 'initials']);
     });
   }
 };

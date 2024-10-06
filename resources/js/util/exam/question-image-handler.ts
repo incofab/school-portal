@@ -7,7 +7,8 @@ class QuestionImageHandler {
 
   getQuestionBaseUrl() {
     return (
-      this.IMG_BASE_URL + `/${this.courseable.course_id}/${this.courseable.id}/`
+      this.IMG_BASE_URL +
+      `/institutions/${this.courseable.institution_id}/ccd/${this.courseable.course_id}/${this.courseable.id}/`
     );
   }
 
@@ -38,10 +39,22 @@ class QuestionImageHandler {
   }
 
   getUrlLastPath(urlPath: string): string {
-    const lastPart = urlPath.split('/').pop();
-    if (this.isValidImage(lastPart)) {
+    let lastPart = urlPath.split('/').pop();
+    const base64DataIndex = urlPath.indexOf('data:');
+    if (base64DataIndex > -1) {
+      // Handle base64 images here
+      lastPart = urlPath.substring(base64DataIndex);
+      let amperSandIndex = lastPart.indexOf('&');
+      return lastPart.substring(
+        0,
+        amperSandIndex == -1 ? undefined : amperSandIndex
+      );
+    }
+
+    if (!lastPart || lastPart.length < 5 || this.isValidImage(lastPart)) {
       return lastPart ?? '';
     }
+
     const prefix = 'filename=';
     const startPoint = urlPath.substring(urlPath.lastIndexOf(prefix));
     // console.log(filename, ' | | ', startPoint.substring(prefix.length, startPoint.indexOf("&")));
@@ -58,7 +71,14 @@ class QuestionImageHandler {
     if (!filename || filename.length < 4) {
       return false;
     }
-    if (!['.jpg', '.gif', '.png', 'jpeg'].includes(filename.substr(-4))) {
+    if (filename.startsWith('data:')) {
+      return true;
+    }
+    if (
+      !['.jpg', '.gif', '.png', 'jpeg'].includes(
+        filename.substring(filename.length - 4)
+      )
+    ) {
       return false;
     }
     return true;

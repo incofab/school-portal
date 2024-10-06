@@ -1,6 +1,6 @@
 import React from 'react';
-import { Institution } from '@/types/models';
-import { HStack } from '@chakra-ui/react';
+import { Institution, InstitutionGroup } from '@/types/models';
+import { HStack, Icon, IconButton } from '@chakra-ui/react';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -8,16 +8,48 @@ import { LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import route from '@/util/route';
 import ManagerDashboardLayout from '@/layout/managers/manager-dashboard-layout';
+import useWebForm from '@/hooks/use-web-form';
+import useMyToast from '@/hooks/use-my-toast';
+import { Inertia } from '@inertiajs/inertia';
+import { TrashIcon } from '@heroicons/react/24/solid';
 
+interface InstitutionWithMeta extends Institution {
+  classifications_count: number;
+  institution_group: InstitutionGroup;
+}
 interface Props {
-  institutions: PaginationResponse<Institution>;
+  institutions: PaginationResponse<InstitutionWithMeta>;
 }
 
 export default function ListInstitutions({ institutions }: Props) {
-  const headers: ServerPaginatedTableHeader<Institution>[] = [
+  const deleteForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
+
+  async function deleteInstitution(institution: Institution) {
+    if (!window.confirm('Do you want to delete this institution?')) {
+      return;
+    }
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(route('managers.institutions.destroy', [institution.uuid]))
+    );
+    if (!handleResponseToast(res)) {
+      return;
+    }
+    Inertia.reload();
+  }
+
+  const headers: ServerPaginatedTableHeader<InstitutionWithMeta>[] = [
     {
       label: 'Name',
       value: 'name',
+    },
+    {
+      label: 'Group',
+      value: 'institution_group.name',
+    },
+    {
+      label: 'Classes',
+      value: 'classifications_count',
     },
     {
       label: 'Email',
@@ -36,10 +68,18 @@ export default function ListInstitutions({ institutions }: Props) {
       render: (row) => (
         <HStack>
           <LinkButton
-            href={route('users.impersonate', [row.user_id])}
+            href={route('institutions.impersonate', [row.uuid])}
             colorScheme={'red'}
             variant={'link'}
             title="Impersonate"
+          />
+          <IconButton
+            aria-label="Delete institution"
+            colorScheme={'red'}
+            size={'sm'}
+            icon={<Icon as={TrashIcon} />}
+            onClick={() => deleteInstitution(row)}
+            isDisabled={row.classifications_count > 0}
           />
         </HStack>
       ),

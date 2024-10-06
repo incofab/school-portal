@@ -1,6 +1,7 @@
 <?php
 namespace App\Actions;
 
+use App\Enums\S3Folder;
 use App\Models\Course;
 use App\Models\CourseSession;
 use App\Models\Instruction;
@@ -39,6 +40,9 @@ class UploadCourseContent
     $sessionsArr = json_decode(file_get_contents($sessionsFile), true);
 
     foreach ($sessionsArr as $key => $sessionData) {
+      // if ($sessionData['session'] != '2000') {
+      //   continue;
+      // }
       $createdCourseSession = $course->sessions()->firstOrCreate(
         [
           'session' => $sessionData['session'],
@@ -96,7 +100,10 @@ class UploadCourseContent
     if (!file_exists($sessionImagesFolder)) {
       return;
     }
-    $destinationFolder = "{$destinationCourseSession->course_id}/{$destinationCourseSession->id}";
+    $destinationFolder = $destinationCourseSession->institution->folder(
+      S3Folder::CCD,
+      "{$destinationCourseSession->course_id}/{$destinationCourseSession->id}"
+    );
 
     AwsFileHelper::uploadDirectory($sessionImagesFolder, $destinationFolder);
   }

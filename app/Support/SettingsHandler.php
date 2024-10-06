@@ -1,6 +1,7 @@
 <?php
 namespace App\Support;
 
+use App\DTO\PaymentKeyDto;
 use App\Enums\InstitutionSettingType;
 use App\Enums\ResultTemplateType;
 use App\Enums\TermType;
@@ -25,12 +26,23 @@ class SettingsHandler
       return self::$instance;
     }
     $institutionSettings = currentInstitution()?->institutionSettings ?? [];
+    self::$instance = self::make($institutionSettings);
+    return self::$instance;
+  }
+
+  /**
+   * @param \Illuminate\Database\Eloquent\Collection<int, InstitutionSetting>|array $institutionSettings
+   */
+  static function make($institutionSettings): static
+  {
     $formatted = [];
     foreach ($institutionSettings as $key => $value) {
+      if ($value['type'] === 'array' && is_string($value->value)) {
+        $value['value'] = json_decode($value->value, true);
+      }
       $formatted[$value->key] = $value;
     }
-    self::$instance = new self($formatted);
-    return self::$instance;
+    return new self($formatted);
   }
 
   function get(string $key): InstitutionSetting|null
@@ -41,6 +53,26 @@ class SettingsHandler
   function getValue(string $key, $default = null)
   {
     return $this->get($key)?->value ?? $default;
+  }
+
+  function usesMidTerm()
+  {
+    return $this->getValue(
+      InstitutionSettingType::UsesMidTermResult->value,
+      false
+    );
+  }
+
+  /** Indicates whether the school is currently on Mid or Full term */
+  function isOnMidTerm()
+  {
+    if (!$this->usesMidTerm()) {
+      return false;
+    }
+    return $this->getValue(
+      InstitutionSettingType::CurrentlyOnMidTerm->value,
+      false
+    );
   }
 
   function getCurrentTerm($default = null)
@@ -54,14 +86,14 @@ class SettingsHandler
 
   function getCurrentAcademicSession($default = 'fetch')
   {
-    if ($default === 'fetch') {
-      $default = AcademicSession::query()
-        ->latest('id')
-        ->first()?->id;
-    }
     return $this->getValue(
       InstitutionSettingType::CurrentAcademicSession->value
-    ) ?? $default;
+    ) ??
+      ($default === 'fetch'
+        ? AcademicSession::query()
+          ->latest('id')
+          ->first()?->id
+        : $default);
   }
 
   function getResultTemplate($default = null)
@@ -69,7 +101,40 @@ class SettingsHandler
     if (!$default) {
       $default = ResultTemplateType::Template1->value;
     }
-    return $this->getValue(InstitutionSettingType::ResultTemplate->value) ??
-      $default;
+    $resultSetting = $this->getValue(InstitutionSettingType::Result->value);
+    return $resultSetting['template'] ?? $default;
+    // return $this->getValue(InstitutionSettingType::Result->value) ?? $default;
+  }
+
+  function academicQueryData(
+    $table = '',
+    $academicSessionId = null,
+    $term = null,
+    $forMidTerm = null
+  ) {
+    if ($table) {
+      $table .= '.';
+    }
+    return [
+      "{$table}academic_session_id" =>
+        $academicSessionId ?? $this->getCurrentAcademicSession(),
+      "{$table}term" => $term ?? $this->getCurrentTerm(),
+      "{$table}for_mid_term" =>
+        $forMidTerm === null ? $this->isOnMidTerm() : $forMidTerm
+    ];
+  }
+
+  function getPaystackKeys(): PaymentKeyDto
+  {
+    $paymentSetting = $this->getValue(
+      InstitutionSettingType::PaymentKeys->value,
+      []
+    );
+
+    $paystack = $paymentSetting['paystack'] ?? [];
+    return new PaymentKeyDto(
+      $paystack['public_key'] ?? '',
+      $paystack['private_key'] ?? ''
+    );
   }
 }

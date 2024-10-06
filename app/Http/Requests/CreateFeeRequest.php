@@ -3,6 +3,10 @@
 namespace App\Http\Requests;
 
 use App\Enums\PaymentInterval;
+use App\Models\Classification;
+use App\Models\ClassificationGroup;
+use App\Models\ReceiptType;
+use App\Rules\ValidateExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -34,7 +38,19 @@ class CreateFeeRequest extends FormRequest
           ->ignore($this->fee?->id, 'id')
       ],
       'amount' => ['required', 'numeric', 'min:1'],
-      'payment_interval' => ['nullable', new Enum(PaymentInterval::class)]
+      'payment_interval' => ['nullable', new Enum(PaymentInterval::class)],
+      'receipt_type_id' => [
+        'required',
+        new ValidateExistsRule(ReceiptType::class)
+      ],
+      'classification_group_id' => [
+        'nullable',
+        new ValidateExistsRule(ClassificationGroup::class)
+      ],
+      'classification_id' => [
+        'nullable',
+        new ValidateExistsRule(Classification::class)
+      ]
     ];
   }
 }

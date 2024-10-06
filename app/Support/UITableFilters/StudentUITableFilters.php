@@ -13,7 +13,7 @@ class StudentUITableFilters extends UserUITableFilters
     ];
   }
 
-  private function joinUser(): static
+  function joinUser(): static
   {
     $this->callOnce(
       'joinUser',
@@ -22,25 +22,26 @@ class StudentUITableFilters extends UserUITableFilters
     return $this;
   }
 
-  private function joinClassification(): static
-  {
-    $this->callOnce(
-      'joinClassification',
-      fn() => $this->baseQuery->join(
-        'classifications',
-        'classifications.id',
-        'students.classification_id'
-      )
-    );
-    return $this;
-  }
+  // private function joinClassification(): static
+  // {
+  //   $this->callOnce(
+  //     'joinClassification',
+  //     fn() => $this->baseQuery->join(
+  //       'classifications',
+  //       'classifications.id',
+  //       'students.classification_id'
+  //     )
+  //   );
+  //   return $this;
+  // }
 
   protected function directQuery()
   {
-    $this->joinUser()->when(
-      $this->requestGet('institution_id'),
-      fn(self $that) => $that->joinClassification()
-    );
+    $this->joinUser();
+    // $this->joinUser()->when(
+    //   $this->requestGet('institution_id'),
+    //   fn(self $that) => $that->joinClassification()
+    // );
 
     parent::directQuery()->baseQuery->when(
       $this->requestGet('classification'),

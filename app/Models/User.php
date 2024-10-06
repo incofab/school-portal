@@ -12,10 +12,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Validation\Rules\Enum;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-  use Notifiable, HasApiTokens, HasFactory, SoftDeletes;
+  use Notifiable, HasApiTokens, HasFactory, SoftDeletes, HasRoles;
 
   /**
    * The attributes that are mass assignable.
@@ -38,8 +39,7 @@ class User extends Authenticatable
    * @var array
    */
   protected $casts = [
-    'email_verified_at' => 'datetime',
-    'manager_role' => ManagerRole::class
+    'email_verified_at' => 'datetime'
   ];
 
   public static function generalRule($userId = null, $prefix = '')
@@ -94,17 +94,6 @@ class User extends Authenticatable
       'institution_users'
     )->withTimestamps();
   }
-
-  // private InstitutionUser $institutionUserData;
-  // function currentInstitutionUser(): InstitutionUser
-  // {
-  //   if ($this->institutionUserData) {
-  //     $this->institutionUserData = $this->institutionUsers()
-  //       ->where('institution_id', currentInstitution()->id)
-  //       ->first();
-  //   }
-  //   return $this->institutionUserData;
-  // }
 
   function institutionUsers()
   {
@@ -166,8 +155,50 @@ class User extends Authenticatable
     return $this->hasInstitutionRole(InstitutionUserType::Student);
   }
 
-  function isManagerAdmin()
+  function isInstitutionGuardian()
   {
-    return $this->manager_role === ManagerRole::Admin;
+    return $this->hasInstitutionRole(InstitutionUserType::Guardian);
+  }
+
+  function isAdmin()
+  {
+    return $this->hasRole(ManagerRole::Admin);
+  }
+  function isPartner()
+  {
+    return $this->hasRole(ManagerRole::Partner);
+  }
+  function isManager()
+  {
+    return $this->hasRole([ManagerRole::Admin, ManagerRole::Partner]);
+  }
+
+  function institutionGroups()
+  {
+    return $this->hasMany(InstitutionGroup::class);
+  }
+  function partnerInstitutionGroups()
+  {
+    return $this->hasMany(InstitutionGroup::class, 'partner_user_id');
+  }
+  function registrationRequests()
+  {
+    return $this->hasMany(RegistrationRequest::class, 'partner_user_id');
+  }
+  /** Children/wards of a parent */
+  function dependents()
+  {
+    return $this->hasManyThrough(
+      Student::class,
+      GuardianStudent::class,
+      'guardian_user_id',
+      'id',
+      'id',
+      'student_id'
+    );
+  }
+  function guardianStudents()
+  {
+    return $this->hasMany(GuardianStudent::class, 'guardian_user_id', 'id');
   }
 }

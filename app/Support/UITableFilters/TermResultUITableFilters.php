@@ -26,6 +26,18 @@ class TermResultUITableFilters extends BaseUITableFilter
   {
   }
 
+  /** Important for sorting list by student names */
+  public function joinStudent(): static
+  {
+    $this->callOnce(
+      'joinStudent',
+      fn() => $this->baseQuery
+        ->join('students', 'students.id', 'term_results.student_id')
+        ->join('users', 'users.id', 'students.user_id')
+    );
+    return $this;
+  }
+
   protected function directQuery()
   {
     $this->baseQuery

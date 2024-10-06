@@ -37,7 +37,7 @@ class SessionResultUITableFilters extends BaseUITableFilter
         fn($q, $value) => $q->where('session_results.classification_id', $value)
       )
       ->when(
-        $this->requestGet('academicSession'),
+        $this->getAcademicSession(),
         fn($q, $value) => $q->where(
           'session_results.academic_session_id',
           $value

@@ -64,6 +64,11 @@ class RouteServiceProvider extends ServiceProvider
         ->prefix('manager')
         ->name('managers.')
         ->group(base_path('routes/manager.php'));
+
+      // Route::middleware(['web', 'auth', 'partner'])
+      //   ->prefix('partner')
+      //   ->name('partners.')
+      //   ->group(base_path('routes/partner.php'));
     });
   }
 

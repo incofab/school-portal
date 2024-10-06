@@ -26,10 +26,10 @@ export default function CalculateClassResultInfoModal({
   const isAdmin = useIsAdmin();
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
     useSharedProps();
   const webForm = useWebForm({
-    academic_session_id: currentAcademicSession,
+    academic_session_id: currentAcademicSessionId,
     term: currentTerm,
     classification: '',
     for_mid_term: false,
@@ -67,7 +67,7 @@ export default function CalculateClassResultInfoModal({
                 isMulti={false}
                 isClearable={true}
                 onChange={(e: any) =>
-                  webForm.setValue('classification', e.value)
+                  webForm.setValue('classification', e?.value)
                 }
                 required
               />
@@ -83,7 +83,7 @@ export default function CalculateClassResultInfoModal({
               isMulti={false}
               isClearable={true}
               onChange={(e: any) =>
-                webForm.setValue('academic_session_id', e.value)
+                webForm.setValue('academic_session_id', e?.value)
               }
               required
             />
@@ -93,7 +93,7 @@ export default function CalculateClassResultInfoModal({
               enumData={TermType}
               selectValue={webForm.data.term}
               isClearable={true}
-              onChange={(e: any) => webForm.setValue('term', e.value)}
+              onChange={(e: any) => webForm.setValue('term', e?.value)}
               required
             />
           </FormControlBox>

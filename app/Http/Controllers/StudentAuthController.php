@@ -16,7 +16,7 @@ class StudentAuthController extends Controller
   public function login()
   {
     $data = request()->validate([
-      'student_code' => ['required', 'integer'],
+      'student_code' => ['required', 'string'],
       'password' => ['nullable', 'string']
     ]);
 

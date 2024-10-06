@@ -27,11 +27,12 @@ import startCase from 'lodash/startCase';
 import InputForm from '@/components/forms/input-form';
 import SelectMidTerm from '@/components/table-filters/mid-term-select';
 import DataTable, { TableHeader } from '@/components/data-table';
-import { PencilIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import useSharedProps from '@/hooks/use-shared-props';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import SetAssessmentDependencyModal from '@/components/modals/set-assessment-dependency-modal';
+import DestructivePopover from '@/components/destructive-popover';
 
 interface Props {
   assessments: Assessment[];
@@ -90,7 +91,10 @@ export default function CreateUpdateAssessment({
                     isMulti={false}
                     isClearable={true}
                     onChange={(e: any) =>
-                      webForm.setValue('term', e.value === 'all' ? '' : e.value)
+                      webForm.setValue(
+                        'term',
+                        e.value === 'all' ? '' : e?.value
+                      )
                     }
                   />
                 </FormControlBox>
@@ -138,6 +142,19 @@ export default function CreateUpdateAssessment({
 function ListAssessments({ assessments }: { assessments: Assessment[] }) {
   const { instRoute } = useInstitutionRoute();
   const setDependencyModalToggle = useModalValueToggle<Assessment>();
+  const { handleResponseToast } = useMyToast();
+  const deleteForm = useWebForm({});
+
+  async function deleteItem(obj: Assessment) {
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(instRoute('assessments.destroy', [obj.id]))
+    );
+    if (!handleResponseToast(res)) {
+      return;
+    }
+    Inertia.reload();
+  }
+
   const headers: TableHeader<Assessment>[] = [
     {
       label: 'Title',
@@ -180,12 +197,26 @@ function ListAssessments({ assessments }: { assessments: Assessment[] }) {
             icon={<Icon as={PencilIcon} />}
             as={InertiaLink}
             href={instRoute('assessments.index', [row])}
+            size={'sm'}
           />
+          <DestructivePopover
+            label={'Delete this assessment'}
+            onConfirm={() => deleteItem(row)}
+            isLoading={deleteForm.processing}
+          >
+            <IconButton
+              aria-label="Delete"
+              icon={<Icon as={TrashIcon} />}
+              colorScheme="red"
+              size={'sm'}
+            />
+          </DestructivePopover>
           <Button
             display={'none'}
             variant={'link'}
             colorScheme="brand"
             as={InertiaLink}
+            size={'sm'}
             href={instRoute(
               'assessments.insert-score-from-course-result.create',
               [row]

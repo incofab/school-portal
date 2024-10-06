@@ -241,7 +241,7 @@ export default function SessionResultTemplate1({
                   {termDataCells(termRow.termCourseResult[TermType.Third])}
                   <td>{sessionTotal}</td>
                   <td>{sessionTotalAverage}</td>
-                  <td>{ResultUtil.getGrade(sessionTotalAverage)[0]}</td>
+                  <td>{ResultUtil.getGrade(sessionTotalAverage).grade}</td>
                 </tr>
               );
             })}

@@ -42,7 +42,11 @@ class CourseResultsController extends Controller
   public function index(Request $request)
   {
     $query = CourseResult::query()->select('course_results.*');
-    CourseResultsUITableFilters::make($request->all(), $query)->filterQuery();
+    CourseResultsUITableFilters::make($request->all(), $query)
+      ->joinStudent()
+      ->filterQuery()
+      ->getQuery()
+      ->oldest('users.last_name');
 
     return Inertia::render('institutions/courses/list-course-results', [
       'courseResults' => paginateFromRequest(

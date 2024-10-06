@@ -1,8 +1,10 @@
 import { Nullable, SelectOptionType } from '@/types/types';
 import { Resizer } from './image-file-resizer';
 import objectGet from 'lodash/get';
+import startCase from 'lodash/startCase';
 
 export const dateFormat = 'yyyy-MM-dd';
+export const dateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
 
 type PreventDefault = Pick<React.FormEvent, 'preventDefault'>['preventDefault'];
 type StopPropagation = Pick<
@@ -126,6 +128,11 @@ export function range(start: number, end: number | undefined) {
   return arr;
 }
 
+export function avatarUrl(name: string) {
+  // const encodedName = encodeURI(name);
+  return `https://ui-avatars.com/api/?name=${encodeURI(name)}`;
+}
+
 export function formatTime(time_in_secs: number) {
   if (isNaN(time_in_secs) || time_in_secs < 0) {
     time_in_secs = 0;
@@ -150,4 +157,23 @@ export function formatTime(time_in_secs: number) {
   hour = hour < 10 ? '0' + hour : hour;
 
   return hour + ':' + min + ':' + sec;
+}
+
+export function stripInitials(studentCode: string) {
+  const pos = studentCode.indexOf('/');
+  return studentCode.substring(pos < 0 ? 0 : pos);
+}
+
+export function validFilename(input?: string): string {
+  // Remove invalid characters and replace them with underscores
+  const sanitizedString = input?.replace(/[^a-zA-Z0-9.-]/g, '_');
+  // Ensure the string is not empty after sanitization
+  if (!sanitizedString?.trim()) {
+    return '';
+  }
+  return sanitizedString;
+}
+
+function ucfirst(text: string) {
+  return startCase(text);
 }

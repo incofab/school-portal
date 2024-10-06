@@ -11,4 +11,8 @@ class AcademicSession extends Model
   use HasFactory, SoftDeletes;
 
   protected $guarded = [];
+
+  protected $casts = [
+    'order_index' => 'integer'
+  ];
 }

@@ -1,7 +1,7 @@
 <?php
 namespace App\Actions\CourseResult;
 
-use App\DTO\ResultSheetColumnIndex;
+use App\DTO\SheetColumnIndex;
 use App\Http\Requests\RecordCourseResultRequest;
 use App\Models\Assessment;
 use App\Models\CourseTeacher;
@@ -49,7 +49,7 @@ class InsertResultFromRecordingSheet
     $columnText = $this->sheetData
       ->getCell($alphabet . $startingRow)
       ->getValue();
-    $this->columnIndex[$alphabet] = new ResultSheetColumnIndex(
+    $this->columnIndex[$alphabet] = new SheetColumnIndex(
       $alphabet,
       'student_id'
     );
@@ -58,7 +58,7 @@ class InsertResultFromRecordingSheet
       $columnText = $this->sheetData
         ->getCell($alphabet . $startingRow)
         ->getValue();
-      $this->columnIndex[$alphabet] = new ResultSheetColumnIndex(
+      $this->columnIndex[$alphabet] = new SheetColumnIndex(
         $alphabet,
         $columnText
       );

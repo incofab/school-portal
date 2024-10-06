@@ -9,9 +9,6 @@ use App\Rules\ValidateMorphRule;
 use App\Support\MorphMap;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\RequiredIf;
-use Illuminate\Validation\ValidationException;
-use Str;
 
 class StoreExamRequest extends FormRequest
 {
@@ -33,17 +30,18 @@ class StoreExamRequest extends FormRequest
     // $student = currentInstitutionUser()?->student;
     return [
       'start_now' => ['nullable', 'boolean'],
-      // 'external_reference' => [
-      //   'string',
-      //   new RequiredIf(empty($student)) // && !config('app.debug'))
-      // ],
       'examable_id' => ['required', 'integer'],
       'examable_type' => [
         'required',
         new ValidateMorphRule('examable'),
         Rule::in(MorphMap::keys([User::class, TokenUser::class]))
       ],
-      'courseables' => ['required', 'array', 'min:1'],
+      'courseables' => [
+        'required',
+        'array',
+        'min:1',
+        'size:' . $this->event->num_of_subjects
+      ],
       'courseables.*.courseable_id' => ['required', 'integer'],
       'courseables.*.courseable_type' => [
         'required',

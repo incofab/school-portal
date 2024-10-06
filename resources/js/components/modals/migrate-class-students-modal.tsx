@@ -6,8 +6,8 @@ import {
   FormControl,
   FormLabel,
   HStack,
+  Icon,
   Spacer,
-  Text,
   VStack,
 } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
@@ -16,10 +16,12 @@ import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Classification } from '@/types/models';
 import ClassificationSelect from '../selectors/classification-select';
-import Dt from '../dt';
+import { LinkButton } from '../buttons';
+import { Div } from '../semantic';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 interface Props {
-  Classification: Classification;
+  classification: Classification;
   isOpen: boolean;
   onClose(): void;
   onSuccess(): void;
@@ -29,7 +31,7 @@ export default function MigrateClassStudentsModal({
   isOpen,
   onSuccess,
   onClose,
-  Classification,
+  classification,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -41,7 +43,7 @@ export default function MigrateClassStudentsModal({
   const onSubmit = async () => {
     const res = await webForm.submit((data, web) =>
       web.post(
-        instRoute('classifications.migrate-students', [Classification]),
+        instRoute('classifications.migrate-students', [classification]),
         data
       )
     );
@@ -58,8 +60,17 @@ export default function MigrateClassStudentsModal({
       props={{ isOpen, onClose }}
       headerContent={'Migrate Class Students'}
       bodyContent={
-        <VStack spacing={2}>
-          {/* <Text>Move students in {Classification.title} Class</Text> */}
+        <VStack spacing={2} align={'stretch'}>
+          <Div>
+            <LinkButton
+              title={'Select Students'}
+              variant={'outline'}
+              href={instRoute('change-multi-student-class.create', [
+                classification,
+              ])}
+              rightIcon={<Icon as={ArrowRightIcon} />}
+            />
+          </Div>
           <Divider />
           <Spacer height={3} />
           {!webForm.data.move_to_alumni && (
@@ -70,7 +81,7 @@ export default function MigrateClassStudentsModal({
                 isMulti={false}
                 isClearable={true}
                 onChange={(e: any) =>
-                  webForm.setValue('destination_class', e.value)
+                  webForm.setValue('destination_class', e?.value)
                 }
               />
             </FormControl>
@@ -85,7 +96,7 @@ export default function MigrateClassStudentsModal({
               size={'md'}
               colorScheme="brand"
             >
-              Move students in {Classification.title} to alumni
+              Move students in {classification.title} to alumni
             </Checkbox>
           </FormControl>
         </VStack>

@@ -43,6 +43,21 @@ abstract class BaseUITableFilter
     return $this;
   }
 
+  function forInstitution()
+  {
+    $this->requestData['institution_id'] = currentInstitution()->id;
+    return $this;
+  }
+
+  function forCurrentTerm()
+  {
+    $this->requestData[
+      'term'
+    ] = $this->settingHandler->getCurrentAcademicSession();
+    $this->requestData['term'] = $this->settingHandler->getCurrentTerm();
+    return $this;
+  }
+
   public function sortQuery(): static
   {
     $sortDir = $this->requestData['sortDir'] ?? null;
@@ -97,16 +112,28 @@ abstract class BaseUITableFilter
     }
     return $this;
   }
+
+  private $useCurrentTerm = true;
+  /** Should be called before the filter query is called */
+  public function dontUseCurrentTerm()
+  {
+    $this->useCurrentTerm = false;
+    return $this;
+  }
+
   protected function getTerm($default = null)
   {
-    return $this->settingHandler->getCurrentTerm(
-      $default ?? $this->requestGet('term')
-    );
+    return $this->requestGet('term') ??
+      ($this->useCurrentTerm
+        ? $this->settingHandler->getCurrentTerm($default)
+        : null);
   }
+
   protected function getAcademicSession($default = null)
   {
-    return $this->settingHandler->getCurrentAcademicSession(
-      $default ?? $this->requestGet('academicSession')
-    );
+    return $this->requestGet('academicSession') ??
+      ($this->useCurrentTerm
+        ? $this->settingHandler->getCurrentAcademicSession($default)
+        : null);
   }
 }

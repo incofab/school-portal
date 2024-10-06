@@ -2,19 +2,27 @@
 
 namespace App\Models;
 
+use App\Enums\S3Folder;
 use App\Support\Queries\InstitutionQueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Institution extends Model
 {
-  use HasFactory;
+  use HasFactory, SoftDeletes;
 
   protected $guarded = [];
+  public $casts = ['institution_group_id' => 'integer', 'user_id' => 'integer'];
+
   public static function generalRule($prefix = '')
   {
     return [
       $prefix . 'name' => ['required', 'string'],
+      // $prefix . 'institution_group_id' => [
+      //   'required',
+      //   'exists:institution_groups,id'
+      // ],
       $prefix . 'phone' => ['nullable', 'string'],
       $prefix . 'email' => ['nullable', 'string'],
       $prefix . 'address' => ['nullable', 'string']
@@ -39,9 +47,6 @@ class Institution extends Model
   public function resolveRouteBinding($value, $field = null)
   {
     $user = currentUser();
-    // if (!$user) {
-    //   return null;
-    // }
     $institutionModel = Institution::query()
       ->select('institutions.*')
       ->join(
@@ -51,7 +56,7 @@ class Institution extends Model
       )
       ->where('uuid', $value)
       ->when(
-        $user,
+        $user && !$user->isManager(),
         fn($q) => $q
           ->where('institution_users.user_id', $user->id)
           ->with(
@@ -61,16 +66,19 @@ class Institution extends Model
               ->with('student')
           )
       )
-      // ->where('institution_users.user_id', $user->id)
-      // ->with(
-      //   'institutionUsers',
-      //   fn($q) => $q
-      //     ->where('institution_users.user_id', $user->id)
-      //     ->with('student')
-      // )
       ->with('institutionSettings')
-      ->firstOrFail();
+      ->first();
+
+    abort_unless($institutionModel, 403, 'Institution not found for this user');
+
     return $institutionModel;
+  }
+
+  /** Return the institution folder without a leading or preceding slash */
+  function folder(S3Folder $s3Folder = S3Folder::Base, $append = '')
+  {
+    $dir = "institutions/{$this->id}/{$s3Folder->value}";
+    return $append ? "$dir/$append" : $dir;
   }
 
   static function generateInstitutionCode()
@@ -139,6 +147,16 @@ class Institution extends Model
     return $this->hasMany(Fee::class);
   }
 
+  function receiptTypes()
+  {
+    return $this->hasMany(ReceiptType::class);
+  }
+
+  function receipts()
+  {
+    return $this->hasMany(Receipt::class);
+  }
+
   function feePayments()
   {
     return $this->hasMany(FeePayment::class);
@@ -169,6 +187,11 @@ class Institution extends Model
     return $this->hasMany(LearningEvaluation::class);
   }
 
+  function resultCommentTemplates()
+  {
+    return $this->hasMany(ResultCommentTemplate::class);
+  }
+
   function events()
   {
     return $this->hasMany(Event::class);
@@ -177,5 +200,20 @@ class Institution extends Model
   function exams()
   {
     return $this->hasMany(Exam::class);
+  }
+
+  function tokenUsers()
+  {
+    return $this->hasMany(TokenUser::class);
+  }
+
+  function user()
+  {
+    return $this->belongsTo(User::class);
+  }
+
+  function institutionGroup()
+  {
+    return $this->belongsTo(InstitutionGroup::class);
   }
 }

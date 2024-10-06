@@ -9,4 +9,5 @@ enum ManagerRole: string
   use EnumToArray;
 
   case Admin = 'admin';
+  case Partner = 'partner';
 }

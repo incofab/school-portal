@@ -16,12 +16,18 @@ class GetUserTokenController extends Controller
       'reference' => ['required', 'string', 'max:255'],
       'email' => ['nullable', 'email'],
       'phone' => ['nullable', 'string'],
-      'name' => ['nullable', 'string']
+      'name' => ['nullable', 'string'],
+      'vendor' => ['nullable', 'string']
     ]);
 
     $tokenUser = TokenUser::query()->firstOrCreate(
-      ['reference' => $data['reference']],
-      $data
+      ['reference' => $data['reference'], 'institution_id' => $institution->id],
+      [
+        ...collect($data)
+          ->except('vendor', 'reference')
+          ->toArray(),
+        'meta' => ['vendor' => $data['vendor'] ?? 'examscholars']
+      ]
     );
 
     $token = JWT::encode(

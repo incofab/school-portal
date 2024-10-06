@@ -1,3 +1,4 @@
+import useSharedProps from '@/hooks/use-shared-props';
 import {
   AcademicSession,
   Assessment,
@@ -6,9 +7,11 @@ import {
   CourseResult,
   CourseResultInfo,
   LearningEvaluation,
+  ResultCommentTemplate,
   Student,
   TermResult,
 } from '@/types/models';
+import { PositionDisplayType, ResultSettingType } from '@/types/types';
 import { Text } from '@chakra-ui/react';
 import jsPDF from 'jspdf';
 
@@ -29,6 +32,9 @@ const ResultUtil = {
       default:
         suffix = 'th';
         break;
+    }
+    if (position >= 11 && position <= 20) {
+      suffix = 'th';
     }
     return suffix;
   },
@@ -61,52 +67,58 @@ const ResultUtil = {
     }
   },
 
-  getGrade: function (score: number) {
+  getGrade: function (
+    score: number,
+    resultCommentTemplate?: ResultCommentTemplate[]
+  ) {
     let grade = '';
+    let pointsGrade = 0;
     let remark = '';
-    let label = '';
+    let range = '';
+
     if (score < 40) {
       grade = 'F';
-      remark = 'Fail';
-      label = '0 - 39';
-    } else if (score < 45) {
-      grade = 'E';
-      remark = 'Poor Pass';
-      label = '40 - 44';
+      remark = 'Progressing';
+      range = '1.0% - 39.0%';
+      pointsGrade = 0;
     } else if (score < 50) {
+      grade = 'E';
+      remark = 'Fair';
+      range = '40.0% - 49.0%';
+      pointsGrade = 2;
+    } else if (score < 60) {
       grade = 'D';
       remark = 'Pass';
-      label = '45 - 49';
-    } else if (score < 55) {
-      grade = 'C6';
-      remark = 'Credit';
-      label = '50 - 54';
-    } else if (score < 60) {
-      grade = 'C4';
-      remark = 'Credit';
-      label = '55 - 59';
-    } else if (score < 65) {
-      grade = 'B3';
-      remark = 'Good';
-      label = '60 - 64';
+      range = '50.0% - 59.0%';
+      pointsGrade = 3;
     } else if (score < 70) {
-      grade = 'B2';
-      remark = 'Very Good';
-      label = '65 - 69';
-    } else if (score < 80) {
-      grade = 'B1';
-      remark = 'Very Good';
-      label = '70 - 79';
+      grade = 'C';
+      remark = 'Good';
+      range = '60.0% - 69.0%';
+      pointsGrade = 4;
     } else if (score < 90) {
-      grade = 'A2';
-      remark = 'Excellent';
-      label = '80 - 89';
+      grade = 'B';
+      remark = 'Very Good';
+      range = '70.0% - 89.0%';
+      pointsGrade = 4;
     } else {
-      grade = 'A1';
-      remark = 'Distinction';
-      label = '90 - 100';
+      grade = 'A';
+      remark = 'Excellent';
+      range = '90.0% - Above';
+      pointsGrade = 5;
     }
-    return [grade, remark, label];
+
+    const comment = ResultUtil.getCommentFromTemplate(
+      score,
+      resultCommentTemplate
+    );
+
+    if (comment) {
+      grade = comment.grade;
+      remark = comment.grade_label;
+      range = `${comment.min} - ${comment.max}`;
+    }
+    return { grade, remark, range, pointsGrade };
   },
 
   getClassSection: function (classTitle: string) {
@@ -158,18 +170,69 @@ const ResultUtil = {
       },
     });
   },
+
+  //https://stackoverflow.com/questions/18191893/generate-pdf-from-html-in-div-using-javascript#:~:text=No%20depenencies%2C%20pure%20JS
+  /*
+  function printDiv({divId, title}) {
+    let mywindow = window.open('', 'PRINT', 'height=650,width=900,top=100,left=150');
+  
+    mywindow.document.write(`<html><head><title>${title}</title>`);
+    mywindow.document.write('</head><body >');
+    mywindow.document.write(document.getElementById(divId).innerHTML);
+    mywindow.document.write('</body></html>');
+  
+    mywindow.document.close(); // necessary for IE >= 10
+    mywindow.focus(); // necessary for IE >= 10
+  
+    mywindow.print();
+    mywindow.close();
+  
+    return true;
+  }
+  */
+
+  getCommentFromTemplate: function (
+    score: number,
+    commentTemplate?: ResultCommentTemplate[]
+  ) {
+    if (!commentTemplate) {
+      return undefined;
+    }
+    score = Math.round(score);
+    const comment = commentTemplate.find(
+      (item) => Number(item.min) <= score && Number(item.max) >= score
+    );
+    return comment;
+  },
 };
 
 export default ResultUtil;
+
+export function useResultSetting() {
+  const { resultSetting } = useSharedProps();
+  const hidePosition =
+    resultSetting[ResultSettingType.PositionDisplayType] ===
+    PositionDisplayType.Hidden;
+  const showGrade =
+    resultSetting[ResultSettingType.PositionDisplayType] ===
+    PositionDisplayType.Grade;
+  const showPosition =
+    resultSetting[ResultSettingType.PositionDisplayType] ===
+    PositionDisplayType.Position;
+
+  return { hidePosition, showGrade, showPosition };
+}
 
 export interface ResultProps {
   termResult: TermResult;
   courseResults: CourseResult[];
   classResultInfo: ClassResultInfo;
-  courseResultInfoData: { [key: string | number]: CourseResultInfo };
+  courseResultInfoData: { [course_id: string | number]: CourseResultInfo };
   academicSession: AcademicSession;
   classification: Classification;
   student: Student;
   assessments: Assessment[];
   learningEvaluations: LearningEvaluation[];
+  resultCommentTemplate: ResultCommentTemplate[];
+  signed_url: string;
 }

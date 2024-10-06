@@ -61,7 +61,7 @@ export default function RecordCourseResult({
   assessments,
 }: Props) {
   const { handleResponseToast } = useMyToast();
-  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
     useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const [assessmentValue, setAssessmentValue] = useState<{
@@ -72,7 +72,7 @@ export default function RecordCourseResult({
     academic_session_id:
       courseResult?.academic_session?.id ??
       academicSession?.id ??
-      currentAcademicSession,
+      currentAcademicSessionId,
     term: courseResult?.term ?? term ?? currentTerm,
     for_mid_term: courseResult?.for_mid_term ?? for_mid_term ?? false,
     result: {
@@ -144,7 +144,7 @@ export default function RecordCourseResult({
                     isMulti={false}
                     isClearable={true}
                     onChange={(e: any) =>
-                      webForm.setValue('academic_session_id', e.value)
+                      webForm.setValue('academic_session_id', e?.value)
                     }
                     required
                   />
@@ -159,7 +159,7 @@ export default function RecordCourseResult({
                     selectValue={webForm.data.term}
                     isMulti={false}
                     isClearable={true}
-                    onChange={(e: any) => webForm.setValue('term', e.value)}
+                    onChange={(e: any) => webForm.setValue('term', e?.value)}
                     required
                   />
                 </FormControlBox>

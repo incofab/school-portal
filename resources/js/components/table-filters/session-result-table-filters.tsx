@@ -16,10 +16,10 @@ interface Props {
 export default function SessionResultsTableFilters({ isOpen, onClose }: Props) {
   const isStaff = useIsStaff();
   const { params } = useQueryString();
-  const { currentAcademicSession } = useSharedProps();
+  const { currentAcademicSessionId } = useSharedProps();
 
   const [filters, setFilters] = useState(() => ({
-    academicSession: params.academicSession ?? currentAcademicSession,
+    academicSession: params.academicSession ?? currentAcademicSessionId,
     student: params.student ?? '',
     classification: params.classification ?? '',
   }));

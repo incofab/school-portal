@@ -29,7 +29,7 @@ interface MenuListType extends MenuType {
 export default function ManagerSideBarLayout() {
   const { currentUser } = useSharedProps();
   const isAdminManager = useIsAdminManager();
-  const managerRole = currentUser.manager_role!;
+  const managerRole = currentUser.roles![0]?.name;
 
   const menus: MenuListType[] = [
     {
@@ -37,15 +37,24 @@ export default function ManagerSideBarLayout() {
       route: route('managers.dashboard'),
     },
     {
-      label: 'Instittutions',
+      label: 'Managers',
+      route: route('managers.index'),
       roles: [ManagerRole.Admin],
-      sub_items: [
-        {
-          label: 'All Institutions',
-          route: route('managers.institutions.index'),
-          roles: [ManagerRole.Admin],
-        },
-      ],
+    },
+    {
+      label: 'Institution Groups',
+      roles: [ManagerRole.Partner, ManagerRole.Admin],
+      route: route('managers.institution-groups.index'),
+    },
+    {
+      label: 'Institutions',
+      roles: [ManagerRole.Partner, ManagerRole.Admin],
+      route: route('managers.institutions.index'),
+    },
+    {
+      label: 'Registration Requests',
+      roles: [ManagerRole.Partner, ManagerRole.Admin],
+      route: route('managers.registration-requests.index'),
     },
     {
       label: 'Pins',

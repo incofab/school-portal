@@ -10,6 +10,14 @@ class Pin extends Model
 {
   use HasFactory, InstitutionScope;
 
+  public $casts = [
+    'student_id' => 'integer',
+    'academic_session_id' => 'integer',
+    'institution_id' => 'integer',
+    'term_result_id' => 'integer',
+    'pin_generator_id' => 'integer',
+    'pin_print_id' => 'integer'
+  ];
   public $guarded = [];
 
   static function generatePin()
@@ -51,6 +59,14 @@ class Pin extends Model
   function pinGenerator()
   {
     return $this->hasOne(PinGenerator::class);
+  }
+  function student()
+  {
+    return $this->belongsTo(Student::class);
+  }
+  function academicSession()
+  {
+    return $this->belongsTo(AcademicSession::class);
   }
   function pinPrint()
   {

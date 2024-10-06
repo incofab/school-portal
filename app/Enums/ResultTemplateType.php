@@ -8,4 +8,5 @@ enum ResultTemplateType: string
   case Template2 = 'template-2';
   case Template3 = 'template-3';
   case Template4 = 'template-4';
+  case Template5 = 'template-5';
 }

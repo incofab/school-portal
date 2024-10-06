@@ -9,8 +9,12 @@ use ArrayObject;
  */
 class Res extends ArrayObject
 {
+  private bool $success = false;
+  private string $message = '';
   function __construct(protected array $data = [])
   {
+    $this->success = $data['success'] ?? false;
+    $this->message = $data['message'] ?? '';
   }
 
   function __get($name): mixed
@@ -54,6 +58,17 @@ class Res extends ArrayObject
   {
     unset($this->data[$key]);
   }
+
+  function isSuccessful()
+  {
+    return $this->success;
+  }
+
+  function isNotSuccessful()
+  {
+    return !$this->success;
+  }
+
   public function toArray()
   {
     return $this->data;

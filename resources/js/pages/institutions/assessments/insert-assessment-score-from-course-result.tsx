@@ -27,18 +27,18 @@ export default function InsertAssessmentScoreFromCourseResult({
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
     useSharedProps();
 
   const [fromDate, setFromDate] = useState({
-    academic_session_id: currentAcademicSession,
+    academic_session_id: currentAcademicSessionId,
     term: currentTerm,
     classification_id: '',
     for_mid_term: false,
   });
 
   const [toDate, setToDate] = useState({
-    academic_session_id: currentAcademicSession,
+    academic_session_id: currentAcademicSessionId,
     term: currentTerm,
     classification_id: '',
     for_mid_term: false,
@@ -108,7 +108,7 @@ export default function InsertAssessmentScoreFromCourseResult({
                   isMulti={false}
                   isClearable={true}
                   onChange={(e: any) =>
-                    setFromDate({ ...fromDate, academic_session_id: e.value })
+                    setFromDate({ ...fromDate, academic_session_id: e?.value })
                   }
                   required
                 />
@@ -123,7 +123,7 @@ export default function InsertAssessmentScoreFromCourseResult({
                   selectValue={fromDate.term}
                   isClearable={true}
                   onChange={(e: any) =>
-                    setFromDate({ ...fromDate, term: e.value })
+                    setFromDate({ ...fromDate, term: e?.value })
                   }
                   required
                 />
@@ -191,7 +191,7 @@ export default function InsertAssessmentScoreFromCourseResult({
                   isMulti={false}
                   isClearable={true}
                   onChange={(e: any) =>
-                    setToDate({ ...toDate, academic_session_id: e.value })
+                    setToDate({ ...toDate, academic_session_id: e?.value })
                   }
                   required
                 />
@@ -205,7 +205,9 @@ export default function InsertAssessmentScoreFromCourseResult({
                   enumData={TermType}
                   selectValue={toDate.term}
                   isClearable={true}
-                  onChange={(e: any) => setToDate({ ...toDate, term: e.value })}
+                  onChange={(e: any) =>
+                    setToDate({ ...toDate, term: e?.value })
+                  }
                   required
                 />
               </FormControlBox>

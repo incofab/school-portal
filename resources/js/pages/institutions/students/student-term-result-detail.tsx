@@ -21,6 +21,7 @@ import {
   Spacer,
   Text,
   VStack,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import startCase from 'lodash/startCase';
 import { LinkButton } from '@/components/buttons';
@@ -169,6 +170,18 @@ export default function StudentTermResultDetail({
           </VStack>
           <Spacer height={5} />
         </SlabBody>
+        <Spacer height={3} />
+        <Div
+          maxWidth={'500px'}
+          background={useColorModeValue('#FAFAFA', 'gray.700')}
+          py={4}
+          px={5}
+        >
+          <SetTermResultEvaluation
+            termResult={termResult}
+            learningEvaluations={learningEvaluations}
+          />
+        </Div>
         <TermResultTeacherCommentModal
           termResult={termResult}
           {...teacherCommentModalToggle.props}
@@ -179,13 +192,6 @@ export default function StudentTermResultDetail({
           {...principalCommentModalToggle.props}
           onSuccess={() => Inertia.reload({ only: ['termResult'] })}
         />
-        <Spacer height={3} />
-        <Div maxWidth={'500px'} background={'#FAFAFA'} py={4} px={5}>
-          <SetTermResultEvaluation
-            termResult={termResult}
-            learningEvaluations={learningEvaluations}
-          />
-        </Div>
       </Slab>
     </DashboardLayout>
   );

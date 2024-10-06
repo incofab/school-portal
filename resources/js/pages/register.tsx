@@ -1,5 +1,5 @@
 import { Div } from '@/components/semantic';
-import { preventNativeSubmit } from '@/util/util';
+import { generateRandomString, preventNativeSubmit } from '@/util/util';
 import route from '@/util/route';
 import {
   Button,
@@ -18,8 +18,11 @@ import useSharedProps from '@/hooks/use-shared-props';
 import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Gender } from '@/types/types';
+import { User } from '@/types/models';
+import Slab, { SlabBody } from '@/components/slab';
+import CenteredLayout from '@/components/centered-layout';
 
-export default function Login() {
+export default function Register({ user }: { user?: User }) {
   const { message } = useSharedProps();
   const toast = useToast();
   const form = useForm({
@@ -37,10 +40,11 @@ export default function Login() {
       email: '',
       address: '',
     },
+    reference: Date.now().toPrecision() + generateRandomString(15),
   });
 
   function onSubmit() {
-    form.post(route('register.store'));
+    form.post(route('registration-requests.store', user ? [user.id] : []));
   }
 
   useEffect(() => {
@@ -58,18 +62,22 @@ export default function Login() {
   }, [message]);
 
   return (
-    <Div bg={'blue.50'} py={12} minH={'100vh'}>
-      <Div
-        bg={'white'}
-        mx={'auto'}
-        w={'full'}
-        maxW={'md'}
-        shadow={'md'}
-        rounded={'md'}
-        as={'form'}
-        onSubmit={preventNativeSubmit(onSubmit)}
-      >
-        <VStack spacing={4} align={'stretch'} p={6}>
+    <CenteredLayout title="Join Us" boxProps={{ maxW: 'lg' }}>
+      <Div w={'full'} as={'form'} onSubmit={preventNativeSubmit(onSubmit)}>
+        <VStack spacing={4} align={'stretch'} px={6} pb={6}>
+          <Slab>
+            <SlabBody>
+              <Text as={'span'} color={'brand.500'} fontWeight={'semibold'}>
+                Thank you
+              </Text>{' '}
+              for your interest in Edumanager, This is the best School
+              Management Solution for your School at a very cheap rate.
+              <br />
+              Kindly fill the form with your personal and school information and
+              one of our staff will contact you.
+            </SlabBody>
+          </Slab>
+          <br />
           <FormControlBox form={form} title="First Name" formKey="first_name">
             <Input
               type="text"
@@ -99,7 +107,7 @@ export default function Login() {
           </FormControlBox>
           <FormControlBox form={form} title="Phone" formKey="phone">
             <Input
-              type="phone"
+              type="tel"
               onChange={(e) => form.setData('phone', e.currentTarget.value)}
               value={form.data.phone}
             />
@@ -231,6 +239,6 @@ export default function Login() {
           </Div>
         </VStack>
       </Div>
-    </Div>
+    </CenteredLayout>
   );
 }

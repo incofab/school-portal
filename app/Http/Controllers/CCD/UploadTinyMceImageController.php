@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\CCD;
 
+use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
 use App\Models\CourseSession;
 use Illuminate\Http\Request;
@@ -16,7 +17,10 @@ class UploadTinyMceImageController extends Controller
     ImageOptimizer::optimize($request->file);
 
     $imagePath = $request->file->store(
-      "content/{$courseSession->course_id}/{$courseSession->id}",
+      $courseSession->institution->folder(
+        S3Folder::CCD,
+        "content/{$courseSession->course_id}/{$courseSession->id}"
+      ),
       's3_public'
     );
     $publicUrl = Storage::disk('s3_public')->url($imagePath);

@@ -2,12 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\ClassificationGroup;
 use App\Models\Institution;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Classification>
- */
 class ClassificationFactory extends Factory
 {
   /**
@@ -21,7 +19,8 @@ class ClassificationFactory extends Factory
       'institution_id' => Institution::factory(),
       'title' => fake()
         ->unique()
-        ->sentence()
+        ->sentence(),
+      'classification_group_id' => ClassificationGroup::factory()
     ];
   }
 
@@ -29,7 +28,21 @@ class ClassificationFactory extends Factory
   {
     return $this->state(
       fn(array $attributes) => [
-        'institution_id' => $institution->id
+        'institution_id' => $institution->id,
+        'classification_group_id' => ClassificationGroup::factory()->withInstitution(
+          $institution
+        )
+      ]
+    );
+  }
+
+  public function classificationGroup(
+    ClassificationGroup $classificationGroup
+  ): static {
+    return $this->state(
+      fn(array $attributes) => [
+        'classification_group_id' => $classificationGroup->id,
+        'institution_id' => $classificationGroup->institution_id
       ]
     );
   }

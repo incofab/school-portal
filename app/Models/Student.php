@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\Queries\StudentQueryBuilder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -15,6 +16,8 @@ class Student extends Model
   protected $casts = [
     'user_id' => 'integer'
   ];
+
+  protected $appends = ['full_code'];
 
   public static function query(): StudentQueryBuilder
   {
@@ -37,6 +40,20 @@ class Student extends Model
     }
 
     return $key;
+  }
+
+  protected function fullCode(): Attribute
+  {
+    $initials = currentInstitution()?->initials;
+    $prefix = $initials ? "$initials/" : '';
+    return Attribute::make(get: fn() => "{$prefix}{$this->code}");
+  }
+
+  static function stripInitials(string $studentCode)
+  {
+    $pos = strpos($studentCode, '/') ?? 0;
+
+    return substr($studentCode, $pos);
   }
 
   function classification()
@@ -67,5 +84,22 @@ class Student extends Model
   function sessionResults()
   {
     return $this->hasMany(SessionResult::class);
+  }
+
+  function classMovement()
+  {
+    return $this->hasMany(StudentClassMovement::class);
+  }
+
+  function guardian()
+  {
+    return $this->hasOneThrough(
+      User::class,
+      GuardianStudent::class,
+      'student_id',
+      'id',
+      'id',
+      'guardian_user_id'
+    );
   }
 }

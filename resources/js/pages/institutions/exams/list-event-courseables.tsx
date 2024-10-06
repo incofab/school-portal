@@ -4,10 +4,9 @@ import {
   HStack,
   IconButton,
   Icon,
-  VStack,
-  FormControl,
   Text,
   Divider,
+  Stack,
 } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
@@ -137,7 +136,8 @@ function CreateEventCourseable({
         Add Subject
       </Text>
       <Divider my={1} />
-      <HStack
+      <Stack
+        direction={{ base: 'column', md: 'row' }}
         spacing={4}
         as={'form'}
         onSubmit={preventNativeSubmit(submit)}
@@ -160,28 +160,31 @@ function CreateEventCourseable({
           />
         </Div>
         {selectCourse?.sessions && (
-          <MySelect
-            isMulti={false}
-            selectValue={webForm.data.courseable_id}
-            getOptions={() =>
-              selectCourse.sessions.map((courseSession) => {
-                return {
-                  label: courseSession.session,
-                  value: courseSession.id + '',
-                };
-              })
-            }
-            onChange={(e: any) =>
-              webForm.setData({
-                ...webForm.data,
-                courseable_type: 'course-session',
-                courseable_id: e.value,
-              })
-            }
-          />
+          <Div minW={'200px'}>
+            <MySelect
+              refreshKey={String(selectCourse.id)}
+              isMulti={false}
+              selectValue={webForm.data.courseable_id}
+              getOptions={() =>
+                selectCourse.sessions.map((courseSession) => {
+                  return {
+                    label: courseSession.session,
+                    value: courseSession.id + '',
+                  };
+                })
+              }
+              onChange={(e: any) =>
+                webForm.setData({
+                  ...webForm.data,
+                  courseable_type: 'course-session',
+                  courseable_id: e.value,
+                })
+              }
+            />
+          </Div>
         )}
         <FormButton isLoading={webForm.processing} />
-      </HStack>
+      </Stack>
     </CenteredBox>
   );
 }

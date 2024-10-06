@@ -1,4 +1,4 @@
-import useWebForm, { WebForm } from '@/hooks/use-web-form';
+import { WebForm } from '@/hooks/use-web-form';
 import { Exam } from '@/types/models';
 import { ExamAttempt } from '@/types/types';
 
@@ -73,6 +73,11 @@ class TabManager {
       exam_courseable_id: tab.exam_courseable_id,
     };
     this.reRender();
+  }
+  getCurrentQuestion() {
+    return this.getCurrentCourseableQuestions()?.[
+      this.getCurrentTab().currentQuestionIndex
+    ];
   }
   getCurrentQuestionIndex() {
     return this.getCurrentTab().currentQuestionIndex;

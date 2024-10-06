@@ -19,12 +19,12 @@ interface Props {
 export default function TermResultsTableFilters({ isOpen, onClose }: Props) {
   const isStaff = useIsStaff();
   const { params } = useQueryString();
-  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
     useSharedProps();
 
   const [filters, setFilters] = useState(() => ({
     term: params.term ?? currentTerm,
-    academicSession: params.academicSession ?? currentAcademicSession,
+    academicSession: params.academicSession ?? currentAcademicSessionId,
     student: params.student ?? '',
     classification: params.classification ?? '',
     forMidTerm: params.forMidTerm,

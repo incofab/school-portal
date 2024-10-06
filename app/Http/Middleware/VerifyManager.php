@@ -2,10 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\ManagerRole;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\URL;
 
 class VerifyManager
 {
@@ -20,7 +19,7 @@ class VerifyManager
   {
     $user = currentUser();
 
-    if (!$user->manager_role) {
+    if (!$user->hasRole([ManagerRole::Admin, ManagerRole::Partner])) {
       return $this->eject($request, 'You are not a manager');
     }
 
@@ -31,6 +30,6 @@ class VerifyManager
   {
     return $request->expectsJson()
       ? abort(403, $message)
-      : Redirect::guest(URL::route('login'));
+      : redirect()->route('user.dashboard'); //Redirect::guest(URL::route('login'));
   }
 }

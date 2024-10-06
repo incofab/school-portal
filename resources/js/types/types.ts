@@ -1,4 +1,5 @@
 export type Nullable<T> = T | null;
+export type KeyValue<T = string> = { [key: string]: T };
 
 export interface PaginationResponse<T> {
   total: number;
@@ -22,13 +23,16 @@ export interface Message {
 
 export enum ManagerRole {
   Admin = 'admin',
+  Partner = 'partner',
 }
 
 export enum InstitutionUserType {
   Admin = 'admin',
   Student = 'student',
+  Accountant = 'accountant',
   Teacher = 'teacher',
   Alumni = 'alumni',
+  Guardian = 'guardian',
 }
 
 export enum UserRoleType {
@@ -57,35 +61,19 @@ export enum Gender {
   Female = 'female',
 }
 
+export enum GuardianRelationship {
+  Parent = 'parent',
+  Sibling = 'sibling',
+  Guardian = 'guardian',
+  Nibling = 'nibling',
+  Pibling = 'pibling',
+}
+
 export enum LearningEvaluationDomainType {
   Text = 'text',
   Number = 'number',
   YesOrNo = 'yes-or-no',
 }
-
-// export enum ProgrammeType {
-//   Regular = 'regular',
-//   Sandwich = 'sandwich',
-//   Certificate = 'certificate',
-//   Postgraduate = 'postgraduate',
-// }
-
-// export enum AdmissionYear {
-//   Y2023 = '2023',
-//   Y2022 = '2022',
-//   Y2021 = '2021',
-//   Y2020 = '2020',
-//   Y2019 = '2019',
-//   Y2018 = '2018',
-//   Y2017 = '2017',
-//   Y2016 = '2016',
-//   Y2015 = '2015',
-//   Y2014 = '2014',
-//   Y2013 = '2013',
-//   Y2012 = '2012',
-//   Y2011 = '2011',
-//   Y2010 = '2010',
-// }
 
 export interface SelectOptionType<T = string> {
   label: string;
@@ -93,17 +81,30 @@ export interface SelectOptionType<T = string> {
 }
 
 export enum FeePaymentInterval {
-  termly = 'termly',
-  yearly = 'yearly',
-  monthly = 'monthly',
+  OneTime = 'one-time',
+  Termly = 'termly',
+  Sessional = 'sessional',
 }
 
 export enum InstitutionSettingType {
-  ResultTemplate = 'result-template',
+  Result = 'result',
   CurrentTerm = 'current-term',
   CurrentAcademicSession = 'current-academic-session',
   UsesMidTermResult = 'uses-mid-term-result',
+  CurrentlyOnMidTerm = 'currently-on-mid-term',
   Stamp = 'stamp',
+  PaymentKeys = 'payment-keys',
+}
+
+export enum ResultSettingType {
+  Template = 'template',
+  PositionDisplayType = 'position-display-type',
+}
+
+export enum PositionDisplayType {
+  Hidden = 'hidden',
+  Position = 'position',
+  Grade = 'grade',
 }
 
 export enum ResultTemplate {
@@ -111,6 +112,7 @@ export enum ResultTemplate {
   Template2 = 'template-2',
   Template3 = 'template-3',
   Template4 = 'template-4',
+  Template5 = 'template-5',
 }
 
 export enum Religion {
@@ -119,11 +121,49 @@ export enum Religion {
   Others = 'others',
 }
 
+export enum EventStatus {
+  Active = 'active',
+  Ended = 'ended',
+}
+
+export enum ExamStatus {
+  Active = 'active',
+  Ended = 'ended',
+  Pending = 'pending',
+  Paused = 'paused',
+}
+
 export enum Nationality {
   Nigeria = 'nigeria',
   Others = 'others',
 }
 
+export enum ResultCommentTemplateType {
+  All = '',
+  MidTermResult = 'mid-term-result',
+  FullTermResult = 'term-result',
+  SessionResult = 'session-result',
+}
+
+export enum Grade {
+  A = 'A',
+  B = 'B',
+  C = 'C',
+  D = 'D',
+  E = 'E',
+  F = 'F',
+}
+
 export interface ExamAttempt {
   [questionId: string | number]: string;
+}
+
+export interface BreadCrumbParam {
+  title: string;
+  href?: string;
+}
+
+export interface PaymentKey {
+  private_key: string;
+  public_key: string;
 }

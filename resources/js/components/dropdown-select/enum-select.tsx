@@ -40,7 +40,7 @@ export default function EnumSelect<T>({
               }
             }
             return {
-              label: startCase(value.replaceAll('-', ' ')),
+              label: startCase(value === '' ? key : value.replaceAll('-', ' ')),
               value: value,
             };
           })

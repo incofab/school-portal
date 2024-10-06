@@ -1,7 +1,7 @@
 import React from 'react';
 import { Student } from '@/types/models';
 import { Div } from '@/components/semantic';
-import { Avatar, HStack, Text } from '@chakra-ui/react';
+import { Avatar, HStack, Text, useColorModeValue } from '@chakra-ui/react';
 import useSharedProps from '@/hooks/use-shared-props';
 import ImagePaths from '@/util/images';
 
@@ -12,7 +12,7 @@ interface Props {
 export default function ClassStudentTiles({ students }: Props) {
   const { currentInstitution } = useSharedProps();
   return (
-    <Div textAlign={'center'}>
+    <Div textAlign={'center'} bg={useColorModeValue('white', 'gray.900')}>
       {students.map((student) => (
         <Div
           display={'inline-block'}

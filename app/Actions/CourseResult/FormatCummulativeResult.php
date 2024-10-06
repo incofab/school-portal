@@ -55,7 +55,9 @@ class FormatCummulativeResult
     $sessionResultsArr = [];
     foreach ($sessionResults as $key => $sessionResult) {
       // $sessionResultsArr[$sessionResult->student_id]
-      $sessionResultsArr[] = StudentSessionResultFormat::run($sessionResult);
+      if ($sessionResult->student) {
+        $sessionResultsArr[] = StudentSessionResultFormat::run($sessionResult);
+      }
     }
 
     return [

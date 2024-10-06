@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, FormControl, VStack } from '@chakra-ui/react';
+import { FormControl, VStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
@@ -11,10 +11,6 @@ import { FormButton } from '@/components/buttons';
 import InputForm from '@/components/forms/input-form';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import FormControlBox from '@/components/forms/form-control-box';
-import StaffSelect from '@/components/selectors/staff-select';
-import { InstitutionUserType } from '@/types/types';
-import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
 
 interface Props {
   classificationGroup?: ClassificationGroup;

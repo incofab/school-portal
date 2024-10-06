@@ -30,6 +30,7 @@ import useWebForm from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { ExamAttempt } from '@/types/types';
 import QuestionImageHandler from '@/util/exam/question-image-handler';
+import '@/style/exam-display.css';
 
 interface Props {
   exam: Exam;
@@ -51,6 +52,7 @@ export default function DisplayExam({
   function updateExamUtil() {
     setKey(Math.random() + '');
   }
+
   const examUtil = useMemo(() => {
     const examUtil = new ExamUtil(exam, existingAttempts, updateExamUtil);
     return examUtil;
@@ -75,9 +77,52 @@ export default function DisplayExam({
     Inertia.visit(instRoute('external.exam-result', [exam.exam_no]));
   }
 
+  function previousClicked() {
+    examUtil
+      .getTabManager()
+      .setCurrentQuestion(examUtil.getExamNavManager().getGoPreviousIndex());
+  }
+
+  function nextClicked() {
+    examUtil
+      .getTabManager()
+      .setCurrentQuestion(examUtil.getExamNavManager().getGoNextIndex());
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const pressedKey = event.key.toUpperCase() ?? '';
+    console.log('Key pressed:', event.key);
+    switch (pressedKey) {
+      case 'A':
+      case 'B':
+      case 'C':
+      case 'D':
+        // case 'E':
+        examUtil
+          .getAttemptManager()
+          .setAttempt(
+            examUtil.getTabManager().getCurrentQuestion()?.id,
+            pressedKey
+          );
+        break;
+      case 'N':
+        nextClicked();
+        break;
+      case 'P':
+        previousClicked();
+        break;
+      case 'S':
+        submitExam();
+        break;
+      case 'R':
+        break;
+    }
+  };
+
   return (
     <ExamLayout
-      title={`${tokenUser.name}`}
+      title={''}
+      breadCrumbItems={[{ title: `${tokenUser.name}`, href: '#' }]}
       rightElement={
         <HStack>
           <IconButton
@@ -94,19 +139,17 @@ export default function DisplayExam({
           />
         </HStack>
       }
+      onKeyDown={handleKeyDown}
     >
-      <Tabs
-        key={key}
-        index={examUtil.getTabManager().getCurrentTabIndex()}
-        mx={{ base: '10px', md: '30px' }}
-      >
-        <TabList>
+      <Tabs key={key} index={examUtil.getTabManager().getCurrentTabIndex()}>
+        <TabList overflowX={'auto'}>
           {exam.exam_courseables?.map((item, index) => (
             <Tab
               key={item.id}
               onClick={() => examUtil.getTabManager().setCurrentTabIndex(index)}
             >
-              {item.courseable?.course?.title} {item.courseable?.session}
+              {item.courseable?.course?.title}
+              {/* {item.courseable?.course?.title} {item.courseable?.session} */}
             </Tab>
           ))}
         </TabList>
@@ -140,25 +183,11 @@ export default function DisplayExam({
       >
         <BrandButton
           title="Previous"
-          onClick={() =>
-            examUtil
-              .getTabManager()
-              .setCurrentQuestion(
-                examUtil.getExamNavManager().getGoPreviousIndex()
-              )
-          }
+          onClick={previousClicked}
           width={'80px'}
         />
         <BrandButton title="Submit" onClick={submitExam} width={'80px'} />
-        <BrandButton
-          title="Next"
-          onClick={() =>
-            examUtil
-              .getTabManager()
-              .setCurrentQuestion(examUtil.getExamNavManager().getGoNextIndex())
-          }
-          width={'80px'}
-        />
+        <BrandButton title="Next" onClick={nextClicked} width={'80px'} />
       </HStack>
     </ExamLayout>
   );
@@ -196,14 +225,18 @@ function DisplayQuestion({
 }) {
   const attemptManager = examUtil.getAttemptManager();
   const questions = examCourseable.courseable!.questions!;
+  // console.log('questions', examCourseable.courseable!.course?.code, questions);
+
   const question =
     questions[examUtil.getTabManager().getCurrentQuestionIndex()];
   const questionImageHandler = new QuestionImageHandler(
     examCourseable.courseable!
   );
-
+  if (!question) {
+    return null;
+  }
   return (
-    <VStack align={'stretch'}>
+    <VStack align={'stretch'} className="question-container">
       <Text fontWeight={'bold'}>
         Question {question.question_no} of {questions.length}
       </Text>

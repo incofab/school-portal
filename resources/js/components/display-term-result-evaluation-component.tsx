@@ -8,6 +8,7 @@ import {
 } from '@/types/models';
 import { LearningEvaluationDomainType } from '@/types/types';
 import { CheckIcon } from '@heroicons/react/24/solid';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   termResult: TermResult;
@@ -41,7 +42,7 @@ export default function DisplayTermResultEvaluation({
 
   return (
     <Div>
-      <table>
+      <table style={{ width: '100%', textAlign: 'left' }}>
         <thead>
           <tr style={{ fontWeight: 'bold' }}>
             {Object.entries(headers).map(([key, item]) => (
@@ -79,6 +80,7 @@ export default function DisplayTermResultEvaluation({
                           learningEvaluationDomain={
                             evaluation?.learning_evaluation_domain
                           }
+                          learningEvaluation={evaluation}
                         />
                       </HStack>
                     </td>
@@ -96,13 +98,22 @@ export default function DisplayTermResultEvaluation({
 function DisplayEvaluationValue({
   value,
   learningEvaluationDomain,
+  learningEvaluation,
 }: {
   value: any;
   learningEvaluationDomain?: LearningEvaluationDomain;
+  learningEvaluation?: LearningEvaluation;
 }) {
+  const { currentInstitution } = useSharedProps();
   // if (!value || !learningEvaluationDomain) {
   //   return null;
   // }
+  if (
+    currentInstitution.name.toLowerCase().includes('wisegate') ||
+    currentInstitution.name.toLowerCase().includes('wise gate')
+  ) {
+    return wiseGate(learningEvaluation);
+  }
   let element = <></>;
   switch (learningEvaluationDomain?.type) {
     case LearningEvaluationDomainType.Number:
@@ -125,4 +136,21 @@ function DisplayEvaluationValue({
       {element}
     </Div>
   );
+}
+
+function wiseGate(learningEvaluation?: LearningEvaluation) {
+  const forA: string[] = ['Cooperation', 'Reliability'];
+  const forC: string[] = [];
+  let element = '';
+  // console.log('title', learningEvaluation?.title, learningEvaluation);
+
+  if (forA.includes(learningEvaluation?.title ?? '')) {
+    element = 'A';
+  } else if (forC.includes(learningEvaluation?.title ?? '')) {
+    element = 'C';
+  } else {
+    element = 'B';
+  }
+
+  return <Text>{element}</Text>;
 }

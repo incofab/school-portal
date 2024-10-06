@@ -12,6 +12,13 @@ class FeePayment extends Model
   use HasFactory, InstitutionScope, SoftDeletes;
 
   public $guarded = [];
+  public $casts = [
+    'institution_id' => 'integer',
+    'user_id' => 'integer',
+    'fee_id' => 'integer',
+    'academic_session_id' => 'integer',
+    'receipt_id' => 'integer'
+  ];
 
   function fee()
   {
@@ -20,6 +27,10 @@ class FeePayment extends Model
   function user()
   {
     return $this->belongsTo(User::class);
+  }
+  function receipt()
+  {
+    return $this->belongsTo(Receipt::class);
   }
   function feePaymentTracks()
   {

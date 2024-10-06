@@ -2,6 +2,7 @@ import React from 'react';
 import { Event, TokenUser } from '@/types/models';
 import CreateExamComponent from '../component/create-exam-component';
 import ExamLayout from '../exam-layout';
+import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface Props {
   event: Event;
@@ -14,8 +15,16 @@ export default function CreateExamExternal({
   tokenUser,
   examable_type,
 }: Props) {
+  const { instRoute } = useInstitutionRoute();
   return (
-    <ExamLayout title={tokenUser.name}>
+    <ExamLayout
+      title={event.title}
+      rightElement={tokenUser.name}
+      breadCrumbItems={[
+        { title: 'Event', href: instRoute('external.events.show', [event]) },
+        { title: 'Create Exam', href: '#' },
+      ]}
+    >
       <CreateExamComponent
         event={event}
         examable={tokenUser}

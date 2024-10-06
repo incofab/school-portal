@@ -19,6 +19,7 @@ export default function StudentsTableFilters({ isOpen, onClose }: Props) {
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
       <FilterFormControlBox title="Class">
         <ClassificationSelect
+          selectValue={filters.classification}
           onChange={(e: any) =>
             setFilters({ ...filters, classification: e.value })
           }

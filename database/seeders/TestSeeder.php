@@ -2,7 +2,6 @@
 namespace Database\Seeders;
 
 use App\Actions\CourseResult\EvaluateCourseResultForClass;
-use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Classification;
@@ -23,13 +22,16 @@ class TestSeeder extends Seeder
   public function run()
   {
     $date = date('Y');
-    $academicSession = AcademicSession::query()->firstOrCreate([
+    $acad1 = AcademicSession::query()->firstOrCreate([
+      'title' => $date - 3 . '/' . $date - 2
+    ]);
+    $acad2 = AcademicSession::query()->firstOrCreate([
       'title' => $date - 1 . '/' . $date
     ]);
-    $admin = User::factory()->create(['email' => 'success@email.com']);
+    $admin = User::factory()->create(['email' => 'vondabaic@email.com']);
     $institution = Institution::factory()->create([
       'user_id' => $admin->id,
-      'name' => 'Success Academy'
+      'name' => 'Vondabaic International School'
     ]);
 
     $courses = Course::factory()
@@ -60,31 +62,33 @@ class TestSeeder extends Seeder
       ]);
     }
 
-    foreach ([true, false] as $key => $forMidTerm) {
-      foreach (TermType::cases() as $key => $term) {
-        foreach ($students as $key => $student) {
-          foreach ($courses as $key => $course) {
-            CourseResult::factory()->create([
-              'institution_id' => $institution->id,
-              'student_id' => $student->id,
-              'teacher_user_id' => $teacher->id,
-              'course_id' => $course->id,
-              'classification_id' => $classification->id,
-              'academic_session_id' => $academicSession->id,
-              'term' => $term,
-              'for_mid_term' => $forMidTerm
-            ]);
+    foreach ([$acad1, $acad2] as $key => $academicSession) {
+      foreach ([true, false] as $key => $forMidTerm) {
+        foreach (TermType::cases() as $key => $term) {
+          foreach ($students as $key => $student) {
+            foreach ($courses as $key => $course) {
+              CourseResult::factory()->create([
+                'institution_id' => $institution->id,
+                'student_id' => $student->id,
+                'teacher_user_id' => $teacher->id,
+                'course_id' => $course->id,
+                'classification_id' => $classification->id,
+                'academic_session_id' => $academicSession->id,
+                'term' => $term,
+                'for_mid_term' => $forMidTerm
+              ]);
+            }
           }
-        }
 
-        foreach ($courses as $key => $course) {
-          EvaluateCourseResultForClass::run(
-            $classification,
-            $course->id,
-            $academicSession->id,
-            $term->value,
-            $forMidTerm
-          );
+          foreach ($courses as $key => $course) {
+            EvaluateCourseResultForClass::run(
+              $classification,
+              $course->id,
+              $academicSession->id,
+              $term->value,
+              $forMidTerm
+            );
+          }
         }
       }
     }

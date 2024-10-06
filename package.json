@@ -6,6 +6,7 @@
         "lint": "eslint resources/js && tsc"
     },
     "devDependencies": {
+        "@chakra-ui/cli": "^2.4.1",
         "@prettier/plugin-php": "^0.19.3",
         "@types/lodash": "^4.14.191",
         "@types/react": "^18.0.28",
@@ -30,7 +31,7 @@
         "@heroicons/react": "^2.0.16",
         "@inertiajs/inertia": "^0.11.1",
         "@inertiajs/inertia-react": "^0.8.1",
-        "@inertiajs/progress": "^0.2.7",
+        "@inertiajs/progress": "^0.1.2",
         "@inertiajs/react": "^1.0.2",
         "datatables.net-bs5": "^1.13.3",
         "datatables.net-buttons-bs5": "^2.3.5",
@@ -47,8 +48,6 @@
         "react-html2pdf": "^1.0.1",
         "react-pro-sidebar": "^1.0.0",
         "react-select": "^5.7.0",
-        "sweetalert2": "^11.7.3",
-        "sweetalert2-react-content": "^5.0.7",
         "ziggy-js": "^1.5.0"
     }
 }

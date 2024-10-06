@@ -17,8 +17,11 @@ import '@/../../public/style/result-sheet.css';
 import '@/../../public/style/result/template-4.css';
 import ImagePaths from '@/util/images';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
-import ResultUtil, { ResultProps } from '@/util/result-util';
-import jsPDF from 'jspdf';
+import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
+import ResultSheetLayout from './result-sheet-layout';
+import DateTimeDisplay from '@/components/date-time-display';
+import { dateFormat } from '@/util/util';
+import ResultDownloadButton from './result-download-button';
 
 export default function Template4({
   termResult,
@@ -30,99 +33,57 @@ export default function Template4({
   courseResultInfoData,
   assessments,
   learningEvaluations,
+  resultCommentTemplate,
+  signed_url,
 }: ResultProps) {
   const { currentInstitution, stamp } = useSharedProps();
+  const { hidePosition, showGrade } = useResultSetting();
 
   const resultSummary1 = [
     { label: 'Name of Pupil', value: student.user?.full_name },
     { label: 'Student Id', value: student.code },
+    ...(hidePosition
+      ? []
+      : [
+          {
+            label: 'Position',
+            value: showGrade
+              ? ResultUtil.getGrade(termResult.average, resultCommentTemplate)
+                  .grade
+              : ResultUtil.formatPosition(termResult.position),
+          },
+        ]),
   ];
   const resultSummary2 = [
     { label: 'Class', value: classification.title },
     {
       label: 'Term',
-      value: `${startCase(termResult.term)} Term, ${
-        academicSession.title
-      } Session`,
+      value: `${startCase(termResult.term)} Term, ${academicSession.title}`,
     },
+    ...(classResultInfo.next_term_resumption_date
+      ? [
+          {
+            label: 'Next Term Begins',
+            value: (
+              <DateTimeDisplay
+                as={'span'}
+                dateTime={classResultInfo.next_term_resumption_date}
+                dateTimeformat={dateFormat}
+              />
+            ),
+          },
+        ]
+      : []),
   ];
 
-  function getGrade(score: number) {
-    let grade = '';
-    let pointsGrade = 0;
-    let remark = '';
-    let label = '';
-    if (score < 40) {
-      grade = 'F';
-      remark = 'Progressing';
-      label = '1.0% - 39.0%';
-      pointsGrade = 0;
-    } else if (score < 50) {
-      grade = 'E';
-      remark = 'Fair';
-      label = '40.0% - 49.0%';
-      pointsGrade = 2;
-    } else if (score < 60) {
-      grade = 'D';
-      remark = 'Pass';
-      label = '50.0% - 59.0%';
-      pointsGrade = 3;
-    } else if (score < 70) {
-      grade = 'C';
-      remark = 'Good';
-      label = '60.0% - 69.0%';
-      pointsGrade = 4;
-    } else if (score < 90) {
-      grade = 'B';
-      remark = 'Very Good';
-      label = '70.0% - 89.0%';
-      pointsGrade = 4;
-    } else {
-      grade = 'A';
-      remark = 'Excellent';
-      label = '90.0% - Above';
-      pointsGrade = 5;
-    }
-    return [grade, remark, label, pointsGrade];
-  }
-  // function getGrade(score: number) {
-  //   let grade = '';
-  //   let pointsGrade = 0;
-  //   let remark = '';
-  //   let label = '';
-  //   if (score < 40) {
-  //     grade = 'F';
-  //     remark = 'Progressing';
-  //     label = '1.0% - 39.0%';
-  //     pointsGrade = 0;
-  //   } else if (score < 45) {
-  //     grade = 'E';
-  //     remark = 'Pass';
-  //     label = '40.0% - 44.0%';
-  //     pointsGrade = 1;
-  //   } else if (score < 50) {
-  //     grade = 'D';
-  //     remark = 'Satisfactory';
-  //     label = '45.0% - 49.0%';
-  //     pointsGrade = 2;
-  //   } else if (score < 60) {
-  //     grade = 'C';
-  //     remark = 'Good';
-  //     label = '50.0% - 59.0%';
-  //     pointsGrade = 3;
-  //   } else if (score < 70) {
-  //     grade = 'B';
-  //     remark = 'Very Good';
-  //     label = '60.0% - 69.0%';
-  //     pointsGrade = 4;
-  //   } else {
-  //     grade = 'A';
-  //     remark = 'Excellent';
-  //     label = '70.0% - Above';
-  //     pointsGrade = 5;
-  //   }
-  //   return [grade, remark, label, pointsGrade];
-  // }
+  const principalComment =
+    termResult.principal_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment;
+  const teacherComment =
+    termResult.teacher_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment_2;
 
   function LabelText({
     label,
@@ -153,9 +114,9 @@ export default function Template4({
   };
 
   return (
-    <>
+    <ResultSheetLayout>
       <Div style={backgroundStyle} minHeight={'1170px'}>
-        <Button
+        {/* <Button
           id={'download-btn'}
           onClick={() =>
             ResultUtil.exportAsPdf(
@@ -168,7 +129,12 @@ export default function Template4({
           colorScheme="brand"
         >
           Download
-        </Button>
+        </Button> */}
+        <ResultDownloadButton
+          signed_url={signed_url}
+          student={student}
+          termResult={termResult}
+        />
         <Div
           mx={'auto'}
           width={'900px'}
@@ -176,9 +142,6 @@ export default function Template4({
           position={'relative'}
           id={'result-sheet'}
         >
-          <Div position={'absolute'} bottom={'130px'} right={0} opacity={0.65}>
-            <Img src={stamp} />
-          </Div>
           <VStack align={'stretch'}>
             <HStack background={'#FCFCFC'} p={2}>
               <Avatar
@@ -223,6 +186,16 @@ export default function Template4({
                 >
                   {currentInstitution.subtitle}
                 </Text>
+                <Text textAlign={'center'} mx={5}>
+                  {[
+                    currentInstitution.website,
+                    currentInstitution.email,
+                    currentInstitution.address,
+                  ]
+                    .filter((item) => Boolean(item))
+                    .join(' | ')
+                    .trim()}
+                </Text>
               </VStack>
             </HStack>
             <Flex
@@ -249,6 +222,7 @@ export default function Template4({
                 ))}
               </VStack>
             </Flex>
+            <Spacer height={3} />
             <div className="table-container">
               <table
                 className="result-table"
@@ -315,9 +289,23 @@ export default function Template4({
                       <td style={{ fontWeight: 'bold' }}>
                         {courseResult.result}
                       </td>
-                      <td>{courseResult.position}</td>
+                      <td>
+                        {showGrade
+                          ? ResultUtil.getGrade(
+                              courseResult.result,
+                              resultCommentTemplate
+                            ).grade
+                          : ResultUtil.formatPosition(courseResult.position)}
+                      </td>
                       {/* <td>{ResultUtil.getRemark(courseResult.grade)}</td> */}
-                      <td>{getGrade(courseResult.result)[1]}</td>
+                      <td>
+                        {
+                          ResultUtil.getGrade(
+                            courseResult.result,
+                            resultCommentTemplate
+                          ).remark
+                        }
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -343,29 +331,34 @@ export default function Template4({
                 <LabelText label={'Average'} text={termResult.average} />
                 <LabelText
                   label={'Remark'}
-                  text={getGrade(termResult.average)[1]}
+                  text={
+                    ResultUtil.getGrade(
+                      termResult.average,
+                      resultCommentTemplate
+                    ).remark
+                  }
                 />
               </VStack>
             </Flex>
             <Spacer height={'10px'} />
-            {termResult.teacher_comment && (
+            {teacherComment && (
               <>
                 <HStack align={'stretch'}>
                   <Text fontWeight={'semibold'} size={'xs'}>
                     Teacher's comment:{' '}
                   </Text>
-                  <Text>{termResult.teacher_comment}</Text>
+                  <Text>{teacherComment}</Text>
                 </HStack>
                 <Divider />
               </>
             )}
-            {termResult.principal_comment && (
+            {principalComment && (
               <>
                 <HStack align={'stretch'}>
                   <Text fontWeight={'semibold'} size={'xs'}>
                     Head Teacher's comment:{' '}
                   </Text>
-                  <Text>{termResult.principal_comment}</Text>
+                  <Text>{principalComment}</Text>
                 </HStack>
                 <Divider />
               </>
@@ -379,29 +372,37 @@ export default function Template4({
                 justifyContent: 'space-between',
               }}
             >
-              <table className="keys-table" style={{ textAlign: 'center' }}>
-                <thead>
-                  <tr>
-                    <th>Percentage Range</th>
-                    <th>Remark</th>
-                    <th>Letter Grade</th>
-                    <th>Point Grade</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[90, 89, 69, 59, 49, 39].map((item) => {
-                    const [grade, remark, label, pointsGrade] = getGrade(item);
-                    return (
-                      <tr key={item}>
-                        <td>{label}</td>
-                        <td>{grade}</td>
-                        <td>{remark}</td>
-                        <td>{pointsGrade}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              {resultCommentTemplate && (
+                <table className="keys-table" style={{ textAlign: 'center' }}>
+                  <thead>
+                    <tr>
+                      <th>Percentage Range</th>
+                      <th>Remark</th>
+                      <th>Letter Grade</th>
+                      {/* <th>Point Grade</th> */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* {[90, 89, 69, 59, 49, 39].map((item) => { */}
+                    {resultCommentTemplate.map((item) => {
+                      const { grade, grade_label } = item;
+                      // const { grade, remark, range, pointsGrade } =
+                      //   ResultUtil.getGrade(item, resultCommentTemplate);
+                      return (
+                        <tr key={grade}>
+                          <td>{`${item.min} - ${item.max}`}</td>
+                          <td>{grade_label}</td>
+                          <td>{grade}</td>
+                          {/* <td>{pointsGrade}</td> */}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+              <Div textAlign={'center'}>
+                <Img src={stamp} alt="School stamp" display={'inline-block'} />
+              </Div>
               <DisplayTermResultEvaluation
                 termResult={termResult}
                 learningEvaluations={learningEvaluations}
@@ -410,6 +411,6 @@ export default function Template4({
           </VStack>
         </Div>
       </Div>
-    </>
+    </ResultSheetLayout>
   );
 }

@@ -19,10 +19,10 @@ interface Props {
 
 export default function CourseResultsTableFilters({ isOpen, onClose }: Props) {
   const { params } = useQueryString();
-  const { currentAcademicSession, currentTerm, usesMidTermResult } =
+  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
     useSharedProps();
   const [filters, setFilters] = useState(() => ({
-    academicSession: params.academicSession ?? currentAcademicSession,
+    academicSession: params.academicSession ?? currentAcademicSessionId,
     term: params.term ?? currentTerm,
     classification: params.classification ?? '',
     student: params.student ?? '',
@@ -35,6 +35,7 @@ export default function CourseResultsTableFilters({ isOpen, onClose }: Props) {
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
       <FilterFormControlBox title="Class">
         <ClassificationSelect
+          selectValue={filters.classification}
           onChange={(e: any) =>
             setFilters({ ...filters, classification: e.value })
           }
@@ -42,11 +43,13 @@ export default function CourseResultsTableFilters({ isOpen, onClose }: Props) {
       </FilterFormControlBox>
       <FilterFormControlBox title="Subject">
         <CourseSelect
+          selectValue={filters.course}
           onChange={(e: any) => setFilters({ ...filters, course: e.value })}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Academic Session">
         <AcademicSessionSelect
+          selectValue={filters.academicSession}
           onChange={(e: any) =>
             setFilters({ ...filters, academicSession: e.value })
           }
@@ -54,6 +57,7 @@ export default function CourseResultsTableFilters({ isOpen, onClose }: Props) {
       </FilterFormControlBox>
       <FilterFormControlBox title="Term">
         <EnumSelect
+          selectValue={filters.term}
           enumData={TermType}
           onChange={(e: any) => setFilters({ ...filters, term: e.value })}
         />

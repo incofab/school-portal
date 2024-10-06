@@ -14,8 +14,12 @@ export interface Row {
 
 export interface AcademicSession extends Row {
   title: string;
+  order_index: number;
 }
 
+export interface Role extends Row {
+  name: ManagerRole;
+}
 export interface User extends Row {
   first_name: string;
   last_name: string;
@@ -27,7 +31,8 @@ export interface User extends Row {
   email: string;
   is_welfare: boolean;
   gender: string;
-  manager_role: ManagerRole;
+  roles?: Role[];
+  institution_user?: InstitutionUser;
 }
 
 export interface TokenUser extends Row {
@@ -37,8 +42,12 @@ export interface TokenUser extends Row {
   phone: string;
 }
 
+export interface InstitutionGroup extends Row {
+  name: string;
+}
 export interface Institution extends Row {
   user_id: number;
+  institution_group_id: number;
   uuid: string;
   code: string;
   subtitle: string;
@@ -50,7 +59,9 @@ export interface Institution extends Row {
   email: string;
   phone: string;
   status: string;
+  initials: string;
   institution_settings?: InstitutionSetting[];
+  institution_group: InstitutionGroup;
 }
 
 interface InstitutionRow extends Row {
@@ -80,6 +91,25 @@ export interface ClassificationGroup extends InstitutionRow {
   classifications_count?: number;
 }
 
+export interface StudentClassMovement extends InstitutionRow {
+  user_id: number;
+  source_classification_id: number;
+  destination_classification_id: number;
+  academic_session_id: number;
+  student_id: number;
+  revert_reference_id: number;
+  term: string;
+  batch_no: string;
+  reason: string;
+  note: string;
+  source_class?: Classification;
+  destination_class?: Classification;
+  student?: Student;
+  user?: User;
+  academic_session?: AcademicSession;
+  revert_reference?: StudentClassMovement;
+}
+
 export interface Course extends InstitutionRow {
   title: string;
   code: string;
@@ -92,9 +122,12 @@ export interface Student extends Row {
   user_id: number;
   classification_id: number;
   code: string;
+  full_code: string;
   guardian_phone: string;
   classification?: Classification;
   user?: User;
+  course_results?: CourseResult[];
+  guardian?: User;
 }
 
 export interface CourseResult extends InstitutionRow {
@@ -148,6 +181,7 @@ export interface ClassResultInfo extends InstitutionRow {
   max_score: number;
   min_score: number;
   average: number;
+  next_term_resumption_date: string;
   classification?: Classification;
   academic_session?: AcademicSession;
 }
@@ -185,9 +219,14 @@ export interface Pin extends InstitutionRow {
   term_result_id: number;
   pin_print_id: number;
   pin_generator_id: number;
+  student_id: number;
+  academic_session_id: number;
+  term: string;
   term_result?: TermResult;
   pin_print?: PinPrint;
   pin_generator: PinGenerator;
+  student?: Student;
+  academic_session?: AcademicSession;
 }
 
 export interface PinPrint extends InstitutionRow {
@@ -221,15 +260,47 @@ export interface CourseTeacher extends Row {
   classification?: Classification;
 }
 
+export interface ReceiptType extends InstitutionRow {
+  title: string;
+  descriptions: string;
+}
+
 export interface Fee extends InstitutionRow {
   title: string;
   amount: number;
   payment_interval: string;
+  receipt_type_id: number;
+  classification_group_id?: number;
+  classification_id?: number;
+  receipt_type?: ReceiptType;
+  classification?: Classification;
+  classification_group?: ClassificationGroup;
 }
 
-export interface FeePayment extends Row {
+export interface Receipt extends InstitutionRow {
+  receipt_type_id: number;
+  user_id: number;
+  academic_session_id?: number;
+  term?: string;
+  reference: string;
+  title: string;
+  classification_id: number;
+  classification_group_id: number;
+  total_amount: number;
+  approved_at: string;
+  approved_by_user_id: number;
+  receipt_type?: ReceiptType;
+  user?: User;
+  academic_session: AcademicSession;
+  classification?: Classification;
+  classification_group?: ClassificationGroup;
+  fee_payments?: FeePayment[];
+}
+
+export interface FeePayment extends InstitutionRow {
   fee_id: number;
   user_id: number;
+  receipt_id: number;
   academic_session_id: number;
   term: string;
   fee_amount: number;
@@ -246,14 +317,15 @@ export interface FeePaymentTrack extends Row {
   confirmed_by_user_id: number;
   amount: number;
   reference: string;
-  method: string;
-  feePayment?: FeePayment;
+  method?: string;
+  transaction_reference?: string;
+  fee_payment?: FeePayment;
   confirmed_by?: User;
 }
 
 export interface InstitutionSetting extends InstitutionRow {
   key: string;
-  value: string;
+  value: string | any;
   display_name: string;
   type: string;
 }
@@ -313,6 +385,33 @@ export interface LearningEvaluation extends InstitutionRow {
   learning_evaluation_domain?: LearningEvaluationDomain;
 }
 
+export interface ResultCommentTemplate extends InstitutionRow {
+  comment: string;
+  comment_2: string;
+  grade: string;
+  grade_label: string;
+  type: string;
+  min: number;
+  max: number;
+}
+
+export interface GuardianStudent extends InstitutionRow {
+  guardian_user_id: number;
+  student_id: number;
+  relationship: string;
+  guardian?: User;
+  student?: Student;
+}
+
+export interface RegistrationRequest extends Row {
+  partner_user_id: number;
+  reference: string;
+  data: { [key: string]: string };
+  institution_registered_at: string;
+  institution_group_registered_at: string;
+  partner: User;
+}
+
 export interface Question extends InstitutionRow {
   question_no: number;
   question: string;
@@ -336,8 +435,9 @@ export interface Event extends InstitutionRow {
   title: string;
   description: string;
   duration: number;
-  status: number;
+  status: string;
   starts_at: string;
+  friendly_start_date: string;
   num_of_subjects: number;
   event_courseables?: EventCourseable[];
   exams?: Exam[];

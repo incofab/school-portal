@@ -39,7 +39,7 @@ export default function StudentSelect<
       valueKey={valueKey}
       params={params}
       label={(item: Student) =>
-        item.user!.full_name + ' - ' + item.classification!.title
+        item.user!.full_name + ' - ' + (item.classification?.title ?? 'Alumni')
       }
       {...props}
     />

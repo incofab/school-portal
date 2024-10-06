@@ -19,6 +19,9 @@ if (!function_exists('currentInstitution')) {
   function currentInstitution(): Institution|null
   {
     $institution = request()->route('institution');
+    if (!($institution instanceof Institution)) {
+      return null;
+    }
     return $institution;
   }
 }
@@ -26,8 +29,7 @@ if (!function_exists('currentInstitution')) {
 if (!function_exists('currentInstitutionUser')) {
   function currentInstitutionUser(): InstitutionUser|null
   {
-    $institution = request()->route('institutionUser');
-    return $institution;
+    return currentInstitution()?->institutionUsers?->first();
   }
 }
 
@@ -114,5 +116,16 @@ if (!function_exists('instRoute')) {
       $params[] = $moreParam;
     }
     return route("institutions.{$routeSuffix}", $params);
+  }
+}
+
+if (!function_exists('randomDigits')) {
+  function randomDigits($length)
+  {
+    $result = '';
+    for ($i = 0; $i < $length; $i++) {
+      $result .= random_int(0, 9);
+    }
+    return $result;
   }
 }
