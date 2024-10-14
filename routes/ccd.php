@@ -36,6 +36,8 @@ Route::post('questions/course-sessions/{courseSession}/store', [CCD\QuestionCont
 Route::get('questions/{question}/edit', [CCD\QuestionController::class, 'edit'])->name('questions.edit');
 Route::put('questions/{question}/update', [CCD\QuestionController::class, 'update'])->name('questions.update');
 Route::get('questions/{question}/delete', [CCD\QuestionController::class, 'destroy'])->name('questions.destroy');
+Route::get('questions/course-sessions/{courseSession}/upload', [CCD\QuestionController::class, 'uploadQuestionsView'])->name('questions.upload.create');
+Route::post('questions/course-sessions/{courseSession}/upload', [CCD\QuestionController::class, 'uploadQuestionsStore'])->name('questions.upload.store');
 // Route::get('question-corrections/{questionCorrection}/mark-as-resolved', [CCD\QuestionController::class, 'markQuestionCorrectionAsResolved'])->name('question-corrections.mark-as-resolved');
     
 

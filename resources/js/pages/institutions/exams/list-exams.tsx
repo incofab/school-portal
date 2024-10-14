@@ -5,17 +5,16 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
-import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import { InertiaLink } from '@inertiajs/inertia-react';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
+import tokenUserUtil from '@/util/token-user-util';
 
 interface Props {
   exams: PaginationResponse<Exam>;
@@ -40,7 +39,7 @@ export default function ListExams({ exams, event }: Props) {
     {
       label: 'Title',
       render: (row) =>
-        String(row.student?.user?.full_name ?? row.external_reference),
+        String(tokenUserUtil(row.examable).getName() ?? row.external_reference),
     },
     {
       label: 'Num of Subjects',
@@ -101,12 +100,12 @@ export default function ListExams({ exams, event }: Props) {
       <Slab>
         <SlabHeading
           title="List Exams"
-          rightElement={
-            <LinkButton
-              href={instRoute('exams.create', [event])}
-              title={'New'}
-            />
-          }
+          // rightElement={
+          // <LinkButton
+          //   href={instRoute('exams.create', [event])}
+          //   title={'New'}
+          // />
+          // }
         />
         <SlabBody>
           <ServerPaginatedTable

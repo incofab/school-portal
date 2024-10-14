@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\CCD;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UploadSessionQuestionsRequest;
 use App\Models\CourseSession;
 use App\Models\Institution;
 use App\Models\Question;
@@ -37,14 +38,16 @@ class QuestionController extends Controller
 
   function storeApi(Institution $institution, CourseSession $courseSession)
   {
-    $this->storeQuestion($institution, $courseSession);
+    $data = request()->validate(Question::createRule());
+    $this->storeQuestion($institution, $courseSession, $data);
 
     return response()->json(['success' => true]);
   }
 
   function store(Institution $institution, CourseSession $courseSession)
   {
-    $this->storeQuestion($institution, $courseSession);
+    $data = request()->validate(Question::createRule());
+    $this->storeQuestion($institution, $courseSession, $data);
 
     return $this->res(
       successRes('Question created'),
@@ -54,16 +57,15 @@ class QuestionController extends Controller
 
   private function storeQuestion(
     Institution $institution,
-    CourseSession $courseSession
+    CourseSession $courseSession,
+    array $validatedData = []
   ) {
-    $data = request()->validate(Question::createRule());
-
     $question = $courseSession->questions()->updateOrCreate(
       [
-        'question_no' => $data['question_no'],
+        'question_no' => $validatedData['question_no'],
         'institution_id' => $institution->id
       ],
-      $data
+      $validatedData
     );
 
     return $question;
@@ -99,6 +101,31 @@ class QuestionController extends Controller
     return $this->res(
       successRes('Question record deleted'),
       instRoute('questions.index')
+    );
+  }
+
+  function uploadQuestionsView(
+    Institution $institution,
+    CourseSession $courseSession
+  ) {
+    return view('ccd/questions/upload-session-questions', [
+      'courseSession' => $courseSession
+    ]);
+  }
+
+  function uploadQuestionsStore(
+    Institution $institution,
+    CourseSession $courseSession,
+    UploadSessionQuestionsRequest $uploadSessionQuestionsRequest
+  ) {
+    $data = $uploadSessionQuestionsRequest->validated();
+    foreach ($data['questions'] as $key => $item) {
+      $this->storeQuestion($institution, $courseSession, $item);
+    }
+
+    return redirect(instRoute('questions.index', $courseSession))->with(
+      'message',
+      'Questions uploaded successfully'
     );
   }
 }

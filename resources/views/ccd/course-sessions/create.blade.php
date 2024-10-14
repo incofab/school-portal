@@ -3,10 +3,10 @@
 @section('dashboard_content')
 
 <div>
-	@include('ccd._breadcrumb', ['headerTitle' => 'Add/Update Course Session'])
+	@include('ccd._breadcrumb', ['headerTitle' => 'Add/Update Session'])
 	<div class="justify-content-center">
     	<div class="tile">
-			<div class="tile-title">{{$edit ? 'Update' : 'Create'}} Course Session</div>
+			<div class="tile-title">{{$edit ? 'Update' : 'Create'}} Session</div>
 			<form method="POST" action="{{$edit ? instRoute('course-sessions.update', [$edit]) : instRoute('course-sessions.store', [$course])}}" name="register" >
 				@include('common.form_message')
 				@csrf
@@ -14,12 +14,12 @@
 					@method('PUT')
 				@endif
 				<div class="font-weight-bold">
-					<span>Course: </span>
+					<span>Subject: </span>
 					<span class="ml-2">{{$course->code}}</span>
 				</div>
 				<hr class="my-3">
 				<div class="form-group">
-					<label for="" >Course Year</label><br />
+					<label for="" >Session</label><br />
 					<input type="text" name="session" value="{{old('session',$edit?->session)}}"  class="form-control" />
 				</div>
 				

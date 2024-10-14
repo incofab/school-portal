@@ -18,6 +18,7 @@ import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
+import useIsStudent from '@/hooks/use-is-student';
 
 interface Props {
   events: PaginationResponse<Event>;
@@ -28,6 +29,7 @@ export default function ListEvents({ events }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
+  const isStudent = useIsStudent();
 
   async function deleteItem(obj: Event) {
     const res = await deleteForm.submit((data, web) =>
@@ -64,47 +66,52 @@ export default function ListEvents({ events }: Props) {
       label: 'Num of Subjects',
       value: 'num_of_subjects',
     },
-    ...(isAdmin
-      ? [
-          {
-            label: 'Action',
-            render: (row: Event) => (
-              <HStack>
-                <LinkButton
-                  href={instRoute('event-courseables.index', [row.id])}
-                  variant={'link'}
-                  title="Content"
-                />
-                <LinkButton
-                  href={instRoute('exams.index', [row.id])}
-                  variant={'link'}
-                  title="Exams"
-                />
+    {
+      label: 'Action',
+      render: (row: Event) => (
+        <HStack>
+          {isAdmin && (
+            <>
+              <LinkButton
+                href={instRoute('event-courseables.index', [row.id])}
+                variant={'link'}
+                title="Content"
+              />
+              <LinkButton
+                href={instRoute('exams.index', [row.id])}
+                variant={'link'}
+                title="Exams"
+              />
+              <IconButton
+                aria-label={'Edit Event'}
+                icon={<Icon as={PencilIcon} />}
+                as={InertiaLink}
+                href={instRoute('events.edit', [row.id])}
+                variant={'ghost'}
+                colorScheme={'brand'}
+              />
+              <DestructivePopover
+                label={'Delete this event'}
+                onConfirm={() => deleteItem(row)}
+                isLoading={deleteForm.processing}
+              >
                 <IconButton
-                  aria-label={'Edit Event'}
-                  icon={<Icon as={PencilIcon} />}
-                  as={InertiaLink}
-                  href={instRoute('events.edit', [row.id])}
+                  aria-label={'Delete event'}
+                  icon={<Icon as={TrashIcon} />}
                   variant={'ghost'}
-                  colorScheme={'brand'}
+                  colorScheme={'red'}
                 />
-                <DestructivePopover
-                  label={'Delete this event'}
-                  onConfirm={() => deleteItem(row)}
-                  isLoading={deleteForm.processing}
-                >
-                  <IconButton
-                    aria-label={'Delete event'}
-                    icon={<Icon as={TrashIcon} />}
-                    variant={'ghost'}
-                    colorScheme={'red'}
-                  />
-                </DestructivePopover>
-              </HStack>
-            ),
-          },
-        ]
-      : []),
+              </DestructivePopover>
+            </>
+          )}
+          <LinkButton
+            href={instRoute('events.show', [row.id])}
+            variant={'link'}
+            title="View"
+          />
+        </HStack>
+      ),
+    },
   ];
 
   return (

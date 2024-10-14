@@ -425,10 +425,15 @@ export interface Event extends InstitutionRow {
   duration: number;
   status: string;
   starts_at: string;
+  expires_at?: string;
   friendly_start_date: string;
   num_of_subjects: number;
+  classification_id?: number;
+  classification_group_id?: number;
   event_courseables?: EventCourseable[];
   exams?: Exam[];
+  classification?: Classification;
+  classification_group?: ClassificationGroup;
 }
 
 export interface EventCourseable extends Row {

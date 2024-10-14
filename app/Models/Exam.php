@@ -32,6 +32,13 @@ class Exam extends Model
     return $key;
   }
 
+  static function scopeForExamable($query, $examable)
+  {
+    return $query
+      ->where('examable_id', $examable->id)
+      ->where('examable_type', get_class($examable));
+  }
+
   function examCourseables()
   {
     return $this->hasMany(ExamCourseable::class);

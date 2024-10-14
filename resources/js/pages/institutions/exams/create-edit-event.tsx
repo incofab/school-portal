@@ -4,7 +4,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { dateTimeFormat, preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { Event } from '@/types/models';
+import { ClassificationGroup, Event } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -13,12 +13,17 @@ import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
 import format from 'date-fns/format';
+import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
 
 interface Props {
   event?: Event;
+  classificationGroups: ClassificationGroup[];
 }
 
-export default function CreateOrUpdateEvent({ event }: Props) {
+export default function CreateOrUpdateEvent({
+  event,
+  classificationGroups,
+}: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
@@ -28,6 +33,8 @@ export default function CreateOrUpdateEvent({ event }: Props) {
     status: event?.status ?? '',
     starts_at: event?.starts_at ?? '',
     num_of_subjects: event?.num_of_subjects ?? 1,
+    classification_id: event?.classification_id ?? '',
+    classification_group_id: event?.classification_group_id ?? '',
   });
 
   const submit = async () => {
@@ -98,6 +105,25 @@ export default function CreateOrUpdateEvent({ event }: Props) {
                       'starts_at',
                       format(new Date(e.currentTarget.value), dateTimeFormat)
                     )
+                  }
+                />
+              </FormControlBox>
+              <FormControlBox
+                title="Class Group"
+                form={webForm as any}
+                formKey="classification_group_id"
+              >
+                <ClassificationGroupSelect
+                  selectValue={webForm.data.classification_group_id}
+                  isMulti={false}
+                  isClearable={true}
+                  classificationGroups={classificationGroups}
+                  onChange={(e: any) =>
+                    webForm.setData({
+                      ...webForm.data,
+                      classification_group_id: e?.value,
+                      classification_id: '',
+                    })
                   }
                 />
               </FormControlBox>

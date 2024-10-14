@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Enums\EventStatus;
+use App\Rules\ValidateExistsRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 
 class Event extends Model
 {
@@ -15,8 +17,38 @@ class Event extends Model
   protected $guarded = [];
   protected $casts = [
     'status' => EventStatus::class,
-    'starts_at' => 'datetime'
+    'starts_at' => 'datetime',
+    'expires_at' => 'datetime',
+    'classification_id' => 'integer',
+    'classification_group_id' => 'integer'
   ];
+
+  static function createRule(Event $event = null)
+  {
+    return [
+      'title' => [
+        'required',
+        'string',
+        Rule::unique('events', 'id')
+          ->where('institution_id', currentInstitution()->id)
+          ->when($event, fn($q) => $q->ignore($event->id, 'id'))
+      ],
+      'description' => ['nullable', 'string'],
+      'duration' => ['required', 'numeric'],
+      'starts_at' => ['required', 'date'],
+      'expires_at' => ['nullable', 'date'],
+      'num_of_subjects' => ['nullable', 'integer'],
+      'num_of_activations' => ['nullable', 'integer'],
+      'classification_group_id' => [
+        'nullable',
+        new ValidateExistsRule(ClassificationGroup::class)
+      ],
+      'classification_id' => [
+        'nullable',
+        new ValidateExistsRule(Classification::class)
+      ]
+    ];
+  }
 
   public function duration(): Attribute
   {
@@ -29,9 +61,30 @@ class Event extends Model
   {
     return $this->getRawOriginal('duration');
   }
-  static function scopeActive($query, $status = 'active')
+  function scopeActive($query, $status = 'active')
   {
     return $query->where('status', $status);
+  }
+
+  function scopeForStudent($query, ?Student $student = null)
+  {
+    if (!$student) {
+      return $query;
+    }
+    if (!$student->classification->classification_group_id) {
+      return $query->where('classification_id', $student->classification_id);
+    }
+    return $query
+      ->where(
+        fn($q) => $q
+          ->where(
+            'classification_group_id',
+            '=',
+            $student->classification->classification_group_id
+          )
+          ->whereNull('classification_id')
+      )
+      ->orWhere('classification_id', $student->classification_id);
   }
 
   function canCreateExamCheck()
@@ -65,5 +118,15 @@ class Event extends Model
   function eventCourseables()
   {
     return $this->hasMany(EventCourseable::class);
+  }
+
+  function classification()
+  {
+    return $this->belongsTo(Classification::class);
+  }
+
+  function classificationGroup()
+  {
+    return $this->belongsTo(ClassificationGroup::class);
   }
 }

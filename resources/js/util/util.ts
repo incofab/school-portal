@@ -177,3 +177,12 @@ export function validFilename(input?: string): string {
 function ucfirst(text: string) {
   return startCase(text);
 }
+
+export function isTimeExpired(timeString?: string): boolean {
+  if (!timeString) {
+    return false;
+  }
+  const givenTime = new Date(timeString);
+  const currentTime = new Date();
+  return givenTime < currentTime;
+}
