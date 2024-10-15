@@ -5,11 +5,6 @@ import {
   Text,
   IconButton,
   Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuDivider,
   useDisclosure,
   Stack,
   Icon,
@@ -25,15 +20,15 @@ import { BreadCrumbParam } from '@/types/types';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { PropsWithChildren, ReactNode } from 'react';
 import useSharedProps from '@/hooks/use-shared-props';
-import ShowBreadCrumb from './component/show-bread-crumb';
 import { avatarUrl } from '@/util/util';
-import { TokenUser } from '@/types/models';
+import { Student, TokenUser, User } from '@/types/models';
+import tokenUserUtil from '@/util/token-user-util';
 
 interface Props {
   title: string | ReactNode;
   rightElement?: string | ReactNode;
   breadCrumbItems?: BreadCrumbParam[];
-  tokenUser?: TokenUser;
+  tokenUser: TokenUser | User | Student;
 }
 
 const NavLink = ({ link }: { link: BreadCrumbParam }) => {
@@ -101,7 +96,10 @@ export default function ExamLayout({
                 {currentInstitution.name}
               </Text>
             </Div>
-            <HStack
+            <Div>
+              <Text>{tokenUserUtil(tokenUser).getName()}</Text>
+            </Div>
+            {/* <HStack
               as={'nav'}
               spacing={4}
               display={{ base: 'none', md: 'flex' }}
@@ -109,12 +107,13 @@ export default function ExamLayout({
               {Links.map((link) => (
                 <NavLink key={link.title} link={link} />
               ))}
-            </HStack>
+            </HStack> */}
           </VStack>
           <HStack spacing={2}>
-            {tokenUser && (
-              <Avatar size={'sm'} src={avatarUrl(tokenUser.name)} />
-            )}
+            <Avatar
+              size={'sm'}
+              src={avatarUrl(tokenUserUtil(tokenUser).getName()!)}
+            />
             {/* <Flex alignItems={'center'} flexDirection={'row'} gap={2}>
               <Menu>
                 <MenuButton
@@ -153,13 +152,13 @@ export default function ExamLayout({
           </Div>
         ) : null}
       </Div>
-
+      {/* 
       <ShowBreadCrumb
         breadCrumbItems={[
           { title: 'Home', href: instRoute('external.home') },
           ...(breadCrumbItems ?? []),
         ]}
-      />
+      /> */}
       <Div px={'8px'}>
         {title && (
           <>

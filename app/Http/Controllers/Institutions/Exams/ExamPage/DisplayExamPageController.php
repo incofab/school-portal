@@ -25,7 +25,7 @@ class DisplayExamPageController extends Controller
 
     $examHandler = ExamHandler::make($exam)->startExam();
     $examAttemptFileHandler = ExamAttemptFileHandler::make($exam);
-    $tokenUser = $this->getTokenUserFromCookie();
+    $tokenUser = currentUser() ?? $this->getTokenUserFromCookie();
 
     return Inertia::render('institutions/exams/exam-page/display-exam', [
       'exam' => $exam,

@@ -19,19 +19,24 @@ class Question extends Model
     return new QuestionQueryBuilder($query);
   }
 
-  static function createRule(Question $question = null)
+  static function createRule(Question $question = null, $prefix = '')
   {
+    $options = ['A', 'B', 'C', 'D', 'E'];
     return [
-      'question_no' => ['required', 'integer'],
-      'question' => ['required', 'string'],
-      'option_a' => ['required', 'string'],
-      'option_b' => ['required', 'string'],
-      'option_c' => ['nullable', 'string'],
-      'option_d' => ['nullable', 'string'],
-      'option_e' => ['nullable', 'string'],
-      'answer' => ['required', 'string'],
-      'answer_meta' => ['nullable', 'string'],
-      'topic_id' => ['nullable', 'integer', Rule::exists('topics', 'id')]
+      $prefix . 'question_no' => ['required', 'integer'],
+      $prefix . 'question' => ['required', 'string'],
+      $prefix . 'option_a' => ['required', Rule::in($options)],
+      $prefix . 'option_b' => ['required', Rule::in($options)],
+      $prefix . 'option_c' => ['nullable', Rule::in($options)],
+      $prefix . 'option_d' => ['nullable', Rule::in($options)],
+      $prefix . 'option_e' => ['nullable', Rule::in($options)],
+      $prefix . 'answer' => ['required', Rule::in($options)],
+      $prefix . 'answer_meta' => ['nullable', 'string'],
+      $prefix . 'topic_id' => [
+        'nullable',
+        'integer',
+        Rule::exists('topics', 'id')
+      ]
     ];
   }
 

@@ -108,7 +108,7 @@ function InstitutionDashboard() {
       route: forTeacher
         ? instRoute('class-result-info.index')
         : student
-        ? instRoute('students.term-results.index')
+        ? instRoute('students.term-results.index', student)
         : '',
       icon: ChartBarIcon,
       roles: [

@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Exam, ExamCourseable, Question, TokenUser } from '@/types/models';
+import {
+  Exam,
+  ExamCourseable,
+  Question,
+  TokenUser,
+  User,
+} from '@/types/models';
 import {
   Center,
   HStack,
@@ -31,10 +37,11 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import { ExamAttempt } from '@/types/types';
 import QuestionImageHandler from '@/util/exam/question-image-handler';
 import '@/style/exam-display.css';
+import tokenUserUtil from '@/util/token-user-util';
 
 interface Props {
   exam: Exam;
-  tokenUser: TokenUser;
+  tokenUser: TokenUser | User;
   timeRemaining: number;
   existingAttempts: ExamAttempt;
 }
@@ -122,7 +129,10 @@ export default function DisplayExam({
   return (
     <ExamLayout
       title={''}
-      breadCrumbItems={[{ title: `${tokenUser.name}`, href: '#' }]}
+      tokenUser={tokenUser}
+      breadCrumbItems={[
+        { title: `${tokenUserUtil(tokenUser).getName()}`, href: '#' },
+      ]}
       rightElement={
         <HStack>
           <IconButton

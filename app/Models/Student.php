@@ -14,7 +14,8 @@ class Student extends Model
 
   public $guarded = [];
   protected $casts = [
-    'user_id' => 'integer'
+    'user_id' => 'integer',
+    'classification_id' => 'integer'
   ];
 
   protected $appends = ['full_code'];

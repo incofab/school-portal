@@ -3,8 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Institutions as Web;
 
-Route::resource('/events', Web\Exams\EventController::class)
-    ->except(['show']);
+Route::resource('/events', Web\Exams\EventController::class);
 
 Route::delete('event-courseables/{eventCourseable}/delete', [Web\Exams\EventCourseableController::class, 'destroy'])
     ->name('event-courseables.destroy');

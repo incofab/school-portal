@@ -10,6 +10,7 @@ use App\Http\Requests\StoreExamRequest;
 use App\Models\Event;
 use App\Models\Exam;
 use App\Models\Institution;
+use App\Models\Student;
 use App\Models\User;
 use App\Support\MorphMap;
 use Illuminate\Http\Request;
@@ -19,7 +20,14 @@ class ExamController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin]);
+    $this->allowedRoles([InstitutionUserType::Admin])->except(
+      'create',
+      'store'
+    );
+    $this->allowedRoles([InstitutionUserType::Student])->only(
+      'create',
+      'store'
+    );
   }
 
   function index(Institution $institution, Event $event, Request $request)
@@ -45,6 +53,23 @@ class ExamController extends Controller
   function create(Institution $institution, Event $event)
   {
     $this->validateCreateExam($event);
+    $student = currentInstitutionUser()->student;
+
+    if ($event->eventCourseables->count() == 1) {
+      // start exam and go to exam page
+      $eventCourseable = $event->eventCourseables->first();
+      $exam = CreateExam::run($event, [
+        'start_now' => true,
+        'examable_id' => $student->id,
+        'examable_type' => MorphMap::key(Student::class),
+        'courseables' => [
+          'courseable_id' => $eventCourseable->courseable_id,
+          'courseable_type' => $eventCourseable->courseable_type
+        ]
+      ]);
+      return redirect(instRoute('display-exam-page', [$exam->exam_no]));
+    }
+
     return Inertia::render('institutions/exams/create-exam', [
       'event' => $event->load('eventCourseables.courseable.course'),
       'external_reference' => request('reference'),
