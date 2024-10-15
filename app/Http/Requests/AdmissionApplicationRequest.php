@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\Gender;
+use App\Enums\GuardianRelationship;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -24,35 +25,29 @@ class AdmissionApplicationRequest extends FormRequest
   public function rules(): array
   {
     return [
+      'reference' => ['required', 'unique:admission_applications,reference'],
       'first_name' => ['required', 'string', 'max:255'],
       'last_name' => ['required', 'string', 'max:255'],
       'other_names' => ['nullable', 'string', 'max:255'],
+      'phone' => ['nullable', 'string', 'max:20'],
+      'email' => ['nullable', 'string'],
       'gender' => ['nullable', new Enum(Gender::class)],
-      'dob' => ['nullable', 'string'],
+      'nationality' => ['nullable', 'string'],
       'religion' => ['nullable', 'string'],
       'lga' => ['nullable', 'string'],
       'state' => ['nullable', 'string'],
-      'nationality' => ['nullable', 'string'],
       'intended_class_of_admission' => ['nullable', 'string'],
       'previous_school_attended' => ['nullable', 'string'],
-      'fathers_name' => ['nullable', 'string'],
-      'fathers_occupation' => ['nullable', 'string'],
-      'fathers_phone' => ['nullable', 'string', 'max:20'],
-      'fathers_email' => ['nullable', 'string'],
-      'fathers_residential_address' => ['nullable', 'string'],
-      'fathers_office_address' => ['nullable', 'string'],
-      'mothers_name' => ['nullable', 'string'],
-      'mothers_occupation' => ['nullable', 'string'],
-      'mothers_phone' => ['nullable', 'string', 'max:20'],
-      'mothers_email' => ['nullable', 'string'],
-      'mothers_residential_address' => ['nullable', 'string'],
-      'mothers_office_address' => ['nullable', 'string'],
+      'dob' => ['nullable', 'string'],
+      'address' => ['nullable', 'string'],
       'photo' => ['nullable', 'image', 'mimes:jpg,png,jpeg', 'max:1024'],
-      'reference' => ['required', 'unique:admission_applications,reference']
-      // 'phone' => ['nullable', 'string', 'max:20'],
-      // 'guardian_phone' => ['nullable', 'string'],
-      // 'email' => ['nullable', 'string'],
-      // 'address' => ['nullable', 'string'],
+      'guardians' => ['required', 'array'],
+      'guardians.*.first_name' => ['required', 'string', 'max:255'],
+      'guardians.*.last_name' => ['required', 'string', 'max:255'],
+      'guardians.*.other_names' => ['nullable', 'string', 'max:255'],
+      'guardians.*.phone' => ['required', 'string', 'max:20'],
+      'guardians.*.email' => ['nullable', 'string'],
+      'guardians.*.relationship' => ['required', new Enum(GuardianRelationship::class)],
     ];
   }
 }

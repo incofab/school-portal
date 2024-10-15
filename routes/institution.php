@@ -254,9 +254,9 @@ Route::delete('/learning-evaluations/destroy/{learningEvaluation}', [Web\Staff\L
 Route::post('/set-term-result-learning-evaluation/{termResult?}', [Web\Staff\LearningEvaluationController::class, 'setTermResultEvaluation'])
   ->name('set-term-result-learning-evaluation');
 
-Route::resource('/admissions', Web\AdmissionApplicationController::class)->except('store');
-Route::post('/admissions/{admissionApplication}/update-status', [Web\AdmissionApplicationController::class, 'updateStatus'])
-  ->name('admissions.update-status');
+Route::resource('/admission-applications', Web\AdmissionApplicationController::class)->except('store');
+Route::post('/admission-applications/{admissionApplication}/update-status', [Web\AdmissionApplicationController::class, 'updateStatus'])
+  ->name('admission-applications.update-status');
 // Route::get('/admissions/letter/{admissionApplication}', [Web\AdmissionApplicationController::class, 'admissionLetter'])
 //   ->name('admissions.letter');
 

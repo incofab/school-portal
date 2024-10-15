@@ -18,10 +18,15 @@ import {
 import React, { useState } from 'react';
 import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
-import { Gender, Nationality, Religion } from '@/types/types';
-import { AdmissionApplication, Institution } from '@/types/models';
+import {
+  Gender,
+  GuardianRelationship,
+  Nationality,
+  Religion,
+} from '@/types/types';
+import { Institution } from '@/types/models';
 import InputForm from '@/components/forms/input-form';
-import { FormButton } from '@/components/buttons';
+import { BrandButton, FormButton } from '@/components/buttons';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
@@ -36,24 +41,55 @@ import { resizeImage } from '@/util/util';
 interface Props {
   institution: Institution;
 }
-interface AdmissionData extends AdmissionApplication {
-  files: FileList | null;
+
+interface GuardianProp {
+  first_name: string;
+  last_name: string;
+  other_names: string;
+  phone: string;
+  email: string;
+  relationship: string;
 }
 
+// interface AdmissionData extends AdmissionApplication {
+//   files: FileList | null;
+// }
+
 export default function AdmissionApplicationPage({ institution }: Props) {
-  const form = useWebForm({
-    reference: String(institution.id) + generateRandomString(16),
-    files: {} as FileList | null,
-  } as AdmissionData);
+  // const form = useWebForm({
+  //   reference: String(institution.id) + generateRandomString(16),
+  //   files: {} as FileList | null,
+  // } as AdmissionData);
+
   // AdmissionApplication & {
   //   files: FileList | null;
   // });
+
+  const form = useWebForm({
+    reference: String(institution.id) + generateRandomString(16),
+    first_name: '',
+    last_name: '',
+    other_names: '',
+    gender: '',
+    dob: '',
+    religion: '',
+    lga: '',
+    state: '',
+    nationality: '',
+    intended_class_of_admission: '',
+    previous_school_attended: '',
+    phone: '',
+    email: '',
+    photo: '',
+    guardians: [] as GuardianProp[],
+    files: {} as FileList | null,
+  });
 
   const { handleResponseToast } = useMyToast();
   const extensions = FileDropperType.Image.extensionLabels;
   // const { instRoute } = useInstitutionRoute();
 
-  const [uploadedPhoto, setUploadedPhoto] = useState(null);
+  const [uploadedPhoto, setUploadedPhoto] = useState<string | null>(null);
 
   async function onSubmit() {
     const res = await form.submit(async (data, web) => {
@@ -61,10 +97,20 @@ export default function AdmissionApplicationPage({ institution }: Props) {
       const file = data.files![0];
       const imageBlob = await resizeImage(file, 300, 300);
       formData.append('photo', imageBlob as Blob);
+
       Object.entries(data).map(([key, value]) => {
-        if (key !== 'files') {
-          formData.append(key, value);
+        if (key === 'files' || key === 'photo') {
+          return;
         }
+        if (key === 'guardians') {
+          (value as []).forEach((v, i) => {
+            Object.entries(v).map(([key1, value1]) => {
+              formData.append(`guardians[${i}][${key1}]`, String(value1));
+            });
+          });
+          return;
+        }
+        formData.append(key, String(value));
       });
 
       return web.post(
@@ -160,21 +206,23 @@ export default function AdmissionApplicationPage({ institution }: Props) {
                   value={form.data.other_names}
                 />
               </FormControlBox>
-              {/* <FormControlBox form={form as any} title="Phone" formKey="phone">
-            <Input
-              type="phone"
-              onChange={(e) => form.setValue('phone', e.currentTarget.value)}
-              value={form.data.phone}
-            />
-          </FormControlBox>
-          <FormControlBox form={form as any} title="Email" formKey="email">
-            <Input
-              type="email"
-              onChange={(e) => form.setValue('email', e.currentTarget.value)}
-              value={form.data.email}
-              required
-            />
-          </FormControlBox> */}
+              {/* 
+              <FormControlBox form={form as any} title="Phone" formKey="phone">
+                <Input
+                  type="phone"
+                  onChange={(e) => form.setValue('phone', e.currentTarget.value)}
+                  value={form.data.phone}
+                />
+              </FormControlBox>
+              <FormControlBox form={form as any} title="Email" formKey="email">
+                <Input
+                  type="email"
+                  onChange={(e) => form.setValue('email', e.currentTarget.value)}
+                  value={form.data.email}
+                  required
+                />
+              </FormControlBox> 
+              */}
               <FormControlBox
                 form={form as any}
                 title="Gender"
@@ -205,6 +253,13 @@ export default function AdmissionApplicationPage({ institution }: Props) {
                   required
                 />
               </FormControlBox>
+
+              <InputForm
+                form={form as any}
+                title="Residential Address"
+                formKey="address"
+              />
+
               <InputForm
                 form={form as any}
                 title="Local Govt. Area"
@@ -237,95 +292,23 @@ export default function AdmissionApplicationPage({ institution }: Props) {
                 formKey="previous_school_attended"
               />
 
-              <HStack align={'stretch'}>
-                <InputForm
-                  form={form as any}
-                  title="Father's name"
-                  formKey="fathers_name"
-                />
+              {form.data.guardians.map((guardian: GuardianProp, index) =>
+                GuardianForm(index, guardian, form)
+              )}
+
+              <HStack align={'stretch'} mt={5}>
+                <FormButton isLoading={form.processing} title="Submit Form" />
                 <Spacer />
-                <InputForm
-                  form={form as any}
-                  title="Father's Occupation"
-                  formKey="fathers_occupation"
+                <BrandButton
+                  title="Add New Guardian"
+                  onClick={() => {
+                    form.setValue('guardians', [
+                      ...form.data.guardians,
+                      {} as GuardianProp,
+                    ]);
+                  }}
                 />
               </HStack>
-              <HStack align={'stretch'}>
-                <InputForm
-                  form={form as any}
-                  title="Father's Phone"
-                  formKey="fathers_phone"
-                />
-                <Spacer />
-                <InputForm
-                  form={form as any}
-                  title="Father's Email"
-                  formKey="fathers_email"
-                />
-              </HStack>
-
-              <InputForm
-                form={form as any}
-                title="Father's Residential Address"
-                formKey="fathers_residential_address"
-              />
-
-              <InputForm
-                form={form as any}
-                title="Father's Office Address"
-                formKey="fathers_office_address"
-              />
-
-              <HStack align={'stretch'}>
-                <InputForm
-                  form={form as any}
-                  title="Mother's name"
-                  formKey="mothers_name"
-                />
-                <Spacer />
-                <InputForm
-                  form={form as any}
-                  title="Mother's Occupation"
-                  formKey="mothers_occupation"
-                />
-              </HStack>
-
-              <HStack align={'stretch'}>
-                <InputForm
-                  form={form as any}
-                  title="Mother's Phone"
-                  formKey="mothers_phone"
-                />
-                <Spacer />
-                <InputForm
-                  form={form as any}
-                  title="Mother's Email"
-                  formKey="mothers_email"
-                />
-              </HStack>
-
-              <InputForm
-                form={form as any}
-                title="Mother's Residential Address"
-                formKey="mothers_residential_address"
-              />
-
-              <InputForm
-                form={form as any}
-                title="Mother's Office Address"
-                formKey="mothers_office_address"
-              />
-
-              {/* <InputForm
-            form={form as any}
-            title="Parents Phone"
-            formKey="guardian_phone"
-          />
-          <InputForm form={form as any} title="Address" formKey="address" /> */}
-
-              <FormControl>
-                <FormButton isLoading={form.processing} title="Apply" />
-              </FormControl>
             </VStack>
           </GridItem>
           <GridItem colSpan={{ lg: 1 }}>
@@ -390,5 +373,112 @@ export default function AdmissionApplicationPage({ institution }: Props) {
       </Div>
       <Spacer height={'30px'} />
     </Div>
+  );
+}
+
+function GuardianForm(index: number, guardian: GuardianProp, form: any) {
+  return (
+    <VStack mt={10}>
+      <HStack width="full" justify="flex-end" align={'stretch'}>
+        <BrandButton
+          title="Remove this Guardian Record"
+          onClick={() => {
+            const guardians = form.data.guardians as [];
+            guardians.splice(index, 1);
+            form.setValue('guardians', guardians);
+          }}
+        />
+      </HStack>
+
+      <FormControlBox
+        form={form as any}
+        title="First Name"
+        formKey="first_name"
+      >
+        <Input
+          type="text"
+          onChange={(e) => {
+            const guardians = form.data.guardians;
+            const g = guardians[index];
+            g.first_name = e.currentTarget.value;
+            form.setValue('guardians', guardians);
+          }}
+          value={guardian.first_name}
+          required
+        />
+      </FormControlBox>
+      <FormControlBox form={form as any} title="Last Name" formKey="last_name">
+        <Input
+          type="text"
+          onChange={(e) => {
+            const guardians = form.data.guardians;
+            const g = guardians[index];
+            g.last_name = e.currentTarget.value;
+            form.setValue('guardians', guardians);
+          }}
+          value={guardian.last_name}
+          required
+        />
+      </FormControlBox>
+      <FormControlBox
+        form={form as any}
+        title="Other Names"
+        formKey="other_names"
+      >
+        <Input
+          type="text"
+          onChange={(e) => {
+            const guardians = form.data.guardians;
+            const g = guardians[index];
+            g.other_names = e.currentTarget.value;
+            form.setValue('guardians', guardians);
+          }}
+          value={guardian.other_names}
+        />
+      </FormControlBox>
+      <FormControlBox form={form as any} title="Phone" formKey="phone">
+        <Input
+          type="phone"
+          onChange={(e) => {
+            const guardians = form.data.guardians;
+            const g = guardians[index];
+            g.phone = e.currentTarget.value;
+            form.setValue('guardians', guardians);
+          }}
+          value={guardian.phone}
+        />
+      </FormControlBox>
+      <FormControlBox form={form as any} title="Email" formKey="email">
+        <Input
+          type="email"
+          onChange={(e) => {
+            const guardians = form.data.guardians;
+            const g = guardians[index];
+            g.email = e.currentTarget.value;
+            form.setValue('guardians', guardians);
+          }}
+          value={guardian.email}
+          required
+        />
+      </FormControlBox>
+
+      <FormControlBox
+        form={form as any}
+        title="Relationship"
+        formKey="relationship"
+      >
+        <EnumSelect
+          enumData={GuardianRelationship}
+          selectValue={guardian.relationship}
+          onChange={(e: any) => {
+            //const guardians = form.data.guardians;
+            //const g = guardians[index];
+            guardian.relationship = e.value;
+            form.setValue('guardians', form.data.guardians);
+          }}
+          required
+        />
+      </FormControlBox>
+    </VStack>
   );
 }

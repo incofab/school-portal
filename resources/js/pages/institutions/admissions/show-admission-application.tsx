@@ -34,10 +34,13 @@ export default function Profile({ admissionApplication }: Props) {
 
     const res = await form.submit((data, web) => {
       return web.post(
-        instRoute('admissions.update-status', [admissionApplication]),
+        instRoute('admission-applications.update-status', [
+          admissionApplication,
+        ]),
         { ...data, admission_status: status }
       );
     });
+
     if (!handleResponseToast(res)) return;
   };
 
@@ -59,42 +62,45 @@ export default function Profile({ admissionApplication }: Props) {
       label: 'Previous School',
       value: admissionApplication.previous_school_attended,
     },
-    { label: "Father's Name", value: admissionApplication.fathers_name },
-    {
-      label: "Father's Occupation",
-      value: admissionApplication.fathers_occupation,
-    },
-    { label: "Father's Phone", value: admissionApplication.fathers_phone },
-    { label: "Father's Email", value: admissionApplication.fathers_email },
-    {
-      label: "Father's Residential Address",
-      value: admissionApplication.fathers_residential_address,
-    },
-    {
-      label: "Father's Office Address",
-      value: admissionApplication.fathers_office_address,
-    },
-    { label: "Mother's Name", value: admissionApplication.mothers_name },
-    {
-      label: "Mother's Occupation",
-      value: admissionApplication.mothers_occupation,
-    },
-    { label: "Mother's Phone", value: admissionApplication.mothers_phone },
-    { label: "Mother's Email", value: admissionApplication.mothers_email },
-    {
-      label: "Mother's Residential Address",
-      value: admissionApplication.mothers_residential_address,
-    },
-    {
-      label: "Mother's Office Address",
-      value: admissionApplication.mothers_office_address,
-    },
     { label: 'Reference', value: admissionApplication.reference },
   ];
 
+  admissionApplication.application_guardians?.forEach((guardian, index) => {
+    profileData.push(
+      {
+        label: `GUARDIAN - ${index + 1}`,
+        value: '',
+      },
+      {
+        label: `First Name`,
+        value: guardian.first_name,
+      },
+      {
+        label: `Last Name`,
+        value: guardian.last_name,
+      },
+      {
+        label: `Other Names`,
+        value: guardian.other_names,
+      },
+      {
+        label: `Phone`,
+        value: guardian.phone,
+      },
+      {
+        label: `Email`,
+        value: guardian.email,
+      },
+      {
+        label: `Relationship`,
+        value: guardian.relationship,
+      }
+    );
+  });
+
   return (
     <Div>
-      {isAdmin && admissionApplication.admission_status === 'pending' ? ( 
+      {isAdmin && admissionApplication.admission_status === 'pending' ? (
         <HStack align={'stretch'} my={2}>
           <BrandButton
             title="Admit Student"

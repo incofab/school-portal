@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Traits\InstitutionScope;
@@ -18,5 +19,10 @@ class AdmissionApplication extends Model
   function institution()
   {
     return $this->belongsTo(Institution::class);
+  }
+
+  public function applicationGuardians()
+  {
+    return $this->hasMany(ApplicationGuardian::class, 'admission_application_id');
   }
 }

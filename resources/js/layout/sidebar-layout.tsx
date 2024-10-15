@@ -89,6 +89,11 @@ export default function SideBarLayout() {
           route: instRoute('students.create'),
           roles: [InstitutionUserType.Admin],
         },
+        {
+          label: 'Student Applications',
+          route: instRoute('admission-applications.index'),
+          roles: [InstitutionUserType.Admin],
+        },
       ],
     },
     {

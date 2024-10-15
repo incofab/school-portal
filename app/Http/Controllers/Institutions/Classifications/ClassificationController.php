@@ -82,7 +82,7 @@ class ClassificationController extends Controller
 
   function edit(Institution $institution, Classification $classification)
   {
-    dd($classification);
+    //dd($classification);
     return inertia('institutions/classifications/create-edit-classification', [
       'classification' => $classification->load(
         'formTeacher',

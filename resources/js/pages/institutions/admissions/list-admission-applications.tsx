@@ -30,7 +30,7 @@ export default function ListAdmissionApplication({
 
   async function deleteItem(obj: AdmissionApplication) {
     const res = await deleteForm.submit((data, web) =>
-      web.delete(instRoute('admissions.destroy', [obj.id]))
+      web.delete(instRoute('admission-applications.destroy', [obj.id]))
     );
     handleResponseToast(res);
     Inertia.reload({ only: ['admissions'] });
@@ -63,7 +63,7 @@ export default function ListAdmissionApplication({
                   aria-label={'View Application'}
                   icon={<Icon as={EyeIcon} />}
                   as={InertiaLink}
-                  href={instRoute('admissions.show', [row.id])}
+                  href={instRoute('admission-applications.show', [row.id])}
                   variant={'ghost'}
                   colorScheme={'brand'}
                 />

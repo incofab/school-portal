@@ -335,14 +335,9 @@ export interface AdmissionApplication extends Row {
   last_name: string;
   other_names: string;
   phone: string;
+  photo: string;
   email: string;
   gender: string;
-  fathers_name: string;
-  mothers_name: string;
-  fathers_occupation: string;
-  mothers_occupation: string;
-  guardian_phone: string;
-  photo: string;
   address: string;
   previous_school_attended: string;
   dob: string;
@@ -352,15 +347,17 @@ export interface AdmissionApplication extends Row {
   lga: string;
   state: string;
   intended_class_of_admission: string;
-  fathers_phone: string;
-  fathers_email: string;
-  fathers_residential_address: string;
-  fathers_office_address: string;
-  mothers_phone: string;
-  mothers_email: string;
-  mothers_residential_address: string;
-  mothers_office_address: string;
   admission_status: string;
+  application_guardians?: ApplicationGuardian[];
+}
+
+export interface ApplicationGuardian extends Row {
+  first_name: string;
+  last_name: string;
+  other_names: string;
+  phone: string;
+  email: string;
+  relationship: string;
 }
 
 export interface Assessment extends InstitutionRow {

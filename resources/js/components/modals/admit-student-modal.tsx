@@ -8,6 +8,7 @@ import FormControlBox from '../forms/form-control-box';
 import ClassificationSelect from '../selectors/classification-select';
 import { preventNativeSubmit } from '@/util/util';
 import { AdmissionApplication } from '@/types/models';
+import { Inertia } from '@inertiajs/inertia';
 
 interface Props {
   isOpen: boolean;
@@ -43,11 +44,14 @@ export default function AdmitStudentModal({
 
     const res = await webForm.submit((data, web) => {
       return web.post(
-        instRoute('admissions.update-status', [admissionApplication]),
+        instRoute('admission-applications.update-status', [
+          admissionApplication,
+        ]),
         data
       );
     });
     if (!handleResponseToast(res)) return;
+    Inertia.visit(instRoute('admission-applications.index'));
     onClose();
     onSuccess();
   };
