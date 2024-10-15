@@ -46,11 +46,10 @@ class UploadSessionQuestionsRequest extends FormRequest
    */
   public function rules(): array
   {
-    $options = ['A', 'B', 'C', 'D', 'E'];
     return [
       'file' => ['required', 'file', new ExcelRule($this->file('file'))],
       'questions' => ['required', 'array', 'min:1'],
-      ...Question::createRule(null, 'questions.*')
+      ...Question::createRule(null, 'questions.*.')
       // 'questions.*.question' => ['required', 'string'],
       // 'questions.*.question_no' => ['required', 'string'],
       // 'questions.*.option_a' => ['required', Rule::in($options)],

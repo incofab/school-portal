@@ -25,11 +25,11 @@ class Question extends Model
     return [
       $prefix . 'question_no' => ['required', 'integer'],
       $prefix . 'question' => ['required', 'string'],
-      $prefix . 'option_a' => ['required', Rule::in($options)],
-      $prefix . 'option_b' => ['required', Rule::in($options)],
-      $prefix . 'option_c' => ['nullable', Rule::in($options)],
-      $prefix . 'option_d' => ['nullable', Rule::in($options)],
-      $prefix . 'option_e' => ['nullable', Rule::in($options)],
+      $prefix . 'option_a' => ['required'],
+      $prefix . 'option_b' => ['required'],
+      $prefix . 'option_c' => ['nullable'],
+      $prefix . 'option_d' => ['nullable'],
+      $prefix . 'option_e' => ['nullable'],
       $prefix . 'answer' => ['required', Rule::in($options)],
       $prefix . 'answer_meta' => ['nullable', 'string'],
       $prefix . 'topic_id' => [
