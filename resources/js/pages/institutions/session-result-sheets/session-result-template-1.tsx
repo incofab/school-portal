@@ -15,7 +15,7 @@ import useSharedProps from '@/hooks/use-shared-props';
 import ImagePaths from '@/util/images';
 import { LabelText } from '@/components/result-helper-components';
 import '@/../../public/style/result-sheet.css';
-import '@/../../public/style/result/session-result.css';
+import '@/../../public/style/result/session-result.css'; 
 
 interface Props {
   sessionResult: SessionResult;

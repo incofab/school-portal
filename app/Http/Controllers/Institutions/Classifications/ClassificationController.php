@@ -20,7 +20,7 @@ class ClassificationController extends Controller
     $query = Classification::query()
       ->when(
         $request->classification_group,
-        fn($q, $value) => $q->where('classification_group_id', $value)
+        fn ($q, $value) => $q->where('classification_group_id', $value)
       )
       ->with('formTeacher', 'classificationGroup')
       ->withCount('students');
@@ -35,7 +35,7 @@ class ClassificationController extends Controller
       'result' => Classification::query()
         ->when(
           request('search'),
-          fn($q, $search) => $q->where('title', 'like', "%$search%")
+          fn ($q, $search) => $q->where('title', 'like', "%$search%")
         )
         ->orderBy('title')
         ->get()
@@ -82,6 +82,7 @@ class ClassificationController extends Controller
 
   function edit(Institution $institution, Classification $classification)
   {
+    //dd($classification);
     return inertia('institutions/classifications/create-edit-classification', [
       'classification' => $classification->load(
         'formTeacher',
