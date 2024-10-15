@@ -41,13 +41,16 @@ class AdmissionApplicationRequest extends FormRequest
       'dob' => ['nullable', 'string'],
       'address' => ['nullable', 'string'],
       'photo' => ['nullable', 'image', 'mimes:jpg,png,jpeg', 'max:1024'],
-      'guardians' => ['required', 'array'],
+      'guardians' => ['required', 'array', 'min:1'],
       'guardians.*.first_name' => ['required', 'string', 'max:255'],
       'guardians.*.last_name' => ['required', 'string', 'max:255'],
       'guardians.*.other_names' => ['nullable', 'string', 'max:255'],
       'guardians.*.phone' => ['required', 'string', 'max:20'],
       'guardians.*.email' => ['nullable', 'string'],
-      'guardians.*.relationship' => ['required', new Enum(GuardianRelationship::class)],
+      'guardians.*.relationship' => [
+        'required',
+        new Enum(GuardianRelationship::class)
+      ]
     ];
   }
 }

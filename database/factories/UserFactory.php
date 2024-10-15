@@ -57,7 +57,8 @@ class UserFactory extends Factory
   ): static {
     return $this->afterCreating(
       fn(User $user) => $user->institutionUsers()->create([
-        'institution_id' => $institution->id ?? Institution::factory(),
+        'institution_id' =>
+          $institution->id ?? Institution::factory()->create()->id,
         'role' => $role
       ])
     );
