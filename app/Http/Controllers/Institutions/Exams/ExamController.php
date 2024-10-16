@@ -63,11 +63,18 @@ class ExamController extends Controller
         'examable_id' => $student->id,
         'examable_type' => MorphMap::key(Student::class),
         'courseables' => [
-          'courseable_id' => $eventCourseable->courseable_id,
-          'courseable_type' => $eventCourseable->courseable_type
+          [
+            'courseable_id' => $eventCourseable->courseable_id,
+            'courseable_type' => $eventCourseable->courseable_type
+          ]
         ]
       ]);
-      return redirect(instRoute('display-exam-page', [$exam->exam_no]));
+      return redirect(
+        route('institutions.display-exam-page', [
+          $institution->uuid,
+          $exam->exam_no
+        ])
+      );
     }
 
     return Inertia::render('institutions/exams/create-exam', [

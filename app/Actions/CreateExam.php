@@ -1,6 +1,7 @@
 <?php
 namespace App\Actions;
 
+use App\Enums\ExamStatus;
 use App\Models\Event;
 use App\Models\Exam;
 use App\Models\Question;
@@ -45,7 +46,8 @@ class CreateExam
 
     DB::beginTransaction();
     $exam = $this->event->exams()->firstOrCreate($examData, [
-      'exam_no' => Exam::generateExamNo()
+      'exam_no' => Exam::generateExamNo(),
+      'status' => ExamStatus::Pending
     ]);
 
     foreach ($this->post['courseables'] as $key => $courseable) {
