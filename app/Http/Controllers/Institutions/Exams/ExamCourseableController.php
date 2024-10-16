@@ -8,6 +8,7 @@ use App\Models\CourseSession;
 use App\Models\Exam;
 use App\Models\ExamCourseable;
 use App\Models\Institution;
+use App\Models\Student;
 use App\Rules\ValidateMorphRule;
 use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -24,6 +25,11 @@ class ExamCourseableController extends Controller
 
   function index(Institution $institution, Exam $exam)
   {
+    $exam->load([
+      'examable' => function (MorphTo $morphTo) {
+        $morphTo->morphWith([Student::class => ['user']]);
+      }
+    ]);
     $query = $exam
       ->examCourseables()
       ->getQuery()

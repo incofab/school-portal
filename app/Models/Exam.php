@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ExamStatus;
+use App\Support\MorphMap;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Model;
@@ -36,7 +37,7 @@ class Exam extends Model
   {
     return $query
       ->where('examable_id', $examable->id)
-      ->where('examable_type', get_class($examable));
+      ->where('examable_type', MorphMap::key(get_class($examable)));
   }
 
   function examCourseables()
@@ -44,7 +45,7 @@ class Exam extends Model
     return $this->hasMany(ExamCourseable::class);
   }
 
-  // TokenUser|User
+  // TokenUser|User|Student
   function examable()
   {
     return $this->morphTo();

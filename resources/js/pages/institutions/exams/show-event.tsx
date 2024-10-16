@@ -1,6 +1,6 @@
 import React from 'react';
 import { Event, Exam } from '@/types/models';
-import { VStack, Text, Divider } from '@chakra-ui/react';
+import { VStack, Text, Divider, HStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { SelectOptionType } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -56,15 +56,22 @@ export default function ShowEvent({ event, studentExam }: Props) {
         <SlabHeading
           title="Event Details"
           rightElement={
-            <>
+            <HStack>
+              {studentExam && (
+                <LinkButton
+                  href={instRoute('external.exam-result', [
+                    studentExam.exam_no,
+                  ])}
+                  title={'View Result'}
+                />
+              )}
               {canStart() ? (
                 <LinkButton
                   href={instRoute('exams.create', [event])}
-                  disabled={!canStart()}
                   title={'Start'}
                 />
               ) : null}
-            </>
+            </HStack>
           }
         />
         <SlabBody>

@@ -1,5 +1,8 @@
+import { Student, TokenUser, User } from './models';
+
 export type Nullable<T> = T | null;
 export type KeyValue<T = string> = { [key: string]: T };
+export type GenericUser = TokenUser | User | Student;
 
 export interface PaginationResponse<T> {
   total: number;

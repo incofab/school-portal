@@ -1,5 +1,5 @@
 import React from 'react';
-import { Exam, TokenUser } from '@/types/models';
+import { Exam } from '@/types/models';
 import { Divider, HStack, Icon, Text, VStack } from '@chakra-ui/react';
 import ExamLayout from '../exam-layout';
 import { AcademicCapIcon } from '@heroicons/react/24/solid';
@@ -8,10 +8,12 @@ import { Div } from '@/components/semantic';
 import { LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import CenteredBox from '@/components/centered-box';
+import { GenericUser } from '@/types/types';
+import tokenUserUtil from '@/util/token-user-util';
 
 interface Props {
   exam: Exam;
-  tokenUser: TokenUser;
+  tokenUser: GenericUser;
 }
 
 export default function ExamResult({ exam, tokenUser }: Props) {
@@ -31,7 +33,7 @@ export default function ExamResult({ exam, tokenUser }: Props) {
           <Text fontWeight={'bold'} color={'brand.100'}>
             Congratulations
           </Text>
-          <Text>{`${tokenUser.name}`}</Text>
+          <Text>{`${tokenUserUtil(tokenUser).getName()}`}</Text>
         </Div>
       }
       breadCrumbItems={[
