@@ -2,7 +2,7 @@ import React from 'react';
 import { Event, Exam } from '@/types/models';
 import { VStack, Text, Divider, HStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
-import { SelectOptionType } from '@/types/types';
+import { ExamStatus, SelectOptionType } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
@@ -57,13 +57,26 @@ export default function ShowEvent({ event, studentExam }: Props) {
           title="Event Details"
           rightElement={
             <HStack>
-              {studentExam && (
-                <LinkButton
-                  href={instRoute('external.exam-result', [
-                    studentExam.exam_no,
-                  ])}
-                  title={'View Result'}
-                />
+              {studentExam ? (
+                <>
+                  {studentExam.status === ExamStatus.Ended ? (
+                    <LinkButton
+                      href={instRoute('external.exam-result', [
+                        studentExam.exam_no,
+                      ])}
+                      title={'View Result'}
+                    />
+                  ) : (
+                    <LinkButton
+                      href={instRoute('display-exam-page', [
+                        studentExam.exam_no,
+                      ])}
+                      title={'Continue'}
+                    />
+                  )}
+                </>
+              ) : (
+                <></>
               )}
               {canStart() ? (
                 <LinkButton

@@ -9,6 +9,7 @@ use App\Models\Institution;
 use App\Models\InstitutionSetting;
 use App\Support\SettingsHandler;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\Rules\Enum;
 use Storage;
 
@@ -72,7 +73,9 @@ class InstitutionSettingController extends Controller
   private function saveRecord(Institution $institution, array $data)
   {
     $data['value'] =
-      $data['type'] === 'array' ? json_encode($data['value']) : $data['value'];
+      Arr::get($data, 'type') === 'array'
+        ? json_encode($data['value'])
+        : $data['value'];
 
     if (!empty($data['photo'])) {
       $imagePath = $data['photo']->store(
