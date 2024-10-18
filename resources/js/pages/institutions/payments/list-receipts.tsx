@@ -53,15 +53,17 @@ export default function ListReceiptTypes({
       label: 'Actions',
       render: (row: Receipt) => (
         <HStack spacing={1}>
-          <LinkButton
-            variant={'ghost'}
-            href={instRoute('students.fee-payments.index', [
-              row.user?.institution_user?.student?.id,
-              row.id,
-            ])}
-            colorScheme={'brand'}
-            title="Payments"
-          />
+          {row.user?.student && (
+            <LinkButton
+              variant={'ghost'}
+              href={instRoute('students.fee-payments.index', [
+                row.user?.student?.id,
+                row.id,
+              ])}
+              colorScheme={'brand'}
+              title="Payments"
+            />
+          )}
           <LinkButton
             variant={'ghost'}
             href={instRoute('receipts.show', [row.reference])}

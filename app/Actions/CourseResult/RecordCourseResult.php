@@ -11,10 +11,12 @@ class RecordCourseResult
   private $bindingData;
   /**
    * @param array{
-   *     student_id: int,
-   *     academic_session_id: int,
-   *     term: string,
-   *     for_mid_term: bool,
+   *  student_id: int,
+   *  academic_session_id: int,
+   *  term: string,
+   *  for_mid_term: bool,
+   *  ass: array<string, float>,
+   *  exam: float,
    * } $data
    */
   public function __construct(

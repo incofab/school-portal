@@ -11,7 +11,10 @@ class ReceiptController extends Controller
 {
   function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin]);
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Accountant
+    ]);
   }
 
   function index()
@@ -25,12 +28,14 @@ class ReceiptController extends Controller
 
     $query
       ->with(
-        'user.institutionUser.student',
+        // 'user.institutionUser.student',
+        'user.student',
         'academicSession',
         'approvedBy',
         'receiptType'
       )
       ->withCount('feePayments');
+    // dd(json_encode($query->get(), JSON_PRETTY_PRINT));
     return inertia('institutions/payments/list-receipts', [
       'receiptTypes' => ReceiptType::query()->get(),
       'receipts' => paginateFromRequest($query->latest('id')),
