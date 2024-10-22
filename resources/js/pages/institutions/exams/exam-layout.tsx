@@ -16,19 +16,18 @@ import {
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
 import { Div } from '@/components/semantic';
-import { BreadCrumbParam } from '@/types/types';
+import { BreadCrumbParam, GenericUser } from '@/types/types';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { PropsWithChildren, ReactNode } from 'react';
 import useSharedProps from '@/hooks/use-shared-props';
 import { avatarUrl } from '@/util/util';
-import { Student, TokenUser, User } from '@/types/models';
 import tokenUserUtil from '@/util/token-user-util';
 
 interface Props {
   title: string | ReactNode;
   rightElement?: string | ReactNode;
   breadCrumbItems?: BreadCrumbParam[];
-  tokenUser: TokenUser | User | Student;
+  tokenUser: GenericUser;
 }
 
 const NavLink = ({ link }: { link: BreadCrumbParam }) => {

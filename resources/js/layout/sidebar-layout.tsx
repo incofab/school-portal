@@ -30,6 +30,11 @@ export default function SideBarLayout() {
   const { currentUser, currentInstitutionUser } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const student = currentInstitutionUser.student;
+  const staff = [
+    InstitutionUserType.Admin,
+    InstitutionUserType.Teacher,
+    InstitutionUserType.Accountant,
+  ];
   const teachers = [InstitutionUserType.Admin, InstitutionUserType.Teacher];
   const accountant = [
     InstitutionUserType.Admin,
@@ -72,17 +77,17 @@ export default function SideBarLayout() {
     },
     {
       label: 'Students',
-      roles: teachers,
+      roles: staff,
       sub_items: [
         {
           label: 'All Students',
           route: instRoute('students.index'),
-          roles: teachers,
+          roles: staff,
         },
         {
           label: 'Guardians',
           route: instRoute('guardians.index'),
-          roles: teachers,
+          roles: staff,
         },
         {
           label: 'Add Student',

@@ -33,6 +33,7 @@ export interface User extends Row {
   gender: string;
   roles?: Role[];
   institution_user?: InstitutionUser;
+  student?: Student;
 }
 
 export interface TokenUser extends Row {

@@ -35,7 +35,7 @@ class ExamResultController extends Controller
       $examHandler->endExam();
     }
 
-    $tokenUser = $this->getTokenUserFromCookie();
+    $tokenUser = currentUser() ?? $this->getTokenUserFromCookie();
 
     return Inertia::render('institutions/exams/exam-page/exam-result', [
       'exam' => $exam,

@@ -26,7 +26,8 @@ class StudentAccess
     if (
       $user->hasInstitutionRole([
         InstitutionUserType::Admin,
-        InstitutionUserType::Teacher
+        InstitutionUserType::Teacher,
+        InstitutionUserType::Accountant
       ])
     ) {
       return $next($request);

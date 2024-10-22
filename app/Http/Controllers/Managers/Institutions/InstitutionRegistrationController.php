@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Managers\Institutions;
 
-use App\Actions\RegisterInstitution;
+use App\Actions\SeedInitialAssessment;
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\InstitutionGroup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Str;
 
 class InstitutionRegistrationController extends Controller
 {
@@ -28,8 +31,6 @@ class InstitutionRegistrationController extends Controller
       ->with('user')
       ->firstOrFail();
 
-    RegisterInstitution::run($institutionGroup, $data);
-    /*
     DB::beginTransaction();
     $user = $institutionGroup->user;
     $institution = $user
@@ -43,7 +44,7 @@ class InstitutionRegistrationController extends Controller
       ]);
     SeedInitialAssessment::run($institution);
     DB::commit();
-    */
+
     return redirect()->intended(route('managers.institutions.index'));
   }
 }

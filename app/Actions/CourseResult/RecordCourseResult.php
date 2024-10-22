@@ -5,11 +5,20 @@ use App\Actions\ResultUtil;
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;
 use App\Models\Assessment;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 
 class RecordCourseResult
 {
   private $bindingData;
+  /**
+   * @param array{
+   *  student_id: int,
+   *  academic_session_id: int,
+   *  term: string,
+   *  for_mid_term: bool,
+   *  ass: array<string, float>,
+   *  exam: float,
+   * } $data
+   */
   public function __construct(
     private $data,
     private CourseTeacher $courseTeacher,

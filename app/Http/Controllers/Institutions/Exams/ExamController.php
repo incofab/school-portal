@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Institutions\Exams;
 
 use App\Actions\CreateExam;
-use App\Enums\EventStatus;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExamRequest;
@@ -13,6 +12,7 @@ use App\Models\Institution;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\MorphMap;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -35,7 +35,9 @@ class ExamController extends Controller
     $query = $event
       ->exams()
       ->getQuery()
-      ->with('examable')
+      ->with('examable', function (MorphTo $morphTo) {
+        $morphTo->morphWith([Student::class => ['user']]);
+      })
       ->withCount('examCourseables');
 
     return Inertia::render('institutions/exams/list-exams', [
@@ -63,11 +65,18 @@ class ExamController extends Controller
         'examable_id' => $student->id,
         'examable_type' => MorphMap::key(Student::class),
         'courseables' => [
-          'courseable_id' => $eventCourseable->courseable_id,
-          'courseable_type' => $eventCourseable->courseable_type
+          [
+            'courseable_id' => $eventCourseable->courseable_id,
+            'courseable_type' => $eventCourseable->courseable_type
+          ]
         ]
       ]);
-      return redirect(instRoute('display-exam-page', [$exam->exam_no]));
+      return redirect(
+        route('institutions.display-exam-page', [
+          $institution->uuid,
+          $exam->exam_no
+        ])
+      );
     }
 
     return Inertia::render('institutions/exams/create-exam', [

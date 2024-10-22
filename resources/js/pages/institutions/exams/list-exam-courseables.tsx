@@ -14,6 +14,7 @@ import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
 import { LabelText } from '@/components/result-helper-components';
+import tokenUserUtil from '@/util/token-user-util';
 
 interface Props {
   exam: Exam;
@@ -78,7 +79,10 @@ export default function ListExamCourseables({ exam, examCourseables }: Props) {
 
   const details = [
     { label: 'Event', value: exam.event?.title },
-    { label: 'User', value: exam.external_reference },
+    {
+      label: 'User',
+      value: tokenUserUtil(exam.examable).getName() ?? exam.external_reference,
+    },
     { label: 'Exam No', value: exam.exam_no },
     { label: 'Score', value: exam.score },
     { label: 'Num of Questions', value: exam.num_of_questions },

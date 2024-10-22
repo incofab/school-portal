@@ -141,6 +141,7 @@ class ViewResultSheetController extends Controller
     $filePath = storage_path(self::STORAGE_PATH . $request->filename);
     if (!file_exists($filePath)) {
       $downloadUrl = config('services.pdf.url') . '?' . http_build_query($data);
+
       $this->downloadFile($downloadUrl, $filename);
     }
     return $this->responseDownload($filePath, $filename);
