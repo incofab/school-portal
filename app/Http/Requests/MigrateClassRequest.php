@@ -28,7 +28,7 @@ class MigrateClassRequest extends FormRequest
         ->first();
 
       if (!$classification) {
-        return throw ValidationException::withMessages([
+        throw ValidationException::withMessages([
           'classification_id' => 'This class does not exists'
         ]);
       }

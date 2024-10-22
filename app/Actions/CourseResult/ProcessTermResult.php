@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions\CourseResult;
 
 use App\Actions\ResultUtil;
@@ -72,9 +73,7 @@ class ProcessTermResult
 
     $studentsTotalAverageScores = [];
     foreach ($studentsResultDetails as $key => $item) {
-      $studentsTotalAverageScores[
-        $item->getStudentId()
-      ] = $item->getAverageScore();
+      $studentsTotalAverageScores[$item->getStudentId()] = $item->getAverageScore();
     }
 
     $bindingData = [
@@ -118,7 +117,7 @@ class ProcessTermResult
       ->count();
 
     if (count($studentsResultDetails) !== $totalClassStudents) {
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'error' => 'You have to record results for all students first'
       ]);
     }
@@ -139,7 +138,7 @@ class ProcessTermResult
     if (!$hasUnequalNumOfSubjects) {
       return true;
     }
-    return throw ValidationException::withMessages([
+    throw ValidationException::withMessages([
       'error' => 'Some students have unrecorded results'
     ]);
   }
@@ -151,9 +150,7 @@ class ResultDetail
   private float $totalScore = 0;
   private int $numOfCourses = 0;
 
-  function __construct(private int $studentId)
-  {
-  }
+  function __construct(private int $studentId) {}
 
   function update(float $resultScore)
   {

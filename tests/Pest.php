@@ -20,7 +20,7 @@ uses(Tests\TestCase::class)
     seed(RoleSeeder::class);
   })
   ->in('Feature');
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class)->in('Feature');
+uses(Illuminate\Foundation\Testing\DatabaseTransactions::class)->in('Feature');
 
 /*
 |--------------------------------------------------------------------------

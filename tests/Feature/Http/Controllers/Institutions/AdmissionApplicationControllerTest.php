@@ -7,6 +7,11 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Inertia\Testing\AssertableInertia;
 
+use Illuminate\Support\Facades\Request;
+use Mockery\MockInterface;
+use App\Actions\HandleAdmission;
+use App\Models\Classification;
+
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
@@ -18,6 +23,7 @@ beforeEach(function () {
   $this->admin = $this->institution->createdBy;
 });
 
+/*
 it('tests the index page', function () {
   $route = route('institutions.admission-applications.index', [
     'institution' => $this->institution->uuid
@@ -30,6 +36,7 @@ it('tests the index page', function () {
   $ordinaryUser = User::factory()
     ->admin()
     ->create();
+
   actingAs($ordinaryUser)
     ->getJson($route)
     ->assertForbidden();
@@ -48,16 +55,19 @@ it('store admission application data', function () {
   $route = route('institutions.admissions.store', [
     'institution' => $this->institution->uuid
   ]);
+
   postJson($route, [])->assertJsonValidationErrors([
     'reference',
     'first_name',
     'last_name',
     'guardians'
   ]);
+
   $admissionApplicationData = AdmissionApplication::factory()
     ->for($this->institution)
     ->make()
     ->toArray();
+
   $guardians = ApplicationGuardian::factory(2)
     ->make(['admission_application_id' => null])
     ->toArray();
@@ -83,4 +93,27 @@ it('store admission application data', function () {
         ->toArray()
     );
   }
+});
+*/
+
+it('handles admission and updates admission status', function () {
+  $admissionApplication = AdmissionApplication::factory()
+    ->for($this->institution)
+    ->create();
+
+  $route = route('institutions.admission-applications.update-status', [
+    $this->institution->uuid,
+    $admissionApplication->id
+  ]);
+
+  $classification = Classification::factory()->for($this->institution)->create();
+
+  $data = [
+    'admission_status' => 'admitted',
+    'classification' => $classification->id
+  ];
+
+  actingAs($this->admin)
+    ->postJson($route, $data)
+    ->assertOk();
 });

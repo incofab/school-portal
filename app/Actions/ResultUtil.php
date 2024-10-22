@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions;
 
 use App\DTO\AssignedPosition;
@@ -73,7 +74,7 @@ class ResultUtil
         $forMidTerm = true;
         break;
       default:
-        return throw new Exception("Invalid full term type ({$fullTerm})");
+        throw new Exception("Invalid full term type ({$fullTerm})");
     }
     return [$term, $forMidTerm];
   }

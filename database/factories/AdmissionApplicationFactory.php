@@ -21,7 +21,8 @@ class AdmissionApplicationFactory extends Factory
       'last_name' => fake()->lastName(),
       'other_names' => fake()->name(),
       'nationality' => fake()->country(),
-      'reference' => Str::orderedUuid()->toString()
+      'reference' => Str::orderedUuid()->toString(),
+      'photo' => fake()->imageUrl(),
     ];
   }
 }

@@ -34,21 +34,27 @@ class HandleAdmission
 
     $parts = explode('/', $sourcePath);
     $fileName = end($parts);
-    $destinationPath = 'avatars/users/' . $fileName;
-    $destinationUrl =
-      $parts[0] .
-      '//' .
-      $parts[2] .
-      '/' .
-      env('AWS_BUCKET') .
-      '/avatars/users/' .
-      $fileName;
 
+    $destinationPath = 'avatars/users/' . $fileName;
+
+    /*
     //== Use the Storage facade to put the image in the S3 bucket
     Storage::disk('s3_public')->put(
       $destinationPath,
       file_get_contents($sourcePath)
     );
+    */
+
+    Storage::disk('s3')->move($sourcePath, $destinationPath);
+    $destinationUrl = Storage::disk('s3_public')->url($destinationPath);
+    // $destinationUrl = 
+    // $parts[0] .
+    // '//' .
+    // $parts[2] .
+    // '/' .
+    // env('AWS_BUCKET') .
+    // '/avatars/users/' .
+    // $fileName;
 
     DB::beginTransaction();
     $student = RecordStudent::make([
