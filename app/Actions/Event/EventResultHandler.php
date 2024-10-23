@@ -31,11 +31,16 @@ class EventResultHandler
     foreach ($event->exams as $key => $exam) {
       $this->transferExamResult($exam);
     }
+    $event->fill(['transferred_at' => now()])->save();
   }
 
   function transferExamResult(Exam $studentExam)
   {
     foreach ($studentExam->examCourseables as $key => $examCourseable) {
+      $examable = $studentExam->examable;
+      if (!($examable instanceof Student)) {
+        continue;
+      }
       $this->recordResult($studentExam->examable, $examCourseable);
     }
   }
@@ -55,6 +60,7 @@ class EventResultHandler
       [
         'student_id' => $student->id,
         ...$this->data,
+        'ass' => [], // ass key is
         ...$this->assessment
           ? [
             'ass' => [$this->assessment->raw_title => $examCourseable->score]

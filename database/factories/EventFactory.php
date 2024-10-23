@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use App\Enums\EventStatus;
+use App\Models\Event;
+use App\Models\EventCourseable;
+use App\Models\Exam;
 use App\Models\Institution;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -66,5 +69,14 @@ class EventFactory extends Factory
         'starts_at' => now()->subMinutes(30)
       ]
     );
+  }
+
+  public function eventCourseables($count = 1): static
+  {
+    return $this->afterCreating(function (Event $event) use ($count) {
+      EventCourseable::factory($count)
+        ->event($event)
+        ->create();
+    });
   }
 }

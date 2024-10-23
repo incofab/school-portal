@@ -4,6 +4,7 @@ import debounce from 'lodash/debounce';
 import AsyncSelect, { AsyncProps } from 'react-select/async';
 import { GroupBase } from 'react-select/dist/declarations/src/types';
 import web from '@/util/web';
+import { useColorModeValue } from '@chakra-ui/react';
 
 interface MyProps<T> {
   searchUrl: string;
@@ -49,6 +50,9 @@ export default function MyAsyncSelect<
     }, 250);
   }, [refreshKey]);
 
+  const backgroundColor = useColorModeValue('white', '#2d3748');
+  const hoverColor = useColorModeValue('#cbd5e0', '#1a202c');
+  const textColor = useColorModeValue('#44596e', '#cbd5e0');
   return (
     <AsyncSelect
       loadOptions={(inputValue, callback) => {
@@ -62,6 +66,16 @@ export default function MyAsyncSelect<
       key={refreshKey}
       defaultOptions={true}
       {...props}
+      theme={(theme) => ({
+        ...theme,
+        borderRadius: 0,
+        colors: {
+          ...theme.colors,
+          primary25: hoverColor,
+          neutral0: backgroundColor,
+          neutral80: textColor,
+        },
+      })}
     />
   );
 }

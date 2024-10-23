@@ -95,7 +95,7 @@ class RecordCourseResult
 
     $allAssessmentValues = [
       ...$existingAssessmentValues,
-      ...$this->data['ass']
+      ...$this->data['ass'] ?? []
     ];
     $assessmentValues = [];
 

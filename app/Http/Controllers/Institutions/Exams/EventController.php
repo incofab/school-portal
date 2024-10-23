@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Institutions\Exams;
 
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
+use App\Models\Assessment;
 use App\Models\ClassificationGroup;
 use App\Models\Event;
 use App\Models\Institution;
@@ -30,7 +31,8 @@ class EventController extends Controller
       ->withCount('eventCourseables');
 
     return Inertia::render('institutions/exams/list-events', [
-      'events' => paginateFromRequest($query->latest('id'))
+      'events' => paginateFromRequest($query->latest('id')),
+      'assessments' => Assessment::all()
     ]);
   }
 
