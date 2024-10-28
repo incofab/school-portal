@@ -44,7 +44,7 @@ class RecordCourseResult
     $data,
     CourseTeacher $courseTeacher,
     bool $processCourseResultForClass = false
-  ) {
+  ): static {
     return (new self(
       $data,
       $courseTeacher,
@@ -52,7 +52,7 @@ class RecordCourseResult
     ))->execute();
   }
 
-  public function execute()
+  public function execute(): static
   {
     $courseResult = CourseResult::query()
       ->where($this->bindingData)
@@ -71,14 +71,20 @@ class RecordCourseResult
     ]);
 
     if ($this->processCourseResultForClass) {
-      EvaluateCourseResultForClass::run(
-        $this->courseTeacher->classification,
-        $this->courseTeacher->course_id,
-        $this->data['academic_session_id'],
-        $this->data['term'],
-        $this->data['for_mid_term']
-      );
+      $this->evaluateResult();
     }
+    return $this;
+  }
+
+  function evaluateResult()
+  {
+    EvaluateCourseResultForClass::run(
+      $this->courseTeacher->classification,
+      $this->courseTeacher->course_id,
+      $this->data['academic_session_id'],
+      $this->data['term'],
+      $this->data['for_mid_term']
+    );
   }
 
   private function getResultScore(array $existingAssessmentValues)

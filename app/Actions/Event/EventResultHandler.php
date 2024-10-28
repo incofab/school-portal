@@ -36,19 +36,24 @@ class EventResultHandler
 
   function transferExamResult(Exam $studentExam)
   {
+    $recordResultObj = null;
     foreach ($studentExam->examCourseables as $key => $examCourseable) {
       $examable = $studentExam->examable;
       if (!($examable instanceof Student)) {
         continue;
       }
-      $this->recordResult($studentExam->examable, $examCourseable);
+      $recordResultObj = $this->recordResult(
+        $studentExam->examable,
+        $examCourseable
+      );
     }
+    $recordResultObj?->evaluateResult();
   }
 
   private function recordResult(
     Student $student,
     ExamCourseable $examCourseable
-  ) {
+  ): RecordCourseResult {
     if (
       $examCourseable->courseable->course_id !== $this->courseTeacher->course_id
     ) {
@@ -56,7 +61,7 @@ class EventResultHandler
         'course_teacher_id' => 'Invalid course teacher'
       ]);
     }
-    RecordCourseResult::run(
+    return RecordCourseResult::run(
       [
         'student_id' => $student->id,
         ...$this->data,
