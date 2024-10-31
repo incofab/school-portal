@@ -1,9 +1,13 @@
 import React from 'react';
-import { BoxProps, Text, TextProps } from '@chakra-ui/react';
-import ResultUtil from '@/util/result-util';
+import { Text, TextProps } from '@chakra-ui/react';
 import { Div } from './semantic';
+import { ResultCommentTemplate } from '@/types/models';
 
-export const GradingTable = () => (
+export const GradingTable = ({
+  resultCommentTemplate,
+}: {
+  resultCommentTemplate: ResultCommentTemplate[];
+}) => (
   <table className="result-analysis-table">
     <thead>
       <tr>
@@ -16,36 +20,16 @@ export const GradingTable = () => (
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>0 - 39</td>
-        <td>A</td>
-        <td>{ResultUtil.getRemark('A')}</td>
-      </tr>
-      <tr>
-        <td>60 - 69</td>
-        <td>B</td>
-        <td>{ResultUtil.getRemark('B')}</td>
-      </tr>
-      <tr>
-        <td>50 - 59</td>
-        <td>C</td>
-        <td>{ResultUtil.getRemark('C')}</td>
-      </tr>
-      <tr>
-        <td>45 - 49</td>
-        <td>D</td>
-        <td>{ResultUtil.getRemark('D')}</td>
-      </tr>
-      <tr>
-        <td>40 - 44</td>
-        <td>E</td>
-        <td>{ResultUtil.getRemark('E')}</td>
-      </tr>
-      <tr>
-        <td>0 - 39</td>
-        <td>F</td>
-        <td>{ResultUtil.getRemark('F')}</td>
-      </tr>
+      {resultCommentTemplate.map((item) => {
+        const { grade, grade_label } = item;
+        return (
+          <tr key={grade}>
+            <td>{`${item.min} - ${item.max}`}</td>
+            <td>{grade_label}</td>
+            <td>{grade}</td>
+          </tr>
+        );
+      })}
     </tbody>
   </table>
 );

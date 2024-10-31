@@ -72,10 +72,9 @@ class InstitutionSettingController extends Controller
 
   private function saveRecord(Institution $institution, array $data)
   {
+    $rawValue = $data['value'] ?? null;
     $data['value'] =
-      Arr::get($data, 'type') === 'array'
-        ? json_encode($data['value'])
-        : $data['value'];
+      Arr::get($data, 'type') === 'array' ? json_encode($rawValue) : $rawValue;
 
     if (!empty($data['photo'])) {
       $imagePath = $data['photo']->store(

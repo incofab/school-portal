@@ -285,9 +285,13 @@ export default function Template3({
                 </thead>
                 <tbody>
                   {courseResults.map((courseResult) => {
-                    const [grade, remark, label] = getGrade(
-                      courseResult.result
+                    const { grade, remark } = ResultUtil.getGrade(
+                      courseResult.result,
+                      resultCommentTemplate
                     );
+                    // const [grade, remark, label] = getGrade(
+                    //   courseResult.result
+                    // );
                     return (
                       <tr key={courseResult.id}>
                         <td style={{ fontWeight: 'bold' }}>
@@ -360,13 +364,15 @@ export default function Template3({
                     </tr>
                   </thead>
                   <tbody>
-                    {[100, 89, 79, 69, 64, 59, 54, 49, 44, 39].map((item) => {
-                      const [grade, remark, label] = getGrade(item);
+                    {/* {[100, 89, 79, 69, 64, 59, 54, 49, 44, 39].map((item) => { */}
+                    {resultCommentTemplate.map((item) => {
+                      const { grade, grade_label } = item;
+                      // const [grade, remark, label] = getGrade(item);
                       return (
                         <tr>
-                          <td>{label}</td>
+                          <td>{`${item.min} - ${item.max}`}</td>
+                          <td>{grade_label}</td>
                           <td>{grade}</td>
-                          <td>{remark}</td>
                         </tr>
                       );
                     })}

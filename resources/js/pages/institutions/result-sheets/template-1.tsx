@@ -197,26 +197,37 @@ export default function Template1({
                   </tr>
                 </thead>
                 <tbody>
-                  {courseResults.map((courseResult) => (
-                    <tr key={courseResult.id}>
-                      <td>{courseResult.course?.title}</td>
-                      {assessments.map((assessment) => (
+                  {courseResults.map((courseResult) => {
+                    const { grade, remark } = ResultUtil.getGrade(
+                      courseResult.result,
+                      resultCommentTemplate
+                    );
+                    return (
+                      <tr key={courseResult.id}>
+                        <td>{courseResult.course?.title}</td>
+                        {assessments.map((assessment) => (
+                          <td>
+                            {courseResult.assessment_values[
+                              assessment.raw_title
+                            ] ?? '-'}
+                          </td>
+                        ))}
+                        <td>{courseResult.exam}</td>
+                        <td>{courseResult.result}</td>
+                        {/* <td>{courseResult.grade}</td> */}
+                        <td>{grade}</td>
+                        <td>{courseResult.position}</td>
                         <td>
-                          {courseResult.assessment_values[
-                            assessment.raw_title
-                          ] ?? '-'}
+                          {
+                            courseResultInfoData[courseResult.course_id]
+                              ?.average
+                          }
                         </td>
-                      ))}
-                      <td>{courseResult.exam}</td>
-                      <td>{courseResult.result}</td>
-                      <td>{courseResult.grade}</td>
-                      <td>{courseResult.position}</td>
-                      <td>
-                        {courseResultInfoData[courseResult.course_id]?.average}
-                      </td>
-                      <td>{ResultUtil.getRemark(courseResult.grade)}</td>
-                    </tr>
-                  ))}
+                        {/* <td>{ResultUtil.getRemark(courseResult.grade)}</td> */}
+                        <td>{remark}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -277,36 +288,16 @@ export default function Template1({
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>70 - 100</td>
-                    <td>A</td>
-                    <td>{ResultUtil.getRemark('A')}</td>
-                  </tr>
-                  <tr>
-                    <td>60 - 69</td>
-                    <td>B</td>
-                    <td>{ResultUtil.getRemark('B')}</td>
-                  </tr>
-                  <tr>
-                    <td>50 - 59</td>
-                    <td>C</td>
-                    <td>{ResultUtil.getRemark('C')}</td>
-                  </tr>
-                  <tr>
-                    <td>45 - 49</td>
-                    <td>D</td>
-                    <td>{ResultUtil.getRemark('D')}</td>
-                  </tr>
-                  <tr>
-                    <td>40 - 44</td>
-                    <td>E</td>
-                    <td>{ResultUtil.getRemark('E')}</td>
-                  </tr>
-                  <tr>
-                    <td>0 - 39</td>
-                    <td>F</td>
-                    <td>{ResultUtil.getRemark('F')}</td>
-                  </tr>
+                  {resultCommentTemplate.map((item) => {
+                    const { grade, grade_label } = item;
+                    return (
+                      <tr key={grade}>
+                        <td>{`${item.min} - ${item.max}`}</td>
+                        <td>{grade_label}</td>
+                        <td>{grade}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </HStack>
