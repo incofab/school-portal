@@ -197,6 +197,11 @@ class Institution extends Model
     return $this->hasMany(Event::class);
   }
 
+  function assignments()
+  {
+    return $this->hasMany(Assignment::class);
+  }
+
   function exams()
   {
     return $this->hasMany(Exam::class);

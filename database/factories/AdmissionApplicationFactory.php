@@ -2,12 +2,23 @@
 
 namespace Database\Factories;
 
+use App\Models\AdmissionApplication;
+use App\Models\ApplicationGuardian;
 use App\Models\Institution;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Str;
 
 class AdmissionApplicationFactory extends Factory
 {
+
+  public function configure()
+  {
+    return $this->afterCreating(function (AdmissionApplication $model) {
+      ApplicationGuardian::factory()->admissionApplication($model)->create();
+    });
+  }
+
+
   /**
    * Define the model's default state.
    *

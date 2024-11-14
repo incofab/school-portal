@@ -94,6 +94,8 @@ class AdmissionApplicationController extends Controller
     Institution $institution,
     AdmissionApplication $admissionApplication
   ) {
+    abort_if($admissionApplication->admission_status != 'pending', 401, "Admission Application has been handled");
+
     $data = request()->validate([
       'admission_status' => ['required', 'string'],
       'classification' => [

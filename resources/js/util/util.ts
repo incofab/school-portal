@@ -1,7 +1,6 @@
 import { Nullable, SelectOptionType } from '@/types/types';
 import { Resizer } from './image-file-resizer';
 import objectGet from 'lodash/get';
-import startCase from 'lodash/startCase';
 
 export const dateFormat = 'yyyy-MM-dd';
 export const dateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
@@ -174,10 +173,6 @@ export function validFilename(input?: string): string {
   return sanitizedString;
 }
 
-function ucfirst(text: string) {
-  return startCase(text);
-}
-
 export function isTimeExpired(timeString?: string): boolean {
   if (!timeString) {
     return false;
@@ -185,4 +180,10 @@ export function isTimeExpired(timeString?: string): boolean {
   const givenTime = new Date(timeString);
   const currentTime = new Date();
   return givenTime < currentTime;
+}
+
+export function generateUniqueString(prefix: any) {
+  return `${prefix}-${Date.now()}-${Math.random()
+    .toString(36)
+    .substring(2, 15)}`;
 }

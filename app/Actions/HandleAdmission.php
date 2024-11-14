@@ -45,7 +45,7 @@ class HandleAdmission
     );
     */
 
-    Storage::disk('s3')->move($sourcePath, $destinationPath);
+    Storage::disk('s3_public')->move($sourcePath, $destinationPath);
     $destinationUrl = Storage::disk('s3_public')->url($destinationPath);
     // $destinationUrl = 
     // $parts[0] .
@@ -82,10 +82,10 @@ class HandleAdmission
     }
     DB::commit();
 
-    $dUrl = route('institutions.admission-applications.letter', [
-      'institution' => $this->institution->uuid,
-      'student' => $student->id
-    ]);
+    // $dUrl = route('institutions.admission-applications.letter', [
+    //   'institution' => $this->institution->uuid,
+    //   'student' => $student->id
+    // ]);
 
     //Mail::to($admissionApplication->fathers_email)->queue(new AdmissionLetterMail(User::first(), $dUrl));
   }

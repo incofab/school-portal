@@ -23,6 +23,15 @@ class InstitutionUserFactory extends Factory
     ];
   }
 
+  public function admin(): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'role' => InstitutionUserType::Admin->value
+      ]
+    );
+  }
+
   public function withInstitution(Institution $institution): static
   {
     return $this->state(

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions\Event;
 
 use App\Actions\CourseResult\RecordCourseResult;
@@ -23,8 +24,7 @@ class EventResultHandler
     private CourseTeacher $courseTeacher,
     private array $data,
     private ?Assessment $assessment = null
-  ) {
-  }
+  ) {}
 
   function transferEventResult(Event $event)
   {
@@ -47,7 +47,7 @@ class EventResultHandler
     if (
       $examCourseable->courseable->course_id !== $this->courseTeacher->course_id
     ) {
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'course_teacher_id' => 'Invalid course teacher'
       ]);
     }

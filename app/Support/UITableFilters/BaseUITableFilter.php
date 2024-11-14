@@ -51,9 +51,7 @@ abstract class BaseUITableFilter
 
   function forCurrentTerm()
   {
-    $this->requestData[
-      'term'
-    ] = $this->settingHandler->getCurrentAcademicSession();
+    $this->requestData['term'] = $this->settingHandler->getCurrentAcademicSession();
     $this->requestData['term'] = $this->settingHandler->getCurrentTerm();
     return $this;
   }
@@ -96,10 +94,14 @@ abstract class BaseUITableFilter
     return $this->requestData[$key] ?? null;
   }
 
-  protected function when($value, callable $callback): static
+  protected function when($value, callable $callback, ?callable $negativeCallback = null): static
   {
     if ($value) {
       $callback($this, $value);
+    } else {
+      if ($negativeCallback) {
+        $negativeCallback($this, $value);
+      }
     }
     return $this;
   }

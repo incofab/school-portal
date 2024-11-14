@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('relationship')->nullable();
             $table->unsignedBigInteger('admission_application_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('admission_application_id')->references('id')->on('admission_applications')->onDelete('cascade');
         });
     }
 

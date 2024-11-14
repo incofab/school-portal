@@ -64,6 +64,11 @@ export enum Gender {
   Female = 'female',
 }
 
+export enum Attendance {
+  In = 'in',
+  Out = 'out',
+}
+
 export enum GuardianRelationship {
   Parent = 'parent',
   Sibling = 'sibling',

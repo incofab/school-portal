@@ -101,6 +101,8 @@ Route::post('/change-multi-student-class', [Web\Classifications\UpdateStudentCla
   ->name('change-multi-student-class.store');
 Route::get('/classifications/{classification}/students', [Web\Staff\StudentManagementController::class, 'classStudentsTiles'])
   ->name('classifications.students');
+Route::get('/classifications/{classification}/idcards', [Web\Staff\StudentManagementController::class, 'classStudentsIdCards'])
+  ->name('classifications.idcards');
 
 Route::get('/guardians', [Web\Staff\GuardianManagementController::class, 'index'])
   ->name('guardians.index');
@@ -125,6 +127,8 @@ Route::put('/users/{editInstitutionUser}/update', [Web\Users\UpdateInstitutionUs
   ->name('users.update');
 Route::post('/users/{user}/upload-photo', [Web\Users\UpdateInstitutionUserController::class, 'uploadPhoto'])
   ->name('users.upload-photo');
+Route::get('/users/idcards/{classification?}', [Web\Users\InstitutionUserController::class, 'idCards'])
+  ->name('users.idcards');
 Route::resource('/users', Web\Users\InstitutionUserController::class)
   ->only(['create', 'store']);
 
@@ -260,5 +264,7 @@ Route::post('/admission-applications/{admissionApplication}/update-status', [Web
 // Route::get('/admissions/letter/{admissionApplication}', [Web\AdmissionApplicationController::class, 'admissionLetter'])
 //   ->name('admissions.letter');
 
+include base_path('routes/assignment.php');
+include base_path('routes/attendance.php');
 include base_path('routes/exam.php');
 include base_path('routes/student_routes.php');

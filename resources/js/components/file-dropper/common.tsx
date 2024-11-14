@@ -26,6 +26,14 @@ export const FileDropperType = {
       'application/pdf': [],
     },
   },
+  Doc: {
+    extensionLabels: ['.doc', '.docx'],
+    mimes: {
+      'application/msword': [],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        [],
+    },
+  },
   Zip: {
     extensionLabels: ['.zip'],
     mimes: {
