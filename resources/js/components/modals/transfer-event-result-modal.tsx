@@ -49,7 +49,7 @@ export default function TransferEventResultModal({
     academic_session_id: currentAcademicSessionId,
     term: currentTerm,
     for_mid_term: false,
-    for_exam: true,
+    for_exam: false,
     assessment_id: '',
     course_teacher_id: {
       label: courseTeacher?.user?.full_name,
@@ -136,23 +136,12 @@ export default function TransferEventResultModal({
               </Checkbox>
             </FormControlBox>
           )}
-          <FormControlBox form={webForm as any} formKey="for_exam" title="">
-            <Checkbox
-              isChecked={webForm.data.for_exam}
-              onChange={(e) => {
-                const forExam = e.currentTarget.checked;
-                webForm.setData({
-                  ...webForm.data,
-                  for_exam: forExam,
-                  assessment_id: '',
-                });
-              }}
-            >
-              Transfer to Exam scores
-            </Checkbox>
-          </FormControlBox>
           {!webForm.data.for_exam && (
-            <FormControlBox form={webForm as any} title="Term" formKey="term">
+            <FormControlBox
+              form={webForm as any}
+              title="Assessment"
+              formKey="assessment_id"
+            >
               <MySelect
                 isMulti={false}
                 selectValue={webForm.data.assessment_id}
@@ -168,6 +157,26 @@ export default function TransferEventResultModal({
               />
             </FormControlBox>
           )}
+          <FormControlBox
+            form={webForm as any}
+            formKey="for_exam"
+            title=""
+            mt={1}
+          >
+            <Checkbox
+              isChecked={webForm.data.for_exam}
+              onChange={(e) => {
+                const forExam = e.currentTarget.checked;
+                webForm.setData({
+                  ...webForm.data,
+                  for_exam: forExam,
+                  assessment_id: '',
+                });
+              }}
+            >
+              Transfer to Exam scores
+            </Checkbox>
+          </FormControlBox>
         </VStack>
       }
       footerContent={

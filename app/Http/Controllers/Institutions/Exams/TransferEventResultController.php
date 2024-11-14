@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions\Exams;
 
 use App\Actions\Event\EventResultHandler;
+use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
@@ -15,6 +16,14 @@ use Illuminate\Validation\Rules\Enum;
 
 class TransferEventResultController extends Controller
 {
+  function __construct()
+  {
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ]);
+  }
+
   public function __invoke(
     Institution $institution,
     Event $event,
@@ -33,7 +42,9 @@ class TransferEventResultController extends Controller
 
     (new EventResultHandler(
       $existsRuleCourseTeacher->getModel(),
-      $data,
+      collect($data)
+        ->except('assessment_id', 'course_teacher_id')
+        ->toArray(),
       $existsRuleAssessment->getModel()
     ))->transferEventResult($event);
 

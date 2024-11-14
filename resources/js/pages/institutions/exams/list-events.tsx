@@ -1,35 +1,46 @@
 import React from 'react';
-import { Event } from '@/types/models';
+import { Assessment, CourseTeacher, Event } from '@/types/models';
 import { HStack, IconButton, Icon } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, ShareIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
-import { TrashIcon } from '@heroicons/react/24/solid';
+import {
+  CheckBadgeIcon,
+  PaperAirplaneIcon,
+  TrashIcon,
+} from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
-import useIsStudent from '@/hooks/use-is-student';
+import TransferEventResultModal from '@/components/modals/transfer-event-result-modal';
+import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 
 interface Props {
   events: PaginationResponse<Event>;
+  assessments: Assessment[];
+  courseTeacher?: CourseTeacher;
 }
 
-export default function ListEvents({ events }: Props) {
+export default function ListEvents({
+  events,
+  assessments,
+  courseTeacher,
+}: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
-  const isStudent = useIsStudent();
+  const transferEventResultModalToggle = useModalValueToggle<Event>();
 
   async function deleteItem(obj: Event) {
     const res = await deleteForm.submit((data, web) =>
@@ -66,6 +77,30 @@ export default function ListEvents({ events }: Props) {
       label: 'Num of Subjects',
       value: 'num_of_subjects',
     },
+    ...(isAdmin
+      ? [
+          {
+            label: 'Transferred At',
+            render: (row: Event) => {
+              return (
+                <>
+                  {row.transferred_at && (
+                    <Icon as={CheckBadgeIcon} color={'brand'} />
+                  )}
+                  <IconButton
+                    aria-label={row.transferred_at ? 'Upload Again' : 'Upload'}
+                    icon={<Icon as={PaperAirplaneIcon} />}
+                    variant={'ghost'}
+                    colorScheme={'brand'}
+                    onClick={() => transferEventResultModalToggle.open(row)}
+                    ml={2}
+                  />
+                </>
+              );
+            },
+          },
+        ]
+      : []),
     {
       label: 'Action',
       render: (row: Event) => (
@@ -120,7 +155,11 @@ export default function ListEvents({ events }: Props) {
         <SlabHeading
           title="List Events"
           rightElement={
-            <LinkButton href={instRoute('events.create')} title={'New'} />
+            isAdmin ? (
+              <LinkButton href={instRoute('events.create')} title={'New'} />
+            ) : (
+              <></>
+            )
           }
         />
         <SlabBody>
@@ -133,6 +172,15 @@ export default function ListEvents({ events }: Props) {
             hideSearchField={true}
           />
         </SlabBody>
+        {transferEventResultModalToggle.state && (
+          <TransferEventResultModal
+            courseTeacher={courseTeacher}
+            event={transferEventResultModalToggle.state}
+            assessments={assessments}
+            {...transferEventResultModalToggle.props}
+            onSuccess={() => Inertia.reload({ only: ['events'] })}
+          />
+        )}
       </Slab>
     </DashboardLayout>
   );

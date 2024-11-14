@@ -1,5 +1,5 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\Sheet;
 
 use Illuminate\Http\UploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -23,7 +23,7 @@ class ConvertSheetToArray
 
   // Example
   // private $columnKeyMapping = [
-  //   'A' => 'question',
+  //   'A' => 'question' | SheetValueHandler,
   //   'B' => 'option_a',
   //   'C' => 'option_b',
   //   'D' => 'option_c',
@@ -33,19 +33,26 @@ class ConvertSheetToArray
 
   function run($startingRow = 1)
   {
-    $totalRows = $this->sheetData->getHighestDataRow();
+    $totalRows = $this->sheetData->getHighestDataRow('A');
 
     $data = [];
     $rows = range($startingRow + 1, $totalRows);
     foreach ($rows as $row) {
       $dataItem = [];
       foreach ($this->columnKeyMapping as $excelColumn => $dataKey) {
-        $dataItem[$dataKey] = $this->sheetData
-          ->getCell($excelColumn . $row)
-          ->getValue();
+        $key = $dataKey;
+        $value = trim(
+          $this->sheetData->getCell($excelColumn . $row)->getValue()
+        );
+        if ($dataKey instanceof SheetValueHandler) {
+          $key = $dataKey->key;
+          $value = $dataKey->handleValue($value);
+        }
+        $dataItem[$key] = $value;
       }
       $data[] = $dataItem;
     }
+    // dd(json_encode($data, JSON_PRETTY_PRINT));
     return $data;
   }
 }

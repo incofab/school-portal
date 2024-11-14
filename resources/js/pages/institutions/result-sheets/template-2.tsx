@@ -194,16 +194,22 @@ export default function Template2({
                     </tr>
                   </thead>
                   <tbody>
-                    {courseResults.map((courseResult) => (
-                      <tr key={'results-' + courseResult.id}>
-                        <td>{courseResult.course?.title}</td>
-                        <td>{getAssessmentScore(courseResult)}</td>
-                        <td>{courseResult.exam}</td>
-                        <td>{courseResult.result}</td>
-                        <td>{courseResult.position}</td>
-                        <td>{courseResult.grade}</td>
-                      </tr>
-                    ))}
+                    {courseResults.map((courseResult) => {
+                      const { grade } = ResultUtil.getGrade(
+                        courseResult.result,
+                        resultCommentTemplate
+                      );
+                      return (
+                        <tr key={'results-' + courseResult.id}>
+                          <td>{courseResult.course?.title}</td>
+                          <td>{getAssessmentScore(courseResult)}</td>
+                          <td>{courseResult.exam}</td>
+                          <td>{courseResult.result}</td>
+                          <td>{courseResult.position}</td>
+                          <td>{grade}</td>
+                        </tr>
+                      );
+                    })}
                     <tr>
                       <td>Total</td>
                       <td></td>
@@ -216,7 +222,7 @@ export default function Template2({
                 </table>
               </div>
               <div style={{ minWidth: '240px' }}>
-                <GradingTable />
+                <GradingTable resultCommentTemplate={resultCommentTemplate} />
               </div>
             </div>
             <Spacer height={'10px'} />

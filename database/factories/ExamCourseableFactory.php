@@ -36,4 +36,14 @@ class ExamCourseableFactory extends Factory
       ]
     );
   }
+
+  public function courseable(CourseSession $courseable): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'courseable_type' => $courseable->getMorphClass(),
+        'courseable_id' => $courseable->id
+      ]
+    );
+  }
 }

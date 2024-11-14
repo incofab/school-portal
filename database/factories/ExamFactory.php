@@ -4,7 +4,10 @@ namespace Database\Factories;
 
 use App\Enums\ExamStatus;
 use App\Models\Event;
+use App\Models\Exam;
+use App\Models\ExamCourseable;
 use App\Models\Institution;
+use App\Models\Student;
 use App\Models\TokenUser;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -91,7 +94,7 @@ class ExamFactory extends Factory
     );
   }
 
-  public function examable(TokenUser|User $examable): static
+  public function examable(TokenUser|User|Student $examable): static
   {
     return $this->state(
       fn(array $attributes) => [
@@ -99,6 +102,15 @@ class ExamFactory extends Factory
         'examable_id' => $examable->id
       ]
     );
+  }
+
+  public function examCourseables($count = 1): static
+  {
+    return $this->afterCreating(function (Exam $exam) use ($count) {
+      ExamCourseable::factory($count)
+        ->exam($exam)
+        ->create();
+    });
   }
 
   public function institution(Institution $institution): static

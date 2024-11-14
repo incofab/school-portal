@@ -267,47 +267,43 @@ export default function Template4({
                   </tr>
                 </thead>
                 <tbody>
-                  {courseResults.map((courseResult) => (
-                    <tr key={courseResult.id}>
-                      <td style={{ fontWeight: 'bold' }}>
-                        {courseResult.course?.title}
-                      </td>
-                      {assessments.map((assessment) => (
-                        <td
-                          key={
-                            'assessment-val' +
-                            courseResult.id +
-                            assessment.title
-                          }
-                        >
-                          {courseResult.assessment_values[
-                            assessment.raw_title
-                          ] ?? '-'}
+                  {courseResults.map((courseResult) => {
+                    const { grade, remark } = ResultUtil.getGrade(
+                      courseResult.result,
+                      resultCommentTemplate
+                    );
+                    return (
+                      <tr key={courseResult.id}>
+                        <td style={{ fontWeight: 'bold' }}>
+                          {courseResult.course?.title}
                         </td>
-                      ))}
-                      <td>{courseResult.exam}</td>
-                      <td style={{ fontWeight: 'bold' }}>
-                        {courseResult.result}
-                      </td>
-                      <td>
-                        {showGrade
-                          ? ResultUtil.getGrade(
-                              courseResult.result,
-                              resultCommentTemplate
-                            ).grade
-                          : ResultUtil.formatPosition(courseResult.position)}
-                      </td>
-                      {/* <td>{ResultUtil.getRemark(courseResult.grade)}</td> */}
-                      <td>
-                        {
-                          ResultUtil.getGrade(
-                            courseResult.result,
-                            resultCommentTemplate
-                          ).remark
-                        }
-                      </td>
-                    </tr>
-                  ))}
+                        {assessments.map((assessment) => (
+                          <td
+                            key={
+                              'assessment-val' +
+                              courseResult.id +
+                              assessment.title
+                            }
+                          >
+                            {courseResult.assessment_values[
+                              assessment.raw_title
+                            ] ?? '-'}
+                          </td>
+                        ))}
+                        <td>{courseResult.exam}</td>
+                        <td style={{ fontWeight: 'bold' }}>
+                          {courseResult.result}
+                        </td>
+                        <td>
+                          {showGrade
+                            ? grade
+                            : ResultUtil.formatPosition(courseResult.position)}
+                        </td>
+                        {/* <td>{ResultUtil.getRemark(courseResult.grade)}</td> */}
+                        <td>{remark}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

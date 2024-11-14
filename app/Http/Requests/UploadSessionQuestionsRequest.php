@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Actions\ConvertSheetToArray;
+use App\Actions\Sheet\ConvertSheetToArray;
 use App\Models\Question;
 use App\Rules\ExcelRule;
 use Illuminate\Foundation\Http\FormRequest;

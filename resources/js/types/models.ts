@@ -446,6 +446,7 @@ export interface Event extends InstitutionRow {
   duration: number;
   status: string;
   starts_at: string;
+  transferred_at?: string;
   expires_at?: string;
   friendly_start_date: string;
   num_of_subjects: number;
