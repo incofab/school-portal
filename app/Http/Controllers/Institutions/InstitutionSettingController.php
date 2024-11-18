@@ -83,7 +83,7 @@ class InstitutionSettingController extends Controller
       );
       $publicUrl = Storage::disk('s3_public')->url($imagePath);
       $data['value'] = $publicUrl;
-    }
+    } 
 
     InstitutionSetting::query()->updateOrCreate(
       [

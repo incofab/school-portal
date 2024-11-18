@@ -62,6 +62,11 @@ class Student extends Model
     return $this->belongsTo(Classification::class);
   }
 
+  function course()
+  {
+    return $this->hasMany(Course::class);
+  }
+
   function institutionUser()
   {
     return $this->belongsTo(InstitutionUser::class);
@@ -102,5 +107,10 @@ class Student extends Model
       'id',
       'guardian_user_id'
     );
+  }
+
+  function assignmentSubmissions()
+  {
+    return $this->hasMany(AssignmentSubmission::class);
   }
 }

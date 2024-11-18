@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -15,11 +16,11 @@ class DatabaseSeeder extends Seeder
     $this->call([
       RoleSeeder::class,
       UserSeeder::class,
-      AcademicSessionSeeder::class
-      //             CourseSeeder::class,
-      //             TopicSeeder::class,
-      //             CourseSessionSeeder::class,
-      //             QuestionSeeder::class,
+      AcademicSessionSeeder::class,
+      //  CourseSeeder::class,
+      //  TopicSeeder::class,
+      //  CourseSessionSeeder::class,
+      //  QuestionSeeder::class,
     ]);
   }
 }

@@ -48,7 +48,7 @@ class TermResultActivationController extends Controller
       ->first();
 
     if (!$pin) {
-      return throw ValidationException::withMessages(['pin' => 'Invalid pin']);
+      throw ValidationException::withMessages(['pin' => 'Invalid pin']);
     }
 
     $student = Student::query()
@@ -59,7 +59,7 @@ class TermResultActivationController extends Controller
       ->first();
 
     if (!$student) {
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'student_code' => 'Invalid student ID'
       ]);
     }
@@ -68,13 +68,13 @@ class TermResultActivationController extends Controller
       if ($pin->term_result_id) {
         return $this->handleUsedPin($pin, $student);
       }
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'pin' => 'Pin has already been used'
       ]);
     }
 
     if ($pin->student_id && $pin->student_id !== $student->id) {
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'pin' => 'This Pin is not for you'
       ]);
     }
@@ -114,7 +114,7 @@ class TermResultActivationController extends Controller
       return response()->json([
         'redirect_url' => route('student-login'),
         'message' =>
-          'No unactivated result found, Login to see already activated results'
+        'No unactivated result found, Login to see already activated results'
       ]);
     }
 

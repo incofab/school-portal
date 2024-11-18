@@ -29,6 +29,13 @@ export function BrandButton({ title, ...props }: Props & ButtonProps) {
     </Button>
   );
 }
+export function BrandButton2({ title, ...props }: Props & ButtonProps) {
+  return (
+    <Button colorScheme={'brand'} mt={2} size={'sm'} {...props}>
+      {title ?? 'Submit'}
+    </Button>
+  );
+}
 
 export function LinkButton({
   title,

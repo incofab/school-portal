@@ -1,0 +1,11 @@
+
+
+**Attendance**
+
+instituion_id
+instituion_user_id
+type -> in,out, index
+institution_staff_user_id
+created_at
+updated_at
+softdelete

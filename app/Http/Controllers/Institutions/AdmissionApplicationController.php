@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers\Institutions;
 
-use App\Enums\InstitutionUserType;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\AdmissionApplicationRequest;
-use App\Models\AdmissionApplication;
-use App\Models\Institution;
+use App\Actions\HandleAdmission;
 use Inertia\Inertia;
+use App\Models\Student;
+use App\Models\Institution;
+use App\Enums\InstitutionUserType;
+use App\Models\ApplicationGuardian;
+use App\Http\Controllers\Controller;
+use App\Models\AdmissionApplication;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\AdmissionApplicationRequest;
+use App\Models\Classification;
+use App\Rules\ValidateExistsRule;
 
 class AdmissionApplicationController extends Controller
 {
@@ -16,25 +22,20 @@ class AdmissionApplicationController extends Controller
     $this->allowedRoles([InstitutionUserType::Admin])->except([
       'create',
       'successMessage',
-      'store'
+      'store',
+      'admissionLetter'
     ]);
   }
 
-  public function index()
+  function index()
   {
-    $data = request()->validate(['search' => ['nullable', 'string']]);
-    $query = AdmissionApplication::query()->when(
-      $data['search'],
-      fn($q, $value) => $q->where(
-        fn($query) => $query
-          ->where('first_name', 'LIKE', "%$value%")
-          ->orWhere('last_name', 'LIKE', "%$value%")
-          ->orWhere('other_names', 'LIKE', "%$value%")
-      )
+    $query = AdmissionApplication::query();
+    return Inertia::render(
+      'institutions/admissions/list-admission-applications',
+      [
+        'admissionApplications' => paginateFromRequest($query)
+      ]
     );
-    return Inertia::render('admissions/list-admission-applications', [
-      'admissionApplications' => paginateFromRequest($query)
-    ]);
   }
 
   public function create(Institution $institution)
@@ -48,11 +49,73 @@ class AdmissionApplicationController extends Controller
     Institution $institution,
     AdmissionApplicationRequest $request
   ) {
+    $data = $request->validated();
+    $applicantData = collect($data)
+      ->except('guardians')
+      ->toArray();
+    $guardiansData = $data['guardians'];
+
+    if ($request->photo) {
+      $imagePath = $request->photo->store(
+        "{$institution->uuid}/admission",
+        's3_public'
+      );
+      $publicUrl = Storage::disk('s3_public')->url($imagePath);
+      $applicantData['photo'] = $publicUrl;
+    }
+
+    // Create the Admission Application
     $admissionApplication = $institution
       ->admissionApplications()
-      ->create($request->validated());
+      ->create($applicantData);
+
+    // Loop through each guardian data and create the records
+    foreach ($guardiansData as $guardianData) {
+      $modGuardianData = [
+        ...$guardianData,
+        'admission_application_id' => $admissionApplication->id
+      ];
+      ApplicationGuardian::create($modGuardianData);
+    }
 
     return $this->ok(['data' => $admissionApplication]);
+  }
+
+  function edit(
+    Institution $institution,
+    AdmissionApplication $admissionApplication
+  ) {
+    return inertia('institutions/admissions/admission-application', [
+      'admissionApplication' => $admissionApplication
+    ]);
+  }
+
+  public function updateStatus(
+    Institution $institution,
+    AdmissionApplication $admissionApplication
+  ) {
+    abort_if($admissionApplication->admission_status != 'pending', 401, "Admission Application has been handled");
+
+    $data = request()->validate([
+      'admission_status' => ['required', 'string'],
+      'classification' => [
+        'required',
+        new ValidateExistsRule(Classification::class)
+      ]
+    ]);
+
+    //== If Admitted, fill the necessary DB Tables with the needed information
+    if ($data['admission_status'] === 'admitted') {
+      //Handle_Admission
+      HandleAdmission::make()->admitStudent($admissionApplication, $data);
+    }
+
+    //== Update the 'admission_status' on the 'admission_applications' DB Table
+    $admissionApplication
+      ->fill(['admission_status' => $data['admission_status']])
+      ->save();
+
+    return $this->ok();
   }
 
   public function successMessage(
@@ -72,12 +135,22 @@ class AdmissionApplicationController extends Controller
     Institution $institution,
     AdmissionApplication $admissionApplication
   ) {
+    $admissionApplication->load('applicationGuardians');
+
     return Inertia::render(
       'institutions/admissions/show-admission-application',
       [
         'admissionApplication' => $admissionApplication
+        // 'applicationGuardians' => $admissionApplication->applicationGuardians
       ]
     );
+  }
+
+  public function admissionLetter(Institution $institution, Student $student)
+  {
+    return Inertia::render('institutions/admissions/show-admission-letter', [
+      'student' => $student->load('user.institutionUser', 'classification')
+    ]);
   }
 
   public function destroy(

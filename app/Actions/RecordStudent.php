@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions;
 
 use App\Enums\InstitutionUserType;
@@ -25,7 +26,7 @@ class RecordStudent
     return new self($data);
   }
 
-  public function create()
+  public function create(): Student
   {
     DB::beginTransaction();
 
@@ -35,9 +36,10 @@ class RecordStudent
       'password' => bcrypt('password')
     ]);
 
-    $this->attach($user);
+    $student = $this->attach($user);
 
     DB::commit();
+    return $student;
   }
 
   private function attach(User $user)
@@ -49,7 +51,7 @@ class RecordStudent
       ['role' => InstitutionUserType::Student]
     );
 
-    $this->createUpdateStudent(
+    $student = $this->createUpdateStudent(
       $user,
       [
         'institution_user_id' => $institutionUser->id,
@@ -60,6 +62,7 @@ class RecordStudent
       ],
       $institutionUser
     );
+    return $student;
   }
 
   function update(Student $student)
@@ -83,8 +86,16 @@ class RecordStudent
     $data,
     InstitutionUser $institutionUser
   ) {
-    $user
+    return $user
       ->student()
       ->updateOrCreate(['institution_user_id' => $institutionUser->id], $data);
   }
 }
+
+/**
+ * What is the essence of 'guardian_phone' here?
+ * Does it imply that the 'guardian' record/user should be created first?
+ * Does this also take care of the 'institution_users' DB table?
+ * Do I need to execute 'RecordGuardian' seperately in order to take care of 'guardian_students' DB table?
+ * What is this 'Actions' folder? and How is it different from Helpers?
+ */

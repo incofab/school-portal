@@ -27,7 +27,7 @@ class AttachInstitutionUserController extends Controller
     $res = $this->verifyUser($user, $institution);
 
     if ($res->isNotSuccessful()) {
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'email' => $res->message
       ]);
     }

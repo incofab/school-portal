@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Institutions\Users;
 
 use App\Actions\Users\DownloadStaffRecordingSheet;
@@ -7,7 +8,9 @@ use App\Actions\RecordStaff;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateStaffRequest;
+use App\Models\Classification;
 use App\Models\Institution;
+use App\Models\InstitutionUser;
 use App\Rules\ExcelRule;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -54,5 +57,26 @@ class InstitutionUserController extends Controller
       $request->role
     );
     return $this->ok();
+  }
+
+  function idCards(Institution $institution, Classification $classification = null)
+  {
+    if (!empty($classification)) {
+      //Returns Students
+      $persons = $classification
+        ->students()
+        ->with('user')
+        ->get();
+    } else {
+      //Returns Staff
+      $persons = InstitutionUser::whereNotIn('role', [
+        InstitutionUserType::Student->value,
+        InstitutionUserType::Alumni->value
+      ])->with('user')->get();
+    }
+
+    return inertia('institutions/students/staff-id-cards', [
+      'persons' => $persons
+    ]);
   }
 }

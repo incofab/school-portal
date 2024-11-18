@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\CCD\QuestionController;
+use App\Http\Controllers\Institutions\Attendance\AttendanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,14 +17,15 @@ use App\Http\Controllers\CCD\QuestionController;
 |
 */
 
+Route::middleware(['auth:sanctum', 'institution.user'])->post('/{institution}/attendance', [AttendanceController::class, 'store']);
+Route::post('/login', [AuthController::class, 'login']); // Login route for API
+
 Route::middleware('auth:sanctum')->any('/user', function (Request $request) {
-    
     return $request->user();
-    
 });
 
-Route::group(['middleware' => []], function() {
-    
+Route::group(['middleware' => []], function () {
+
     // Route::any('/exam/pause', [\App\Http\Controllers\Exam\ExamController::class, 'pauseExam']);
     // Route::any('/exam/end', [\App\Http\Controllers\Exam\ExamController::class, 'endExam']);
     // Route::any('/exam/submit', [\App\Http\Controllers\Exam\ExamController::class, 'submitExam']);
@@ -30,10 +33,9 @@ Route::group(['middleware' => []], function() {
     // Route::any('/institution/event/index', [\App\Http\Controllers\API\EventController::class, 'index']);
     // Route::any('/institution/event/download', [\App\Http\Controllers\API\EventController::class, 'downloadEventContent']);
     // Route::any('/institution/event/upload', [\App\Http\Controllers\API\EventController::class, 'uploadEventResult']);
-    
+
 });
 
-Route::group(['middleware' => []], function() {
+Route::group(['middleware' => []], function () {
     Route::any('/ccd/institution/{institution_id}/question/create/{sessionId}', [QuestionController::class, 'apiCreate'])->name('api.ccd.question.create');
 });
-

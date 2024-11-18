@@ -154,6 +154,13 @@ export default function ListClassification({ classifications }: Props) {
                       Student Tiles
                     </MenuItem>
                     <MenuItem
+                      as={InertiaLink}
+                      href={instRoute('users.idcards', [row])}
+                    >
+                      Students ID Cards
+                    </MenuItem>
+
+                    <MenuItem
                       onClick={() => migrateClassStudentsModalToggle.open(row)}
                     >
                       Move Students

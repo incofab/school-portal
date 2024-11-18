@@ -73,6 +73,11 @@ export default function SideBarLayout() {
           route: instRoute('users.create'),
           roles: [InstitutionUserType.Admin],
         },
+        {
+          label: 'Staff ID Cards',
+          route: instRoute('users.idcards'),
+          roles: [InstitutionUserType.Admin],
+        },
       ],
     },
     {
@@ -92,6 +97,27 @@ export default function SideBarLayout() {
         {
           label: 'Add Student',
           route: instRoute('students.create'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Student Applications',
+          route: instRoute('admission-applications.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+    {
+      label: 'Attendance',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'Mark Attendance',
+          route: instRoute('attendances.create'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'All Attendances',
+          route: instRoute('attendances.index'),
           roles: [InstitutionUserType.Admin],
         },
       ],
@@ -130,6 +156,37 @@ export default function SideBarLayout() {
         },
       ],
     },
+
+    {
+      label: 'Assignments',
+      roles: [
+        InstitutionUserType.Student,
+        InstitutionUserType.Admin,
+        InstitutionUserType.Teacher,
+      ],
+      sub_items: [
+        {
+          label: 'All Assignments',
+          route: instRoute('assignments.index'),
+          roles: [
+            InstitutionUserType.Student,
+            InstitutionUserType.Admin,
+            InstitutionUserType.Teacher,
+          ],
+        },
+        {
+          label: 'Add Assignment',
+          route: instRoute('assignments.create'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Submitted Assignments',
+          route: instRoute('assignment-submissions.index'),
+          roles: [InstitutionUserType.Student],
+        },
+      ],
+    },
+
     {
       label: 'Classes',
       roles: [

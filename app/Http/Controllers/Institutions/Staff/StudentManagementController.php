@@ -1,19 +1,22 @@
 <?php
+
 namespace App\Http\Controllers\Institutions\Staff;
 
-use App\Actions\Users\DownloadStudentRecordingSheet;
-use App\Actions\Users\InsertStudentFromRecordingSheet;
-use App\Actions\RecordStudent;
-use App\Http\Controllers\Controller;
-use App\Models\Student;
-use Illuminate\Http\Request;
-use App\Http\Requests\CreateStudentRequest;
-use App\Models\Classification;
-use App\Models\Institution;
-use App\Rules\ExcelRule;
-use App\Support\UITableFilters\StudentUITableFilters;
 use DB;
+use App\Models\Student;
+use App\Rules\ExcelRule;
+use App\Models\Institution;
+use Illuminate\Http\Request;
+use App\Actions\RecordStudent;
+use App\Models\Classification;
+use App\Models\InstitutionUser;
+use App\Enums\InstitutionUserType;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\CreateStudentRequest;
+use App\Actions\Users\DownloadStudentRecordingSheet;
+use App\Support\UITableFilters\StudentUITableFilters;
+use App\Actions\Users\InsertStudentFromRecordingSheet;
 
 class StudentManagementController extends Controller
 {
@@ -35,6 +38,19 @@ class StudentManagementController extends Controller
     Classification $classification
   ) {
     return inertia('institutions/students/class-students-tiles', [
+      'students' => $classification
+        ->students()
+        ->with('user')
+        ->get()
+    ]);
+  }
+
+  function classStudentsIdCards(
+    Request $request,
+    Institution $institution,
+    Classification $classification
+  ) {
+    return inertia('institutions/students/class-students-id-cards', [
       'students' => $classification
         ->students()
         ->with('user')
@@ -114,9 +130,9 @@ class StudentManagementController extends Controller
     $institutionUser->delete();
     if (
       $user
-        ->institutionUsers()
-        ->get()
-        ->count() < 1
+      ->institutionUsers()
+      ->get()
+      ->count() < 1
     ) {
       $user->delete();
     }
