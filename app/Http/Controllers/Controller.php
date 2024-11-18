@@ -109,9 +109,9 @@ class Controller extends BaseController
   {
     return response()->json(['ok' => true, ...$data]);
   }
-  protected function message(string $message)
+  protected function message(string $message, $status = 200)
   {
-    return response()->json(['message' => $message]);
+    return response()->json(['message' => $message], $status);
   }
 
   protected function res(

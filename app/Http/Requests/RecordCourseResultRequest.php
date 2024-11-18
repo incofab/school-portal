@@ -27,7 +27,7 @@ class RecordCourseResultRequest extends FormRequest
         ->where('id', $courseTeacher->course_id)
         ->exists()
     ) {
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'result' => 'Access denied'
       ]);
     }

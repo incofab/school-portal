@@ -68,7 +68,7 @@ class GuardianManagementController extends Controller
           ->where('id', $id)
           ->exists()
       ) {
-        return throw ValidationException::withMessages([
+        throw ValidationException::withMessages([
           'message' => 'Invalid student Id'
         ]);
       }

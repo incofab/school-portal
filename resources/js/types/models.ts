@@ -77,6 +77,16 @@ export interface InstitutionUser extends InstitutionRow {
   student?: Student;
 }
 
+export interface Attendance extends InstitutionRow {
+  institution_id: number;
+  institution_staff_user_id: number;
+  institution_user_id: number;
+  institution_user: InstitutionUser;
+  remark: string;
+  signed_in_at: string;
+  signed_out_at: string;
+}
+
 export interface Classification extends InstitutionRow {
   title: string;
   description: string;
@@ -120,6 +130,7 @@ export interface Course extends InstitutionRow {
 }
 
 export interface Student extends Row {
+  institution_user_id: number;
   user_id: number;
   classification_id: number;
   code: string;
@@ -336,20 +347,29 @@ export interface AdmissionApplication extends Row {
   last_name: string;
   other_names: string;
   phone: string;
+  photo: string;
   email: string;
   gender: string;
-  fathers_name: string;
-  mothers_name: string;
-  fathers_occupation: string;
-  mothers_occupation: string;
-  guardian_phone: string;
-  photo: string;
   address: string;
   previous_school_attended: string;
   dob: string;
   nationality: string;
   religion: string;
   reference: string;
+  lga: string;
+  state: string;
+  intended_class_of_admission: string;
+  admission_status: string;
+  application_guardians?: ApplicationGuardian[];
+}
+
+export interface ApplicationGuardian extends Row {
+  first_name: string;
+  last_name: string;
+  other_names: string;
+  phone: string;
+  email: string;
+  relationship: string;
 }
 
 export interface Assessment extends InstitutionRow {
@@ -436,6 +456,33 @@ export interface Event extends InstitutionRow {
   exams?: Exam[];
   classification?: Classification;
   classification_group?: ClassificationGroup;
+}
+
+export interface Assignment extends InstitutionRow {
+  status: string;
+  starts_at: string;
+  expires_at: string;
+  max_score: number;
+  content: string;
+  user?: User;
+  course?: Course;
+  classification?: Classification;
+  course_teacher?: CourseTeacher;
+}
+
+export interface AssignmentSubmission extends InstitutionRow {
+  assignment_id: number;
+  student_id: number;
+  answer: string;
+  attachments?: Attachment[];
+  score?: number;
+  remark?: string;
+  assignment: Assignment;
+  student?: Student;
+}
+
+export interface Attachment extends InstitutionRow {
+  attachment: string;
 }
 
 export interface EventCourseable extends Row {

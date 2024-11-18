@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\{actingAs, assertDatabaseHas, assertSoftDeleted};
 
-uses(RefreshDatabase::class);
+//uses(RefreshDatabase::class);
 
 beforeEach(function () {
   $this->institution = Institution::factory()->create();

@@ -23,19 +23,19 @@ class DownloadCourseResultSheetRequest extends FormRequest
     $this->classificationObj = Classification::find($this->classification);
 
     if (!$this->academicSessionObj) {
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'academicSession' => 'Academic session not selected/invalid'
       ]);
     }
 
     if (!$this->courseObj) {
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'course' => 'Course not selected/invalid'
       ]);
     }
 
     if (!$this->classificationObj) {
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'classification' => 'Class not selected/invalid'
       ]);
     }

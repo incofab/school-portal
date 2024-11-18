@@ -88,13 +88,13 @@ class AssessmentController extends Controller
 
     if (
       Assessment::query()
-        ->forTerm($data['term'])
-        ->forMidTerm($data['for_mid_term'])
-        ->where('title', $data)
-        ->whereNot('id', $assessment->id)
-        ->exists()
+      ->forTerm($data['term'])
+      ->forMidTerm($data['for_mid_term'])
+      ->where('title', $data)
+      ->whereNot('id', $assessment->id)
+      ->exists()
     ) {
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'title' => 'This title already exists'
       ]);
     }

@@ -52,6 +52,7 @@ export default function UsersTableFilters({ isOpen, onClose }: Props) {
                 selectValue={filters.role}
                 enumData={UserRoleType}
                 value={filters.role}
+                refreshKey={filters.role}
                 onChange={(e: any) =>
                   setFilters({ ...filters, role: e.currentTarget.value })
                 }

@@ -57,7 +57,7 @@ export default function DownloadCourseResultModal({
     window.location.href = instRoute('course-results.download', [webForm.data]);
     onClose();
     onSuccess();
-  };
+  }; 
 
   return (
     <GenericModal

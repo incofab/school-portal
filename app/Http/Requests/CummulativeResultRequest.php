@@ -32,7 +32,7 @@ class CummulativeResultRequest extends FormRequest
     )->first();
 
     if (!$this->classificationObj || !$this->academicSessionObj) {
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'classification' => 'Select a class and an academic session',
         'academicSession' => 'Select a class and an academic session'
       ]);

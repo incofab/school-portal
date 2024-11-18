@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions\Users;
 
 use App\Actions\RecordStaff;
@@ -109,7 +110,7 @@ class InsertStaffFromRecordingSheet
         $emails[] = $item['email'];
         continue;
       }
-      return throw ValidationException::withMessages([
+      throw ValidationException::withMessages([
         'email' => 'This data contains duplicate emails'
       ]);
     }

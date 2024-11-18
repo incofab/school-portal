@@ -24,6 +24,7 @@ class EventController extends Controller
       ?->student()
       ->with('classification')
       ->first();
+
     $query = $institution
       ->events()
       ->getQuery()
@@ -63,10 +64,10 @@ class EventController extends Controller
       'event' => $event,
       'studentExam' => $student
         ? $event
-          ->exams()
-          ->getQuery()
-          ->forExamable($student)
-          ->first()
+        ->exams()
+        ->getQuery()
+        ->forExamable($student)
+        ->first()
         : null
     ]);
   }
