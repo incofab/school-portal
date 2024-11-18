@@ -101,6 +101,8 @@ Route::get('/guardians/classifications/{classification}/create', [Web\Staff\Guar
     ->name('guardians.classifications.create');
 Route::post('/guardians/classifications/{classification}/store', [Web\Staff\GuardianManagementController::class, 'store'])
     ->name('guardians.classifications.store');
+Route::post('/guardians/{guardianUser}/assign-student', [Web\Staff\GuardianManagementController::class, 'assignStudent'])
+    ->name('guardians.assign-student');
 Route::get('/guardians/list-dependents', Web\Guardians\ListDependentsController::class)
     ->name('guardians.list-dependents');
 Route::delete('/guardians/remove-dependent/{student}', Web\Guardians\RemoveDependentController::class)

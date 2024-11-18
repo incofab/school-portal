@@ -29,17 +29,32 @@ class RecordGuardian
     ]);
 
     $this->syncRole($user);
-    $user->guardianStudents()->firstOrCreate(
+    // $user->guardianStudents()->firstOrCreate(
+    //   [
+    //     'institution_id' => currentInstitution()->id,
+    //     'student_id' => $studentId
+    //   ],
+    //   collect($this->userData)
+    //     ->only('relationship')
+    //     ->toArray()
+    // );
+    self::attachStudent($user, $studentId, $this->userData['relationship']);
+
+    DB::commit();
+  }
+
+  static function attachStudent(
+    User $guardianUser,
+    int $studentId,
+    string $relationship
+  ) {
+    $guardianUser->guardianStudents()->firstOrCreate(
       [
         'institution_id' => currentInstitution()->id,
         'student_id' => $studentId
       ],
-      collect($this->userData)
-        ->only('relationship')
-        ->toArray()
+      ['relationship' => $relationship]
     );
-
-    DB::commit();
   }
 
   function update(User $user)

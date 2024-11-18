@@ -11,6 +11,7 @@ use App\Models\GuardianStudent;
 use App\Models\Institution;
 use App\Models\Student;
 use App\Models\User;
+use App\Rules\ValidateExistsRule;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
@@ -50,11 +51,8 @@ class GuardianManagementController extends Controller
     );
   }
 
-  public function store(
-    Request $request,
-    Institution $institution,
-    Classification $classification
-  ) {
+  public function store(Request $request, Institution $institution)
+  {
     $rule = [];
     foreach (request('guardians') as $id => $value) {
       $thisRule = User::generalRule(null, "guardians.$id.");
@@ -87,5 +85,23 @@ class GuardianManagementController extends Controller
     }
 
     return $this->ok();
+  }
+
+  public function assignStudent(
+    Request $request,
+    Institution $institution,
+    User $guardianUser
+  ) {
+    $request->validate([
+      'relationship' => ['required', new Enum(GuardianRelationship::class)],
+      'student_id' => ['required', new ValidateExistsRule(Student::class)]
+    ]);
+
+    RecordGuardian::attachStudent(
+      $guardianUser,
+      $request->student_id,
+      $request->relationship
+    );
+    return $this->ok(['message' => 'Student assigned successfully']);
   }
 }
