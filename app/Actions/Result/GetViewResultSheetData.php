@@ -10,6 +10,7 @@ use App\Models\CourseResultInfo;
 use App\Models\Institution;
 use App\Models\ResultCommentTemplate;
 use App\Models\Student;
+use App\Models\TermDetail;
 use App\Models\TermResult;
 use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultInfoUITableFilters;
@@ -112,6 +113,9 @@ class GetViewResultSheetData
       'resultDetails' => self::getResultDetails($classResultInfo, $termResult),
       'assessments' => $assessments,
       'resultCommentTemplate' => $resultCommentTemplate,
+      'termDetail' => TermDetail::query()
+        ->forTermResult($termResult)
+        ->first(),
       'learningEvaluations' => $institution
         ->learningEvaluations()
         ->with('learningEvaluationDomain')

@@ -27,7 +27,7 @@ class EventFactory extends Factory
       'duration' => fake()->numberBetween(10 * 60, 60 * 60),
       'status' => EventStatus::Active->value,
       'num_of_activations' => fake()->randomNumber(2),
-      'num_of_subjects' => fake()->randomNumber(1),
+      'num_of_subjects' => fake()->randomNumber(1) + 1,
       'starts_at' => now()
     ];
   }

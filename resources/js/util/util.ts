@@ -1,6 +1,7 @@
 import { Nullable, SelectOptionType } from '@/types/types';
 import { Resizer } from './image-file-resizer';
 import objectGet from 'lodash/get';
+import startCase from 'lodash/startCase';
 
 export const dateFormat = 'yyyy-MM-dd';
 export const dateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
@@ -186,4 +187,8 @@ export function generateUniqueString(prefix: any) {
   return `${prefix}-${Date.now()}-${Math.random()
     .toString(36)
     .substring(2, 15)}`;
+}
+
+export function ucFirst(str?: string) {
+  return startCase(str);
 }

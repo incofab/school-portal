@@ -93,6 +93,12 @@ Route::post('/term-results/{termResult}/teacher-comment', [Web\Staff\TermResultC
   ->name('term-results.teacher-comment');
 Route::post('/term-results/{termResult}/principal-comment', [Web\Staff\TermResultCommentController::class, 'principalComment'])
   ->name('term-results.principal-comment');
+Route::post('/term-results/{termResult}/extra-data-update', Web\Staff\UpdateTermResultExtraDataController::class)
+  ->name('term-results.extra-data.update');
+Route::get('/term-details/{termDetail?}', [Web\Staff\TermDetailController::class, 'index'])
+  ->name('term-details.index');
+Route::put('/term-details/{termDetail}/update', [Web\Staff\TermDetailController::class, 'update'])
+  ->name('term-details.update');
 Route::post('/students/{student}/change-class', [Web\Classifications\UpdateStudentClassController::class, 'changeStudentClass'])
   ->name('students.change-class');
 Route::get('/change-multi-student-class/{classification}', [Web\Classifications\UpdateStudentClassController::class, 'changeMultipleStudentClassView'])

@@ -241,6 +241,11 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin],
         },
         {
+          label: 'Current Term Detail',
+          route: instRoute('term-details.index'),
+          roles: teachers,
+        },
+        {
           label: 'Pins',
           route: instRoute('pin-prints.index'),
           roles: [InstitutionUserType.Admin],

@@ -211,9 +211,22 @@ export interface TermResult extends InstitutionRow {
   teacher_comment: string;
   principal_comment: string;
   general_comment: string;
+  height: number;
+  weight: number;
+  attendance_count: number;
   learning_evaluation: { [key: string]: string };
   student?: Student;
   classification?: Classification;
+  academic_session?: AcademicSession;
+}
+
+export interface TermDetail extends InstitutionRow {
+  academic_session_id: number;
+  term: TermType;
+  start_date: string;
+  end_date: string;
+  expected_attendance_count: number;
+  for_mid_term: boolean;
   academic_session?: AcademicSession;
 }
 

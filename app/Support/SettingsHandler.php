@@ -7,6 +7,7 @@ use App\Enums\ResultTemplateType;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\InstitutionSetting;
+use App\Models\TermDetail;
 
 class SettingsHandler
 {
@@ -136,5 +137,24 @@ class SettingsHandler
       $paystack['public_key'] ?? '',
       $paystack['private_key'] ?? ''
     );
+  }
+
+  function fetchCurrentTermDetail(): TermDetail
+  {
+    $academicSessionId = $this->getCurrentAcademicSession();
+    $term = $this->getCurrentTerm();
+    abort_unless(
+      $academicSessionId && $term,
+      401,
+      'You need to set the current term and academic session first'
+    );
+    return TermDetail::query()
+      ->with('academicSession')
+      ->firstOrCreate([
+        'institution_id' => currentInstitution()->id,
+        'academic_session_id' => $academicSessionId,
+        'term' => $term,
+        'for_mid_term' => $this->isOnMidTerm()
+      ]);
   }
 }
