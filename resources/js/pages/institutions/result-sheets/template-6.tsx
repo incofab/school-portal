@@ -31,6 +31,7 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import ResultDownloadButton from './result-download-button';
 import { EnvelopeIcon, MapIcon, PhoneIcon } from '@heroicons/react/24/solid';
+import { LabelText } from '@/components/result-helper-components';
 
 const PDF_URL = import.meta.env.VITE_PDF_URL;
 export default function Template6({
@@ -55,7 +56,7 @@ export default function Template6({
     { label: 'Student Name', value: student.user?.full_name },
     { label: 'Class', value: termResult.classification?.title },
     { label: 'No in Class', value: classResultInfo.num_of_students },
-    { label: 'Average Score', value: termResult.average },
+    // { label: 'Average Score', value: termResult.average },
     ...(hidePosition
       ? []
       : [
@@ -72,7 +73,7 @@ export default function Template6({
       value: startCase(termResult.term),
     },
     // { label: 'Session', value: academicSession.title },
-    { label: 'Student Id', value: student.code },
+    // { label: 'Student Id', value: student.code },
     ...(classResultInfo.next_term_resumption_date
       ? [
           {
@@ -116,7 +117,7 @@ export default function Template6({
     },
   ];
 
-  function LabelText({
+  function LocalLabelText({
     label,
     text,
   }: {
@@ -289,7 +290,7 @@ export default function Template6({
           <Wrap spacing={1} align={'stretch'} fontSize={'16px'}>
             {resultSummary1.map((item) => (
               <WrapItem flex={1} key={'summary1' + item.label}>
-                <LabelText label={item.label} text={item.value} />
+                <LocalLabelText label={item.label} text={item.value} />
               </WrapItem>
             ))}
           </Wrap>
@@ -333,7 +334,35 @@ export default function Template6({
                 hideSearchField={true}
                 tableProps={{ className: 'result-table' }}
               />
-              <br />
+            </Div>
+            <Div className="cell" my={2}>
+              <HStack>
+                <LabelText
+                  label={'Total'}
+                  text={`${termResult.total_score} out of ${classResultInfo.max_obtainable_score}`}
+                />
+                <Spacer />
+                <LabelText
+                  label={'Percentage Average'}
+                  text={`${termResult.average}%`}
+                />
+              </HStack>
+              <HStack mt={0}>
+                <LabelText
+                  label={'Overall Grade'}
+                  text={String(
+                    ResultUtil.getGrade(
+                      termResult.average,
+                      resultCommentTemplate
+                    ).grade
+                  )}
+                />
+                <Spacer />
+                <LabelText
+                  label={'Overall Grade'}
+                  text={`${classResultInfo.average}%`}
+                />
+              </HStack>
             </Div>
             <DisplayTermResultEvaluation
               termResult={termResult}

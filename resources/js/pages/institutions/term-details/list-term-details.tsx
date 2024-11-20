@@ -117,8 +117,12 @@ function UpdateTermDetail({ termDetail }: { termDetail: TermDetail }) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
-    start_date: format(new Date(termDetail.start_date), dateFormat),
-    end_date: format(new Date(termDetail.end_date), dateFormat),
+    start_date: termDetail.start_date
+      ? format(new Date(termDetail.start_date), dateFormat)
+      : '',
+    end_date: termDetail.end_date
+      ? format(new Date(termDetail.end_date), dateFormat)
+      : '',
     expected_attendance_count: String(
       termDetail.expected_attendance_count ?? ''
     ),
@@ -142,7 +146,7 @@ function UpdateTermDetail({ termDetail }: { termDetail: TermDetail }) {
       <Divider />
       <FormControlBox
         form={webForm as any}
-        title="Start Date"
+        title="Opening Date"
         formKey="start_date"
       >
         <Input
@@ -153,7 +157,11 @@ function UpdateTermDetail({ termDetail }: { termDetail: TermDetail }) {
           }
         />
       </FormControlBox>
-      <FormControlBox form={webForm as any} title="End Date" formKey="end_date">
+      <FormControlBox
+        form={webForm as any}
+        title="Closing Date"
+        formKey="end_date"
+      >
         <Input
           type={'date'}
           value={webForm.data.end_date}
