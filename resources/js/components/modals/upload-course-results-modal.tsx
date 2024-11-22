@@ -83,7 +83,7 @@ export default function UploadCourseResultsModal({
       headerContent={'Upload course results'}
       bodyContent={
         <VStack>
-          {isAdmin && (
+          {(isAdmin || !courseTeacher) && (
             <FormControl
               isRequired
               isInvalid={!!webForm.errors.course_teacher_id}

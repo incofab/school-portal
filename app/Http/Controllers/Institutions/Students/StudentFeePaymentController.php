@@ -15,6 +15,7 @@ use App\Models\ReceiptType;
 use App\Models\Student;
 use App\Models\User;
 use App\Rules\ValidateExistsRule;
+use App\Support\MorphMap;
 use App\Support\UITableFilters\FeePaymentUITableFilters;
 use App\Support\UITableFilters\ReceiptUITableFilters;
 use Illuminate\Http\Request;
@@ -141,7 +142,7 @@ class StudentFeePaymentController extends Controller
       'institution_id' => $institution->id,
       'user_id' => $user->id,
       'payable_id' => $student->user_id,
-      'payable_type' => 'user',
+      'payable_type' => MorphMap::key(User::class),
       'amount' => $totalAmount,
       'purpose' => PaymentPurpose::Fee->value,
       'meta' => $data,

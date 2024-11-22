@@ -21,11 +21,16 @@ class RecordCourseResultRequest extends FormRequest
   {
     $this->institution = currentInstitution();
     $courseTeacher = $this->courseTeacher;
+    $currentUser = currentUser();
+    $validTeacher =
+      $currentUser->id === $courseTeacher->user_id ||
+      currentInstitutionUser()->isAdmin();
     // checks if this courseTeacher's course belongs to the current institution
     if (
       !Course::query()
         ->where('id', $courseTeacher->course_id)
-        ->exists()
+        ->exists() ||
+      !$validTeacher
     ) {
       throw ValidationException::withMessages([
         'result' => 'Access denied'
