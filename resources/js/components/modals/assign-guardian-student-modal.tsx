@@ -6,7 +6,7 @@ import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '../forms/form-control-box';
 import { User } from '@/types/models';
-import { GuardianRelationship } from '@/types/types';
+import { GuardianRelationship, SelectOptionType } from '@/types/types';
 import EnumSelect from '../dropdown-select/enum-select';
 import StudentSelect from '../selectors/student-select';
 
@@ -27,12 +27,15 @@ export default function AssignGuardianStudentModal({
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
     relationship: '',
-    student_id: '',
+    student_id: {} as SelectOptionType<number>,
   });
 
   const onSubmit = async () => {
     const res = await webForm.submit((data, web) =>
-      web.post(instRoute('guardians.assign-student', [user]), data)
+      web.post(instRoute('guardians.assign-student', [user]), {
+        ...data,
+        student_id: data.student_id.value,
+      })
     );
 
     if (!handleResponseToast(res)) return;
