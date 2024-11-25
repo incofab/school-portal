@@ -283,7 +283,7 @@ export default function Template6({
               {academicSession.title} Session
             </Text>
           </VStack>
-          <Avatar size={'2xl'} name="Student Logo" src={currentUser.photo} />
+          <Avatar size={'2xl'} name="Student Logo" src={student.user?.photo} />
         </HStack>
         {/* <Divider height={2} backgroundColor={'#550d98'} opacity={1} /> */}
         <Div>
