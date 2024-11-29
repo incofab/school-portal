@@ -30,7 +30,7 @@ class ListInstitutionUserController extends Controller
 
     return InstitutionUser::query()
       ->select('institution_users.*')
-      ->where('institution_users.institution_id', currentInstitution()->id)
+      // ->where('institution_users.institution_id', currentInstitution()->id)
       ->when(
         $rolesIn,
         fn($q, $value) => $q->whereIn('institution_users.role', $value)

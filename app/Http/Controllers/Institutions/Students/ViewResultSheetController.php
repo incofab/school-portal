@@ -56,13 +56,6 @@ class ViewResultSheetController extends Controller
     bool $forMidTerm
   ) {
     $this->validateStudent($student);
-    // $institutionUser = currentInstitutionUser();
-    // abort_if(
-    //   $institutionUser->user_id !== $student->user_id &&
-    //     !$institutionUser->isAdmin(),
-    //   403
-    // );
-
     $viewData = GetViewResultSheetData::run(
       $institution,
       $student,
@@ -75,7 +68,7 @@ class ViewResultSheetController extends Controller
     $termResult = $viewData['termResult'] ?? null;
     abort_unless($termResult, 404, 'Result not found');
 
-    if (currentUser()->id == $student->user_id) {
+    if (!currentInstitutionUser()->isAdmin()) {
       abort_unless(
         $termResult->is_activated,
         403,
