@@ -200,14 +200,18 @@ export default function ListClassification({ classifications }: Props) {
           title="List Classes"
           rightElement={
             <HStack>
-              <LinkButton
-                href={instRoute('classifications.create')}
-                title={'New'}
-              />
-              <BrandButton
-                title="Upload Classes"
-                onClick={uploadClassModalToggle.open}
-              />
+              {isAdmin && (
+                <>
+                  <LinkButton
+                    href={instRoute('classifications.create')}
+                    title={'New'}
+                  />
+                  <BrandButton
+                    title="Upload Classes"
+                    onClick={uploadClassModalToggle.open}
+                  />
+                </>
+              )}
             </HStack>
           }
         />

@@ -21,7 +21,7 @@ class StudentTermResultDetailController extends Controller
     bool $forMidTerm
   ) {
     $institutionUser = currentInstitutionUser();
-    if ($institutionUser->isStudent()) {
+    if ($institutionUser->isStudent() || $institutionUser->isGuardian()) {
       return redirect()->route('institutions.students.result-sheet', [
         $institution->uuid,
         $student,

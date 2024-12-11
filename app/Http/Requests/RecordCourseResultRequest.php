@@ -100,7 +100,7 @@ class RecordCourseResultRequest extends FormRequest
   function assessmentValidationRule($prefix)
   {
     $assessments = Assessment::query()
-      ->forMidTerm($this->for_mid_term)
+      ->forMidTerm($this->for_mid_term ?? false)
       ->forTerm($this->term)
       ->get();
 

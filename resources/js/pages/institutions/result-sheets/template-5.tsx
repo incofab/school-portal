@@ -325,106 +325,106 @@ export default function Template5({
           id={'result-sheet'}
         >
           <Div>
-            <A4Page>
-              <div className="table-container">
-                <DataTable
-                  scroll={true}
-                  headers={resultTableHeaders}
-                  data={courseResults}
-                  keyExtractor={(row) => row.id}
-                  hideSearchField={true}
-                  tableProps={{ className: 'result-table' }}
-                />
-                <br />
-              </div>
-            </A4Page>
-            <A4Page>
-              <DisplayTermResultEvaluation
-                termResult={termResult}
-                learningEvaluations={learningEvaluations}
+            {/* <A4Page> */}
+            <div className="table-container">
+              <DataTable
+                scroll={true}
+                headers={resultTableHeaders}
+                data={courseResults}
+                keyExtractor={(row) => row.id}
+                hideSearchField={true}
+                tableProps={{ className: 'result-table' }}
               />
               <br />
-              <div
-                style={{
-                  minWidth: '240px',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}
-              >
-                {resultCommentTemplate && (
-                  <table
-                    className="keys-table"
-                    style={{ textAlign: 'center', minWidth: '300px' }}
-                  >
-                    <thead>
-                      <tr>
-                        <th>Range (%)</th>
-                        <th>Remark</th>
-                        <th>Letter Grade</th>
-                        {/* <th>Point Grade</th> */}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/* {[90, 89, 69, 59, 49, 39].map((item) => { */}
-                      {resultCommentTemplate.map((item) => {
-                        const { grade, grade_label } = item;
-                        // ResultUtil.getGrade(item, resultCommentTemplate);
-                        return (
-                          <tr key={grade}>
-                            <td>{`${item.min} - ${item.max}`}</td>
-                            <td>{grade_label}</td>
-                            <td>{grade}</td>
-                            {/* <td>{pointsGrade}</td> */}
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+            </div>
+            {/* </A4Page>
+            <A4Page> */}
+            <DisplayTermResultEvaluation
+              termResult={termResult}
+              learningEvaluations={learningEvaluations}
+            />
+            <br />
+            <div
+              style={{
+                minWidth: '240px',
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              {resultCommentTemplate && (
+                <table
+                  className="keys-table"
+                  style={{ textAlign: 'center', minWidth: '300px' }}
+                >
+                  <thead>
+                    <tr>
+                      <th>Range (%)</th>
+                      <th>Remark</th>
+                      <th>Letter Grade</th>
+                      {/* <th>Point Grade</th> */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* {[90, 89, 69, 59, 49, 39].map((item) => { */}
+                    {resultCommentTemplate.map((item) => {
+                      const { grade, grade_label } = item;
+                      // ResultUtil.getGrade(item, resultCommentTemplate);
+                      return (
+                        <tr key={grade}>
+                          <td>{`${item.min} - ${item.max}`}</td>
+                          <td>{grade_label}</td>
+                          <td>{grade}</td>
+                          {/* <td>{pointsGrade}</td> */}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+              <Div ml={3} width={'full'}>
+                {teacherComment && (
+                  <>
+                    <HStack align={'stretch'} width={'full'}>
+                      <Text
+                        fontWeight={'semibold'}
+                        size={'xs'}
+                        whiteSpace={'nowrap'}
+                      >
+                        Teacher's comment:{' '}
+                      </Text>
+                      <Text>{teacherComment}</Text>
+                    </HStack>
+                    <Divider />
+                  </>
                 )}
-                <Div ml={3} width={'full'}>
-                  {teacherComment && (
-                    <>
-                      <HStack align={'stretch'} width={'full'}>
-                        <Text
-                          fontWeight={'semibold'}
-                          size={'xs'}
-                          whiteSpace={'nowrap'}
-                        >
-                          Teacher's comment:{' '}
-                        </Text>
-                        <Text>{teacherComment}</Text>
-                      </HStack>
-                      <Divider />
-                    </>
-                  )}
-                  {principalComment && (
-                    <>
-                      <HStack align={'stretch'} width={'full'}>
-                        <Text
-                          fontWeight={'semibold'}
-                          size={'xs'}
-                          whiteSpace={'nowrap'}
-                        >
-                          Head Teacher's comment:{' '}
-                        </Text>
-                        <Text>{principalComment}</Text>
-                      </HStack>
-                      <Divider />
-                    </>
-                  )}
-                  {stamp && (
-                    <Div textAlign={'end'}>
-                      <Img
-                        src={stamp}
-                        alt="School stamp"
-                        display={'inline-block'}
-                      />
-                    </Div>
-                  )}
-                </Div>
-              </div>
-            </A4Page>
+                {principalComment && (
+                  <>
+                    <HStack align={'stretch'} width={'full'}>
+                      <Text
+                        fontWeight={'semibold'}
+                        size={'xs'}
+                        whiteSpace={'nowrap'}
+                      >
+                        Head Teacher's comment:{' '}
+                      </Text>
+                      <Text>{principalComment}</Text>
+                    </HStack>
+                    <Divider />
+                  </>
+                )}
+                {stamp && (
+                  <Div textAlign={'end'}>
+                    <Img
+                      src={stamp}
+                      alt="School stamp"
+                      display={'inline-block'}
+                    />
+                  </Div>
+                )}
+              </Div>
+            </div>
+            {/* </A4Page> */}
           </Div>
         </Div>
       </Div>

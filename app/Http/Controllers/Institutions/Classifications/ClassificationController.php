@@ -15,12 +15,20 @@ use Storage;
 
 class ClassificationController extends Controller
 {
+  public function __construct()
+  {
+    $this->allowedRoles([InstitutionUserType::Admin])->except([
+      'index',
+      'search'
+    ]);
+  }
+
   function index(Request $request)
   {
     $query = Classification::query()
       ->when(
         $request->classification_group,
-        fn ($q, $value) => $q->where('classification_group_id', $value)
+        fn($q, $value) => $q->where('classification_group_id', $value)
       )
       ->with('formTeacher', 'classificationGroup')
       ->withCount('students');
@@ -35,7 +43,7 @@ class ClassificationController extends Controller
       'result' => Classification::query()
         ->when(
           request('search'),
-          fn ($q, $search) => $q->where('title', 'like', "%$search%")
+          fn($q, $search) => $q->where('title', 'like', "%$search%")
         )
         ->orderBy('title')
         ->get()
