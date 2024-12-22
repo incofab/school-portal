@@ -1,6 +1,5 @@
 import React from 'react';
 import { FormControl, VStack } from '@chakra-ui/react';
-import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
@@ -21,6 +20,7 @@ export default function UpdateInstitutionGroup({ institutionGroup }: Props) {
   const { handleResponseToast } = useMyToast();
   const webForm = useWebForm({
     name: institutionGroup?.name ?? '',
+    loan_limit: institutionGroup?.loan_limit ?? '',
   });
 
   const submit = async () => {
@@ -57,6 +57,13 @@ export default function UpdateInstitutionGroup({ institutionGroup }: Props) {
                 formKey="name"
                 title="Institution Group Name"
               />
+
+              <InputForm
+                form={webForm as any}
+                formKey="loan_limit"
+                title="Loan Limit"
+              />
+
               <FormControl>
                 <FormButton isLoading={webForm.processing} />
               </FormControl>

@@ -45,6 +45,10 @@ export interface TokenUser extends Row {
 
 export interface InstitutionGroup extends Row {
   name: string;
+  credit_wallet: number;
+  debt_wallet: number;
+  loan_limit: number;
+  // wallet_balance: number;
 }
 export interface Institution extends Row {
   user_id: number;
@@ -62,6 +66,14 @@ export interface Institution extends Row {
   status: string;
   initials: string;
   institution_settings?: InstitutionSetting[];
+  institution_group: InstitutionGroup;
+}
+export interface Funding extends Row {
+  institution_group_id: string;
+  amount: number;
+  previous_balance: number;
+  new_balance: number;
+  remark: string;
   institution_group: InstitutionGroup;
 }
 
@@ -470,6 +482,29 @@ export interface Assignment extends InstitutionRow {
   course_teacher?: CourseTeacher;
 }
 
+export interface Note extends InstitutionRow {
+  title: string;
+  content: string;
+  status: string;
+}
+
+export interface NoteTopic extends Note {
+  // institution_group_id: string;
+  // institution_user_id: string;
+  // classification_group_id: string;
+  // classification_id: string;
+  // course_id: string;
+  // term: string;
+  course?: Course;
+  classification?: Classification;
+  course_teacher?: CourseTeacher;
+}
+
+export interface NoteSubTopic extends Note {
+  // note_topic_id: number;
+  note_topic?: NoteTopic;
+}
+
 export interface AssignmentSubmission extends InstitutionRow {
   assignment_id: number;
   student_id: number;
@@ -523,4 +558,12 @@ export interface ExamCourseable extends Row {
   num_of_questions: number;
   exam?: Exam;
   courseable?: CourseSession;
+}
+
+export interface Billing extends Row {
+  type: string;
+  institution_group_id: string;
+  payment_structure: string;
+  amount: number;
+  institution_group: InstitutionGroup;
 }

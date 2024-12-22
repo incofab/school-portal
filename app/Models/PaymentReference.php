@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Enums\Payments\PaymentMerchant;
@@ -43,7 +44,7 @@ class PaymentReference extends Model
     return Str::orderedUuid();
   }
 
-  // Morph to User
+  // Morph to User | InstitutionGroup
   public function payable()
   {
     return $this->morphTo();

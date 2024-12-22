@@ -87,7 +87,8 @@ class InstitutionGroupsController extends Controller
   {
     $this->authorize('update', $institutionGroup);
     $data = $request->validate([
-      'name' => ['required', 'string', 'max:255']
+      'name' => ['required', 'string', 'max:255'],
+      'loan_limit' => ['required', 'integer', 'min:0']
     ]);
     $institutionGroup->update($data);
     return $this->ok();

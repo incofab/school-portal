@@ -221,4 +221,9 @@ class Institution extends Model
   {
     return $this->belongsTo(InstitutionGroup::class);
   }
+
+  public function noteTopics()
+  {
+    return $this->hasMany(NoteTopic::class);
+  }
 }

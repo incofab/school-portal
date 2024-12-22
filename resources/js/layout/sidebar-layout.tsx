@@ -158,6 +158,31 @@ export default function SideBarLayout() {
     },
 
     {
+      label: 'Notes',
+      roles: [
+        InstitutionUserType.Student,
+        InstitutionUserType.Admin,
+        InstitutionUserType.Teacher,
+      ],
+      sub_items: [
+        {
+          label: 'All Note Topics',
+          route: instRoute('note-topics.index'),
+          roles: [
+            InstitutionUserType.Student,
+            InstitutionUserType.Admin,
+            InstitutionUserType.Teacher,
+          ],
+        },
+        {
+          label: 'Add Note Topic',
+          route: instRoute('note-topics.create'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+      ],
+    },
+
+    {
       label: 'Assignments',
       roles: [
         InstitutionUserType.Student,
@@ -258,6 +283,27 @@ export default function SideBarLayout() {
         {
           label: 'Result Comments',
           route: instRoute('result-comment-templates.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Result Publication',
+          route: instRoute('result-publications.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+    {
+      label: 'Funds',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'Add Fund',
+          route: instRoute('fundings.create'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'All Fundings',
+          route: instRoute('fundings.index'),
           roles: [InstitutionUserType.Admin],
         },
       ],

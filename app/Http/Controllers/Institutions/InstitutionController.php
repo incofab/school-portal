@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Institutions;
 
 use App\Enums\S3Folder;
@@ -11,7 +12,8 @@ class InstitutionController extends Controller
 {
   function index()
   {
-    return inertia('institutions/dashboard');
+    $institutionGroup = currentInstitution()->institutionGroup;
+    return inertia('institutions/dashboard', ['institutionGroup' => $institutionGroup]);
   }
 
   public function profile(Request $request, Institution $institution)

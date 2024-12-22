@@ -50,6 +50,11 @@ export enum TermType {
   Third = 'third',
 }
 
+export enum WalletType {
+  Credit = 'credit',
+  Debt = 'debt',
+}
+
 export enum FullTermType {
   FirstMid = 'first-mid',
   First = 'first',
@@ -160,6 +165,24 @@ export enum Grade {
   D = 'D',
   E = 'E',
   F = 'F',
+}
+
+export enum PriceType {
+  ResultChecking = 'result-checking',
+  EmailSending = 'email-sending',
+  SmsSending = 'sms-sending',
+}
+
+export enum PaymentStructure {
+  PerTerm = 'per-term',
+  PerSession = 'per-session',
+  PerStudentPerTerm = 'per-student-per-term',
+  PerStudentPerSession = 'per-student-per-session',
+}
+
+export enum NoteStatusType {
+  Draft = 'draft',
+  Published = 'published',
 }
 
 export interface ExamAttempt {

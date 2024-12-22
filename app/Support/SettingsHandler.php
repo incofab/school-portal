@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Support;
 
 use App\DTO\PaymentKeyDto;
@@ -10,13 +11,17 @@ use App\Models\InstitutionSetting;
 
 class SettingsHandler
 {
-  function __construct(private array $settings)
-  {
-  }
+  function __construct(private array $settings) {}
 
   function all()
   {
     return $this->settings;
+  }
+
+  // Used in tests
+  static function clear()
+  {
+    self::$instance = null;
   }
 
   private static ?self $instance = null;
@@ -91,8 +96,8 @@ class SettingsHandler
     ) ??
       ($default === 'fetch'
         ? AcademicSession::query()
-          ->latest('id')
-          ->first()?->id
+        ->latest('id')
+        ->first()?->id
         : $default);
   }
 
@@ -117,10 +122,10 @@ class SettingsHandler
     }
     return [
       "{$table}academic_session_id" =>
-        $academicSessionId ?? $this->getCurrentAcademicSession(),
+      $academicSessionId ?? $this->getCurrentAcademicSession(),
       "{$table}term" => $term ?? $this->getCurrentTerm(),
       "{$table}for_mid_term" =>
-        $forMidTerm === null ? $this->isOnMidTerm() : $forMidTerm
+      $forMidTerm === null ? $this->isOnMidTerm() : $forMidTerm
     ];
   }
 

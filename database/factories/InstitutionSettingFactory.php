@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\InstitutionSettingType;
+use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Institution;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -37,12 +38,22 @@ class InstitutionSettingFactory extends Factory
     );
   }
 
-  public function academicSession(): static
+  public function term(TermType $term = TermType::First): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'key' => InstitutionSettingType::CurrentTerm->value,
+        'value' => $term->value
+      ]
+    );
+  }
+
+  public function academicSession(AcademicSession $academicSession = null): static
   {
     return $this->state(
       fn(array $attributes) => [
         'key' => InstitutionSettingType::CurrentAcademicSession->value,
-        'value' => AcademicSession::factory()
+        'value' => $academicSession ?? AcademicSession::factory()
       ]
     );
   }

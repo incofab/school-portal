@@ -51,7 +51,7 @@ abstract class BaseUITableFilter
 
   function forCurrentTerm()
   {
-    $this->requestData['term'] = $this->settingHandler->getCurrentAcademicSession();
+    $this->requestData['academic_session_id'] = $this->settingHandler->getCurrentAcademicSession();
     $this->requestData['term'] = $this->settingHandler->getCurrentTerm();
     return $this;
   }
@@ -70,6 +70,7 @@ abstract class BaseUITableFilter
 
     return $this;
   }
+
   public function getQuery()
   {
     return $this->baseQuery;

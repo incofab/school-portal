@@ -268,3 +268,23 @@ include base_path('routes/assignment.php');
 include base_path('routes/attendance.php');
 include base_path('routes/exam.php');
 include base_path('routes/student_routes.php');
+
+Route::resource('/fundings', Web\Fundings\FundingsController::class);
+Route::resource('/result-publications', Web\ResultPublications\ResultPublicationsController::class);
+
+Route::resource('/note-topics', Web\Notes\NoteTopicController::class);
+
+Route::get('/note-sub-topics/{noteTopic}/list', [Web\Notes\NoteSubTopicController::class, 'list'])
+  ->name('note-sub-topics.list');
+Route::get('/note-sub-topics/{noteTopic}/create', [Web\Notes\NoteSubTopicController::class, 'create'])
+  ->name('note-sub-topics.create');
+Route::get('/note-sub-topics/{noteTopic}/edit', [Web\Notes\NoteSubTopicController::class, 'edit'])
+  ->name('note-sub-topics.edit');
+Route::post('/note-sub-topics/{noteTopic}/store', [Web\Notes\NoteSubTopicController::class, 'store'])
+  ->name('note-sub-topics.store');
+Route::put('/note-sub-topics/{noteSubTopic}/update', [Web\Notes\NoteSubTopicController::class, 'update'])
+  ->name('note-sub-topics.update');
+Route::get('/note-sub-topics/{noteSubTopic}/show', [Web\Notes\NoteSubTopicController::class, 'show'])
+  ->name('note-sub-topics.show');
+Route::delete('/note-sub-topics/{noteSubTopic}/destroy', [Web\Notes\NoteSubTopicController::class, 'destroy'])
+  ->name('note-sub-topics.destroy');

@@ -45,6 +45,7 @@ class StudentFactory extends Factory
       $institutionUser = InstitutionUser::factory()
         ->withInstitution($institution)
         ->create(['role' => InstitutionUserType::Student]);
+
       return [
         'institution_user_id' => $institutionUser->id,
         'user_id' => $institutionUser->user_id,

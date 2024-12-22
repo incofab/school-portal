@@ -54,14 +54,14 @@ Route::post('activate-result', [Web\TermResultActivationController::class, 'stor
     ->name('activate-term-result.store');
 
 Route::group(['prefix' => '{institution}/admissions/'], function () {
-    // Route::get('apply', [Web\Institutions\AdmissionApplicationController::class, 'create'])
-    //     ->name('institutions.admissions.create');
+    Route::get('apply', [Web\Institutions\AdmissionApplicationController::class, 'create'])
+        ->name('institutions.admissions.create');
     Route::post('apply', [Web\Institutions\AdmissionApplicationController::class, 'store'])
         ->name('institutions.admissions.store');
     Route::get('{admissionApplication}/application-success', [Web\Institutions\AdmissionApplicationController::class, 'successMessage'])
         ->name('institutions.admissions.success');
-    // Route::get('letter/{student}', [Web\Institutions\AdmissionApplicationController::class, 'admissionLetter'])
-    //     ->name('institutions.admissions.letter');
+    Route::get('letter/{student}', [Web\Institutions\AdmissionApplicationController::class, 'admissionLetter'])
+        ->name('institutions.admissions.letter');
 });
 
 Route::group(['middleware' => ['guest']], function () {

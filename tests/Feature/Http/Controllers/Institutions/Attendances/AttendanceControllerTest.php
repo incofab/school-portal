@@ -11,6 +11,10 @@ use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\assertSoftDeleted;
 
+/**
+ * ./vendor/bin/pest --filter AttendanceControllerTest
+ */
+
 beforeEach(function () {
     $this->institution = Institution::factory()->create();
     $this->admin = $this->institution->createdBy;

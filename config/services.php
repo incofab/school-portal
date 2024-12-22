@@ -35,5 +35,10 @@ return [
 
   'jwt' => [
     'secret-key' => env('JWT_SECRET_KEY')
+  ],
+
+  'paystack' => [
+    'private-key' => env('PAYSTACK_PRIVATE_KEY'),
+    'public-key' => env('PAYSTACK_PUBLIC_KEY'),
   ]
 ];
