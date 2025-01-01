@@ -126,6 +126,12 @@ class StudentManagementController extends Controller
     $user = $student->user;
     $institutionUser = $student->institutionUser;
 
+    abort_if(
+      $student->termResults()->count() > 0,
+      403,
+      'This student has existing results, move to alumni instead'
+    );
+
     DB::beginTransaction();
     $student->courseResults()->delete();
     $student->termResults()->delete();

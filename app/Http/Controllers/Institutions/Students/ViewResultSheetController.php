@@ -132,7 +132,7 @@ class ViewResultSheetController extends Controller
       'url' => ['required', 'string'],
       'filename' => ['required', 'string']
     ]);
-
+    // dd($data);
     $filename = $request->filename;
     $filePath = storage_path(self::STORAGE_PATH . $request->filename);
     if (!file_exists($filePath)) {

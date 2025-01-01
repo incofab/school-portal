@@ -326,6 +326,7 @@ export default function Template5({
         >
           <Div>
             {/* <A4Page> */}
+            <Header />
             <div className="table-container">
               <DataTable
                 scroll={true}
