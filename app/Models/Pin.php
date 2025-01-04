@@ -54,9 +54,9 @@ class Pin extends Model
       : $query->whereNull('pin_print_id');
   }
 
-  function termResults()
+  function termResult()
   {
-    return $this->hasMany(TermResult::class);
+    return $this->belongsTo(TermResult::class);
   }
   function pinGenerator()
   {

@@ -22,7 +22,9 @@ class ListStudentTermResultController extends Controller
       ->activated()
       ->select('term_results.*');
 
-    TermResultUITableFilters::make($request->all(), $query)->filterQuery();
+    TermResultUITableFilters::make($request->all(), $query)
+      ->dontUseCurrentTerm()
+      ->filterQuery();
 
     return Inertia::render('institutions/list-term-results', [
       'student' => $student,

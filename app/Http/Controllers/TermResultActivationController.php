@@ -69,7 +69,7 @@ class TermResultActivationController extends Controller
     }
 
     if ($count === 1) {
-      return $this->activateResult($termResults->first(), $pin, $student->user);
+      return $this->activateResult($termResults->first(), $pin, $student);
     }
 
     return response()->json([
@@ -111,8 +111,11 @@ class TermResultActivationController extends Controller
     ]);
   }
 
-  private function activateResult(TermResult $termResult, Pin $pin, User $user)
-  {
+  private function activateResult(
+    TermResult $termResult,
+    Pin $pin,
+    Student $student
+  ) {
     if (!$this->canActivate($pin, $termResult)) {
       return $this->errorRes('Invalid pin combination');
     }
@@ -121,6 +124,7 @@ class TermResultActivationController extends Controller
       $pin
         ->fill([
           'term_result_id' => $termResult->id,
+          'student_id' => $student->id,
           'used_at' => now(),
           'academic_session_id' => $termResult->academic_session_id,
           'term' => $termResult->term
