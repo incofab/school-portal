@@ -19,10 +19,10 @@ class Institution extends Model
   {
     return [
       $prefix . 'name' => ['required', 'string'],
-      // $prefix . 'institution_group_id' => [
-      //   'required',
-      //   'exists:institution_groups,id'
-      // ],
+      $prefix . 'institution_group_id' => [
+        'required',
+        'exists:institution_groups,id'
+      ],
       $prefix . 'phone' => ['nullable', 'string'],
       $prefix . 'email' => ['nullable', 'string'],
       $prefix . 'address' => ['nullable', 'string']
