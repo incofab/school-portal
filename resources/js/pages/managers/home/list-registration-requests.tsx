@@ -37,7 +37,11 @@ export default function ListRegistrationRequests({
       return;
     }
     const res = await deleteForm.submit((data, web) =>
-      web.delete(route('registration-requests.destroy', [registrationRequest]))
+      web.delete(
+        route('managers.registration-requests.destroy', [
+          registrationRequest.id,
+        ])
+      )
     );
     if (!handleResponseToast(res)) {
       return;

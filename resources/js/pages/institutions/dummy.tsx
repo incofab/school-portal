@@ -20,9 +20,9 @@ import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { BrandButton } from '@/components/buttons';
 import { PlusIcon } from '@heroicons/react/24/solid';
 import { Inertia } from '@inertiajs/inertia';
-import { Timetable } from '@/types/models';
+// import { Timetable } from '@/types/models';
 import useModalToggle from '@/hooks/use-modal-toggle';
-import CreateEditTimetableModal from './../../../components/modals/create-edit-timetable-modal';
+// import CreateEditTimetableModal from './../../../components/modals/create-edit-timetable-modal';
 import { PencilIcon } from '@heroicons/react/24/outline';
 
 interface Props {

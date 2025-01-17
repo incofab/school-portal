@@ -117,7 +117,9 @@ class TermResultActivationController extends Controller
     Student $student
   ) {
     if (!$this->canActivate($pin, $termResult)) {
-      return $this->errorRes('Invalid pin combination');
+      throw ValidationException::withMessages([
+        'pin' => 'Invalid pin combination'
+      ]);
     }
     $termResult->fill(['is_activated' => true])->save();
     if (!$pin->term_result_id) {

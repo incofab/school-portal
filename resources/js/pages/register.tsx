@@ -9,6 +9,7 @@ import {
   Input,
   Spacer,
   Text,
+  useColorModeValue,
   useToast,
   VStack,
 } from '@chakra-ui/react';
@@ -150,7 +151,11 @@ export default function Register({ user }: { user?: User }) {
             />
           </FormControlBox>
         </VStack>
-        <VStack spacing={3} p={6} background={'gray.50'}>
+        <VStack
+          spacing={3}
+          p={6}
+          background={useColorModeValue('white', 'gray.700')}
+        >
           <Text mt={5} fontWeight="bold" fontSize="md">
             Institution details
           </Text>
