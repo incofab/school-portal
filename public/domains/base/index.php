@@ -1,7 +1,7 @@
 <?php
 $name = 'Edumanager';
-$phone = '08133744803';
-$email = 'support@edumanager.ng';
+$phone = '09035316014';
+$email = 'edumanager.ng@gmail.com'; //'support@edumanager.ng';
 $address = 'Lagos Nigeria';
 
 $faqList = [
@@ -110,8 +110,8 @@ $testimonials = [
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="<?= $basePath ?>assets/img/favicon.png" rel="icon">
-  <link href="<?= $basePath ?>assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="/favicon.ico" rel="icon">
+  <link href="/favicon.ico" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -331,18 +331,18 @@ $testimonials = [
           <div class="col-lg-6">
 
             <div class="stats-item d-flex align-items-center">
-              <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Happy Clients</strong> consequuntur quae diredo para mesta</p>
+              <span data-purecounter-start="0" data-purecounter-end="32" data-purecounter-duration="1" class="purecounter"></span>
+              <p><strong>Happy Clients</strong> using this solution everyday for their activities</p>
             </div><!-- End Stats Item -->
 
             <div class="stats-item d-flex align-items-center">
-              <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Projects</strong> adipisci atque cum quia aut</p>
+              <span data-purecounter-start="0" data-purecounter-end="21" data-purecounter-duration="1" class="purecounter"></span>
+              <p><strong>Feature</strong> Extremely helpful features</p>
             </div><!-- End Stats Item -->
 
             <div class="stats-item d-flex align-items-center">
-              <span data-purecounter-start="0" data-purecounter-end="453" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Hours Of Support</strong> aut commodi quaerat</p>
+              <span data-purecounter-start="0" data-purecounter-end="24/7" data-purecounter-duration="1" class="purecounter"></span>
+              <p><strong>Hours Of Support</strong> Always available every day of the week</p>
             </div><!-- End Stats Item -->
 
           </div>
@@ -356,9 +356,9 @@ $testimonials = [
     <section id="call-to-action" class="call-to-action">
       <div class="container text-center" data-aos="zoom-out">
         <a href="https://www.youtube.com/watch?v=LXb3EKWsInQ" class="glightbox play-btn"></a>
-        <h3>Call To Action</h3>
-        <p> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-        <a class="cta-btn" href="#">Call To Action</a>
+        <h3>Join Us Today</h3>
+        <p> It takes less than 24 hrs to fully onboard your school and digitize your operations. Get started with us and take your administrative processes to the next level and stay ahead of your peers</p>
+        <a class="cta-btn" href="https://edumanager.ng/register">Register</a>
       </div>
     </section><!-- End Call To Action Section -->
 
@@ -1004,7 +1004,7 @@ $testimonials = [
 
         <div class="section-header">
           <h2>Contact</h2>
-          <p>Nulla dolorum nulla nesciunt rerum facere sed ut inventore quam porro nihil id ratione ea sunt quis dolorem dolore earum</p>
+          <p>We are always available to listen to your needs. Talk to us</p>
         </div>
 
         <div class="row gx-lg-0 gy-4">
@@ -1086,9 +1086,9 @@ $testimonials = [
       <div class="row gy-4">
         <div class="col-lg-5 col-md-12 footer-info">
           <a href="index.html" class="logo d-flex align-items-center">
-            <span>Impact</span>
+            <span>Edumanager</span>
           </a>
-          <p>Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.</p>
+          <p>Take your school management to the next level. Improve your operational efficiency, reduce workload, and enhance the learning experience. Let's make education management smarter and more effective</p>
           <div class="social-links d-flex mt-4">
             <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
             <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
