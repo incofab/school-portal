@@ -58,5 +58,5 @@ Route::group(['middleware' => 'admin'], function () {
 });
 
 
-Route::resource('funding', Web\Fundings\FundingsController::class);
+Route::resource('funding', Web\Fundings\FundingController::class);
 Route::resource('billings', Web\Billings\BillingsController::class);

@@ -63,4 +63,9 @@ class InstitutionGroup extends Model
     $newDebtBalance = $this->debt_wallet + $amount;
     return $newDebtBalance <= $this->loan_limit;
   }
+
+  public function schemeOfWorks()
+  {
+    return $this->hasMany(SchemeOfWork::class);
+  }
 }

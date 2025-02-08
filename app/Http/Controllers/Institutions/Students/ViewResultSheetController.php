@@ -74,6 +74,11 @@ class ViewResultSheetController extends Controller
 
     $termResult = $viewData['termResult'] ?? null;
     abort_unless($termResult, 404, 'Result not found');
+    abort_unless(
+      $termResult->result_publication_id,
+      403,
+      'Result not published'
+    );
 
     if (currentUser()->id == $student->user_id) {
       abort_unless(

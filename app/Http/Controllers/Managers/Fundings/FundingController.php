@@ -14,7 +14,7 @@ use App\Models\Transaction;
 use App\Rules\ValidateFundingReference;
 use App\Support\Fundings\FundingHandler;
 
-class FundingsController extends Controller
+class FundingController extends Controller
 {
     public function index(Request $request)
     {

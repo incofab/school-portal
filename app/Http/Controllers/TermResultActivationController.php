@@ -114,7 +114,7 @@ class TermResultActivationController extends Controller
       return response()->json([
         'redirect_url' => route('student-login'),
         'message' =>
-        'No unactivated result found, Login to see already activated results'
+          'No unactivated result found, Login to see already activated results'
       ]);
     }
 
@@ -145,6 +145,11 @@ class TermResultActivationController extends Controller
 
   private function activateResult(TermResult $termResult, Pin $pin, User $user)
   {
+    if (!$termResult->result_publication_id) {
+      throw ValidationException::withMessages([
+        'pin' => 'Result not published'
+      ]);
+    }
     $termResult->fill(['is_activated' => true])->save();
     $pin
       ->fill([

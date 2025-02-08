@@ -6,11 +6,14 @@ use App\Enums\Payments\PaymentMerchant;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class PaymentReference extends Model
 {
+  use HasFactory;
+
   protected $guarded = [];
   protected $casts = [
     'institution_id' => 'integer',

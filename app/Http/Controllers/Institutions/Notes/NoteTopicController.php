@@ -177,7 +177,7 @@ class NoteTopicController extends Controller
         $courseTeacher = CourseTeacher::find($data['course_teacher_id']);
 
         if (!$courseTeacher) {
-            abort('Course Teacher not found.', 401);
+            abort(401, 'Course Teacher not found.');
         }
 
         $classification = Classification::find($courseTeacher->classification_id);

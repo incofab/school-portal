@@ -69,6 +69,16 @@ export enum Gender {
   Female = 'female',
 }
 
+export enum WeekDay {
+  Monday = '0',
+  Tuesday = '1',
+  Wednesday = '2',
+  Thursday = '3',
+  Friday = '4',
+  Saturday = '5',
+  Sunday = '6',
+}
+
 export enum Attendance {
   In = 'in',
   Out = 'out',
@@ -185,6 +195,11 @@ export enum NoteStatusType {
   Published = 'published',
 }
 
+export enum TimetableActionableType {
+  Course = 'course',
+  SchoolActivity = 'school-activity',
+}
+
 export interface ExamAttempt {
   [questionId: string | number]: string;
 }
@@ -197,4 +212,18 @@ export interface BreadCrumbParam {
 export interface PaymentKey {
   private_key: string;
   public_key: string;
+}
+
+export interface TimetableCell {
+  id?: number;
+  day: number;
+  start_time: string;
+  end_time: string;
+  actionable_type?: string;
+  actionable_id?: number;
+  actionable_name?: string;
+  coordinators?: {
+    coordinator_user_id?: number;
+    coordinator_name?: string;
+  }[];
 }

@@ -123,6 +123,11 @@ export default function SideBarLayout() {
       ],
     },
     {
+      label: 'Timetable',
+      route: instRoute('timetables.index'),
+      roles: [InstitutionUserType.Student, InstitutionUserType.Teacher],
+    },
+    {
       label: 'Subject',
       roles: [
         InstitutionUserType.Student,
@@ -158,6 +163,68 @@ export default function SideBarLayout() {
     },
 
     {
+      label: 'Topics',
+      route: instRoute('inst-topics.index'),
+      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+    },
+    {
+      label: 'Lesson Notes',
+      route: instRoute('lesson-notes.index'),
+      roles: [InstitutionUserType.Student],
+    },
+
+    /*
+    {
+      label: 'Topics',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'All Topics',
+          route: instRoute('inst-topics.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Add Topic',
+          route: instRoute('inst-topics.create-or-edit'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+
+    {
+      label: 'Scheme of Work',
+      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+      sub_items: [
+        {
+          label: 'All Scheme of Works',
+          route: instRoute('scheme-of-works.index'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Add Scheme of Work',
+          route: instRoute('scheme-of-works.create'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+
+    {
+      label: 'Lesson Plans',
+      route: instRoute('lesson-plans.index'),
+      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+    },
+
+    {
+      label: 'Lesson Notes',
+      route: instRoute('lesson-notes.index'),
+      roles: [
+        InstitutionUserType.Student,
+        InstitutionUserType.Admin,
+        InstitutionUserType.Teacher,
+      ],
+    },
+
+    {
       label: 'Notes',
       roles: [
         InstitutionUserType.Student,
@@ -181,6 +248,7 @@ export default function SideBarLayout() {
         },
       ],
     },
+    */
 
     {
       label: 'Assignments',
