@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TermType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,8 @@ class Pin extends Model
     'institution_id' => 'integer',
     'term_result_id' => 'integer',
     'pin_generator_id' => 'integer',
-    'pin_print_id' => 'integer'
+    'pin_print_id' => 'integer',
+    'term' => TermType::class
   ];
   public $guarded = [];
 
@@ -52,9 +54,9 @@ class Pin extends Model
       : $query->whereNull('pin_print_id');
   }
 
-  function termResults()
+  function termResult()
   {
-    return $this->hasMany(TermResult::class);
+    return $this->belongsTo(TermResult::class);
   }
   function pinGenerator()
   {

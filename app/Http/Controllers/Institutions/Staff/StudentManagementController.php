@@ -23,7 +23,11 @@ class StudentManagementController extends Controller
   function index(Request $request)
   {
     $query = Student::query()->select('students.*');
-    StudentUITableFilters::make($request->all(), $query)->filterQuery();
+    StudentUITableFilters::make($request->all(), $query)
+      ->filterQuery()
+      ->joinUser()
+      ->getQuery()
+      ->latest('users.last_name');
 
     return inertia('institutions/students/list-students', [
       'students' => paginateFromRequest(
@@ -122,6 +126,12 @@ class StudentManagementController extends Controller
     $user = $student->user;
     $institutionUser = $student->institutionUser;
 
+    abort_if(
+      $student->termResults()->count() > 0,
+      403,
+      'This student has existing results, move to alumni instead'
+    );
+
     DB::beginTransaction();
     $student->courseResults()->delete();
     $student->termResults()->delete();
@@ -130,9 +140,9 @@ class StudentManagementController extends Controller
     $institutionUser->delete();
     if (
       $user
-      ->institutionUsers()
-      ->get()
-      ->count() < 1
+        ->institutionUsers()
+        ->get()
+        ->count() < 1
     ) {
       $user->delete();
     }

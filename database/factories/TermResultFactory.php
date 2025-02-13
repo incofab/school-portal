@@ -24,7 +24,8 @@ class TermResultFactory extends Factory
       'position' => fake()->randomDigit(),
       'average' => fake()->randomNumber(2),
       'remark' => fake()->sentence(),
-      'academic_session_id' => AcademicSession::factory()
+      'academic_session_id' => AcademicSession::factory(),
+      'student_id' => Student::factory()
     ];
   }
 

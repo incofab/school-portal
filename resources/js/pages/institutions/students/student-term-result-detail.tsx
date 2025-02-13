@@ -19,12 +19,13 @@ import {
   Icon,
   IconButton,
   Spacer,
+  Stack,
   Text,
   VStack,
   useColorModeValue,
 } from '@chakra-ui/react';
 import startCase from 'lodash/startCase';
-import { LinkButton } from '@/components/buttons';
+import { BrandButton, LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { PencilIcon } from '@heroicons/react/24/solid';
 import useModalToggle from '@/hooks/use-modal-toggle';
@@ -32,6 +33,10 @@ import TermResultTeacherCommentModal from '@/components/modals/term-result-teach
 import { Inertia } from '@inertiajs/inertia';
 import TermResultPrincipalCommentModal from '@/components/modals/term-result-principal-comment-modal';
 import SetTermResultEvaluation from '../learning-evaluations/set-term-result-evaluations-component';
+import FormControlBox from '@/components/forms/form-control-box';
+import InputForm from '@/components/forms/input-form';
+import useMyToast from '@/hooks/use-my-toast';
+import useWebForm from '@/hooks/use-web-form';
 
 interface Props {
   term: string;
@@ -171,17 +176,27 @@ export default function StudentTermResultDetail({
           <Spacer height={5} />
         </SlabBody>
         <Spacer height={3} />
-        <Div
-          maxWidth={'500px'}
-          background={useColorModeValue('#FAFAFA', 'gray.700')}
-          py={4}
-          px={5}
-        >
-          <SetTermResultEvaluation
-            termResult={termResult}
-            learningEvaluations={learningEvaluations}
-          />
-        </Div>
+        <Stack direction={{ base: 'column', md: 'row' }} spacing={3}>
+          <Div
+            maxWidth={'500px'}
+            background={useColorModeValue('#FAFAFA', 'gray.700')}
+            py={4}
+            px={5}
+            flex={1}
+          >
+            <SetTermResultEvaluation
+              termResult={termResult}
+              learningEvaluations={learningEvaluations}
+            />
+          </Div>
+          <Div
+            flex={1}
+            background={useColorModeValue('#FAFAFA', 'gray.700')}
+            p={4}
+          >
+            <UpdateExtraDataForm termResult={termResult} />
+          </Div>
+        </Stack>
         <TermResultTeacherCommentModal
           termResult={termResult}
           {...teacherCommentModalToggle.props}
@@ -194,5 +209,59 @@ export default function StudentTermResultDetail({
         />
       </Slab>
     </DashboardLayout>
+  );
+}
+
+function UpdateExtraDataForm({ termResult }: { termResult: TermResult }) {
+  const { handleResponseToast } = useMyToast();
+  const { instRoute } = useInstitutionRoute();
+  const webForm = useWebForm({
+    height: String(termResult.height ?? ''),
+    weight: String(termResult.weight ?? ''),
+    attendance_count: String(termResult.attendance_count ?? ''),
+  });
+
+  const onSubmit = async () => {
+    const res = await webForm.submit((data, web) =>
+      web.post(instRoute('term-results.extra-data.update', [termResult]), data)
+    );
+    if (!handleResponseToast(res)) return;
+    // webForm.reset();
+  };
+
+  return (
+    <VStack spacing={2} align={'start'}>
+      <Text fontWeight={'bold'} fontSize={'16px'}>
+        Other Attributes
+      </Text>
+      <Divider />
+      <InputForm
+        form={webForm as any}
+        formKey="attendance_count"
+        title="Attendance"
+        onChange={(e) =>
+          webForm.setValue('attendance_count', e.currentTarget.value)
+        }
+      />
+      <InputForm
+        form={webForm as any}
+        formKey="height"
+        title="Height (CM)"
+        onChange={(e) => webForm.setValue('height', e.currentTarget.value)}
+      />
+      <InputForm
+        form={webForm as any}
+        formKey="weight"
+        title="Weight (Kg)"
+        onChange={(e) => webForm.setValue('weight', e.currentTarget.value)}
+      />
+      <BrandButton
+        colorScheme={'brand'}
+        onClick={onSubmit}
+        isLoading={webForm.processing}
+      >
+        Save
+      </BrandButton>
+    </VStack>
   );
 }

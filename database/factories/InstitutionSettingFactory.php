@@ -38,17 +38,17 @@ class InstitutionSettingFactory extends Factory
     );
   }
 
-  public function term(TermType $term = TermType::First): static
+  public function term(string $term = null): static
   {
     return $this->state(
       fn(array $attributes) => [
         'key' => InstitutionSettingType::CurrentTerm->value,
-        'value' => $term->value
+        'value' => $term ?? TermType::First->value
       ]
     );
   }
 
-  public function academicSession(AcademicSession $academicSession = null): static
+  public function academicSession(): static
   {
     return $this->state(
       fn(array $attributes) => [

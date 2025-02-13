@@ -35,7 +35,9 @@ class InstitutionRegistrationRequestController extends Controller
     $data = $request->validate([
       ...User::generalRule(),
       'institution' => ['required', 'array'],
-      ...Institution::generalRule('institution.'),
+      ...collect(Institution::generalRule('institution.'))
+        ->except('institution.institution_group_id')
+        ->toArray(),
       'reference' => [
         'required',
         'string',

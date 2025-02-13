@@ -151,7 +151,7 @@ class ExamNavManager {
   private canGoNext(currentQuestionIndex: number) {
     return (
       currentQuestionIndex <
-      this.tabManager.getCurrentCourseableQuestions().length
+      this.tabManager.getCurrentCourseableQuestions().length - 1
     );
   }
   private canGoPrevious(currentQuestionIndex: number) {

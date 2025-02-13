@@ -73,7 +73,9 @@ class ProcessTermResult
 
     $studentsTotalAverageScores = [];
     foreach ($studentsResultDetails as $key => $item) {
-      $studentsTotalAverageScores[$item->getStudentId()] = $item->getAverageScore();
+      $studentsTotalAverageScores[
+        $item->getStudentId()
+      ] = $item->getAverageScore();
     }
 
     $bindingData = [
@@ -122,7 +124,7 @@ class ProcessTermResult
       ]);
     }
 
-    $hasUnequalNumOfSubjects = false;
+    $incompleteStudentResultDetail = null;
     $numOfCourses = -1;
     /** @var ResultDetail $studentResultDetail */
     foreach ($studentsResultDetails as $key => $studentResultDetail) {
@@ -130,16 +132,17 @@ class ProcessTermResult
         $numOfCourses !== -1 &&
         $numOfCourses !== $studentResultDetail->getNumOfCourses()
       ) {
-        $hasUnequalNumOfSubjects = true;
+        $incompleteStudentResultDetail = $studentResultDetail;
         break;
       }
       $numOfCourses = $studentResultDetail->getNumOfCourses();
     }
-    if (!$hasUnequalNumOfSubjects) {
+    if (!$incompleteStudentResultDetail) {
       return true;
     }
+    $affectedStudent = $incompleteStudentResultDetail->getStudent();
     throw ValidationException::withMessages([
-      'error' => 'Some students have unrecorded results'
+      'error' => "Some students ({$affectedStudent->user?->full_name}) have unrecorded results"
     ]);
   }
 }
@@ -150,7 +153,9 @@ class ResultDetail
   private float $totalScore = 0;
   private int $numOfCourses = 0;
 
-  function __construct(private int $studentId) {}
+  function __construct(private int $studentId)
+  {
+  }
 
   function update(float $resultScore)
   {
@@ -162,6 +167,12 @@ class ResultDetail
   function getStudentId()
   {
     return $this->studentId;
+  }
+  function getStudent(): Student
+  {
+    return Student::where('id', $this->getStudentId())
+      ->with('user')
+      ->first();
   }
   function getAverageScore()
   {

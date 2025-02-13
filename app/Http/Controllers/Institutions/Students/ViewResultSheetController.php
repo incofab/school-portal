@@ -56,13 +56,6 @@ class ViewResultSheetController extends Controller
     bool $forMidTerm
   ) {
     $this->validateStudent($student);
-    // $institutionUser = currentInstitutionUser();
-    // abort_if(
-    //   $institutionUser->user_id !== $student->user_id &&
-    //     !$institutionUser->isAdmin(),
-    //   403
-    // );
-
     $viewData = GetViewResultSheetData::run(
       $institution,
       $student,
@@ -80,7 +73,7 @@ class ViewResultSheetController extends Controller
       'Result not published'
     );
 
-    if (currentUser()->id == $student->user_id) {
+    if (!currentInstitutionUser()->isAdmin()) {
       abort_unless(
         $termResult->is_activated,
         403,
@@ -123,6 +116,9 @@ class ViewResultSheetController extends Controller
       $term,
       $forMidTerm
     );
+    $viewData['signed_url'] = url()->current();
+    $termResult = $viewData['termResult'];
+    abort_unless($termResult->is_activated, 403, 'Result not activated');
     return $this->display($viewData);
   }
 
@@ -141,7 +137,7 @@ class ViewResultSheetController extends Controller
       'url' => ['required', 'string'],
       'filename' => ['required', 'string']
     ]);
-
+    // dd($data);
     $filename = $request->filename;
     $filePath = storage_path(self::STORAGE_PATH . $request->filename);
     if (!file_exists($filePath)) {
@@ -190,12 +186,17 @@ class ViewResultSheetController extends Controller
 
   private function downloadFile(string $url, string $filename)
   {
-    $savePath = storage_path(self::STORAGE_PATH); // Adjust the path as needed
-    if (!file_exists($savePath)) {
-      mkdir($savePath, 0777, true);
+    try {
+      $savePath = storage_path(self::STORAGE_PATH); // Adjust the path as needed
+      if (!file_exists($savePath)) {
+        mkdir($savePath, 0777, true);
+      }
+      $fileContent = file_get_contents($url);
+      file_put_contents("$savePath$filename", $fileContent);
+    } catch (\Throwable $th) {
+      info('Error downloading result sheet pdf: ' . $th->getMessage());
+      abort(401, 'Error downloading result sheet');
     }
-    $fileContent = file_get_contents($url);
-    file_put_contents("$savePath$filename", $fileContent);
   }
 
   /** @deprecated */

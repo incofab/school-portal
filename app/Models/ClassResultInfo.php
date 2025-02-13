@@ -19,6 +19,8 @@ class ClassResultInfo extends Model
     'institution_id' => 'integer',
     'academic_session_id' => 'integer',
     'classification_id' => 'integer',
+    'num_of_students' => 'integer',
+    'num_of_courses' => 'integer',
     'for_mid_term' => 'boolean',
     'next_term_resumption_date' => 'date'
   ];

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Pin;
 use App\Models\Student;
@@ -18,34 +19,34 @@ beforeEach(function () {
     ->create();
   $this->student = $this->termResult->student;
 
-  $this->successRoute = route('institutions.students.result-sheet', [
-    $this->institution->uuid,
-    $this->termResult->student_id,
-    $this->termResult->classification_id,
-    $this->termResult->academic_session_id,
-    $this->termResult->term,
-    $this->termResult->for_mid_term ? 1 : 0
-  ]);
+  // $this->successRoute = route('institutions.students.result-sheet', [
+  //   $this->institution->uuid,
+  //   $this->termResult->student_id,
+  //   $this->termResult->classification_id,
+  //   $this->termResult->academic_session_id,
+  //   $this->termResult->term,
+  //   $this->termResult->for_mid_term ? 1 : 0
+  // ]);
 });
 
-it('handles used pin', function () {
-  $pin = Pin::factory()
-    ->withInstitution($this->institution)
-    ->forStudent($this->student)
-    ->for($this->academicSession)
-    ->used()
-    ->create();
+// it('handles used pin', function () {
+//   $pin = Pin::factory()
+//     ->withInstitution($this->institution)
+//     ->forStudent($this->student)
+//     ->for($this->academicSession)
+//     ->used()
+//     ->create();
 
-  postJson(route('activate-term-result.store'), [
-    'student_code' => $this->student->code,
-    'pin' => $pin->pin
-  ])->assertJsonValidationErrorFor('pin');
-  $pin->fill(['term_result_id' => $this->termResult->id])->save();
-  postJson(route('activate-term-result.store'), [
-    'student_code' => $this->student->code,
-    'pin' => $pin->pin
-  ])->assertOk();
-});
+//   postJson(route('activate-term-result.store'), [
+//     'student_code' => $this->student->code,
+//     'pin' => $pin->pin
+//   ])->assertJsonValidationErrorFor('pin');
+//   $pin->fill(['term_result_id' => $this->termResult->id])->save();
+//   postJson(route('activate-term-result.store'), [
+//     'student_code' => $this->student->code,
+//     'pin' => $pin->pin
+//   ])->assertOk();
+// });
 
 it('should handle invalid pin', function () {
   postJson(route('activate-term-result.store'), [
@@ -72,7 +73,8 @@ it('should handle invalid student code', function () {
   postJson(route('activate-term-result.store'), [
     'student_code' => $student2->code,
     'pin' => $pin->pin
-  ])->assertJsonValidationErrorFor('student_code');
+  ])->assertNotFound();
+  // ])->assertJsonValidationErrorFor('student_code');
 });
 
 it('should handle pin not for student', function () {
@@ -141,8 +143,8 @@ it('should activate term result with student pin', function () {
     'pin' => $pin->pin
   ])
     ->assertOk()
-    ->assertJsonPath('redirect_url', $this->successRoute);
-  expect($this->termResult->fresh())->is_activated->toBe(1);
+    ->assertJsonPath('activated', true);
+  expect($this->termResult->fresh())->is_activated->toBe(true);
   expect($pin->fresh())
     ->term_result_id->toBe($this->termResult->id)
     ->used_at->not()
@@ -159,8 +161,8 @@ it('should activate term result with normal pin', function () {
     'pin' => $pin->pin
   ])
     ->assertOk()
-    ->assertJsonPath('redirect_url', $this->successRoute);
-  expect($this->termResult->fresh())->is_activated->toBe(1);
+    ->assertJsonPath('activated', true);
+  expect($this->termResult->fresh())->is_activated->toBe(true);
   expect($pin->fresh())
     ->term_result_id->toBe($this->termResult->id)
     ->used_at->not()
@@ -178,10 +180,47 @@ it('activates a particular term result with normal pin', function () {
     'term_result_id' => $this->termResult->id
   ])
     ->assertOk()
-    ->assertJsonPath('redirect_url', $this->successRoute);
-  expect($this->termResult->fresh())->is_activated->toBe(1);
+    ->assertJsonPath('activated', true);
+  expect($this->termResult->fresh())->is_activated->toBe(true);
   expect($pin->fresh())
     ->term_result_id->toBe($this->termResult->id)
     ->used_at->not()
     ->toBeNull();
+});
+
+it('uses same pin to activate other results in the same session', function () {
+  $pin = Pin::factory()
+    ->withInstitution($this->institution)
+    ->create();
+
+  postJson(route('activate-term-result.store'), [
+    'student_code' => $this->student->code,
+    'pin' => $pin->pin
+  ])->assertJsonPath('activated', true);
+  expect($this->termResult->fresh())->is_activated->toBe(true);
+
+  $termResult2 = TermResult::factory()
+    ->withInstitution($this->institution)
+    ->for($this->academicSession)
+    ->forStudent($this->student)
+    ->create(['term' => TermType::Second->value]);
+
+  postJson(route('activate-term-result.store'), [
+    'student_code' => $this->student->code,
+    'pin' => $pin->pin
+  ])->assertOk();
+  expect($termResult2->fresh())->is_activated->toBe(true);
+
+  $academicSession2 = AcademicSession::factory()->create();
+  $academicSession2TermResult = TermResult::factory()
+    ->withInstitution($this->institution)
+    ->for($academicSession2)
+    ->forStudent($this->student)
+    ->create();
+
+  postJson(route('activate-term-result.store'), [
+    'student_code' => $this->student->code,
+    'pin' => $pin->pin
+  ])->assertOk();
+  expect($academicSession2TermResult->fresh())->is_activated->toBe(false);
 });

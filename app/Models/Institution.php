@@ -19,10 +19,10 @@ class Institution extends Model
   {
     return [
       $prefix . 'name' => ['required', 'string'],
-      // $prefix . 'institution_group_id' => [
-      //   'required',
-      //   'exists:institution_groups,id'
-      // ],
+      $prefix . 'institution_group_id' => [
+        'required',
+        'exists:institution_groups,id'
+      ],
       $prefix . 'phone' => ['nullable', 'string'],
       $prefix . 'email' => ['nullable', 'string'],
       $prefix . 'address' => ['nullable', 'string']
@@ -220,11 +220,6 @@ class Institution extends Model
   function institutionGroup()
   {
     return $this->belongsTo(InstitutionGroup::class);
-  }
-
-  public function noteTopics()
-  {
-    return $this->hasMany(NoteTopic::class);
   }
 
   public function schoolActivities()

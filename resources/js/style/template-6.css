@@ -1,0 +1,62 @@
+@media print {
+  .result-sheet-header {
+    display: block !important;
+  }
+}
+
+.a4-page:not(:first-child) .result-sheet-header {
+  display: none;
+}
+
+/* .result-table thead tr {
+  background-color: #00007e !important;
+} */
+.result-table th {
+  font-size: 12px !important;
+  padding: 2px !important;
+  background-color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #171923;
+}
+
+.result-table,
+.result-table td,
+.keys-table,
+.keys-table td {
+  font-size: 14px !important;
+  padding: 2px !important;
+}
+
+/* .result-table, */
+table tr,
+table td,
+table th {
+  border: none !important;
+}
+
+.result-table th {
+  font-size: 11px !important;
+}
+.result-table th,
+.result-table th > * {
+  font-weight: bold !important;
+}
+
+table,
+.result-table th > *,
+.result-table td > *,
+.keys-table th > *,
+.keys-table td > *,
+.cell {
+  border: 1px solid #2f2f2f !important;
+  padding: 3px 5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.evaluation-table td {
+  border: none !important;
+  padding: 1px !important;
+}

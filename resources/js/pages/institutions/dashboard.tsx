@@ -118,7 +118,7 @@ function InstitutionDashboard({ institutionGroup }: Props) {
       route: forTeacher
         ? instRoute('class-result-info.index')
         : student
-        ? instRoute('students.term-results.index', student)
+        ? instRoute('students.term-results.index', [student.id])
         : '',
       icon: ChartBarIcon,
       roles: [

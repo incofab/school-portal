@@ -21,6 +21,7 @@ class TermResult extends Model
     'academic_session_id' => 'integer',
     'classification_id' => 'integer',
     'for_mid_term' => 'boolean',
+    'is_activated' => 'boolean',
     'next_term_resumption_date' => 'date',
     'average' => 'float',
     'learning_evaluation' => AsArrayObject::class

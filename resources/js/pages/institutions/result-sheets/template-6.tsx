@@ -5,17 +5,20 @@ import {
   Divider,
   Flex,
   HStack,
+  Icon,
   Img,
   Spacer,
   Text,
   VStack,
+  Wrap,
+  WrapItem,
 } from '@chakra-ui/react';
 import React, { PropsWithChildren } from 'react';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
 import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
-import '@/style/template-5.css';
+import '@/style/template-6.css';
 import ImagePaths from '@/util/images';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
@@ -23,14 +26,15 @@ import DataTable, { TableHeader } from '@/components/data-table';
 import { CourseResult } from '@/types/models';
 import ResultSheetLayout from './result-sheet-layout';
 import DateTimeDisplay from '@/components/date-time-display';
-import { dateFormat, validFilename } from '@/util/util';
+import { dateFormat } from '@/util/util';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
-import route from '@/util/route';
 import ResultDownloadButton from './result-download-button';
+import { EnvelopeIcon, MapIcon, PhoneIcon } from '@heroicons/react/24/solid';
+import { LabelText } from '@/components/result-helper-components';
 
 const PDF_URL = import.meta.env.VITE_PDF_URL;
-export default function Template5({
+export default function Template6({
   termResult,
   courseResults,
   classResultInfo,
@@ -40,9 +44,10 @@ export default function Template5({
   assessments,
   learningEvaluations,
   resultCommentTemplate,
+  termDetail,
   signed_url,
 }: ResultProps) {
-  const { currentInstitution, stamp } = useSharedProps();
+  const { currentInstitution, currentUser, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
   const downloadPdfForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
@@ -51,7 +56,7 @@ export default function Template5({
     { label: 'Student Name', value: student.user?.full_name },
     { label: 'Class', value: termResult.classification?.title },
     { label: 'No in Class', value: classResultInfo.num_of_students },
-    { label: 'Average Score', value: termResult.average },
+    // { label: 'Average Score', value: termResult.average },
     ...(hidePosition
       ? []
       : [
@@ -63,14 +68,12 @@ export default function Template5({
               : ResultUtil.formatPosition(termResult.position),
           },
         ]),
-  ];
-  const resultSummary2 = [
     {
       label: 'Term',
       value: startCase(termResult.term),
     },
-    { label: 'Session', value: academicSession.title },
-    { label: 'Student Id', value: student.code },
+    // { label: 'Session', value: academicSession.title },
+    // { label: 'Student Id', value: student.code },
     ...(classResultInfo.next_term_resumption_date
       ? [
           {
@@ -85,41 +88,36 @@ export default function Template5({
           },
         ]
       : []),
+    { label: 'Height', value: termResult.height },
+    { label: 'Weight', value: termResult.weight },
+    { label: 'Attendance', value: termResult.attendance_count },
+    {
+      label: 'No of Times School Held',
+      value: termDetail?.expected_attendance_count,
+    },
+    {
+      label: 'Opening Date',
+      value: (
+        <DateTimeDisplay
+          as={'span'}
+          dateTime={termDetail?.start_date}
+          dateTimeformat={dateFormat}
+        />
+      ),
+    },
+    {
+      label: 'Closing Date',
+      value: (
+        <DateTimeDisplay
+          as={'span'}
+          dateTime={termDetail?.end_date}
+          dateTimeformat={dateFormat}
+        />
+      ),
+    },
   ];
 
-  // async function downloadAsPdf() {
-  //   if (!confirm('Do you want to download this result?')) {
-  //     return;
-  //   }
-  //   const filename = `${validFilename(student.user?.full_name)}-result-${
-  //     termResult.term
-  //   }-${termResult.id}.pdf`;
-  //   const res = await downloadPdfForm.submit((data, web) =>
-  //     web.post(route('pdf-bridge'), {
-  //       url: signed_url,
-  //       filename: filename,
-  //     })
-  //   );
-
-  //   if (!handleResponseToast(res)) {
-  //     exportPdf();
-  //     return;
-  //   }
-  //   window.location.href = route('pdf-bridge-download', { filename });
-  //   // const url = new URL(`${PDF_URL}/download`);
-  //   // url.searchParams.set('filename', filename);
-  //   // // window.location.href = url.toString();
-  //   // window.open(url.toString(), '_blank');
-  // }
-
-  // function exportPdf() {
-  //   ResultUtil.exportAsPdf(
-  //     'result-sheet',
-  //     student.user?.full_name + 'result-sheet'
-  //   );
-  // }
-
-  function LabelText({
+  function LocalLabelText({
     label,
     text,
   }: {
@@ -127,7 +125,7 @@ export default function Template5({
     text: string | number | undefined | React.ReactNode;
   }) {
     return (
-      <Div>
+      <Div className="cell" width={'full'}>
         <Text as={'span'} textTransform={'uppercase'} width={'120px'}>
           {label.toUpperCase()}:
         </Text>
@@ -159,143 +157,144 @@ export default function Template5({
   const resultTableHeaders: TableHeader<CourseResult>[] = [
     {
       label: 'Subject',
-      value: 'course.title',
+      render: (row) => <Div className="cell">{row.course?.title}</Div>,
     },
     ...assessments.map((assessment) => ({
       label: assessment.title,
-      render: (courseResult: CourseResult) =>
-        String(courseResult.assessment_values[assessment.raw_title] ?? ''),
+      render: (courseResult: CourseResult) => (
+        <Div className="cell">
+          {String(courseResult.assessment_values[assessment.raw_title] ?? '')}
+        </Div>
+      ),
     })),
     {
       label: 'Exam',
       value: 'exam',
+      render: (row) => <Div className="cell">{row.exam}</Div>,
     },
     {
       label: 'Total',
       value: 'result',
+      render: (row) => <Div className="cell">{row.result}</Div>,
     },
     {
       label: 'Grade',
-      render: (courseResult) =>
-        String(
-          ResultUtil.getGrade(courseResult.result, resultCommentTemplate).grade
-        ),
+      render: (courseResult) => (
+        <Div className="cell">
+          {String(
+            ResultUtil.getGrade(courseResult.result, resultCommentTemplate)
+              .grade
+          )}
+        </Div>
+      ),
     },
     ...(hidePosition
       ? []
       : [
           {
             label: 'Position',
-            render: (courseResult: CourseResult) =>
-              ResultUtil.formatPosition(courseResult.position),
+            render: (courseResult: CourseResult) => (
+              <Div className="cell">
+                {ResultUtil.formatPosition(courseResult.position)}
+              </Div>
+            ),
           },
         ]),
     {
       label: 'Average',
-      render: (courseResult) =>
-        String(courseResultInfoData[courseResult.course_id]?.average),
+      render: (courseResult) => (
+        <Div className="cell">
+          {String(courseResultInfoData[courseResult.course_id]?.average)}
+        </Div>
+      ),
     },
-    {
-      label: 'Highest',
-      render: (courseResult) =>
-        String(courseResultInfoData[courseResult.course_id]?.max_score),
-    },
-    {
-      label: 'Lowest',
-      render: (courseResult) =>
-        String(courseResultInfoData[courseResult.course_id]?.min_score),
-    },
+    // {
+    //   label: 'Highest',
+    //   render: (courseResult) => (
+    //     <Div className="cell">
+    //       {String(courseResultInfoData[courseResult.course_id]?.max_score)}
+    //     </Div>
+    //   ),
+    // },
+    // {
+    //   label: 'Lowest',
+    //   render: (courseResult) => (
+    //     <Div className="cell">
+    //       {String(courseResultInfoData[courseResult.course_id]?.min_score)}
+    //     </Div>
+    //   ),
+    // },
     {
       label: 'Remark',
-      render: (courseResult) =>
-        String(
-          ResultUtil.getGrade(courseResult.result, resultCommentTemplate).remark
-        ),
+      render: (courseResult) => (
+        <Div className="cell">
+          {String(
+            ResultUtil.getGrade(courseResult.result, resultCommentTemplate)
+              .remark
+          )}
+        </Div>
+      ),
     },
   ];
+
   function Header() {
     return (
       <Div className="result-sheet-header">
-        <Text
-          fontWeight={'bold'}
-          fontSize={'2xl'}
-          textAlign={'center'}
-          color={'#00008b'}
-        >
-          {currentInstitution.name}
-        </Text>
-        <Text fontWeight={'normal'} textAlign={'center'}>
-          {currentInstitution.subtitle}
-        </Text>
         <HStack
           p={2}
           align={'stretch'}
           width={'100%'}
           justifyContent={'space-between'}
         >
-          <Div mt={5} width={'full'}>
-            <Text as={'span'} whiteSpace={'nowrap'}>
-              Postal Address:
-            </Text>
-            <Text as={'span'}>{currentInstitution.address}</Text>
-          </Div>
           <Avatar
             size={'2xl'}
             name="Institution logo"
             src={currentInstitution.photo ?? ImagePaths.default_school_logo}
           />
-          <Div width={'full'}>
-            <Spacer height={5} />
-            <VStack
-              width={'full'}
-              align={'stretch'}
-              textAlign={'right'}
-              spacing={0}
+          <VStack
+            width={'full'}
+            align={'stretch'}
+            textAlign={'center'}
+            spacing={1}
+          >
+            <Text
+              as={'p'}
+              whiteSpace={'nowrap'}
+              fontWeight={'bold'}
+              fontSize={'18px'}
             >
-              <Text whiteSpace={'nowrap'}>
-                Email: {currentInstitution.email}
-              </Text>
-              <Text whiteSpace={'nowrap'}>
-                Website: {currentInstitution.website}
-              </Text>
-              <Text whiteSpace={'nowrap'}>
-                Phone: {currentInstitution.phone}
-              </Text>
-            </VStack>
-          </Div>
+              {currentInstitution.name?.toUpperCase()}
+            </Text>
+            <Text as={'p'} whiteSpace={'nowrap'}>
+              <Icon as={MapIcon} /> {currentInstitution.address}
+            </Text>
+            <Text as={'p'} whiteSpace={'nowrap'}>
+              <Icon as={PhoneIcon} /> {currentInstitution.phone} &nbsp;{' '}
+              <Icon as={EnvelopeIcon} /> {currentInstitution.email}
+            </Text>
+            <Text
+              textTransform={'uppercase'}
+              textAlign={'center'}
+              fontSize={'14px'}
+              fontWeight={'bold'}
+              as={'p'}
+            >
+              Student {termResult.term} Term Report Sheet |{' '}
+              {academicSession.title} Session
+            </Text>
+          </VStack>
+          <Avatar size={'2xl'} name="Student Logo" src={student.user?.photo} />
         </HStack>
-        <Divider height={2} backgroundColor={'#550d98'} opacity={1} />
-        <Flex
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          fontSize={'lg'}
-        >
-          <VStack spacing={1} align={'left'} fontSize={'16px'}>
+        {/* <Divider height={2} backgroundColor={'#550d98'} opacity={1} /> */}
+        <Div>
+          <Wrap spacing={1} align={'stretch'} fontSize={'16px'}>
             {resultSummary1.map((item) => (
-              <LabelText
-                label={item.label}
-                text={item.value}
-                key={'summary1' + item.label}
-              />
+              <WrapItem flex={1} key={'summary1' + item.label}>
+                <LocalLabelText label={item.label} text={item.value} />
+              </WrapItem>
             ))}
-          </VStack>
-          <VStack spacing={1} align={'left'} fontSize={'16px'}>
-            {resultSummary2.map((item) => (
-              <LabelText
-                label={item.label}
-                text={item.value}
-                key={'summary2' + item.label}
-              />
-            ))}
-          </VStack>
-        </Flex>
-        <Text
-          textTransform={'uppercase'}
-          textAlign={'center'}
-          fontSize={'18px'}
-        >
-          Student Report Sheet
-        </Text>
+          </Wrap>
+        </Div>
       </Div>
     );
   }
@@ -325,9 +324,8 @@ export default function Template5({
           id={'result-sheet'}
         >
           <Div>
-            {/* <A4Page> */}
             <Header />
-            <div className="table-container">
+            <Div className="table-container">
               <DataTable
                 scroll={true}
                 headers={resultTableHeaders}
@@ -336,10 +334,36 @@ export default function Template5({
                 hideSearchField={true}
                 tableProps={{ className: 'result-table' }}
               />
-              <br />
-            </div>
-            {/* </A4Page>
-            <A4Page> */}
+            </Div>
+            <Div className="cell" my={2}>
+              <HStack>
+                <LabelText
+                  label={'Total'}
+                  text={`${termResult.total_score} out of ${classResultInfo.max_obtainable_score}`}
+                />
+                <Spacer />
+                <LabelText
+                  label={'Percentage Average'}
+                  text={`${termResult.average}%`}
+                />
+              </HStack>
+              <HStack mt={0}>
+                <LabelText
+                  label={'Overall Grade'}
+                  text={String(
+                    ResultUtil.getGrade(
+                      termResult.average,
+                      resultCommentTemplate
+                    ).grade
+                  )}
+                />
+                <Spacer />
+                <LabelText
+                  label={'Overall Grade'}
+                  text={`${classResultInfo.average}%`}
+                />
+              </HStack>
+            </Div>
             <DisplayTermResultEvaluation
               termResult={termResult}
               learningEvaluations={learningEvaluations}
@@ -360,9 +384,15 @@ export default function Template5({
                 >
                   <thead>
                     <tr>
-                      <th>Range (%)</th>
-                      <th>Remark</th>
-                      <th>Letter Grade</th>
+                      <th>
+                        <div>Range (%)</div>
+                      </th>
+                      <th>
+                        <div>Remark</div>
+                      </th>
+                      <th>
+                        <div>Letter Grade</div>
+                      </th>
                       {/* <th>Point Grade</th> */}
                     </tr>
                   </thead>
@@ -373,9 +403,15 @@ export default function Template5({
                       // ResultUtil.getGrade(item, resultCommentTemplate);
                       return (
                         <tr key={grade}>
-                          <td>{`${item.min} - ${item.max}`}</td>
-                          <td>{grade_label}</td>
-                          <td>{grade}</td>
+                          <td>
+                            <div>{`${item.min} - ${item.max}`}</div>
+                          </td>
+                          <td>
+                            <div>{grade_label}</div>
+                          </td>
+                          <td>
+                            <div>{grade}</div>
+                          </td>
                           {/* <td>{pointsGrade}</td> */}
                         </tr>
                       );
@@ -425,7 +461,6 @@ export default function Template5({
                 )}
               </Div>
             </div>
-            {/* </A4Page> */}
           </Div>
         </Div>
       </Div>

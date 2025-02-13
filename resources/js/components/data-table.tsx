@@ -77,9 +77,9 @@ export default function DataTable<T>({
           <Tr>
             {headers.map((header, i) => (
               <Th key={i}>
-                <HStack spacing={2}>
-                  <Text fontWeight={400}>{header.label}</Text>
-                </HStack>
+                {/* <Div> */}
+                <Text fontWeight={400}>{header.label}</Text>
+                {/* </Div> */}
               </Th>
             ))}
           </Tr>

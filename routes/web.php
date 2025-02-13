@@ -6,8 +6,6 @@ use App\Http\Controllers as Web;
 use App\Http\Controllers\Institutions\Exams\External as External;
 use App\Models\Institution;
 
-Route::get('pdf-result/{student}', [Web\TermResultActivationController::class, 'showPdfResult'])
-    ->name('show-pdf-result');
 Route::get(
     '{institution}/students/signed-result-sheet/{student}/{classification}/{academicSession}/{term}/{forMidTerm}',
     [Web\Institutions\Students\ViewResultSheetController::class, 'viewResultSigned']

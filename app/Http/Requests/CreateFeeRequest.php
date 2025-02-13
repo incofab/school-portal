@@ -35,6 +35,7 @@ class CreateFeeRequest extends FormRequest
         'max:255',
         Rule::unique('fees', 'title')
           ->where('institution_id', currentInstitution()->id)
+          ->where('receipt_type_id', $this->receipt_type_id)
           ->ignore($this->fee?->id, 'id')
       ],
       'amount' => ['required', 'numeric', 'min:1'],

@@ -42,12 +42,15 @@ export default function DisplayTermResultEvaluation({
 
   return (
     <Div>
-      <table style={{ width: '100%', textAlign: 'left' }}>
+      <table
+        style={{ width: '100%', textAlign: 'left' }}
+        className="evaluation-table"
+      >
         <thead>
           <tr style={{ fontWeight: 'bold' }}>
             {Object.entries(headers).map(([key, item]) => (
               <th style={{ border: '1px solid #000' }} key={'header' + key}>
-                {key}
+                <div className="cell">{key}</div>
               </th>
             ))}
           </tr>
@@ -72,16 +75,20 @@ export default function DisplayTermResultEvaluation({
                       }}
                       key={'td' + index + columnHeader}
                     >
-                      <HStack>
-                        <Text>{evaluation?.title}</Text>
-                        <Spacer />
-                        <DisplayEvaluationValue
-                          value={rowValue}
-                          learningEvaluationDomain={
-                            evaluation?.learning_evaluation_domain
-                          }
-                          learningEvaluation={evaluation}
-                        />
+                      <HStack align={'stretch'} p={0} m={0}>
+                        <Div className="cell" flex={1}>
+                          <Text>{evaluation?.title}</Text>
+                        </Div>
+                        {/* <Spacer /> */}
+                        <Div className="cell">
+                          <DisplayEvaluationValue
+                            value={rowValue}
+                            learningEvaluationDomain={
+                              evaluation?.learning_evaluation_domain
+                            }
+                            learningEvaluation={evaluation}
+                          />
+                        </Div>
                       </HStack>
                     </td>
                   );
@@ -132,6 +139,7 @@ function DisplayEvaluationValue({
       width={'35px'}
       height={'25px'}
       textAlign={'center'}
+      className="cell"
     >
       {element}
     </Div>

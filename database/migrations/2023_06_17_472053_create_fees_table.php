@@ -13,7 +13,7 @@ return new class extends Migration {
     Schema::create('fees', function (Blueprint $table) {
       $table->id();
       $table->unsignedBigInteger('institution_id');
-      $table->string('title')->unique();
+      $table->string('title');
       $table->float('amount', 10, 2);
       $table->string('payment_interval');
       $table->softDeletes();

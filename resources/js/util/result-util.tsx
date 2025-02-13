@@ -9,6 +9,7 @@ import {
   LearningEvaluation,
   ResultCommentTemplate,
   Student,
+  TermDetail,
   TermResult,
 } from '@/types/models';
 import { PositionDisplayType, ResultSettingType } from '@/types/types';
@@ -234,5 +235,6 @@ export interface ResultProps {
   assessments: Assessment[];
   learningEvaluations: LearningEvaluation[];
   resultCommentTemplate: ResultCommentTemplate[];
+  termDetail: TermDetail;
   signed_url: string;
 }
