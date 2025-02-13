@@ -75,11 +75,4 @@ class Topic extends Model
   {
     return $this->hasMany(SchemeOfWork::class);
   }
-
-  public function schemeOfWorkXX()
-  {
-    return SchemeOfWork::where('topic_id', $this->id)
-      ->with('lessonPlans')
-      ->first();
-  }
 }

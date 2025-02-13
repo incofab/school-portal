@@ -27,6 +27,7 @@ class LessonNoteController extends Controller
 
   public function index(Institution $institution, Request $request)
   {
+    // dd("Heelll");
     $institutionUser = currentInstitutionUser();
     $user = $institutionUser->user;
 

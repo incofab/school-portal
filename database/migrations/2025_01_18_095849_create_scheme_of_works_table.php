@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('scheme_of_works', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('institution_group_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
+            $table->foreignId('institution_group_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('institution_id')->constrained()->cascadeOnDelete();
             $table->string('term');
             $table->foreignId('topic_id')->constrained()->onDelete('cascade');
             $table->unsignedInteger('week_number');

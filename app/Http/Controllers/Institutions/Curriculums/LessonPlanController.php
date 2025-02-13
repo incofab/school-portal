@@ -111,18 +111,6 @@ class LessonPlanController extends Controller
     {
         $data = $request->validate(LessonPlan::createRule());
 
-        /*
-            $params = [
-                'course_teacher_id' => $data['course_teacher_id'],
-                'scheme_of_work_id' => $lessonPlan ? $lessonPlan->scheme_of_work_id : $data['scheme_of_work_id'],
-                'objective' => $data['objective'],
-                'activities' => $data['activities'],
-                'content' => $data['content'],
-                'institution_id' => $institution->id,
-                'institution_group_id' => $data['is_used_by_institution_group'] ? $institution->institutionGroup->id : null,
-            ];
-        */
-
         $params = collect($data)->only([
             'course_teacher_id',
             'objective',
@@ -154,7 +142,7 @@ class LessonPlanController extends Controller
 
     function destroy(Institution $institution, LessonPlan $lessonPlan)
     {
-        if (!empty($lessonPlan->lessonNote())) {
+        if (count($lessonPlan->lessonNote()->get()) > 0) {
             return $this->message("This Lesson-Plan already has a Lesson-Note.", 403);
         }
 

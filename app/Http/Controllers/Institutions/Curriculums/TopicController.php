@@ -40,8 +40,8 @@ class TopicController extends Controller
       )
       ->with('classificationGroup', 'course')
       ->latest('id');
-      // dd(Topic::all()->toArray());
-      // dd(json_encode(paginateFromRequest($query), JSON_PRETTY_PRINT) );
+    // dd(Topic::all()->toArray());
+    // dd(json_encode(paginateFromRequest($query), JSON_PRETTY_PRINT) );
     return Inertia::render('institutions/topics/list-topics', [
       'parentTopic' => $topic,
       'topics' => paginateFromRequest($query),
@@ -104,9 +104,7 @@ class TopicController extends Controller
       $request->search,
       fn($q, $value) => $q->where('title', 'LIKE', "%$value%")
     );
-    return response()->json([
-      'result' => $query->latest('id')->get()
-    ]);
+    return response()->json(['result' => $query->latest('id')->get()]);
   }
 
   function storeOrUpdate(
@@ -117,11 +115,7 @@ class TopicController extends Controller
     $data = $request->validate(Topic::createRule());
 
     $data = [
-      'title' => $data['title'],
-      'description' => $data['description'],
-      'classification_group_id' => $data['classification_group_id'],
-      'course_id' => $data['course_id'],
-      'parent_topic_id' => $data['parent_topic_id'],
+      ...collect($data)->except('is_used_by_institution_group')->toArray(),
       'institution_id' => $institution->id,
       'institution_group_id' => $data['is_used_by_institution_group']
         ? $institution->institutionGroup->id
@@ -140,9 +134,9 @@ class TopicController extends Controller
   function destroy(Institution $institution, Topic $topic)
   {
     $hasSubTopics = Topic::where('parent_topic_id', $topic->id)->exists();
-    $schemeOfWork = $topic->schemeOfWork;
+    $hasSchemeOfWork = $topic->schemeOfWorks()->get()->count() > 0;
 
-    if ($hasSubTopics || !empty($schemeOfWork)) {
+    if ($hasSubTopics || $hasSchemeOfWork) {
       return $this->message(
         'This Topic already has some Sub-Topics or Scheme of Work.',
         403

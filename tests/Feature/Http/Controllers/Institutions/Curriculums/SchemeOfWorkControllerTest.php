@@ -1,193 +1,226 @@
 <?php
 
-namespace Tests\Feature\Http\Controllers\Institutions\Curriculums;
-
+use App\Enums\TermType;
 use App\Models\Institution;
 use App\Models\SchemeOfWork;
 use App\Models\Topic;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-use App\Enums\InstitutionUserType;
+use App\Models\InstitutionUser;
+use App\Models\Student;
+use App\Models\LessonPlan;
+use Inertia\Testing\AssertableInertia;
 
-class SchemeOfWorkControllerTest extends TestCase
-{
-    // use RefreshDatabase;
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\assertDatabaseCount;
+use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\assertSoftDeleted;
+use function PHPUnit\Framework\assertEquals;
 
-    protected $admin;
-    protected $institution;
+/**
+ * ./vendor/bin/pest --filter SchemeOfWorkControllerTest
+ */
 
-    protected function setUp(): void
-    {
-        parent::setUp();
+beforeEach(function () {
+  $this->institution = Institution::factory()->create();
+  $this->institutionUser = InstitutionUser::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  $this->admin = $this->institution->createdBy;
+  $this->user = $this->institutionUser->user;
+  $this->topic = Topic::factory()
+    ->for($this->institution)
+    ->create();
 
-        $this->admin = User::factory()->create();
-        $this->institution = Institution::factory()->create();
-        $this->institution->users()->attach($this->admin, ['type' => InstitutionUserType::Admin]);
-    }
+  $this->student = Student::factory()
+    ->withInstitution($this->institution)
+    ->create();
+});
 
-    /** @test */
-    public function admin_can_view_create_scheme_of_work_page()
-    {
-        $topic = Topic::factory()->create();
+it('tests the create page', function () {
+  $route = route('institutions.scheme-of-works.create', [
+    'institution' => $this->institution->uuid,
+    'topic' => $this->topic->id
+  ]);
 
-        $response = $this->actingAs($this->admin)
-            ->get(route('institutions.scheme-of-works.create', [
-                'institution' => $this->institution,
-                'topic' => $topic,
-            ]));
+  actingAs($this->student->user)
+    ->getJson($route)
+    ->assertForbidden();
 
-        $response->assertStatus(200);
-        $response->assertInertia(fn ($assert) => $assert
-            ->component('institutions/scheme-of-works/create-edit-scheme-of-work')
-            ->has('topicId')
-        );
-    }
+  actingAs($this->admin)
+    ->getJson($route)
+    ->assertOk()
+    ->assertInertia(function (AssertableInertia $assert) {
+      return $assert
+        ->has('topicId')
+        ->where('topicId', $this->topic->id)
+        ->component('institutions/scheme-of-works/create-edit-scheme-of-work');
+    });
+});
 
-    /** @test */
-    public function admin_can_view_edit_scheme_of_work_page()
-    {
-        $schemeOfWork = SchemeOfWork::factory()->create(['institution_id' => $this->institution->id]);
+it('tests the edit page', function () {
+  $schemeOfWork = SchemeOfWork::factory()
+    ->topic($this->topic)
+    ->create();
 
-        $response = $this->actingAs($this->admin)
-            ->get(route('institutions.scheme-of-works.edit', [
-                'institution' => $this->institution,
-                'schemeOfWork' => $schemeOfWork,
-            ]));
+  $route = route('institutions.scheme-of-works.edit', [
+    'institution' => $this->institution->uuid,
+    'scheme_of_work' => $schemeOfWork->id
+  ]);
 
-        $response->assertStatus(200);
-        $response->assertInertia(fn ($assert) => $assert
-            ->component('institutions/scheme-of-works/create-edit-scheme-of-work')
-            ->has('parentTopics')
-            ->has('schemeOfWork')
-        );
-    }
+  actingAs($this->admin)
+    ->getJson($route)
+    ->assertOk()
+    ->assertInertia(function (AssertableInertia $assert) use ($schemeOfWork) {
+      return $assert
+        ->has('parentTopics')
+        ->has('schemeOfWork')
+        ->where('schemeOfWork.id', $schemeOfWork->id)
+        ->component('institutions/scheme-of-works/create-edit-scheme-of-work');
+    });
+});
 
-    /** @test */
-    public function admin_can_store_new_scheme_of_work()
-    {
-        $topic = Topic::factory()->create();
+it('stores scheme of work data', function () {
+  $route = route('institutions.scheme-of-works.store', [
+    'institution' => $this->institution->uuid
+  ]);
 
-        $schemeOfWorkData = [
-            'term' => 'First Term',
-            'topic_id' => $topic->id,
-            'week_number' => 1,
-            'learning_objectives' => 'Test objectives',
-            'resources' => 'Test resources',
-            'is_used_by_institution_group' => false,
-        ];
+  $schemeOfWork = SchemeOfWork::factory()
+    ->topic($this->topic)
+    ->make()
+    ->toArray();
 
-        $response = $this->actingAs($this->admin)
-            ->post(route('institutions.scheme-of-works.store', ['institution' => $this->institution]), $schemeOfWorkData);
+  $schemeOfWorkData = [
+    ...$schemeOfWork,
+    'is_used_by_institution_group' => false
+  ];
 
-        $response->assertStatus(200);
-        $this->assertDatabaseHas('scheme_of_works', [
-            'term' => 'First Term',
-            'topic_id' => $topic->id,
-            'institution_id' => $this->institution->id,
-        ]);
-    }
+  actingAs($this->admin)
+    ->postJson($route, [])
+    ->assertJsonValidationErrors([
+      'term',
+      'topic_id',
+      'week_number',
+      'is_used_by_institution_group',
+    ]);
 
-    /** @test */
-    public function admin_can_update_scheme_of_work()
-    {
-        $schemeOfWork = SchemeOfWork::factory()->create(['institution_id' => $this->institution->id]);
-        $newTopic = Topic::factory()->create();
+  actingAs($this->admin)
+    ->postJson($route, $schemeOfWorkData)
+    ->assertOk();
 
-        $updatedData = [
-            'term' => 'Second Term',
-            'topic_id' => $newTopic->id,
-            'week_number' => 2,
-            'learning_objectives' => 'Updated objectives',
-            'resources' => 'Updated resources',
-            'is_used_by_institution_group' => true,
-        ];
+  assertDatabaseCount('scheme_of_works', 1);
+  assertDatabaseHas('scheme_of_works', $schemeOfWork);
+});
 
-        $response = $this->actingAs($this->admin)
-            ->put(route('institutions.scheme-of-works.update', [
-                'institution' => $this->institution,
-                'schemeOfWork' => $schemeOfWork,
-            ]), $updatedData);
+it('updates scheme of work data', function () {
+  $schemeOfWork = SchemeOfWork::factory()
+    ->topic($this->topic)
+    ->create();
 
-        $response->assertStatus(200);
-        $this->assertDatabaseHas('scheme_of_works', [
-            'id' => $schemeOfWork->id,
-            'term' => 'Second Term',
-            'topic_id' => $newTopic->id,
-        ]);
-    }
+  $route = route('institutions.scheme-of-works.update', [
+    'institution' => $this->institution->uuid,
+    'scheme_of_work' => $schemeOfWork->id
+  ]);
+  
+  $updatedData = [
+    'term' => TermType::First->value,
+    'topic_id' => $this->topic->id,
+    'week_number' => 2,
+    'learning_objectives' => 'Updated objectives',
+    'resources' => 'Updated resources',
+    'is_used_by_institution_group' => true
+  ];
 
-    /** @test */
-    public function admin_can_delete_scheme_of_work_without_lesson_plans()
-    {
-        $schemeOfWork = SchemeOfWork::factory()->create(['institution_id' => $this->institution->id]);
+  actingAs($this->admin)
+    ->putJson($route, $updatedData)
+    ->assertOk();
 
-        $response = $this->actingAs($this->admin)
-            ->delete(route('institutions.scheme-of-works.destroy', [
-                'institution' => $this->institution,
-                'schemeOfWork' => $schemeOfWork,
-            ]));
+  $schemeOfWork->refresh();
+  assertEquals($updatedData['term'], $schemeOfWork->term->value);
+  assertEquals($updatedData['week_number'], $schemeOfWork->week_number);
+  assertEquals(
+    $updatedData['learning_objectives'],
+    $schemeOfWork->learning_objectives
+  );
+});
 
-        $response->assertStatus(200);
-        $this->assertDatabaseMissing('scheme_of_works', ['id' => $schemeOfWork->id]);
-    }
+it('deletes a scheme of work', function () {
+  $schemeOfWork = SchemeOfWork::factory()
+    ->topic($this->topic)
+    ->create();
 
-    /** @test */
-    public function admin_cannot_delete_scheme_of_work_with_lesson_plans()
-    {
-        $schemeOfWork = SchemeOfWork::factory()->create(['institution_id' => $this->institution->id]);
-        $schemeOfWork->lessonPlans()->create(['title' => 'Test Lesson Plan']);
+  $route = route('institutions.scheme-of-works.destroy', [
+    'institution' => $this->institution->uuid,
+    'scheme_of_work' => $schemeOfWork->id
+  ]);
 
-        $response = $this->actingAs($this->admin)
-            ->delete(route('institutions.scheme-of-works.destroy', [
-                'institution' => $this->institution,
-                'schemeOfWork' => $schemeOfWork,
-            ]));
+  actingAs($this->admin)
+    ->deleteJson($route)
+    ->assertOk();
 
-        $response->assertStatus(403);
-        $this->assertDatabaseHas('scheme_of_works', ['id' => $schemeOfWork->id]);
-    }
+  assertSoftDeleted('scheme_of_works', ['id' => $schemeOfWork->id]);
+});
 
-    /** @test */
-    public function non_admin_cannot_access_scheme_of_work_routes()
-    {
-        $nonAdmin = User::factory()->create();
-        $this->institution->users()->attach($nonAdmin, ['type' => InstitutionUserType::Teacher]);
+it('cannot delete a scheme of work with lesson plans', function () {
+  $schemeOfWork = SchemeOfWork::factory()
+    ->topic($this->topic)
+    ->create();
 
-        $topic = Topic::factory()->create();
-        $schemeOfWork = SchemeOfWork::factory()->create(['institution_id' => $this->institution->id]);
+  LessonPlan::factory()->create(['scheme_of_work_id' => $schemeOfWork->id]);
 
-        $createResponse = $this->actingAs($nonAdmin)
-            ->get(route('institutions.scheme-of-works.create', [
-                'institution' => $this->institution,
-                'topic' => $topic,
-            ]));
+  $route = route('institutions.scheme-of-works.destroy', [
+    'institution' => $this->institution->uuid,
+    'scheme_of_work' => $schemeOfWork->id
+  ]);
 
-        $editResponse = $this->actingAs($nonAdmin)
-            ->get(route('institutions.scheme-of-works.edit', [
-                'institution' => $this->institution,
-                'schemeOfWork' => $schemeOfWork,
-            ]));
+  actingAs($this->admin)
+    ->deleteJson($route)
+    ->assertStatus(403)
+    ->assertJson([
+      'message' => 'This Scheme-of-Work already has a Lesson-Plan.'
+    ]);
 
-        $storeResponse = $this->actingAs($nonAdmin)
-            ->post(route('institutions.scheme-of-works.store', ['institution' => $this->institution]), []);
+  $this->assertDatabaseHas('scheme_of_works', ['id' => $schemeOfWork->id]);
+});
 
-        $updateResponse = $this->actingAs($nonAdmin)
-            ->put(route('institutions.scheme-of-works.update', [
-                'institution' => $this->institution,
-                'schemeOfWork' => $schemeOfWork,
-            ]), []);
+it('restricts non-admin access to scheme of work routes', function () {
+  $schemeOfWork = SchemeOfWork::factory()
+    ->topic($this->topic)
+    ->create();
 
-        $deleteResponse = $this->actingAs($nonAdmin)
-            ->delete(route('institutions.scheme-of-works.destroy', [
-                'institution' => $this->institution,
-                'schemeOfWork' => $schemeOfWork,
-            ]));
+  $routes = [
+    'create' => route('institutions.scheme-of-works.create', [
+      'institution' => $this->institution->uuid,
+      'topic' => $this->topic->id
+    ]),
+    'edit' => route('institutions.scheme-of-works.edit', [
+      'institution' => $this->institution->uuid,
+      'scheme_of_work' => $schemeOfWork->id
+    ]),
+    'store' => route('institutions.scheme-of-works.store', [
+      'institution' => $this->institution->uuid
+    ]),
+    'update' => route('institutions.scheme-of-works.update', [
+      'institution' => $this->institution->uuid,
+      'scheme_of_work' => $schemeOfWork->id
+    ]),
+    'destroy' => route('institutions.scheme-of-works.destroy', [
+      'institution' => $this->institution->uuid,
+      'scheme_of_work' => $schemeOfWork->id
+    ])
+  ];
 
-        $createResponse->assertStatus(403);
-        $editResponse->assertStatus(403);
-        $storeResponse->assertStatus(403);
-        $updateResponse->assertStatus(403);
-        $deleteResponse->assertStatus(403);
-    }
-}
+  foreach ($routes as $name => $route) {
+    $method = match ($name) {
+      'create', 'edit' => 'getJson',
+      'store' => 'postJson',
+      'update' => 'putJson',
+      'destroy' => 'deleteJson'
+    };
+
+    actingAs($this->user)
+      ->$method(
+        $route,
+        $name === 'store' || $name === 'update' ? ['term' => 'Test'] : []
+      )
+      ->assertForbidden();
+  }
+});

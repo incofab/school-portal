@@ -9,9 +9,9 @@ return new class extends Migration
     public function up()
     {
         Schema::table('topics', function (Blueprint $table) {
-            $table->foreignId('institution_group_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('classification_group_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('parent_topic_id')->nullable()->constrained('topics')->onDelete('cascade');
+            $table->foreignId('institution_group_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('classification_group_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('parent_topic_id')->nullable()->constrained('topics')->cascadeOnDelete();
             $table->softDeletes();
         });
     }

@@ -1,46 +1,34 @@
 <?php
 
+use App\Models\ClassificationGroup;
 use App\Models\Institution;
 use App\Models\User;
 use App\Models\Topic;
 use App\Models\Course;
 use App\Models\InstitutionUser;
+use App\Models\SchemeOfWork;
 use App\Models\Student;
 use Inertia\Testing\AssertableInertia;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\assertSoftDeleted;
 use function Pest\Laravel\postJson;
 use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertNotNull;
 
 beforeEach(function () {
   $this->institution = Institution::factory()->create();
-  $this->institutionUser = InstitutionUser::factory()->withInstitution($this->institution)->create();
   $this->admin = $this->institution->createdBy;
-  $this->user = $this->institutionUser->user;
-  $this->course = Course::factory()->for($this->institution)->create();
+  $this->course = Course::factory()
+    ->withInstitution($this->institution)
+    ->create();
 
   $this->student = Student::factory()
-  ->withInstitution($this->institution)
-  ->create();
+    ->withInstitution($this->institution)
+    ->create();
 });
-
-/*
-it('tests the index page', function () {
-
-  $route = route('institutions.inst-topics.index', $this->institution);
-
-  actingAs($this->student->user)
-    ->getJson($route)
-    ->assertForbidden();
-    
-  actingAs($this->admin)
-    ->getJson($route)
-    ->assertStatus(200);
-});
-
 
 it('tests the index page', function () {
   $route = route('institutions.inst-topics.index', [
@@ -58,45 +46,45 @@ it('tests the index page', function () {
   actingAs($this->admin)
     ->getJson($route)
     ->assertOk()
-    ->assertInertia(
-      function (AssertableInertia $assert){
-        return $assert
+    ->assertInertia(function (AssertableInertia $assert) {
+      return $assert
         ->has('topics.data', 2)
         ->component('institutions/topics/list-topics');
-      }
-    );
+    });
 });
-*/
-
 
 it('stores topic data', function () {
-  $route = route('institutions.inst-topics.store', [
+  $route = route('institutions.inst-topics.store-or-update', [
     'institution' => $this->institution->uuid
   ]);
 
-  postJson($route, [])->assertJsonValidationErrors([
-    'title',
-    'description',
-    'course_id'
-  ]);
+  actingAs($this->admin)
+    ->postJson($route, [])
+    ->assertJsonValidationErrors(['title', 'description', 'course_id']);
 
   $topicData = Topic::factory()
-    ->for($this->course)
+    ->course($this->course)
     ->make()
     ->toArray();
 
-  postJson($route, $topicData)->assertOk();
+  postJson($route, [
+    ...$topicData,
+    'is_used_by_institution_group' => false,
+    'classification_group_id' => ClassificationGroup::factory()
+      ->for($this->institution)
+      ->create()->id
+  ])->assertOk();
 
   assertDatabaseCount('topics', 1);
   assertDatabaseHas('topics', $topicData);
 });
-/*
+
 it('updates topic data', function () {
   $topic = Topic::factory()
-    ->for($this->course)
+    ->course($this->course)
     ->create();
 
-  $route = route('institutions.inst-topics.update', [
+  $route = route('institutions.inst-topics.store-or-update', [
     'institution' => $this->institution->uuid,
     'topic' => $topic->id
   ]);
@@ -104,11 +92,15 @@ it('updates topic data', function () {
   $updatedData = [
     'title' => 'Updated Topic Title',
     'description' => 'Updated topic description',
-    'course_id' => $this->course->id
+    'course_id' => $this->course->id,
+    'is_used_by_institution_group' => false,
+    'classification_group_id' => ClassificationGroup::factory()
+      ->for($this->institution)
+      ->create()->id
   ];
 
   actingAs($this->admin)
-    ->putJson($route, $updatedData)
+    ->postJson($route, $updatedData)
     ->assertOk();
 
   $topic->refresh();
@@ -117,25 +109,55 @@ it('updates topic data', function () {
 });
 
 it('deletes a topic', function () {
-  $topic = Topic::factory()
-    ->for($this->course)
+  [$topic1, $topic2] = Topic::factory(2)
+    ->course($this->course)
+    ->create();
+  $topic3 = Topic::factory()
+    ->course($this->course)
+    ->parentTopic($topic2)
+    ->create();
+
+  SchemeOfWork::factory()
+    ->topic($topic1)
     ->create();
 
   $route = route('institutions.inst-topics.destroy', [
     'institution' => $this->institution->uuid,
-    'topic' => $topic->id
+    'topic' => $topic1->id
   ]);
 
   actingAs($this->admin)
-    ->deleteJson($route)
+    ->deleteJson(
+      route('institutions.inst-topics.destroy', [
+        'institution' => $this->institution->uuid,
+        'topic' => $topic1->id
+      ])
+    )
+    ->assertForbidden();
+  actingAs($this->admin)
+    ->deleteJson(
+      route('institutions.inst-topics.destroy', [
+        'institution' => $this->institution->uuid,
+        'topic' => $topic2->id
+      ])
+    )
+    ->assertForbidden();
+
+  actingAs($this->admin)
+    ->deleteJson(
+      route('institutions.inst-topics.destroy', [
+        'institution' => $this->institution->uuid,
+        'topic' => $topic3->id
+      ])
+    )
     ->assertOk();
 
-  assertDatabaseCount('topics', 0);
+  assertSoftDeleted('topics', ['id' => $topic3->id]);
 });
 
 it('shows topic details', function () {
   $topic = Topic::factory()
-    ->for($this->course)
+    ->course($this->course)
     ->create();
 
   $route = route('institutions.inst-topics.show', [
@@ -151,7 +173,6 @@ it('shows topic details', function () {
         ->has('topic')
         ->where('topic.id', $topic->id)
         ->where('topic.title', $topic->title)
-        ->component('institutions/courses/topics/show')
+        ->component('institutions/topics/show-topic')
     );
 });
-*/
