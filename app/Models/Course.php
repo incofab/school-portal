@@ -28,11 +28,11 @@ class Course extends Model
       ->get()
       ->count() === 0 &&
       $this->topics()
-        ->get()
-        ->count() === 0 &&
+      ->get()
+      ->count() === 0 &&
       $this->summaryChapters()
-        ->get()
-        ->count() === 0;
+      ->get()
+      ->count() === 0;
   }
 
   function institution()
@@ -58,5 +58,10 @@ class Course extends Model
   function courseTeachers()
   {
     return $this->hasMany(CourseTeacher::class);
+  }
+
+  public function noteTopics()
+  {
+    return $this->hasMany(NoteTopic::class);
   }
 }

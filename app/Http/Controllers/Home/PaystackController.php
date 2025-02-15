@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Home;
 
-use App\Actions\Payments\ConfirmFeePayment;
-use App\Enums\Payments\PaymentPurpose;
-use App\Http\Controllers\Controller;
+use Exception;
+use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
 use App\Models\PaymentReference;
 use App\Support\SettingsHandler;
-use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
+use App\Http\Controllers\Controller;
+use App\Enums\Payments\PaymentPurpose;
+use App\Actions\Payments\ConfirmFeePayment;
+use App\Actions\Payments\ConfirmWalletFunding;
+use App\Enums\WalletType;
+use App\Support\Fundings\FundingHandler;
 
 class PaystackController extends Controller
 {
-  public function __construct()
-  {
-  }
+  public function __construct() {}
 
   public function callback(Request $request)
   {
@@ -106,6 +107,12 @@ class PaystackController extends Controller
         $paymentRef,
         $paymentRef->institution
       ))->run();
+    } else if ($paymentRef->purpose === PaymentPurpose::WalletFunding) {
+      FundingHandler::makeFromPaymentRef($paymentRef)->run(WalletType::Credit, $paymentRef);
+      // $res = (new ConfirmWalletFunding(
+      //   $paymentRef,
+      //   $paymentRef->institution
+      // ))->run();
     } else {
       throw new Exception('Payment purpose not recognized');
     }

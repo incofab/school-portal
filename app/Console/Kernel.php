@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\AssignRoleToUser;
+use App\Console\Commands\PublishPendingResult;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +14,7 @@ class Kernel extends ConsoleKernel
    *
    * @var array
    */
-  protected $commands = [AssignRoleToUser::class];
+  protected $commands = [AssignRoleToUser::class, PublishPendingResult::class];
 
   /**
    * Define the application's command schedule.

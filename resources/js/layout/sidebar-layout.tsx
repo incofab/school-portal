@@ -123,6 +123,11 @@ export default function SideBarLayout() {
       ],
     },
     {
+      label: 'Timetable',
+      route: instRoute('timetables.index'),
+      roles: [InstitutionUserType.Student, InstitutionUserType.Teacher],
+    },
+    {
       label: 'Subject',
       roles: [
         InstitutionUserType.Student,
@@ -156,6 +161,94 @@ export default function SideBarLayout() {
         },
       ],
     },
+
+    {
+      label: 'Topics',
+      route: instRoute('inst-topics.index'),
+      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+    },
+    {
+      label: 'Lesson Notes',
+      route: instRoute('lesson-notes.index'),
+      roles: [InstitutionUserType.Student],
+    },
+
+    /*
+    {
+      label: 'Topics',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'All Topics',
+          route: instRoute('inst-topics.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Add Topic',
+          route: instRoute('inst-topics.create-or-edit'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+
+    {
+      label: 'Scheme of Work',
+      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+      sub_items: [
+        {
+          label: 'All Scheme of Works',
+          route: instRoute('scheme-of-works.index'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Add Scheme of Work',
+          route: instRoute('scheme-of-works.create'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+
+    {
+      label: 'Lesson Plans',
+      route: instRoute('lesson-plans.index'),
+      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+    },
+
+    {
+      label: 'Lesson Notes',
+      route: instRoute('lesson-notes.index'),
+      roles: [
+        InstitutionUserType.Student,
+        InstitutionUserType.Admin,
+        InstitutionUserType.Teacher,
+      ],
+    },
+
+    {
+      label: 'Notes',
+      roles: [
+        InstitutionUserType.Student,
+        InstitutionUserType.Admin,
+        InstitutionUserType.Teacher,
+      ],
+      sub_items: [
+        {
+          label: 'All Note Topics',
+          route: instRoute('note-topics.index'),
+          roles: [
+            InstitutionUserType.Student,
+            InstitutionUserType.Admin,
+            InstitutionUserType.Teacher,
+          ],
+        },
+        {
+          label: 'Add Note Topic',
+          route: instRoute('note-topics.create'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+      ],
+    },
+    */
 
     {
       label: 'Assignments',
@@ -263,6 +356,27 @@ export default function SideBarLayout() {
         {
           label: 'Result Comments',
           route: instRoute('result-comment-templates.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Result Publication',
+          route: instRoute('result-publications.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+    {
+      label: 'Funds',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'Add Fund',
+          route: instRoute('fundings.create'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'All Fundings',
+          route: instRoute('fundings.index'),
           roles: [InstitutionUserType.Admin],
         },
       ],

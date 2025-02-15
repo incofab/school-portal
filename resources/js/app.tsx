@@ -11,6 +11,7 @@ import {
   extendTheme,
 } from '@chakra-ui/react';
 import { ProSidebarProvider } from 'react-pro-sidebar';
+import './style/app.css';
 
 const config: ThemeConfig = {
   initialColorMode: 'dark',

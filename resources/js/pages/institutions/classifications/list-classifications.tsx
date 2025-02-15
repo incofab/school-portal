@@ -1,5 +1,5 @@
 import React from 'react';
-import { Classification } from '@/types/models';
+import { Classification, Timetable } from '@/types/models';
 import {
   HStack,
   IconButton,
@@ -147,6 +147,12 @@ export default function ListClassification({ classifications }: Props) {
                     variant={'ghost'}
                   />
                   <MenuList>
+                    <MenuItem
+                      as={InertiaLink}
+                      href={instRoute('timetables.classTimetable', [row])}
+                    >
+                      Timetable
+                    </MenuItem>
                     <MenuItem
                       as={InertiaLink}
                       href={instRoute('classifications.students', [row])}

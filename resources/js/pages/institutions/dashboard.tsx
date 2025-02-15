@@ -18,10 +18,12 @@ import {
   ChartBarIcon,
   MapIcon,
   UsersIcon,
+  CurrencyDollarIcon,
 } from '@heroicons/react/24/solid';
 import { InstitutionUserType } from '@/types/types';
 import useIsStaff from '@/hooks/use-is-staff';
 import useInstitutionRole from '@/hooks/use-institution-role';
+import { InstitutionGroup } from '@/types/models';
 
 interface ItemCardProps {
   route: string;
@@ -34,6 +36,14 @@ interface ItemCardProps {
   title: string;
   desc: string;
   roles?: InstitutionUserType[];
+}
+
+interface Props {
+  institutionGroup: InstitutionGroup;
+}
+
+function NumberFormatter(number: number) {
+  return new Intl.NumberFormat().format(number);
 }
 
 function DashboardItemCard(prop: ItemCardProps) {
@@ -79,7 +89,7 @@ function DashboardItemCard(prop: ItemCardProps) {
   );
 }
 
-function InstitutionDashboard() {
+function InstitutionDashboard({ institutionGroup }: Props) {
   const { currentInstitutionUser } = useSharedProps();
   const student = currentInstitutionUser.student;
   const { forTeacher } = useInstitutionRole();
@@ -136,6 +146,20 @@ function InstitutionDashboard() {
       desc: 'Show fee payments',
       route: instRoute('fee-payments.index'),
       icon: BanknotesIcon,
+      roles: accountant,
+    },
+    {
+      title: '₦ ' + NumberFormatter(institutionGroup.credit_wallet),
+      desc: 'Credit Balance',
+      route: instRoute('fundings.create'),
+      icon: CurrencyDollarIcon,
+      roles: accountant,
+    },
+    {
+      title: '₦ ' + NumberFormatter(institutionGroup.debt_wallet),
+      desc: 'Debt Balance',
+      route: instRoute('fundings.create'),
+      icon: CurrencyDollarIcon,
       roles: accountant,
     },
     ...(student

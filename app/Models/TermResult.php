@@ -32,6 +32,13 @@ class TermResult extends Model
     return $this->belongsTo(Institution::class);
   }
 
+  function scopeIsPublished($query, $isPublished = true)
+  {
+    return $isPublished
+      ? $query->whereNotNull('result_publication_id')
+      : $query->whereNull('result_publication_id');
+  }
+
   function scopeActivated($query, $isActivated = true)
   {
     return $query->where('is_activated', $isActivated);

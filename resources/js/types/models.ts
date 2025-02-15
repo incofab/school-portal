@@ -2,7 +2,6 @@ import {
   ExamAttempt,
   InstitutionUserType,
   ManagerRole,
-  Nullable,
   TermType,
 } from './types';
 
@@ -45,6 +44,10 @@ export interface TokenUser extends Row {
 
 export interface InstitutionGroup extends Row {
   name: string;
+  credit_wallet: number;
+  debt_wallet: number;
+  loan_limit: number;
+  // wallet_balance: number;
 }
 export interface Institution extends Row {
   user_id: number;
@@ -65,9 +68,43 @@ export interface Institution extends Row {
   institution_group: InstitutionGroup;
 }
 
+export interface Funding extends Row {
+  institution_group_id: string;
+  amount: number;
+  previous_balance: number;
+  new_balance: number;
+  remark: string;
+  institution_group: InstitutionGroup;
+}
+
+export interface SchoolActivity extends Row {
+  institution_id: string;
+  title: string;
+  description: string;
+  institution: Institution;
+}
+
 interface InstitutionRow extends Row {
   institution_id: number;
   institution?: Institution;
+}
+
+export interface Timetable extends InstitutionRow {
+  classification_id: number;
+  day: number;
+  start_time: string;
+  end_time: string;
+  actionable_type: string;
+  actionable_id: number;
+  actionable: Course | SchoolActivity;
+  timetable_coordinators: TimetableCoordinator[];
+}
+
+export interface TimetableCoordinator extends InstitutionRow {
+  institution_user_id: number;
+  timetable_id: number;
+  institution_user?: InstitutionUser;
+  timetable?: Timetable;
 }
 
 export interface InstitutionUser extends InstitutionRow {
@@ -78,7 +115,7 @@ export interface InstitutionUser extends InstitutionRow {
 }
 
 export interface Attendance extends InstitutionRow {
-  institution_id: number;
+  // institution_id: number;
   institution_staff_user_id: number;
   institution_user_id: number;
   institution_user: InstitutionUser;
@@ -483,6 +520,84 @@ export interface Assignment extends InstitutionRow {
   course_teacher?: CourseTeacher;
 }
 
+export interface Topic extends InstitutionRow {
+  title: string;
+  description: string;
+  course_id: string;
+  institution_group_id?: number;
+  classification_group_id: number;
+  parent_topic_id?: number;
+
+  course?: Course;
+  classification_group?: ClassificationGroup;
+
+  scheme_of_works?: SchemeOfWork[];
+}
+
+export interface SchemeOfWork extends InstitutionRow {
+  term: string;
+  topic_id: number;
+  week_number: number;
+  learning_objectives: string;
+  resources: string;
+  institution_group_id: number;
+  institution_id: number;
+
+  topic?: Topic;
+  lesson_plans?: LessonPlan[];
+}
+
+export interface LessonPlan extends InstitutionRow {
+  objective: string;
+  activities: string;
+  content: string;
+  institution_group_id: number;
+  institution_id: number;
+  scheme_of_work_id: number;
+  course_teacher_id: number;
+
+  course_teacher?: CourseTeacher;
+  lesson_note?: LessonNote;
+  scheme_of_work?: SchemeOfWork;
+}
+
+export interface LessonNote extends InstitutionRow {
+  title: string;
+  content: string;
+  status: string;
+  classification_group_id: string;
+  institution_group_id: string;
+  topic_id: number;
+
+  course?: Course;
+  classification?: Classification;
+  course_teacher?: CourseTeacher;
+  lesson_plan?: LessonPlan;
+}
+
+export interface Note extends InstitutionRow {
+  title: string;
+  content: string;
+  status: string;
+}
+
+export interface NoteTopic extends Note {
+  // institution_group_id: string;
+  // institution_user_id: string;
+  // classification_group_id: string;
+  // classification_id: string;
+  // course_id: string;
+  // term: string;
+  course?: Course;
+  classification?: Classification;
+  course_teacher?: CourseTeacher;
+}
+
+export interface NoteSubTopic extends Note {
+  // note_topic_id: number;
+  note_topic?: NoteTopic;
+}
+
 export interface AssignmentSubmission extends InstitutionRow {
   assignment_id: number;
   student_id: number;
@@ -536,4 +651,12 @@ export interface ExamCourseable extends Row {
   num_of_questions: number;
   exam?: Exam;
   courseable?: CourseSession;
+}
+
+export interface Billing extends Row {
+  type: string;
+  institution_group_id: string;
+  payment_structure: string;
+  amount: number;
+  institution_group: InstitutionGroup;
 }

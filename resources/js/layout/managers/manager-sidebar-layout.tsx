@@ -42,6 +42,16 @@ export default function ManagerSideBarLayout() {
       roles: [ManagerRole.Admin],
     },
     {
+      label: 'Fundings',
+      route: route('managers.funding.index'),
+      roles: [ManagerRole.Admin],
+    },
+    {
+      label: 'Billings',
+      route: route('managers.billings.index'),
+      roles: [ManagerRole.Admin],
+    },
+    {
       label: 'Institution Groups',
       roles: [ManagerRole.Partner, ManagerRole.Admin],
       route: route('managers.institution-groups.index'),

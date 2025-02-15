@@ -30,4 +30,9 @@ class CourseTeacher extends Model
   {
     return $this->belongsTo(Classification::class);
   }
+
+  public function noteTopics()
+  {
+    return $this->hasMany(NoteTopic::class);
+  }
 }

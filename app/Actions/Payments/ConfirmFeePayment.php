@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions\Payments;
 
 use App\Core\PaystackHelper;
@@ -11,12 +12,11 @@ class ConfirmFeePayment
   public function __construct(
     private PaymentReference $paymentReference,
     private Institution $institution
-  ) {
-  }
+  ) {}
 
   function run()
   {
-    $res = (new PaystackHelper($this->institution))->verifyReference(
+    $res = PaystackHelper::makeFromInstitution($this->institution)->verifyReference(
       $this->paymentReference->reference
     );
 
@@ -37,7 +37,7 @@ class ConfirmFeePayment
       [
         'user_id' => $this->paymentReference->user_id,
         'academic_session_id' =>
-          $this->paymentReference->meta['academic_session_id'] ?? null,
+        $this->paymentReference->meta['academic_session_id'] ?? null,
         'term' => $this->paymentReference->meta['term'] ?? null,
         'method' => null,
         'transaction_reference' => null,

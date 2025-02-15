@@ -221,4 +221,14 @@ class Institution extends Model
   {
     return $this->belongsTo(InstitutionGroup::class);
   }
+
+  public function schoolActivities()
+  {
+    return $this->hasMany(SchoolActivity::class);
+  }
+
+  public function schemeOfWorks()
+  {
+    return $this->hasMany(SchemeOfWork::class);
+  }
 }
