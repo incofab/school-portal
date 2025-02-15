@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Institutions\Students;
 
 use App\Core\PaystackHelper;
@@ -150,7 +151,7 @@ class StudentFeePaymentController extends Controller
       'redirect_url' => instRoute('students.receipts.index', $student->id)
     ]);
 
-    $res = (new PaystackHelper($institution))->initialize(
+    $res = PaystackHelper::makeFromInstitution($institution)->initialize(
       $totalAmount,
       $user->email,
       route('paystack.callback'),

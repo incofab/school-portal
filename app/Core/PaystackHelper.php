@@ -1,37 +1,42 @@
 <?php
+
 namespace App\Core;
 
 use App\DTO\PaymentKeyDto;
 use App\Models\Institution;
 use App\Support\SettingsHandler;
-// use App\Traits\MakeInstance;
 use Illuminate\Support\Facades\Http;
+use App\Enums\Payments\PaymentPurpose;
 
 class PaystackHelper
 {
-  // use MakeInstance;
-
   const PERCENTAGE_CHARGE = 1.5;
   const FLAT_CHARGE = 100;
   const FLAT_CHARGE_ELIGIBLE = 2500;
 
-  private PaymentKeyDto $paystackKeys;
+  function __construct(private PaymentKeyDto $paystackKeys) {}
 
-  function __construct(private Institution $institution)
+  static function makeFromInstitution(Institution $institution)
   {
-    $this->paystackKeys = SettingsHandler::make(
+    $paystackKeys = SettingsHandler::make(
       $institution->institutionSettings
     )->getPaystackKeys();
+    return new self($paystackKeys);
   }
 
-  function initialize($amount, $email, $callbackUrl, $reference = null)
+  static function make()
+  {
+    $paystackKeys = new PaymentKeyDto(config('services.paystack.public-key'), config('services.paystack.private-key'));
+    return new self($paystackKeys);
+  }
+
+  function initialize($amount, $email, $callbackUrl, $reference = null, $purpose = null)
   {
     $url = 'https://api.paystack.co/transaction/initialize';
 
-    // Add paystack charge
-    // $amount = $this->addPaystackCharge($amount);
+    $privateKey = $this->paystackKeys->getPrivateKey();
 
-    $res = Http::withToken($this->paystackKeys->getPrivateKey())
+    $res = Http::withToken($privateKey)
       ->contentType('application/json')
       ->post($url, [
         'amount' => $amount * 100,
@@ -60,11 +65,13 @@ class PaystackHelper
   //abandoned
   //success
   //
-  function verifyReference($reference)
+  function verifyReference($reference, $purpose = null)
   {
     $url = 'https://api.paystack.co/transaction/verify/' . $reference;
 
-    $res = Http::withToken($this->paystackKeys->getPrivateKey())
+    $privateKey = $this->paystackKeys->getPrivateKey();
+
+    $res = Http::withToken($privateKey)
       ->contentType('application/json')
       ->get($url);
 

@@ -66,4 +66,9 @@ class InstitutionUser extends Model
   {
     return $this->belongsTo(User::class);
   }
+
+  function timetableCoordinators()
+  {
+    return $this->hasMany(TimetableCoordinator::class);
+  }
 }

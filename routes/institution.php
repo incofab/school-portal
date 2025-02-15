@@ -276,3 +276,65 @@ include base_path('routes/assignment.php');
 include base_path('routes/attendance.php');
 include base_path('routes/exam.php');
 include base_path('routes/student_routes.php');
+
+Route::resource('/fundings', Web\Fundings\FundingsController::class);
+Route::resource('/result-publications', Web\ResultPublications\ResultPublicationsController::class);
+
+//A route named 'topics' already exist in 'ccd' route file, hence I use 'inst-topics'
+Route::get('/inst-topics', [Web\Curriculums\TopicController::class, 'index'])->name('inst-topics.index');
+// Route::get('/inst-topics/{topic}/edit', [Web\Curriculums\TopicController::class, 'edit'])->name('inst-topics.edit');
+Route::get('/inst-topics/{topic}/sub-topics', [Web\Curriculums\TopicController::class, 'subTopicIndex'])->name('inst-topics.sub-topics');
+Route::delete('/inst-topics/{topic}/destroy', [Web\Curriculums\TopicController::class, 'destroy'])->name('inst-topics.destroy');
+// Route::post('/inst-topics/{parentTopicId?}', [Web\Curriculums\TopicController::class, 'updateOrCreate'])->name('inst-topics.store');
+// Route::put('/inst-topics/{topic?}', [Web\Curriculums\TopicController::class, 'updateOrCreate'])->name('inst-topics.update');
+Route::post('/inst-topics/{topic?}', [Web\Curriculums\TopicController::class, 'storeOrUpdate'])->name('inst-topics.store-or-update');
+Route::get('/inst-topics/create-edit/{topic?}', [Web\Curriculums\TopicController::class, 'createOrEdit'])->name('inst-topics.create-or-edit');
+Route::get('/inst-topics/search', [Web\Curriculums\TopicController::class, 'search'])->name('inst-topics.search');
+Route::get('/inst-topics/{topic}', [Web\Curriculums\TopicController::class, 'show'])->name('inst-topics.show');
+
+//== SCHEME OF WORK ::
+Route::get('/scheme-of-works/{topic}/create', [Web\Curriculums\SchemeOfWorkController::class, 'create'])->name('scheme-of-works.create');
+Route::resource('/scheme-of-works', Web\Curriculums\SchemeOfWorkController::class)->except('create');
+
+//== LESSON PLAN ::
+// Route::resource('/lesson-plans', Web\Curriculum\LessonPlanController::class);
+Route::get('/lesson-plans', [Web\Curriculums\LessonPlanController::class, 'index'])->name('lesson-plans.index');
+Route::get('/lesson-plans/{schemeOfWork}/create', [Web\Curriculums\LessonPlanController::class, 'createOrEdit'])->name('lesson-plans.create');
+Route::get('/lesson-plans/{lessonPlan}/edit', [Web\Curriculums\LessonPlanController::class, 'createOrEdit'])->name('lesson-plans.edit');
+Route::get('/lesson-plans/{lessonPlan}', [Web\Curriculums\LessonPlanController::class, 'show'])->name('lesson-plans.show');
+Route::post('/lesson-plans/{lessonPlan?}', [Web\Curriculums\LessonPlanController::class, 'storeOrUpdate'])->name('lesson-plans.store-or-update');
+Route::delete('/lesson-plans/{lessonPlan}/destroy', [Web\Curriculums\LessonPlanController::class, 'destroy'])->name('lesson-plans.destroy');
+
+//== LESSON NOTES ::
+Route::get('/lesson-notes', [Web\Curriculums\LessonNoteController::class, 'index'])->name('lesson-notes.index');
+Route::get('/lesson-notes/{lessonPlan}/create', [Web\Curriculums\LessonNoteController::class, 'createOrEdit'])->name('lesson-notes.create');
+Route::get('/lesson-notes/{lessonNote}/edit', [Web\Curriculums\LessonNoteController::class, 'createOrEdit'])->name('lesson-notes.edit');
+Route::get('/lesson-notes/{lessonNote}', [Web\Curriculums\LessonNoteController::class, 'show'])->name('lesson-notes.show');
+Route::post('/lesson-notes/{lessonNote?}', [Web\Curriculums\LessonNoteController::class, 'storeOrUpdate'])->name('lesson-notes.store-or-update');
+Route::delete('/lesson-notes/{lessonNote}/destroy', [Web\Curriculums\LessonNoteController::class, 'destroy'])->name('lesson-notes.destroy');
+
+
+Route::resource('/note-topics', Web\Notes\NoteTopicController::class);
+
+Route::get('/note-sub-topics/{noteTopic}/list', [Web\Notes\NoteSubTopicController::class, 'list'])
+  ->name('note-sub-topics.list');
+Route::get('/note-sub-topics/{noteTopic}/create', [Web\Notes\NoteSubTopicController::class, 'create'])
+  ->name('note-sub-topics.create');
+Route::get('/note-sub-topics/{noteTopic}/edit', [Web\Notes\NoteSubTopicController::class, 'edit'])
+  ->name('note-sub-topics.edit');
+Route::post('/note-sub-topics/{noteTopic}/store', [Web\Notes\NoteSubTopicController::class, 'store'])
+  ->name('note-sub-topics.store');
+Route::put('/note-sub-topics/{noteSubTopic}/update', [Web\Notes\NoteSubTopicController::class, 'update'])
+  ->name('note-sub-topics.update');
+Route::get('/note-sub-topics/{noteSubTopic}/show', [Web\Notes\NoteSubTopicController::class, 'show'])
+  ->name('note-sub-topics.show');
+Route::delete('/note-sub-topics/{noteSubTopic}/destroy', [Web\Notes\NoteSubTopicController::class, 'destroy'])
+  ->name('note-sub-topics.destroy');
+
+Route::get('/school-activities/search', [Web\SchoolActivities\SchoolActivityController::class, 'search'])
+  ->name('school-activities.search');
+Route::resource('/school-activities', Web\SchoolActivities\SchoolActivityController::class);
+
+Route::get('/timetables/{classification}/class', [Web\Timetables\TimetableController::class, 'classTimetable'])
+  ->name('timetables.classTimetable');
+Route::resource('/timetables', Web\Timetables\TimetableController::class);

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Traits\InstitutionScope;
@@ -49,5 +50,10 @@ class Classification extends Model
   function sessionResults()
   {
     return $this->hasMany(SessionResult::class);
+  }
+
+  public function noteTopics()
+  {
+    return $this->hasMany(NoteTopic::class);
   }
 }

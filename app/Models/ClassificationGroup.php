@@ -24,4 +24,9 @@ class ClassificationGroup extends Model
   {
     return $this->hasMany(Classification::class);
   }
+
+  public function noteTopics()
+  {
+    return $this->hasMany(NoteTopic::class);
+  }
 }

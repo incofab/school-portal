@@ -53,7 +53,7 @@ class InstitutionSettingFactory extends Factory
     return $this->state(
       fn(array $attributes) => [
         'key' => InstitutionSettingType::CurrentAcademicSession->value,
-        'value' => AcademicSession::factory()
+        'value' => $academicSession ?? AcademicSession::factory()
       ]
     );
   }

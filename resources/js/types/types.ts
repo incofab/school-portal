@@ -50,6 +50,11 @@ export enum TermType {
   Third = 'third',
 }
 
+export enum WalletType {
+  Credit = 'credit',
+  Debt = 'debt',
+}
+
 export enum FullTermType {
   FirstMid = 'first-mid',
   First = 'first',
@@ -62,6 +67,16 @@ export enum FullTermType {
 export enum Gender {
   Male = 'male',
   Female = 'female',
+}
+
+export enum WeekDay {
+  Monday = '0',
+  Tuesday = '1',
+  Wednesday = '2',
+  Thursday = '3',
+  Friday = '4',
+  Saturday = '5',
+  Sunday = '6',
 }
 
 export enum Attendance {
@@ -163,6 +178,29 @@ export enum Grade {
   F = 'F',
 }
 
+export enum PriceType {
+  ResultChecking = 'result-checking',
+  EmailSending = 'email-sending',
+  SmsSending = 'sms-sending',
+}
+
+export enum PaymentStructure {
+  PerTerm = 'per-term',
+  PerSession = 'per-session',
+  PerStudentPerTerm = 'per-student-per-term',
+  PerStudentPerSession = 'per-student-per-session',
+}
+
+export enum NoteStatusType {
+  Draft = 'draft',
+  Published = 'published',
+}
+
+export enum TimetableActionableType {
+  Course = 'course',
+  SchoolActivity = 'school-activity',
+}
+
 export interface ExamAttempt {
   [questionId: string | number]: string;
 }
@@ -175,4 +213,18 @@ export interface BreadCrumbParam {
 export interface PaymentKey {
   private_key: string;
   public_key: string;
+}
+
+export interface TimetableCell {
+  id?: number;
+  day: number;
+  start_time: string;
+  end_time: string;
+  actionable_type?: string;
+  actionable_id?: number;
+  actionable_name?: string;
+  coordinators?: {
+    coordinator_user_id?: number;
+    coordinator_name?: string;
+  }[];
 }

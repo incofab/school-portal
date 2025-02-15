@@ -44,7 +44,11 @@ class TermResultFactory extends Factory
   public function forStudent(Student $student): static
   {
     return $this->state(function (array $attributes) use ($student) {
-      return ['student_id' => $student->id];
+      return [
+        'student_id' => $student->id,
+        'institution_id' => $student->institutionUser->institution->id,
+        'classification_id' => $student->classification_id
+      ];
     });
   }
 }

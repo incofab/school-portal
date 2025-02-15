@@ -25,10 +25,10 @@ class StudentFactory extends Factory
       // 'institution_user_id' => InstitutionUser::factory()->student(),
       // 'user_id' => User::factory(null, ['other_names' => null])->student(),
       'code' =>
-        date('Y') .
+      date('Y') .
         fake()
-          ->unique()
-          ->numerify('####'),
+        ->unique()
+        ->numerify('####'),
       'classification_id' => Classification::factory(),
       'guardian_phone' => fake()->phoneNumber()
     ];
@@ -45,11 +45,12 @@ class StudentFactory extends Factory
       $institutionUser = InstitutionUser::factory()
         ->withInstitution($institution)
         ->create(['role' => InstitutionUserType::Student]);
+
       return [
         'institution_user_id' => $institutionUser->id,
         'user_id' => $institutionUser->user_id,
         'classification_id' =>
-          $classification ??
+        $classification ??
           Classification::factory()->withInstitution(
             $institutionUser->institution
           )
