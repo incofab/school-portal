@@ -4,7 +4,7 @@
 
 <div>
 	@include('ccd._breadcrumb', [
-		'headerTitle' => 'Passages',
+		'headerTitle' => 'Questions',
 		'crumbs' => [
 			breadCrumb('Sessions', instRoute('course-sessions.index', [$courseSession->course_id])),
 			breadCrumb('Questions')->active()

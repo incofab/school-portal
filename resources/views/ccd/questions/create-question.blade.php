@@ -41,7 +41,7 @@
 						class="form-control" style="max-width: 80px" />
 				</div>
 				
-				<div class="form-group">
+				{{-- <div class="form-group">
 					<label for="" >Topic</label><br />
 					<select name="topic_id" id="" class="form-control">
 						<option value="">Topic</option>
@@ -53,7 +53,7 @@
 						</option>
 						@endforeach
 					</select>
-				</div>
+				</div> --}}
 
 				<div class="form-group">
 					<label for="" >Question</label>
@@ -146,7 +146,7 @@
 
 				<div class="form-group">
 					<input type="submit" name="add" style="width: 60%; margin: auto;" 
-							class="btn btn-primary btn-block" value="{{empty($edit) ? 'Add' : 'Update'}}">
+							class="btn btn-primary btn-block" value="Submit">
 					<div class="clearfix"></div>
 				</div>
 			</form>

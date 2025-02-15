@@ -36,7 +36,7 @@
 				
 				<div class="form-group">
 					<input type="submit" name="add" style="width: 60%; margin: auto;" 
-							class="btn btn-primary btn-block" value="{{empty($edit) ? 'Add' : 'Update'}}">
+							class="btn btn-primary btn-block" value="Submit">
 					<div class="clearfix"></div>
 				</div>
 			</form>
