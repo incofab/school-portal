@@ -22,7 +22,6 @@ use Illuminate\Database\Eloquent\Model;
 use App\Support\Fundings\FundingHandler;
 use App\Enums\PriceLists\PaymentStructure;
 
-
 abstract class PublishResult
 {
   protected $resultsToPublish;
@@ -63,8 +62,8 @@ abstract class PublishResult
     $amountToPay = $this->getAmountToPay();
     if ($amountToPay > 0) {
       if ($this->institutionGroup->credit_wallet < $amountToPay) {
-
-        $loanAmountNeeded = $amountToPay - $this->institutionGroup->credit_wallet;
+        $loanAmountNeeded =
+          $amountToPay - $this->institutionGroup->credit_wallet;
 
         if (!$this->institutionGroup->canGetLoan($loanAmountNeeded)) {
           return failRes(
@@ -77,18 +76,22 @@ abstract class PublishResult
         $data = [
           'amount' => $loanAmountNeeded,
           'reference' => Str::orderedUuid(),
-          'remark' => 'Result Publication',
+          'remark' => 'Result Publication'
         ];
 
-        $obj = new FundingHandler($this->institutionGroup, $this->staffUser, $data);
-        $obj->run(WalletType::Debt);
+        $obj = new FundingHandler(
+          $this->institutionGroup,
+          $this->staffUser,
+          $data
+        );
+        $obj->requestDebt();
       }
 
       //===
       $this->institutionGroup
         ->fill([
           'credit_wallet' =>
-          $this->institutionGroup->credit_wallet - $amountToPay
+            $this->institutionGroup->credit_wallet - $amountToPay
         ])
         ->save();
     }

@@ -2,14 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\ManagerRole;
 use App\Enums\PriceLists\PaymentStructure;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Institution;
 use App\Models\ResultPublication;
 use App\Models\TermResult;
-use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 

@@ -23,7 +23,11 @@ export default function StaffSelect<
   ...props
 }: Props & AsyncProps<Option, IsMulti, Group>) {
   if (!rolesIn && !rolesExclude) {
-    rolesExclude = [InstitutionUserType.Student, InstitutionUserType.Alumni];
+    rolesExclude = [
+      InstitutionUserType.Student,
+      InstitutionUserType.Alumni,
+      InstitutionUserType.Guardian,
+    ];
   }
 
   const { instRoute } = useInstitutionRoute();

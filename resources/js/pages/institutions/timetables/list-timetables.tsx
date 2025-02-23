@@ -106,21 +106,6 @@ export default function ListTimetables({
       .padStart(2, '0')}`;
   }
 
-  // function getNextTimeRange(
-  //   timeRange: string
-  // ) {
-  //   const timeGap = getTimeGap(prevCellStartTime, prevCellEndTime);
-  //   const [hour, minute] = timeRange.split(':').map((item) => parseInt(item));
-  //   let nextHour = hour + 1;
-  //   if (nextHour > 23) {
-  //     nextHour = nextHour - 24;
-  //   }
-  //   const nextMinute = minute;
-  //   return `${nextHour.toString().padStart(2, '0')}:${nextMinute
-  //     .toString()
-  //     .padStart(2, '0')}`;
-  // }
-
   return (
     <DashboardLayout>
       <Slab>
@@ -133,7 +118,14 @@ export default function ListTimetables({
             const cells = formattedTableState[parsedkey] ?? [];
             return (
               <HStack key={dayId} gap="0">
-                <Div p="2" borderWidth="2px" minW="120px" h="120px">
+                <Div
+                  p="2"
+                  borderWidth="2px"
+                  minW="120px"
+                  h="120px"
+                  display={'flex'}
+                  alignItems={'center'}
+                >
                   {day}
                 </Div>
                 {cells.map((cell, i) => (
@@ -188,19 +180,6 @@ export default function ListTimetables({
           classificationId={classificationId}
           {...createEditTimetableModalToggle.props}
           onSuccess={() => window.location.reload()} // Reloads the page
-
-          // onSuccess={(cell: TimetableCell) => {
-          //   const cells = formattedTableState[cell.day].map((item) =>
-          //     item.start_time === cell.start_time &&
-          //     item.end_time === cell.end_time
-          //       ? cell
-          //       : item
-          //   );
-          //   setFormattedTableState({
-          //     ...formattedTableState,
-          //     [cell.day]: cells,
-          //   });
-          // }}
         />
       )}
     </DashboardLayout>
@@ -291,7 +270,7 @@ function Cell({
         </Flex>
 
         {/* Action:  */}
-        <Flex justify="space-between">
+        <Flex justify="space-between" my={1}>
           <Text fontSize="sm" marginEnd="auto">
             {cell.actionable_name}
           </Text>
@@ -314,7 +293,7 @@ function Cell({
         </Flex>
 
         {/* Coordinator:  */}
-        <Text fontSize="sm">
+        <Text fontSize="sm" noOfLines={2} color={'brand.700'}>
           {cell?.coordinators
             ?.map((item) => item.coordinator_name)
             .join(', ') ?? ''}

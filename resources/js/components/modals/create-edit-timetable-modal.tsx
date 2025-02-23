@@ -96,20 +96,25 @@ export default function CreateEditTimetableModal({
             }
             setActionType={(type) => webForm.setValue('actionable_type', type)}
           />
-          <Wrap>
+          <Wrap my={3}>
             {webForm.data.coordinators?.map((coordinator) => (
               <HStack
                 borderRadius="full"
                 key={coordinator.coordinator_user_id}
-                backgroundColor="brand.500"
-                color="white"
-                p={2}
+                borderWidth={'1px'}
+                borderColor={'brand.500'}
+                borderLeftRadius={'10px'}
+                borderRightRadius={'10px'}
+                color={'brand.700'}
+                px={2}
+                py={0}
               >
                 <Text>{coordinator.coordinator_name}</Text>
                 <IconButton
                   aria-label="Remove Coordinator"
                   icon={<Icon as={TrashIcon} />}
                   variant={'ghost'}
+                  color={'red'}
                   onClick={() => {
                     webForm.setValue(
                       'coordinators',
