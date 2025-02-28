@@ -29,6 +29,16 @@ export enum ManagerRole {
   Partner = 'partner',
 }
 
+export enum NotificationChannelsType {
+  Email = 'email',
+  Sms = 'sms',
+}
+
+export enum NotificationReceiversType {
+  AllClasses = 'all-classes',
+  SpecificClass = 'specific-class',
+}
+
 export enum InstitutionUserType {
   Admin = 'admin',
   Student = 'student',

@@ -69,7 +69,7 @@ class CourseTeachersController extends Controller
   //     'courses' => Course::all(),
   //     'user' => $courseTeacher->user,
   //     'courseTeacher' => $courseTeacher
-  //   ]);
+  //   ]); 
   // }
 
   function destroy(Institution $institution, CourseTeacher $courseTeacher)

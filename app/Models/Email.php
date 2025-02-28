@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\EmailRecipientType;
+use App\Enums\EmailStatus;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +14,9 @@ class Email extends Model
 
   protected $casts = [
     'institution_id' => 'integer',
-    'sender_user_id' => 'integer'
+    'sender_user_id' => 'integer',
+    'type' => EmailRecipientType::class,
+    'status' => EmailStatus::class
   ];
   protected $guarded = [];
 
@@ -30,4 +34,10 @@ class Email extends Model
   {
     return $this->hasMany(EmailRecipient::class);
   }
-}
+
+  // SchoolNotification
+  function messageable()
+  {
+    return $this->morphTo('messageable');
+  }
+} 
