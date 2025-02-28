@@ -13,7 +13,6 @@ use Spatie\Permission\Models\Role;
 
 class InstitutionRegistrationRequestController extends Controller
 {
-  // public function create(User $partner = null)
   public function create($partner = null)
   {
     if (!empty($partner)) {

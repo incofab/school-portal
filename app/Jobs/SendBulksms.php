@@ -3,10 +3,11 @@
 namespace App\Jobs;
 
 use App\Actions\Fees\GetStudentPendingFees;
-use App\Enums\EmailRecipientType;
-use App\Enums\EmailStatus;
-use App\Models\Email;
-use App\Models\EmailRecipient;
+use App\Enums\MessageRecipientCategory;
+use App\Enums\MessageStatus;
+use App\Enums\NotificationChannelsType;
+use App\Models\Message;
+use App\Models\MessageRecipient;
 use App\Models\Institution;
 use App\Models\ReceiptType;
 use App\Models\Student;
@@ -16,7 +17,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use GuzzleHttp\Client;
+use Http;
 
 class SendBulksms implements ShouldQueue
 {
@@ -48,13 +49,10 @@ class SendBulksms implements ShouldQueue
   public function handle(): void
   {
     $msg =
-      "Dear Parent,\nThis is a gentle reminder that the " .
-      $this->receiptType->title .
-      ' for ' .
-      $this->student->user->last_name .
-      ' ' .
-      $this->student->user->first_name .
-      ", is due for payment.\nThe total amount is N" .
+      "Dear Parent,\nThis is a gentle reminder that the 
+      {$this->receiptType->title} for {$this->student->user->last_name}
+      {$this->student->user->first_name}
+      , is due for payment.\nThe total amount is N" .
       number_format($this->totalFeesToPay) .
       ".\nThank you.";
 
@@ -66,9 +64,7 @@ class SendBulksms implements ShouldQueue
       'gateway' => 'direct-refund'
     ];
 
-    $client = new Client();
-
-    $client->request('POST', 'https://www.bulksmsnigeria.com/api/v2/sms', [
+    Http::post('https://www.bulksmsnigeria.com/api/v2/sms', [
       'form_params' => $data
     ]);
 
@@ -78,19 +74,21 @@ class SendBulksms implements ShouldQueue
       'sender_user_id' => $this->user->id,
       'subject' => 'Payment Notification',
       'body' => $msg,
-      'type' => EmailRecipientType::Single->value,
-      'status' => EmailStatus::Sent->value,
+      'recipient_category' => MessageRecipientCategory::Single->value,
+      'channel' => NotificationChannelsType::Sms,
+      'status' => MessageStatus::Sent->value,
       'sent_at' => now()
     ];
+    $message = Message::create($data);
 
     $data2 = [
       'institution_id' => $this->currentInstitution->id,
-      'recipient_email' => $this->guardian->email,
-      'recipient_type' => User::class,
-      'recipient_id' => $this->guardian->id
+      'recipient_contact' => $this->guardian->phone,
+      'recipient_type' => $this->guardian->getMorphClass(),
+      'recipient_id' => $this->guardian->id,
+      'message_id' => $message->id
     ];
 
-    Email::create($data);
-    EmailRecipient::create($data2);
+    MessageRecipient::create($data2);
   }
 }

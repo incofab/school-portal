@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use App\Enums\EmailRecipientType;
-use App\Enums\EmailStatus;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EmailRecipient extends Model
+class MessageRecipient extends Model
 {
   use HasFactory, InstitutionScope;
 
@@ -25,6 +23,6 @@ class EmailRecipient extends Model
 
   function email()
   {
-    return $this->belongsTo(Email::class);
+    return $this->belongsTo(Message::class);
   }
 }

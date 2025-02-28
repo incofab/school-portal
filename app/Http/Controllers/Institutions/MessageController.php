@@ -6,7 +6,7 @@ use App\Models\Classification;
 use App\Models\Institution;
 use Illuminate\Validation\Rule;
 
-class EmailController extends Controller
+class MessageController extends Controller
 {
   // function create()
 // {

@@ -88,7 +88,7 @@ class RecordPaymentNotification
       if ($guardian) {
         $notificationChannel = $this->data['channel'];
 
-        //== Send via Email
+        //== Send via Message
         if ($notificationChannel === NotificationChannelsType::Email->value) {
           Mail::to($guardian?->email)->queue(
             new PaymentNotificationMail(

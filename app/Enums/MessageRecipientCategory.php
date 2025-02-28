@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum EmailRecipientType: string
+enum MessageRecipientCategory: string
 {
   case AllStudents = 'all-students';
   case AllTeachers = 'all-teachers';

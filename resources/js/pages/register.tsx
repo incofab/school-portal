@@ -15,7 +15,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { InertiaLink, useForm } from '@inertiajs/inertia-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import useSharedProps from '@/hooks/use-shared-props';
 import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
@@ -93,22 +93,6 @@ export default function Register({ user }: { user?: User }) {
               </SlabBody>
             </Slab>
           )}
-
-          {/* 
-          <Slab>
-            <SlabBody>
-              <Text as={'span'} color={'brand.500'} fontWeight={'semibold'}>
-                Thank you
-              </Text>{' '}
-              for your interest in Edumanager, This is the best School
-              Management Solution for your School at a very cheap rate.
-              <br />
-              Kindly fill the form with your personal and school information
-              and one of our staff will contact you.
-            </SlabBody>
-          </Slab> 
-        */}
-
           <br />
           <FormControlBox form={form} title="First Name" formKey="first_name">
             <Input

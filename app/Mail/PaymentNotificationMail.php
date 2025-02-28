@@ -3,10 +3,11 @@
 namespace App\Mail;
 
 use App\Actions\Fees\GetStudentPendingFees;
-use App\Enums\EmailRecipientType;
-use App\Enums\EmailStatus;
-use App\Models\Email;
-use App\Models\EmailRecipient;
+use App\Enums\MessageRecipientCategory;
+use App\Enums\MessageStatus;
+use App\Enums\NotificationChannelsType;
+use App\Models\Message;
+use App\Models\MessageRecipient;
 use App\Models\Fee;
 use App\Models\FeePayment;
 use App\Models\Institution;
@@ -89,22 +90,24 @@ class PaymentNotificationMail extends Mailable implements ShouldQueue
       'sender_user_id' => $this->user->id,
       'subject' => 'Payment Notification',
       'body' => $bodyContent,
-      'type' => EmailRecipientType::Single->value,
-      'status' => EmailStatus::Sent->value,
+      'recipient_category' => MessageRecipientCategory::Single->value,
+      'channel' => NotificationChannelsType::Email->value,
+      'status' => MessageStatus::Sent->value,
       'sent_at' => now(),
       'messageable_type' => $this->schoolNotification->getMorphClass(),
-      'messageable_id' => $this->schoolNotification->id,
+      'messageable_id' => $this->schoolNotification->id
     ];
+    $message = Message::create($data);
 
     $data2 = [
       'institution_id' => $this->currentInstitution->id,
-      'recipient_email' => $this->guardian->email,
+      'recipient_contact' => $this->guardian->email,
       'recipient_type' => User::class,
-      'recipient_id' => $this->guardian->id
+      'recipient_id' => $this->guardian->id,
+      'message_id' => $message->id
     ];
 
-    Email::create($data);
-    EmailRecipient::create($data2);
+    MessageRecipient::create($data2);
   }
 
   /**

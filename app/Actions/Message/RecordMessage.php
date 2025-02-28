@@ -1,21 +1,22 @@
 <?php
-namespace App\Actions\Email;
+namespace App\Actions\Message;
 
-use App\Enums\EmailRecipientType;
+use App\Enums\MessageRecipientCategory;
 use App\Models\Classification;
 use App\Models\ClassificationGroup;
-use App\Models\Email;
+use App\Models\Message;
 use App\Models\Institution;
 use App\Models\User;
 use DB;
 
-class RecordEmail
+class RecordMessage
 {
   private array $recipient = [];
   /**
    * @param array{
    *   subject: string,
    *   body: string,
+   *   channel: string,
    * }
    */
   function __construct(
@@ -31,7 +32,8 @@ class RecordEmail
       'recipient_type' => $classification->getMorphClass(),
       'recipient_id' => $classification->id
     ];
-    $this->post['type'] = EmailRecipientType::Classification->value;
+    $this->post['recipient_category'] =
+      MessageRecipientCategory::Classification->value;
   }
 
   public function forClassGroup(ClassificationGroup $classificationGroup)
@@ -40,7 +42,8 @@ class RecordEmail
       'recipient_type' => $classificationGroup->getMorphClass(),
       'recipient_id' => $classificationGroup->id
     ];
-    $this->post['type'] = EmailRecipientType::ClassificationGroup->value;
+    $this->post['recipient_category'] =
+      MessageRecipientCategory::ClassificationGroup->value;
   }
 
   public function forInstitution(Institution $institution)
@@ -49,26 +52,27 @@ class RecordEmail
       'recipient_type' => $institution->getMorphClass(),
       'recipient_id' => $institution->id
     ];
-    $this->post['type'] = EmailRecipientType::ClassificationGroup->value;
+    $this->post['recipient_category'] =
+      MessageRecipientCategory::ClassificationGroup->value;
   }
 
   public function forSingle(string $email)
   {
-    $this->recipient = ['recipient_email' => $email];
-    $this->post['type'] = EmailRecipientType::Single->value;
+    $this->recipient = ['recipient_contact' => $email];
+    $this->post['recipient_category'] = MessageRecipientCategory::Single->value;
   }
 
   public function forMultiple(array $emails)
   {
-    $this->recipient['recipient_email'] = implode(',', $emails);
-    $this->post['type'] = EmailRecipientType::Single->value;
+    $this->recipient['recipient_contact'] = implode(',', $emails);
+    $this->post['recipient_category'] = MessageRecipientCategory::Single->value;
   }
 
   public function save()
   {
     DB::beginTransaction();
-    Email::create($this->post);
-    $email = Email::create([
+    Message::create($this->post);
+    $email = Message::create([
       ...$this->post,
       'institution_id' => $this->institution->id,
       'sender_user_id' => $this->senderUser->id
