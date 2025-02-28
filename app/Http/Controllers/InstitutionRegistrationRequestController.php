@@ -13,8 +13,13 @@ use Spatie\Permission\Models\Role;
 
 class InstitutionRegistrationRequestController extends Controller
 {
-  public function create(User $partner = null)
+  // public function create(User $partner = null)
+  public function create($partner = null)
   {
+    if (!empty($partner)) {
+      $partner = User::where('username', $partner)->first();
+    }
+
     return inertia('register', [
       'user' => $partner
     ]);

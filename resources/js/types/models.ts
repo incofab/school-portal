@@ -28,6 +28,7 @@ export interface User extends Row {
   photo: string;
   photo_url: string;
   email: string;
+  username: string;
   is_welfare: boolean;
   gender: string;
   roles?: Role[];

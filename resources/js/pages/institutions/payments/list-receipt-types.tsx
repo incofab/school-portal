@@ -88,6 +88,12 @@ export default function ListReceiptTypes({ receiptTypes }: Props) {
           title="List Receipt Categories"
           rightElement={
             <HStack>
+              <LinkButton
+                variant={'outline'}
+                href={instRoute('payment-notifications.create')}
+                colorScheme={'brand'}
+                title="Send Notification"
+              />
               <BrandButton
                 title="Add New"
                 onClick={() => createReceiptTypeModal.open(null)}

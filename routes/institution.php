@@ -313,24 +313,6 @@ Route::get('/lesson-notes/{lessonNote}', [Web\Curriculums\LessonNoteController::
 Route::post('/lesson-notes/{lessonNote?}', [Web\Curriculums\LessonNoteController::class, 'storeOrUpdate'])->name('lesson-notes.store-or-update');
 Route::delete('/lesson-notes/{lessonNote}/destroy', [Web\Curriculums\LessonNoteController::class, 'destroy'])->name('lesson-notes.destroy');
 
-
-Route::resource('/note-topics', Web\Notes\NoteTopicController::class);
-
-Route::get('/note-sub-topics/{noteTopic}/list', [Web\Notes\NoteSubTopicController::class, 'list'])
-  ->name('note-sub-topics.list');
-Route::get('/note-sub-topics/{noteTopic}/create', [Web\Notes\NoteSubTopicController::class, 'create'])
-  ->name('note-sub-topics.create');
-Route::get('/note-sub-topics/{noteTopic}/edit', [Web\Notes\NoteSubTopicController::class, 'edit'])
-  ->name('note-sub-topics.edit');
-Route::post('/note-sub-topics/{noteTopic}/store', [Web\Notes\NoteSubTopicController::class, 'store'])
-  ->name('note-sub-topics.store');
-Route::put('/note-sub-topics/{noteSubTopic}/update', [Web\Notes\NoteSubTopicController::class, 'update'])
-  ->name('note-sub-topics.update');
-Route::get('/note-sub-topics/{noteSubTopic}/show', [Web\Notes\NoteSubTopicController::class, 'show'])
-  ->name('note-sub-topics.show');
-Route::delete('/note-sub-topics/{noteSubTopic}/destroy', [Web\Notes\NoteSubTopicController::class, 'destroy'])
-  ->name('note-sub-topics.destroy');
-
 Route::get('/school-activities/search', [Web\SchoolActivities\SchoolActivityController::class, 'search'])
   ->name('school-activities.search');
 Route::resource('/school-activities', Web\SchoolActivities\SchoolActivityController::class);
@@ -338,3 +320,6 @@ Route::resource('/school-activities', Web\SchoolActivities\SchoolActivityControl
 Route::get('/timetables/{classification}/class', [Web\Timetables\TimetableController::class, 'classTimetable'])
   ->name('timetables.classTimetable');
 Route::resource('/timetables', Web\Timetables\TimetableController::class);
+
+
+Route::resource('/payment-notifications', Web\PaymentNotifications\PaymentNotificationController::class);

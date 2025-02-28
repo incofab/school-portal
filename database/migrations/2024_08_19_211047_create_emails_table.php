@@ -26,6 +26,7 @@ return new class extends Migration {
       $table->string('status')->default(EmailStatus::Pending->value);
       $table->timestamp('sent_at')->nullable(); // Timestamp when the email was sent
       $table->text('meta')->nullable();
+      $table->nullableMorphs('messageable');
 
       $table->timestamps();
     });
@@ -50,4 +51,4 @@ return new class extends Migration {
     Schema::dropIfExists('email_recipients');
     Schema::dropIfExists('emails');
   }
-};
+}; 

@@ -231,4 +231,18 @@ class Institution extends Model
   {
     return $this->hasMany(SchemeOfWork::class);
   }
+
+  public function students()
+  {
+    return $this->hasManyThrough(
+      User::class,
+      InstitutionUser::class,
+      'institution_id', // Foreign key on InstitutionUser table
+      'id', // Foreign key on User table
+      'id', // Local key on Institution table
+      'user_id' // Local key on InstitutionUser table
+    )->whereHas('institutionUsers', function ($query) {
+      $query->where('role', 'student');
+    });
+  }
 }
