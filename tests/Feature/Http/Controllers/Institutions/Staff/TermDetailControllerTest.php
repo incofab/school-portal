@@ -4,6 +4,7 @@ use App\Models\Institution;
 use App\Models\InstitutionSetting;
 use App\Models\TermDetail;
 use App\Models\User;
+use App\Support\SettingsHandler;
 
 use function Pest\Laravel\actingAs;
 
@@ -13,11 +14,15 @@ beforeEach(function () {
   $this->getRoute = route('institutions.term-details.index', [
     'institution' => $this->institution->uuid
   ]);
-  $this->seedSetting = fn() => InstitutionSetting::factory()
-    ->withInstitution($this->institution)
-    ->term()
-    ->academicSession()
-    ->create();
+  SettingsHandler::clear();
+  $this->seedSetting = function () {
+    InstitutionSetting::factory()
+      ->term($this->institution)
+      ->create();
+    InstitutionSetting::factory()
+      ->academicSession($this->institution)
+      ->create();
+  };
   $this->createTermDetail = function () {
     $this->termDetail = TermDetail::factory()
       ->for($this->institution)

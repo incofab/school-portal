@@ -2,23 +2,16 @@
 
 namespace App\Support\ResultPublications;
 
-use Eloquent;
 use Exception;
 use App\Models\User;
 use App\Support\Res;
-use App\Models\Funding;
-use App\Enums\WalletType;
 use App\Models\PriceList;
 use App\Models\TermResult;
 use App\Models\Institution;
-use App\Models\Transaction;
 use Illuminate\Support\Str;
-use App\Enums\TransactionType;
 use App\Models\InstitutionGroup;
-use App\Models\PaymentReference;
 use App\Support\SettingsHandler;
 use App\Models\ResultPublication;
-use Illuminate\Database\Eloquent\Model;
 use App\Support\Fundings\FundingHandler;
 use App\Enums\PriceLists\PaymentStructure;
 

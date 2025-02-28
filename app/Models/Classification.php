@@ -51,9 +51,4 @@ class Classification extends Model
   {
     return $this->hasMany(SessionResult::class);
   }
-
-  public function noteTopics()
-  {
-    return $this->hasMany(NoteTopic::class);
-  }
 }

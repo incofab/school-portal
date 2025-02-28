@@ -38,20 +38,24 @@ class InstitutionSettingFactory extends Factory
     );
   }
 
-  public function term(string $term = null): static
+  public function term(Institution $institution, string $term = null): static
   {
     return $this->state(
       fn(array $attributes) => [
+        'institution_id' => $institution->id,
         'key' => InstitutionSettingType::CurrentTerm->value,
         'value' => $term ?? TermType::First->value
       ]
     );
   }
 
-  public function academicSession(): static
-  {
+  public function academicSession(
+    Institution $institution,
+    AcademicSession $academicSession = null
+  ): static {
     return $this->state(
       fn(array $attributes) => [
+        'institution_id' => $institution->id,
         'key' => InstitutionSettingType::CurrentAcademicSession->value,
         'value' => $academicSession ?? AcademicSession::factory()
       ]

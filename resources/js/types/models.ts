@@ -581,23 +581,6 @@ export interface Note extends InstitutionRow {
   status: string;
 }
 
-export interface NoteTopic extends Note {
-  // institution_group_id: string;
-  // institution_user_id: string;
-  // classification_group_id: string;
-  // classification_id: string;
-  // course_id: string;
-  // term: string;
-  course?: Course;
-  classification?: Classification;
-  course_teacher?: CourseTeacher;
-}
-
-export interface NoteSubTopic extends Note {
-  // note_topic_id: number;
-  note_topic?: NoteTopic;
-}
-
 export interface AssignmentSubmission extends InstitutionRow {
   assignment_id: number;
   student_id: number;

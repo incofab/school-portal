@@ -13,17 +13,10 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 
 interface Props {
   topic: Topic;
-  // schemeOfWork: SchemeOfWork;
-  // lessonPlans: LessonPlan[];
   assignedCourseIds?: number[];
 }
 
-export default function ShowNoteTopic({
-  topic,
-  // schemeOfWork,
-  // lessonPlans,
-  assignedCourseIds,
-}: Props) {
+export default function ShowTopic({ topic, assignedCourseIds }: Props) {
   const { instRoute } = useInstitutionRoute();
   const isAdmin = useIsAdmin();
   const schemeOfWorks = topic.scheme_of_works!;

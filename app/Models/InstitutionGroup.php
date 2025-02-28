@@ -15,7 +15,7 @@ class InstitutionGroup extends Model
     'user_id' => 'integer',
     'credit_wallet' => 'float',
     'debt_wallet' => 'float',
-    'loan_limit' => 'float',
+    'loan_limit' => 'float'
   ];
 
   static function getQueryForManager(User $user)
@@ -51,11 +51,6 @@ class InstitutionGroup extends Model
   public function pricelists()
   {
     return $this->hasMany(PriceList::class);
-  }
-
-  public function noteTopics()
-  {
-    return $this->hasMany(NoteTopic::class);
   }
 
   public function canGetLoan($amount): bool

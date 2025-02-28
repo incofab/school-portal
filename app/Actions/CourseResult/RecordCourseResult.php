@@ -69,7 +69,6 @@ class RecordCourseResult
       'assessment_values' => $assessmentValues,
       'grade' => GetGrade::run($result)
     ]);
-
     if ($this->processCourseResultForClass) {
       $this->evaluateResult();
     }

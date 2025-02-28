@@ -1,5 +1,5 @@
 import React from 'react';
-import { LessonNote, Note } from '@/types/models';
+import { LessonNote } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import DOMPurify from 'dompurify';
@@ -10,7 +10,7 @@ interface Props {
   lessonNote: LessonNote;
 }
 
-export default function ShowNoteTopic({ lessonNote }: Props) {
+export default function ShowLessonNote({ lessonNote }: Props) {
   const sanitizedContent = DOMPurify.sanitize(lessonNote.content);
 
   return (

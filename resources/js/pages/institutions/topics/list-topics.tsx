@@ -18,7 +18,6 @@ import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
 import useModalToggle from '@/hooks/use-modal-toggle';
-import NoteTopicTableFilters from '@/components/table-filters/note-topic-table-filters';
 
 interface Props {
   topics: PaginationResponse<Topic>;
@@ -31,7 +30,7 @@ export default function ListTopics({
   classificationGroups,
   parentTopic,
 }: Props) {
-  const noteTopicFilterToggle = useModalToggle();
+  const topicFilterToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
@@ -132,13 +131,9 @@ export default function ListTopics({
             keyExtractor={(row) => row.id}
             paginator={topics}
             validFilters={['classificationGroup', 'course', 'term']}
-            onFilterButtonClick={noteTopicFilterToggle.open}
+            onFilterButtonClick={topicFilterToggle.open}
           />
         </SlabBody>
-        <NoteTopicTableFilters
-          {...noteTopicFilterToggle.props}
-          classificationGroups={classificationGroups}
-        />
       </Slab>
     </DashboardLayout>
   );

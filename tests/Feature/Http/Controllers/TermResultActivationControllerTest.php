@@ -221,6 +221,16 @@ it('uses same pin to activate other results in the same session', function () {
   postJson(route('activate-term-result.store'), [
     'student_code' => $this->student->code,
     'pin' => $pin->pin
+  ])->assertJsonValidationErrorFor('pin');
+
+  $sameAcademicSessionTermResult = TermResult::factory()
+    ->withInstitution($this->institution)
+    ->for($this->academicSession)
+    ->forStudent($this->student)
+    ->create();
+  postJson(route('activate-term-result.store'), [
+    'student_code' => $this->student->code,
+    'pin' => $pin->pin
   ])->assertOk();
-  expect($academicSession2TermResult->fresh())->is_activated->toBe(false);
+  expect($sameAcademicSessionTermResult->fresh())->is_activated->toBe(false);
 });

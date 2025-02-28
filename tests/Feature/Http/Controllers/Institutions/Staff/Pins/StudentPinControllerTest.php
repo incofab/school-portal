@@ -3,16 +3,26 @@
 use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\Institution;
+use App\Models\InstitutionSetting;
 use App\Models\Student;
+use App\Support\SettingsHandler;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 
 beforeEach(function () {
+  SettingsHandler::clear();
   $this->institution = Institution::factory()->create();
   $this->instAdmin = $this->institution->createdBy;
   $this->academicSession = AcademicSession::factory()->create();
+
+  InstitutionSetting::factory()
+    ->academicSession($this->institution, $this->academicSession)
+    ->create();
+  InstitutionSetting::factory()
+    ->term($this->institution)
+    ->create();
 });
 
 it('can store student pin', function () {

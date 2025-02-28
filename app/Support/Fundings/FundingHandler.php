@@ -2,7 +2,6 @@
 
 namespace App\Support\Fundings;
 
-use App\Enums\Payments\PaymentStatus;
 use App\Enums\TransactionType;
 use App\Enums\WalletType;
 use App\Models\Funding;
@@ -68,7 +67,11 @@ class FundingHandler
   {
     $surplus = $this->payDebt($this->principalAmount);
     if ($surplus > 0) {
-      return $this->fundCreditWallet($surplus, $fundable);
+      return $this->fundCreditWallet(
+        $surplus,
+        TransactionType::Credit,
+        $fundable
+      );
     }
     return failRes('Not enough amount remaining after debt');
   }
@@ -76,7 +79,7 @@ class FundingHandler
   function giveLoan($amount, ?Model $fundable = null)
   {
     $this->fundDebtWallet($amount, TransactionType::Credit);
-    $this->fundCreditWallet($amount, $fundable);
+    $this->fundCreditWallet($amount, TransactionType::Credit, $fundable);
     return successRes('Loan given');
   }
 
@@ -92,16 +95,16 @@ class FundingHandler
     return $amount - $prevDebtBal;
   }
 
-  function fundCreditWallet($amount, ?Model $fundable = null)
-  {
-    if (
-      Funding::where('reference', $this->creditReference)->exists() ||
-      Transaction::where('reference', $this->creditReference)->exists()
-    ) {
-      return failRes('Transaction already resolved');
-    }
+  function fundCreditWallet(
+    $amount,
+    TransactionType $type,
+    ?Model $fundable = null
+  ) {
     $prevCreditBal = $this->institutionGroup->credit_wallet;
-    $newCreditBal = $prevCreditBal + $amount;
+    $newCreditBal =
+      $type === TransactionType::Credit
+        ? $amount + $prevCreditBal
+        : $amount - $prevCreditBal;
 
     DB::beginTransaction();
     $this->institutionGroup->fill(['credit_wallet' => $newCreditBal])->save();
@@ -120,21 +123,27 @@ class FundingHandler
         'fundable_type' => $fundable?->getMorphClass()
       ]
     );
-
-    $funding->transactions()->firstOrCreate(
-      ['reference' => $this->creditReference],
-      [
-        'institution_group_id' => $this->institutionGroup->id,
-        'wallet' => WalletType::Credit->value,
-        'amount' => $amount,
-        'type' => TransactionType::Credit->value,
-        'bbt' => $prevCreditBal,
-        'bat' => $newCreditBal
-      ]
+    Transaction::record(
+      $this->institutionGroup,
+      $this->creditReference,
+      WalletType::Credit,
+      $amount,
+      $type,
+      $prevCreditBal,
+      $newCreditBal,
+      $funding
     );
-    PaymentReference::where('reference', $this->reference)->update([
-      'status' => PaymentStatus::Confirmed
-    ]);
+    // $funding->transactions()->firstOrCreate(
+    //   ['reference' => $this->creditReference],
+    //   [
+    //     'institution_group_id' => $this->institutionGroup->id,
+    //     'wallet' => WalletType::Credit->value,
+    //     'amount' => $amount,
+    //     'type' => $type,
+    //     'bbt' => $prevCreditBal,
+    //     'bat' => $newCreditBal
+    //   ]
+    // );
     DB::commit();
     return successRes('Wallet funded successfully');
   }
@@ -164,19 +173,29 @@ class FundingHandler
 
     $this->institutionGroup->fill(['debt_wallet' => $newDebtBal])->save();
 
-    $funding->transactions()->firstOrCreate(
-      [
-        'reference' => $this->debtReference
-      ],
-      [
-        'wallet' => WalletType::Debt->value,
-        'amount' => $amount,
-        'type' => $type,
-        'bbt' => $prevDebtBal,
-        'bat' => $newDebtBal,
-
-        'institution_group_id' => $this->institutionGroup->id
-      ]
+    Transaction::record(
+      $this->institutionGroup,
+      $this->debtReference,
+      WalletType::Debt,
+      $amount,
+      $type,
+      $prevDebtBal,
+      $newDebtBal,
+      $funding
     );
+    // $funding->transactions()->firstOrCreate(
+    //   [
+    //     'reference' => $this->debtReference
+    //   ],
+    //   [
+    //     'wallet' => WalletType::Debt->value,
+    //     'amount' => $amount,
+    //     'type' => $type,
+    //     'bbt' => $prevDebtBal,
+    //     'bat' => $newDebtBal,
+
+    //     'institution_group_id' => $this->institutionGroup->id
+    //   ]
+    // );
   }
 }

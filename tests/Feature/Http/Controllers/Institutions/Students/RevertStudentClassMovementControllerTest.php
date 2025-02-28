@@ -5,10 +5,12 @@ use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\Student;
 use App\Models\StudentClassMovement;
+use App\Support\SettingsHandler;
 
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
+  SettingsHandler::clear();
   $this->institution = Institution::factory()->create();
   $this->instAdmin = $this->institution->createdBy;
 });

@@ -6,7 +6,6 @@ use App\DTO\PaymentKeyDto;
 use App\Models\Institution;
 use App\Support\SettingsHandler;
 use Illuminate\Support\Facades\Http;
-use App\Enums\Payments\PaymentPurpose;
 
 class PaystackHelper
 {
@@ -14,24 +13,38 @@ class PaystackHelper
   const FLAT_CHARGE = 100;
   const FLAT_CHARGE_ELIGIBLE = 2500;
 
-  function __construct(private PaymentKeyDto $paystackKeys) {}
+  function __construct(private PaymentKeyDto $paystackKeys)
+  {
+  }
 
   static function makeFromInstitution(Institution $institution)
   {
     $paystackKeys = SettingsHandler::make(
       $institution->institutionSettings
     )->getPaystackKeys();
+    // Use system keys if school didn't provide any
+    if (empty($paystackKeys->getPublicKey())) {
+      return self::make();
+    }
     return new self($paystackKeys);
   }
 
   static function make()
   {
-    $paystackKeys = new PaymentKeyDto(config('services.paystack.public-key'), config('services.paystack.private-key'));
+    $paystackKeys = new PaymentKeyDto(
+      config('services.paystack.public-key'),
+      config('services.paystack.private-key')
+    );
     return new self($paystackKeys);
   }
 
-  function initialize($amount, $email, $callbackUrl, $reference = null, $purpose = null)
-  {
+  function initialize(
+    $amount,
+    $email,
+    $callbackUrl,
+    $reference = null,
+    $purpose = null
+  ) {
     $url = 'https://api.paystack.co/transaction/initialize';
 
     $privateKey = $this->paystackKeys->getPrivateKey();
@@ -75,13 +88,14 @@ class PaystackHelper
       ->contentType('application/json')
       ->get($url);
 
-    if (!$res->json('status')) {
-      return failRes($res->json('message', 'Transaction NOT successful'));
-    }
-
-    if ($res->json('data.status') !== 'success') {
+    $status = $res->json('data.status');
+    if (!$res->json('status') || $status !== 'success') {
       return failRes(
-        $res->json('gateway_response', 'Transaction NOT successful')
+        $res->json('data.gateway_response', 'Transaction NOT successful'),
+        [
+          'result' => $res->json('data'),
+          'is_failed' => in_array($status, ['abandoned', 'failed', 'reversed'])
+        ]
       );
     }
 

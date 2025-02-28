@@ -9,7 +9,7 @@ interface Props {
   topic: Topic;
 }
 
-export default function ShowNoteTopic({ topic }: Props) {
+export default function ShowSubTopic({ topic }: Props) {
   const sanitizedContent = DOMPurify.sanitize(topic.description);
 
   return (

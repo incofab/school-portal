@@ -10,8 +10,8 @@ use App\Support\SettingsHandler;
 use App\Http\Controllers\Controller;
 use App\Enums\Payments\PaymentPurpose;
 use App\Actions\Payments\ConfirmFeePayment;
-use App\Enums\WalletType;
-use App\Support\Fundings\FundingHandler;
+use App\Actions\Payments\ConfirmWalletFunding;
+use App\Enums\Payments\PaymentStatus;
 
 class PaystackController extends Controller
 {
@@ -102,6 +102,12 @@ class PaystackController extends Controller
       ->with('user', 'institution')
       ->firstOrFail();
 
+    abort_unless(
+      $paymentRef->status === PaymentStatus::Pending,
+      403,
+      'Paymet already processed'
+    );
+
     $res = null;
     if ($paymentRef->purpose === PaymentPurpose::Fee) {
       $res = (new ConfirmFeePayment(
@@ -109,9 +115,7 @@ class PaystackController extends Controller
         $paymentRef->institution
       ))->run();
     } elseif ($paymentRef->purpose === PaymentPurpose::WalletFunding) {
-      $res = FundingHandler::makeFromPaymentRef(
-        $paymentRef
-      )->processWalletPayment($paymentRef);
+      (new ConfirmWalletFunding($paymentRef))->run();
     } else {
       throw new Exception('Payment purpose not recognized');
     }

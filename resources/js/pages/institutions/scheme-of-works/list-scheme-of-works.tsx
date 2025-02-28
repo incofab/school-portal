@@ -17,8 +17,6 @@ import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
-import useModalToggle from '@/hooks/use-modal-toggle';
-import NoteTopicTableFilters from '@/components/table-filters/note-topic-table-filters';
 import useIsAdmin from '@/hooks/use-is-admin';
 
 interface Props {
@@ -30,7 +28,6 @@ export default function ListSchemeOfWork({
   schemeOfWorks,
   classificationGroups,
 }: Props) {
-  // const noteTopicFilterToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
@@ -137,16 +134,8 @@ export default function ListSchemeOfWork({
             data={schemeOfWorks.data}
             keyExtractor={(row) => row.id}
             paginator={schemeOfWorks}
-            // validFilters={['classificationGroup', 'course', 'term']}
-            // onFilterButtonClick={noteTopicFilterToggle.open}
           />
         </SlabBody>
-        {/* 
-        <NoteTopicTableFilters
-          {...noteTopicFilterToggle.props}
-          classificationGroups={classificationGroups}
-        /> 
-        */}
       </Slab>
     </DashboardLayout>
   );

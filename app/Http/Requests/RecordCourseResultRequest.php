@@ -2,23 +2,32 @@
 
 namespace App\Http\Requests;
 
+use App\Actions\Sheet\ConvertSheetToArray;
+use App\Actions\Sheet\SheetValueHandler;
 use App\Enums\TermType;
 use App\Models\Course;
 use App\Models\Assessment;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
 use Arr;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
+use Str;
 
 class RecordCourseResultRequest extends FormRequest
 {
   public Institution $institution;
+  public Collection $assessments;
 
   protected function prepareForValidation()
   {
+    $this->assessments = Assessment::query()
+      ->forMidTerm($this->for_mid_term ?? false)
+      ->forTerm($this->term)
+      ->get();
     $this->institution = currentInstitution();
     $courseTeacher = $this->courseTeacher;
     $currentUser = currentUser();
@@ -36,6 +45,51 @@ class RecordCourseResultRequest extends FormRequest
         'result' => 'Access denied'
       ]);
     }
+    $this->handleFile();
+  }
+
+  protected function handleFile()
+  {
+    if (!$this->file) {
+      return;
+    }
+    $columnKeyMapping = [
+      'A' => 'student_id',
+      'B' => 'student'
+    ];
+    $letterRange = range('C', 'Z');
+    $i = 0;
+    foreach ($this->assessments as $key => $assessment) {
+      $letter = $letterRange[$i];
+      $title = $assessment->raw_title;
+      $columnKeyMapping[$letter] = new SheetValueHandler(
+        Assessment::PREFIX . "$title",
+        fn($val) => floatval($val)
+      );
+      $i++;
+    }
+    $columnKeyMapping[$letterRange[$i]] = new SheetValueHandler(
+      'exam',
+      fn($val) => floatval($val)
+    );
+    // Convert the assement dot notation to array
+    $result = (new ConvertSheetToArray($this->file, $columnKeyMapping))->run();
+    $formatedRes = [];
+    foreach ($result as $key => $res) {
+      $newRes = [];
+      $ass = [];
+      foreach ($res as $key => $item) {
+        if (Str::startsWith($key, Assessment::PREFIX)) {
+          $ass[substr($key, strlen(Assessment::PREFIX))] = $item;
+        } else {
+          $newRes[$key] = $item;
+        }
+      }
+      $formatedRes[] = [...$newRes, trim(Assessment::PREFIX, '.') => $ass];
+    }
+    $this->merge([
+      'result' => $formatedRes
+    ]);
   }
 
   /**
@@ -69,7 +123,7 @@ class RecordCourseResultRequest extends FormRequest
     string $prefix = ''
   ) {
     return [
-      ...$this->assessmentValidationRule("{$prefix}ass."),
+      ...$this->assessmentValidationRule($prefix . Assessment::PREFIX),
       $prefix . 'exam' => [
         'sometimes',
         'numeric',
@@ -99,14 +153,8 @@ class RecordCourseResultRequest extends FormRequest
 
   function assessmentValidationRule($prefix)
   {
-    $assessments = Assessment::query()
-      ->forMidTerm($this->for_mid_term ?? false)
-      ->forTerm($this->term)
-      ->get();
-
     $rules = [];
-
-    foreach ($assessments as $key => $assessment) {
+    foreach ($this->assessments as $key => $assessment) {
       $title = $assessment->raw_title;
       $rules["{$prefix}{$title}"] = [
         'sometimes',

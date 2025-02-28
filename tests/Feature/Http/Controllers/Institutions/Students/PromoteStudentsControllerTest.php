@@ -5,10 +5,12 @@ use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\Institution;
 use App\Models\SessionResult;
+use App\Support\SettingsHandler;
 
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
+  SettingsHandler::clear();
   $this->institution = Institution::factory()->create();
   $this->academicSession = AcademicSession::factory()->create();
   $this->instAdmin = $this->institution->createdBy;

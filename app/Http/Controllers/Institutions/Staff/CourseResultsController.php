@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Institutions\Staff;
 
 use App\Actions\CourseResult\EvaluateCourseResultForClass;
-use App\Actions\CourseResult\InsertResultFromRecordingSheet;
 use App\Actions\CourseResult\RecordCourseResult;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
@@ -12,8 +11,8 @@ use App\Models\Assessment;
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;
 use App\Models\Institution;
-use App\Rules\ExcelRule;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Inertia\Inertia;
@@ -118,18 +117,20 @@ class CourseResultsController extends Controller
     Institution $institution,
     CourseTeacher $courseTeacher
   ) {
-    request()->validate([
-      'file' => ['required', 'file', new ExcelRule($request->file('file'))]
-    ]);
     $this->validateUser($courseTeacher);
+    $baseData = $request->safe()->except('result');
+    $resultData = $request->safe()->result;
 
-    InsertResultFromRecordingSheet::run(
-      $request->file('file'),
-      collect($request->validated())
-        ->except('file')
-        ->toArray(),
-      $courseTeacher
-    );
+    $lastKey = array_key_last($resultData);
+    DB::beginTransaction();
+    foreach ($resultData as $key => $result) {
+      RecordCourseResult::run(
+        [...$baseData, ...$result],
+        $courseTeacher,
+        $key == $lastKey
+      );
+    }
+    DB::commit();
 
     return response()->json(['ok' => true]);
   }

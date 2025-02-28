@@ -17,8 +17,6 @@ import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
-import useModalToggle from '@/hooks/use-modal-toggle';
-import NoteTopicTableFilters from '@/components/table-filters/note-topic-table-filters';
 
 interface Props {
   lessonPlans: PaginationResponse<LessonPlan>;
@@ -29,7 +27,6 @@ export default function LessonPlans({
   lessonPlans,
   classificationGroups,
 }: Props) {
-  // const noteTopicFilterToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
@@ -137,16 +134,8 @@ export default function LessonPlans({
             data={lessonPlans.data}
             keyExtractor={(row) => row.id}
             paginator={lessonPlans}
-            // validFilters={['classificationGroup', 'course', 'term']}
-            // onFilterButtonClick={noteTopicFilterToggle.open}
           />
         </SlabBody>
-        {/* 
-        <NoteTopicTableFilters
-          {...noteTopicFilterToggle.props}
-          classificationGroups={classificationGroups}
-        /> 
-        */}
       </Slab>
     </DashboardLayout>
   );

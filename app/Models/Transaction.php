@@ -2,13 +2,9 @@
 
 namespace App\Models;
 
-use App\Enums\Payments\PaymentMerchant;
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentPurpose;
-use App\Enums\Payments\PaymentStatus;
 use App\Enums\TransactionType;
+use App\Enums\WalletType;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class Transaction extends Model
 {
@@ -19,6 +15,31 @@ class Transaction extends Model
     'type' => TransactionType::class,
     'meta' => 'array'
   ];
+
+  static function record(
+    $instGroup,
+    $reference,
+    WalletType $wallet,
+    $amount,
+    TransactionType $type,
+    $bbt,
+    $bat,
+    $transactionable = null
+  ) {
+    self::query()->firstOrCreate(
+      ['reference' => $reference],
+      [
+        'institution_group_id' => $instGroup->id,
+        'wallet' => $wallet,
+        'amount' => $amount,
+        'type' => $type,
+        'bbt' => $bbt,
+        'bat' => $bat,
+        'transactionable_type' => $transactionable?->getMorphClass(),
+        'transactionable_id' => $transactionable?->id
+      ]
+    );
+  }
 
   public function institution()
   {

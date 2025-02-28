@@ -13,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Str;
 use Validator;
 
+/** @deprecated No longer in use */
 class InsertResultFromRecordingSheet
 {
   private Spreadsheet $spreadsheet;
