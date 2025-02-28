@@ -4,21 +4,33 @@ import { BoxProps, Divider, useColorModeValue } from '@chakra-ui/react';
 import { PageTitle } from './page-header';
 
 interface Props {
+  bgImage?: string|undefined;
   title?: string;
   boxProps?: BoxProps;
 }
 export default function CenteredLayout({
   children,
+  bgImage,
   title,
   boxProps,
   ...props
 }: Props & BoxProps) {
   return (
     <Div
-      bg={useColorModeValue('blue.50', 'gray.900')}
       py={12}
       minH={'100vh'}
-      {...props}
+      {...props} // Spread any additional props you want to pass to the Div
+      style={
+        bgImage
+          ? {
+              backgroundImage: `url(${bgImage})`, // Dynamically set the background image
+              backgroundPosition: 'center',
+              backgroundSize: 'cover',
+              backgroundAttachment: 'fixed',
+            }
+          : {}
+      }
+      bg={bgImage ? undefined : useColorModeValue('blue.50', 'gray.900')} // Only set bg color if no bgImage
     >
       <Div
         bg={useColorModeValue('white', 'gray.800')}

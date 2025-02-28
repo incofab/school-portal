@@ -73,6 +73,7 @@ class MorphMap
     'registration-request' => Models\RegistrationRequest::class,
     'result-comment-template' => Models\ResultCommentTemplate::class,
     'school-activity' => Models\SchoolActivity::class,
+    'school-notification' => Models\SchoolNotification::class,
     'session-result' => Models\SessionResult::class,
     'student' => Models\Student::class,
     'student-class-movement' => Models\StudentClassMovement::class,

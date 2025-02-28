@@ -39,6 +39,10 @@ return [
 
   'paystack' => [
     'private-key' => env('PAYSTACK_PRIVATE_KEY'),
-    'public-key' => env('PAYSTACK_PUBLIC_KEY'),
+    'public-key' => env('PAYSTACK_PUBLIC_KEY')
+  ],
+
+  'bulksms_nigeria' => [
+    'api-token' => env('BULKSMS_NIGERIA_API_TOKEN')
   ]
 ];

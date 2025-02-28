@@ -6,6 +6,7 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Image,
   Input,
   Spacer,
   Text,
@@ -14,7 +15,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { InertiaLink, useForm } from '@inertiajs/inertia-react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import useSharedProps from '@/hooks/use-shared-props';
 import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
@@ -62,10 +63,38 @@ export default function Register({ user }: { user?: User }) {
       });
   }, [message]);
 
+  const bgImage = user ? '/partners/' + user.username + '.webp' : undefined;
+
   return (
-    <CenteredLayout title="Join Us" boxProps={{ maxW: 'lg' }}>
+    <CenteredLayout title="Join Us" boxProps={{ maxW: 'lg' }} bgImage={bgImage}>
       <Div w={'full'} as={'form'} onSubmit={preventNativeSubmit(onSubmit)}>
         <VStack spacing={4} align={'stretch'} px={6} pb={6}>
+          {bgImage ? (
+            <Image
+              src={bgImage} // Set the path to your image
+              alt="Description of the image"
+              style={{
+                width: '100%', // Makes the image span the full width of the Slab
+                height: 'auto', // Maintains the aspect ratio of the image
+                marginBottom: '20px', // Optional: Adds space below the image
+              }}
+            />
+          ) : (
+            <Slab>
+              <SlabBody>
+                <Text as={'span'} color={'brand.500'} fontWeight={'semibold'}>
+                  Thank you
+                </Text>{' '}
+                for your interest in Edumanager, This is the best School
+                Management Solution for your School at a very cheap rate.
+                <br />
+                Kindly fill the form with your personal and school information
+                and one of our staff will contact you.
+              </SlabBody>
+            </Slab>
+          )}
+
+          {/* 
           <Slab>
             <SlabBody>
               <Text as={'span'} color={'brand.500'} fontWeight={'semibold'}>
@@ -74,10 +103,12 @@ export default function Register({ user }: { user?: User }) {
               for your interest in Edumanager, This is the best School
               Management Solution for your School at a very cheap rate.
               <br />
-              Kindly fill the form with your personal and school information and
-              one of our staff will contact you.
+              Kindly fill the form with your personal and school information
+              and one of our staff will contact you.
             </SlabBody>
-          </Slab>
+          </Slab> 
+        */}
+
           <br />
           <FormControlBox form={form} title="First Name" formKey="first_name">
             <Input

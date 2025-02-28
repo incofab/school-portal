@@ -320,3 +320,6 @@ Route::resource('/school-activities', Web\SchoolActivities\SchoolActivityControl
 Route::get('/timetables/{classification}/class', [Web\Timetables\TimetableController::class, 'classTimetable'])
   ->name('timetables.classTimetable');
 Route::resource('/timetables', Web\Timetables\TimetableController::class);
+
+
+Route::resource('/payment-notifications', Web\PaymentNotifications\PaymentNotificationController::class);

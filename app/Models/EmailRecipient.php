@@ -15,9 +15,7 @@ class EmailRecipient extends Model
   protected $guarded = [];
   protected $casts = [
     'institution_id' => 'integer',
-    'recipient_id' => 'integer',
-    'type' => EmailRecipientType::class,
-    'status' => EmailStatus::class
+    'recipient_id' => 'integer'
   ];
 
   function institution()

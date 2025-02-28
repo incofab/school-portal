@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Home as Home;
 use App\Http\Controllers as Web;
 use App\Http\Controllers\Institutions\Exams\External as External;
+use App\Mail\PaymentNotificationMail;
 use App\Models\Institution;
 
 Route::get(
@@ -20,28 +21,30 @@ Route::any(
 )->name('pdf-bridge-download');
 
 Route::get('/dummy1', function () {
-    // Top Notchers activate result
-    $institution = \App\Models\Institution::where('uuid', '9a668567-156c-4f8f-a6c6-dbd6443c34ac')->first();
-    $result = \App\Models\TermResult::query()->where('institution_id', $institution->id)->where('is_activated', false)
-        ->update(['is_activated' => true]);
-    dd("Result = $result");
+    $student = \App\Models\Student::find(109);
+    $receiptType = \App\Models\ReceiptType::find(1);
 
-    // Checks Wisegate result files
-    $instUsers = \App\Models\InstitutionUser::where('institution_id', 1)
-        ->where('role', \App\Enums\InstitutionUserType::Student)
-        ->with('student.user', 'student.classification')
-        ->get();
+    new \App\Mail\PaymentNotificationMail($student, $receiptType);
 
-    $i = 0;
-    foreach ($instUsers as $key => $instUser) {
-        if (File::exists(public_path("wisegate/{$instUser->student->code}.pdf"))) {
-            continue;
-        }
-        echo "Name = {$instUser->student->user->full_name}, Code={$instUser->student->code}, Class={$instUser->student->classification->title} <br><br>";
-        $i++;
-    }
+    // return new \App\Mail\PaymentNotificationMail($student, $receiptType);
+    /*
+    $guardian = \App\Models\User::find(138);
 
-    dd(',ksdmksdmds = ' . $i);
+    $markdown = new Illuminate\Mail\Markdown(view(), config('mail.markdown'));
+    $bodyContent = $markdown->render('mail.payment-notification-mail', [
+        'guardian' => $guardian,
+        'receiptType' => $receiptType,
+        'student' => $student,
+        'feesToPay' => [],
+        'totalFeesToPay' => 5000,
+    ]);
+
+    return $bodyContent;
+    */
+
+    return file_get_contents(
+        public_path('/../resources/views/mail/payment-notification-mail.blade.php')
+    );
 });
 
 Route::get('institutions/search', Web\SearchInstitutionController::class)

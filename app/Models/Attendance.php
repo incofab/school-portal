@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Attendance extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InstitutionScope;
 
     protected $guarded = [];
     protected $casts = [
@@ -23,12 +24,7 @@ class Attendance extends Model
     {
         return $this->belongsTo(Institution::class);
     }
-
-    function user()
-    {
-        return $this->belongsTo(User::class, $this->institutionUser()['user_id']);
-    }
-
+    
     public function institutionUser()
     {
         return $this->belongsTo(InstitutionUser::class, 'institution_user_id');

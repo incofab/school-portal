@@ -18,6 +18,7 @@ import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
 import useModalToggle from '@/hooks/use-modal-toggle';
+import TopicTableFilters from '@/components/table-filters/topic-table-filters';
 
 interface Props {
   topics: PaginationResponse<Topic>;
@@ -134,6 +135,10 @@ export default function ListTopics({
             onFilterButtonClick={topicFilterToggle.open}
           />
         </SlabBody>
+        <TopicTableFilters
+          {...topicFilterToggle.props}
+          classificationGroups={classificationGroups}
+        />
       </Slab>
     </DashboardLayout>
   );
