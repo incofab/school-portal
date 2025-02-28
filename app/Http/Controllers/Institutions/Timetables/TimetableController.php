@@ -26,21 +26,19 @@ class TimetableController extends Controller
     $institutionUser = currentInstitutionUser();
 
     if ($institutionUser->isStudent()) {
-      $student = $institutionUser?->student()->with('classification')->first();
+      $student = $institutionUser
+        ?->student()
+        ->with('classification')
+        ->first();
       $classification = Classification::find($student->classification_id);
       return $this->classTimetable($institution, $classification);
     }
 
     if ($institutionUser->isTeacher()) {
-      /*
-      $getTimetables = TimetableCoordinator::where('institution_user_id', $institutionUser->id)
-        ->with('institutionUser.user')
-        ->with('timetable.actionable')
-        // ->orderBy('timetable.start_time', 'asc')
-        ->get();
-      */
-
-      $getCoordinationIds = TimetableCoordinator::where('institution_user_id', $institutionUser->id)->pluck('timetable_id');
+      $getCoordinationIds = TimetableCoordinator::where(
+        'institution_user_id',
+        $institutionUser->id
+      )->pluck('timetable_id');
       $getTimetables = Timetable::whereIn('id', $getCoordinationIds)
         ->with('timetableCoordinators.institutionUser.user')
         ->with('actionable')
@@ -100,7 +98,13 @@ class TimetableController extends Controller
         ->only('day', 'start_time', 'end_time', 'classification_id')
         ->toArray(),
       collect($data)
-        ->only('institution_id', 'start_time', 'end_time', 'actionable_type', 'actionable_id')
+        ->only(
+          'institution_id',
+          'start_time',
+          'end_time',
+          'actionable_type',
+          'actionable_id'
+        )
         ->toArray()
     );
     foreach ($coordinators as $key => $value) {

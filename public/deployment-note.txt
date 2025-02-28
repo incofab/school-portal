@@ -5,5 +5,4 @@
 ** On 'Email_Recipients' table, rename 'recipient_email' to 'recipients'.
 ** Rename "EmailRecipientType" and "EmailStatus" enums, to "MessageRecipientType" and "MessageStatus"
 ** 'school_notification' :: 'instituion_id', 'purpose (receiptType)', 'sender', 'receiver_type', 'receiver_ids', 
-
 ** Rename 'email' migration file name to 'message'
