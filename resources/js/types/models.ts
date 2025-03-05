@@ -480,6 +480,8 @@ export interface Question extends InstitutionRow {
   option_c: string;
   option_d: string;
   option_e: string;
+  answer: string;
+  answer_meta: string;
 }
 
 export interface CourseSession extends InstitutionRow {
@@ -501,6 +503,7 @@ export interface Event extends InstitutionRow {
   expires_at?: string;
   friendly_start_date: string;
   num_of_subjects: number;
+  show_corrections: boolean;
   classification_id?: number;
   classification_group_id?: number;
   event_courseables?: EventCourseable[];

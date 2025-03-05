@@ -137,7 +137,7 @@ export default function CreateOrUpdateTopic({
 
               <FormControlBox
                 form={webForm as any}
-                title="Parent Topic"
+                title="Parent Topic [Optional]"
                 formKey="parent_topic_id"
               >
                 <TopicSelect

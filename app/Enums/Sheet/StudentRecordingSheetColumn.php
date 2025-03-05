@@ -10,4 +10,5 @@ enum StudentRecordingSheetColumn: string
   const Gender = 'D';
   const GuardianPhone = 'E';
   const Phone = 'F';
+  const Code = 'G';
 }

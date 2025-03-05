@@ -9,8 +9,6 @@ use App\Models\Institution;
 use Illuminate\Http\Request;
 use App\Actions\RecordStudent;
 use App\Models\Classification;
-use App\Models\InstitutionUser;
-use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\CreateStudentRequest;
@@ -69,9 +67,9 @@ class StudentManagementController extends Controller
     ]);
   }
 
-  public function store(CreateStudentRequest $request)
+  public function store(Institution $institution, CreateStudentRequest $request)
   {
-    RecordStudent::make($request->validated())->create();
+    RecordStudent::make($institution, $request->validated())->create();
 
     return $this->ok();
   }
@@ -97,7 +95,7 @@ class StudentManagementController extends Controller
     Institution $institution,
     Student $student
   ) {
-    RecordStudent::make($request->validated())->update($student);
+    RecordStudent::make($institution, $request->validated())->update($student);
 
     return $this->ok();
   }
@@ -110,7 +108,11 @@ class StudentManagementController extends Controller
     $request->validate([
       'file' => ['required', 'file', new ExcelRule($request->file('file'))]
     ]);
-    InsertStudentFromRecordingSheet::run($request->file, $classification);
+    InsertStudentFromRecordingSheet::run(
+      $institution,
+      $request->file,
+      $classification
+    );
     return $this->ok();
   }
 

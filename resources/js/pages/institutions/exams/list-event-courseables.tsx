@@ -20,11 +20,11 @@ import { TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
-import useIsAdmin from '@/hooks/use-is-admin';
 import CenteredBox from '@/components/centered-box';
 import MySelect from '@/components/dropdown-select/my-select';
 import { preventNativeSubmit } from '@/util/util';
 import { Div } from '@/components/semantic';
+import useIsStaff from '@/hooks/use-is-staff';
 
 interface Props {
   event: Event;
@@ -40,7 +40,7 @@ export default function ListEventCourseables({
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
-  const isAdmin = useIsAdmin();
+  const isStaff = useIsStaff();
 
   async function deleteItem(obj: EventCourseable) {
     const res = await deleteForm.submit((data, web) =>
@@ -61,7 +61,7 @@ export default function ListEventCourseables({
     //   label: 'Status',
     //   value: 'status',
     // },
-    ...(isAdmin
+    ...(isStaff
       ? [
           {
             label: 'Action',

@@ -18,7 +18,7 @@ Route::resource('/{event}/exams', Web\Exams\ExamController::class)
 Route::delete('exam-courseables/{examCourseable}/delete', [Web\Exams\ExamCourseableController::class, 'destroy'])
     ->name('exam-courseables.destroy');
 Route::resource('/{exam}/exam-courseables', Web\Exams\ExamCourseableController::class)
-    ->except(['show', 'edit', 'update', 'destroy']);
+    ->except(['edit', 'update', 'destroy']);
     
 Route::post('events/{event}/transfer-results', Web\Exams\TransferEventResultController::class)
 ->name('events.transfer-results');

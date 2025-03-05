@@ -15,7 +15,10 @@ class EventController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin])->except('index', 'show');
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ])->except('index', 'show');
   }
 
   function index(Request $request, Institution $institution)
@@ -64,10 +67,11 @@ class EventController extends Controller
       'event' => $event,
       'studentExam' => $student
         ? $event
-        ->exams()
-        ->getQuery()
-        ->forExamable($student)
-        ->first()
+          ->exams()
+          ->getQuery()
+          ->forExamable($student)
+          ->with('examCourseables.courseable.course')
+          ->first()
         : null
     ]);
   }

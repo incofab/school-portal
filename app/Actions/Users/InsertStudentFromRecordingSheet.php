@@ -5,7 +5,10 @@ use App\Actions\RecordStudent;
 use App\Enums\Gender;
 use App\Enums\Sheet\StudentRecordingSheetColumn;
 use App\Models\Classification;
+use App\Models\Institution;
+use App\Models\Student;
 use App\Models\User;
+use App\Rules\ValidateExistsRule;
 use Illuminate\Http\UploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -20,6 +23,7 @@ class InsertStudentFromRecordingSheet
   private Worksheet $sheetData;
 
   function __construct(
+    private Institution $institution,
     private UploadedFile $file,
     private Classification $classification
   ) {
@@ -27,9 +31,12 @@ class InsertStudentFromRecordingSheet
     $this->sheetData = $this->spreadsheet->getActiveSheet();
   }
 
-  public static function run(UploadedFile $file, Classification $classification)
-  {
-    $obj = new self($file, $classification);
+  public static function run(
+    Institution $institution,
+    UploadedFile $file,
+    Classification $classification
+  ) {
+    $obj = new self($institution, $file, $classification);
     return $obj->execute();
   }
 
@@ -57,6 +64,7 @@ class InsertStudentFromRecordingSheet
           StudentRecordingSheetColumn::GuardianPhone . $row
         ),
         'phone' => $this->getValue(StudentRecordingSheetColumn::Phone . $row),
+        'code' => $this->getValue(StudentRecordingSheetColumn::Code . $row),
         'email' => Str::orderedUuid() . '@email.com',
         'password' => 'password',
         'password_confirmation' => 'password'
@@ -68,7 +76,7 @@ class InsertStudentFromRecordingSheet
     DB::beginTransaction();
     foreach ($data as $studentData) {
       $studentData['classification_id'] = $this->classification->id;
-      RecordStudent::make($studentData)->create();
+      RecordStudent::make($this->institution, $studentData)->create();
     }
     DB::commit();
   }
@@ -94,7 +102,8 @@ class InsertStudentFromRecordingSheet
   {
     $validated = Validator::validate($data, [
       ...User::generalRule(null, '*.'),
-      '*.guardian_phone' => ['nullable', 'string']
+      '*.guardian_phone' => ['nullable', 'string'],
+      '*.code' => ['sometimes', new ValidateExistsRule(Student::class, 'code')]
     ]);
 
     return $validated;

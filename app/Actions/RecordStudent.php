@@ -12,18 +12,19 @@ use Illuminate\Support\Facades\DB;
 class RecordStudent
 {
   private $userData = [];
-  private Institution $institution;
-  public function __construct(private array $data)
-  {
-    $this->institution = currentInstitution();
+  // private Institution $institution;
+  public function __construct(
+    private Institution $institution,
+    private array $data
+  ) {
     $this->userData = collect($data)
-      ->except('classification_id', 'role', 'guardian_phone')
+      ->except('classification_id', 'role', 'guardian_phone', 'code')
       ->toArray();
   }
 
-  public static function make(array $data)
+  public static function make(Institution $institution, array $data)
   {
-    return new self($data);
+    return new self($institution, $data);
   }
 
   public function create(): Student
@@ -54,8 +55,7 @@ class RecordStudent
     $student = $this->createUpdateStudent(
       $user,
       [
-        'institution_user_id' => $institutionUser->id,
-        'code' => Student::generateStudentID(),
+        'code' => $this->data['code'] ?? Student::generateStudentID(),
         ...collect($this->data)
           ->only('classification_id', 'guardian_phone')
           ->toArray()
@@ -91,11 +91,3 @@ class RecordStudent
       ->updateOrCreate(['institution_user_id' => $institutionUser->id], $data);
   }
 }
-
-/**
- * What is the essence of 'guardian_phone' here?
- * Does it imply that the 'guardian' record/user should be created first?
- * Does this also take care of the 'institution_users' DB table?
- * Do I need to execute 'RecordGuardian' seperately in order to take care of 'guardian_students' DB table?
- * What is this 'Actions' folder? and How is it different from Helpers?
- */

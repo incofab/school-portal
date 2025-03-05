@@ -40,6 +40,11 @@ class Exam extends Model
       ->where('examable_type', MorphMap::key(get_class($examable)));
   }
 
+  function isEnded()
+  {
+    return $this->status === ExamStatus::Ended;
+  }
+
   function examCourseables()
   {
     return $this->hasMany(ExamCourseable::class);

@@ -20,7 +20,10 @@ class ExamCourseableController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin]);
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ])->except('show');
   }
 
   function index(Institution $institution, Exam $exam)
@@ -40,6 +43,34 @@ class ExamCourseableController extends Controller
     return Inertia::render('institutions/exams/list-exam-courseables', [
       'examCourseables' => paginateFromRequest($query->latest('id')),
       'exam' => $exam->load('event')
+    ]);
+  }
+
+  function show(
+    Request $request,
+    Institution $institution,
+    Exam $exam,
+    ExamCourseable $examCourseable
+  ) {
+    abort_unless($exam->isended(), 403, 'Exam has not ended');
+    $examCourseable->load([
+      'exam.examable' => function (MorphTo $morphTo) {
+        $morphTo->morphWith([Student::class => ['user']]);
+      },
+      'exam.event',
+      'courseable' => function (MorphTo $morphTo) {
+        $morphTo->morphWith([
+          CourseSession::class => [
+            'course',
+            'questions',
+            'passages',
+            'instructions'
+          ]
+        ]);
+      }
+    ]);
+    return Inertia::render('institutions/exams/show-exam-courseables', [
+      'examCourseable' => $examCourseable
     ]);
   }
 

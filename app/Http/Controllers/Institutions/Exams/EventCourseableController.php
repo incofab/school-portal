@@ -19,7 +19,10 @@ class EventCourseableController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin]);
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ]);
   }
 
   function index(Institution $institution, Event $event)
