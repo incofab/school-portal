@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Actions\Fees\GetStudentPendingFees;
+use App\Actions\Fees\GetStudentFeePaymentSummary;
 use App\Enums\MessageRecipientCategory;
 use App\Enums\MessageStatus;
 use App\Enums\NotificationChannelsType;
@@ -16,6 +16,7 @@ use App\Models\SchoolNotification;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\MorphMap;
+use App\Support\SettingsHandler;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
@@ -45,10 +46,11 @@ class PaymentNotificationMail extends Mailable implements ShouldQueue
     $this->currentInstitution = $student->classification->institution;
     $this->guardian = $student->guardian;
 
-    [$this->feesToPay, $this->totalFeesToPay] = (new GetStudentPendingFees(
-      $receiptType,
-      $student
-    ))->run();
+    $settingshandler = SettingsHandler::makeFromInstitution($this->currentInstitution);
+
+    [$this->feesToPay, $this->totalFeesToPay] = (new GetStudentFeePaymentSummary(
+      $student, $student->classification, $settingshandler->getCurrentTerm(), $settingshandler->getCurrentAcademicSession()
+    ))->getPaymentSummary($receiptType);
   }
 
   /**

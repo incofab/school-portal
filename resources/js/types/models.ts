@@ -644,3 +644,17 @@ export interface Billing extends Row {
   amount: number;
   institution_group: InstitutionGroup;
 }
+
+export interface FeesToPay extends Row {
+  amount_paid: number;
+  amount_remaining: number;
+  title: string;
+  is_part_payment: boolean;
+}
+
+export interface FeeSummary extends Row {
+  receipt_type: ReceiptType;
+  fees_to_pay: FeesToPay;
+  total_amount_to_pay: number;
+  total_amount_of_the_receipt_type: number;
+}

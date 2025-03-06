@@ -16,7 +16,7 @@ import { LabelText } from '@/components/result-helper-components';
 import ImagePaths from '@/util/images';
 import { format } from 'date-fns';
 import ResultSheetLayout from '../../result-sheets/result-sheet-layout';
-import startCase from 'lodash/startCase';
+import startCase from 'lodash/startCase'; 
 
 interface Props {
   receipt: Receipt;

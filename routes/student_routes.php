@@ -12,6 +12,8 @@ Route::get('/students/search', Web\Students\SearchStudentController::class)->nam
 
 Route::get('/receipts/{receipt:reference}/show', [Web\Students\StudentFeePaymentController::class, 'showReceipt'])->name('receipts.show');
 
+Route::get('/receipt-type-fees/{student}/{classification}/{term}/{academicSession}/show', [Web\Students\StudentFeePaymentController::class, 'showReceiptTypeFee'])->name('receipt-type-fees.show');
+
 Route::prefix('students/{student}')->name('students.')->middleware(['student.access'])->group(function () {
     Route::get('term-result-detail/{classification}/{academicSession}/{term}/{forMidTerm}', Web\Students\StudentTermResultDetailController::class)
         ->name('term-result-detail');
@@ -24,9 +26,10 @@ Route::prefix('students/{student}')->name('students.')->middleware(['student.acc
         ->name('term-results.index');
 
     Route::get('receipts', [Web\Students\StudentFeePaymentController::class, 'receipts'])->name('receipts.index');
-    Route::get('fee-payments/{receipt}', [Web\Students\StudentFeePaymentController::class, 'index'])->name('fee-payments.index');
+    
     Route::get('fee-payments/create', [Web\Students\StudentFeePaymentController::class, 'feePaymentView'])->name('fee-payments.create');
     Route::post('fee-payments/store', [Web\Students\StudentFeePaymentController::class, 'feePaymentStore'])->name('fee-payments.store');
+    Route::get('fee-payments/{receipt}', [Web\Students\StudentFeePaymentController::class, 'index'])->name('fee-payments.index');
 });
     
     

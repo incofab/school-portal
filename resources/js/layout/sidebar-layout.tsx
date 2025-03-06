@@ -414,7 +414,7 @@ export default function SideBarLayout() {
               },
               {
                 label: 'Pay Fees',
-                route: instRoute('students.fee-payments.create', [currentUser]),
+                route: instRoute('students.fee-payments.create', [student]),
                 roles: studentOrAlumni,
               },
             ]

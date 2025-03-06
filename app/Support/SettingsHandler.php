@@ -7,6 +7,7 @@ use App\Enums\InstitutionSettingType;
 use App\Enums\ResultTemplateType;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
+use App\Models\Institution;
 use App\Models\InstitutionSetting;
 use App\Models\TermDetail;
 
@@ -32,6 +33,16 @@ class SettingsHandler
       return self::$instance;
     }
     $institutionSettings = currentInstitution()?->institutionSettings ?? [];
+    self::$instance = self::make($institutionSettings);
+    return self::$instance;
+  }
+
+  static function makeFromInstitution(Institution $institution): static
+  {
+    if (self::$instance) {
+      return self::$instance;
+    }
+    $institutionSettings = $institution->institutionSettings ?? [];
     self::$instance = self::make($institutionSettings);
     return self::$instance;
   }

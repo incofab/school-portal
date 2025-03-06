@@ -1,6 +1,15 @@
 import React from 'react';
 import { Classification, Student, User } from '@/types/models';
-import { HStack, IconButton, Icon, Button } from '@chakra-ui/react';
+import {
+  HStack,
+  IconButton,
+  Icon,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
@@ -8,7 +17,11 @@ import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
-import { BookOpenIcon, TrashIcon } from '@heroicons/react/24/solid';
+import {
+  BookOpenIcon,
+  EllipsisVerticalIcon,
+  TrashIcon,
+} from '@heroicons/react/24/solid';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
 import DestructivePopover from '@/components/destructive-popover';
@@ -17,6 +30,7 @@ import DisplayUserFullname from '@/domain/institutions/users/display-user-fullna
 
 interface Dependent extends Student {
   user: User;
+  student_id: Number;
   classification: Classification;
 }
 
@@ -76,6 +90,24 @@ function ListDependents({ dependents }: Props) {
               colorScheme={'red'}
             />
           </DestructivePopover>
+
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              aria-label={'open file menu'}
+              icon={<Icon as={EllipsisVerticalIcon} />}
+              size={'sm'}
+              variant={'ghost'}
+            />
+            <MenuList>
+              <MenuItem
+                as={InertiaLink}
+                href={instRoute('students.receipts.index', [row.student_id])}
+              >
+                Fees & Receipts
+              </MenuItem>
+            </MenuList>
+          </Menu>
         </HStack>
       ),
     },

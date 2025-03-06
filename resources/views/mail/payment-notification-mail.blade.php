@@ -6,7 +6,7 @@ We hope this message finds you well. This is a gentle reminder that the **{{$rec
 To ensure uninterrupted access to all school services, we kindly request that the payment be made as soon as possible. Below are the payment details:
 
 @foreach ($feesToPay as $fee)
-    {{$fee['title']}}: {{'₦' . number_format($fee['amount'])}}
+    {{$fee['title']}}: {{'₦' . number_format($fee['amount_remaining'])}}
 @endforeach
 
 **TOTAL: {{'₦' . number_format($totalFeesToPay)}}**
