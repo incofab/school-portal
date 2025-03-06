@@ -12,9 +12,10 @@ import { TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
-import useIsAdmin from '@/hooks/use-is-admin';
 import { LabelText } from '@/components/result-helper-components';
 import tokenUserUtil from '@/util/token-user-util';
+import { LinkButton } from '@/components/buttons';
+import useIsStaff from '@/hooks/use-is-staff';
 
 interface Props {
   exam: Exam;
@@ -25,7 +26,7 @@ export default function ListExamCourseables({ exam, examCourseables }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
-  const isAdmin = useIsAdmin();
+  const isStaff = useIsStaff();
 
   async function deleteItem(obj: ExamCourseable) {
     const res = await deleteForm.submit((data, web) =>
@@ -52,12 +53,20 @@ export default function ListExamCourseables({ exam, examCourseables }: Props) {
       value: 'num_of_questions',
       render: (row) => row.num_of_questions + '',
     },
-    ...(isAdmin
+    ...(isStaff
       ? [
           {
             label: 'Action',
             render: (row: ExamCourseable) => (
               <HStack>
+                <LinkButton
+                  href={instRoute('exam-courseables.show', [
+                    row.exam_id,
+                    row.id,
+                  ])}
+                  variant={'link'}
+                  title="Question Details"
+                />
                 <DestructivePopover
                   label={'Delete this subjects'}
                   onConfirm={() => deleteItem(row)}

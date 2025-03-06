@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers\Institutions\Assignments;
 
-use Validator;
 use Carbon\Carbon;
 use Inertia\Inertia;
-use App\Models\Course;
 use App\Models\Assignment;
 use App\Models\Institution;
 use Illuminate\Http\Request;
 use App\Models\CourseTeacher;
 use App\Support\SettingsHandler;
 use App\Enums\InstitutionUserType;
-use App\Models\InstitutionSetting;
-use App\Models\ClassificationGroup;
 use App\Http\Controllers\Controller;
 use App\Models\AssignmentSubmission;
 
@@ -31,13 +27,6 @@ class AssignmentController extends Controller
   function index(Request $request, Institution $institution)
   {
     $user = currentInstitutionUser();
-
-    // $query = Assignment::query()->when($user->isStudent(), fn($q) => $q->where('expires_at', '>', now())->where('classification_id', $user->student()->first()->classification_id))
-    //     ->when($user->isTeacher(), fn($q) => $q->join('course_teachers', 'assignments.course_teacher_id', 'course_teachers.id'))
-    //     ->latest('id')->with('course', 'classification')->get();
-
-    // info($query);
-    // dd();
 
     if ($user->isStudent()) {
       $student = $user->student()->first();

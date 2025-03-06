@@ -15,6 +15,7 @@ import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
 import tokenUserUtil from '@/util/token-user-util';
+import useIsStaff from '@/hooks/use-is-staff';
 
 interface Props {
   exams: PaginationResponse<Exam>;
@@ -25,6 +26,7 @@ export default function ListExams({ exams, event }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
+  const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
 
   async function deleteItem(obj: Exam) {
@@ -57,7 +59,7 @@ export default function ListExams({ exams, event }: Props) {
       label: 'Status',
       value: 'status',
     },
-    ...(isAdmin
+    ...(isStaff
       ? [
           {
             label: 'Action',

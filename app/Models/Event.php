@@ -20,10 +20,11 @@ class Event extends Model
     'starts_at' => 'datetime',
     'expires_at' => 'datetime',
     'classification_id' => 'integer',
-    'classification_group_id' => 'integer'
+    'classification_group_id' => 'integer',
+    'show_corrections' => 'boolean'
   ];
 
-  static function createRule(Event $event = null)
+  static function createRule(Event|null $event = null)
   {
     return [
       'title' => [
@@ -39,6 +40,7 @@ class Event extends Model
       'expires_at' => ['nullable', 'date'],
       'num_of_subjects' => ['nullable', 'integer'],
       'num_of_activations' => ['nullable', 'integer'],
+      'show_corrections' => ['sometimes', 'boolean'],
       'classification_group_id' => [
         'nullable',
         new ValidateExistsRule(ClassificationGroup::class)

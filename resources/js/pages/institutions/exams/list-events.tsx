@@ -5,7 +5,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
-import { PencilIcon, ShareIcon } from '@heroicons/react/24/outline';
+import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
@@ -24,6 +24,7 @@ import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
 import TransferEventResultModal from '@/components/modals/transfer-event-result-modal';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
+import useIsStaff from '@/hooks/use-is-staff';
 
 interface Props {
   events: PaginationResponse<Event>;
@@ -40,6 +41,7 @@ export default function ListEvents({
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
+  const isStaff = useIsStaff();
   const transferEventResultModalToggle = useModalValueToggle<Event>();
 
   async function deleteItem(obj: Event) {
@@ -70,6 +72,10 @@ export default function ListEvents({
       ),
     },
     {
+      label: 'View Corrections',
+      render: (row) => (row.show_corrections ? 'Yes' : 'No'),
+    },
+    {
       label: 'Selectable Subjects',
       value: 'event_courseables_count',
     },
@@ -77,7 +83,7 @@ export default function ListEvents({
       label: 'Num of Subjects',
       value: 'num_of_subjects',
     },
-    ...(isAdmin
+    ...(isStaff
       ? [
           {
             label: 'Transferred At',
@@ -105,7 +111,7 @@ export default function ListEvents({
       label: 'Action',
       render: (row: Event) => (
         <HStack>
-          {isAdmin && (
+          {isStaff && (
             <>
               <LinkButton
                 href={instRoute('event-courseables.index', [row.id])}

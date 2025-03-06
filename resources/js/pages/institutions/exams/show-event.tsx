@@ -1,6 +1,6 @@
 import React from 'react';
 import { Event, Exam } from '@/types/models';
-import { VStack, Text, Divider, HStack } from '@chakra-ui/react';
+import { VStack, Text, Divider, HStack, Spacer } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { ExamStatus, SelectOptionType } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -10,6 +10,7 @@ import { dateFormat, isTimeExpired } from '@/util/util';
 import useIsStudent from '@/hooks/use-is-student';
 import { format } from 'date-fns';
 import Dt from '@/components/dt';
+import { Div } from '@/components/semantic';
 
 interface Props {
   event: Event;
@@ -94,14 +95,47 @@ export default function ShowEvent({ event, studentExam }: Props) {
             <Divider my={4} />
             <br />
             <Text fontWeight={'bold'}>Subjects</Text>
-            {event.event_courseables?.map((eventCoursable) => (
-              <Text py={2} key={eventCoursable.courseable_id}>
-                {eventCoursable.courseable?.course?.title}
-              </Text>
-            ))}
+            {studentExam ? (
+              <ShowExam exam={studentExam} />
+            ) : (
+              <>
+                {event.event_courseables?.map((eventCoursable) => (
+                  <Text py={2} key={eventCoursable.courseable_id}>
+                    {eventCoursable.courseable?.course?.title}
+                  </Text>
+                ))}
+              </>
+            )}
           </VStack>
         </SlabBody>
       </Slab>
     </DashboardLayout>
+  );
+}
+
+function ShowExam({ exam }: { exam: Exam }) {
+  const { instRoute } = useInstitutionRoute();
+  return (
+    <Div>
+      {exam.exam_courseables?.map((examCourseable) => {
+        return (
+          <HStack key={examCourseable.id} align={'stretch'}>
+            <Text py={2} key={examCourseable.courseable_id}>
+              {examCourseable.courseable?.course?.title}
+            </Text>
+            <Spacer />
+            {exam.status === ExamStatus.Ended && (
+              <LinkButton
+                href={instRoute('exam-courseables.show', [
+                  examCourseable.exam_id,
+                  examCourseable.id,
+                ])}
+                title="View Details"
+              />
+            )}
+          </HStack>
+        );
+      })}
+    </Div>
   );
 }

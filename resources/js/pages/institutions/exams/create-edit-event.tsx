@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormControl, Input, VStack } from '@chakra-ui/react';
+import { Checkbox, FormControl, Input, VStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { dateTimeFormat, preventNativeSubmit } from '@/util/util';
@@ -35,6 +35,7 @@ export default function CreateOrUpdateEvent({
     num_of_subjects: event?.num_of_subjects ?? 1,
     classification_id: event?.classification_id ?? '',
     classification_group_id: event?.classification_group_id ?? '',
+    show_corrections: event?.show_corrections ?? false,
   });
 
   const submit = async () => {
@@ -127,6 +128,22 @@ export default function CreateOrUpdateEvent({
                   }
                 />
               </FormControlBox>
+
+              <FormControl>
+                <Checkbox
+                  isChecked={webForm.data.show_corrections}
+                  onChange={(e) =>
+                    webForm.setValue(
+                      'show_corrections',
+                      e.currentTarget.checked
+                    )
+                  }
+                  size={'md'}
+                  colorScheme="brand"
+                >
+                  Allow students to view corrections after the exam
+                </Checkbox>
+              </FormControl>
               <FormControl>
                 <FormButton isLoading={webForm.processing} />
               </FormControl>

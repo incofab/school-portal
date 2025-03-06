@@ -47,7 +47,7 @@ class HandleAdmission
 
     Storage::disk('s3_public')->move($sourcePath, $destinationPath);
     $destinationUrl = Storage::disk('s3_public')->url($destinationPath);
-    // $destinationUrl = 
+    // $destinationUrl =
     // $parts[0] .
     // '//' .
     // $parts[2] .
@@ -57,7 +57,7 @@ class HandleAdmission
     // $fileName;
 
     DB::beginTransaction();
-    $student = RecordStudent::make([
+    $student = RecordStudent::make($this->institution, [
       'classification_id' => $data['classification'],
       'email' => Str::orderedUuid() . '@email.com',
       'phone' => $guardians[0]['phone'],
