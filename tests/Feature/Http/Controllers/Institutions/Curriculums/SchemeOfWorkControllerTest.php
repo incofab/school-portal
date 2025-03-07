@@ -7,6 +7,7 @@ use App\Models\Topic;
 use App\Models\InstitutionUser;
 use App\Models\Student;
 use App\Models\LessonPlan;
+use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
 use function Pest\Laravel\actingAs;
@@ -25,7 +26,6 @@ beforeEach(function () {
     ->withInstitution($this->institution)
     ->create();
   $this->admin = $this->institution->createdBy;
-  $this->user = $this->institutionUser->user;
   $this->topic = Topic::factory()
     ->for($this->institution)
     ->create();
@@ -99,7 +99,7 @@ it('stores scheme of work data', function () {
       'term',
       'topic_id',
       'week_number',
-      'is_used_by_institution_group',
+      'is_used_by_institution_group'
     ]);
 
   actingAs($this->admin)
@@ -119,7 +119,7 @@ it('updates scheme of work data', function () {
     'institution' => $this->institution->uuid,
     'scheme_of_work' => $schemeOfWork->id
   ]);
-  
+
   $updatedData = [
     'term' => TermType::First->value,
     'topic_id' => $this->topic->id,
@@ -182,6 +182,9 @@ it('cannot delete a scheme of work with lesson plans', function () {
 });
 
 it('restricts non-admin access to scheme of work routes', function () {
+  $user = User::factory()
+    ->teacher($this->institution)
+    ->create();
   $schemeOfWork = SchemeOfWork::factory()
     ->topic($this->topic)
     ->create();
@@ -216,7 +219,7 @@ it('restricts non-admin access to scheme of work routes', function () {
       'destroy' => 'deleteJson'
     };
 
-    actingAs($this->user)
+    actingAs($user)
       ->$method(
         $route,
         $name === 'store' || $name === 'update' ? ['term' => 'Test'] : []

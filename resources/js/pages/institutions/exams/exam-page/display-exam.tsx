@@ -194,7 +194,8 @@ export default function DisplayExam({
         mt={2}
         position={'absolute'}
         bottom={0}
-        w={'full'}
+        left={0}
+        right={0}
       >
         <BrandButton
           title="Previous"
