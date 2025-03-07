@@ -8,7 +8,7 @@ use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\Student;
 use App\Models\User;
-use App\Rules\ValidateExistsRule;
+use App\Rules\ValidateUniqueRule;
 use Illuminate\Http\UploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -103,7 +103,7 @@ class InsertStudentFromRecordingSheet
     $validated = Validator::validate($data, [
       ...User::generalRule(null, '*.'),
       '*.guardian_phone' => ['nullable', 'string'],
-      '*.code' => ['sometimes', new ValidateExistsRule(Student::class, 'code')]
+      '*.code' => ['sometimes', new ValidateUniqueRule(Student::class, 'code')]
     ]);
 
     return $validated;

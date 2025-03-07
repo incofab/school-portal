@@ -24,6 +24,7 @@ import { InstitutionUserType } from '@/types/types';
 import useIsStaff from '@/hooks/use-is-staff';
 import useInstitutionRole from '@/hooks/use-institution-role';
 import { InstitutionGroup } from '@/types/models';
+import { formatAsCurrency } from '@/util/util';
 
 interface ItemCardProps {
   route: string;
@@ -40,10 +41,6 @@ interface ItemCardProps {
 
 interface Props {
   institutionGroup: InstitutionGroup;
-}
-
-function NumberFormatter(number: number) {
-  return new Intl.NumberFormat().format(number);
 }
 
 function DashboardItemCard(prop: ItemCardProps) {
@@ -149,16 +146,16 @@ function InstitutionDashboard({ institutionGroup }: Props) {
       roles: accountant,
     },
     {
-      title: '₦ ' + NumberFormatter(institutionGroup.credit_wallet),
+      title: formatAsCurrency(institutionGroup.credit_wallet),
       desc: 'Credit Balance',
       route: instRoute('fundings.create'),
       icon: CurrencyDollarIcon,
       roles: accountant,
     },
     {
-      title: '₦ ' + NumberFormatter(institutionGroup.debt_wallet),
+      title: formatAsCurrency(institutionGroup.debt_wallet),
       desc: 'Debt Balance',
-      route: instRoute('fundings.create'),
+      route: instRoute('fundings.index'),
       icon: CurrencyDollarIcon,
       roles: accountant,
     },

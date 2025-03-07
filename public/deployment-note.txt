@@ -6,3 +6,8 @@
 ** Rename "MessageRecipientType" and "MessageStatus" enums, to "MessageRecipientType" and "MessageStatus"
 ** 'school_notification' :: 'instituion_id', 'purpose (receiptType)', 'sender', 'receiver_type', 'receiver_ids', 
 ** Rename 'email' migration file name to 'message'
+
+
+===================
+** Write tests for key methods in StudentManagementController
+===================

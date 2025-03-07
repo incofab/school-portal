@@ -174,30 +174,26 @@ class AssignmentController extends Controller
 
   function store(Institution $institution, Request $request)
   {
+    $user = currentUser();
     $data = $request->validate(Assignment::createRule());
-    // // == Build the needed data
-    // $buildData = [
-    //     ...$request->all(),
-    // ];
-
-    // // == Validate the 'buildData'
-    // $data = Validator::validate($buildData, Assignment::createRule());
-
     // == Grab 'courseId' and 'classificationId'
-    $courseInfo = CourseTeacher::where(
-      'id',
-      $request->course_teacher_id
-    )->first();
+    $courseTeacher = CourseTeacher::find($request->course_teacher_id);
 
+    // == Check if user is an admin or the specific course teacher assigned to this assignment
+    if (!$user->isInstitutionAdmin() && $courseTeacher->user_id !== $user->id) {
+      abort(403, 'You can only ');
+    }
+
+    $settingsHandler = SettingsHandler::makeFromRoute();
     // == Create Record.
     $institution
       ->assignments()
       ->create([
         ...$data,
-        'course_id' => $courseInfo->course_id,
-        'classification_id' => $courseInfo->classification_id,
-        'academic_session_id' => SettingsHandler::makeFromRoute()->getCurrentAcademicSession(),
-        'term' => SettingsHandler::makeFromRoute()->getCurrentTerm()
+        'course_id' => $courseTeacher->course_id,
+        'classification_id' => $courseTeacher->classification_id,
+        'academic_session_id' => $settingsHandler->getCurrentAcademicSession(),
+        'term' => $settingsHandler->getCurrentTerm()
       ]);
     return $this->ok();
   }
@@ -211,20 +207,17 @@ class AssignmentController extends Controller
     $data = $request->validate(Assignment::createRule());
 
     // == Grab 'courseId' and 'classificationId' - incase the assignment's Subject was changed
-    $courseInfo = CourseTeacher::where(
-      'id',
-      $request->course_teacher_id
-    )->first();
+    $courseTeacher = CourseTeacher::query()->find($request->course_teacher_id);
 
     // == Check if user is an admin or the specific course teacher assigned to this assignment
-    if (!$user->isInstitutionAdmin() && $courseInfo->user_id !== $user->id) {
+    if (!$user->isInstitutionAdmin() && $courseTeacher->user_id !== $user->id) {
       abort(403, 'Forbidden');
     }
 
     $assignment->update([
       ...$data,
-      'course_id' => $courseInfo->course_id,
-      'classification_id' => $courseInfo->classification_id
+      'course_id' => $courseTeacher->course_id,
+      'classification_id' => $courseTeacher->classification_id
     ]);
     return $this->ok();
   }

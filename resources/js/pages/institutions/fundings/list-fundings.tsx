@@ -7,13 +7,10 @@ import { ServerPaginatedTableHeader } from '@/components/server-paginated-table'
 import DashboardLayout from '@/layout/dashboard-layout';
 import { LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import { formatAsCurrency } from '@/util/util';
 
 interface Props {
   fundings: PaginationResponse<Funding>;
-}
-
-function NumberFormatter(number: number) {
-  return new Intl.NumberFormat().format(number);
 }
 
 export default function ListInstitutionFundings({ fundings }: Props) {
@@ -23,21 +20,21 @@ export default function ListInstitutionFundings({ fundings }: Props) {
     {
       label: 'Amount Funded',
       value: 'amount',
-      render: (row) => '₦ ' + NumberFormatter(row.amount),
+      render: (row) => formatAsCurrency(row.amount),
     },
     {
       label: 'Previous Balance',
       value: 'previous_balance',
-      render: (row) => '₦ ' + NumberFormatter(row.previous_balance),
+      render: (row) => formatAsCurrency(row.previous_balance),
     },
     {
       label: 'New Balance',
       value: 'new_balance',
-      render: (row) => '₦ ' + NumberFormatter(row.new_balance),
+      render: (row) => formatAsCurrency(row.new_balance),
     },
     {
-      label: 'Reference',
-      value: 'reference',
+      label: 'Remark',
+      value: 'remark',
     },
   ];
 

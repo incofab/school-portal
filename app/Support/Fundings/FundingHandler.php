@@ -133,17 +133,6 @@ class FundingHandler
       $newCreditBal,
       $funding
     );
-    // $funding->transactions()->firstOrCreate(
-    //   ['reference' => $this->creditReference],
-    //   [
-    //     'institution_group_id' => $this->institutionGroup->id,
-    //     'wallet' => WalletType::Credit->value,
-    //     'amount' => $amount,
-    //     'type' => $type,
-    //     'bbt' => $prevCreditBal,
-    //     'bat' => $newCreditBal
-    //   ]
-    // );
     DB::commit();
     return successRes('Wallet funded successfully');
   }
@@ -156,6 +145,7 @@ class FundingHandler
         ? $amount + $prevDebtBal
         : $amount - $prevDebtBal;
 
+    DB::beginTransaction();
     $funding = $this->institutionGroup->fundings()->firstOrCreate(
       [
         'reference' => $this->debtReference
@@ -183,19 +173,6 @@ class FundingHandler
       $newDebtBal,
       $funding
     );
-    // $funding->transactions()->firstOrCreate(
-    //   [
-    //     'reference' => $this->debtReference
-    //   ],
-    //   [
-    //     'wallet' => WalletType::Debt->value,
-    //     'amount' => $amount,
-    //     'type' => $type,
-    //     'bbt' => $prevDebtBal,
-    //     'bat' => $newDebtBal,
-
-    //     'institution_group_id' => $this->institutionGroup->id
-    //   ]
-    // );
+    DB::commit();
   }
 }

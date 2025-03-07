@@ -81,6 +81,8 @@ Route::post('/classification-groups/{classificationGroup}/promote-students', [We
 // Route::post('/students/{student}/fee-payments/store', [Web\Students\StudentFeePaymentController::class, 'feePaymentStore'])->name('students.fee-payments.store');
 
 
+Route::post('/students/{student}/update-code', [Web\Staff\StudentManagementController::class, 'updateCode'])
+  ->name('students.update-code');
 Route::get('/classifications/{classification}/students-download', Web\Classifications\DownloadClassStudentsController::class)
   ->name('classifications.students-download');
 Route::get('/students/download-recording-template', [Web\Staff\StudentManagementController::class, 'downloadTemplate'])
