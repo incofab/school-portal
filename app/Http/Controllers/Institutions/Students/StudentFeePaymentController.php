@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Institutions\Students;
 
+use App\Actions\Fees\GetStudentFeePaymentSummary;
 use App\Core\PaystackHelper;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
+use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\Fee;
@@ -17,6 +19,7 @@ use App\Models\Student;
 use App\Models\User;
 use App\Rules\ValidateExistsRule;
 use App\Support\MorphMap;
+use App\Support\SettingsHandler;
 use App\Support\UITableFilters\FeePaymentUITableFilters;
 use App\Support\UITableFilters\ReceiptUITableFilters;
 use Illuminate\Http\Request;
@@ -48,6 +51,8 @@ class StudentFeePaymentController extends Controller
 
   function receipts(Institution $institution, Student $student)
   {
+    $settingshandler = SettingsHandler::makeFromRoute();
+
     $query = ReceiptUITableFilters::make(
       request()->all(),
       Receipt::query()->where('user_id', $student->user_id)
@@ -61,11 +66,75 @@ class StudentFeePaymentController extends Controller
         'classificationGroup'
       );
 
+    //== Fetch applicable ReceiptTypes
+    $receiptTypesQuery = ReceiptType::where(
+      'institution_id',
+      $student->institutionUser->institution_id
+    );
+
+    $dReceiptTypes = $receiptTypesQuery->get();
+    $payableReceiptTypes = [];
+
+    // foreach ($dReceiptTypes as $dReceiptType) {
+    //   //== Check if student have made part or full payment of the fee
+    //   [$feesToPay, $totalFeesToPay] = (new GetStudentFeePaymentSummary(
+    //     $student
+    //   ))->getPendingPayments($dReceiptType);
+
+    //   //== List only ReceiptTypes that needs to be paid, not every receiptType of the school
+    //   if ($totalFeesToPay > 0) {
+    //     $payableReceiptTypes[$dReceiptType->id] = $totalFeesToPay;
+    //   }
+    // }
+
+    /*
+     * $query can NOT be merged with $receiptTypesQuery - They are from different DB tables and have difference columns,
+     * hence they will have to be in 2 different tables
+     */
+    $term = $settingshandler->getCurrentTerm();
+    $academicSessionId = $settingshandler->getCurrentAcademicSession();
+
+    $paymentSummary = (new GetStudentFeePaymentSummary(
+      $student,
+      $student->classification,
+      $term,
+      $academicSessionId
+    ))->getStudentReceiptPaymentSummary(ReceiptType::all());
+
     return inertia('institutions/students/payments/list-student-receipts', [
       'fees' => Fee::query()->get(),
       'receiptTypes' => ReceiptType::query()->get(),
       'receipts' => paginateFromRequest($query->latest('id')),
-      'student' => $student
+      'student' => $student,
+      'classification' => $student->classification,
+      'term' => $term,
+      'academicSession' => AcademicSession::find($academicSessionId),
+
+      'payableReceiptTypes' => $paymentSummary,
+      'instReceiptTypes' => paginateFromRequest(
+        $receiptTypesQuery->latest('id')
+      )
+    ]);
+  }
+
+  function showReceiptTypeFee(
+    Institution $institution,
+    Student $student,
+    Classification $classification,
+    $term,
+    $academicSessionId
+  ) {
+    $feeSummary = (new GetStudentFeePaymentSummary(
+      $student,
+      $classification,
+      $term,
+      $academicSessionId
+    ))->getStudentReceiptPaymentSummary(ReceiptType::all())[0];
+
+    return inertia('institutions/students/payments/show-receipt-type-fees', [
+      'student' => $student,
+      'feeSummary' => $feeSummary,
+      'fees' => $feeSummary['fees_to_pay']
     ]);
   }
 

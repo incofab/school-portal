@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions\PaymentNotifications;
 
 use App\Actions\Payments\RecordPaymentNotification;
+use App\Enums\InstitutionUserType;
 use App\Enums\NotificationChannelsType;
 use App\Enums\NotificationReceiversType;
 use App\Enums\PaymentInterval;
@@ -33,6 +34,10 @@ class PaymentNotificationController extends Controller
 
   function __construct(protected Institution $institution)
   {
+    $this->allowedRoles([
+      InstitutionUserType::Admin
+    ])->except(['index', 'search', 'show']);
+
     $this->settingHandler = SettingsHandler::makeFromRoute();
   }
 
@@ -56,7 +61,7 @@ class PaymentNotificationController extends Controller
     // $data = $request->validated();
     $receiptTypeExists = new ValidateExistsRule(ReceiptType::class);
     $data = $request->validate([
-      'receipt_type_id' => [ 'required', $receiptTypeExists ],
+      'receipt_type_id' => ['required', $receiptTypeExists],
       'reference' => [
         'required',
         new ValidateUniqueRule(SchoolNotification::class)
@@ -74,9 +79,14 @@ class PaymentNotificationController extends Controller
       ],
       'channel' => ['required', new Enum(NotificationChannelsType::class)]
     ]);
-    
-    (new RecordPaymentNotification(currentUser(), $data, $institution, $receiptTypeExists->getModel()))->run();
-/*
+
+    (new RecordPaymentNotification(
+      currentUser(),
+      $data,
+      $institution,
+      $receiptTypeExists->getModel()
+    ))->run();
+    /* 
     $currentTerm = $this->settingHandler->getCurrentTerm();
     $currentAcademicSessionId = $this->settingHandler->getCurrentAcademicSession();
 

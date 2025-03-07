@@ -19,6 +19,7 @@ class StudentAccess
   {
     $user = currentUser();
     $student = $request->route('student');
+
     if ($student->user_id === $user->id) {
       return $next($request);
     }

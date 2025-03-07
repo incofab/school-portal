@@ -19,7 +19,19 @@ class UpdateInstitutionUserController extends Controller
     Institution $institution,
     User $user
   ) {
-    $this->validateUser($user);
+    /** Permit Guardian to view the profile of their dependants. */
+    if (
+      !currentInstitutionUser()->isGuardian() ||
+      !in_array(
+        $user->id,
+        currentUser()
+          ->dependents->pluck('user_id')
+          ->toArray()
+      )
+    ) {
+      $this->validateUser($user);
+    }
+
     $institutionUser = $user
       ->institutionUser()
       ->with('student.classification')

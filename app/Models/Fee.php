@@ -32,6 +32,35 @@ class Fee extends Model
     return $this->payment_interval === PaymentInterval::Termly;
   }
 
+  static function scopeForClass($query, Classification $classification)
+  {
+    return $query->where(function ($qq) use ($classification) {
+      $qq
+        ->where(fn ($q) => 
+          $q->whereNull('classification_group_id')->whereNull(
+            'classification_id'
+          )
+        )
+        ->orWhere(fn ($q) => 
+          $q->whereNotNull('classification_group_id')->where(
+            'classification_group_id',
+            $classification->classification_group_id
+          )
+        )
+        ->orWhere(fn ($q) => 
+          $q->whereNull('classification_group_id')->where(
+            'classification_id',
+            $classification->id
+          )
+        );
+    });
+  }
+
+  static function scopeForReceiptType($query, ReceiptType|null $receiptType = null)
+  {
+    return $query->when($receiptType, fn($q) => $q->where('receipt_type_id', $receiptType->id));
+  }
+
   function receiptType()
   {
     return $this->belongsTo(ReceiptType::class);
@@ -50,5 +79,10 @@ class Fee extends Model
   function institution()
   {
     return $this->belongsTo(Institution::class);
+  }
+
+  function feePayments()
+  {
+    return $this->hasMany(FeePayment::class);
   }
 }
