@@ -129,3 +129,13 @@ if (!function_exists('randomDigits')) {
     return $result;
   }
 }
+
+if (!function_exists('sanitizeFilename')) {
+  function sanitizeFilename(string $filename): string
+  {
+    $filename = basename($filename);
+    $sanitized = Str::slug(pathinfo($filename, PATHINFO_FILENAME));
+    $extension = pathinfo($filename, PATHINFO_EXTENSION);
+    return $extension ? "{$sanitized}.{$extension}" : $sanitized;
+  }
+}

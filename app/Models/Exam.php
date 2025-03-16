@@ -45,6 +45,26 @@ class Exam extends Model
     return $this->status === ExamStatus::Ended;
   }
 
+  function scorePercent()
+  {
+    return ($this->score /
+      ($this->num_of_questions == 0 ? 1 : $this->num_of_questions)) *
+      100;
+  }
+
+  function getExamableName()
+  {
+    if ($this->examable instanceof User) {
+      return $this->examable->full_name;
+    } elseif ($this->examable instanceof Student) {
+      return $this->examable->user->full_name;
+    } elseif ($this->examable instanceof TokenUser) {
+      return $this->examable->name;
+    } else {
+      return 'Unknown';
+    }
+  }
+
   function examCourseables()
   {
     return $this->hasMany(ExamCourseable::class);

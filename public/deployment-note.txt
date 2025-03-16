@@ -1,13 +1,11 @@
-** Manually add 'message_type' column to 'Emails' DB table.
-** Manually rename 'emails' DB table to 'messages' table.
-** Manually rename 'email_recipients' to 'message_recipients'
-** Rename the corresponding models (Email, MessageRecipient)
-** On 'Email_Recipients' table, rename 'recipient_email' to 'recipients'.
-** Rename "MessageRecipientType" and "MessageStatus" enums, to "MessageRecipientType" and "MessageStatus"
-** 'school_notification' :: 'instituion_id', 'purpose (receiptType)', 'sender', 'receiver_type', 'receiver_ids', 
-** Rename 'email' migration file name to 'message'
-
-
 ===================
 ** Write tests for key methods in StudentManagementController
 ===================
+
+** Add the following columns to events
+  -- institution_user_id (The InstUser that created this event)
+  -- classification_id
+  -- classification_group_id
+  -- term
+  -- academic_session_id
+  -- for mid term
