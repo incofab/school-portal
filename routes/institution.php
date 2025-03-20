@@ -268,11 +268,12 @@ Route::delete('/learning-evaluations/destroy/{learningEvaluation}', [Web\Staff\L
 Route::post('/set-term-result-learning-evaluation/{termResult?}', [Web\Staff\LearningEvaluationController::class, 'setTermResultEvaluation'])
   ->name('set-term-result-learning-evaluation');
 
-Route::resource('/admission-applications', Web\AdmissionApplicationController::class)->except('store');
-Route::post('/admission-applications/{admissionApplication}/update-status', [Web\AdmissionApplicationController::class, 'updateStatus'])
+Route::resource('/admission-applications', Web\Admissions\AdmissionApplicationController::class)->except('store');
+Route::post('/admission-applications/{admissionApplication}/update-status', [Web\Admissions\AdmissionApplicationController::class, 'updateStatus'])
   ->name('admission-applications.update-status');
-// Route::get('/admissions/letter/{admissionApplication}', [Web\AdmissionApplicationController::class, 'admissionLetter'])
-//   ->name('admissions.letter');
+
+Route::get('/admission-forms/search', [Web\Admissions\AdmissionFormController::class, 'search'])->name('admission-forms.search');
+Route::resource('admission-forms', Web\Admissions\AdmissionFormController::class);
 
 include base_path('routes/assignment.php');
 include base_path('routes/attendance.php');

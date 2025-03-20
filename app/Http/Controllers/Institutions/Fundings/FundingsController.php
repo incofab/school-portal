@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Institutions\Fundings;
 
 use App\Models\Institution;
-use App\Core\PaystackHelper;
+use App\DTO\PaymentReferenceDto;
 use Illuminate\Http\Request;
-use App\Models\InstitutionGroup;
 use App\Models\PaymentReference;
 use App\Enums\InstitutionUserType;
+use App\Enums\Payments\PaymentMerchantType;
 use App\Http\Controllers\Controller;
 use App\Enums\Payments\PaymentPurpose;
-use App\Support\MorphMap;
+use App\Support\Payments\Merchants\PaymentMerchant;
 
 class FundingsController extends Controller
 {
@@ -45,9 +45,9 @@ class FundingsController extends Controller
         'unique:fundings,reference'
       ]
     ]);
-
-    $totalAmount = $data['amount'];
     $user = currentUser();
+    /*
+    $totalAmount = $data['amount'];
     $reference = $data['reference']; //Str::orderedUuid();
     $purpose = PaymentPurpose::WalletFunding->value;
 
@@ -69,6 +69,24 @@ class FundingsController extends Controller
       $reference,
       $purpose
     );
+    return $this->ok($res->toArray());
+    */
+    $merchant = $request->merchant ?? PaymentMerchantType::Paystack->value;
+    $paymentReferenceDto = new PaymentReferenceDto(
+      institution_id: $institution->id,
+      merchant: $merchant,
+      payable: $institution->institutionGroup,
+      paymentable: null,
+      amount: $data['amount'],
+      purpose: PaymentPurpose::WalletFunding,
+      user_id: $user->id,
+      reference: $request->reference,
+      redirect_url: instRoute('fundings.index')
+    );
+    [$res, $paymentReference] = PaymentMerchant::make($merchant)->init(
+      $paymentReferenceDto
+    );
+    abort_unless($res->isSuccessful(), 403, $res->getMessage());
     return $this->ok($res->toArray());
   }
 }

@@ -1,19 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\Institutions;
+namespace App\Http\Controllers\Institutions\Admissions;
 
+use App\Actions\Admisssions\RecordAdmissionApplication;
 use App\Actions\HandleAdmission;
+use App\DTO\PaymentReferenceDto;
 use Inertia\Inertia;
 use App\Models\Student;
 use App\Models\Institution;
 use App\Enums\InstitutionUserType;
-use App\Models\ApplicationGuardian;
+use App\Enums\Payments\PaymentMerchantType;
+use App\Enums\Payments\PaymentPurpose;
 use App\Http\Controllers\Controller;
 use App\Models\AdmissionApplication;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\AdmissionApplicationRequest;
+use App\Models\AdmissionForm;
 use App\Models\Classification;
 use App\Rules\ValidateExistsRule;
+use App\Support\Payments\Merchants\PaymentMerchant;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 
 class AdmissionApplicationController extends Controller
 {
@@ -23,7 +29,8 @@ class AdmissionApplicationController extends Controller
       'create',
       'successMessage',
       'store',
-      'admissionLetter'
+      'admissionLetter',
+      'buyAdmissionForm'
     ]);
   }
 
@@ -40,9 +47,12 @@ class AdmissionApplicationController extends Controller
 
   public function create(Institution $institution)
   {
-    return Inertia::render('institutions/admissions/admission-application', [
-      'institution' => $institution
-    ]);
+    return Inertia::render(
+      'institutions/admissions/create-admission-application',
+      [
+        'institution' => $institution
+      ]
+    );
   }
 
   public function store(
@@ -50,45 +60,22 @@ class AdmissionApplicationController extends Controller
     AdmissionApplicationRequest $request
   ) {
     $data = $request->validated();
-    $applicantData = collect($data)
-      ->except('guardians')
-      ->toArray();
-    $guardiansData = $data['guardians'];
+    $admissionApplication = (new RecordAdmissionApplication($institution))->run(
+      $request->getAdmissionForm(),
+      $data
+    );
 
-    if ($request->photo) {
-      $imagePath = $request->photo->store(
-        "{$institution->uuid}/admission",
-        's3_public'
-      );
-      $publicUrl = Storage::disk('s3_public')->url($imagePath);
-      $applicantData['photo'] = $publicUrl;
-    }
-
-    // Create the Admission Application
-    $admissionApplication = $institution
-      ->admissionApplications()
-      ->create($applicantData);
-
-    // Loop through each guardian data and create the records
-    foreach ($guardiansData as $guardianData) {
-      $modGuardianData = [
-        ...$guardianData,
-        'admission_application_id' => $admissionApplication->id
-      ];
-      ApplicationGuardian::create($modGuardianData);
-    }
-
-    return $this->ok(['data' => $admissionApplication]);
+    return $this->ok(['admissionApplication' => $admissionApplication]);
   }
 
-  function edit(
-    Institution $institution,
-    AdmissionApplication $admissionApplication
-  ) {
-    return inertia('institutions/admissions/admission-application', [
-      'admissionApplication' => $admissionApplication
-    ]);
-  }
+  // function edit(
+  //   Institution $institution,
+  //   AdmissionApplication $admissionApplication
+  // ) {
+  //   return inertia('institutions/admissions/admission-application', [
+  //     'admissionApplication' => $admissionApplication
+  //   ]);
+  // }
 
   public function updateStatus(
     Institution $institution,
@@ -126,6 +113,13 @@ class AdmissionApplicationController extends Controller
     Institution $institution,
     AdmissionApplication $admissionApplication
   ) {
+    $admissionApplication->load('admissionForm');
+    if (!$admissionApplication->hasBeenPaid()) {
+      return Inertia::render(
+        'institutions/admissions/buy-admission-application',
+        ['admissionApplication' => $admissionApplication]
+      );
+    }
     return Inertia::render(
       'institutions/admissions/admission-application-success',
       [
@@ -163,5 +157,40 @@ class AdmissionApplicationController extends Controller
   ) {
     $admissionApplication->delete();
     return $this->ok();
+  }
+
+  function buyAdmissionForm(
+    Request $request,
+    Institution $institution,
+    AdmissionForm $admissionForm,
+    AdmissionApplication|null $admissionApplication
+  ) {
+    $request->validate([
+      'reference' => [
+        'nullable',
+        'string',
+        'unique:payment_references,reference'
+      ],
+      'merchant' => ['nullable', new Enum(PaymentMerchantType::class)]
+    ]);
+    $merchant = $request->merchant ?? PaymentMerchantType::Paystack->value;
+    $paymentReferenceDto = new PaymentReferenceDto(
+      institution_id: $admissionForm->institution_id,
+      merchant: $merchant,
+      payable: $admissionForm,
+      paymentable: $admissionApplication,
+      amount: $admissionForm->price,
+      purpose: PaymentPurpose::AdmissionFormPurchase,
+      user_id: $admissionForm->institution->user_id,
+      reference: $request->reference,
+      meta: [
+        'admission_application_id' => $admissionApplication->id
+      ]
+    );
+    [$res, $paymentReference] = PaymentMerchant::make($merchant)->init(
+      $paymentReferenceDto
+    );
+    abort_unless($res->isSuccessful(), 403, $res->getMessage());
+    return $this->ok($res->toArray());
   }
 }

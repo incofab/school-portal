@@ -69,6 +69,11 @@ class Res extends ArrayObject
     return !$this->success;
   }
 
+  function getMessage()
+  {
+    return $this->message;
+  }
+
   public function toArray()
   {
     return $this->data;

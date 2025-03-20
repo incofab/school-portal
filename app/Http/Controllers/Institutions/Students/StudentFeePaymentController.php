@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Institutions\Students;
 
 use App\Actions\Fees\GetStudentFeePaymentSummary;
 use App\Core\PaystackHelper;
+use App\DTO\PaymentReferenceDto;
+use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
@@ -19,6 +21,7 @@ use App\Models\Student;
 use App\Models\User;
 use App\Rules\ValidateExistsRule;
 use App\Support\MorphMap;
+use App\Support\Payments\Merchants\PaymentMerchant;
 use App\Support\SettingsHandler;
 use App\Support\UITableFilters\FeePaymentUITableFilters;
 use App\Support\UITableFilters\ReceiptUITableFilters;
@@ -71,26 +74,6 @@ class StudentFeePaymentController extends Controller
       'institution_id',
       $student->institutionUser->institution_id
     );
-
-    $dReceiptTypes = $receiptTypesQuery->get();
-    $payableReceiptTypes = [];
-
-    // foreach ($dReceiptTypes as $dReceiptType) {
-    //   //== Check if student have made part or full payment of the fee
-    //   [$feesToPay, $totalFeesToPay] = (new GetStudentFeePaymentSummary(
-    //     $student
-    //   ))->getPendingPayments($dReceiptType);
-
-    //   //== List only ReceiptTypes that needs to be paid, not every receiptType of the school
-    //   if ($totalFeesToPay > 0) {
-    //     $payableReceiptTypes[$dReceiptType->id] = $totalFeesToPay;
-    //   }
-    // }
-
-    /*
-     * $query can NOT be merged with $receiptTypesQuery - They are from different DB tables and have difference columns,
-     * hence they will have to be in 2 different tables
-     */
     $term = $settingshandler->getCurrentTerm();
     $academicSessionId = $settingshandler->getCurrentAcademicSession();
 
@@ -205,27 +188,25 @@ class StudentFeePaymentController extends Controller
     $fees = Fee::whereIn('id', $data['fee_ids'])->get();
 
     $totalAmount = $fees->sum('amount');
-
     $user = currentUser();
-    $reference = Str::orderedUuid();
-    PaymentReference::query()->create([
-      'institution_id' => $institution->id,
-      'user_id' => $user->id,
-      'payable_id' => $student->user_id,
-      'payable_type' => MorphMap::key(User::class),
-      'amount' => $totalAmount,
-      'purpose' => PaymentPurpose::Fee->value,
-      'meta' => $data,
-      'reference' => $reference,
-      'redirect_url' => instRoute('students.receipts.index', $student->id)
-    ]);
 
-    $res = PaystackHelper::makeFromInstitution($institution)->initialize(
-      $totalAmount,
-      $user->email,
-      route('paystack.callback'),
-      $reference
+    $merchant = $request->merchant ?? PaymentMerchantType::Paystack->value;
+    $paymentReferenceDto = new PaymentReferenceDto(
+      institution_id: $institution->id,
+      merchant: $merchant,
+      payable: $student->user,
+      paymentable: null, // Paying for potentially more that one fee
+      amount: $totalAmount,
+      purpose: PaymentPurpose::Fee,
+      user_id: $user->id,
+      reference: PaymentReference::generateReference(),
+      redirect_url: instRoute('students.receipts.index', $student->id),
+      meta: $data
     );
+    [$res, $paymentReference] = PaymentMerchant::make($merchant)->init(
+      $paymentReferenceDto
+    );
+    abort_unless($res->isSuccessful(), 403, $res->getMessage());
     return $this->ok($res->toArray());
   }
 }

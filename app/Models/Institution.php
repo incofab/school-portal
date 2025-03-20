@@ -232,6 +232,11 @@ class Institution extends Model
     return $this->hasMany(SchemeOfWork::class);
   }
 
+  public function admissionForms()
+  {
+    return $this->hasMany(AdmissionForm::class);
+  }
+
   public function students()
   {
     return $this->hasManyThrough(

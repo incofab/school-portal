@@ -24,12 +24,16 @@ class RecordMultiFeePayments
    *     transaction_reference?: string|null,
    *     fee_ids: int[]
    * } $data
+   * @return Collection<Fee>
    */
   public static function run(array $data, Institution $institution)
   {
     return (new self($data, $institution))->execute();
   }
 
+  /**
+   * @return Collection<Fee>
+   */
   private function execute()
   {
     /** @var Collection<string,Fee> */
@@ -55,5 +59,6 @@ class RecordMultiFeePayments
         $this->institution
       );
     }
+    return $fees;
   }
 }

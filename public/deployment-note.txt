@@ -9,3 +9,6 @@
   -- term
   -- academic_session_id
   -- for mid term
+
+
+** Make user_id in payment_references table nullable

@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 class FundingHandler
 {
   private $principalAmount;
-  private $reference;
   private $debtReference;
   private $creditReference;
 
@@ -32,19 +31,22 @@ class FundingHandler
     private array $data
   ) {
     $this->principalAmount = $data['amount'];
-    $this->reference = $data['reference'];
-    $this->debtReference = Funding::debtReference($data['reference']);
-    $this->creditReference = Funding::creditReference($data['reference']);
+    $reference = $data['reference'];
+    $this->debtReference = Funding::debtReference($reference);
+    $this->creditReference = Funding::creditReference($reference);
   }
 
-  static function makeFromPaymentRef(PaymentReference $paymentRef): static
-  {
+  static function makeFromPaymentRef(
+    PaymentReference $paymentRef,
+    $remark = ''
+  ): static {
     return new self(
       $paymentRef->institution->institutionGroup,
       $paymentRef->user,
       [
         'reference' => $paymentRef->reference,
-        'amount' => $paymentRef->amount
+        'amount' => $paymentRef->amount,
+        'remark' => $remark
       ]
     );
   }

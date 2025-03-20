@@ -1,6 +1,5 @@
 import { Div } from '@/components/semantic';
 import { generateRandomString, preventNativeSubmit } from '@/util/util';
-import route from '@/util/route';
 import {
   Avatar,
   Divider,
@@ -24,7 +23,7 @@ import {
   Nationality,
   Religion,
 } from '@/types/types';
-import { Institution } from '@/types/models';
+import { AdmissionForm, Institution } from '@/types/models';
 import InputForm from '@/components/forms/input-form';
 import { BrandButton, FormButton } from '@/components/buttons';
 import useWebForm from '@/hooks/use-web-form';
@@ -37,9 +36,12 @@ import {
   FileDropperType,
 } from '@/components/file-dropper/common';
 import { resizeImage } from '@/util/util';
+import useInstitutionRoute from '@/hooks/use-institution-route';
+import AdmissionFormSelect from '@/components/selectors/admission-form-select';
 
 interface Props {
   institution: Institution;
+  admissionForms: AdmissionForm[];
 }
 
 interface GuardianProp {
@@ -51,22 +53,13 @@ interface GuardianProp {
   relationship: string;
 }
 
-// interface AdmissionData extends AdmissionApplication {
-//   files: FileList | null;
-// }
-
-export default function AdmissionApplicationPage({ institution }: Props) {
-  // const form = useWebForm({
-  //   reference: String(institution.id) + generateRandomString(16),
-  //   files: {} as FileList | null,
-  // } as AdmissionData);
-
-  // AdmissionApplication & {
-  //   files: FileList | null;
-  // });
-
+export default function CreateAdmissionApplication({
+  institution,
+  admissionForms,
+}: Props) {
   const form = useWebForm({
     reference: String(institution.id) + generateRandomString(16),
+    admission_form_id: '',
     first_name: '',
     last_name: '',
     other_names: '',
@@ -87,7 +80,7 @@ export default function AdmissionApplicationPage({ institution }: Props) {
 
   const { handleResponseToast } = useMyToast();
   const extensions = FileDropperType.Image.extensionLabels;
-  // const { instRoute } = useInstitutionRoute();
+  const { instRoute } = useInstitutionRoute();
 
   const [uploadedPhoto, setUploadedPhoto] = useState<string | null>(null);
 
@@ -113,19 +106,13 @@ export default function AdmissionApplicationPage({ institution }: Props) {
         formData.append(key, String(value));
       });
 
-      return web.post(
-        route('institutions.admissions.store', [institution.uuid]),
-        formData
-      );
+      return web.post(instRoute('admissions.store'), formData);
     });
 
     if (!handleResponseToast(res)) return;
 
     Inertia.visit(
-      route('institutions.admissions.success', [
-        institution.uuid,
-        res.data.data.id,
-      ])
+      instRoute('admissions.success', [res.data.admissionApplication.id])
     );
   }
 
@@ -165,6 +152,21 @@ export default function AdmissionApplicationPage({ institution }: Props) {
         <Grid templateColumns={{ lg: 'repeat(3, 1fr)' }} gap={4}>
           <GridItem colSpan={{ lg: 2 }}>
             <VStack spacing={4} align={'stretch'} p={6}>
+              <FormControlBox
+                form={form as any}
+                title="Admission Form"
+                formKey="admission_form_id"
+              >
+                <AdmissionFormSelect
+                  admissionForms={admissionForms}
+                  onChange={(e: any) =>
+                    form.setValue('admission_form_id', e?.value)
+                  }
+                  selectValue={form.data.admission_form_id}
+                  isMulti={false}
+                  isClearable={true}
+                />
+              </FormControlBox>
               <FormControlBox
                 form={form as any}
                 title="First Name"

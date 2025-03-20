@@ -36,7 +36,10 @@ class Funding extends Model
     return $this->belongsTo(InstitutionGroup::class);
   }
 
-  // Can be PaymentReference
+  /**
+   * The entity creating the funding
+   * Can be PaymentReference
+   */
   public function fundable()
   {
     return $this->morphTo();

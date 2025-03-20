@@ -99,11 +99,11 @@ export default function SideBarLayout() {
           route: instRoute('students.create'),
           roles: [InstitutionUserType.Admin],
         },
-        {
-          label: 'Student Applications',
-          route: instRoute('admission-applications.index'),
-          roles: [InstitutionUserType.Admin],
-        },
+        // {
+        //   label: 'Student Applications',
+        //   route: instRoute('admission-applications.index'),
+        //   roles: [InstitutionUserType.Admin],
+        // },
       ],
     },
     {
@@ -118,6 +118,22 @@ export default function SideBarLayout() {
         {
           label: 'All Attendances',
           route: instRoute('attendances.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+    {
+      label: 'Admissions',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'Admission Forms',
+          route: instRoute('admission-forms.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Admission Applications',
+          route: instRoute('admission-applications.index'),
           roles: [InstitutionUserType.Admin],
         },
       ],

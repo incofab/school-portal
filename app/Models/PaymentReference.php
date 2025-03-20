@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use App\Enums\Payments\PaymentMerchant;
+use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -19,12 +20,13 @@ class PaymentReference extends Model
     'institution_id' => 'integer',
     'user_id' => 'integer',
     'payable_id' => 'integer',
-    'merchant' => PaymentMerchant::class,
+    'paymentable_id' => 'integer',
+    'merchant' => PaymentMerchantType::class,
     'status' => PaymentStatus::class,
     'method' => PaymentMethod::class,
     'purpose' => PaymentPurpose::class,
-    'meta' => 'array',
-    'payload' => 'array'
+    'meta' => AsArrayObject::class,
+    'payload' => AsArrayObject::class
   ];
 
   function confirmPayment()
@@ -47,8 +49,20 @@ class PaymentReference extends Model
     return Str::orderedUuid();
   }
 
-  // Morph to User | InstitutionGroup
+  /**
+   * The entity making the payment. Cannot be null
+   * Morphs to User | InstitutionGroup
+   */
   public function payable()
+  {
+    return $this->morphTo();
+  }
+
+  /**
+   * The entity being paid for, it is nullable
+   * Morphs to AdmissionForm|null
+   */
+  function paymentable()
   {
     return $this->morphTo();
   }

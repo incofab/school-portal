@@ -22,7 +22,7 @@ class MorphMap
     return $keys;
   }
 
-  function value($key): string|null
+  static function value($key): string|null
   {
     return self::MAP[$key] ?? null;
   }
@@ -31,6 +31,8 @@ class MorphMap
     'academic-session' => Models\AcademicSession::class,
     'admin' => Models\Admin::class,
     'admission-application' => Models\AdmissionApplication::class,
+    'admission-form' => Models\AdmissionForm::class,
+    'admission-form-purchase' => Models\AdmissionFormPurchase::class,
     'application-guardian' => Models\ApplicationGuardian::class,
     'assessment' => Models\Assessment::class,
     'assignment' => Models\Assignment::class,

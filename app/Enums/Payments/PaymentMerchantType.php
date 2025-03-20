@@ -1,7 +1,7 @@
 <?php
 namespace App\Enums\Payments;
 
-enum PaymentMerchant: string
+enum PaymentMerchantType: string
 {
   case Paystack = 'paystack';
   case Rave = 'rave';
