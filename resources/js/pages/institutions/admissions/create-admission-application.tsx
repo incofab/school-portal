@@ -65,6 +65,7 @@ export default function CreateAdmissionApplication({
     other_names: '',
     gender: '',
     dob: '',
+    address: '',
     religion: '',
     lga: '',
     state: '',
@@ -87,10 +88,11 @@ export default function CreateAdmissionApplication({
   async function onSubmit() {
     const res = await form.submit(async (data, web) => {
       const formData = new FormData();
-      const file = data.files![0];
-      const imageBlob = await resizeImage(file, 300, 300);
-      formData.append('photo', imageBlob as Blob);
-
+      const file = data.files ? data.files[0] : null;
+      if (file) {
+        const imageBlob = await resizeImage(file, 300, 300);
+        formData.append('photo', imageBlob as Blob);
+      }
       Object.entries(data).map(([key, value]) => {
         if (key === 'files' || key === 'photo') {
           return;
@@ -208,23 +210,6 @@ export default function CreateAdmissionApplication({
                   value={form.data.other_names}
                 />
               </FormControlBox>
-              {/* 
-              <FormControlBox form={form as any} title="Phone" formKey="phone">
-                <Input
-                  type="phone"
-                  onChange={(e) => form.setValue('phone', e.currentTarget.value)}
-                  value={form.data.phone}
-                />
-              </FormControlBox>
-              <FormControlBox form={form as any} title="Email" formKey="email">
-                <Input
-                  type="email"
-                  onChange={(e) => form.setValue('email', e.currentTarget.value)}
-                  value={form.data.email}
-                  required
-                />
-              </FormControlBox> 
-              */}
               <FormControlBox
                 form={form as any}
                 title="Gender"
@@ -284,7 +269,7 @@ export default function CreateAdmissionApplication({
 
               <InputForm
                 form={form as any}
-                title="Intended Class of Admission"
+                title="Intended Class of Admission [Optional]"
                 formKey="intended_class_of_admission"
               />
 
@@ -294,15 +279,21 @@ export default function CreateAdmissionApplication({
                 formKey="previous_school_attended"
               />
 
-              {form.data.guardians.map((guardian: GuardianProp, index) =>
-                GuardianForm(index, guardian, form)
-              )}
+              {form.data.guardians.map((guardian: GuardianProp, index) => (
+                <GuardianForm
+                  index={index}
+                  key={index}
+                  guardian={guardian}
+                  form={form}
+                />
+              ))}
 
               <HStack align={'stretch'} mt={5}>
                 <FormButton isLoading={form.processing} title="Submit Form" />
                 <Spacer />
                 <BrandButton
                   title="Add New Guardian"
+                  type={'button'}
                   onClick={() => {
                     form.setValue('guardians', [
                       ...form.data.guardians,
@@ -344,9 +335,9 @@ export default function CreateAdmissionApplication({
                     <Input
                       type={'file'}
                       id="photo"
+                      name="photo_form"
                       hidden
                       accept={'image/jpeg,image/png,image/jpg'}
-                      isRequired
                       onChange={(e) => {
                         const file = e.target.files?.[0];
 
@@ -378,7 +369,15 @@ export default function CreateAdmissionApplication({
   );
 }
 
-function GuardianForm(index: number, guardian: GuardianProp, form: any) {
+function GuardianForm({
+  index,
+  guardian,
+  form,
+}: {
+  index: number;
+  guardian: GuardianProp;
+  form: any;
+}) {
   return (
     <VStack mt={10}>
       <HStack width="full" justify="flex-end" align={'stretch'}>

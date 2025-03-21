@@ -30,6 +30,8 @@ Route::get('academic-sessions/search', [Web\AcademicSessionController::class, 's
 Route::post('activate-result', [Web\TermResultActivationController::class, 'store'])
     ->name('activate-term-result.store');
 
+Route::get('/institution/{institution}/admission-forms/search', [Admissions\AdmissionFormController::class, 'search'])->name('institutions.admission-forms.search');
+
 Route::group(['prefix' => '{institution}/admissions/', 'as' => 'institutions.'], function () {
     Route::get('apply', [Admissions\AdmissionApplicationController::class, 'create'])
         ->name('admissions.create');

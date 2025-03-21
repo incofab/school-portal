@@ -20,7 +20,8 @@ class WalletFundingProcessor extends PaymentProcessor
     $this->paymentReference->confirmPayment();
 
     $res = FundingHandler::makeFromPaymentRef(
-      $this->paymentReference
+      $this->paymentReference,
+      'Wallet funding'
     )->processWalletPayment($this->paymentReference);
 
     DB::commit();

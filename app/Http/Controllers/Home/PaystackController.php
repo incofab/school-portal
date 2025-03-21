@@ -113,19 +113,6 @@ class PaystackController extends Controller
 
     $res = $paymentProcessor->handleCallback();
 
-    /*
-    $res = null;
-    if ($paymentRef->purpose === PaymentPurpose::Fee) {
-      $res = (new ConfirmFeePayment(
-        $paymentRef,
-        $paymentRef->institution
-      ))->run();
-    } elseif ($paymentRef->purpose === PaymentPurpose::WalletFunding) {
-      (new ConfirmWalletFunding($paymentRef))->run();
-    } else {
-      throw new Exception('Payment purpose not recognized');
-    }
-    */
     return redirect($paymentRef->redirect_url ?? route('home'))->with(
       $res->isSuccessful() ? 'message' : 'error',
       $res->message

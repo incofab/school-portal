@@ -68,18 +68,10 @@ class AdmissionApplicationController extends Controller
     return $this->ok(['admissionApplication' => $admissionApplication]);
   }
 
-  // function edit(
-  //   Institution $institution,
-  //   AdmissionApplication $admissionApplication
-  // ) {
-  //   return inertia('institutions/admissions/admission-application', [
-  //     'admissionApplication' => $admissionApplication
-  //   ]);
-  // }
-
   public function updateStatus(
     Institution $institution,
-    AdmissionApplication $admissionApplication
+    AdmissionApplication $admissionApplication,
+    Request $request
   ) {
     abort_if(
       $admissionApplication->admission_status != 'pending',
@@ -87,7 +79,7 @@ class AdmissionApplicationController extends Controller
       'Admission Application has been handled'
     );
 
-    $data = request()->validate([
+    $data = $request->validate([
       'admission_status' => ['required', 'string'],
       'classification' => [
         'required',
@@ -97,7 +89,6 @@ class AdmissionApplicationController extends Controller
 
     //== If Admitted, fill the necessary DB Tables with the needed information
     if ($data['admission_status'] === 'admitted') {
-      //Handle_Admission
       HandleAdmission::make()->admitStudent($admissionApplication, $data);
     }
 
@@ -183,6 +174,9 @@ class AdmissionApplicationController extends Controller
       purpose: PaymentPurpose::AdmissionFormPurchase,
       user_id: $admissionForm->institution->user_id,
       reference: $request->reference,
+      redirect_url: instRoute('admissions.success', [
+        $admissionApplication->id
+      ]),
       meta: [
         'admission_application_id' => $admissionApplication->id
       ]

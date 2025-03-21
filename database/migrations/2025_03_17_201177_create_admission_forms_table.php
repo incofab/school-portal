@@ -17,6 +17,12 @@ return new class extends Migration {
       $table->string('title');
       $table->mediumText('description')->nullable();
       $table->decimal('price', 10, 2)->default(0.0);
+      $table
+        ->foreignId('academic_session_id')
+        ->nullable()
+        ->constrained()
+        ->cascadeOnDelete();
+      $table->string('term')->nullable();
       $table->boolean('is_published')->default(true);
       $table->timestamps();
       $table->softDeletes();

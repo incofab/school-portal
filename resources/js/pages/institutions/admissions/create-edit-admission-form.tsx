@@ -11,6 +11,10 @@ import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
 import InputForm from '@/components/forms/input-form';
+import AcademicSessionSelect from '@/components/selectors/academic-session-select';
+import EnumSelect from '@/components/dropdown-select/enum-select';
+import { TermType } from '@/types/types';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   admissionForm?: AdmissionForm;
@@ -19,12 +23,16 @@ interface Props {
 export default function CreateEditAdmissionForms({ admissionForm }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
+  const { currentTerm, currentAcademicSession } = useSharedProps();
 
   const webForm = useWebForm({
     title: admissionForm?.title ?? '',
     description: admissionForm?.description ?? '',
     price: admissionForm?.price ?? '',
     is_published: admissionForm?.is_published ?? false,
+    academic_session_id:
+      admissionForm?.academic_session_id ?? currentAcademicSession.id,
+    term: admissionForm?.term ?? currentTerm,
   });
 
   const submit = async () => {
@@ -64,7 +72,35 @@ export default function CreateEditAdmissionForms({ admissionForm }: Props) {
               />
             </FormControlBox>
             <InputForm form={webForm as any} formKey="price" title="Price" />
-            <FormControlBox form={webForm as any} formKey="forMidTerm" title="">
+            <FormControlBox
+              form={webForm as any}
+              title="Academic Session [Optional]"
+              formKey="academic_session_id"
+            >
+              <AcademicSessionSelect
+                selectValue={webForm.data.academic_session_id}
+                isMulti={false}
+                isClearable={true}
+                onChange={(e: any) =>
+                  webForm.setValue('academic_session_id', e?.value)
+                }
+              />
+            </FormControlBox>
+            <FormControlBox form={webForm as any} title="Term" formKey="term">
+              <EnumSelect
+                enumData={TermType}
+                selectValue={webForm.data.term}
+                isMulti={false}
+                isClearable={true}
+                onChange={(e: any) => webForm.setValue('term', e?.value)}
+                required
+              />
+            </FormControlBox>
+            <FormControlBox
+              form={webForm as any}
+              formKey="is_published"
+              title=""
+            >
               <Checkbox
                 isChecked={webForm.data.is_published}
                 onChange={(e) =>

@@ -32,7 +32,7 @@ class AdmissionApplication extends Model
     if (intval($this->admissionForm?->price) <= 0) {
       return true;
     }
-    return empty($this->admission_form_purchase_id);
+    return !empty($this->admission_form_purchase_id);
   }
 
   function institution()

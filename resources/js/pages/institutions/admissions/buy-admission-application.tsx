@@ -47,9 +47,8 @@ export default function BuyAdmissionApplication({
         textAlign={'center'}
         p={8}
       >
-        <Text fontSize={'2xl'} color={'green.600'}>
-          Complete your Registration
-        </Text>
+        <Text fontSize={'3xl'}>Final Step on your Registration Process</Text>
+        <br />
         <Div>
           <LabelText
             label="Name"
@@ -57,15 +56,15 @@ export default function BuyAdmissionApplication({
           />
           <LabelText
             label="Application Number"
-            text={admissionApplication.appplication_no}
+            text={admissionApplication.application_no}
           />
         </Div>
         <Icon as={ArrowDownIcon} w={10} h={10} mt={6} />
-        <Text mb={2} fontWeight={'semibold'}>
-          {admissionApplication.admissionForm!.title}
+        <Text mb={2} fontWeight={'semibold'} fontSize={'2xl'}>
+          {admissionApplication.admission_form!.title}
         </Text>
-        <Text mb={4} fontWeight={'bold'} color={'green.500'}>
-          {formatAsCurrency(admissionApplication.admissionForm!.price)}
+        <Text mb={4} fontWeight={'bold'} fontSize={'3xl'} color={'green.500'}>
+          {formatAsCurrency(admissionApplication.admission_form!.price)}
         </Text>
         <Button
           variant={'outline'}
@@ -73,7 +72,8 @@ export default function BuyAdmissionApplication({
           leftIcon={<Icon as={CurrencyDollarIcon} />}
           mt={4}
           size={'sm'}
-          onClick={(e) => window.close()}
+          onClick={submit}
+          isLoading={webForm.processing}
         >
           Pay Now
         </Button>

@@ -23,7 +23,9 @@ class AdmissionForm extends Model
       'title' => ['required', 'string'],
       'description' => ['nullable', 'string'],
       'price' => ['required', 'numeric', 'min:0'],
-      'is_published' => ['sometimes', 'boolean']
+      'is_published' => ['sometimes', 'boolean'],
+      'academic_session_id' => ['nullable', 'exists:academic_sessions,id'],
+      'term' => ['nullable', 'string']
     ];
   }
 

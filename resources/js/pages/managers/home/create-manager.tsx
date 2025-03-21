@@ -22,6 +22,7 @@ export default function CreateManager({}: Props) {
     first_name: '',
     last_name: '',
     other_names: '',
+    username: '',
     phone: '',
     email: '',
     gender: '',
@@ -105,6 +106,16 @@ export default function CreateManager({}: Props) {
                       form.setValue('email', e.currentTarget.value)
                     }
                     value={form.data.email}
+                    required
+                  />
+                </FormControlBox>
+                <FormControlBox form={form} title="Username" formKey="username">
+                  <Input
+                    type="text"
+                    onChange={(e) =>
+                      form.setValue('username', e.currentTarget.value)
+                    }
+                    value={form.data.username}
                     required
                   />
                 </FormControlBox>

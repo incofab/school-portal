@@ -1,6 +1,6 @@
 import React from 'react';
 import { AdmissionForm } from '@/types/models';
-import { HStack, IconButton, Icon } from '@chakra-ui/react';
+import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -52,6 +52,7 @@ export default function ListAdmissionForms({ admissionForms }: Props) {
     {
       label: 'Is Published',
       value: 'is_published',
+      render: (row) => <Text>{row.is_published ? 'Yes' : 'No'}</Text>,
     },
     {
       label: 'Date',

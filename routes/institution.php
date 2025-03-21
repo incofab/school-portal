@@ -272,7 +272,6 @@ Route::resource('/admission-applications', Web\Admissions\AdmissionApplicationCo
 Route::post('/admission-applications/{admissionApplication}/update-status', [Web\Admissions\AdmissionApplicationController::class, 'updateStatus'])
   ->name('admission-applications.update-status');
 
-Route::get('/admission-forms/search', [Web\Admissions\AdmissionFormController::class, 'search'])->name('admission-forms.search');
 Route::resource('admission-forms', Web\Admissions\AdmissionFormController::class);
 
 include base_path('routes/assignment.php');

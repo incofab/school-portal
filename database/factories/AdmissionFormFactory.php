@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Enums\TermType;
+use App\Models\AcademicSession;
 use App\Models\Institution;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Str;
 
 class AdmissionFormFactory extends Factory
 {
@@ -17,9 +18,11 @@ class AdmissionFormFactory extends Factory
   {
     return [
       'institution_id' => Institution::factory(),
+      'academic_session_id' => AcademicSession::factory(),
       'title' => fake()->sentence(),
       'description' => fake()->paragraph(),
-      'price' => fake()->randomNumber(3)
+      'price' => fake()->randomNumber(3),
+      'term' => fake()->randomElement(TermType::cases())->value
     ];
   }
 }
