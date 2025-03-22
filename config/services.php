@@ -44,5 +44,9 @@ return [
 
   'bulksms_nigeria' => [
     'api-token' => env('BULKSMS_NIGERIA_API_TOKEN')
+  ],
+
+  'ai_keys' => [
+    'gemini-api-key' => env('GEMINI_API_KEY')
   ]
 ];
