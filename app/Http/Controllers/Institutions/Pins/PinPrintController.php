@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Institutions\Staff;
+namespace App\Http\Controllers\Institutions\Pins;
 
 use App\Actions\CourseResult\DownloadPins;
 use App\Enums\InstitutionUserType;
@@ -13,6 +13,7 @@ use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Storage;
 
+/** @deprecated No need for this controller, PinController handles it */
 class PinPrintController extends Controller
 {
   public function __construct()

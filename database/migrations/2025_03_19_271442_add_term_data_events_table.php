@@ -23,6 +23,19 @@ return new class extends Migration {
     });
   }
 
+  function removePinPrintTable()
+  {
+    DB::table('migrations')
+      ->where('migration', '2024_08_19_211047_create_emails_table')
+      ->orWhere('migration', '2023_06_15_311053_add_print_pin_id_to_pins_table')
+      ->delete();
+
+    Schema::table('pins', function (Blueprint $table) {
+      $table->dropForeign(['pin_print_id']);
+      $table->dropColumn(['pin_print_id']);
+    });
+  }
+
   /**
    * Reverse the migrations.
    */

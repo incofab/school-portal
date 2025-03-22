@@ -208,9 +208,9 @@ Route::get('/term-results/index/{user?}', Web\ListTermResultController::class)
 Route::get('/cummulative-result/index', Web\Staff\CummulativeResultController::class)
   ->name('cummulative-result.index');
 
-Route::get('/pin-prints/{pinPrint}/download', [Web\Staff\PinPrintController::class, 'downloadPins'])
+Route::get('/pin-prints/{pinPrint}/download', [Web\Pins\PinPrintController::class, 'downloadPins'])
   ->name('pin-prints.download');
-Route::resource('/pin-prints', Web\Staff\PinPrintController::class)->only(['index', 'store', 'show']);
+Route::resource('/pin-prints', Web\Pins\PinPrintController::class)->only(['index', 'store', 'show']);
 
 Route::get('/pins/classifications/{classification}/tiles', [Web\Staff\Pins\StudentPinController::class, 'indexTiles'])
   ->name('pins.classification.student-pin-tiles');
@@ -218,6 +218,17 @@ Route::post('/pins/students/{student}', [Web\Staff\Pins\StudentPinController::cl
   ->name('pins.students.store');
 Route::post('/pins/classifications/{classification}', [Web\Staff\Pins\StudentPinController::class, 'storeClassStudentPin'])
   ->name('pins.classifications.store');
+
+Route::get('/pin-generators/{pinGenerator}/download', [Web\Pins\PinGeneratorController::class, 'downloadPins'])
+  ->name('pin-generators.download');
+Route::get('/pin-generators', [Web\Pins\PinGeneratorController::class, 'index'])
+  ->name('pin-generators.index');
+Route::get('/pin-generators/create', [Web\Pins\PinGeneratorController::class, 'create'])
+  ->name('pin-generators.create');
+Route::get('/pin-generators/{pinGenerator}', [Web\Pins\PinGeneratorController::class, 'show'])
+  ->name('pin-generators.show');
+Route::post('/pin-generators/store', [Web\Pins\PinGeneratorController::class, 'store'])
+  ->name('pin-generators.store');
 
 Route::get('/fees/search', [Web\Payments\FeeController::class, 'search'])->name('fees.search');
 Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);

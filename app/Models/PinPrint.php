@@ -6,6 +6,7 @@ use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/** @deprecated No longer in use */
 class PinPrint extends Model
 {
   use HasFactory, InstitutionScope;

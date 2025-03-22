@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Managers;
+namespace App\Http\Controllers\Institutions\Pins;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pin;
@@ -7,6 +7,7 @@ use App\Models\PinGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+/** @deprecated All methods moved to App\Http\Controllers\Pins\PinGeneratorController */
 class GeneratePinController extends Controller
 {
   function create()

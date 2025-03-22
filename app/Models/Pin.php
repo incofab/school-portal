@@ -17,7 +17,7 @@ class Pin extends Model
     'institution_id' => 'integer',
     'term_result_id' => 'integer',
     'pin_generator_id' => 'integer',
-    'pin_print_id' => 'integer',
+    // 'pin_print_id' => 'integer',
     'term' => TermType::class
   ];
   public $guarded = [];

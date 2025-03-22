@@ -356,7 +356,7 @@ export default function SideBarLayout() {
         },
         {
           label: 'Pins',
-          route: instRoute('pin-prints.index'),
+          route: instRoute('pin-generators.index'),
           roles: [InstitutionUserType.Admin],
         },
         {

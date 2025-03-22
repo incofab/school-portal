@@ -3,22 +3,21 @@ import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
-import ManagerDashboardLayout from '@/layout/managers/manager-dashboard-layout';
 import DateTimeDisplay from '@/components/date-time-display';
 import { PinGenerator } from '@/types/models';
 import { LinkButton } from '@/components/buttons';
-import route from '@/util/route';
+import DashboardLayout from '@/layout/dashboard-layout';
+import useInstitutionRoute from '@/hooks/use-institution-route';
+import { HStack, Icon, IconButton, Tooltip } from '@chakra-ui/react';
+import { CloudArrowDownIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   pinGenerators: PaginationResponse<PinGenerator>;
 }
 
 export default function ListPinGenerators({ pinGenerators }: Props) {
+  const { instRoute } = useInstitutionRoute();
   const headers: ServerPaginatedTableHeader<PinGenerator>[] = [
-    {
-      label: 'Institution',
-      value: 'institution.name',
-    },
     {
       label: 'Num of Pins',
       value: 'num_of_pins',
@@ -39,19 +38,40 @@ export default function ListPinGenerators({ pinGenerators }: Props) {
     {
       label: 'Action',
       render: (row) => (
-        <LinkButton
-          variant={'link'}
-          href={route('managers.pins.index', [row.id])}
-          title="View Pins"
-        />
+        <HStack>
+          <LinkButton
+            variant={'link'}
+            href={instRoute('pin-generators.show', [row.id])}
+            title="View Pins"
+          />
+          <Tooltip label={'Download Pins'}>
+            <IconButton
+              aria-label="Download Pins"
+              icon={<Icon as={CloudArrowDownIcon} />}
+              colorScheme="brand"
+              size={'md'}
+              as={'a'}
+              href={instRoute('pin-generators.download', [row.id])}
+              variant={'ghost'}
+            />
+          </Tooltip>
+        </HStack>
       ),
     },
   ];
 
   return (
-    <ManagerDashboardLayout>
+    <DashboardLayout>
       <Slab>
-        <SlabHeading title="Result Pins" />
+        <SlabHeading
+          title="Generated Pins"
+          rightElement={
+            <LinkButton
+              label="Generate Pin"
+              href={instRoute('pin-generators.create')}
+            />
+          }
+        />
         <SlabBody>
           <ServerPaginatedTable
             scroll={true}
@@ -62,6 +82,6 @@ export default function ListPinGenerators({ pinGenerators }: Props) {
           />
         </SlabBody>
       </Slab>
-    </ManagerDashboardLayout>
+    </DashboardLayout>
   );
 }
