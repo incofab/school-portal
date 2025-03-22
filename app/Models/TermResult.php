@@ -32,6 +32,11 @@ class TermResult extends Model
     return $this->belongsTo(Institution::class);
   }
 
+  function isPublished()
+  {
+    return boolval($this->result_publication_id);
+  }
+
   function scopeIsPublished($query, $isPublished = true)
   {
     return $isPublished

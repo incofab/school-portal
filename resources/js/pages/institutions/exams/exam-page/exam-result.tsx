@@ -10,6 +10,7 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import CenteredBox from '@/components/centered-box';
 import { GenericUser } from '@/types/types';
 import tokenUserUtil from '@/util/token-user-util';
+import useIsStudent from '@/hooks/use-is-student';
 
 interface Props {
   exam: Exam;
@@ -18,6 +19,7 @@ interface Props {
 
 export default function ExamResult({ exam, tokenUser }: Props) {
   const { instRoute } = useInstitutionRoute();
+  const isStudent = useIsStudent();
   const displayData = [
     { label: 'Exam No', value: exam.exam_no },
     { label: 'Num of Subjects', value: exam.exam_courseables?.length },
@@ -101,7 +103,12 @@ export default function ExamResult({ exam, tokenUser }: Props) {
             })}
           </VStack>
           <br />
-          <LinkButton title="Home" href={instRoute('external.home')} />
+          <LinkButton
+            title="Home"
+            href={
+              isStudent ? instRoute('dashboard') : instRoute('external.home')
+            }
+          />
         </VStack>
       </CenteredBox>
     </ExamLayout>

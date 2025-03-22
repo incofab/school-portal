@@ -69,6 +69,13 @@ class ExamCourseable extends Model
   //   return successRes('Data recorded');
   // }
 
+  function scorePercent()
+  {
+    return ($this->score /
+      ($this->num_of_questions == 0 ? 1 : $this->num_of_questions)) *
+      100;
+  }
+
   function exam()
   {
     return $this->belongsTo(Exam::class);

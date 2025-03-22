@@ -393,10 +393,11 @@ export interface InstitutionSetting extends InstitutionRow {
   type: string;
 }
 
-export interface AdmissionApplication extends Row {
+export interface AdmissionApplication extends InstitutionRow {
   first_name: string;
   last_name: string;
   other_names: string;
+  application_no: string;
   phone: string;
   photo: string;
   email: string;
@@ -411,7 +412,19 @@ export interface AdmissionApplication extends Row {
   state: string;
   intended_class_of_admission: string;
   admission_status: string;
+  admission_form_id?: number;
+  admission_form?: AdmissionForm;
   application_guardians?: ApplicationGuardian[];
+}
+
+export interface AdmissionForm extends InstitutionRow {
+  title: string;
+  description: string;
+  price: number;
+  is_published: boolean;
+  term?: string;
+  academic_session_id?: number;
+  academic_session?: AcademicSession;
 }
 
 export interface ApplicationGuardian extends Row {

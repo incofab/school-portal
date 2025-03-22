@@ -1,6 +1,6 @@
 import React from 'react';
-import { Exam } from '@/types/models';
-import { HStack, IconButton, Icon } from '@chakra-ui/react';
+import { Event, Exam } from '@/types/models';
+import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -13,9 +13,10 @@ import { TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
-import useIsAdmin from '@/hooks/use-is-admin';
 import tokenUserUtil from '@/util/token-user-util';
 import useIsStaff from '@/hooks/use-is-staff';
+import useModalToggle from '@/hooks/use-modal-toggle';
+import ExamTableFilters from '@/components/table-filters/exam-table-filters';
 
 interface Props {
   exams: PaginationResponse<Exam>;
@@ -25,9 +26,9 @@ interface Props {
 export default function ListExams({ exams, event }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
+  const examFilterToggle = useModalToggle();
   const { handleResponseToast } = useMyToast();
   const isStaff = useIsStaff();
-  const isAdmin = useIsAdmin();
 
   async function deleteItem(obj: Exam) {
     const res = await deleteForm.submit((data, web) =>
@@ -56,6 +57,10 @@ export default function ListExams({ exams, event }: Props) {
       value: 'score',
     },
     {
+      label: 'Class',
+      render: (row) => tokenUserUtil(row.examable).getClassName(),
+    },
+    {
       label: 'Status',
       value: 'status',
     },
@@ -70,14 +75,6 @@ export default function ListExams({ exams, event }: Props) {
                   variant={'link'}
                   title="Detail"
                 />
-                {/* <IconButton
-                  aria-label={'Edit Exam'}
-                  icon={<Icon as={PencilIcon} />}
-                  as={InertiaLink}
-                  href={instRoute('exams.edit', [row.id])}
-                  variant={'ghost'}
-                  colorScheme={'brand'}
-                /> */}
                 <DestructivePopover
                   label={'Delete this exam'}
                   onConfirm={() => deleteItem(row)}
@@ -100,15 +97,14 @@ export default function ListExams({ exams, event }: Props) {
   return (
     <DashboardLayout>
       <Slab>
-        <SlabHeading
-          title="List Exams"
-          // rightElement={
-          // <LinkButton
-          //   href={instRoute('exams.create', [event])}
-          //   title={'New'}
-          // />
-          // }
-        />
+        <SlabHeading>
+          <Text as={'div'} size={'md'} fontWeight={'medium'}>
+            {event.title}
+          </Text>
+          <Text as={'div'} size={'sm'}>
+            List Exams
+          </Text>
+        </SlabHeading>
         <SlabBody>
           <ServerPaginatedTable
             scroll={true}
@@ -117,9 +113,12 @@ export default function ListExams({ exams, event }: Props) {
             keyExtractor={(row) => row.id}
             paginator={exams}
             hideSearchField={true}
+            validFilters={['classification']}
+            onFilterButtonClick={examFilterToggle.open}
           />
         </SlabBody>
       </Slab>
+      <ExamTableFilters {...examFilterToggle.props} />
     </DashboardLayout>
   );
 }

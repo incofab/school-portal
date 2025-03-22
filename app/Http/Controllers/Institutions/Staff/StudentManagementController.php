@@ -15,6 +15,7 @@ use App\Http\Requests\CreateStudentRequest;
 use App\Actions\Users\DownloadStudentRecordingSheet;
 use App\Support\UITableFilters\StudentUITableFilters;
 use App\Actions\Users\InsertStudentFromRecordingSheet;
+use Illuminate\Validation\Rule;
 
 class StudentManagementController extends Controller
 {
@@ -149,6 +150,22 @@ class StudentManagementController extends Controller
       $user->delete();
     }
     DB::commit();
+
+    return $this->ok();
+  }
+
+  function updateCode(
+    Request $request,
+    Institution $institution,
+    Student $student
+  ) {
+    $data = $request->validate([
+      'code' => [
+        'required',
+        Rule::unique('students', 'code')->ignore($student->id, 'id')
+      ]
+    ]);
+    $student->fill($data)->save();
 
     return $this->ok();
   }

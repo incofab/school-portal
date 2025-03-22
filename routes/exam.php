@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Institutions as Web;
 
+Route::get('events/{event}/download', [Web\Exams\EventController::class, 'download'])
+    ->name('events.download');
 Route::resource('/events', Web\Exams\EventController::class);
 
 Route::delete('event-courseables/{eventCourseable}/delete', [Web\Exams\EventCourseableController::class, 'destroy'])

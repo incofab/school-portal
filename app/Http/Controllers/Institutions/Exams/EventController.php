@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Exams;
 
+use App\Actions\DownloadResult;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
@@ -9,6 +10,7 @@ use App\Models\ClassificationGroup;
 use App\Models\Event;
 use App\Models\Institution;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use Inertia\Inertia;
 
 class EventController extends Controller
@@ -94,5 +96,17 @@ class EventController extends Controller
     $data = $request->validate(Event::createRule($event));
     $event->fill($data)->save();
     return $this->ok();
+  }
+
+  function download(Institution $institution, Event $event)
+  {
+    $excelWriter = DownloadResult::run($event);
+    $fileName = sanitizeFilename("{$event->title}-exams.xlsx");
+    $tempFilePath = storage_path("app/public/{$fileName}");
+    // Save to a temporary file
+    $excelWriter->save($tempFilePath);
+    return Response::download($tempFilePath, $fileName)->deleteFileAfterSend(
+      true
+    );
   }
 }

@@ -1,6 +1,5 @@
 import { Div } from '@/components/semantic';
 import { generateRandomString, preventNativeSubmit } from '@/util/util';
-import route from '@/util/route';
 import {
   Avatar,
   Divider,
@@ -24,7 +23,7 @@ import {
   Nationality,
   Religion,
 } from '@/types/types';
-import { Institution } from '@/types/models';
+import { AdmissionForm, Institution } from '@/types/models';
 import InputForm from '@/components/forms/input-form';
 import { BrandButton, FormButton } from '@/components/buttons';
 import useWebForm from '@/hooks/use-web-form';
@@ -37,9 +36,12 @@ import {
   FileDropperType,
 } from '@/components/file-dropper/common';
 import { resizeImage } from '@/util/util';
+import useInstitutionRoute from '@/hooks/use-institution-route';
+import AdmissionFormSelect from '@/components/selectors/admission-form-select';
 
 interface Props {
   institution: Institution;
+  admissionForms: AdmissionForm[];
 }
 
 interface GuardianProp {
@@ -51,27 +53,19 @@ interface GuardianProp {
   relationship: string;
 }
 
-// interface AdmissionData extends AdmissionApplication {
-//   files: FileList | null;
-// }
-
-export default function AdmissionApplicationPage({ institution }: Props) {
-  // const form = useWebForm({
-  //   reference: String(institution.id) + generateRandomString(16),
-  //   files: {} as FileList | null,
-  // } as AdmissionData);
-
-  // AdmissionApplication & {
-  //   files: FileList | null;
-  // });
-
+export default function CreateAdmissionApplication({
+  institution,
+  admissionForms,
+}: Props) {
   const form = useWebForm({
     reference: String(institution.id) + generateRandomString(16),
+    admission_form_id: '',
     first_name: '',
     last_name: '',
     other_names: '',
     gender: '',
     dob: '',
+    address: '',
     religion: '',
     lga: '',
     state: '',
@@ -87,17 +81,18 @@ export default function AdmissionApplicationPage({ institution }: Props) {
 
   const { handleResponseToast } = useMyToast();
   const extensions = FileDropperType.Image.extensionLabels;
-  // const { instRoute } = useInstitutionRoute();
+  const { instRoute } = useInstitutionRoute();
 
   const [uploadedPhoto, setUploadedPhoto] = useState<string | null>(null);
 
   async function onSubmit() {
     const res = await form.submit(async (data, web) => {
       const formData = new FormData();
-      const file = data.files![0];
-      const imageBlob = await resizeImage(file, 300, 300);
-      formData.append('photo', imageBlob as Blob);
-
+      const file = data.files ? data.files[0] : null;
+      if (file) {
+        const imageBlob = await resizeImage(file, 300, 300);
+        formData.append('photo', imageBlob as Blob);
+      }
       Object.entries(data).map(([key, value]) => {
         if (key === 'files' || key === 'photo') {
           return;
@@ -113,19 +108,13 @@ export default function AdmissionApplicationPage({ institution }: Props) {
         formData.append(key, String(value));
       });
 
-      return web.post(
-        route('institutions.admissions.store', [institution.uuid]),
-        formData
-      );
+      return web.post(instRoute('admissions.store'), formData);
     });
 
     if (!handleResponseToast(res)) return;
 
     Inertia.visit(
-      route('institutions.admissions.success', [
-        institution.uuid,
-        res.data.data.id,
-      ])
+      instRoute('admissions.success', [res.data.admissionApplication.id])
     );
   }
 
@@ -167,6 +156,21 @@ export default function AdmissionApplicationPage({ institution }: Props) {
             <VStack spacing={4} align={'stretch'} p={6}>
               <FormControlBox
                 form={form as any}
+                title="Admission Form"
+                formKey="admission_form_id"
+              >
+                <AdmissionFormSelect
+                  admissionForms={admissionForms}
+                  onChange={(e: any) =>
+                    form.setValue('admission_form_id', e?.value)
+                  }
+                  selectValue={form.data.admission_form_id}
+                  isMulti={false}
+                  isClearable={true}
+                />
+              </FormControlBox>
+              <FormControlBox
+                form={form as any}
                 title="First Name"
                 formKey="first_name"
               >
@@ -206,23 +210,6 @@ export default function AdmissionApplicationPage({ institution }: Props) {
                   value={form.data.other_names}
                 />
               </FormControlBox>
-              {/* 
-              <FormControlBox form={form as any} title="Phone" formKey="phone">
-                <Input
-                  type="phone"
-                  onChange={(e) => form.setValue('phone', e.currentTarget.value)}
-                  value={form.data.phone}
-                />
-              </FormControlBox>
-              <FormControlBox form={form as any} title="Email" formKey="email">
-                <Input
-                  type="email"
-                  onChange={(e) => form.setValue('email', e.currentTarget.value)}
-                  value={form.data.email}
-                  required
-                />
-              </FormControlBox> 
-              */}
               <FormControlBox
                 form={form as any}
                 title="Gender"
@@ -282,7 +269,7 @@ export default function AdmissionApplicationPage({ institution }: Props) {
 
               <InputForm
                 form={form as any}
-                title="Intended Class of Admission"
+                title="Intended Class of Admission [Optional]"
                 formKey="intended_class_of_admission"
               />
 
@@ -292,15 +279,21 @@ export default function AdmissionApplicationPage({ institution }: Props) {
                 formKey="previous_school_attended"
               />
 
-              {form.data.guardians.map((guardian: GuardianProp, index) =>
-                GuardianForm(index, guardian, form)
-              )}
+              {form.data.guardians.map((guardian: GuardianProp, index) => (
+                <GuardianForm
+                  index={index}
+                  key={index}
+                  guardian={guardian}
+                  form={form}
+                />
+              ))}
 
               <HStack align={'stretch'} mt={5}>
                 <FormButton isLoading={form.processing} title="Submit Form" />
                 <Spacer />
                 <BrandButton
                   title="Add New Guardian"
+                  type={'button'}
                   onClick={() => {
                     form.setValue('guardians', [
                       ...form.data.guardians,
@@ -342,9 +335,9 @@ export default function AdmissionApplicationPage({ institution }: Props) {
                     <Input
                       type={'file'}
                       id="photo"
+                      name="photo_form"
                       hidden
                       accept={'image/jpeg,image/png,image/jpg'}
-                      isRequired
                       onChange={(e) => {
                         const file = e.target.files?.[0];
 
@@ -376,7 +369,15 @@ export default function AdmissionApplicationPage({ institution }: Props) {
   );
 }
 
-function GuardianForm(index: number, guardian: GuardianProp, form: any) {
+function GuardianForm({
+  index,
+  guardian,
+  form,
+}: {
+  index: number;
+  guardian: GuardianProp;
+  form: any;
+}) {
   return (
     <VStack mt={10}>
       <HStack width="full" justify="flex-end" align={'stretch'}>

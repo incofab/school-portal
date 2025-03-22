@@ -5,7 +5,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import { CloudArrowDownIcon, PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
@@ -131,6 +131,21 @@ export default function ListEvents({
                 variant={'ghost'}
                 colorScheme={'brand'}
               />
+              <DestructivePopover
+                label={'Download the exams of this event'}
+                onConfirm={(onClose) => {
+                  window.location.href = instRoute('events.download', [row.id]);
+                  onClose();
+                }}
+                positiveButtonLabel="Download"
+              >
+                <IconButton
+                  aria-label={'Download event exams'}
+                  icon={<Icon as={CloudArrowDownIcon} />}
+                  variant={'ghost'}
+                  colorScheme={'green'}
+                />
+              </DestructivePopover>
               <DestructivePopover
                 label={'Delete this event'}
                 onConfirm={() => deleteItem(row)}

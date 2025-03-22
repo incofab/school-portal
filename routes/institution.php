@@ -81,6 +81,8 @@ Route::post('/classification-groups/{classificationGroup}/promote-students', [We
 // Route::post('/students/{student}/fee-payments/store', [Web\Students\StudentFeePaymentController::class, 'feePaymentStore'])->name('students.fee-payments.store');
 
 
+Route::post('/students/{student}/update-code', [Web\Staff\StudentManagementController::class, 'updateCode'])
+  ->name('students.update-code');
 Route::get('/classifications/{classification}/students-download', Web\Classifications\DownloadClassStudentsController::class)
   ->name('classifications.students-download');
 Route::get('/students/download-recording-template', [Web\Staff\StudentManagementController::class, 'downloadTemplate'])
@@ -266,11 +268,11 @@ Route::delete('/learning-evaluations/destroy/{learningEvaluation}', [Web\Staff\L
 Route::post('/set-term-result-learning-evaluation/{termResult?}', [Web\Staff\LearningEvaluationController::class, 'setTermResultEvaluation'])
   ->name('set-term-result-learning-evaluation');
 
-Route::resource('/admission-applications', Web\AdmissionApplicationController::class)->except('store');
-Route::post('/admission-applications/{admissionApplication}/update-status', [Web\AdmissionApplicationController::class, 'updateStatus'])
+Route::resource('/admission-applications', Web\Admissions\AdmissionApplicationController::class)->except('store');
+Route::post('/admission-applications/{admissionApplication}/update-status', [Web\Admissions\AdmissionApplicationController::class, 'updateStatus'])
   ->name('admission-applications.update-status');
-// Route::get('/admissions/letter/{admissionApplication}', [Web\AdmissionApplicationController::class, 'admissionLetter'])
-//   ->name('admissions.letter');
+
+Route::resource('admission-forms', Web\Admissions\AdmissionFormController::class);
 
 include base_path('routes/assignment.php');
 include base_path('routes/attendance.php');

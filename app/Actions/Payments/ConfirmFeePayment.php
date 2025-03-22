@@ -8,6 +8,7 @@ use App\Models\Institution;
 use App\Models\PaymentReference;
 use DB;
 
+/** @deprecated */
 class ConfirmFeePayment
 {
   public function __construct(

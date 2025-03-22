@@ -124,10 +124,13 @@ it('can store a payment notification for specific class', function () {
     'reference' => $data['reference'],
     'sender_user_id' => $this->admin->id,
     'receiver_type' => $receiverType,
-    'receiver_ids' => json_encode($this->classificationIds),
+    // 'receiver_ids' => json_encode($this->classificationIds),
     'institution_id' => $this->institution->id,
     'purpose' => SchoolNotificationPurpose::Receipt->value
   ]);
+  expect(
+    SchoolNotification::where('reference', $data['reference'])->first()
+  )->receiver_ids->toMatchArray($this->classificationIds);
 });
 
 it(

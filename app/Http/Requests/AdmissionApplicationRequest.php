@@ -4,17 +4,34 @@ namespace App\Http\Requests;
 
 use App\Enums\Gender;
 use App\Enums\GuardianRelationship;
+use App\Models\AdmissionForm;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\ValidationException;
 
 class AdmissionApplicationRequest extends FormRequest
 {
+  private ?AdmissionForm $admissionForm = null;
+  function prepareForValidation()
+  {
+    $this->admissionForm = AdmissionForm::find($this->admission_form_id);
+    if (!$this->admissionForm) {
+      throw ValidationException::withMessages([
+        'admission_form_id' => 'Admission form not found'
+      ]);
+    }
+  }
   /**
    * Determine if the user is authorized to make this request.
    */
   public function authorize(): bool
   {
     return true;
+  }
+
+  function getAdmissionForm(): AdmissionForm
+  {
+    return $this->admissionForm;
   }
 
   /**
@@ -25,6 +42,7 @@ class AdmissionApplicationRequest extends FormRequest
   public function rules(): array
   {
     return [
+      'admission_form_id' => ['required', 'integer'],
       'reference' => ['required', 'unique:admission_applications,reference'],
       'first_name' => ['required', 'string', 'max:255'],
       'last_name' => ['required', 'string', 'max:255'],

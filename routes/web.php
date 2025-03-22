@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Home as Home;
 use App\Http\Controllers as Web;
 use App\Http\Controllers\Institutions\Exams\External as External;
-use App\Mail\PaymentNotificationMail;
-use App\Models\Institution;
+use App\Http\Controllers\Institutions\Admissions as Admissions;
 
 Route::get(
     '{institution}/students/signed-result-sheet/{student}/{classification}/{academicSession}/{term}/{forMidTerm}',
@@ -21,30 +20,7 @@ Route::any(
 )->name('pdf-bridge-download');
 
 Route::get('/dummy1', function () {
-    $student = \App\Models\Student::find(109);
-    $receiptType = \App\Models\ReceiptType::find(1);
-
-    new \App\Mail\PaymentNotificationMail($student, $receiptType);
-
-    // return new \App\Mail\PaymentNotificationMail($student, $receiptType);
-    /*
-    $guardian = \App\Models\User::find(138);
-
-    $markdown = new Illuminate\Mail\Markdown(view(), config('mail.markdown'));
-    $bodyContent = $markdown->render('mail.payment-notification-mail', [
-        'guardian' => $guardian,
-        'receiptType' => $receiptType,
-        'student' => $student,
-        'feesToPay' => [],
-        'totalFeesToPay' => 5000,
-    ]);
-
-    return $bodyContent;
-    */
-
-    return file_get_contents(
-        public_path('/../resources/views/mail/payment-notification-mail.blade.php')
-    );
+    die('Dummy page');
 });
 
 Route::get('institutions/search', Web\SearchInstitutionController::class)
@@ -54,15 +30,19 @@ Route::get('academic-sessions/search', [Web\AcademicSessionController::class, 's
 Route::post('activate-result', [Web\TermResultActivationController::class, 'store'])
     ->name('activate-term-result.store');
 
-Route::group(['prefix' => '{institution}/admissions/'], function () {
-    Route::get('apply', [Web\Institutions\AdmissionApplicationController::class, 'create'])
-        ->name('institutions.admissions.create');
-    Route::post('apply', [Web\Institutions\AdmissionApplicationController::class, 'store'])
-        ->name('institutions.admissions.store');
-    Route::get('{admissionApplication}/application-success', [Web\Institutions\AdmissionApplicationController::class, 'successMessage'])
-        ->name('institutions.admissions.success');
-    Route::get('letter/{student}', [Web\Institutions\AdmissionApplicationController::class, 'admissionLetter'])
-        ->name('institutions.admissions.letter');
+Route::get('/institution/{institution}/admission-forms/search', [Admissions\AdmissionFormController::class, 'search'])->name('institutions.admission-forms.search');
+
+Route::group(['prefix' => '{institution}/admissions/', 'as' => 'institutions.'], function () {
+    Route::get('apply', [Admissions\AdmissionApplicationController::class, 'create'])
+        ->name('admissions.create');
+    Route::post('apply', [Admissions\AdmissionApplicationController::class, 'store'])
+        ->name('admissions.store');
+    Route::get('{admissionApplication}/application-success', [Admissions\AdmissionApplicationController::class, 'successMessage'])
+        ->name('admissions.success');
+    Route::get('letter/{student}', [Admissions\AdmissionApplicationController::class, 'admissionLetter'])
+        ->name('admissions.letter');
+    Route::post('/admission-forms/{admissionForm}/buy/{admissionApplication?}', [Admissions\AdmissionApplicationController::class, 'buyAdmissionForm'])
+        ->name('admission-forms.buy');
 });
 
 Route::group(['middleware' => ['guest']], function () {

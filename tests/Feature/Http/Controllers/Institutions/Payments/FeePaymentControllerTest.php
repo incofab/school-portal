@@ -94,11 +94,11 @@ it('updates fee payments', function () {
     )
     ->assertOk()
     ->assertJsonStructure(['feePayment']);
-  info(
-    FeePayment::query()
-      ->get()
-      ->toArray()
-  );
+  // info(
+  //   FeePayment::query()
+  //     ->get()
+  //     ->toArray()
+  // );
   assertDatabaseCount('fee_payments', 1);
   assertDatabaseHas('fee_payments', [
     'fee_id' => $this->fee->id,

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\EventStatus;
+use App\Enums\TermType;
 use App\Rules\ValidateExistsRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -21,7 +22,10 @@ class Event extends Model
     'expires_at' => 'datetime',
     'classification_id' => 'integer',
     'classification_group_id' => 'integer',
-    'show_corrections' => 'boolean'
+    'show_corrections' => 'boolean',
+    'academic_session_id' => 'integer',
+    'term' => TermType::class,
+    'for_mid_term' => 'boolean'
   ];
 
   static function createRule(Event|null $event = null)

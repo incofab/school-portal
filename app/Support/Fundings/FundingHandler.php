@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 class FundingHandler
 {
   private $principalAmount;
-  private $reference;
   private $debtReference;
   private $creditReference;
 
@@ -32,19 +31,22 @@ class FundingHandler
     private array $data
   ) {
     $this->principalAmount = $data['amount'];
-    $this->reference = $data['reference'];
-    $this->debtReference = Funding::debtReference($data['reference']);
-    $this->creditReference = Funding::creditReference($data['reference']);
+    $reference = $data['reference'];
+    $this->debtReference = Funding::debtReference($reference);
+    $this->creditReference = Funding::creditReference($reference);
   }
 
-  static function makeFromPaymentRef(PaymentReference $paymentRef): static
-  {
+  static function makeFromPaymentRef(
+    PaymentReference $paymentRef,
+    $remark = ''
+  ): static {
     return new self(
       $paymentRef->institution->institutionGroup,
       $paymentRef->user,
       [
         'reference' => $paymentRef->reference,
-        'amount' => $paymentRef->amount
+        'amount' => $paymentRef->amount,
+        'remark' => $remark
       ]
     );
   }
@@ -133,17 +135,6 @@ class FundingHandler
       $newCreditBal,
       $funding
     );
-    // $funding->transactions()->firstOrCreate(
-    //   ['reference' => $this->creditReference],
-    //   [
-    //     'institution_group_id' => $this->institutionGroup->id,
-    //     'wallet' => WalletType::Credit->value,
-    //     'amount' => $amount,
-    //     'type' => $type,
-    //     'bbt' => $prevCreditBal,
-    //     'bat' => $newCreditBal
-    //   ]
-    // );
     DB::commit();
     return successRes('Wallet funded successfully');
   }
@@ -156,6 +147,7 @@ class FundingHandler
         ? $amount + $prevDebtBal
         : $amount - $prevDebtBal;
 
+    DB::beginTransaction();
     $funding = $this->institutionGroup->fundings()->firstOrCreate(
       [
         'reference' => $this->debtReference
@@ -183,19 +175,6 @@ class FundingHandler
       $newDebtBal,
       $funding
     );
-    // $funding->transactions()->firstOrCreate(
-    //   [
-    //     'reference' => $this->debtReference
-    //   ],
-    //   [
-    //     'wallet' => WalletType::Debt->value,
-    //     'amount' => $amount,
-    //     'type' => $type,
-    //     'bbt' => $prevDebtBal,
-    //     'bat' => $newDebtBal,
-
-    //     'institution_group_id' => $this->institutionGroup->id
-    //   ]
-    // );
+    DB::commit();
   }
 }

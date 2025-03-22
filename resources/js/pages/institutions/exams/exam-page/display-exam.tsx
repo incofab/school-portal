@@ -53,6 +53,7 @@ export default function DisplayExam({
   existingAttempts,
 }: Props) {
   const [key, setKey] = useState<string>('0');
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const webForm = useWebForm({});
   const calculatorModalToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
@@ -78,9 +79,13 @@ export default function DisplayExam({
     if (!confirm('Do you want to submit your exam?')) {
       return;
     }
+    setSubmitLoading(true);
+    await examUtil.getAttemptManager().sendAttempts(webForm);
+
     await webForm.submit((data, web) => {
       return web.post(instRoute('end-exam', [exam.id]));
     });
+    setSubmitLoading(false);
     Inertia.visit(instRoute('external.exam-result', [exam.exam_no]));
   }
 
@@ -189,14 +194,20 @@ export default function DisplayExam({
         mt={2}
         position={'absolute'}
         bottom={0}
-        w={'full'}
+        left={0}
+        right={0}
       >
         <BrandButton
           title="Previous"
           onClick={previousClicked}
           width={'80px'}
         />
-        <BrandButton title="Submit" onClick={submitExam} width={'80px'} />
+        <BrandButton
+          title="Submit"
+          onClick={submitExam}
+          width={'80px'}
+          isLoading={submitLoading}
+        />
         <BrandButton title="Next" onClick={nextClicked} width={'80px'} />
       </HStack>
     </ExamLayout>

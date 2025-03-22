@@ -12,6 +12,7 @@ use App\Models\Institution;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\MorphMap;
+use App\Support\UITableFilters\ExamUITableFilters;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -32,12 +33,16 @@ class ExamController extends Controller
 
   function index(Institution $institution, Event $event, Request $request)
   {
-    $query = $event
-      ->exams()
+    $query = ExamUITableFilters::make(
+      $request->all(),
+      $event->exams()->getQuery()
+    )
+      ->filterQuery()
       ->getQuery()
       ->with('examable', function (MorphTo $morphTo) {
-        $morphTo->morphWith([Student::class => ['user']]);
+        $morphTo->morphWith([Student::class => ['user', 'classification']]);
       })
+      ->oldest('exams.score')
       ->withCount('examCourseables');
 
     return Inertia::render('institutions/exams/list-exams', [

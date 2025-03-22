@@ -24,7 +24,7 @@ export default function PinsTableFilters({ isOpen, onClose }: Props) {
 
   return (
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
-      <FilterFormControlBox title="Class">
+      <FilterFormControlBox title="School">
         <InstitutionSelect
           onChange={(e: any) =>
             setFilters({ ...filters, institution_id: e.value })

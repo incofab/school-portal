@@ -1,6 +1,9 @@
 <?php
 use App\Models\Event;
+use App\Models\Exam;
+use App\Models\ExamCourseable;
 use App\Models\Institution;
+use App\Models\Student;
 use App\Models\User;
 
 use function Pest\Laravel\actingAs;
@@ -89,4 +92,43 @@ it('updates an event', function () {
     )
     ->assertStatus(200);
   assertDatabaseHas('events', [...$data, 'duration' => $data['duration'] * 60]);
+});
+
+it('downloads the event results as an excel file', function () {
+  $event = Event::factory()
+    ->institution($this->institution)
+    ->create();
+  Storage::fake();
+  $student = Student::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  $exam = Exam::factory()
+    ->examable($student)
+    ->examCourseables()
+    ->create([
+      'event_id' => $event->id,
+      'examable_id' => $student->id,
+      'examable_type' => $student->getMorphClass(),
+      'score' => 80,
+      'num_of_questions' => 100
+    ]);
+
+  // Act
+  actingAs($this->admin)
+    ->getJson(instRoute('events.download', [$event], $this->institution))
+    ->assertOk()
+    ->assertHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    ->assertHeader(
+      'Content-Disposition',
+      'attachment; filename=' . sanitizeFilename("{$event->title}-exams.xlsx")
+    );
+
+  // Check if the file was created in the storage
+  $fileName = sanitizeFilename("{$event->title}-exams.xlsx");
+  $tempFilePath = storage_path("app/public/{$fileName}");
+  expect(file_exists($tempFilePath))->toBeTrue();
+  unlink($tempFilePath);
 });

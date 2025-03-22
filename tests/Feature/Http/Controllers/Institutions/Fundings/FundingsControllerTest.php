@@ -1,17 +1,13 @@
 <?php
 
-use App\Models\User;
 use App\Models\Institution;
-use App\Core\PaystackHelper;
 use App\Models\InstitutionUser;
 use App\Models\PaymentReference;
 use Illuminate\Support\Facades\Http;
 use App\Enums\Payments\PaymentPurpose;
-use App\Enums\Payments\PaymentMerchant;
+use App\Enums\Payments\PaymentMerchantType;
 use function Pest\Laravel\{actingAs, postJson};
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Inertia\Testing\AssertableInertia as AssertInertia;
 
 /**
  * ./vendor/bin/pest --filter FundingsControllerTest
@@ -71,7 +67,7 @@ it(
     $this->assertDatabaseHas('payment_references', [
       'reference' => $data['reference'],
       'purpose' => PaymentPurpose::WalletFunding->value,
-      'merchant' => PaymentMerchant::Paystack->value
+      'merchant' => PaymentMerchantType::Paystack->value
     ]);
   }
 );

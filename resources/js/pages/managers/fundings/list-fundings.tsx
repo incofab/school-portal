@@ -12,18 +12,17 @@ import { Inertia } from '@inertiajs/inertia';
 import { HStack, Icon, IconButton } from '@chakra-ui/react';
 import InfoPopover from '@/components/info-popover';
 import { EyeIcon } from '@heroicons/react/24/outline';
+import { formatAsCurrency } from '@/util/util';
+import RecordDebtModal from '@/components/modals/record-debt-modal';
 
 interface Props {
   fundings: PaginationResponse<Funding>;
   institutionGroups: InstitutionGroup[];
 }
 
-function NumberFormatter(number: number) {
-  return new Intl.NumberFormat().format(number);
-}
-
 export default function ListFundings({ fundings, institutionGroups }: Props) {
   const fundInstitutionGroupModalToggle = useModalToggle();
+  const recordDebtModalToggle = useModalToggle();
 
   const headers: ServerPaginatedTableHeader<Funding>[] = [
     {
@@ -34,17 +33,17 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
     {
       label: 'Amount Funded',
       value: 'amount',
-      render: (row) => '₦ ' + NumberFormatter(row.amount),
+      render: (row) => formatAsCurrency(row.amount),
     },
     {
       label: 'Previous Balance',
       value: 'previous_balance',
-      render: (row) => '₦ ' + NumberFormatter(row.previous_balance),
+      render: (row) => formatAsCurrency(row.previous_balance),
     },
     {
       label: 'New Balance',
       value: 'new_balance',
-      render: (row) => '₦ ' + NumberFormatter(row.new_balance),
+      render: (row) => formatAsCurrency(row.new_balance),
     },
     {
       label: 'Reference',
@@ -77,10 +76,16 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
         <SlabHeading
           title="Deposits"
           rightElement={
-            <BrandButton
-              title="Add Fund"
-              onClick={fundInstitutionGroupModalToggle.open}
-            />
+            <HStack>
+              <BrandButton
+                title="Record Debt"
+                onClick={recordDebtModalToggle.open}
+              />
+              <BrandButton
+                title="Add Fund"
+                onClick={fundInstitutionGroupModalToggle.open}
+              />
+            </HStack>
           }
         />
 
@@ -98,6 +103,11 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
       <FundInstitutionGroupModal
         institutionGroups={institutionGroups}
         {...fundInstitutionGroupModalToggle.props}
+        onSuccess={() => Inertia.reload()}
+      />
+      <RecordDebtModal
+        institutionGroups={institutionGroups}
+        {...recordDebtModalToggle.props}
         onSuccess={() => Inertia.reload()}
       />
     </ManagerDashboardLayout>

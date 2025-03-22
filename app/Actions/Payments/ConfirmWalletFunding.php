@@ -8,6 +8,7 @@ use App\Models\PaymentReference;
 use App\Support\Fundings\FundingHandler;
 use DB;
 
+/** @deprecated Moved to \App\Support\FundingProcessor */
 class ConfirmWalletFunding
 {
   public function __construct(private PaymentReference $paymentReference)

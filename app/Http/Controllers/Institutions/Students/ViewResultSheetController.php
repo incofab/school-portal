@@ -65,13 +65,10 @@ class ViewResultSheetController extends Controller
       $forMidTerm
     );
 
+    /** @var TermResult|null $termResult */
     $termResult = $viewData['termResult'] ?? null;
     abort_unless($termResult, 404, 'Result not found');
-    abort_unless(
-      $termResult->result_publication_id,
-      403,
-      'Result not published'
-    );
+    abort_unless($termResult->isPublished(), 403, 'Result not published');
 
     if (!currentInstitutionUser()->isAdmin()) {
       abort_unless(

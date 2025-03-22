@@ -24,7 +24,13 @@ import { User } from '@/types/models';
 import Slab, { SlabBody } from '@/components/slab';
 import CenteredLayout from '@/components/centered-layout';
 
-export default function Register({ user }: { user?: User }) {
+export default function Register({
+  user,
+  imageUrl,
+}: {
+  user?: User;
+  imageUrl?: string;
+}) {
   const { message } = useSharedProps();
   const toast = useToast();
   const form = useForm({
@@ -63,15 +69,19 @@ export default function Register({ user }: { user?: User }) {
       });
   }, [message]);
 
-  const bgImage = user ? '/partners/' + user.username + '.webp' : undefined;
+  // const bgImage = user ? '/partners/' + user.username + '.webp' : undefined;
 
   return (
-    <CenteredLayout title="Join Us" boxProps={{ maxW: 'lg' }} bgImage={bgImage}>
+    <CenteredLayout
+      title="Join Us"
+      boxProps={{ maxW: 'lg' }}
+      bgImage={imageUrl}
+    >
       <Div w={'full'} as={'form'} onSubmit={preventNativeSubmit(onSubmit)}>
         <VStack spacing={4} align={'stretch'} px={6} pb={6}>
-          {bgImage ? (
+          {imageUrl ? (
             <Image
-              src={bgImage} // Set the path to your image
+              src={imageUrl} // Set the path to your image
               alt="Description of the image"
               style={{
                 width: '100%', // Makes the image span the full width of the Slab

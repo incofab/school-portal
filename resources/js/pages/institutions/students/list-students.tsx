@@ -1,9 +1,9 @@
 import React from 'react';
 import { Student } from '@/types/models';
-import { HStack, IconButton, Icon, Button } from '@chakra-ui/react';
+import { HStack, IconButton, Icon, Button, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import ServerPaginatedTable from '@/components/server-paginated-table';
-import { InstitutionUserType, PaginationResponse } from '@/types/types';
+import { PaginationResponse } from '@/types/types';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { BrandButton, LinkButton } from '@/components/buttons';
@@ -11,7 +11,7 @@ import { ServerPaginatedTableHeader } from '@/components/server-paginated-table'
 import DateTimeDisplay from '@/components/date-time-display';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
-import useModalToggle from '@/hooks/use-modal-toggle';
+import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import StudentsTableFilters from '@/components/table-filters/students-table-filters';
 import {
   CloudArrowDownIcon,
@@ -21,20 +21,19 @@ import {
 import useIsStaff from '@/hooks/use-is-staff';
 import useQueryString from '@/hooks/use-query-string';
 import useMyToast from '@/hooks/use-my-toast';
-import useSharedProps from '@/hooks/use-shared-props';
 import UploadStudentModal from '@/components/modals/upload-student-modal';
 import { Inertia } from '@inertiajs/inertia';
 import useIsAdmin from '@/hooks/use-is-admin';
 import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
+import EditStudentCodeModal from '@/components/modals/edit-student-code-modal';
 
 interface Props {
   students: PaginationResponse<Student>;
 }
 
 function ListStudents({ students }: Props) {
-  const { currentUser, currentInstitutionUser } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
@@ -42,6 +41,7 @@ function ListStudents({ students }: Props) {
   const { toastError, handleResponseToast } = useMyToast();
   const studentFiltersModalToggle = useModalToggle();
   const studentUploadModalToggle = useModalToggle();
+  const editStudentModalToggle = useModalValueToggle<Student | null>();
   const deleteForm = useWebForm({});
 
   async function deleteItem(obj: Student) {
@@ -86,6 +86,18 @@ function ListStudents({ students }: Props) {
     {
       label: 'Student Id',
       value: 'code',
+      render: (row) => (
+        <HStack>
+          <Text as={'span'}>{row.code}</Text>
+          <IconButton
+            aria-label={'Edit user'}
+            icon={<Icon as={PencilIcon} />}
+            variant={'ghost'}
+            colorScheme={'brand'}
+            onClick={() => editStudentModalToggle.open(row)}
+          />
+        </HStack>
+      ),
     },
     {
       label: 'Registered on',
@@ -104,16 +116,6 @@ function ListStudents({ students }: Props) {
             variant={'ghost'}
             colorScheme={'brand'}
           />
-          {/* {(row.user_id === currentUser.id ||
-            currentInstitutionUser.role === InstitutionUserType.Admin ||
-            currentInstitutionUser.role === InstitutionUserType.Teacher) && (
-            <LinkButton
-              href={instRoute('users.profile', [row.user_id])}
-              colorScheme={'brand'}
-              variant={'link'}
-              title="Profile"
-            />
-          )} */}
           {isAdmin && (
             <DestructivePopover
               label={`Delete ${row.user?.full_name} from the student record. This is irreversible, be careful!!!`}
@@ -189,6 +191,13 @@ function ListStudents({ students }: Props) {
           {...studentUploadModalToggle.props}
           onSuccess={() => Inertia.reload({ only: ['students'] })}
         />
+        {editStudentModalToggle.state && (
+          <EditStudentCodeModal
+            student={editStudentModalToggle.state}
+            {...editStudentModalToggle.props}
+            onSuccess={() => Inertia.reload()}
+          />
+        )}
       </Slab>
     </DashboardLayout>
   );

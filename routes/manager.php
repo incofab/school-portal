@@ -57,6 +57,6 @@ Route::group(['middleware' => 'admin'], function () {
         ->name('destroy');
 });
 
-
+Route::post('funding/record-debt', [Web\Fundings\FundingController::class, 'recordDebt'])->name('funding.record-debt');
 Route::resource('funding', Web\Fundings\FundingController::class);
 Route::resource('billings', Web\Billings\BillingsController::class);

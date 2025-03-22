@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TransactionType;
 use App\Models\Funding;
 use App\Models\InstitutionGroup;
 use App\Models\User;
@@ -69,4 +70,44 @@ it('fails validation with invalid data', function () {
   actingAs($this->user)
     ->postJson(route('managers.funding.store'), $payload)
     ->assertJsonValidationErrors(['amount', 'reference']);
+});
+
+it('records a debt and updates wallet balances', function () {
+  $currentBalance = floatval($this->institutionGroup->debt_wallet);
+
+  $payload = [
+    'institution_group_id' => $this->institutionGroup->id,
+    'amount' => 200,
+    'remark' => 'Recording a debt',
+    'reference' => 'DEBT12345'
+  ];
+
+  actingAs($this->user)
+    ->postJson(route('managers.funding.record-debt'), $payload)
+    ->assertOk();
+
+  // Assert database updates for InstitutionGroup
+  assertDatabaseHas('institution_groups', [
+    'id' => $this->institutionGroup->id,
+    'credit_wallet' => 1000,
+    'debt_wallet' => $currentBalance + 200
+  ]);
+
+  // Assert database updates for Funding
+  assertDatabaseHas('fundings', [
+    'institution_group_id' => $this->institutionGroup->id,
+    'amount' => 200,
+    'funded_by_user_id' => $this->user->id,
+    'previous_balance' => $currentBalance,
+    'new_balance' => $currentBalance + 200
+  ]);
+
+  // Assert database updates for Transaction
+  assertDatabaseHas('transactions', [
+    'institution_group_id' => $this->institutionGroup->id,
+    'amount' => 200,
+    'bbt' => $currentBalance,
+    'bat' => $currentBalance + 200,
+    'type' => TransactionType::Credit->value
+  ]);
 });

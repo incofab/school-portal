@@ -34,6 +34,7 @@ class ManagerController extends Controller
   {
     $data = $request->validate([
       ...User::generalRule(),
+      'username' => ['required', 'unique:users,username'],
       'role' => [
         'required',
         new Enum(ManagerRole::class),

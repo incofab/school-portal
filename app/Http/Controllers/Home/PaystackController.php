@@ -12,6 +12,7 @@ use App\Enums\Payments\PaymentPurpose;
 use App\Actions\Payments\ConfirmFeePayment;
 use App\Actions\Payments\ConfirmWalletFunding;
 use App\Enums\Payments\PaymentStatus;
+use App\Support\Payments\Processors\PaymentProcessor;
 
 class PaystackController extends Controller
 {
@@ -108,17 +109,9 @@ class PaystackController extends Controller
       'Paymet already processed'
     );
 
-    $res = null;
-    if ($paymentRef->purpose === PaymentPurpose::Fee) {
-      $res = (new ConfirmFeePayment(
-        $paymentRef,
-        $paymentRef->institution
-      ))->run();
-    } elseif ($paymentRef->purpose === PaymentPurpose::WalletFunding) {
-      (new ConfirmWalletFunding($paymentRef))->run();
-    } else {
-      throw new Exception('Payment purpose not recognized');
-    }
+    $paymentProcessor = PaymentProcessor::make($paymentRef);
+
+    $res = $paymentProcessor->handleCallback();
 
     return redirect($paymentRef->redirect_url ?? route('home'))->with(
       $res->isSuccessful() ? 'message' : 'error',

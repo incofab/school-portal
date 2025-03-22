@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\Payments\PaymentMerchant;
+use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\Payments\PaymentStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -18,10 +18,13 @@ return new class extends Migration {
     Schema::create('payment_references', function (Blueprint $table) {
       $table->bigIncrements('id');
       $table->foreignId('institution_id')->constrained('institutions');
-      $table->foreignId('user_id')->constrained('users');
-      $table->morphs('payable');
+      $table
+        ->foreignId('user_id')
+        ->nullable()
+        ->constrained('users'); // The user making the payment or inst admin user
+      $table->morphs('payable'); // The entity making the payment
       $table->string('reference')->unique();
-      $table->string('merchant')->default(PaymentMerchant::Paystack->value);
+      $table->string('merchant')->default(PaymentMerchantType::Paystack->value);
       $table->string('method')->nullable();
       $table->float('amount', 30, 2);
       $table->string('status')->default(PaymentStatus::Pending->value);

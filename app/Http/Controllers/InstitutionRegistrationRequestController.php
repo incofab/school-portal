@@ -18,16 +18,17 @@ class InstitutionRegistrationRequestController extends Controller
     if (!empty($partner)) {
       $partner = User::where('username', $partner)->first();
     }
-
+    $fileExists = file_exists(public_path("partners/$partner.webp"));
     return inertia('register', [
-      'user' => $partner
+      'user' => $partner,
+      'imageUrl' => $fileExists ? asset("partners/$partner.webp") : null
     ]);
   }
 
   /**
    * @param User $partner A partner whose referral link was used in creating this registration request
    */
-  public function store(Request $request, User $partner = null)
+  public function store(Request $request, User|null $partner = null)
   {
     if (!$partner?->isManager()) {
       $adminRole = Role::query()
