@@ -30,17 +30,19 @@ Route::get('academic-sessions/search', [Web\AcademicSessionController::class, 's
 Route::post('activate-result', [Web\TermResultActivationController::class, 'store'])
     ->name('activate-term-result.store');
 
-Route::get('/institution/{institution}/admission-forms/search', [Admissions\AdmissionFormController::class, 'search'])->name('institutions.admission-forms.search');
+Route::get('/institutions/{institution}/admission-forms/search', [Admissions\AdmissionFormController::class, 'search'])->name('institutions.admission-forms.search');
 
 Route::group(['prefix' => '{institution}/admissions/', 'as' => 'institutions.'], function () {
     Route::get('apply', [Admissions\AdmissionApplicationController::class, 'create'])
         ->name('admissions.create');
     Route::post('apply', [Admissions\AdmissionApplicationController::class, 'store'])
         ->name('admissions.store');
-    Route::get('{admissionApplication}/application-success', [Admissions\AdmissionApplicationController::class, 'successMessage'])
-        ->name('admissions.success');
+    // Route::get('{admissionApplication}/application-success', [Admissions\AdmissionApplicationController::class, 'successMessage'])
+    //     ->name('admissions.success');
     Route::get('letter/{student}', [Admissions\AdmissionApplicationController::class, 'admissionLetter'])
         ->name('admissions.letter');
+    Route::get('/{admissionApplication}/preview', [Admissions\AdmissionApplicationController::class, 'previewAdmissionApplication'])
+        ->name('admission-applications.preview');
     Route::post('/admission-forms/{admissionForm}/buy/{admissionApplication?}', [Admissions\AdmissionApplicationController::class, 'buyAdmissionForm'])
         ->name('admission-forms.buy');
 });

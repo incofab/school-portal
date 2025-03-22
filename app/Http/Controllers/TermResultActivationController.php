@@ -7,7 +7,6 @@ use App\Models\Institution;
 use App\Models\Pin;
 use App\Models\Student;
 use App\Models\TermResult;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use URL;
@@ -35,13 +34,23 @@ class TermResultActivationController extends Controller
     if (!$pin) {
       throw ValidationException::withMessages(['pin' => 'Invalid pin']);
     }
+    $institution = $pin->institution;
 
     $student = Student::query()
       ->select('students.*')
-      ->forInstitution($pin->institution_id)
+      // ->forInstitution($pin->institution_id)
       ->where('students.code', $data['student_code'])
-      ->with('user')
+      ->with('user', 'institutionUser.institution')
       ->firstOrFail();
+
+    if (
+      $institution->institution_group_id ===
+      $student->institutionUser->institution->institution_group_id
+    ) {
+      throw ValidationException::withMessages([
+        'pin' => 'This pin is invalid'
+      ]);
+    }
 
     if ($pin->student_id && $pin->student_id !== $student->id) {
       throw ValidationException::withMessages([

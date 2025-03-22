@@ -397,9 +397,11 @@ export interface AdmissionApplication extends InstitutionRow {
   first_name: string;
   last_name: string;
   other_names: string;
+  name: string;
   application_no: string;
   phone: string;
-  photo: string;
+  photo?: string;
+  photo_url: string;
   email: string;
   gender: string;
   address: string;

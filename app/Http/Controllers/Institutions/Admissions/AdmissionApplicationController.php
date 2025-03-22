@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Institutions\Admissions;
 use App\Actions\Admisssions\RecordAdmissionApplication;
 use App\Actions\HandleAdmission;
 use App\DTO\PaymentReferenceDto;
+use App\Enums\AdmissionStatusType;
 use Inertia\Inertia;
 use App\Models\Student;
 use App\Models\Institution;
@@ -74,13 +75,13 @@ class AdmissionApplicationController extends Controller
     Request $request
   ) {
     abort_if(
-      $admissionApplication->admission_status != 'pending',
+      $admissionApplication->admission_status != AdmissionStatusType::Pending,
       401,
       'Admission Application has been handled'
     );
 
     $data = $request->validate([
-      'admission_status' => ['required', 'string'],
+      'admission_status' => ['required', new Enum(AdmissionStatusType::class)],
       'classification' => [
         'required',
         new ValidateExistsRule(Classification::class)
@@ -88,7 +89,7 @@ class AdmissionApplicationController extends Controller
     ]);
 
     //== If Admitted, fill the necessary DB Tables with the needed information
-    if ($data['admission_status'] === 'admitted') {
+    if ($data['admission_status'] === AdmissionStatusType::Admitted->value) {
       HandleAdmission::make()->admitStudent($admissionApplication, $data);
     }
 
@@ -100,6 +101,8 @@ class AdmissionApplicationController extends Controller
     return $this->ok();
   }
 
+  /*
+  * Moved to preview previewAdmissionApplication() function
   public function successMessage(
     Institution $institution,
     AdmissionApplication $admissionApplication
@@ -119,6 +122,7 @@ class AdmissionApplicationController extends Controller
       ]
     );
   }
+  */
 
   public function show(
     Institution $institution,
@@ -140,6 +144,32 @@ class AdmissionApplicationController extends Controller
     return Inertia::render('institutions/admissions/show-admission-letter', [
       'student' => $student->load('user.institutionUser', 'classification')
     ]);
+  }
+
+  public function previewAdmissionApplication(
+    Institution $institution,
+    AdmissionApplication $admissionApplication
+  ) {
+    $admissionApplication->load(
+      'applicationGuardians',
+      'admissionForm.academicSession',
+      'admissionFormPurchase'
+    );
+    if (!$admissionApplication->hasBeenPaid()) {
+      return redirect(
+        instRoute('admission-forms.buy', [
+          $admissionApplication->admission_form_id
+        ])
+      );
+    }
+
+    return Inertia::render(
+      'institutions/admissions/preview-admission-application',
+      [
+        'institution' => $institution,
+        'admissionApplication' => $admissionApplication
+      ]
+    );
   }
 
   public function destroy(
@@ -174,7 +204,7 @@ class AdmissionApplicationController extends Controller
       purpose: PaymentPurpose::AdmissionFormPurchase,
       user_id: $admissionForm->institution->user_id,
       reference: $request->reference,
-      redirect_url: instRoute('admissions.success', [
+      redirect_url: instRoute('admission-applications.preview', [
         $admissionApplication->id
       ]),
       meta: [

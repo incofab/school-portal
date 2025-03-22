@@ -211,6 +211,12 @@ export enum TimetableActionableType {
   SchoolActivity = 'school-activity',
 }
 
+export enum AdmissionStatusType {
+  Pending = 'pending',
+  Admitted = 'admitted',
+  Declined = 'declined',
+}
+
 export interface ExamAttempt {
   [questionId: string | number]: string;
 }

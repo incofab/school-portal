@@ -9,7 +9,7 @@ import { AdmissionApplication } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import Dt from '@/components/dt';
-import { SelectOptionType } from '@/types/types';
+import { AdmissionStatusType, SelectOptionType } from '@/types/types';
 import { BrandButton } from '@/components/buttons';
 import useIsAdmin from '@/hooks/use-is-admin';
 import AdmitStudentModal from '@/components/modals/admit-student-modal';
@@ -100,7 +100,8 @@ export default function Profile({ admissionApplication }: Props) {
 
   return (
     <Div>
-      {isAdmin && admissionApplication.admission_status === 'pending' ? (
+      {isAdmin &&
+      admissionApplication.admission_status === AdmissionStatusType.Pending ? (
         <HStack align={'stretch'} my={2}>
           <BrandButton
             title="Admit Student"
@@ -108,7 +109,7 @@ export default function Profile({ admissionApplication }: Props) {
           />
           <BrandButton
             title="Deny Admission"
-            onClick={() => updateStatus('declined')}
+            onClick={() => updateStatus(AdmissionStatusType.Declined)}
           />
         </HStack>
       ) : (

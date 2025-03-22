@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\AdmissionStatusType;
 use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\Payments\PaymentPurpose;
 use App\Models\AdmissionApplication;
@@ -116,7 +117,7 @@ it('store admission application data', function () {
 it('will not run if admission status is not pending', function () {
   $admissionApplication = AdmissionApplication::factory()
     ->admissionForm($this->admissionForm)
-    ->create(['admission_status' => 'declined']);
+    ->create(['admission_status' => AdmissionStatusType::Declined->value]);
 
   $route = route('institutions.admission-applications.update-status', [
     $this->institution->uuid,
@@ -144,7 +145,7 @@ it('handles admission and updates admission status', function () {
     ->create();
 
   $data = [
-    'admission_status' => 'admitted',
+    'admission_status' => AdmissionStatusType::Admitted->value,
     'classification' => $classification->id
   ];
 
@@ -152,7 +153,10 @@ it('handles admission and updates admission status', function () {
     ->postJson($route, $data)
     ->assertOk();
 
-  assertEquals($admissionApplication->fresh()->admission_status, 'admitted');
+  assertEquals(
+    $admissionApplication->fresh()->admission_status,
+    AdmissionStatusType::Admitted
+  );
   $user = User::where([
     'first_name' => $admissionApplication->first_name,
     'last_name' => $admissionApplication->last_name

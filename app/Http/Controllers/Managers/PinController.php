@@ -11,7 +11,7 @@ use Inertia\Inertia;
 
 class PinController extends Controller
 {
-  public function index(Request $request, PinGenerator $pinGenerator = null)
+  public function index(Request $request, ?PinGenerator $pinGenerator = null)
   {
     $query = $pinGenerator ? $pinGenerator->pins()->getQuery() : Pin::query();
     $query = PinUITableFilters::make($request->all(), $query)
