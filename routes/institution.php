@@ -208,10 +208,6 @@ Route::get('/term-results/index/{user?}', Web\ListTermResultController::class)
 Route::get('/cummulative-result/index', Web\Staff\CummulativeResultController::class)
   ->name('cummulative-result.index');
 
-Route::get('/pin-prints/{pinPrint}/download', [Web\Pins\PinPrintController::class, 'downloadPins'])
-  ->name('pin-prints.download');
-Route::resource('/pin-prints', Web\Pins\PinPrintController::class)->only(['index', 'store', 'show']);
-
 Route::get('/pins/classifications/{classification}/tiles', [Web\Staff\Pins\StudentPinController::class, 'indexTiles'])
   ->name('pins.classification.student-pin-tiles');
 Route::post('/pins/students/{student}', [Web\Staff\Pins\StudentPinController::class, 'storeStudentPin'])
@@ -290,8 +286,10 @@ include base_path('routes/attendance.php');
 include base_path('routes/exam.php');
 include base_path('routes/student_routes.php');
 
-Route::resource('/fundings', Web\Fundings\FundingsController::class);
-Route::resource('/result-publications', Web\ResultPublications\ResultPublicationsController::class);
+Route::get('/transactions/{walletType?}', [Web\Fundings\TransactionController::class, 'index'])->name('transactions.index');
+Route::get('/fundings/{walletType?}', [Web\Fundings\FundingsController::class, 'index'])->name('fundings.index');
+Route::resource('/fundings', Web\Fundings\FundingsController::class)->only('create', 'store');
+Route::resource('/result-publications', Web\ResultPublications\ResultPublicationsController::class)->only('index', 'create', 'store');
 
 //A route named 'topics' already exist in 'ccd' route file, hence I use 'inst-topics'
 Route::get('/inst-topics', [Web\Curriculums\TopicController::class, 'index'])->name('inst-topics.index');

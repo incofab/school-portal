@@ -1,13 +1,8 @@
-===================
-** Write tests for key methods in StudentManagementController
-===================
-
-** Add the following columns to events
-  -- institution_user_id (The InstUser that created this event)
-  -- classification_id
-  -- classification_group_id
-  -- term
-  -- academic_session_id
-  -- for mid term
 
 ** Change admission_status in admission_applications to a string instead of enum on database
+
+** List Result Publications in the admin
+
+** Start exam with Event Code and Student Code
+
+** PDF API for downloading results 

@@ -2,14 +2,11 @@
 
 namespace App\Support\Fundings;
 
-use App\Enums\TransactionType;
 use App\Enums\WalletType;
 use App\Models\Funding;
 use App\Models\InstitutionGroup;
 use App\Models\PaymentReference;
-use App\Models\Transaction;
 use App\Models\User;
-use DB;
 use Illuminate\Database\Eloquent\Model;
 
 class FundingHandler
@@ -17,6 +14,7 @@ class FundingHandler
   private $principalAmount;
   private $debtReference;
   private $creditReference;
+  private ?string $remark;
 
   /**
    * @param array{
@@ -31,6 +29,7 @@ class FundingHandler
     private array $data
   ) {
     $this->principalAmount = $data['amount'];
+    $this->remark = $data['remark'] ?? '';
     $reference = $data['reference'];
     $this->debtReference = Funding::debtReference($reference);
     $this->creditReference = Funding::creditReference($reference);
@@ -67,12 +66,16 @@ class FundingHandler
 
   function processWalletPayment(?Model $fundable)
   {
-    $surplus = $this->payDebt($this->principalAmount);
+    $surplus = $this->payDebt($this->principalAmount, $fundable);
     if ($surplus > 0) {
-      return $this->fundCreditWallet(
+      RecordFunding::make(
+        $this->institutionGroup,
+        $this->user
+      )->recordCreditTopup(
         $surplus,
-        TransactionType::Credit,
-        $fundable
+        $this->creditReference,
+        $fundable,
+        $this->remark
       );
     }
     return failRes('Not enough amount remaining after debt');
@@ -80,101 +83,43 @@ class FundingHandler
 
   function giveLoan($amount, ?Model $fundable = null)
   {
-    $this->fundDebtWallet($amount, TransactionType::Credit);
-    $this->fundCreditWallet($amount, TransactionType::Credit, $fundable);
+    RecordFunding::make($this->institutionGroup, $this->user)->recordDebtTopup(
+      $amount,
+      $this->debtReference,
+      $fundable,
+      $this->remark
+    );
+
+    RecordFunding::make(
+      $this->institutionGroup,
+      $this->user
+    )->recordCreditTopup(
+      $amount,
+      $this->creditReference,
+      $fundable,
+      $this->remark
+    );
+
     return successRes('Loan given');
   }
 
-  function payDebt($amount)
+  function payDebt($amount, ?Model $fundable)
   {
     if (!$this->institutionGroup->isOwing()) {
       return $amount;
     }
     $prevDebtBal = $this->institutionGroup->debt_wallet;
-
     $debtToPay = $amount > $prevDebtBal ? $prevDebtBal : $amount;
-    $this->fundDebtWallet($debtToPay, TransactionType::Debit);
-    return $amount - $prevDebtBal;
-  }
 
-  function fundCreditWallet(
-    $amount,
-    TransactionType $type,
-    ?Model $fundable = null
-  ) {
-    $prevCreditBal = $this->institutionGroup->credit_wallet;
-    $newCreditBal =
-      $type === TransactionType::Credit
-        ? $amount + $prevCreditBal
-        : $amount - $prevCreditBal;
-
-    DB::beginTransaction();
-    $this->institutionGroup->fill(['credit_wallet' => $newCreditBal])->save();
-
-    $funding = $this->institutionGroup->fundings()->firstOrCreate(
-      ['reference' => $this->creditReference],
-      [
-        'amount' => $amount,
-        'wallet' => WalletType::Credit->value,
-        'previous_balance' => $prevCreditBal,
-        'new_balance' => $newCreditBal,
-
-        'funded_by_user_id' => $this->user->id,
-        'remark' => $this->data['remark'] ?? '',
-        'fundable_id' => $fundable?->id,
-        'fundable_type' => $fundable?->getMorphClass()
-      ]
-    );
-    Transaction::record(
+    RecordFunding::make(
       $this->institutionGroup,
-      $this->creditReference,
-      WalletType::Credit,
-      $amount,
-      $type,
-      $prevCreditBal,
-      $newCreditBal,
-      $funding
-    );
-    DB::commit();
-    return successRes('Wallet funded successfully');
-  }
-
-  function fundDebtWallet($amount, TransactionType $type)
-  {
-    $prevDebtBal = $this->institutionGroup->debt_wallet;
-    $newDebtBal =
-      $type === TransactionType::Credit
-        ? $amount + $prevDebtBal
-        : $amount - $prevDebtBal;
-
-    DB::beginTransaction();
-    $funding = $this->institutionGroup->fundings()->firstOrCreate(
-      [
-        'reference' => $this->debtReference
-      ],
-      [
-        'amount' => $amount,
-        'previous_balance' => $prevDebtBal,
-        'new_balance' => $newDebtBal,
-
-        'wallet' => WalletType::Debt->value,
-        'remark' => $this->data['remark'] ?? '',
-        'funded_by_user_id' => $this->user->id
-      ]
-    );
-
-    $this->institutionGroup->fill(['debt_wallet' => $newDebtBal])->save();
-
-    Transaction::record(
-      $this->institutionGroup,
+      $this->user
+    )->recordDebtReduction(
+      $debtToPay,
       $this->debtReference,
-      WalletType::Debt,
-      $amount,
-      $type,
-      $prevDebtBal,
-      $newDebtBal,
-      $funding
+      $fundable,
+      $this->remark ?? 'Pay debt'
     );
-    DB::commit();
+    return $amount - $prevDebtBal;
   }
 }

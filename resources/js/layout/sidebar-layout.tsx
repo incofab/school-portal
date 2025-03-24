@@ -395,6 +395,11 @@ export default function SideBarLayout() {
           route: instRoute('fundings.index'),
           roles: [InstitutionUserType.Admin],
         },
+        {
+          label: 'All Transactions',
+          route: instRoute('transactions.index'),
+          roles: [InstitutionUserType.Admin],
+        },
       ],
     },
     {

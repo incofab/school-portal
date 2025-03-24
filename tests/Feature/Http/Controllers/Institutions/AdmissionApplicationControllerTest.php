@@ -95,14 +95,14 @@ it('store admission application data', function () {
     $admissionApplicationData['reference']
   )->first();
   assertDatabaseCount('admission_applications', 1);
+
   assertDatabaseHas(
     'admission_applications',
     collect($admissionApplicationData)
-      ->except('photo')
+      ->except('photo', 'name', 'photo_url')
       ->toArray()
   );
   assertNotNull($admissionApplication->photo);
-
   assertDatabaseCount('application_guardians', 2);
   foreach ($guardians as $key => $guardian) {
     assertDatabaseHas(

@@ -13,7 +13,8 @@ class PinGenerator extends Model
   public $guarded = [];
   public $casts = [
     'institution_id' => 'integer',
-    'user_id' => 'integer'
+    'user_id' => 'integer',
+    'num_of_pins' => 'integer'
   ];
 
   function pins()

@@ -18,8 +18,7 @@ class PinUITableFilters extends BaseUITableFilter
       'term' => ['sometimes', new Enum(TermType::class)],
       'classification' => ['sometimes', 'integer'],
       'academicSession' => ['sometimes', 'integer'],
-      'pin_generator_id' => ['sometimes', 'integer'],
-      'pin_print_id' => ['sometimes', 'integer']
+      'pin_generator_id' => ['sometimes', 'integer']
     ];
   }
 
@@ -54,10 +53,6 @@ class PinUITableFilters extends BaseUITableFilter
       ->when(
         $this->requestGet('pin_generator_id'),
         fn($q, $value) => $q->where('pin_generator_id', $value)
-      )
-      ->when(
-        $this->requestGet('pin_print_id'),
-        fn($q, $value) => $q->where('pin_print_id', $value)
       )
       ->when(
         $this->requestGet('term'),

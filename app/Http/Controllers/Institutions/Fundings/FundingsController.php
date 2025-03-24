@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Institutions\Fundings;
 use App\Models\Institution;
 use App\DTO\PaymentReferenceDto;
 use Illuminate\Http\Request;
-use App\Models\PaymentReference;
 use App\Enums\InstitutionUserType;
 use App\Enums\Payments\PaymentMerchantType;
 use App\Http\Controllers\Controller;
 use App\Enums\Payments\PaymentPurpose;
+use App\Models\Funding;
 use App\Support\Payments\Merchants\PaymentMerchant;
 
 class FundingsController extends Controller
@@ -19,13 +19,17 @@ class FundingsController extends Controller
     $this->allowedRoles([InstitutionUserType::Admin]);
   }
 
-  //
-  public function index(Institution $institution)
+  public function index(Institution $institution, ?string $walletType = null)
   {
-    $fundings = $institution->institutionGroup->fundings();
+    $query = Funding::query()
+      ->where('institution_group_id', $institution->institution_group_id)
+      ->when($walletType, fn($q) => $q->where('wallet', $walletType))
+      ->with('transaction')
+      ->latest('id');
 
     return inertia('institutions/fundings/list-fundings', [
-      'fundings' => paginateFromRequest($fundings)
+      'fundings' => paginateFromRequest($query),
+      'wallet' => $walletType
     ]);
   }
 
@@ -46,31 +50,7 @@ class FundingsController extends Controller
       ]
     ]);
     $user = currentUser();
-    /*
-    $totalAmount = $data['amount'];
-    $reference = $data['reference']; //Str::orderedUuid();
-    $purpose = PaymentPurpose::WalletFunding->value;
 
-    PaymentReference::query()->create([
-      'institution_id' => $institution->id,
-      'user_id' => $user->id,
-      'payable_id' => $institution->institution_group_id, //$institution->institutionGroup->id
-      'payable_type' => MorphMap::key(InstitutionGroup::class),
-      'amount' => $totalAmount,
-      'purpose' => $purpose,
-      'reference' => $reference,
-      'redirect_url' => instRoute('fundings.index')
-    ]);
-
-    $res = PaystackHelper::make()->initialize(
-      $totalAmount,
-      $user->email,
-      route('paystack.callback'),
-      $reference,
-      $purpose
-    );
-    return $this->ok($res->toArray());
-    */
     $merchant = $request->merchant ?? PaymentMerchantType::Paystack->value;
     $paymentReferenceDto = new PaymentReferenceDto(
       institution_id: $institution->id,

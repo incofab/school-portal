@@ -8,16 +8,26 @@ use Illuminate\Http\Request;
 use App\Models\Classification;
 use App\Support\SettingsHandler;
 use App\Http\Controllers\Controller;
+use App\Models\ResultPublication;
 use App\Rules\ValidateExistsRule;
 use App\Support\ResultPublications\PublishResult;
 
 class ResultPublicationsController extends Controller
 {
-  //
   function index(Institution $institution)
   {
-    $classifications = $institution->classifications()->get();
+    $query = ResultPublication::query()
+      ->with('academicSession', 'transaction', 'staff')
+      ->latest('id');
+    return inertia(
+      'institutions/result-publications/list-result-publications',
+      ['resultPublications' => paginateFromRequest($query)]
+    );
+  }
 
+  function create(Institution $institution)
+  {
+    $classifications = $institution->classifications()->get();
     return inertia(
       'institutions/result-publications/create-result-publication',
       [
@@ -43,6 +53,10 @@ class ResultPublicationsController extends Controller
       ->pricelists()
       ->where('type', PriceType::ResultChecking->value)
       ->first();
+
+    if (!$instGroupPriceList) {
+      return $this->message('Price list has not been set. Contact admin', 401);
+    }
 
     $obj = PublishResult::make(
       currentUser(),

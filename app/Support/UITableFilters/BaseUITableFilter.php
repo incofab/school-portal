@@ -51,7 +51,9 @@ abstract class BaseUITableFilter
 
   function forCurrentTerm()
   {
-    $this->requestData['academic_session_id'] = $this->settingHandler->getCurrentAcademicSession();
+    $this->requestData[
+      'academic_session_id'
+    ] = $this->settingHandler->getCurrentAcademicSession();
     $this->requestData['term'] = $this->settingHandler->getCurrentTerm();
     return $this;
   }
@@ -84,10 +86,12 @@ abstract class BaseUITableFilter
 
   public function filterQuery(): static
   {
-    return $this->directQuery()->when(
-      $this->requestGet('search'),
-      fn(self $that, $search) => $that->generalSearch($search)
-    );
+    return $this->directQuery()
+      ->when(
+        $this->requestGet('search'),
+        fn(self $that, $search) => $that->generalSearch($search)
+      )
+      ->sortQuery();
   }
 
   protected function requestGet($key)
@@ -95,8 +99,11 @@ abstract class BaseUITableFilter
     return $this->requestData[$key] ?? null;
   }
 
-  protected function when($value, callable $callback, ?callable $negativeCallback = null): static
-  {
+  protected function when(
+    $value,
+    callable $callback,
+    ?callable $negativeCallback = null
+  ): static {
     if ($value) {
       $callback($this, $value);
     } else {

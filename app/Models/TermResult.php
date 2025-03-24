@@ -34,6 +34,11 @@ class TermResult extends Model
 
   function isPublished()
   {
+    // Allow mid term results.
+    // Todo: This could be a security risk. Some schools can intentionally mark their result as mid term
+    if ($this->for_mid_term) {
+      return true;
+    }
     return boolval($this->result_publication_id);
   }
 

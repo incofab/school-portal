@@ -65,6 +65,11 @@ export enum WalletType {
   Debt = 'debt',
 }
 
+export enum TransactionType {
+  Credit = 'credit',
+  Debit = 'debit',
+}
+
 export enum FullTermType {
   FirstMid = 'first-mid',
   First = 'first',

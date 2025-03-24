@@ -45,8 +45,8 @@ class Funding extends Model
     return $this->morphTo();
   }
 
-  function transactions()
+  function transaction()
   {
-    return $this->morphMany(Transaction::class, 'transactionable');
+    return $this->morphOne(Transaction::class, 'transactionable');
   }
 }

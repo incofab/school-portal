@@ -32,6 +32,15 @@ class InstitutionUserFactory extends Factory
     );
   }
 
+  public function teacher(): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'role' => InstitutionUserType::Teacher->value
+      ]
+    );
+  }
+
   public function withInstitution(Institution $institution): static
   {
     return $this->state(

@@ -44,11 +44,11 @@ class TermResultActivationController extends Controller
       ->firstOrFail();
 
     if (
-      $institution->institution_group_id ===
+      $institution->institution_group_id !==
       $student->institutionUser->institution->institution_group_id
     ) {
       throw ValidationException::withMessages([
-        'pin' => 'This pin is invalid'
+        'student_code' => 'Student not found'
       ]);
     }
 
@@ -59,8 +59,9 @@ class TermResultActivationController extends Controller
     }
 
     $termResults = TermResult::query()
-      ->where('institution_id', $pin->institution_id)
+      ->where('institution_id', $student->institutionUser->institution_id)
       ->where('student_id', $student->id)
+      ->where('for_mid_term', false)
       ->when(
         $request->term_result_id,
         fn($q, $value) => $q->where('id', $value)

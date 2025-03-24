@@ -142,11 +142,6 @@ class Institution extends Model
     return $this->hasMany(PinGenerator::class);
   }
 
-  function pinPrints()
-  {
-    return $this->hasMany(PinPrint::class);
-  }
-
   function fees()
   {
     return $this->hasMany(Fee::class);

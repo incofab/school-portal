@@ -14,6 +14,8 @@ use App\Support\SettingsHandler;
 use App\Models\ResultPublication;
 use App\Support\Fundings\FundingHandler;
 use App\Enums\PriceLists\PaymentStructure;
+use App\Support\TransactionHandler;
+use DB;
 
 abstract class PublishResult
 {
@@ -38,6 +40,7 @@ abstract class PublishResult
     )
       ->where('academic_session_id', $this->academicSessionId)
       ->where('term', $this->term)
+      ->where('for_mid_term', false)
       ->whereNull('result_publication_id')
       ->get();
   }
@@ -53,43 +56,15 @@ abstract class PublishResult
     }
 
     $amountToPay = $this->getAmountToPay();
-    if ($amountToPay > 0) {
-      if ($this->institutionGroup->credit_wallet < $amountToPay) {
-        $loanAmountNeeded =
-          $amountToPay - $this->institutionGroup->credit_wallet;
 
-        if (!$this->institutionGroup->canGetLoan($loanAmountNeeded)) {
-          return failRes(
-            'Insufficient Credit Balance. ₦' .
-              number_format($amountToPay) .
-              ' Required.'
-          );
-        }
-
-        $data = [
-          'amount' => $loanAmountNeeded,
-          'reference' => Str::orderedUuid(),
-          'remark' => 'Result Publication'
-        ];
-
-        $obj = new FundingHandler(
-          $this->institutionGroup,
-          $this->staffUser,
-          $data
-        );
-        $obj->requestDebt();
+    DB::beginTransaction();
+    if ($this->institutionGroup->credit_wallet < $amountToPay) {
+      $loanRes = $this->processLoan($amountToPay);
+      if ($loanRes->isNotSuccessful()) {
+        return $loanRes;
       }
-
-      //===
-      $this->institutionGroup
-        ->fill([
-          'credit_wallet' =>
-            $this->institutionGroup->credit_wallet - $amountToPay
-        ])
-        ->save();
     }
 
-    //== Add record to 'result_publications' DB table
     $publication = ResultPublication::create([
       'institution_id' => $this->institution->id,
       'institution_group_id' => $this->institutionGroup->id,
@@ -100,11 +75,42 @@ abstract class PublishResult
       'payment_structure' => $this->priceList->payment_structure
     ]);
 
-    //== Update the each $resultsToPublish - Mark as Published
     TermResult::whereIn('id', $this->resultsToPublish->pluck('id'))->update([
       'result_publication_id' => $publication->id
     ]);
+
+    if ($amountToPay > 0) {
+      TransactionHandler::make(
+        $this->institution,
+        Str::orderedUuid()
+      )->deductCreditWallet($amountToPay, $publication, 'Result Publication');
+    }
+    DB::commit();
+
     return successRes('Result published successfully');
+  }
+
+  private function processLoan($amountToPay): Res
+  {
+    $loanAmountNeeded = $amountToPay - $this->institutionGroup->credit_wallet;
+
+    if (!$this->institutionGroup->canGetLoan($loanAmountNeeded)) {
+      return failRes(
+        'Insufficient Credit Balance. ₦' .
+          number_format($amountToPay) .
+          ' Required.'
+      );
+    }
+
+    $data = [
+      'amount' => $loanAmountNeeded,
+      'reference' => Str::orderedUuid(),
+      'remark' => 'Loan for Result Publication'
+    ];
+
+    $obj = new FundingHandler($this->institutionGroup, $this->staffUser, $data);
+    $obj->requestDebt();
+    return successRes('loan given');
   }
 
   static function make(

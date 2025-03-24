@@ -1,13 +1,11 @@
 <?php
 
 use App\Enums\TransactionType;
-use App\Models\Funding;
 use App\Models\InstitutionGroup;
 use App\Models\User;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
-use function Pest\Laravel\postJson;
 
 /**
  * ./vendor/bin/pest --filter FundingControllerTest
