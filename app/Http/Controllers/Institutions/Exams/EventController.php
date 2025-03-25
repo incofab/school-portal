@@ -87,14 +87,16 @@ class EventController extends Controller
   function store(Institution $institution, Request $request)
   {
     $data = $request->validate(Event::createRule());
-    $institution->events()->create($data);
+    $institution->events()->create([...$data, 'code' => Event::generateCode()]);
     return $this->ok();
   }
 
   function update(Request $request, Institution $institution, Event $event)
   {
     $data = $request->validate(Event::createRule($event));
-    $event->fill($data)->save();
+    $event
+      ->fill([...$data, 'code' => $event->code ?? Event::generateCode()])
+      ->save();
     return $this->ok();
   }
 

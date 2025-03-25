@@ -6,7 +6,9 @@ use App\Enums\ExamStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Institution;
+use App\Models\Student;
 use App\Support\ExamHandler;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -21,6 +23,11 @@ class ExamResultController extends Controller
         'examCourseables.courseable',
         fn($q) => $q->with('course', 'questions', 'passages', 'instructions')
       )
+      ->with([
+        'examable' => function (MorphTo $morphTo) {
+          $morphTo->morphWith([Student::class => ['user']]);
+        }
+      ])
       ->first();
 
     $examHandler = ExamHandler::make($exam);
@@ -35,7 +42,8 @@ class ExamResultController extends Controller
       $examHandler->endExam();
     }
 
-    $tokenUser = currentUser() ?? $this->getTokenUserFromCookie();
+    $tokenUser =
+      currentUser() ?? ($exam->examable ?? $this->getTokenUserFromCookie());
 
     return Inertia::render('institutions/exams/exam-page/exam-result', [
       'exam' => $exam,

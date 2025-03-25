@@ -7,6 +7,8 @@ use App\Models\Exam;
 use App\Models\Question;
 use App\Support\ExamHandler;
 use DB;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class CreateExam
 {
@@ -14,24 +16,39 @@ class CreateExam
   {
   }
 
+  public static function make(
+    Event $event,
+    Model $examable,
+    Collection $eventCourseables,
+    array $post
+  ) {
+    return new self($event, [
+      'examable_type' => $examable->getMorphClass(),
+      'examable_id' => $examable->id,
+      'courseables' => $eventCourseables
+        ->map(
+          fn($item) => [
+            'courseable_id' => $item->courseable_id,
+            'courseable_type' => $item->courseable_type
+          ]
+        )
+        ->toArray(),
+      ...$post
+    ]);
+  }
+
   public static function run(Event $event, array $post)
   {
     return (new self($event, $post))->execute();
   }
 
-  private function execute()
+  function execute()
   {
-    // $student = currentInstitutionUser()?->student;
-    $institution = currentInstitution();
     $examData = [
-      'institution_id' => $institution->id,
+      'institution_id' => $this->event->institution_id,
       'event_id' => $this->event->id,
       'examable_type' => $this->post['examable_type'],
       'examable_id' => $this->post['examable_id']
-      // ...$student ? ['student_id' => $student->id] : [],
-      // ...empty($this->post['external_reference'])
-      //   ? []
-      //   : ['external_reference' => $this->post['external_reference']]
     ];
 
     $checkExam = $this->event

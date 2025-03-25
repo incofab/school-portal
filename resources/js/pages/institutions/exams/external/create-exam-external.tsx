@@ -18,6 +18,7 @@ export default function CreateExamExternal({
   const { instRoute } = useInstitutionRoute();
   return (
     <ExamLayout
+      tokenUser={tokenUser}
       title={event.title}
       rightElement={tokenUser.name}
       breadCrumbItems={[

@@ -64,6 +64,7 @@ class ExamController extends Controller
 
     if ($event->eventCourseables->count() == 1) {
       // start exam and go to exam page
+      /*
       $eventCourseable = $event->eventCourseables->first();
       $exam = CreateExam::run($event, [
         'start_now' => true,
@@ -76,6 +77,11 @@ class ExamController extends Controller
           ]
         ]
       ]);
+      */
+      $exam = CreateExam::make($event, $student, $event->eventCourseables, [
+        'start_now' => true
+      ])->execute();
+
       return redirect(
         route('institutions.display-exam-page', [
           $institution->uuid,
