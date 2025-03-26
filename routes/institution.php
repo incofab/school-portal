@@ -318,6 +318,7 @@ Route::delete('/lesson-plans/{lessonPlan}/destroy', [Web\Curriculums\LessonPlanC
 
 //== LESSON NOTES ::
 Route::get('/lesson-notes', [Web\Curriculums\LessonNoteController::class, 'index'])->name('lesson-notes.index');
+Route::post('/lesson-notes/generate-ai-note', [Web\Curriculums\LessonNoteController::class, 'generateAiNote'])->name('lesson-notes.gen-ai-note');
 Route::get('/lesson-notes/{lessonPlan}/create', [Web\Curriculums\LessonNoteController::class, 'createOrEdit'])->name('lesson-notes.create');
 Route::get('/lesson-notes/{lessonNote}/edit', [Web\Curriculums\LessonNoteController::class, 'createOrEdit'])->name('lesson-notes.edit');
 Route::get('/lesson-notes/{lessonNote}', [Web\Curriculums\LessonNoteController::class, 'show'])->name('lesson-notes.show');
