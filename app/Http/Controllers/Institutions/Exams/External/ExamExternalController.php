@@ -7,8 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExamRequest;
 use App\Models\Event;
 use App\Models\Institution;
+use App\Models\Student;
 use App\Models\TokenUser;
 use App\Support\MorphMap;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ExamExternalController extends Controller
@@ -38,5 +40,48 @@ class ExamExternalController extends Controller
     $this->validateCreateExam($event);
     $exam = CreateExam::run($event, $request->validated());
     return $this->ok(['exam' => $exam]);
+  }
+
+  function studentExamLoginCreate()
+  {
+    return Inertia::render('student-exam-login');
+  }
+
+  function studentExamLoginStore(Request $request)
+  {
+    $data = $request->validate([
+      'event_code' => ['required', 'string'],
+      'student_code' => ['required', 'string']
+    ]);
+
+    $event = Event::query()
+      ->where('code', $data['event_code'])
+      ->with('institution')
+      ->firstOrFail();
+
+    $student = Student::query()
+      ->where('code', $data['student_code'])
+      ->with('institutionUser', 'classification')
+      ->firstOrFail();
+
+    abort_unless(
+      $event->institution_id === $student->institutionUser->institution_id,
+      403,
+      'Institution mismatch'
+    );
+
+    [$status, $message] = $event->canCreateExamCheck();
+    abort_unless($status, 400, $message);
+
+    $exam = CreateExam::make($event, $student, $event->eventCourseables, [
+      'start_now' => true
+    ])->execute();
+
+    return redirect(
+      route('institutions.display-exam-page', [
+        $event->institution->uuid,
+        $exam->exam_no
+      ])
+    );
   }
 }

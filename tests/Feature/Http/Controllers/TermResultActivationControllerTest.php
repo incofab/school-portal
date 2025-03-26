@@ -73,8 +73,7 @@ it('should handle invalid student code', function () {
   postJson(route('activate-term-result.store'), [
     'student_code' => $student2->code,
     'pin' => $pin->pin
-  ])->assertNotFound();
-  // ])->assertJsonValidationErrorFor('student_code');
+  ])->assertJsonValidationErrorFor('student_code');
 });
 
 it('should handle pin not for student', function () {
@@ -234,3 +233,28 @@ it('uses same pin to activate other results in the same session', function () {
   ])->assertOk();
   expect($sameAcademicSessionTermResult->fresh())->is_activated->toBe(false);
 });
+
+it(
+  'activates term result with a pin from another institution but in the same institution group',
+  function () {
+    $this->termResult->fill(['is_activated' => false])->save();
+    $institution2 = Institution::factory()
+      ->for($this->institution->institutionGroup)
+      ->create();
+    $pin = Pin::factory()
+      ->withInstitution($institution2)
+      ->create();
+
+    postJson(route('activate-term-result.store'), [
+      'student_code' => $this->student->code,
+      'pin' => $pin->pin
+    ])
+      ->assertOk()
+      ->assertJsonPath('activated', true);
+    expect($this->termResult->fresh())->is_activated->toBe(true);
+    expect($pin->fresh())
+      ->term_result_id->toBe($this->termResult->id)
+      ->used_at->not()
+      ->toBeNull();
+  }
+);

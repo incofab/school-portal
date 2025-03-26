@@ -7,8 +7,10 @@ use App\Helpers\ExamAttemptFileHandler;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Institution;
+use App\Models\Student;
 use App\Models\TokenUser;
 use App\Support\ExamHandler;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -23,6 +25,11 @@ class TestDisplayExamPageController extends Controller
         'examCourseables.courseable',
         fn($q) => $q->with('course', 'questions', 'passages', 'instructions')
       )
+      ->with([
+        'examable' => function (MorphTo $morphTo) {
+          $morphTo->morphWith([Student::class => ['user']]);
+        }
+      ])
       ->first();
     $exam
       ->fill([

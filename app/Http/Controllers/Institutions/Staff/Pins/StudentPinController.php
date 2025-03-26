@@ -13,6 +13,7 @@ use App\Support\UITableFilters\PinUITableFilters;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/** @deprecated We're not using this anymore. */
 class StudentPinController extends Controller
 {
   public function __construct()

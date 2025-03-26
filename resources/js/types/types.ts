@@ -65,6 +65,11 @@ export enum WalletType {
   Debt = 'debt',
 }
 
+export enum TransactionType {
+  Credit = 'credit',
+  Debit = 'debit',
+}
+
 export enum FullTermType {
   FirstMid = 'first-mid',
   First = 'first',
@@ -209,6 +214,12 @@ export enum NoteStatusType {
 export enum TimetableActionableType {
   Course = 'course',
   SchoolActivity = 'school-activity',
+}
+
+export enum AdmissionStatusType {
+  Pending = 'pending',
+  Admitted = 'admitted',
+  Declined = 'declined',
 }
 
 export interface ExamAttempt {

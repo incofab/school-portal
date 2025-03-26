@@ -114,7 +114,9 @@ export default function CreateAdmissionApplication({
     if (!handleResponseToast(res)) return;
 
     Inertia.visit(
-      instRoute('admissions.success', [res.data.admissionApplication.id])
+      instRoute('admission-applications.preview', [
+        res.data.admissionApplication.id,
+      ])
     );
   }
 

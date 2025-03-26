@@ -2,11 +2,10 @@
 namespace App\Support\Payments\Processors;
 
 use App\Enums\Payments\PaymentStatus;
-use App\Enums\TransactionType;
 use App\Models\AdmissionApplication;
 use App\Models\AdmissionFormPurchase;
-use App\Support\Fundings\FundingHandler;
 use App\Support\Res;
+use App\Support\TransactionHandler;
 use DB;
 
 class AdmissionFormPurchaseProcessor extends PaymentProcessor
@@ -37,18 +36,21 @@ class AdmissionFormPurchaseProcessor extends PaymentProcessor
       ]
     );
 
-    AdmissionApplication::query()
-      ->find($admissionApplicationId)
-      ?->update(['admission_form_purchase_id' => $admissionFormPurchase->id]);
-
-    FundingHandler::makeFromPaymentRef(
-      $this->paymentReference,
-      'Purchased Admission Form: ' . $admissionForm->title
-    )->fundCreditWallet(
-      $this->paymentReference->amount,
-      TransactionType::Credit,
-      $admissionForm
+    $admissionApplication = AdmissionApplication::query()->find(
+      $admissionApplicationId
     );
+    $admissionApplication?->update([
+      'admission_form_purchase_id' => $admissionFormPurchase->id
+    ]);
+
+    TransactionHandler::makeFromPaymentReference(
+      $this->paymentReference
+    )->topupCreditWallet(
+      $this->paymentReference->amount,
+      $admissionApplication ?? $admissionForm,
+      "Purchased Admission Form: {$admissionForm->title}"
+    );
+
     DB::commit();
 
     return successRes('Admission form purchased successfully');

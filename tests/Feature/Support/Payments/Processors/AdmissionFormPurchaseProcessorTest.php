@@ -88,15 +88,15 @@ it('can handle a successful admission form purchase callback', function () {
   ]);
 
   // Check if the credit wallet was funded
-  assertDatabaseHas('fundings', [
-    'reference' => Funding::creditReference($this->paymentReference->reference),
-    'amount' => $this->paymentReference->amount,
-    'wallet' => \App\Enums\WalletType::Credit->value,
-    'fundable_id' => $this->admissionForm->id,
-    'fundable_type' => $this->admissionForm->getMorphClass()
-  ]);
+  // assertDatabaseHas('fundings', [
+  //   'reference' => Funding::creditReference($this->paymentReference->reference),
+  //   'amount' => $this->paymentReference->amount,
+  //   'wallet' => \App\Enums\WalletType::Credit->value,
+  //   'fundable_id' => $this->admissionForm->id,
+  //   'fundable_type' => $this->admissionForm->getMorphClass()
+  // ]);
   assertDatabaseHas('transactions', [
-    'reference' => Funding::creditReference($this->paymentReference->reference),
+    'reference' => $this->paymentReference->reference,
     'amount' => $this->paymentReference->amount,
     'type' => TransactionType::Credit->value
   ]);
@@ -176,20 +176,8 @@ it(
       )->first()->id
     ]);
 
-    // Check if the credit wallet was funded
-    assertDatabaseHas('fundings', [
-      'reference' => Funding::creditReference(
-        $this->paymentReference->reference
-      ),
-      'amount' => $this->paymentReference->amount,
-      'wallet' => \App\Enums\WalletType::Credit->value,
-      'fundable_id' => $this->admissionForm->id,
-      'fundable_type' => $this->admissionForm->getMorphClass()
-    ]);
     assertDatabaseHas('transactions', [
-      'reference' => Funding::creditReference(
-        $this->paymentReference->reference
-      ),
+      'reference' => $this->paymentReference->reference,
       'amount' => $this->paymentReference->amount,
       'type' => TransactionType::Credit->value
     ]);

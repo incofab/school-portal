@@ -134,7 +134,7 @@ function InstitutionDashboard({ institutionGroup }: Props) {
     {
       title: 'Pin',
       desc: 'Result activation pins',
-      route: instRoute('pin-prints.index'),
+      route: instRoute('pin-generators.index'),
       icon: MapIcon,
       roles: [InstitutionUserType.Admin],
     },

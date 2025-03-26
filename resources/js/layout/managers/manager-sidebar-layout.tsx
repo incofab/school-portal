@@ -66,22 +66,22 @@ export default function ManagerSideBarLayout() {
       roles: [ManagerRole.Partner, ManagerRole.Admin],
       route: route('managers.registration-requests.index'),
     },
-    {
-      label: 'Pins',
-      roles: [ManagerRole.Admin],
-      sub_items: [
-        {
-          label: 'List Generated Pins',
-          route: route('managers.pin-generators.index'),
-          roles: [ManagerRole.Admin],
-        },
-        {
-          label: 'Generate Pins',
-          route: route('managers.generate-pin.create'),
-          roles: [ManagerRole.Admin],
-        },
-      ],
-    },
+    // {
+    //   label: 'Pins',
+    //   roles: [ManagerRole.Admin],
+    //   sub_items: [
+    //     {
+    //       label: 'List Generated Pins',
+    //       route: route('managers.pin-generators.index'),
+    //       roles: [ManagerRole.Admin],
+    //     },
+    //     {
+    //       label: 'Generate Pins',
+    //       route: route('managers.generate-pin.create'),
+    //       roles: [ManagerRole.Admin],
+    //     },
+    //   ],
+    // },
     {
       label: 'Logout',
       route: route('logout'),

@@ -117,17 +117,6 @@ export default function Login({ institution }: { institution?: Institution }) {
             Forgot Password?
           </Button>
         </HStack>
-        {/* <FormControl>
-            <Button
-              as={InertiaLink}
-              href={route('forgot-password')}
-              colorScheme={'brand'}
-              variant={'link'}
-              float={'right'}
-            >
-              Forgot Password?
-            </Button>
-          </FormControl> */}
         <Button
           isLoading={form.processing}
           loadingText="Logging in"
@@ -137,15 +126,26 @@ export default function Login({ institution }: { institution?: Institution }) {
         >
           Login
         </Button>
-        {!institution && (
-          <Div textAlign={'center'}>
-            <InertiaLink href={route('registration-requests.create')}>
-              <Button colorScheme={'brand'} variant={'link'}>
-                Need an account?
-              </Button>
-            </InertiaLink>
-          </Div>
-        )}
+        <HStack align={'stretch'} justify={'space-between'}>
+          <Button
+            as={InertiaLink}
+            href={route('student.exam.login.create')}
+            colorScheme={'brand'}
+            variant={'link'}
+            float={'right'}
+          >
+            Exam Login
+          </Button>
+          {!institution && (
+            <Div textAlign={'center'}>
+              <InertiaLink href={route('registration-requests.create')}>
+                <Button colorScheme={'brand'} variant={'link'}>
+                  Need an account?
+                </Button>
+              </InertiaLink>
+            </Div>
+          )}
+        </HStack>
       </VStack>
     </CenteredLayout>
   );

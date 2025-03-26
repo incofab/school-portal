@@ -1,7 +1,6 @@
 <?php
 use App\Models\Event;
 use App\Models\Exam;
-use App\Models\ExamCourseable;
 use App\Models\Institution;
 use App\Models\Student;
 use App\Models\User;
@@ -21,12 +20,6 @@ beforeEach(function () {
 });
 
 it('only allows admins to access the controller', function () {
-  // Attempt to access the controller as a non-admin
-  // actingAs($this->nonAdminUser)
-  //   ->get(instRoute('events.index', [], $this->institution))
-  //   ->assertStatus(403);
-
-  // Attempt to access the controller as an admin
   actingAs($this->admin)
     ->get(instRoute('events.index', [], $this->institution))
     ->assertStatus(200);
@@ -62,6 +55,9 @@ it('stores a new event', function () {
     ->institution($this->institution)
     ->make()
     ->toArray();
+  $data = collect($data)
+    ->except('code')
+    ->toArray();
 
   actingAs($this->admin)
     ->post(instRoute('events.store', [], $this->institution), $data)
@@ -77,6 +73,9 @@ it('updates an event', function () {
   $data = Event::factory()
     ->institution($this->institution)
     ->make()
+    ->toArray();
+  $data = collect($data)
+    ->except('code')
     ->toArray();
 
   actingAs($this->admin)

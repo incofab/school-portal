@@ -37,6 +37,7 @@ Route::delete('/registration-requests/{registrationRequest}', [Web\RegistrationR
 
 //Admin section
 Route::group(['middleware' => 'admin'], function () {
+    /*
     Route::get('/generate-pin', [Web\GeneratePinController::class, 'create'])
         ->name('generate-pin.create');
     Route::post('/generate-pin', [Web\GeneratePinController::class, 'store'])
@@ -46,7 +47,7 @@ Route::group(['middleware' => 'admin'], function () {
         ->name('pins.index');
     Route::get('/pin-generators', [Web\PinGeneratorController::class, 'index'])
         ->name('pin-generators.index');
-
+    */
     Route::get('/index', [Web\ManagerController::class, 'index'])
         ->name('index');
     Route::get('/create', [Web\ManagerController::class, 'create'])

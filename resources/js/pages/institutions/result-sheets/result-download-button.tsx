@@ -45,7 +45,8 @@ export default function ResultDownloadButton({
       id={'download-btn'}
       {...props}
       onClick={() => {
-        downloadAsPdf();
+        // downloadAsPdf();
+        exportPdf();
       }}
       isLoading={downloadPdfForm.processing}
       size={'sm'}

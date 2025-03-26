@@ -28,7 +28,8 @@ class EventFactory extends Factory
       'status' => EventStatus::Active->value,
       'num_of_activations' => fake()->randomNumber(2),
       'num_of_subjects' => fake()->randomNumber(1) + 1,
-      'starts_at' => now()
+      'starts_at' => now(),
+      'code' => Event::generateCode()
     ];
   }
 

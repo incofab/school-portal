@@ -3,6 +3,8 @@ import {
   InstitutionUserType,
   ManagerRole,
   TermType,
+  TransactionType,
+  WalletType,
 } from './types';
 
 export interface Row {
@@ -71,11 +73,26 @@ export interface Institution extends Row {
 
 export interface Funding extends Row {
   institution_group_id: string;
+  wallet: WalletType;
   amount: number;
   previous_balance: number;
   new_balance: number;
   remark: string;
   institution_group: InstitutionGroup;
+}
+
+export interface Transaction extends InstitutionRow {
+  institution_group_id: string;
+  wallet: WalletType;
+  type: TransactionType;
+  reference: string;
+  amount: number;
+  bbt: number;
+  bat: number;
+  remark: string;
+  transactionable_id: number;
+  transactionable_type: string;
+  institution_group?: InstitutionGroup;
 }
 
 export interface SchoolActivity extends Row {
@@ -280,24 +297,14 @@ export interface Pin extends InstitutionRow {
   pin: string;
   used_at: string;
   term_result_id: number;
-  pin_print_id: number;
   pin_generator_id: number;
   student_id: number;
   academic_session_id: number;
   term: string;
   term_result?: TermResult;
-  pin_print?: PinPrint;
   pin_generator: PinGenerator;
   student?: Student;
   academic_session?: AcademicSession;
-}
-
-export interface PinPrint extends InstitutionRow {
-  user_id: number;
-  num_of_pins: number;
-  reference: string;
-  comment: string;
-  user?: User;
 }
 
 export interface SessionResult extends InstitutionRow {
@@ -397,9 +404,11 @@ export interface AdmissionApplication extends InstitutionRow {
   first_name: string;
   last_name: string;
   other_names: string;
+  name: string;
   application_no: string;
   phone: string;
-  photo: string;
+  photo?: string;
+  photo_url: string;
   email: string;
   gender: string;
   address: string;
@@ -468,6 +477,19 @@ export interface ResultCommentTemplate extends InstitutionRow {
   max: number;
 }
 
+export interface ResultPublication extends InstitutionRow {
+  institution_group_id: number;
+  academic_session_id: number;
+  staff_user_id: number;
+  term: string;
+  payment_structure: string;
+  num_of_results: number;
+  institution_group?: InstitutionGroup;
+  academic_session?: AcademicSession;
+  staff?: User;
+  transaction?: Transaction;
+}
+
 export interface GuardianStudent extends InstitutionRow {
   guardian_user_id: number;
   student_id: number;
@@ -511,6 +533,7 @@ export interface Event extends InstitutionRow {
   description: string;
   duration: number;
   status: string;
+  code?: string;
   starts_at: string;
   transferred_at?: string;
   expires_at?: string;

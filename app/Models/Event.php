@@ -20,6 +20,7 @@ class Event extends Model
     'status' => EventStatus::class,
     'starts_at' => 'datetime',
     'expires_at' => 'datetime',
+    'institution_id' => 'integer',
     'classification_id' => 'integer',
     'classification_group_id' => 'integer',
     'show_corrections' => 'boolean',
@@ -54,6 +55,15 @@ class Event extends Model
         new ValidateExistsRule(Classification::class)
       ]
     ];
+  }
+
+  static function generateCode()
+  {
+    $key = str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
+    while (self::where('code', '=', $key)->first()) {
+      $key = str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
+    }
+    return $key;
   }
 
   public function duration(): Attribute

@@ -356,7 +356,7 @@ export default function SideBarLayout() {
         },
         {
           label: 'Pins',
-          route: instRoute('pin-prints.index'),
+          route: instRoute('pin-generators.index'),
           roles: [InstitutionUserType.Admin],
         },
         {
@@ -393,6 +393,11 @@ export default function SideBarLayout() {
         {
           label: 'All Fundings',
           route: instRoute('fundings.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'All Transactions',
+          route: instRoute('transactions.index'),
           roles: [InstitutionUserType.Admin],
         },
       ],

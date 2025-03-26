@@ -58,6 +58,10 @@ export default function ListEvents({
       value: 'title',
     },
     {
+      label: 'Code',
+      value: 'code',
+    },
+    {
       label: 'Duration',
       value: 'duration',
     },

@@ -70,10 +70,12 @@ function ListStudents({ students }: Props) {
       label: 'Name',
       value: 'user.full_name',
       render: (row) => <DisplayUserFullname user={row.user} />,
+      sortKey: 'firstName',
     },
     {
       label: 'Class',
       value: 'classification.title',
+      sortKey: 'classification',
     },
     {
       label: 'Guardian Phone',
@@ -103,6 +105,7 @@ function ListStudents({ students }: Props) {
       label: 'Registered on',
       value: 'created_at',
       render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
+      sortKey: 'createdAt',
     },
     {
       label: 'Action',

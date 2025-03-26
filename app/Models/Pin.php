@@ -17,7 +17,6 @@ class Pin extends Model
     'institution_id' => 'integer',
     'term_result_id' => 'integer',
     'pin_generator_id' => 'integer',
-    'pin_print_id' => 'integer',
     'term' => TermType::class
   ];
   public $guarded = [];
@@ -47,13 +46,6 @@ class Pin extends Model
       : $query->whereNull('used_at');
   }
 
-  function scopePrinted($query, $isPrinted = true)
-  {
-    return $isPrinted
-      ? $query->whereNotNull('pin_print_id')
-      : $query->whereNull('pin_print_id');
-  }
-
   function termResult()
   {
     return $this->belongsTo(TermResult::class);
@@ -70,10 +62,7 @@ class Pin extends Model
   {
     return $this->belongsTo(AcademicSession::class);
   }
-  function pinPrint()
-  {
-    return $this->hasOne(PinPrint::class);
-  }
+
   function institution()
   {
     return $this->belongsTo(Institution::class);

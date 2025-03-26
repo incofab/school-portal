@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers\Home;
 
-use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Models\PaymentReference;
 use App\Support\SettingsHandler;
 use App\Http\Controllers\Controller;
-use App\Enums\Payments\PaymentPurpose;
-use App\Actions\Payments\ConfirmFeePayment;
-use App\Actions\Payments\ConfirmWalletFunding;
 use App\Enums\Payments\PaymentStatus;
 use App\Support\Payments\Processors\PaymentProcessor;
 

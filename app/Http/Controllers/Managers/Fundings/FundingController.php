@@ -11,6 +11,7 @@ use App\Models\InstitutionGroup;
 use App\Http\Controllers\Controller;
 use App\Rules\ValidateFundingReference;
 use App\Support\Fundings\FundingHandler;
+use App\Support\Fundings\RecordFunding;
 
 class FundingController extends Controller
 {
@@ -63,9 +64,13 @@ class FundingController extends Controller
     $institutionGroup = InstitutionGroup::find(
       $validated['institution_group_id']
     );
-    $obj = new FundingHandler($institutionGroup, currentUser(), $validated);
 
-    $obj->fundDebtWallet($validated['amount'], TransactionType::Credit);
+    RecordFunding::make($institutionGroup, currentUser())->recordDebtTopup(
+      $validated['amount'],
+      $validated['reference'],
+      null,
+      $validated['remark'] ?? null
+    );
 
     return $this->ok();
   }

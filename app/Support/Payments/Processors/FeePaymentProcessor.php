@@ -3,9 +3,8 @@ namespace App\Support\Payments\Processors;
 
 use App\Actions\Payments\RecordMultiFeePayments;
 use App\Enums\Payments\PaymentStatus;
-use App\Enums\TransactionType;
-use App\Support\Fundings\FundingHandler;
 use App\Support\Res;
+use App\Support\TransactionHandler;
 use DB;
 
 class FeePaymentProcessor extends PaymentProcessor
@@ -43,14 +42,14 @@ class FeePaymentProcessor extends PaymentProcessor
       $this->paymentReference->institution
     );
 
-    FundingHandler::makeFromPaymentRef(
+    TransactionHandler::makeFromPaymentReference(
+      $this->paymentReference
+    )->topupCreditWallet(
+      $this->paymentReference->amount,
       $this->paymentReference,
       'Fee payment for: ' . $fees->map(fn($item) => $item->title)->join(', ')
-    )->fundCreditWallet(
-      $this->paymentReference->amount,
-      TransactionType::Credit,
-      $this->paymentReference
     );
+
     DB::commit();
 
     return successRes('Admission form purchased successfully');

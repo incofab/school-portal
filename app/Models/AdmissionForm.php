@@ -39,6 +39,11 @@ class AdmissionForm extends Model
     return $this->belongsTo(Institution::class);
   }
 
+  public function academicSession()
+  {
+    return $this->belongsTo(AcademicSession::class);
+  }
+
   public function admissionFormPurchases()
   {
     return $this->hasMany(AdmissionFormPurchase::class);

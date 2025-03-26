@@ -56,7 +56,7 @@ it(
   'returns classifications for the institution in the index view',
   function () {
     $response = $this->get(
-      route('institutions.result-publications.index', $this->institution)
+      route('institutions.result-publications.create', $this->institution)
     );
 
     $response->assertInertia(
@@ -112,7 +112,7 @@ it(
     ];
 
     postJson(
-      route('institutions.result-publications.index', $this->institution),
+      route('institutions.result-publications.store', $this->institution),
       $payload
     )->assertStatus(401);
     expect(ResultPublication::all())->toBeEmpty();
@@ -140,7 +140,7 @@ it(
     ];
 
     postJson(
-      route('institutions.result-publications.index', $this->institution),
+      route('institutions.result-publications.store', $this->institution),
       $payload
     )->assertStatus(401);
 
@@ -172,7 +172,7 @@ it('tests for payment Structure: PerTerm', function () {
   ];
 
   postJson(
-    route('institutions.result-publications.index', $this->institution),
+    route('institutions.result-publications.store', $this->institution),
     $payload
   )->assertOk();
 
@@ -199,7 +199,7 @@ it('tests for payment Structure: PerTerm', function () {
     ]);
 
   postJson(
-    route('institutions.result-publications.index', $this->institution),
+    route('institutions.result-publications.store', $this->institution),
     $payload
   )->assertOk();
   expect($this->institutionGroup->fresh())->credit_wallet->toBe(
@@ -227,7 +227,7 @@ it('tests for payment Structure: PerStudentPerTerm', function () {
   $payload = ['classifications' => [$this->classes->first()->id]];
 
   postJson(
-    route('institutions.result-publications.index', $this->institution),
+    route('institutions.result-publications.store', $this->institution),
     $payload
   )->assertOk();
 
@@ -240,7 +240,7 @@ it('tests for payment Structure: PerStudentPerTerm', function () {
     ->create($termResultProp);
 
   postJson(
-    route('institutions.result-publications.index', $this->institution),
+    route('institutions.result-publications.store', $this->institution),
     $payload
   )->assertOk();
 
@@ -262,7 +262,7 @@ it('tests for payment Structure: PerStudentPerTerm', function () {
     ->create([...$termResultProp, 'term' => $newTerm->value]);
 
   postJson(
-    route('institutions.result-publications.index', $this->institution),
+    route('institutions.result-publications.store', $this->institution),
     $payload
   )->assertOk();
   expect($this->institutionGroup->fresh())->credit_wallet->toBe(
@@ -290,7 +290,7 @@ it('tests for payment Structure: PerSession', function () {
   $payload = ['classifications' => [$termResultProp['classification_id']]];
 
   postJson(
-    route('institutions.result-publications.index', $this->institution),
+    route('institutions.result-publications.store', $this->institution),
     $payload
   )->assertOk();
 
@@ -334,7 +334,7 @@ it('tests for payment Structure: PerSession', function () {
   //   'settings' => InstitutionSetting::all()->toArray()
   // ]);
   postJson(
-    route('institutions.result-publications.index', $this->institution),
+    route('institutions.result-publications.store', $this->institution),
     $payload
   )->assertOk();
   expect($this->institutionGroup->fresh())->credit_wallet->toBe(
@@ -362,7 +362,7 @@ it('tests for payment Structure: PerStudentPerSession', function () {
   $payload = ['classifications' => [$this->classes->first()->id]];
 
   postJson(
-    route('institutions.result-publications.index', $this->institution),
+    route('institutions.result-publications.store', $this->institution),
     $payload
   )->assertOk();
 
@@ -393,7 +393,7 @@ it('tests for payment Structure: PerStudentPerSession', function () {
     ->create([...$termResultProp, 'term' => $newTerm->value]);
 
   postJson(
-    route('institutions.result-publications.index', $this->institution),
+    route('institutions.result-publications.store', $this->institution),
     $payload
   )->assertOk();
 
@@ -422,7 +422,7 @@ it('tests for payment Structure: PerStudentPerSession', function () {
   }
 
   postJson(
-    route('institutions.result-publications.index', $this->institution),
+    route('institutions.result-publications.store', $this->institution),
     $payload
   )->assertOk();
   expect($this->institutionGroup->fresh())->credit_wallet->toBe(

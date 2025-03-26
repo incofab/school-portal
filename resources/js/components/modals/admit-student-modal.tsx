@@ -9,6 +9,7 @@ import ClassificationSelect from '../selectors/classification-select';
 import { preventNativeSubmit } from '@/util/util';
 import { AdmissionApplication } from '@/types/models';
 import { Inertia } from '@inertiajs/inertia';
+import { AdmissionStatusType } from '@/types/types';
 
 interface Props {
   isOpen: boolean;
@@ -29,7 +30,7 @@ export default function AdmitStudentModal({
 
   const webForm = useWebForm({
     classification: '',
-    admission_status: 'admitted',
+    admission_status: AdmissionStatusType.Admitted,
   });
 
   function canSubmit() {

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\TermType;
 use App\Models\Institution;
+use App\Models\PinGenerator;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,8 +19,18 @@ class PinFactory extends Factory
   {
     return [
       'pin' => fake()->numerify('##########'),
-      'institution_id' => Institution::factory()
+      'institution_id' => Institution::factory(),
+      'pin_generator_id' => PinGenerator::factory()
     ];
+  }
+
+  public function pinGenerator(PinGenerator $pinGenerator): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'pin_generator_id' => $pinGenerator->id
+      ]
+    )->withInstitution($pinGenerator->institution);
   }
 
   public function withInstitution(

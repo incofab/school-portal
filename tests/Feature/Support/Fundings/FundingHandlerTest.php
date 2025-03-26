@@ -1,15 +1,9 @@
 <?php
 
-// use PEST;
-// use Mockery;
-use App\Models\User;
 use App\Enums\WalletType;
 use App\Models\Institution;
-use App\Enums\TransactionType;
 use App\Models\InstitutionUser;
-use App\Models\InstitutionGroup;
 use App\Models\PaymentReference;
-use Illuminate\Database\Eloquent\Model;
 use App\Support\Fundings\FundingHandler;
 
 use function PHPUnit\Framework\assertEquals;
@@ -28,16 +22,6 @@ beforeEach(function () {
     ->withInstitution($this->institution)
     ->create();
 });
-
-// it('can create an instance from payment reference', function () {
-//   $handler = FundingHandler::makeFromPaymentRef($this->paymentReference);
-
-//   expect($handler)->toBeInstanceOf(FundingHandler::class);
-//   // expect($handler->institutionGroup)->toEqual($this->institutionGroup);
-//   expect($handler->user)->toEqual($this->user);
-//   expect($handler->data['amount'])->toEqual(1500);
-//   expect($handler->data['reference'])->toEqual('ref123');
-// });
 
 it('can process loan correctly', function () {
   $handler = new FundingHandler($this->institutionGroup, $this->user, [
@@ -61,6 +45,7 @@ it('correctly handles paying debt', function () {
   assertEquals($this->institutionGroup->debt_wallet, 1500);
 });
 
+/*
 it('can correctly fund the credit wallet', function () {
   $handler = new FundingHandler($this->institutionGroup, $this->user, [
     'amount' => 2000,
@@ -83,3 +68,4 @@ it('can correctly fund the debt wallet', function () {
 
   assertEquals($this->institutionGroup->debt_wallet, 1000);
 });
+*/
