@@ -74,7 +74,7 @@ export default function CreateOrUpdateTopic({
   const submit = async () => {
     const res = await webForm.submit((data, web) => {
       return web.post(
-        instRoute('inst-topics.store-or-update', topic ?? [topic]),
+        instRoute('inst-topics.store-or-update', topic ? [topic] : undefined),
         data
       );
 

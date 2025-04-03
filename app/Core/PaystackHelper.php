@@ -22,7 +22,7 @@ class PaystackHelper
     $paystackKeys = SettingsHandler::make(
       $institution->institutionSettings
     )->getPaystackKeys();
-    // Use system keys if school didn't provide any
+    // Use system keys if school didn't provide any 
     if (empty($paystackKeys->getPublicKey())) {
       return self::make();
     }

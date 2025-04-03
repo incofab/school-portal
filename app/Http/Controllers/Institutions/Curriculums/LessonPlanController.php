@@ -24,8 +24,8 @@ class LessonPlanController extends Controller
 
   function createOrEdit(
     Institution $institution,
-    SchemeOfWork $schemeOfWork = null,
-    LessonPlan $lessonPlan = null
+    ?SchemeOfWork $schemeOfWork = null,
+    ?LessonPlan $lessonPlan = null
   ) {
     $institutionUser = currentInstitutionUser();
     $user = $institutionUser->user;
@@ -48,6 +48,8 @@ class LessonPlanController extends Controller
     //== Create New Lesson Plan ==
     if ($schemeOfWork) {
       $courseId = $schemeOfWork->topic->course_id;
+
+      // dd($schemeOfWork->topic->classificationGroup()->get());
       $classificationIds = $schemeOfWork->topic->classificationGroup
         ->classifications()
         ->pluck('id');

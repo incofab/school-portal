@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormControl, VStack, Checkbox } from '@chakra-ui/react';
+import { FormControl, VStack, Checkbox, HStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
@@ -7,7 +7,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { LessonNote, LessonPlan } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
-import { FormButton } from '@/components/buttons';
+import { BrandButton, FormButton, LinkButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
@@ -23,7 +23,7 @@ interface Props {
 const tinymceApiKey = import.meta.env.VITE_TINYMCE_API_KEY;
 
 export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
-  const { handleResponseToast } = useMyToast();
+  const { handleResponseToast, toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
 
   const webForm = useWebForm({
@@ -49,6 +49,11 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
       : false,
   });
 
+  const webForm_genWithAi = useWebForm({
+    topic_id: 0,
+    title: '',
+  });
+
   const topicId = lessonNote
     ? lessonNote.topic_id
     : lessonPlan?.scheme_of_work?.topic_id;
@@ -67,6 +72,20 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
     Inertia.visit(instRoute('inst-topics.show', [topicId]));
   };
 
+  const genNoteWithAi = async () => {
+    const response = await webForm_genWithAi.submit((data, web) => {
+      data.topic_id = topicId ?? 0;
+      data.title = webForm.data.title;
+      return web.post(instRoute('lesson-notes.gen-ai-note'), data);
+    });
+
+    webForm.setValue('content', response.data[0]);
+
+    if (!handleResponseToast(response)) {
+      return;
+    }
+  };
+
   return (
     <DashboardLayout>
       <CenteredBox>
@@ -82,7 +101,7 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
             >
               <FormControlBox
                 form={webForm as any}
-                title="Topic Title"
+                title="Title"
                 formKey="title"
                 isRequired
               >
@@ -130,19 +149,35 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
               </FormControlBox>
 
               <FormControl>
-                <Checkbox
-                  isChecked={webForm.data.is_published}
-                  onChange={(e) =>
-                    webForm.setData({
-                      ...webForm.data,
-                      is_published: e.currentTarget.checked,
-                    })
-                  }
-                  size={'md'}
-                  colorScheme="brand"
-                >
-                  Publish Instantly.
-                </Checkbox>
+                <HStack justifyContent={'space-between'}>
+                  <Checkbox
+                    isChecked={webForm.data.is_published}
+                    onChange={(e) =>
+                      webForm.setData({
+                        ...webForm.data,
+                        is_published: e.currentTarget.checked,
+                      })
+                    }
+                    size={'md'}
+                    colorScheme="brand"
+                  >
+                    Publish Instantly.
+                  </Checkbox>
+                  <BrandButton
+                    size="xs"
+                    variant={'outline'}
+                    title="Generate with AI"
+                    isLoading={webForm_genWithAi.processing}
+                    loadingText="Processing... Please Wait!!"
+                    onClick={preventNativeSubmit(() => {
+                      if (!webForm.data.title) {
+                        toastError('Kindly enter the title of the lesson note');
+                        return;
+                      }
+                      genNoteWithAi();
+                    })}
+                  />
+                </HStack>
               </FormControl>
 
               <FormControl>
@@ -178,7 +213,10 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
               </FormControl>
 
               <FormControl>
-                <FormButton isLoading={webForm.processing} />
+                <FormButton
+                  isLoading={webForm.processing}
+                  isDisabled={webForm_genWithAi.processing}
+                />
               </FormControl>
             </VStack>
           </SlabBody>

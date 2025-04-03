@@ -9,9 +9,11 @@ use App\Models\LessonPlan;
 use App\Models\Institution;
 use Illuminate\Http\Request;
 use App\Enums\NoteStatusType;
+use App\Helpers\GoogleAiHelper;
 use App\Models\CourseTeacher;
 use App\Models\ClassificationGroup;
 use App\Http\Controllers\Controller;
+use App\Models\Topic;
 use App\Support\UITableFilters\LessonNoteUITableFilters;
 
 class LessonNoteController extends Controller
@@ -191,5 +193,36 @@ class LessonNoteController extends Controller
 
     $lessonNote->delete();
     return $this->ok();
+  }
+
+  function generateAiNote(Request $request)
+  {
+    //$model = 'gemma-3-27b-it';
+    //$model = 'gemini-1.5-pro';
+
+    $getTopic = Topic::where('id', $request->topic_id)->first();
+
+    if (empty($getTopic)) {
+      $className = 'a class';
+      $topicTitle = $request->title;
+    } else {
+      $className = $getTopic->classificationGroup->title;
+      $topicTitle = $getTopic->title . ' - ' . $request->title;
+    }
+
+    $question = "Using the Nigerian Basic Education Syllabus, write a long detailed class note for $className on the topic: $topicTitle. Try to touch every aspect of this topic in detail. Give me only the class note, no comment or side comment. You can include some practice questions. Return the response in pure html. Do not include stylings, meta tags, etc.";
+
+    $res = GoogleAiHelper::ask($question);
+
+    $res_parts = $res['candidates'][0]['content']['parts'];
+    $full_note = '';
+
+    foreach ($res_parts as $res_part) {
+      $full_note .= $res_part['text'];
+    }
+
+    $fullNote = str_replace('```html', '', $full_note);
+
+    return $this->ok([$fullNote]);
   }
 }
