@@ -21,16 +21,21 @@ class TopicFactory extends Factory
   }
   function parentTopic(Topic $topic)
   {
-    return $this->state(fn($attr) => [
-      'parent_topic_id' => $topic,
-    ]);
+    return $this->state(
+      fn($attr) => [
+        'parent_topic_id' => $topic
+      ]
+    );
   }
+
   function course(Course $course)
   {
-    return $this->state(fn($attr) => [
-      'course_id' => $course->id,
-      'institution_id' => $course->institution_id,
-    ]);
+    return $this->state(
+      fn($attr) => [
+        'course_id' => $course->id,
+        'institution_id' => $course->institution_id
+      ]
+    );
   }
 
   public function classificationGroup(
@@ -39,7 +44,7 @@ class TopicFactory extends Factory
     return $this->state(
       fn(array $attributes) => [
         'classification_group_id' => $classificationGroup->id,
-        'institution_id' => $classificationGroup->institution_id,
+        'institution_id' => $classificationGroup->institution_id
       ]
     );
   }

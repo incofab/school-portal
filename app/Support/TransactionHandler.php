@@ -27,7 +27,8 @@ class TransactionHandler
     private string $reference
   ) {
     if ($institutionOrGroup instanceof Institution) {
-      $this->institutionGroup = $institutionOrGroup->institutionGroup;
+      // Fresh to be sure we're using the DB updated version
+      $this->institutionGroup = $institutionOrGroup->institutionGroup->fresh();
       $this->institution = $institutionOrGroup;
     } else {
       $this->institutionGroup = $institutionOrGroup;
@@ -110,12 +111,23 @@ class TransactionHandler
     $this->amount = $amount;
     $this->bbt = $this->institutionGroup->credit_wallet;
     $this->bat = $this->bbt - $this->amount;
+    info([
+      'amount' => $this->amount,
+      'bbt' => $this->bbt,
+      'bat' => $this->bat,
+      'remark' => $this->remark
+    ]);
     $this->recordTransaction();
   }
 
   private function recordTransaction()
   {
     if ($this->bat < 0) {
+      dd([
+        'bat' => $this->bat,
+        'amount' => $this->amount,
+        'bbt' => $this->bbt
+      ]);
       return throw new Exception('Wallet balance cannot be negative');
     }
 

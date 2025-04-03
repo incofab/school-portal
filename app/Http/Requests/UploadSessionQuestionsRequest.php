@@ -6,12 +6,23 @@ use App\Actions\Sheet\ConvertSheetToArray;
 use App\Models\Question;
 use App\Rules\ExcelRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class UploadSessionQuestionsRequest extends FormRequest
 {
   protected function prepareForValidation()
   {
-    if ($this->file) {
+    $this->handleUploadedFile();
+  }
+
+  private function handleUploadedFile()
+  {
+    $file = $this->file('file');
+    $extension = strtolower($file?->getClientOriginalExtension()) ?? '';
+    if (!$file || !in_array($extension, ['csv', 'xls', 'xlsx'])) {
+      return;
+    }
+    try {
       $columnKeyMapping = [
         'A' => 'question_no',
         'B' => 'question',
@@ -27,6 +38,10 @@ class UploadSessionQuestionsRequest extends FormRequest
           $this->file,
           $columnKeyMapping
         ))->run()
+      ]);
+    } catch (\Throwable $th) {
+      throw ValidationException::withMessages([
+        'file' => 'Invalid file: ' . $th->getMessage()
       ]);
     }
   }

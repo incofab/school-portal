@@ -120,23 +120,16 @@ class ExamAttemptFileHandler
 
   function calculateScoreFromFile($questions)
   {
-    $contentRet = $this->getContent(false);
-    if (!$contentRet['success']) {
-      return $contentRet;
-    }
-
     $size = count($questions);
-    $examFileContent = $contentRet['content'];
+    $subjectAttempts =
+      $this->getQuestionAttempts() ?? ($this->exam['attempts'] ?? []);
 
-    if (
-      empty($examFileContent) ||
-      empty($examFileContent['attempts']) //[$examSubjectId])
-    ) {
+    if (empty($subjectAttempts)) {
       return ['success' => true, 'score' => 0, 'num_of_questions' => $size];
     }
 
     $score = 0;
-    $subjectAttempts = $examFileContent['attempts']; //[$examSubjectId];
+    // $subjectAttempts = $examFileContent['attempts']; //[$examSubjectId];
     foreach ($questions as $question) {
       $attempt = $subjectAttempts[$question['id']] ?? null;
       if ($attempt === $question['answer']) {
@@ -171,7 +164,7 @@ class ExamAttemptFileHandler
     ];
   }
 
-  private function getFullFilepath($toCreateBaseFolder = true)
+  function getFullFilepath($toCreateBaseFolder = true)
   {
     $ext = 'edr';
     $examNo = $this->exam['exam_no'];

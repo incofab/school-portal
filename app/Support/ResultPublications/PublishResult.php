@@ -109,8 +109,8 @@ abstract class PublishResult
     ];
 
     $obj = new FundingHandler($this->institutionGroup, $this->staffUser, $data);
-    $obj->requestDebt();
-    return successRes('loan given');
+    $res = $obj->requestDebt();
+    return $res;
   }
 
   static function make(

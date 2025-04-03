@@ -8,7 +8,7 @@ use Illuminate\Http\UploadedFile;
 
 class ExcelRule implements ValidationRule
 {
-  public function __construct(private UploadedFile $file)
+  public function __construct(private ?UploadedFile $file)
   {
     //
   }
@@ -20,6 +20,10 @@ class ExcelRule implements ValidationRule
    */
   public function validate(string $attribute, mixed $value, Closure $fail): void
   {
+    if (!$this->file) {
+      $fail('The excel file is required');
+      return;
+    }
     $extension = strtolower($this->file?->getClientOriginalExtension()) ?? '';
 
     $isValidExtension = in_array($extension, ['csv', 'xls', 'xlsx']);

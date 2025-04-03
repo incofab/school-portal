@@ -103,11 +103,14 @@ export default function RecordClassCourseResult({
     return isNaN(totalScore) ? '' : totalScore;
   }
 
-  function isValidScore(score: number | string, maxScore: number) {
+  function isValidScore(score: number | string, maxScore?: number) {
     score = Number(score);
     if (isNaN(score)) {
       toastError(`Score invalid. It must be a number`);
       return false;
+    }
+    if (!maxScore || maxScore == 0) {
+      return true;
     }
     if (score > maxScore) {
       toastError(`Score cannot be greater than ${maxScore}`);

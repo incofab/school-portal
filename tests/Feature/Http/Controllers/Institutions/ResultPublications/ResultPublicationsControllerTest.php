@@ -429,3 +429,48 @@ it('tests for payment Structure: PerStudentPerSession', function () {
     $amount - 8 * $this->priceList->amount
   );
 });
+
+it('publishes result with loan', function () {
+  $termResultProp = [
+    'classification_id' => $this->classes->first()->id,
+    'academic_session_id' => $this->academicSession->id
+  ];
+  $paymentStructure = PaymentStructure::PerSession;
+  $amount = 5000;
+  $this->institutionGroup
+    ->fill([
+      'credit_wallet' => 0,
+      'debt_wallet' => 0,
+      'loan_limit' => $amount - 100
+    ])
+    ->save();
+  $this->priceList
+    ->fill([
+      'payment_structure' => $paymentStructure->value,
+      'amount' => $amount
+    ])
+    ->save();
+
+  $termResults = TermResult::factory(3)
+    ->withInstitution($this->institution)
+    ->create($termResultProp);
+  $payload = ['classifications' => [$termResultProp['classification_id']]];
+
+  // Won't publish is loan limit not enough
+  postJson(
+    route('institutions.result-publications.store', $this->institution),
+    $payload
+  )->assertStatus(401);
+
+  $this->institutionGroup->fill(['loan_limit' => $amount])->save();
+
+  postJson(
+    route('institutions.result-publications.store', $this->institution),
+    $payload
+  )->assertOk();
+
+  expect($this->institutionGroup->fresh())->credit_wallet->toBe(0.0);
+  expect($this->institutionGroup->fresh())->debt_wallet->toBe(
+    $this->priceList->amount
+  );
+});

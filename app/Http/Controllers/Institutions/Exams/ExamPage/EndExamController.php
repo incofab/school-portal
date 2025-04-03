@@ -12,7 +12,7 @@ class EndExamController extends Controller
 {
   function __invoke(Institution $institution, Exam $exam, Request $request)
   {
-    ExamHandler::make($exam)->endExam();
+    ExamHandler::make($exam)->endExam(boolval($request->re_evaluate));
 
     return $this->ok();
   }

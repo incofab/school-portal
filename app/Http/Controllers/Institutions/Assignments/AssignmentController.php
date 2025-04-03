@@ -29,19 +29,32 @@ class AssignmentController extends Controller
     $user = currentInstitutionUser();
 
     if ($user->isStudent()) {
-      $student = $user->student()->first();
+      $student = $user
+        ->student()
+        ->with('classification')
+        ->first();
 
       $submittedAssignments = AssignmentSubmission::where(
         'student_id',
         $student->id
       )->pluck('assignment_id');
 
-      $assignments = Assignment::where(
-        'classification_id',
-        $student->classification_id
-      )
+      $assignments = Assignment::select('assignments.*')
+        ->join(
+          'classifications',
+          'classifications.id',
+          'assignments.classification_id'
+        )
+        ->where(
+          fn($q) => $q
+            ->where('classification_id', $student->classification_id)
+            ->orWhere(
+              'classifications.classification_group_id',
+              $student->classification->classification_group_id
+            )
+        )
         ->notExpired()
-        ->whereNotIn('id', $submittedAssignments)
+        ->whereNotIn('assignments.id', $submittedAssignments)
         ->with('course')
         ->with('classification');
     } elseif ($user->isTeacher()) {
@@ -59,7 +72,9 @@ class AssignmentController extends Controller
     }
 
     return Inertia::render('institutions/assignments/list-assignments', [
-      'assignments' => paginateFromRequest($assignments->latest('id'))
+      'assignments' => paginateFromRequest(
+        $assignments->latest('assignments.id')
+      )
     ]);
   }
 
@@ -114,9 +129,14 @@ class AssignmentController extends Controller
       $submittedAssignments = AssignmentSubmission::where(
         'student_id',
         $student->id
-      )->pluck('assignment_id');
+      )
+        ->with('classification')
+        ->pluck('assignment_id');
 
-      if ($assignment->classification_id != $student->classification_id) {
+      if (
+        $assignment->classification->classification_group_id !=
+        $student->classification->classification_group_id
+      ) {
         abort(403, 'You are not eligible for this assignment.');
       }
 

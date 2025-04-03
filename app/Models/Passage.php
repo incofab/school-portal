@@ -22,7 +22,8 @@ class Passage extends Model
     return [
       'from' => ['required', 'integer'],
       'to' => ['required', 'integer', 'gte:from'],
-      'passage' => ['required', 'string']
+      'passage' => ['required', 'string'],
+      'courseable_id' => ['required']
     ];
   }
 
@@ -40,14 +41,10 @@ class Passage extends Model
     }
   }
 
-  function session()
-  {
-    return $this->belongsTo(
-      \App\Models\CourseSession::class,
-      'course_session_id',
-      'id'
-    );
-  }
+  // function session()
+  // {
+  //   return $this->belongsTo(CourseSession::class);
+  // }
 
   function courseable()
   {

@@ -180,13 +180,13 @@
 	'uploadURL' => instRoute('api.questions.image-upload', $courseSession),
 	'imagePath' => asset(config('app.image-content-folder')."{$courseSession->course_id}/{$courseSession->id}")
 ])
-
+{{-- 
 @if(!isset($edit))
 	<script src="{{asset('js/add-question.js')}}"></script>
 	<script>
 		var addQuestionAPI = "{{instRoute('api.questions.store', $courseSession)}}";
 		var currentQuestionNo = {{$questionNo}};
 	</script>
-@endif
+@endif --}}
 
 @endsection
