@@ -31,6 +31,11 @@ class Assessment extends Model
     return parent::query();
   }
 
+  public function newEloquentBuilder($query)
+  {
+    return new AssessmentQueryBuilder($query);
+  }
+
   protected function title(): Attribute
   {
     return Attribute::make(
@@ -53,11 +58,6 @@ class Assessment extends Model
   protected function rawTitle(): Attribute
   {
     return Attribute::make(get: fn() => $this->getRawOriginal('title'));
-  }
-
-  public function newEloquentBuilder($query)
-  {
-    return new AssessmentQueryBuilder($query);
   }
 
   function institution()

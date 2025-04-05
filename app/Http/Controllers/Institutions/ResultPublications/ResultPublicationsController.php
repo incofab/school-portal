@@ -17,6 +17,7 @@ class ResultPublicationsController extends Controller
   function index(Institution $institution)
   {
     $query = ResultPublication::query()
+      ->where('institution_id', $institution->id)
       ->with('academicSession', 'transaction', 'staff')
       ->latest('id');
     return inertia(

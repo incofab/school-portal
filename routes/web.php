@@ -19,8 +19,21 @@ Route::any(
     [Web\Institutions\Students\ViewResultSheetController::class, 'pdfBridgeDownload']
 )->name('pdf-bridge-download');
 
-Route::get('/dummy1', function () {
+Route::get('dummy1', function () {
     die('Dummy page');
+});
+
+Route::get('/activate-result/{instUuid}', function ($instUuid) {
+    $inst = \App\Models\Institution::where('uuid', $instUuid)->firstOrFail();
+    $termResults = \App\Models\TermResult::query()
+      ->where('institution_id', $inst->id)
+      ->where('for_mid_term', false)
+      ->where('term', \App\Enums\TermType::Second)
+      ->where('academic_session_id', 4)
+      ->activated(false)
+    //   ->update(['is_activated' => true]);
+      ->count();
+    return "Result $termResults";
 });
 
 Route::get('institutions/search', Web\SearchInstitutionController::class)
