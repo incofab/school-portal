@@ -56,14 +56,16 @@ class QuestionFactory extends Factory
     );
   }
 
-  public function courseable(Model $model): static
-  {
+  public function courseable(
+    Model $model,
+    ?Institution $institution = null
+  ): static {
     return $this->state(
       fn(array $attributes) => [
         'courseable_id' => $model->id,
         'courseable_type' => $model->getMorphClass(),
-        ...$model->institution_id
-          ? ['institution_id' => $model->institution_id]
+        ...$model->institution_id || $institution
+          ? ['institution_id' => $model->institution_id ?? $institution->id]
           : []
       ]
     );

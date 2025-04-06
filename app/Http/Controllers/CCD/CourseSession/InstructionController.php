@@ -2,35 +2,36 @@
 namespace App\Http\Controllers\CCD\CourseSession;
 
 use App\Http\Controllers\Controller;
-use App\Models\CourseSession;
 use App\Models\Institution;
 use App\Models\Instruction;
+use App\Models\Support\QuestionCourseable;
+use App\Support\MorphableHandler;
 
 class InstructionController extends Controller
 {
   function index(
     Institution $institution,
-    CourseSession $courseSession,
+    QuestionCourseable $morphable,
     ?Instruction $instruction = null
   ) {
     return view('ccd/course-sessions/instructions', [
-      'allRecords' => $courseSession->instructions()->paginate(100),
-      'courseSession' => $courseSession,
+      'allRecords' => $morphable->instructions()->paginate(100),
+      'courseable' => $morphable,
       'edit' => $instruction
     ]);
   }
 
-  function store(Institution $institution, CourseSession $courseSession)
+  function store(Institution $institution, QuestionCourseable $morphable)
   {
     $data = request()->validate(Instruction::createRule());
 
-    $courseSession
+    $morphable
       ->instructions()
       ->create([...$data, 'institution_id' => $institution->id]);
 
     return $this->res(
       successRes('Instruction created'),
-      instRoute('instructions.index', [$courseSession])
+      instRoute('instructions.index', [$morphable->getMorphedId()])
     );
   }
 
@@ -42,7 +43,9 @@ class InstructionController extends Controller
 
     return $this->res(
       successRes('Instruction record updated'),
-      instRoute('instructions.index', [$instruction->courseable_id])
+      instRoute('instructions.index', [
+        MorphableHandler::make()->buildIdFromCourseable($instruction)
+      ])
     );
   }
 
@@ -52,7 +55,9 @@ class InstructionController extends Controller
 
     return $this->res(
       successRes('Instruction record deleted'),
-      instRoute('instructions.index', $instruction->courseable_id)
+      instRoute('instructions.index', [
+        MorphableHandler::make()->buildIdFromCourseable($instruction)
+      ])
     );
   }
 }

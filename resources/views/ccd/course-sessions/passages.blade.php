@@ -6,7 +6,7 @@
 	@include('ccd._breadcrumb', [
 		'headerTitle' => 'Passages',
 		'crumbs' => [
-			breadCrumb('Sessions', instRoute('course-sessions.index', [$courseSession->course_id])),
+			// breadCrumb('Sessions', instRoute('course-sessions.index', [$courseSession->course_id])),
 			breadCrumb('Passages')->active()
 		]
 	])
@@ -14,7 +14,10 @@
 		<div class="justify-content-center">
 			<div class="tile">
 				<div class="tile-title">{{$edit ? 'Update' : 'Create'}} Passage</div>
-				<form method="POST" action="{{$edit ? instRoute('passages.update', [$edit]) : instRoute('passages.store', [$courseSession])}}" name="register" >
+				<form 
+					method="POST"
+					action="{{$edit ? instRoute('passages.update', [$edit]) : instRoute('passages.store', [$courseable->getMorphedId()])}}" 
+					name="register" >
 					@include('common.form_message')
 					@csrf
 					@if ($edit)
@@ -22,12 +25,8 @@
 					@endif
 					<div class="font-weight-bold">
 						<div>
-							<span>Course: </span>
-							<span class="ml-2">{{$courseSession->course->code}}</span>
-						</div>
-						<div class="mt-2">
-							<span>Session: </span>
-							<span class="ml-2">{{$courseSession->session}}</span>
+							<span>Title: </span>
+							<span class="ml-2">{{$courseable->getName()}}</span>
 						</div>
 					</div>
 					<hr class="my-3">
@@ -41,19 +40,13 @@
 						<div class="col-6">
 							<div class="form-group">
 								<label for="" >From</label><br />
-								<input type="number" name="from_" value="<?= old(
-          'from_',
-          $edit?->from_
-        ) ?>"  class="form-control" />
+								<input type="number" name="from" value="{{old('from', $edit?->from)}}"  class="form-control" />
 							</div>
 						</div>
 						<div class="col-6">
 							<div class="form-group">
 								<label for="" >To</label><br />
-								<input type="number" name="to_" value="<?= old(
-          'to_',
-          $edit?->to_
-        ) ?>"  class="form-control" />
+								<input type="number" name="to" value="{{old('to', $edit?->to)}}"  class="form-control" />
 							</div>
 						</div>
 					</div>
@@ -71,10 +64,10 @@
 			@foreach ($allRecords as $record)
 				<div class="tile full mt-1">
 					<div>{{$record->passage}}</div>
-					<div>From: {{$record->from_}} - To: {{$record->to_}}</div>
+					<div>From: {{$record->from}} - To: {{$record->to}}</div>
 					<hr class="my-1">
 					<div>
-						<a href="{{instRoute('passages.index', [$courseSession, $record])}}" class="btn btn-sm btn-primary">Edit</a>
+						<a href="{{instRoute('passages.index', [$courseable->getMorphedId(), $record])}}" class="btn btn-sm btn-primary">Edit</a>
 						<a href="{{instRoute('passages.destroy', [$record])}}" 
 						onclick="return confirm('Are you sure?')"
 						class="btn btn-sm btn-danger">Delete</a>

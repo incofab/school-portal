@@ -5,6 +5,7 @@ use App\Models\Institution;
 
 use App\Models\Course;
 use App\Models\CourseSession;
+use App\Models\EventCourseable;
 use App\Models\Question;
 use App\Models\Topic;
 
@@ -21,39 +22,51 @@ beforeEach(function () {
     ->course($this->course)
     ->create();
 
+  $this->eventCourseable = EventCourseable::factory()
+    ->institution($this->institution)
+    ->create();
+  $this->courseable = [
+    CourseSession::class => $this->courseSession,
+    EventCourseable::class => $this->eventCourseable
+  ];
+  // dd($this->eventCourseable->event->toArray());
   $this->topic = Topic::factory()
     ->course($this->course)
     ->create();
 });
 
-test('index displays questions for a course session', function () {
+test('index displays questions for a course session', function ($class) {
+  $courseable = $this->courseable[$class];
+  // dd($class, $courseable->event->toArray());
   $questions = Question::factory(3)
-    ->courseable($this->courseSession)
+    ->courseable($courseable, $this->institution)
     ->create();
 
   $response = actingAs($this->instAdmin)->get(
     route('institutions.questions.index', [
       $this->institution,
-      $this->courseSession
+      $courseable->getMorphedId()
     ])
   );
 
   $response->assertOk();
   $response->assertViewIs('ccd.questions.index');
   $response->assertViewHas('allRecords');
-  $response->assertViewHas('courseSession');
+  $response->assertViewHas('courseable');
   expect($response['allRecords']->count())->toBe(3);
-});
+  // }); //->with([EventCourseable::factory()->create()]);
+})->with([[CourseSession::class], [EventCourseable::class]]);
 
-test('store creates a new question via API', function () {
+test('store creates a new question via API', function ($class) {
+  $courseable = $this->courseable[$class];
   $data = Question::factory()
-    ->courseable($this->courseSession)
+    ->courseable($courseable, $this->institution)
     ->raw();
 
   $response = actingAs($this->instAdmin)->postJson(
     route('institutions.api.questions.store', [
       $this->institution,
-      $this->courseSession
+      $courseable->getMorphedId()
     ]),
     $data
   );
@@ -61,23 +74,24 @@ test('store creates a new question via API', function () {
   $response->assertOk();
   $response->assertJson(['success' => true]);
   expect(Question::count())->toBe(1);
-});
+})->with([[CourseSession::class], [EventCourseable::class]]);
 
-test('store creates a new question', function () {
+test('store creates a new question', function ($class) {
+  $courseable = $this->courseable[$class];
   $data = Question::factory()
-    ->courseable($this->courseSession)
+    ->courseable($courseable, $this->institution)
     ->raw();
 
   $response = actingAs($this->instAdmin)->post(
     route('institutions.questions.store', [
       $this->institution,
-      $this->courseSession
+      $courseable->getMorphedId()
     ]),
     $data
   );
   $response->assertRedirect();
   expect(Question::count())->toBe(1);
-});
+})->with([[CourseSession::class], [EventCourseable::class]]);
 
 test('edit displays a form to edit a question', function () {
   $question = Question::factory()
@@ -91,15 +105,14 @@ test('edit displays a form to edit a question', function () {
   $response->assertOk();
   $response->assertViewIs('ccd.questions.create-question');
   $response->assertViewHas('edit', $question);
-  $response->assertViewHas('courseSession');
+  $response->assertViewHas('courseable');
   $response->assertViewHas('questionNo', $question->question_no);
-  $response->assertViewHas('topics');
-  expect($response['topics']->count())->toBe(1);
-});
+})->with([[CourseSession::class], [EventCourseable::class]]);
 
-test('updates an existing question', function () {
+test('updates an existing question', function ($class) {
+  $courseable = $this->courseable[$class];
   $question = Question::factory()
-    ->courseable($this->courseSession)
+    ->courseable($courseable, $this->institution)
     ->create();
 
   $newData = Question::factory()->raw([
@@ -114,4 +127,4 @@ test('updates an existing question', function () {
 
   $response->assertRedirect();
   expect(Question::first()->question)->toBe('Updated Question Text');
-});
+})->with([[CourseSession::class], [EventCourseable::class]]);

@@ -6,7 +6,7 @@
 	@include('ccd._breadcrumb', [
 		'headerTitle' => 'Questions',
 		'crumbs' => [
-			breadCrumb('Sessions', instRoute('course-sessions.index', [$courseSession->course_id])),
+			// breadCrumb('Sessions', instRoute('course-sessions.index', [$courseSession->course_id])),
 			breadCrumb('Questions')->active()
 		]
 	])
@@ -14,8 +14,8 @@
 		<div class="tile full p-0">
 			<div class="tile-title p-2">
 				<div class="clearfix">
-					<div class="float-left">All Questions for {{$courseSession->course->code}} {{$courseSession->session}}</div>
-					<a href="{{instRoute('questions.create', [$courseSession])}}" class="btn btn-success float-right" >
+					<div class="float-left">All Questions for {{$courseable->getName()}}</div>
+					<a href="{{instRoute('questions.create', [$courseable])}}" class="btn btn-success float-right" >
 						<i class="fa fa-plus"></i> New
 					</a>
 				</div>
@@ -30,11 +30,6 @@
 							<div class="col-md-3">
 								<div><b>No: {{$record->question_no}}</b></div>
 							</div>
-							@if ($record->topic)
-								<div class="col-md-9">
-									<div><b>Topic: {{$record->topic?->title}}</b></div>
-								</div>
-							@endif
 						</div>
 						<div>{!!$record->question!!}</div>
 						<hr class="my-1">
@@ -94,7 +89,7 @@
 	</div>
 </div>
 
-@include('ccd.questions._handle_image_base_url_script', ['courseSession' => $courseSession])
+{{-- @include('ccd.questions._handle_image_base_url_script', ['courseSession' => $courseSession])
 
 <script>
 function handleImages() {
@@ -106,7 +101,7 @@ function handleImages() {
 	});
 }
 handleImages();
-</script>
+</script> --}}
 <style>
 .options > *{
 	margin-top: 7px;

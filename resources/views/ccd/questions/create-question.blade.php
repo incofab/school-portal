@@ -6,15 +6,15 @@
 	@include('ccd._breadcrumb', [
 		'headerTitle' => 'Passages',
 		'crumbs' => [
-			breadCrumb('Sessions', instRoute('course-sessions.index', [$courseSession->course_id])),
-			breadCrumb('Questions', instRoute('questions.index', [$courseSession->id])),
+			// breadCrumb('Sessions', instRoute('course-sessions.index', [$courseSession->course_id])),
+			breadCrumb('Questions', instRoute('questions.index', [$courseable->getMorphedId()])),
 			breadCrumb('Create Question')->active()
 		]
 	])
 	<div class="justify-content-center">
 		<div class="tile">
 			<div class="tile-title">{{$edit ? 'Update' : 'Create'}} Question</div>
-			<form method="POST" action="{{$edit ? instRoute('questions.update', [$edit]) : instRoute('questions.store', [$courseSession])}}"
+			<form method="POST" action="{{$edit ? instRoute('questions.update', [$edit]) : instRoute('questions.store', [$courseable->getMorphedId()])}}"
 				name="record-question"
 			>
 				@include('common.form_message')
@@ -25,11 +25,7 @@
 				<div class="font-weight-bold">
 					<div>
 						<span>Course: </span>
-						<span class="ml-2">{{$courseSession->course->code}}</span>
-					</div>
-					<div class="mt-2">
-						<span>Session: </span>
-						<span class="ml-2">{{$courseSession->session}}</span>
+						<span class="ml-2">{{$courseable->getName()}}</span>
 					</div>
 				</div>
 				<hr class="my-3">
@@ -158,6 +154,7 @@
 		cursor: pointer;
 	}
 </style>
+{{-- 
 @include('ccd.questions._handle_image_base_url_script', ['courseSession' => $courseSession])
 <script>
 	function handleImages() {
@@ -180,7 +177,7 @@
 	'uploadURL' => instRoute('api.questions.image-upload', $courseSession),
 	'imagePath' => asset(config('app.image-content-folder')."{$courseSession->course_id}/{$courseSession->id}")
 ])
-{{-- 
+
 @if(!isset($edit))
 	<script src="{{asset('js/add-question.js')}}"></script>
 	<script>

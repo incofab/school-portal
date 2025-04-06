@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Support\Queries\InstructionQueryBuilder;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,11 +11,11 @@ class Instruction extends Model
   use HasFactory, InstitutionScope;
 
   protected $guarded = [];
-
-  public function newEloquentBuilder($query)
-  {
-    return new InstructionQueryBuilder($query);
-  }
+  protected $casts = [
+    'institution_id' => 'integer',
+    'from' => 'integer',
+    'to' => 'integer'
+  ];
 
   static function createRule()
   {
@@ -27,18 +26,9 @@ class Instruction extends Model
     ];
   }
 
-  static function multiInsert(CourseSession $courseSession, array $instructions)
+  function institution()
   {
-    foreach ($instructions as $key => $instruction) {
-      $courseSession->instructions()->firstOrCreate(
-        [
-          'institution_id' => $courseSession->institution_id,
-          'from' => $instruction['from_'],
-          'to' => $instruction['to_']
-        ],
-        ['instruction' => $instruction['instruction']]
-      );
-    }
+    return $this->belongsTo(Institution::class);
   }
 
   function courseable()

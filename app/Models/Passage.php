@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Support\Queries\PassageQueryBuilder;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,11 +10,11 @@ class Passage extends Model
 {
   use HasFactory, InstitutionScope;
   protected $guarded = [];
-
-  public function newEloquentBuilder($query)
-  {
-    return new PassageQueryBuilder($query);
-  }
+  protected $casts = [
+    'institution_id' => 'integer',
+    'from' => 'integer',
+    'to' => 'integer'
+  ];
 
   static function createRule()
   {
@@ -27,24 +26,10 @@ class Passage extends Model
     ];
   }
 
-  static function multiInsert(CourseSession $courseSession, array $passages)
+  function institution()
   {
-    foreach ($passages as $key => $passage) {
-      $courseSession->passages()->firstOrCreate(
-        [
-          'institution_id' => $courseSession->institution_id,
-          'from' => $passage['from_'],
-          'to' => $passage['to_']
-        ],
-        ['passage' => $passage['passage']]
-      );
-    }
+    return $this->belongsTo(Institution::class);
   }
-
-  // function session()
-  // {
-  //   return $this->belongsTo(CourseSession::class);
-  // }
 
   function courseable()
   {

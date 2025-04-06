@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Support\QuestionCourseable;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class CourseSession extends Model
+class CourseSession extends QuestionCourseable
 {
   use HasFactory, InstitutionScope;
 
@@ -35,18 +35,23 @@ class CourseSession extends Model
     return $this->belongsTo(Course::class);
   }
 
-  function questions()
+  function getName()
   {
-    return $this->morphMany(Question::class, 'courseable');
+    return "{$this->course->title} {$this->session}";
   }
 
-  function instructions()
-  {
-    return $this->morphMany(Instruction::class, 'courseable');
-  }
+  // function questions()
+  // {
+  //   return $this->morphMany(Question::class, 'courseable');
+  // }
 
-  function passages()
-  {
-    return $this->morphMany(Passage::class, 'courseable');
-  }
+  // function instructions()
+  // {
+  //   return $this->morphMany(Instruction::class, 'courseable');
+  // }
+
+  // function passages()
+  // {
+  //   return $this->morphMany(Passage::class, 'courseable');
+  // }
 }

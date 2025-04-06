@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Institution;
+use App\Support\MorphableHandler;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -39,6 +41,10 @@ class RouteServiceProvider extends ServiceProvider
     Route::model('institution', Institution::class);
 
     $this->configureRateLimiting();
+
+    Route::bind('morphable', function ($value, $route) {
+      return (new MorphableHandler())->getModel($value);
+    });
 
     $this->routes(function () {
       Route::prefix('api')

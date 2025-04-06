@@ -8,7 +8,7 @@ use App\Models\Institution;
 
 class CourseSessionController extends Controller
 {
-  function index(Institution $institution, Course $course = null)
+  function index(Institution $institution, ?Course $course = null)
   {
     $query = $course ? $course->sessions() : CourseSession::query();
 

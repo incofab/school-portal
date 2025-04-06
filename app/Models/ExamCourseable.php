@@ -34,7 +34,7 @@ class ExamCourseable extends Model
     return $this->belongsTo(Exam::class);
   }
 
-  // CourseSession | CourseTerm
+  // CourseSession | EventCourseable (QuestionCourseable)
   function courseable()
   {
     return $this->morphTo('courseable');

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Support\QuestionCourseable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class EventCourseable extends Model
+class EventCourseable extends QuestionCourseable
 {
   use HasFactory;
 
@@ -16,9 +16,14 @@ class EventCourseable extends Model
     return $this->belongsTo(Event::class);
   }
 
-  // CourseSession | CourseTerm
+  // CourseSession | Course
   function courseable()
   {
     return $this->morphTo('courseable');
+  }
+
+  function getName()
+  {
+    return $this->event->title;
   }
 }

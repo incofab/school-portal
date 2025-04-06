@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Enums\EventStatus;
 use App\Models\Event;
 use App\Models\EventCourseable;
-use App\Models\Exam;
 use App\Models\Institution;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

@@ -29,6 +29,7 @@
 					<th></th>
 				</tr>
 				@foreach($allRecords as $record)
+				<?php $morphedId = $record->getMorphedId(); ?>
 				<tr>
 					<td>{{$record->course->code}}</td>
 					<td>{{$record['session']}}</td>
@@ -36,14 +37,14 @@
 					<td>{{$record->general_instructions}}</td>
 					<td>{{$record->questions_count}}</td>
 					<td>
-						<a href="{{instRoute('questions.index', $record)}}" 
+						<a href="{{instRoute('questions.index', $morphedId)}}" 
 							class="btn btn-sm btn-link"> Questions </a>
-						<a href="{{instRoute('passages.index', $record)}}" 
+						<a href="{{instRoute('passages.index', $morphedId)}}" 
 							class="btn btn-sm btn-link"> Passages </a>
-						<a href="{{instRoute('instructions.index', $record)}}" 
+						<a href="{{instRoute('instructions.index', $morphedId)}}" 
 							class="btn btn-sm btn-link"> Instructions </a>
 
-						<a href="{{instRoute('questions.upload.create', $record)}}" 
+						<a href="{{instRoute('questions.upload.create', $morphedId)}}" 
 							class="btn btn-sm btn-primary"> <i class="fa fa-upload"></i> </a>
 
 						<a href="{{instRoute('course-sessions.edit', $record)}}" 

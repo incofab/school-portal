@@ -2,35 +2,36 @@
 namespace App\Http\Controllers\CCD\CourseSession;
 
 use App\Http\Controllers\Controller;
-use App\Models\CourseSession;
 use App\Models\Institution;
 use App\Models\Passage;
+use App\Models\Support\QuestionCourseable;
+use App\Support\MorphableHandler;
 
 class PassageController extends Controller
 {
   function index(
     Institution $institution,
-    CourseSession $courseSession,
+    QuestionCourseable $morphable,
     ?Passage $passage = null
   ) {
     return view('ccd/course-sessions/passages', [
-      'allRecords' => $courseSession->passages()->paginate(100),
-      'courseSession' => $courseSession,
+      'allRecords' => $morphable->passages()->paginate(100),
+      'courseable' => $morphable,
       'edit' => $passage
     ]);
   }
 
-  function store(Institution $institution, CourseSession $courseSession)
+  function store(Institution $institution, QuestionCourseable $morphable)
   {
     $data = request()->validate(Passage::createRule());
 
-    $courseSession
+    $morphable
       ->passages()
       ->create([...$data, 'institution_id' => $institution->id]);
 
     return $this->res(
       successRes('Passage created'),
-      instRoute('passages.index', [$courseSession])
+      instRoute('passages.index', [$morphable->getMorphedId()])
     );
   }
 
@@ -42,7 +43,9 @@ class PassageController extends Controller
 
     return $this->res(
       successRes('Passage record updated'),
-      instRoute('passages.index', [$passage->courseable_id])
+      instRoute('passages.index', [
+        MorphableHandler::make()->buildIdFromCourseable($passage)
+      ])
     );
   }
 
@@ -52,7 +55,9 @@ class PassageController extends Controller
 
     return $this->res(
       successRes('Passage record deleted'),
-      instRoute('passages.index', [$passage->courseable_id])
+      instRoute('passages.index', [
+        MorphableHandler::make()->buildIdFromCourseable($passage)
+      ])
     );
   }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Support\Queries\QuestionQueryBuilder;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,11 +12,10 @@ class Question extends Model
   use HasFactory, InstitutionScope;
 
   protected $guarded = [];
-
-  public function newEloquentBuilder($query)
-  {
-    return new QuestionQueryBuilder($query);
-  }
+  protected $casts = [
+    'institution_id' => 'integer',
+    'topic_id' => 'integer'
+  ];
 
   static function createRule(Question $question = null, $prefix = '')
   {
