@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\CourseSession;
 use App\Models\Event;
 use App\Models\Exam;
+use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ExamCourseableFactory extends Factory
@@ -32,7 +33,8 @@ class ExamCourseableFactory extends Factory
         'exam_id' => $exam->id,
         'courseable_id' => CourseSession::factory()->institution(
           $exam->institution
-        )
+        ),
+        'courseable_type' => MorphMap::key(CourseSession::class)
       ]
     );
   }

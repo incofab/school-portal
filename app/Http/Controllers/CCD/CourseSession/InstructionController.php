@@ -11,7 +11,7 @@ class InstructionController extends Controller
   function index(
     Institution $institution,
     CourseSession $courseSession,
-    Instruction $instruction = null
+    ?Instruction $instruction = null
   ) {
     return view('ccd/course-sessions/instructions', [
       'allRecords' => $courseSession->instructions()->paginate(100),
@@ -42,7 +42,7 @@ class InstructionController extends Controller
 
     return $this->res(
       successRes('Instruction record updated'),
-      instRoute('instructions.index', [$instruction->course_session_id])
+      instRoute('instructions.index', [$instruction->courseable_id])
     );
   }
 
@@ -52,7 +52,7 @@ class InstructionController extends Controller
 
     return $this->res(
       successRes('Instruction record deleted'),
-      instRoute('instructions.index', $instruction->course_session_id)
+      instRoute('instructions.index', $instruction->courseable_id)
     );
   }
 }

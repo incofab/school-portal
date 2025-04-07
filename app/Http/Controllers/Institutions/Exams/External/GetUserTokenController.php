@@ -12,6 +12,7 @@ class GetUserTokenController extends Controller
 {
   public function __invoke(Request $request, Institution $institution)
   {
+    die('<h2>Please update your app to the latest version</h2>');
     $data = $request->validate([
       'reference' => ['required', 'string', 'max:255'],
       'email' => ['nullable', 'email'],

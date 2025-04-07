@@ -54,7 +54,7 @@ class CourseTeachersController extends Controller
     ]);
   }
 
-  function create(User $user = null)
+  function create(?User $user = null)
   {
     return Inertia::render('institutions/staff/register-course-teacher', [
       'courses' => Course::all(),
@@ -69,7 +69,7 @@ class CourseTeachersController extends Controller
   //     'courses' => Course::all(),
   //     'user' => $courseTeacher->user,
   //     'courseTeacher' => $courseTeacher
-  //   ]); 
+  //   ]);
   // }
 
   function destroy(Institution $institution, CourseTeacher $courseTeacher)

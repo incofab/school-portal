@@ -16,7 +16,7 @@ class ListTermResultController extends Controller
   public function __invoke(
     Request $request,
     Institution $institution,
-    User $user = null
+    ?User $user = null
   ) {
     $query = $this->getQuery($user)->select('term_results.*');
     TermResultUITableFilters::make($request->all(), $query)
@@ -24,7 +24,8 @@ class ListTermResultController extends Controller
       ->dontUseCurrentTerm()
       ->filterQuery()
       ->getQuery()
-      ->oldest('users.last_name');
+      ->oldest('users.last_name')
+      ->latest('term_results.academic_session_id');
 
     return Inertia::render('institutions/list-term-results', [
       'termResults' => paginateFromRequest(
@@ -35,7 +36,7 @@ class ListTermResultController extends Controller
     ]);
   }
 
-  public function validateUser(User $user = null)
+  public function validateUser(?User $user = null)
   {
     $institutionUser = currentInstitutionUser();
     if (!$user) {
@@ -73,7 +74,7 @@ class ListTermResultController extends Controller
     );
   }
 
-  private function getQuery(User $user = null)
+  private function getQuery(?User $user = null)
   {
     $this->validateUser($user);
     $currentInstitutionUser = currentInstitutionUser();

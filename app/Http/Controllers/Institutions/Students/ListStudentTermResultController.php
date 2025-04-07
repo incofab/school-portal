@@ -20,7 +20,9 @@ class ListStudentTermResultController extends Controller
       ->termResults()
       ->getQuery()
       ->activated()
-      ->select('term_results.*');
+      ->select('term_results.*')
+      ->latest('term_results.academic_session_id')
+      ->latest('term_results.id');
 
     TermResultUITableFilters::make($request->all(), $query)
       ->dontUseCurrentTerm()

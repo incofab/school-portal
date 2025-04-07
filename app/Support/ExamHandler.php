@@ -109,9 +109,9 @@ class ExamHandler
       ->save();
   }
 
-  function endExam()
+  function endExam(bool $reEvaluate = false)
   {
-    if ($this->isEnded()) {
+    if ($this->isEnded() && !$reEvaluate) {
       return;
     }
     $this->exam->examCourseables;

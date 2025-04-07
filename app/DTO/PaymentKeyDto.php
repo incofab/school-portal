@@ -3,7 +3,7 @@ namespace App\DTO;
 
 class PaymentKeyDto
 {
-  function __construct(private string $publicKey, private string $privateKey)
+  function __construct(private ?string $publicKey, private ?string $privateKey)
   {
   }
 

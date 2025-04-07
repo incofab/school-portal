@@ -72,6 +72,13 @@ class TermResultActivationController extends Controller
 
     $count = $termResults->count();
     if ($count === 0) {
+      $latestTermResult = $this->getLatestResult($student);
+      if ($latestTermResult) {
+        return $this->successRes(
+          $latestTermResult->institution,
+          $latestTermResult
+        );
+      }
       return $this->errorRes(
         'Seems results have already been activate, Login to access them',
         route('student-login')
@@ -86,6 +93,17 @@ class TermResultActivationController extends Controller
       'has_multiple_results' => true,
       'term_results' => $termResults
     ]);
+  }
+
+  private function getLatestResult(Student $student): ?TermResult
+  {
+    return TermResult::query()
+      ->where('institution_id', $student->institutionUser->institution_id)
+      ->where('student_id', $student->id)
+      ->where('for_mid_term', false)
+      ->with('classification', 'academicSession')
+      ->latest('id')
+      ->first();
   }
 
   private function successRes(Institution $institution, TermResult $termResult)

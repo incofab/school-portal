@@ -7,6 +7,7 @@ use App\Models\Funding;
 use App\Models\InstitutionGroup;
 use App\Models\PaymentReference;
 use App\Models\User;
+use App\Support\Res;
 use Illuminate\Database\Eloquent\Model;
 
 class FundingHandler
@@ -59,7 +60,7 @@ class FundingHandler
     }
   }
 
-  function requestDebt(?Model $fundable = null)
+  function requestDebt(?Model $fundable = null): Res
   {
     return $this->giveLoan($this->principalAmount, $fundable);
   }

@@ -51,7 +51,7 @@ class QuestionController extends Controller
 
     return $this->res(
       successRes('Question created'),
-      instRoute('questions.index', [$courseSession])
+      instRoute('questions.create', [$courseSession])
     );
   }
 
@@ -89,7 +89,7 @@ class QuestionController extends Controller
 
     return $this->res(
       successRes('Question record updated'),
-      instRoute('questions.index', [$question->course_session_id])
+      instRoute('questions.index', [$question->courseable_id])
     );
   }
 
@@ -100,7 +100,7 @@ class QuestionController extends Controller
 
     return $this->res(
       successRes('Question record deleted'),
-      instRoute('questions.index')
+      instRoute('questions.index', [$question->courseable_id])
     );
   }
 

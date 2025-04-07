@@ -449,7 +449,7 @@ export interface Assessment extends InstitutionRow {
   title: string;
   raw_title: string;
   description: number;
-  max: number;
+  max?: number;
   term: string;
   for_mid_term: boolean;
   depends_on: string;

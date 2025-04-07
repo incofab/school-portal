@@ -5,14 +5,17 @@ namespace Database\Factories;
 use App\Models\CourseSession;
 use App\Models\Institution;
 use App\Models\Topic;
+use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 
 class QuestionFactory extends Factory
 {
   public function definition(): array
   {
     return [
-      'course_session_id' => CourseSession::factory(),
+      'courseable_id' => CourseSession::factory(),
+      'courseable_type' => MorphMap::key(CourseSession::class),
       'topic_id' => Topic::factory(),
       'question_no' => rand(1, 50),
       'question' => $this->faker->paragraph,
@@ -36,7 +39,8 @@ class QuestionFactory extends Factory
       ->toArray();
     return $this->state(
       fn(array $attributes) => [
-        'course_session_id' => $this->faker->randomElement($couseSessionIDs),
+        'courseable_id' => $this->faker->randomElement($couseSessionIDs),
+        'courseable_type' => MorphMap::key(CourseSession::class),
         'topic_id' => $this->faker->randomElement($topicIDs)
       ]
     );
@@ -46,17 +50,22 @@ class QuestionFactory extends Factory
   {
     return $this->state(
       fn(array $attributes) => [
-        'course_session_id' => CourseSession::factory()->institution(
-          $institution
-        )
+        'courseable_id' => CourseSession::factory()->institution($institution),
+        'courseable_type' => MorphMap::key(CourseSession::class)
       ]
     );
   }
 
-  public function courseSession(CourseSession $courseSession): static
+  public function courseable(Model $model): static
   {
     return $this->state(
-      fn(array $attributes) => ['course_session_id' => $courseSession]
+      fn(array $attributes) => [
+        'courseable_id' => $model->id,
+        'courseable_type' => $model->getMorphClass(),
+        ...$model->institution_id
+          ? ['institution_id' => $model->institution_id]
+          : []
+      ]
     );
   }
 }

@@ -38,7 +38,7 @@ class AssessmentController extends Controller
   function index(
     Request $request,
     Institution $institution,
-    Assessment $assessment = null
+    ?Assessment $assessment = null
   ) {
     $query = AssessmentUITableFilters::make(
       $request->all(),
@@ -59,7 +59,7 @@ class AssessmentController extends Controller
       'term' => ['nullable', new Enum(TermType::class)],
       'for_mid_term' => ['nullable', 'boolean'],
       'title' => ['required'],
-      'max' => ['required', 'numeric', 'min:1', 'max:100'],
+      'max' => ['required', 'numeric', 'min:0', 'max:100'],
       'description' => ['nullable', 'string']
     ]);
 
@@ -82,17 +82,17 @@ class AssessmentController extends Controller
       'term' => ['nullable', new Enum(TermType::class)],
       'for_mid_term' => ['nullable', 'boolean'],
       'title' => ['required'],
-      'max' => ['required', 'numeric', 'min:1', 'max:100'],
+      'max' => ['required', 'numeric', 'min:0', 'max:100'],
       'description' => ['nullable', 'string']
     ]);
 
     if (
       Assessment::query()
-      ->forTerm($data['term'])
-      ->forMidTerm($data['for_mid_term'])
-      ->where('title', $data)
-      ->whereNot('id', $assessment->id)
-      ->exists()
+        ->forTerm($data['term'])
+        ->forMidTerm($data['for_mid_term'])
+        ->where('title', $data)
+        ->whereNot('id', $assessment->id)
+        ->exists()
     ) {
       throw ValidationException::withMessages([
         'title' => 'This title already exists'

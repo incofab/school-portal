@@ -73,6 +73,7 @@ class AssignmentController extends Controller
 
   function show(Institution $institution, Assignment $assignment)
   {
+<<<<<<< HEAD
     $this->authorize('view', $assignment);
     $institutionUser = currentInstitutionUser();
     
@@ -81,6 +82,48 @@ class AssignmentController extends Controller
       403,
       'Submission Deadline has passed.'
     );
+=======
+    $user = currentInstitutionUser();
+
+    if ($user->isStudent()) {
+      $currentTime = Carbon::now();
+      $student = currentInstitutionUser()
+        ->student()
+        ->with('classification')
+        ->first();
+      $submittedAssignments = AssignmentSubmission::where(
+        'student_id',
+        $student->id
+      )
+        ->with('classification')
+        ->pluck('assignment_id');
+
+      if (
+        $assignment->classification->classification_group_id !=
+        $student->classification->classification_group_id
+      ) {
+        abort(403, 'You are not eligible for this assignment.');
+      }
+
+      if ($currentTime > $assignment->expires_at) {
+        abort(403, 'Submission Deadline has passed.');
+      }
+
+      if ($submittedAssignments->contains($assignment->id)) {
+        abort(403, 'You have already submitted this assignment.');
+      }
+    } elseif ($user->isTeacher()) {
+      $course_teacher_user_id = $assignment->courseTeacher->user_id;
+      $current_user_id = $user->user->id;
+
+      if ($course_teacher_user_id != $current_user_id) {
+        abort(401, 'Unauthorized.');
+      }
+    } elseif ($user->isAdmin()) {
+    } else {
+      abort(401, 'Unauthorized');
+    }
+>>>>>>> e42b5313d399e660cf1d35680def02e598a8171d
 
     return Inertia::render('institutions/assignments/show-assignment', [
       'assignment' => $assignment->load('course')

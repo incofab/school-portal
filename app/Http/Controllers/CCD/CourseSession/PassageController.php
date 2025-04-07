@@ -11,7 +11,7 @@ class PassageController extends Controller
   function index(
     Institution $institution,
     CourseSession $courseSession,
-    Passage $passage = null
+    ?Passage $passage = null
   ) {
     return view('ccd/course-sessions/passages', [
       'allRecords' => $courseSession->passages()->paginate(100),
@@ -42,7 +42,7 @@ class PassageController extends Controller
 
     return $this->res(
       successRes('Passage record updated'),
-      instRoute('passages.index', [$passage->course_session_id])
+      instRoute('passages.index', [$passage->courseable_id])
     );
   }
 
@@ -52,7 +52,7 @@ class PassageController extends Controller
 
     return $this->res(
       successRes('Passage record deleted'),
-      instRoute('passages.index')
+      instRoute('passages.index', [$passage->courseable_id])
     );
   }
 }
