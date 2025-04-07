@@ -1,8 +1,9 @@
-import { Student, TokenUser, User } from './models';
+import { AdmissionApplication, Student, TokenUser, User } from './models';
 
 export type Nullable<T> = T | null;
 export type KeyValue<T = string> = { [key: string]: T };
-export type GenericUser = TokenUser | User | Student;
+export type GenericUser = TokenUser | User | Student | AdmissionApplication;
+export type Examable = GenericUser;
 
 export interface PaginationResponse<T> {
   total: number;
@@ -163,6 +164,12 @@ export enum Religion {
 export enum EventStatus {
   Active = 'active',
   Ended = 'ended',
+}
+
+export enum EventType {
+  StudentTest = 'student-test',
+  AdmissionExam = 'admission-exam',
+  RecruitmentTest = 'recruitment-test',
 }
 
 export enum ExamStatus {

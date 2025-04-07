@@ -15,7 +15,7 @@ class TermResultActivationController extends Controller
 {
   public function create()
   {
-    return inertia('activate-student-term-result');
+    return inertia('auth/activate-student-term-result');
   }
 
   public function store(Request $request)

@@ -70,7 +70,7 @@ class Exam extends Model
     return $this->hasMany(ExamCourseable::class);
   }
 
-  // TokenUser|User|Student
+  // TokenUser|User|Student|AdmissionApplication
   function examable()
   {
     return $this->morphTo();

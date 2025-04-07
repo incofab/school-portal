@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\CCD;
 
+use App\Actions\GenericExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UploadSessionQuestionsRequest;
 use App\Models\Institution;
@@ -126,5 +127,30 @@ class QuestionController extends Controller
     return redirect(
       instRoute('questions.index', $morphable->getMorphedId())
     )->with('message', 'Questions uploaded successfully');
+  }
+
+  function downloadQuestions(
+    Institution $institution,
+    QuestionCourseable $morphable
+  ) {
+    $questions = $morphable
+      ->questions()
+      ->oldest('question_no')
+      ->get();
+
+    $data = $questions->map(
+      fn($item) => [
+        'question_no' => $item->question_no,
+        'question' => $item->question,
+        'option_a' => $item->option_a,
+        'option_b' => $item->option_b,
+        'option_c' => $item->option_c,
+        'option_d' => $item->option_d,
+        'option_e' => $item->option_e,
+        'answer' => $item->answer
+      ]
+    );
+
+    return (new GenericExport($data, 'questions.xlsx'))->download();
   }
 }

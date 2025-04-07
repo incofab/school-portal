@@ -1,4 +1,6 @@
 import {
+  EventType,
+  Examable,
   ExamAttempt,
   InstitutionUserType,
   ManagerRole,
@@ -540,6 +542,7 @@ export interface Event extends InstitutionRow {
   friendly_start_date: string;
   num_of_subjects: number;
   show_corrections: boolean;
+  type: EventType;
   classification_id?: number;
   classification_group_id?: number;
   event_courseables?: EventCourseable[];
@@ -659,7 +662,7 @@ export interface Exam extends InstitutionRow {
   status: string;
   examable_type: string;
   examable_id: number;
-  examable: TokenUser | Student;
+  examable: Examable;
   event?: Event;
   exam_courseables?: ExamCourseable[];
   attempts: ExamAttempt;

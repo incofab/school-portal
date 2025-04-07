@@ -14,7 +14,7 @@ class AuthController extends Controller
 {
   public function showLogin()
   {
-    return Inertia::render('login');
+    return Inertia::render('auth/login');
   }
 
   public function login()
@@ -37,7 +37,7 @@ class AuthController extends Controller
 
   public function showForgotPassword()
   {
-    return Inertia::render('forgot-password');
+    return Inertia::render('auth/forgot-password');
   }
 
   public function forgotPassword()
@@ -55,7 +55,7 @@ class AuthController extends Controller
 
   public function showResetPassword(string $token)
   {
-    return Inertia::render('reset-password', [
+    return Inertia::render('auth/reset-password', [
       'email' => request()->email,
       'token' => $token
     ]);

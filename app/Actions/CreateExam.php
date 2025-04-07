@@ -12,6 +12,12 @@ use Illuminate\Support\Collection;
 
 class CreateExam
 {
+  /**
+   * @param array {
+   *  examable_type: string,
+   *  examable_id: int,
+   * } $post
+   */
   function __construct(private Event $event, private array $post)
   {
   }

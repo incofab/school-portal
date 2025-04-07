@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers\Institutions;
 
-use App\Enums\InstitutionSettingType;
 use App\Enums\InstitutionUserType;
 use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
@@ -10,7 +9,6 @@ use App\Models\InstitutionSetting;
 use App\Support\SettingsHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Validation\Rules\Enum;
 use Storage;
 
 class InstitutionSettingController extends Controller
@@ -83,7 +81,7 @@ class InstitutionSettingController extends Controller
       );
       $publicUrl = Storage::disk('s3_public')->url($imagePath);
       $data['value'] = $publicUrl;
-    } 
+    }
 
     InstitutionSetting::query()->updateOrCreate(
       [

@@ -8,16 +8,15 @@ import { Div } from '@/components/semantic';
 import { LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import CenteredBox from '@/components/centered-box';
-import { GenericUser } from '@/types/types';
 import tokenUserUtil from '@/util/token-user-util';
 import useIsStudent from '@/hooks/use-is-student';
 
 interface Props {
   exam: Exam;
-  tokenUser: GenericUser;
+  // tokenUser: GenericUser;
 }
 
-export default function ExamResult({ exam, tokenUser }: Props) {
+export default function ExamResult({ exam }: Props) {
   const { instRoute } = useInstitutionRoute();
   const isStudent = useIsStudent();
   const displayData = [
@@ -29,13 +28,13 @@ export default function ExamResult({ exam, tokenUser }: Props) {
   return (
     <ExamLayout
       title={exam.event?.title}
-      tokenUser={tokenUser}
+      examable={exam.examable}
       rightElement={
         <Div>
           <Text fontWeight={'bold'} color={'brand.100'}>
             Congratulations
           </Text>
-          <Text>{`${tokenUserUtil(tokenUser).getName()}`}</Text>
+          <Text>{`${tokenUserUtil(exam.examable).getName()}`}</Text>
         </Div>
       }
       breadCrumbItems={[

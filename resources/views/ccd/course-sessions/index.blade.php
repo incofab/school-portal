@@ -46,6 +46,9 @@
 
 						<a href="{{instRoute('questions.upload.create', $morphedId)}}" 
 							class="btn btn-sm btn-primary"> <i class="fa fa-upload"></i> </a>
+						<a href="{{instRoute('questions.download', $morphedId)}}" 
+							onclick="return confirm('Do you want to download all the questions here')"
+							class="btn btn-sm btn-success"> <i class="fa fa-download"></i> </a>
 
 						<a href="{{instRoute('course-sessions.edit', $record)}}" 
 							class="btn btn-sm btn-success"> <i class="fa fa-edit"></i> </a>

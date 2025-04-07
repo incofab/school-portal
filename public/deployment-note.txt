@@ -3,6 +3,8 @@
 
 ** List Result Publications in the admin
 
-** Start exam with Event Code and Student Code
-
 ** PDF API for downloading results 
+
+** Create event_participants table to move classes and groups out of events table
+
+** Make the type column in the event table an index

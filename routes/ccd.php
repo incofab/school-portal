@@ -38,8 +38,9 @@ Route::put('questions/{question}/update', [CCD\QuestionController::class, 'updat
 Route::get('questions/{question}/delete', [CCD\QuestionController::class, 'destroy'])->name('questions.destroy');
 Route::get('questions/courseable/{morphable}/upload', [CCD\QuestionController::class, 'uploadQuestionsView'])->name('questions.upload.create');
 Route::post('questions/courseable/{morphable}/upload', [CCD\QuestionController::class, 'uploadQuestionsStore'])->name('questions.upload.store');
+Route::get('questions/courseable/{morphable}/download', [CCD\QuestionController::class, 'downloadQuestions'])->name('questions.download');
 // Route::get('question-corrections/{questionCorrection}/mark-as-resolved', [CCD\QuestionController::class, 'markQuestionCorrectionAsResolved'])->name('question-corrections.mark-as-resolved');
-    
+
 
 
 

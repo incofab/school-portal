@@ -1,31 +1,53 @@
-import React from 'react';
-import { Checkbox, FormControl, Input, VStack } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import {
+  Checkbox,
+  Divider,
+  FormControl,
+  HStack,
+  Icon,
+  IconButton,
+  Input,
+  Spacer,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { dateTimeFormat, preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { ClassificationGroup, Event } from '@/types/models';
+import { ClassificationGroup, Course, Event } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
-import { FormButton } from '@/components/buttons';
+import { BrandButton, FormButton } from '@/components/buttons';
 import InputForm from '@/components/forms/input-form';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
 import format from 'date-fns/format';
 import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
+import { EventType } from '@/types/types';
+import EnumSelect from '@/components/dropdown-select/enum-select';
+import { Div } from '@/components/semantic';
+import MySelect from '@/components/dropdown-select/my-select';
+import { TrashIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   event?: Event;
+  courses: Course[];
   classificationGroups: ClassificationGroup[];
 }
 
 export default function CreateOrUpdateEvent({
   event,
+  courses,
   classificationGroups,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
+  const [eventCourseableData, setEventCourseableData] = useState<
+    EventCourseableData[]
+  >([]);
   const webForm = useWebForm({
     title: event?.title ?? '',
     description: event?.description ?? '',
@@ -33,6 +55,7 @@ export default function CreateOrUpdateEvent({
     status: event?.status ?? '',
     starts_at: event?.starts_at ?? '',
     num_of_subjects: event?.num_of_subjects ?? 1,
+    type: event?.type ?? EventType.StudentTest,
     classification_id: event?.classification_id ?? '',
     classification_group_id: event?.classification_group_id ?? '',
     show_corrections: event?.show_corrections ?? false,
@@ -42,13 +65,44 @@ export default function CreateOrUpdateEvent({
     const res = await webForm.submit((data, web) => {
       return event
         ? web.put(instRoute('events.update', [event]), data)
-        : web.post(instRoute('events.store'), data);
+        : web.post(instRoute('events.store'), {
+            ...data,
+            event_courseables: eventCourseableData.map((item) => ({
+              courseable_type: item.courseable_type,
+              courseable_id: item.courseable_id,
+            })),
+          });
     });
     if (!handleResponseToast(res)) {
       return;
     }
     Inertia.visit(instRoute('events.index'));
   };
+
+  function addEventCourseable(newEventCourseableData: EventCourseableData) {
+    if (
+      eventCourseableData.find(
+        (item) =>
+          item.courseable_id === newEventCourseableData.courseable_id &&
+          item.courseable_type === newEventCourseableData.courseable_type
+      )
+    ) {
+      return;
+    }
+    setEventCourseableData([...eventCourseableData, newEventCourseableData]);
+  }
+
+  function deleteEventCourseable(
+    selectedEventCourseableData: EventCourseableData
+  ) {
+    setEventCourseableData(
+      eventCourseableData.filter(
+        (item) =>
+          item.courseable_id !== selectedEventCourseableData.courseable_id &&
+          item.courseable_type !== selectedEventCourseableData.courseable_type
+      )
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -110,6 +164,18 @@ export default function CreateOrUpdateEvent({
                 />
               </FormControlBox>
               <FormControlBox
+                title="Event Type"
+                form={webForm as any}
+                formKey="type"
+              >
+                <EnumSelect
+                  enumData={EventType}
+                  selectValue={webForm.data.type}
+                  isClearable={true}
+                  onChange={(e: any) => webForm.setValue('type', e?.value)}
+                />
+              </FormControlBox>
+              <FormControlBox
                 title="Class Group"
                 form={webForm as any}
                 formKey="classification_group_id"
@@ -150,7 +216,132 @@ export default function CreateOrUpdateEvent({
             </VStack>
           </SlabBody>
         </Slab>
+        {!event && (
+          <>
+            <Divider my={2} height={'3px'} backgroundColor={'brand.500'} />
+            <CreateEventCourseable
+              courses={courses}
+              add={addEventCourseable}
+              remove={deleteEventCourseable}
+              eventCourseableData={eventCourseableData}
+            />
+          </>
+        )}
       </CenteredBox>
     </DashboardLayout>
+  );
+}
+
+interface EventCourseableData {
+  course: Course;
+  courseable_type?: string;
+  courseable_id?: number;
+  title?: string;
+}
+
+function CreateEventCourseable({
+  courses,
+  eventCourseableData,
+  add,
+  remove,
+}: {
+  courses: Course[];
+  add: (newEventCourseableData: EventCourseableData) => void;
+  remove: (newEventCourseableData: EventCourseableData) => void;
+  eventCourseableData: EventCourseableData[];
+}) {
+  const [data, setData] = useState<EventCourseableData>();
+  const { toastError } = useMyToast();
+
+  const submit = async () => {
+    if (!data?.course || !data.courseable_id) {
+      return toastError('Please select a subject and session');
+    }
+    add(data);
+    setData(undefined);
+  };
+
+  return (
+    <CenteredBox>
+      <Text fontSize={'lg'} fontWeight={'semibold'}>
+        Add Subject
+      </Text>
+      <Divider my={1} />
+      <Stack
+        direction={{ base: 'column', md: 'row' }}
+        spacing={4}
+        as={'form'}
+        onSubmit={preventNativeSubmit(submit)}
+        align={'stretch'}
+        verticalAlign={'centered'}
+      >
+        <Div minW={'200px'}>
+          <MySelect
+            isMulti={false}
+            selectValue={data?.course}
+            getOptions={() =>
+              courses.map((course) => {
+                return {
+                  label: course.title,
+                  value: course,
+                };
+              })
+            }
+            onChange={(e: any) => setData({ course: e.value })}
+          />
+        </Div>
+        {data?.course?.sessions && (
+          <Div minW={'200px'}>
+            <MySelect
+              refreshKey={String(data.course.id)}
+              isMulti={false}
+              selectValue={data?.courseable_id}
+              getOptions={() =>
+                data.course.sessions.map((courseSession) => {
+                  return {
+                    label: courseSession.session,
+                    value: courseSession.id + '',
+                  };
+                })
+              }
+              onChange={(e: any) =>
+                setData({
+                  ...data,
+                  courseable_id: e.value,
+                  courseable_type: 'course-session',
+                  title: `${data.course.code} - ${e.label}`,
+                })
+              }
+            />
+          </Div>
+        )}
+        <BrandButton />
+      </Stack>
+      <br />
+      <VStack align={'stretch'} spacing={2}>
+        {eventCourseableData.map((eventCourseableData) => (
+          <HStack
+            align={'stretch'}
+            key={eventCourseableData.course.id}
+            border={'1px solid'}
+            borderRadius={'5px'}
+            py={3}
+            px={4}
+          >
+            <Text key={eventCourseableData.course.id}>
+              {eventCourseableData.title}
+            </Text>
+            <Spacer />
+            <IconButton
+              aria-label={'Delete subject'}
+              icon={<Icon as={TrashIcon} />}
+              variant={'ghost'}
+              colorScheme={'red'}
+              onClick={() => remove(eventCourseableData)}
+            />
+          </HStack>
+        ))}
+      </VStack>
+    </CenteredBox>
   );
 }

@@ -1,13 +1,17 @@
-import { Student, TokenUser, User } from '@/types/models';
+import { AdmissionApplication, Student, TokenUser, User } from '@/types/models';
 
 export class TokenUserUtil {
   private name: string | null;
+  public isAdmissionApplication = false;
   public isStudent = false;
   public isUser = false;
   public isTokenUser = false;
   constructor(private tokenUser: TokenUser | Student | User | null) {
     if (tokenUser == null) {
       this.name = null;
+    } else if ('application_no' in tokenUser) {
+      this.isAdmissionApplication = true;
+      this.name = (tokenUser as AdmissionApplication).name;
     } else if ('name' in tokenUser) {
       // TokenUser
       this.isTokenUser = true;

@@ -19,7 +19,7 @@ class InstitutionRegistrationRequestController extends Controller
       $partner = User::where('username', $partner)->first();
     }
     $fileExists = file_exists(public_path("partners/$partner.webp"));
-    return inertia('register', [
+    return inertia('auth/register', [
       'user' => $partner,
       'imageUrl' => $fileExists ? asset("partners/$partner.webp") : null
     ]);

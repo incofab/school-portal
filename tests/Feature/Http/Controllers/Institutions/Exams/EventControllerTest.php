@@ -1,4 +1,6 @@
 <?php
+
+use App\Models\CourseSession;
 use App\Models\Event;
 use App\Models\Exam;
 use App\Models\Institution;
@@ -63,6 +65,35 @@ it('stores a new event', function () {
     ->post(instRoute('events.store', [], $this->institution), $data)
     ->assertStatus(200);
   assertDatabaseHas('events', [...$data, 'duration' => $data['duration'] * 60]);
+});
+
+it('stores a new event and event courseables', function () {
+  $event = Event::factory()
+    ->institution($this->institution)
+    ->make()
+    ->toArray();
+  $courseSession = CourseSession::factory()
+    ->institution($this->institution)
+    ->create();
+
+  $data = collect($event)
+    ->except('code')
+    ->toArray();
+  $eventCourseables = [
+    [
+      'courseable_id' => $courseSession->id,
+      'courseable_type' => $courseSession->getMorphClass()
+    ]
+  ];
+
+  actingAs($this->admin)
+    ->post(instRoute('events.store', [], $this->institution), [
+      ...$data,
+      'event_courseables' => $eventCourseables
+    ])
+    ->assertStatus(200);
+  assertDatabaseHas('events', [...$data, 'duration' => $data['duration'] * 60]);
+  assertDatabaseHas('event_courseables', [...$eventCourseables[0]]);
 });
 
 it('updates an event', function () {

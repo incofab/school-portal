@@ -24,8 +24,16 @@ class HomeController extends Controller
    */
   public function index()
   {
-    // return redirect(route('login'));
-    return view('home.index', []);
+    $currentDomain = request()->getHost();
+    $isForEdumanager =
+      $currentDomain == 'localhost' ||
+      str_contains($currentDomain, 'edumanager.ng');
+
+    if ($isForEdumanager) {
+      return view('home.index', []);
+    }
+
+    return redirect("$currentDomain/login");
   }
 
   public function monnifyCheckout(Request $request)

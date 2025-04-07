@@ -12,7 +12,10 @@ return new class extends Migration {
   public function up(): void
   {
     Schema::table('events', function (Blueprint $table) {
-      $table->string('type')->default(EventType::StudentTest->value);
+      $table
+        ->string('type')
+        ->index()
+        ->default(EventType::StudentTest->value);
       $table
         ->foreignId('academic_session_id')
         ->nullable()

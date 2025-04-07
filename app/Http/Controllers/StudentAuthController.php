@@ -10,7 +10,7 @@ class StudentAuthController extends Controller
 {
   public function showLogin()
   {
-    return Inertia::render('student-login');
+    return Inertia::render('auth/student-login');
   }
 
   public function login()

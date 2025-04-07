@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Institutions\Exams\External;
 use App\Actions\CreateExam;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExamRequest;
+use App\Models\AdmissionApplication;
 use App\Models\Event;
 use App\Models\Institution;
 use App\Models\Student;
@@ -44,7 +45,7 @@ class ExamExternalController extends Controller
 
   function studentExamLoginCreate()
   {
-    return Inertia::render('student-exam-login');
+    return Inertia::render('auth/student-exam-login');
   }
 
   function studentExamLoginStore(Request $request)
@@ -76,6 +77,52 @@ class ExamExternalController extends Controller
     $exam = CreateExam::make($event, $student, $event->eventCourseables, [
       'start_now' => true
     ])->execute();
+
+    return redirect(
+      route('institutions.display-exam-page', [
+        $event->institution->uuid,
+        $exam->exam_no
+      ])
+    );
+  }
+
+  function admissionExamLoginCreate()
+  {
+    return Inertia::render('auth/admissions-exam-login');
+  }
+
+  function admissionExamLoginStore(Request $request)
+  {
+    $data = $request->validate([
+      'event_code' => ['required', 'string'],
+      'application_no' => ['required', 'string']
+    ]);
+
+    $event = Event::query()
+      ->where('code', $data['event_code'])
+      ->with('institution')
+      ->firstOrFail();
+
+    $admissionApplication = AdmissionApplication::query()
+      ->where('application_no', $data['application_no'])
+      ->with('institutionUser')
+      ->firstOrFail();
+
+    abort_unless(
+      $event->institution_id === $admissionApplication->institution_id,
+      403,
+      'Institution mismatch'
+    );
+
+    [$status, $message] = $event->canCreateExamCheck();
+    abort_unless($status, 400, $message);
+
+    $exam = CreateExam::make(
+      $event,
+      $admissionApplication,
+      $event->eventCourseables,
+      ['start_now' => true]
+    )->execute();
 
     return redirect(
       route('institutions.display-exam-page', [

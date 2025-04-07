@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Assessment;
 use App\Models\ClassificationGroup;
 use App\Models\Event;
+use App\Models\EventCourseable;
 use App\Models\Institution;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
@@ -42,10 +43,14 @@ class EventController extends Controller
     ]);
   }
 
-  function create()
+  function create(Institution $institution)
   {
     return Inertia::render('institutions/exams/create-edit-event', [
-      'classificationGroups' => ClassificationGroup::all()
+      'classificationGroups' => ClassificationGroup::all(),
+      'courses' => $institution
+        ->courses()
+        ->with('sessions')
+        ->get()
     ]);
   }
 
@@ -86,8 +91,20 @@ class EventController extends Controller
 
   function store(Institution $institution, Request $request)
   {
-    $data = $request->validate(Event::createRule());
-    $institution->events()->create([...$data, 'code' => Event::generateCode()]);
+    $data = $request->validate([
+      ...Event::createRule(),
+      'event_courseables' => ['nullable', 'array', 'min:1'],
+      ...EventCourseable::createRule('event_courseables.*.')
+    ]);
+    $event = $institution->events()->create([
+      ...collect($data)
+        ->except('event_courseables')
+        ->toArray(),
+      'code' => Event::generateCode()
+    ]);
+    foreach ($data['event_courseables'] ?? [] as $key => $courseable) {
+      $event->eventCourseables()->updateOrCreate($courseable);
+    }
     return $this->ok();
   }
 

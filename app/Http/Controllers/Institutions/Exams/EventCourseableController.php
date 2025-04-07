@@ -8,11 +8,8 @@ use App\Models\CourseSession;
 use App\Models\Event;
 use App\Models\EventCourseable;
 use App\Models\Institution;
-use App\Rules\ValidateMorphRule;
-use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class EventCourseableController extends Controller
@@ -62,15 +59,7 @@ class EventCourseableController extends Controller
 
   function store(Request $request, Institution $institution, Event $event)
   {
-    $morphRule = new ValidateMorphRule('courseable');
-    $data = $request->validate([
-      'courseable_id' => ['required', 'integer'],
-      'courseable_type' => [
-        'required',
-        $morphRule,
-        Rule::in(MorphMap::keys([CourseSession::class]))
-      ]
-    ]);
+    $data = $request->validate(EventCourseable::createRule());
 
     $event->eventCourseables()->updateOrCreate($data);
 

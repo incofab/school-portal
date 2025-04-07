@@ -67,7 +67,7 @@ export default function DisplayEvent({ event, tokenUser }: Props) {
       title={event.title}
       rightElement={<Text>{tokenUser.name}</Text>}
       breadCrumbItems={[{ title: 'Event', href: '#' }]}
-      tokenUser={tokenUser}
+      examable={tokenUser}
     >
       {event.status === EventStatus.Active && <ActivatationReminder my={1} />}
       <CenteredBox>

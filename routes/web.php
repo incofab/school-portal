@@ -126,6 +126,9 @@ Route::get('/app-not-activated', External\NotActivatedErrorController::class);
 Route::get('/student/exam-login', [External\ExamExternalController::class, 'studentExamLoginCreate'])->name('student.exam.login.create');
 Route::post('/student/exam-login', [External\ExamExternalController::class, 'studentExamLoginStore'])->name('student.exam.login.store');
 
+Route::get('/admissions/exam-login', [External\ExamExternalController::class, 'admissionExamLoginCreate'])->name('admissions.exam.login.create');
+Route::post('/admissions/exam-login', [External\ExamExternalController::class, 'admissionExamLoginStore'])->name('admissions.exam.login.store');
+
 Route::group(['prefix' => 'external/{institution}/'], function () {
     Route::post('/get-user-token', External\GetUserTokenController::class);
     Route::get('/home', External\HomeExternalController::class)

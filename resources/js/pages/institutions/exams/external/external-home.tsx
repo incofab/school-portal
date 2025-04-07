@@ -32,7 +32,7 @@ interface Props {
 export default function ExternalHome({ events, exams, tokenUser }: Props) {
   const { instRoute } = useInstitutionRoute();
   return (
-    <ExamLayout title={`Welcome ${tokenUser.name}`} tokenUser={tokenUser}>
+    <ExamLayout title={`Welcome ${tokenUser.name}`} examable={tokenUser}>
       <CenteredBox>
         {events && events.length > 0 && (
           <Slab>

@@ -41,6 +41,7 @@ export default function EditTokenUserProfile({ tokenUser }: Props) {
       title={'Update your profile'}
       rightElement={tokenUser.name}
       breadCrumbItems={[{ title: 'Edit Profile' }]}
+      examable={tokenUser}
     >
       <CenteredBox>
         <Slab>

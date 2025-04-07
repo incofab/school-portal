@@ -41,14 +41,13 @@ import tokenUserUtil from '@/util/token-user-util';
 
 interface Props {
   exam: Exam;
-  tokenUser: TokenUser | User;
   timeRemaining: number;
   existingAttempts: ExamAttempt;
 }
 
 export default function DisplayExam({
   exam,
-  tokenUser,
+  // tokenUser,
   timeRemaining,
   existingAttempts,
 }: Props) {
@@ -134,9 +133,9 @@ export default function DisplayExam({
   return (
     <ExamLayout
       title={''}
-      tokenUser={tokenUser}
+      examable={exam.examable}
       breadCrumbItems={[
-        { title: `${tokenUserUtil(tokenUser).getName()}`, href: '#' },
+        { title: `${tokenUserUtil(exam.examable).getName()}`, href: '#' },
       ]}
       rightElement={
         <HStack>

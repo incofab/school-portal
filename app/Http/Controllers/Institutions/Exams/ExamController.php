@@ -63,21 +63,6 @@ class ExamController extends Controller
     $student = currentInstitutionUser()->student;
 
     if ($event->eventCourseables->count() == 1) {
-      // start exam and go to exam page
-      /*
-      $eventCourseable = $event->eventCourseables->first();
-      $exam = CreateExam::run($event, [
-        'start_now' => true,
-        'examable_id' => $student->id,
-        'examable_type' => MorphMap::key(Student::class),
-        'courseables' => [
-          [
-            'courseable_id' => $eventCourseable->courseable_id,
-            'courseable_type' => $eventCourseable->courseable_type
-          ]
-        ]
-      ]);
-      */
       $exam = CreateExam::make($event, $student, $event->eventCourseables, [
         'start_now' => true
       ])->execute();

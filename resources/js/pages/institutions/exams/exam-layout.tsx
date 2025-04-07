@@ -16,18 +16,19 @@ import {
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
 import { Div } from '@/components/semantic';
-import { BreadCrumbParam, GenericUser } from '@/types/types';
+import { BreadCrumbParam, Examable } from '@/types/types';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { PropsWithChildren, ReactNode } from 'react';
 import useSharedProps from '@/hooks/use-shared-props';
 import { avatarUrl } from '@/util/util';
 import tokenUserUtil from '@/util/token-user-util';
+import { Exam } from '@/types/models';
 
 interface Props {
   title: string | ReactNode;
   rightElement?: string | ReactNode;
   breadCrumbItems?: BreadCrumbParam[];
-  tokenUser: GenericUser;
+  examable?: Examable;
 }
 
 const NavLink = ({ link }: { link: BreadCrumbParam }) => {
@@ -54,7 +55,7 @@ export default function ExamLayout({
   rightElement,
   children,
   breadCrumbItems,
-  tokenUser,
+  examable,
   ...props
 }: Props & BoxProps & PropsWithChildren) {
   const { instRoute } = useInstitutionRoute();
@@ -95,9 +96,11 @@ export default function ExamLayout({
                 {currentInstitution.name}
               </Text>
             </Div>
-            <Div>
-              <Text>{tokenUserUtil(tokenUser).getName()}</Text>
-            </Div>
+            {examable && (
+              <Div>
+                <Text>{tokenUserUtil(examable).getName()}</Text>
+              </Div>
+            )}
             {/* <HStack
               as={'nav'}
               spacing={4}
@@ -109,10 +112,12 @@ export default function ExamLayout({
             </HStack> */}
           </VStack>
           <HStack spacing={2}>
-            <Avatar
-              size={'sm'}
-              src={avatarUrl(tokenUserUtil(tokenUser).getName()!)}
-            />
+            {examable && (
+              <Avatar
+                size={'sm'}
+                src={avatarUrl(tokenUserUtil(examable).getName()!)}
+              />
+            )}
             {/* <Flex alignItems={'center'} flexDirection={'row'} gap={2}>
               <Menu>
                 <MenuButton

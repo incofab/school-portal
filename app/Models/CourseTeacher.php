@@ -12,6 +12,7 @@ class CourseTeacher extends Model
 
   protected $guarded = [];
   protected $casts = [
+    'institution_id' => 'integer',
     'classification_id' => 'integer',
     'user_id' => 'integer',
     'course_id' => 'integer'

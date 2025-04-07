@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\EventStatus;
+use App\Enums\EventType;
 use App\Models\Event;
 use App\Models\EventCourseable;
 use App\Models\Institution;
@@ -28,6 +29,7 @@ class EventFactory extends Factory
       'num_of_activations' => fake()->randomNumber(2),
       'num_of_subjects' => fake()->randomNumber(1) + 1,
       'starts_at' => now(),
+      'type' => EventType::StudentTest->value,
       'code' => Event::generateCode()
     ];
   }
