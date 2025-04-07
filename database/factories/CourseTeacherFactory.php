@@ -21,6 +21,7 @@ class CourseTeacherFactory extends Factory
   public function definition(): array
   {
     return [
+      'institution_id' => Institution::factory(),
       'course_id' => Course::factory(),
       'user_id' => User::factory()->teacher(),
       'classification_id' => Classification::factory()
@@ -31,6 +32,7 @@ class CourseTeacherFactory extends Factory
   {
     return $this->state(
       fn(array $attributes) => [
+        'institution_id' => $institution->id,
         'course_id' => Course::factory()->withInstitution($institution),
         'user_id' => User::factory()->teacher($institution),
         'classification_id' => Classification::factory()->withInstitution(

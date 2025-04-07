@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Rules\ValidateExistsRule;
+use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LessonPlan extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, InstitutionScope, SoftDeletes;
     protected $table = 'lesson_plans';
     protected $guarded = [];
 

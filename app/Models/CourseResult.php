@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TermType;
+use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Validation\Rule;
 
 class CourseResult extends Model
 {
-  use HasFactory;
+  use HasFactory, InstitutionScope;
 
   protected $guarded = [];
   protected $casts = [

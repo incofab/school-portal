@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Enums\TermType;
 use App\Rules\ValidateExistsRule;
+use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SchemeOfWork extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, InstitutionScope, SoftDeletes;
     protected $table = 'scheme_of_works';
     protected $guarded = [];
 
