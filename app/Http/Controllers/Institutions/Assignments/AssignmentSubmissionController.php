@@ -13,151 +13,173 @@ use App\Models\AssignmentSubmission;
 
 class AssignmentSubmissionController extends Controller
 {
-    //
-    public function __construct()
-    {
-        $this->allowedRoles([
-            InstitutionUserType::Admin,
-            InstitutionUserType::Teacher
-        ])->except('index', 'show', 'store');
+  //
+  public function __construct()
+  {
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ])->except('index', 'show', 'store');
+  }
+
+  function index(Request $request, Institution $institution)
+  {
+    $user = currentInstitutionUser();
+
+    if ($user->isStudent()) {
+      $student = $user->student;
+
+      $assignmentSubmissions = AssignmentSubmission::where(
+        'student_id',
+        $student->id
+      )
+        ->with(['assignment.course', 'assignment.classification'])
+        ->with('student.user');
+    } else {
+      abort(401, 'Unauthorized');
     }
 
-    function index(Request $request, Institution $institution)
-    {
-        $user = currentInstitutionUser();
+    return Inertia::render(
+      'institutions/assignments/list-assignment-submissions',
+      [
+        'assignmentSubmissions' => paginateFromRequest(
+          $assignmentSubmissions->latest('id')
+        )
+      ]
+    );
+  }
 
-        if ($user->isStudent()) {
-            $student = $user->student;
+  /**
+   * This function shows a list of all assignmentSubmissions for a particular/given Assignment
+   */
+  function list(Institution $institution, Assignment $assignment)
+  {
+    $user = currentUser();
+    $institutionUser = currentInstitutionUser();
 
-            $assignmentSubmissions = AssignmentSubmission::where("student_id", $student->id)->with(['assignment.course', 'assignment.classification'])->with('student.user');
-        } else {
-            abort(401, "Unauthorized");
-        }
-
-        /** == Removed Because we decided that Teachers and Admins should only access the 'List' route - not this 'Index' route
-         * 
-         *  else if ($user->isTeacher()) {
-         *  $teacherCourses = CourseTeacher::where('user_id', $user->user->id)->pluck('course_id');
-         *  $teacherAssignments = Assignment::whereIn('course_id', $teacherCourses)->pluck('id');
-         *
-         *  $assignmentSubmissions = AssignmentSubmission::whereIn("assignment_id", $teacherAssignments)->with(['assignment.course', 'assignment.classification'])->with('student.user');
-         *  } else if ($user->isAdmin()) {
-         *    $assignmentSubmissions = AssignmentSubmission::with(['assignment.course', 'assignment.classification'])->with('student.user');
-         *  }
-         */
-
-        return Inertia::render('institutions/assignments/list-assignment-submissions', [
-            'assignmentSubmissions' => paginateFromRequest($assignmentSubmissions->latest('id')),
-        ]);
+    if ($institutionUser->isTeacher()) {
+      $assgnmentCourseTeacher = $this->isAssignmentCourseTeacher(
+        $user,
+        $assignment
+      );
+      abort_unless($assgnmentCourseTeacher, 401, 'Unauthorized Operation');
     }
 
-    /**
-     * This function shows a list of all assignmentSubmissions for a particular/given Assignment
-     */
-    function list(Institution $institution, Assignment $assignment)
-    {
-        $user = currentUser();
-        $institutionUser = currentInstitutionUser();
+    $assignmentSubmissions = AssignmentSubmission::where(
+      'assignment_id',
+      $assignment->id
+    )
+      ->with(['assignment.course', 'assignment.classification'])
+      ->with('student.user');
 
-        if ($institutionUser->isTeacher()) {
-            // $teacherCourses = CourseTeacher::where('user_id', $user->user->id)->pluck('course_id');
-            // $teacherAssignments = Assignment::whereIn('course_id', $teacherCourses)->pluck('id');
+    return Inertia::render(
+      'institutions/assignments/list-assignment-submissions',
+      [
+        'assignmentSubmissions' => paginateFromRequest(
+          $assignmentSubmissions->latest('id')
+        )
+      ]
+    );
+  }
 
-            // if (!$teacherAssignments->contains($assignment->id)) {
-            //     abort(401, "Unauthorized Operation");
-            // }
+  function show(
+    Institution $institution,
+    AssignmentSubmission $assignmentSubmission
+  ) {
+    $user = currentUser();
 
-            $assgnmentCourseTeacher = $assignment->courseTeacher()->where('user_id', $user->id)->first();
+    if ($user->isInstitutionStudent()) {
+      $student = currentInstitutionUser()->student;
 
-            //$assgnmentCourseTeacher = CourseTeacher::where('id', $assignment->course_teacher_id)->where('user_id', $user->id)->first();
+      if ($assignmentSubmission->student_id != $student->id) {
+        abort(401, 'Unauthorized Operation.');
+      }
+    } elseif ($user->isInstitutionTeacher()) {
+      $assignment = $assignmentSubmission->assignment;
+      $assignmentCourseTeacher = $this->isAssignmentCourseTeacher(
+        $user,
+        $assignment
+      );
 
-            // $teacherAssignments = Assignment::select('assignments.*')
-            //     ->join('course_teachers', 'course_teachers.id', 'assignments.course_teacher_id')
-            //     ->where('course_teachers.user_id', $user->id)
-            //     ->where('assignments.id', $assignment->id)
-            //     ->first();
-
-            abort_unless($assgnmentCourseTeacher, 401, "Unauthorized Operation");
-        }
-
-        $assignmentSubmissions = AssignmentSubmission::where('assignment_id', $assignment->id)->with(['assignment.course', 'assignment.classification'])->with('student.user');
-
-        return Inertia::render('institutions/assignments/list-assignment-submissions', [
-            'assignmentSubmissions' => paginateFromRequest($assignmentSubmissions->latest('id')),
-        ]);
+      if (!$assignmentCourseTeacher) {
+        abort(401, 'Unauthorized Operation.');
+      }
+    } elseif ($user->isInstitutionAdmin()) {
+    } else {
+      abort(401, 'Unauthorized');
     }
 
-    function show(Institution $institution, AssignmentSubmission $assignmentSubmission)
-    {
-        $user = currentInstitutionUser();
+    return Inertia::render(
+      'institutions/assignments/show-assignment-submission',
+      [
+        'assignmentSubmission' => $assignmentSubmission->load('assignment')
+      ]
+    );
+  }
 
-        if ($user->isStudent()) {
-            $student = currentInstitutionUser()->student;
-
-            if ($assignmentSubmission->student_id != $student->id) {
-                abort(401, "Unauthorized Operation.");
-            }
-        } else if ($user->isTeacher()) {
-            $assignment_course_teacher_user_id = $assignmentSubmission->assignment->courseTeacher->user_id;
-            $current_user_id = $user->user->id;
-
-            if ($assignment_course_teacher_user_id != $current_user_id) {
-                abort(401, "Unauthorized Operation.");
-            }
-        } else if ($user->isAdmin()) {
-        } else {
-            abort(401, "Unauthorized");
-        }
-
-        return Inertia::render('institutions/assignments/show-assignment-submission', [
-            'assignmentSubmission' => $assignmentSubmission->load('assignment'),
-        ]);
+  function store(Institution $institution, Request $request)
+  {
+    $user = currentInstitutionUser();
+    if (!$user->isStudent()) {
+      abort(401, 'Unauthorized Operation');
     }
 
-    function store(Institution $institution, Request $request)
-    {
-        $user = currentInstitutionUser();
-        if (!$user->isStudent()) {
-            abort(401, 'Unauthorized Operation');
-        };
+    $data = $request->validate([
+      'assignment_id' => 'required|integer',
+      'answer' => 'required|string'
+    ]);
 
-        $data = $request->validate([
-            'assignment_id' => 'required|integer',
-            'answer' => 'required|string',
-        ]);
+    $student = $user->student;
 
-        $student = $user->student;
+    AssignmentSubmission::create([...$data, 'student_id' => $student->id]);
+    return $this->ok();
+  }
 
-        AssignmentSubmission::create([
-            ...$data,
-            'student_id' => $student->id
-        ]);
-        return $this->ok();
+  function score(
+    Institution $institution,
+    AssignmentSubmission $assignmentSubmission,
+    Request $request
+  ) {
+    $user = currentUser();
+
+    if ($user->isInstitutionTeacher()) {
+      $assignment = $assignmentSubmission->assignment;
+      $assignmentCourseTeacher = $this->isAssignmentCourseTeacher(
+        $user,
+        $assignment
+      );
+
+      if (!$assignmentCourseTeacher) {
+        abort(401, 'Unauthorized Operation.');
+      }
     }
 
-    function score(Institution $institution, AssignmentSubmission $assignmentSubmission, Request $request)
-    {
-        $user = currentInstitutionUser();
+    $maxScore = $assignmentSubmission->assignment->max_score;
 
-        $assignment_course_teacher_user_id = $assignmentSubmission->assignment->courseTeacher->user_id;
-        $current_user_id = $user->user->id;
+    $request->validate([
+      'score' => 'required|integer|min:0|max:' . $maxScore,
+      'remark' => 'nullable|string'
+    ]);
 
-        if (!$user->isAdmin() && ($assignment_course_teacher_user_id != $current_user_id)) {
-            abort(403, 'Unauthorized');
-        };
+    $assignmentSubmission->update([
+      'score' => $request->score,
+      'remark' => $request->remark
+    ]);
 
-        $maxScore = $assignmentSubmission->assignment->max_score;
+    return $this->ok();
+  }
 
-        $request->validate([
-            'score' => 'required|integer|min:0|max:' . $maxScore,
-            'remark' => 'nullable|string',
-        ]);
+  function isAssignmentCourseTeacher($user, $assignment)
+  {
+    $courseTeacher = CourseTeacher::where('user_id', $user->id)
+      ->where('course_id', $assignment->course_id)
+      ->whereIn('classification_id', $assignment->classification_ids)
+      ->first();
 
-        $assignmentSubmission->update([
-            'score' => $request->score,
-            'remark' => $request->remark,
-        ]);
-
-        return $this->ok();
+    if (!$courseTeacher) {
+      return false;
     }
+
+    return true;
+  }
 }

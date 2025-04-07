@@ -6,6 +6,7 @@ use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
+use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Support\Str;
 
 class PaymentReference extends Model
 {
-  use HasFactory;
+  use HasFactory, InstitutionScope;
 
   protected $guarded = [];
   protected $casts = [

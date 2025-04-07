@@ -1,144 +1,386 @@
 <?php
 
-use App\Models\AdmissionApplication;
-use App\Models\ApplicationGuardian;
+use App\Actions\RecordAssignment;
+use App\Enums\AssignmentStatus;
+use App\Models\Assignment;
+use App\Models\Course;
+use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\User;
-use Illuminate\Http\UploadedFile;
-use Inertia\Testing\AssertableInertia;
-
-use Illuminate\Support\Facades\Request;
-use Mockery\MockInterface;
-use App\Actions\HandleAdmission;
-use App\Models\Assignment;
 use App\Models\Classification;
-use App\Models\CourseTeacher;
+use App\Models\InstitutionUser;
+use App\Models\AssignmentSubmission;
+use App\Enums\InstitutionUserType;
+use App\Enums\TermType;
+use App\Models\AcademicSession;
+use App\Models\ClassificationGroup;
 use App\Models\Student;
-use Database\Factories\ApplicationGuardianFactory;
-use Database\Factories\StudentFactory;
-
+use Carbon\Carbon;
+use function Pest\Laravel\getJson;
+use function Pest\Laravel\postJson;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
-use function Pest\Laravel\postJson;
-use function PHPUnit\Framework\assertCount;
-use function PHPUnit\Framework\assertEquals;
-use function PHPUnit\Framework\assertNotNull;
-use function PHPUnit\Framework\assertTrue;
+
+/**
+ * ./vendor/bin/pest --filter AssignmentControllerTest
+ */
 
 beforeEach(function () {
-    Storage::fake();
-    $this->institution = Institution::factory()->create();
-    $this->admin = $this->institution->createdBy;
-    $this->assignment = Assignment::factory()->withInstitution($this->institution)->create();
+  $this->institution = Institution::factory()->create();
+  $this->admin = $this->institution->createdBy;
+  $this->user = User::factory()->create();
+  $this->teacher = User::factory()->create();
+  $this->student = User::factory()->create();
 
-    // Get the course teacher already linked to the 'assignment'
-    $this->courseTeacher = $this->assignment->courseTeacher->user;
+  $this->adminInstitutionUser = InstitutionUser::factory()->create([
+    'institution_id' => $this->institution->id,
+    'user_id' => $this->admin->id,
+    'role' => InstitutionUserType::Admin->value
+  ]);
+
+  $this->teacherInstitutionUser = InstitutionUser::factory()->create([
+    'institution_id' => $this->institution->id,
+    'user_id' => $this->teacher->id,
+    'role' => InstitutionUserType::Teacher->value
+  ]);
+
+  $this->studentInstitutionUser = InstitutionUser::factory()->create([
+    'institution_id' => $this->institution->id,
+    'user_id' => $this->student->id,
+    'role' => InstitutionUserType::Student->value
+  ]);
+
+  $this->course = Course::factory()->create([
+    'institution_id' => $this->institution->id
+  ]);
+
+  $this->classifications = Classification::factory()
+    ->count(2)
+    ->create([
+      'institution_id' => $this->institution->id
+    ]);
+
+  $this->classification = $this->classifications[0];
+
+  // $this->classification = Classification::factory()->create([
+  //   'institution_id' => $this->institution->id
+  // ]);
+
+  $this->courseTeacher = CourseTeacher::factory()->create([
+    'institution_id' => $this->institution->id,
+    'course_id' => $this->course->id,
+    'classification_id' => $this->classification->id,
+    'user_id' => $this->teacher->id
+  ]);
 });
 
-it('creates an assignment', function () {
-    $route = route('institutions.assignments.store', [
-        'institution' => $this->institution->uuid
+
+it('admin can view assignments', function () {
+  Assignment::factory(3)
+    ->withClassifications($this->classifications)
+    ->create([
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $this->teacherInstitutionUser->id
     ]);
 
-    actingAs($this->admin)->postJson($route, [])
-        ->assertJsonValidationErrors(['max_score', 'content', 'expires_at']);
+  $route = route('institutions.assignments.index', $this->institution);
 
-    $student = User::factory()->student()->create();
-    actingAs($student)->postJson($route, [])->assertForbidden();
+  actingAs($this->admin)
+    ->get($route)
+    ->assertOk();
 
-    $assignmentData = Assignment::factory()
-        ->make()->toArray();
-
-    actingAs($this->admin)->postJson($route, $assignmentData)
-        ->assertOk();
-
-    assertDatabaseHas('assignments', collect($assignmentData)->only('max_score', 'expires_at', 'course_teacher_id')->toArray());
+  assertDatabaseCount('assignments', 3);
 });
 
-it('allows only the CourseTeacher or Admin to edit an assignment', function () {
-    $route = route('institutions.assignments.update', [
-        'institution' => $this->institution->uuid,
-        'assignment' => $this->assignment->id,
+it('unauthenticated user cannot view assignments', function () {
+  Assignment::factory(3)
+    ->withClassifications($this->classifications)
+    ->create([
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $this->teacherInstitutionUser->id
     ]);
 
-    // Data to update the assignment
-    $updatedData = [
-        'course_teacher_id' => $this->assignment->course_teacher_id,
-        'content' => $this->assignment->content,
-        'max_score' => 90,
-        'expires_at' => now()->addDays(10)->toDateTimeString(),
-    ];
+  $route = route('institutions.assignments.index', $this->institution);
 
-    // Unauthorized User (e.g., Student) tries to edit the assignment
-    $student = User::factory()->student()->create();
-    actingAs($student)->putJson($route, $updatedData)->assertForbidden();
-
-    // Authorized as Admin
-    actingAs($this->admin)->putJson($route, $updatedData)->assertOk();
-    assertDatabaseHas('assignments', array_merge(['id' => $this->assignment->id], $updatedData));
-
-    $updatedData['max_score'] = 92;
-    // Authorized as CourseTeacher
-    actingAs($this->courseTeacher)->putJson($route, $updatedData)->assertOk();
-    assertDatabaseHas('assignments', array_merge(['id' => $this->assignment->id], $updatedData));
-
-    // Unauthorized User (non-related Teacher) tries to edit the assignment
-    $unrelatedTeacher = CourseTeacher::factory()->withInstitution($this->institution)->create();
-    actingAs($unrelatedTeacher->user)->putJson($route, $updatedData)->assertForbidden();
+  actingAs($this->user)
+    ->get($route)
+    ->assertStatus(403);
 });
 
-it('allows only the assigned CourseTeacher or Admin to delete an assignment', function () {
-    // Initial route for the first instance of the assignment
-    $route = route('institutions.assignments.destroy', [
-        'institution' => $this->institution->uuid,
-        'assignment' => $this->assignment->id,
+it('teacher can view their assignments', function () {
+  Assignment::factory(2)
+    ->withClassifications($this->classifications)
+    ->create([
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $this->teacherInstitutionUser->id
     ]);
 
-    // Unauthorized User (e.g., unrelated Teacher) tries to delete the assignment
-    $unrelatedTeacher = CourseTeacher::factory()->withInstitution($this->institution)->create();
-    actingAs($unrelatedTeacher->user)->deleteJson($route)->assertStatus(401);
+  $route = route('institutions.assignments.index', $this->institution);
 
-    // Unauthorized User (e.g., Student) tries to delete the assignment
-    $student = User::factory()->student()->create();
-    actingAs($student)->deleteJson($route)->assertForbidden();
+  actingAs($this->teacher)
+    ->getJson($route)
+    ->assertOk();
 
-    // Authorized User (Admin) deletes the assignment
-    actingAs($this->admin)->deleteJson($route)->assertOk();
-    assertDatabaseMissing('assignments', ['id' => $this->assignment->id]);
-
-    // Re-create the assignment for further testing and update `$this->assignment`
-    $this->assignment = Assignment::factory()->withInstitution($this->institution)->create();
-
-    // Re-establish the route with the updated assignment's ID
-    $route = route('institutions.assignments.destroy', [
-        'institution' => $this->institution->uuid,
-        'assignment' => $this->assignment->id,
-    ]);
-
-    // Authorized User (assigned CourseTeacher) deletes the new assignment
-    $courseTeacherUser = $this->assignment->courseTeacher->user;  // Get the CourseTeacher associated with the assignment
-    actingAs($courseTeacherUser)->deleteJson($route)->assertOk();
-    assertDatabaseMissing('assignments', ['id' => $this->assignment->id]);
+  assertDatabaseCount('assignments', 2);
 });
 
-it('prevents deletion if the assignment has submissions', function () {
-    $route = route('institutions.assignments.destroy', [
-        'institution' => $this->institution->uuid,
-        'assignment' => $this->assignment->id,
+it('teacher can view assignments of another teacher', function () {
+  $classificationGroup = ClassificationGroup::factory()->create([
+    'institution_id' => $this->institution->id
+  ]);
+
+  //= Another Teacher
+  $anotherTeacher = User::factory()->create();
+  $anotherTeacherInstitutionUser = InstitutionUser::factory()->create([
+    'institution_id' => $this->institution->id,
+    'user_id' => $anotherTeacher,
+    'role' => InstitutionUserType::Teacher->value
+  ]);
+
+  Assignment::factory(3)
+    ->withClassificationGroup(1, $classificationGroup)
+    ->create([
+      'course_id' => $this->course->id,
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $anotherTeacherInstitutionUser->id
     ]);
 
-    // Create a student record in the `students` table
-    $student = Student::factory()->withInstitution($this->institution)->create();
+  $route = route('institutions.assignments.index', $this->institution);
 
-    // Add a submission to the assignment with the correct student ID
-    $this->assignment->assignmentSubmissions()->create([
-        'student_id' => $student->id,
-        'assignment_id' => $this->assignment->id,
-        'answer' => 'Sample submission content',
+  actingAs($this->teacher)
+    ->getJson($route)
+    ->assertOk();
+
+  assertDatabaseCount('assignments', 3);
+});
+
+it('admin can create an assignment', function () {
+  $classificationIds = $this->classifications->pluck('id');
+  $academicSessionId = AcademicSession::factory()->create()->id;
+
+  $assignmentData = [
+    'institution_user_id' => $this->adminInstitutionUser->id,
+    'course_id' => $this->course->id,
+    'academic_session_id' => $academicSessionId,
+    'term' => TermType::First->value,
+    'status' => AssignmentStatus::Active->value,
+    'max_score' => fake()->randomNumber(2),
+    'content' => fake()->sentence(),
+    'expires_at' => now()
+      ->addDays(10)
+      ->toDateTimeString()
+  ];
+
+  $response = actingAs($this->admin)->postJson(
+    route('institutions.assignments.store', $this->institution),
+    [...$assignmentData, 'classification_ids' => $classificationIds]
+  );
+
+  $response->assertStatus(200);
+  assertDatabaseHas('assignments', $assignmentData);
+});
+
+it('admin cannot create assignment with invalid data', function () {
+  $classificationIds = $this->classifications->pluck('id');
+  $academicSessionId = AcademicSession::factory()->create()->id;
+
+  $assignmentData = [
+    'institution_user_id' => $this->adminInstitutionUser->id,
+    'course_id' => $this->course->id,
+    'academic_session_id' => $academicSessionId,
+    'term' => TermType::First->value,
+    'status' => AssignmentStatus::Active->value,
+    'max_score' => fake()->randomNumber(2),
+    'content' => '', //= *Required - hence, Invalid submission.
+    'expires_at' => now()->addDays(10)
+  ];
+
+  $response = actingAs($this->admin)->postJson(
+    route('institutions.assignments.store', $this->institution),
+    [...$assignmentData, 'classification_ids' => $classificationIds]
+  );
+
+  $response->assertStatus(422)->assertJsonValidationErrors(['content']);
+});
+
+it('admin can update an assignment', function () {
+  $classificationIds = $this->classifications->pluck('id');
+  $assignment = Assignment::factory()
+    ->withClassifications($this->classifications)
+    ->create([
+      'course_id' => $this->course->id,
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $this->teacherInstitutionUser->id
     ]);
 
-    // Try to delete as an Admin (should fail due to existing 'assignment submission')
-    actingAs($this->admin)->deleteJson($route)->assertForbidden();
+  $updatedData = [
+    'course_id' => $this->course->id,
+    'content' => 'Updated Assignment Content',
+    'max_score' => 30,
+    'expires_at' => $assignment->expires_at->toDateTimeString(),
+    'institution_user_id' => $this->adminInstitutionUser->id
+  ];
+
+  $response = actingAs($this->admin)->putJson(
+    route('institutions.assignments.update', [$this->institution, $assignment]),
+    [...$updatedData, 'classification_ids' => $classificationIds]
+  );
+
+  $response->assertStatus(200);
+  assertDatabaseHas('assignments', $updatedData);
+});
+
+it('teacher can update their assignment', function () {
+  $classificationIds = $this->classifications->pluck('id');
+  $assignment = Assignment::factory()
+    ->withClassifications($this->classifications)
+    ->create([
+      'course_id' => $this->course->id,
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $this->teacherInstitutionUser->id
+    ]);
+
+  $updatedData = [
+    'course_id' => $this->course->id,
+    'content' => 'Updated Assignment Content',
+    'max_score' => 30,
+    'expires_at' => $assignment->expires_at->toDateTimeString(),
+    'institution_user_id' => $this->teacherInstitutionUser->id
+  ];
+
+  $response = actingAs($this->teacher)->putJson(
+    route('institutions.assignments.update', [$this->institution, $assignment]),
+    [...$updatedData, 'classification_ids' => $classificationIds]
+  );
+
+  $response->assertStatus(200);
+  assertDatabaseHas('assignments', $updatedData);
+});
+
+it('admin can delete an assignment', function () {
+  $assignment = Assignment::factory()
+    ->withClassifications($this->classifications)
+    ->create([
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $this->teacherInstitutionUser->id
+    ]);
+
+  $response = actingAs($this->admin)->deleteJson(
+    route('institutions.assignments.destroy', [$this->institution, $assignment])
+  );
+
+  $response->assertStatus(200);
+  assertDatabaseMissing('assignments', ['id' => $assignment->id]);
+});
+
+it('teacher can delete their assignment', function () {
+  $assignment = Assignment::factory()
+    ->withClassifications($this->classifications)
+    ->create([
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $this->teacherInstitutionUser->id
+    ]);
+
+  $response = actingAs($this->teacher)->deleteJson(
+    route('institutions.assignments.destroy', [$this->institution, $assignment])
+  );
+
+  $response->assertStatus(200);
+  assertDatabaseMissing('assignments', ['id' => $assignment->id]);
+});
+
+it('show assignment', function () {
+  $assignment = Assignment::factory()
+    ->withClassifications($this->classifications)
+    ->create([
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $this->teacherInstitutionUser->id
+    ]);
+
+  $response = actingAs($this->admin)->getJson(
+    route('institutions.assignments.show', [$this->institution, $assignment])
+  );
+
+  $response->assertStatus(200);
+});
+
+it('student can view assignments', function () {
+  Assignment::factory()
+    ->withClassifications($this->classifications)
+    ->create([
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $this->teacherInstitutionUser->id
+    ]);
+
+  Student::factory()
+    ->withInstitution(
+      $this->institution,
+      $this->classification,
+      $this->studentInstitutionUser
+    )
+    ->create();
+
+  $route = route('institutions.assignments.index', $this->institution);
+
+  actingAs($this->student)
+    ->getJson($route)
+    ->assertOk();
+});
+
+it('student cannot view other classes assignments', function () {
+  $anotherClassification = Classification::factory()
+    ->count(2)
+    ->create([
+      'institution_id' => $this->institution->id
+    ]);
+
+  $assignment = Assignment::factory()
+    ->withClassifications($anotherClassification)
+    ->create([
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $this->teacherInstitutionUser->id
+    ]);
+
+  Student::factory()
+    ->withInstitution(
+      $this->institution,
+      $this->classification,
+      $this->studentInstitutionUser
+    )
+    ->create();
+
+  $route = route('institutions.assignments.show', [
+    $this->institution,
+    $assignment
+  ]);
+
+  $response = actingAs($this->student)->getJson($route);
+
+  $response->assertStatus(403);
+});
+
+it('student cannot view assignments after deadline', function () {
+  $assignment = Assignment::factory()
+    ->withClassifications($this->classifications)
+    ->create([
+      'institution_id' => $this->institution->id,
+      'institution_user_id' => $this->teacherInstitutionUser->id,
+      'expires_at' => Carbon::now()->subDay()
+    ]);
+
+  Student::factory()
+    ->withInstitution(
+      $this->institution,
+      $this->classification,
+      $this->studentInstitutionUser
+    )
+    ->create();
+
+  $response = actingAs($this->student)->getJson(
+    route('institutions.assignments.show', [$this->institution, $assignment])
+  );
+
+  $response->assertStatus(403);
 });

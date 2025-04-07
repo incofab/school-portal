@@ -11,7 +11,7 @@ export default function TeacherSubjectSelect({
   teacherCourses,
   selectValue,
   ...props
-}: Props) {
+}: Props) { 
   return (
     <MySelect
       {...props}

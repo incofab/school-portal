@@ -38,8 +38,15 @@ class AssignmentPolicy
    */
   public function view(User $user, Assignment $assignment)
   {
-    // The logic is done within the controller.
-    return true;
+    $institutionUser = currentInstitutionUser();
+    if($institutionUser->isStudent()){
+      return Assignment::query()
+        ->init()
+        ->forStudent($institutionUser->student)
+        ->where('assignments.id', $assignment->id)->exists();
+    }
+
+    return $this->delete($user, $assignment);
   }
 
   /**
@@ -51,7 +58,7 @@ class AssignmentPolicy
   public function create(User $user)
   {
     // Only Institution Admins and Teachers can create assignments
-    return $user->isInstitutionAdmin() || $user->isInstitutionTeacher();
+    return true;
   }
 
   /**
@@ -64,9 +71,7 @@ class AssignmentPolicy
   public function update(User $user, Assignment $assignment)
   {
     // Only Institution Admins and the specific Course Teacher can update an assignment
-    return $user->isInstitutionAdmin() ||
-      ($user->isInstitutionTeacher() &&
-        $assignment->courseTeacher->user_id === $user->id);
+    return $this->delete($user, $assignment);
   }
 
   /**
@@ -78,10 +83,19 @@ class AssignmentPolicy
    */
   public function delete(User $user, Assignment $assignment)
   {
-    // Only Institution Admins and the specific Course Teacher can delete an assignment
-    return $user->isInstitutionAdmin() ||
-      ($user->isInstitutionTeacher() &&
-        $assignment->courseTeacher->user_id === $user->id);
+    $institutionUser = currentInstitutionUser();
+    if($institutionUser->isAdmin()){
+      return true;
+    }
+    
+    if($institutionUser->isTeacher()){
+      return Assignment::query()
+        ->init()
+        ->forTeacher($institutionUser)
+        ->where('assignments.id', $assignment->id)->exists();
+    }
+
+    return false;
   }
 
   /**

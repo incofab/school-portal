@@ -557,10 +557,26 @@ export interface Assignment extends InstitutionRow {
   expires_at: string;
   max_score: number;
   content: string;
+  course_id: number;
+  institution_user_id: number;
   user?: User;
   course?: Course;
+  institution_user?: InstitutionUser;
+  assignment_classifications?: AssignmentClassification[];
+  classifications?: Classification[];
+}
+
+export interface AssignmentClassification extends InstitutionRow {
+  assignment_id: number;
+  classification_id: number;
+  assignment?: Assignment;
   classification?: Classification;
-  course_teacher?: CourseTeacher;
+}
+
+export interface Todo {
+  count: number;
+  route: string;
+  label: string;
 }
 
 export interface Topic extends InstitutionRow {

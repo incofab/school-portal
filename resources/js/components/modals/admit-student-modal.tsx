@@ -56,7 +56,7 @@ export default function AdmitStudentModal({
     onClose();
     onSuccess();
   };
-
+ 
   return (
     <GenericModal
       props={{ isOpen, onClose }}

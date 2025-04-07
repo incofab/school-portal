@@ -107,6 +107,7 @@ class CourseTeachersController extends Controller
     foreach ($courseIds as $key => $courseId) {
       foreach ($classificationIds as $key => $classificationId) {
         $user->courseTeachers()->firstOrCreate([
+          'institution_id' => $institution->id,
           'course_id' => $courseId,
           'classification_id' => $classificationId
         ]);

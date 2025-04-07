@@ -72,10 +72,12 @@ it('stores a new exam and exam courseables', function () {
     ->count($this->event->num_of_subjects)
     ->event($this->event)
     ->create();
+    
   $data = Exam::factory()
     ->event($this->event)
     ->make()
     ->toArray();
+
   actingAs($this->student)
     ->postJson(instRoute('exams.store', [$this->event], $this->institution), [
       ...$data,

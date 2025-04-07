@@ -108,15 +108,16 @@ class LessonNoteController extends Controller
   function storeOrUpdate(
     Institution $institution,
     Request $request,
-    LessonNote $lessonNote = null
+    ?LessonNote $lessonNote = null
   ) {
     $data = $request->validate(LessonNote::createRule());
 
     $lessonPlanId = $lessonNote
       ? $lessonNote->lesson_plan_id
       : $data['lesson_plan_id'];
+    
     $getLessonPlan = LessonPlan::where('id', $lessonPlanId)
-      ->with('schemeOfWork.topic')
+      ->with('schemeOfWork.topic', 'courseTeacher')
       ->first();
 
     $classificationId = $getLessonPlan->courseTeacher->classification_id;

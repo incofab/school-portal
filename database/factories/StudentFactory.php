@@ -36,15 +36,19 @@ class StudentFactory extends Factory
 
   public function withInstitution(
     Institution $institution,
-    Classification|null $classification = null
+    Classification|null $classification = null,
+    InstitutionUser|null $institutionUser = null
   ): static {
     return $this->state(function (array $attributes) use (
       $institution,
-      $classification
+      $classification,
+      $institutionUser
     ) {
-      $institutionUser = InstitutionUser::factory()
-        ->withInstitution($institution)
-        ->create(['role' => InstitutionUserType::Student]);
+      if (empty($institutionUser)) {
+        $institutionUser = InstitutionUser::factory()
+          ->withInstitution($institution)
+          ->create(['role' => InstitutionUserType::Student]);
+      }
 
       return [
         'institution_user_id' => $institutionUser->id,

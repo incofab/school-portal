@@ -46,7 +46,9 @@ class SchemeOfWorkController extends Controller
     $data = $request->validate(SchemeOfWork::createRule());
 
     $params = [
-      ...collect($data)->except('is_used_by_institution_group')->toArray(),
+      ...collect($data)
+        ->except('is_used_by_institution_group')
+        ->toArray(),
       'institution_id' => $institution->id,
       'institution_group_id' => $data['is_used_by_institution_group']
         ? $institution->institutionGroup->id
