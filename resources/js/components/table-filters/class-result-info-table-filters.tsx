@@ -27,7 +27,7 @@ export default function ClassResultInfoTableFilters({
     classification: params.classification ?? '',
     forMidTerm: params.forMidTerm,
   }));
-
+ 
   return (
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
       <FilterFormControlBox title="Class">

@@ -45,6 +45,7 @@ export default function ListEvents({ assignments }: Props) {
     {
       label: 'Class',
       value: 'classification.title',
+      render: (row) => row.classifications?.map((item) => item.title).join(', ') ?? '',
     },
     {
       label: 'Subject',

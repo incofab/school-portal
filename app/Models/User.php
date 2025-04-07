@@ -105,7 +105,7 @@ class User extends Authenticatable
     return $this->institutionUsers()
       ->where('institution_id', currentInstitution()->id)
       ->with('student');
-  }
+  } 
 
   function courseTeachers()
   {
