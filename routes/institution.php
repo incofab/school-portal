@@ -19,7 +19,9 @@ Route::get('dummy', function () {
 })->name('dummy');
 
 Route::get('/dashboard', [Web\InstitutionController::class, 'index'])
-  ->name('dashboard');
+  ->name('dashboard');  
+Route::get('/dashboard/setup-checklist', [Web\InstitutionController::class, 'setupChecklist'])
+  ->name('dashboard.setup-checklist');
 Route::get('/profile', [Web\InstitutionController::class, 'profile'])
   ->name('profile');
 Route::put('/update', [Web\InstitutionController::class, 'update'])

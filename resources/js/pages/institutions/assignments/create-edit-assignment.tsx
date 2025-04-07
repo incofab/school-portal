@@ -4,7 +4,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { Assignment, CourseTeacher } from '@/types/models';
+import { Assignment, Classification, CourseTeacher } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -18,34 +18,33 @@ import { Input } from '@chakra-ui/react';
 import useIsAdmin from '@/hooks/use-is-admin';
 import TeacherSubjectSelect from '@/components/selectors/teacher-subject-select';
 import CourseTeacherSelect from '@/components/selectors/course-teacher-select';
-import { SelectOptionType } from '@/types/types';
-import { SingleValue } from 'react-select';
+import { SelectOptionType, Nullable } from '@/types/types';
+import { MultiValue, SingleValue } from 'react-select';
+import ClassificationSelect from '@/components/selectors/classification-select';
+import CourseSelect from '@/components/selectors/course-select';
+import useSharedProps from '@/hooks/use-shared-props';
 
+// TODO :: When Assignment is available (EDIT), how do I display the classification_ids into the 'Select Class / Classes'.
 interface Props {
   assignment?: Assignment;
-  teacherCourses: CourseTeacher[];
 }
 
 const tinymceApiKey = import.meta.env.VITE_TINYMCE_API_KEY;
 
 export default function CreateOrUpdateEvent({
   assignment,
-  teacherCourses,
 }: Props) {
+  const isAdmin = useIsAdmin();
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const [courseTeacher, setCourseTeacher] = useState(
-    (assignment
-      ? {
-          label: `${assignment.course_teacher?.user?.first_name} ${assignment.course_teacher?.user?.last_name} - ${assignment.course?.title} - ${assignment.classification?.title}`,
-          value: assignment.course_teacher?.id,
-        }
-      : {}) as SingleValue<SelectOptionType<number>>
-  );
-  const isAdmin = useIsAdmin();
-
+  const { currentInstitutionUser } = useSharedProps();
+  
   const webForm = useWebForm({
-    course_teacher_id: '',
+    course_id: assignment ? assignment.course_id : '',
+    classification_ids: (assignment?.classifications?.map((item) => ({
+      label: item.title,
+      value: item.id
+    }))) as Nullable<MultiValue<SelectOptionType<number>>>,
     max_score: assignment ? assignment.max_score : '',
     expires_at: assignment ? assignment.expires_at : '',
     content: '',
@@ -53,15 +52,20 @@ export default function CreateOrUpdateEvent({
 
   const submit = async () => {
     const res = await webForm.submit((data, web) => {
-      data.course_teacher_id = courseTeacher?.value + '';
+      const requestData = {...data, 
+        institution_user_id: currentInstitutionUser.id,
+        classification_ids: data.classification_ids?.map((item) => item.value)
+      };
 
       return assignment
-        ? web.put(instRoute('assignments.update', [assignment]), data)
-        : web.post(instRoute('assignments.store'), data);
+        ? web.put(instRoute('assignments.update', [assignment.id]), requestData)
+        : web.post(instRoute('assignments.store'), requestData);
     });
+
     if (!handleResponseToast(res)) {
       return;
     }
+
     Inertia.visit(instRoute('assignments.index'));
   };
 
@@ -78,35 +82,34 @@ export default function CreateOrUpdateEvent({
               as={'form'}
               onSubmit={preventNativeSubmit(submit)}
             >
-              {teacherCourses.length > 0 && (
-                <FormControlBox
-                  title="Select Subject"
-                  form={webForm as any}
-                  formKey="course_teacher_id"
-                  isRequired
-                >
-                  <TeacherSubjectSelect
-                    selectValue={courseTeacher?.value}
-                    teacherCourses={teacherCourses ?? []}
-                    onChange={(e: any) => setCourseTeacher(e)}
-                  />
-                </FormControlBox>
-              )}
-              {isAdmin && (
-                <FormControlBox
-                  title="Select the subject teacher"
-                  form={webForm as any}
-                  formKey="course_teacher_id"
-                  isRequired
-                >
-                  <CourseTeacherSelect
-                    value={courseTeacher}
-                    isMulti={false}
-                    isClearable={true}
-                    onChange={(e) => setCourseTeacher(e)}
-                  />
-                </FormControlBox>
-              )}
+              <FormControlBox
+                form={webForm as any}
+                title="Select Subject"
+                formKey="course"
+              >
+                <CourseSelect
+                  selectValue={webForm.data.course_id}
+                  isMulti={false}
+                  isClearable={true}
+                  onChange={(e: any) => webForm.setValue('course_id', e?.value)}
+                  required
+                />
+              </FormControlBox>
+
+              <FormControlBox
+                form={webForm as any}
+                title="Select Class(es)"
+                formKey="classification"
+              >
+                <ClassificationSelect
+                  value={webForm.data.classification_ids}
+                  selectValue={webForm.data.classification_ids}
+                  isMulti={true}
+                  isClearable={true}
+                  onChange={(e: any) => webForm.setValue('classification_ids', e)}
+                  required
+                />
+              </FormControlBox>
 
               <FormControlBox
                 form={webForm as any}

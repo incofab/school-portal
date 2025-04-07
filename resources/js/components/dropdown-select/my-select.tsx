@@ -26,7 +26,7 @@ export default function MySelect<T>({
       return;
     }
     const result = optionsData.find((item) => item.value == param);
-    return result;
+    return result || param;
   }
 
   const backgroundColor = useColorModeValue('white', '#2d3748');

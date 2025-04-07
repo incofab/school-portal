@@ -25,6 +25,14 @@ import useIsStaff from '@/hooks/use-is-staff';
 import useInstitutionRole from '@/hooks/use-institution-role';
 import { InstitutionGroup } from '@/types/models';
 import { formatAsCurrency } from '@/util/util';
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+} from '@chakra-ui/react';
+import CenteredBox from '@/components/centered-box';
+import { LinkButton } from '@/components/buttons';
 
 interface ItemCardProps {
   route: string;
@@ -41,6 +49,7 @@ interface ItemCardProps {
 
 interface Props {
   institutionGroup: InstitutionGroup;
+  isSetupComplete: string;
 }
 
 function DashboardItemCard(prop: ItemCardProps) {
@@ -86,7 +95,7 @@ function DashboardItemCard(prop: ItemCardProps) {
   );
 }
 
-function InstitutionDashboard({ institutionGroup }: Props) {
+function InstitutionDashboard({ institutionGroup, isSetupComplete }: Props) {
   const { currentInstitutionUser } = useSharedProps();
   const student = currentInstitutionUser.student;
   const { forTeacher } = useInstitutionRole();
@@ -181,6 +190,24 @@ function InstitutionDashboard({ institutionGroup }: Props) {
 
   return (
     <DashboardLayout>
+      {!isSetupComplete ? (
+        <CenteredBox mb={5}>
+          <Alert status="error" variant="left-accent">
+            <AlertIcon />
+            <AlertTitle>You have some unfinished setup.</AlertTitle>
+            <AlertDescription>
+              <LinkButton
+                variant={'outline'}
+                href={instRoute('dashboard.setup-checklist')}
+                title="Continue Setup"
+              />
+            </AlertDescription>
+          </Alert>
+        </CenteredBox>
+      ) : (
+        ''
+      )}
+
       <SimpleGrid spacing={6} columns={{ base: 1, sm: 2, md: 3 }}>
         {items.map(function (item) {
           if (item.roles && !item.roles.includes(currentInstitutionUser.role)) {

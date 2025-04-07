@@ -164,11 +164,13 @@ it('cannot delete a scheme of work with lesson plans', function () {
     ->topic($this->topic)
     ->create();
 
-  LessonPlan::factory()->create(['scheme_of_work_id' => $schemeOfWork->id]);
+  LessonPlan::factory()
+    ->schemeOfWork($schemeOfWork)
+    ->create();
 
   $route = route('institutions.scheme-of-works.destroy', [
     'institution' => $this->institution->uuid,
-    'scheme_of_work' => $schemeOfWork->id
+    'scheme_of_work' => $schemeOfWork
   ]);
 
   actingAs($this->admin)

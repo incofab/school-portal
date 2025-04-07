@@ -5,12 +5,14 @@ namespace App\Models;
 use App\Enums\AssignmentStatus;
 use App\Enums\TermType;
 use App\Rules\ValidateExistsRule;
+use App\Support\Queries\AssignmentQueryBuilder;
+use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Assignment extends Model
 {
-  use HasFactory;
+  use HasFactory, InstitutionScope;
 
   protected $table = 'assignments';
 
@@ -19,24 +21,20 @@ class Assignment extends Model
     'max_score' => 'integer',
     'expires_at' => 'datetime',
     'status' => AssignmentStatus::class,
-    'course_teacher_id' => 'integer',
-    'classification_id' => 'integer',
+    'institution_id' => 'integer',
     'course_id' => 'integer',
     'academic_session_id' => 'integer',
     'term' => TermType::class
   ];
 
-  static function createRule()
+  public static function query(): AssignmentQueryBuilder
   {
-    return [
-      'course_teacher_id' => [
-        'required',
-        new ValidateExistsRule(CourseTeacher::class)
-      ],
-      'max_score' => ['required', 'integer', 'min:1'],
-      'content' => ['required', 'string'],
-      'expires_at' => ['required', 'date', 'after:now']
-    ];
+    return parent::query();
+  }
+
+  public function newEloquentBuilder($query)
+  {
+    return new AssignmentQueryBuilder($query);
   }
 
   function scopeNotExpired($query)
@@ -60,6 +58,11 @@ class Assignment extends Model
     return $this->belongsTo(Classification::class);
   }
 
+  public function institutionUser()
+  {
+    return $this->belongsTo(InstitutionUser::class);
+  }
+
   public function courseTeacher()
   {
     return $this->belongsTo(CourseTeacher::class);
@@ -68,5 +71,18 @@ class Assignment extends Model
   function assignmentSubmissions()
   {
     return $this->hasMany(AssignmentSubmission::class);
+  }
+
+  function assignmentClassifications()
+  {
+    return $this->hasMany(AssignmentClassification::class);
+  }
+
+  function classifications()
+  {
+    return $this->belongsToMany(
+      Classification::class,
+      'assignment_classifications'
+    )->withTimestamps();
   }
 }

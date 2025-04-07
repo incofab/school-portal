@@ -26,8 +26,8 @@ class ExamFactory extends Factory
       'institution_id' => Institution::factory(),
       'event_id' => Event::factory(),
       // 'external_reference' => Str::uuid(),
-      'examable_type' => (new TokenUser())->getMorphClass(),
-      'examable_id' => TokenUser::factory(),
+      'examable_type' => (new User())->getMorphClass(),
+      'examable_id' => User::factory(),
       'exam_no' => fake()
         ->unique()
         ->numerify('###########'),

@@ -30,7 +30,7 @@ export default function CourseTeacherSelect<
   if (classification) {
     searchParams.classification = classification;
   }
-
+ 
   return (
     <MyAsyncSelect
       searchUrl={instRoute('course-teachers.search', searchParams)}

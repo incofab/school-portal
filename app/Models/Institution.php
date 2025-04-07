@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InstitutionUserType;
 use App\Enums\S3Folder;
 use App\Support\Queries\InstitutionQueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -95,6 +96,11 @@ class Institution extends Model
   function courses()
   {
     return $this->hasMany(Course::class);
+  }
+
+  function courseTeachers()
+  {
+    return $this->hasMany(CourseTeacher::class);
   }
 
   function classifications()
@@ -247,7 +253,21 @@ class Institution extends Model
       'id', // Local key on Institution table
       'user_id' // Local key on InstitutionUser table
     )->whereHas('institutionUsers', function ($query) {
-      $query->where('role', 'student');
+      $query->where('role', InstitutionUserType::Student);
+    });
+  }
+
+  public function teachers()
+  {
+    return $this->hasManyThrough(
+      User::class,
+      InstitutionUser::class,
+      'institution_id', // Foreign key on InstitutionUser table
+      'id', // Foreign key on User table
+      'id', // Local key on Institution table
+      'user_id' // Local key on InstitutionUser table
+    )->whereHas('institutionUsers', function ($query) {
+      $query->where('role', InstitutionUserType::Teacher);
     });
   }
 }

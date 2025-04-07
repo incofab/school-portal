@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Enums\NoteStatusType;
 use App\Rules\ValidateExistsRule;
+use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LessonNote extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, InstitutionScope, SoftDeletes;
     protected $table = 'lesson_notes';
     protected $guarded = [];
 

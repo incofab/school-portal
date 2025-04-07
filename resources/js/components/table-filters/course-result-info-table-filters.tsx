@@ -29,7 +29,7 @@ export default function CourseResultInfoTableFilters({
     classification: params.classification ?? '',
     forMidTerm: params.forMidTerm ?? '',
   }));
-
+ 
   return (
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
       <FilterFormControlBox title="Subject">

@@ -58,7 +58,7 @@ abstract class BaseUITableFilter
     return $this;
   }
 
-  public function sortQuery(): static
+  private function sortQuery(): static
   {
     $sortDir = $this->requestData['sortDir'] ?? null;
     $sortKey = $this->requestData['sortKey'] ?? null;
