@@ -52,7 +52,7 @@ export default function ListCourse({ courses }: Props) {
                   variant={'link'}
                   colorScheme={'brand'}
                 >
-                  Questions
+                  Question Bank
                 </Button>
                 <IconButton
                   aria-label={'Upload Content'}
