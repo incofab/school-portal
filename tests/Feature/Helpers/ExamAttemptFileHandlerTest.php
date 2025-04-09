@@ -61,7 +61,6 @@ afterEach(function () {
 
 it('creates an exam file', function () {
   $result = $this->examAttemptFileHandler->syncExamFile();
-  info($this->examAttemptFileHandler->getContent());
 
   expect($result['success'])->toBeTrue();
   expect(File::exists($this->filePath))->toBeTrue();

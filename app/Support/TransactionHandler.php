@@ -111,23 +111,12 @@ class TransactionHandler
     $this->amount = $amount;
     $this->bbt = $this->institutionGroup->credit_wallet;
     $this->bat = $this->bbt - $this->amount;
-    info([
-      'amount' => $this->amount,
-      'bbt' => $this->bbt,
-      'bat' => $this->bat,
-      'remark' => $this->remark
-    ]);
     $this->recordTransaction();
   }
 
   private function recordTransaction()
   {
     if ($this->bat < 0) {
-      dd([
-        'bat' => $this->bat,
-        'amount' => $this->amount,
-        'bbt' => $this->bbt
-      ]);
       return throw new Exception('Wallet balance cannot be negative');
     }
 
