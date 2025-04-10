@@ -28,7 +28,7 @@ class TermResultActivationController extends Controller
 
     $pin = Pin::query()
       ->where('pin', $data['pin'])
-      ->with('institution')
+      ->with('institution', 'termResult')
       ->first();
 
     if (!$pin) {
@@ -169,6 +169,7 @@ class TermResultActivationController extends Controller
     if (!$pin->term_result_id) {
       return true;
     }
-    return $pin->academic_session_id === $termResult->academic_session_id;
+    return $pin->termResult->academic_session_id ===
+      $termResult->academic_session_id;
   }
 }

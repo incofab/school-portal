@@ -1,9 +1,14 @@
+// import { useColorModeValue } from '@chakra-ui/react';
 import { AdmissionApplication, Student, TokenUser, User } from './models';
 
 export type Nullable<T> = T | null;
 export type KeyValue<T = string> = { [key: string]: T };
 export type GenericUser = TokenUser | User | Student | AdmissionApplication;
 export type Examable = GenericUser;
+
+// export const bgWhite = useColorModeValue('white', 'gray.900');
+// export const bgBrand = useColorModeValue('brand.50', 'gray.800');
+// export const bgGreen = useColorModeValue('green.50', 'gray.800');
 
 export interface PaginationResponse<T> {
   total: number;

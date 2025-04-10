@@ -30,7 +30,7 @@ import { EventType } from '@/types/types';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Div } from '@/components/semantic';
 import MySelect from '@/components/dropdown-select/my-select';
-import { TrashIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   event?: Event;
@@ -60,7 +60,7 @@ export default function CreateOrUpdateEvent({
     classification_group_id: event?.classification_group_id ?? '',
     show_corrections: event?.show_corrections ?? false,
   });
-
+  const forStudents = webForm.data.type === EventType.StudentTest;
   const submit = async () => {
     const res = await webForm.submit((data, web) => {
       return event
@@ -175,26 +175,44 @@ export default function CreateOrUpdateEvent({
                   onChange={(e: any) => webForm.setValue('type', e?.value)}
                 />
               </FormControlBox>
-              <FormControlBox
-                title="Class Group"
-                form={webForm as any}
-                formKey="classification_group_id"
-              >
-                <ClassificationGroupSelect
-                  selectValue={webForm.data.classification_group_id}
-                  isMulti={false}
-                  isClearable={true}
-                  classificationGroups={classificationGroups}
-                  onChange={(e: any) =>
-                    webForm.setData({
-                      ...webForm.data,
-                      classification_group_id: e?.value,
-                      classification_id: '',
-                    })
-                  }
-                />
-              </FormControlBox>
-
+              {forStudents && (
+                <FormControlBox
+                  title="Class Group"
+                  form={webForm as any}
+                  formKey="classification_group_id"
+                >
+                  <ClassificationGroupSelect
+                    selectValue={webForm.data.classification_group_id}
+                    isMulti={false}
+                    isClearable={true}
+                    classificationGroups={classificationGroups}
+                    onChange={(e: any) =>
+                      webForm.setData({
+                        ...webForm.data,
+                        classification_group_id: e?.value,
+                        classification_id: '',
+                      })
+                    }
+                  />
+                </FormControlBox>
+              )}
+              {!event && (
+                <Div
+                  border={'3px solid'}
+                  borderColor={'brand.50'}
+                  borderRadius={'5px'}
+                  w={'100%'}
+                  p={3}
+                  ps={5}
+                >
+                  <CreateEventCourseable
+                    courses={courses}
+                    add={addEventCourseable}
+                    remove={deleteEventCourseable}
+                    eventCourseableData={eventCourseableData}
+                  />
+                </Div>
+              )}
               <FormControl>
                 <Checkbox
                   isChecked={webForm.data.show_corrections}
@@ -216,17 +234,6 @@ export default function CreateOrUpdateEvent({
             </VStack>
           </SlabBody>
         </Slab>
-        {!event && (
-          <>
-            <Divider my={2} height={'3px'} backgroundColor={'brand.500'} />
-            <CreateEventCourseable
-              courses={courses}
-              add={addEventCourseable}
-              remove={deleteEventCourseable}
-              eventCourseableData={eventCourseableData}
-            />
-          </>
-        )}
       </CenteredBox>
     </DashboardLayout>
   );
@@ -270,8 +277,6 @@ function CreateEventCourseable({
       <Stack
         direction={{ base: 'column', md: 'row' }}
         spacing={4}
-        as={'form'}
-        onSubmit={preventNativeSubmit(submit)}
         align={'stretch'}
         verticalAlign={'centered'}
       >
@@ -315,7 +320,13 @@ function CreateEventCourseable({
             />
           </Div>
         )}
-        <BrandButton />
+        <BrandButton
+          leftIcon={<Icon as={PlusIcon} />}
+          title="Add"
+          mt={1}
+          type={'button'}
+          onClick={submit}
+        />
       </Stack>
       <br />
       <VStack align={'stretch'} spacing={2}>
@@ -325,10 +336,10 @@ function CreateEventCourseable({
             key={eventCourseableData.course.id}
             border={'1px solid'}
             borderRadius={'5px'}
-            py={3}
-            px={4}
+            py={1}
+            px={2}
           >
-            <Text key={eventCourseableData.course.id}>
+            <Text key={eventCourseableData.course.id} mt={1}>
               {eventCourseableData.title}
             </Text>
             <Spacer />

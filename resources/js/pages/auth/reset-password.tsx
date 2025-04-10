@@ -10,7 +10,7 @@ import {
   useToast,
   FormErrorMessage,
 } from '@chakra-ui/react';
-import '../../css/app.css';
+import '../../../css/app.css';
 import { preventNativeSubmit } from '@/util/util';
 import route from '@/util/route';
 import CenteredLayout from '@/components/centered-layout';

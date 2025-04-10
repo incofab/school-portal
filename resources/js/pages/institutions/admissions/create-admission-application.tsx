@@ -13,6 +13,8 @@ import {
   Grid,
   GridItem,
   VStack,
+  useColorModeValue,
+  Icon,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import FormControlBox from '@/components/forms/form-control-box';
@@ -38,6 +40,7 @@ import {
 import { resizeImage } from '@/util/util';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import AdmissionFormSelect from '@/components/selectors/admission-form-select';
+import { PlusIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   institution: Institution;
@@ -57,6 +60,14 @@ export default function CreateAdmissionApplication({
   institution,
   admissionForms,
 }: Props) {
+  const emptyGuardian = {
+    first_name: '',
+    last_name: '',
+    other_names: '',
+    phone: '',
+    email: '',
+    relationship: '',
+  } as GuardianProp;
   const form = useWebForm({
     reference: String(institution.id) + generateRandomString(16),
     admission_form_id: '',
@@ -75,7 +86,7 @@ export default function CreateAdmissionApplication({
     phone: '',
     email: '',
     photo: '',
-    guardians: [] as GuardianProp[],
+    guardians: [emptyGuardian] as GuardianProp[],
     files: {} as FileList | null,
   });
 
@@ -126,8 +137,13 @@ export default function CreateAdmissionApplication({
   }
 
   return (
-    <Div bg={'brand.50'} minH={'100vh'}>
-      <Div shadow={'md'} py={5} px={5} background={'white'}>
+    <Div bg={useColorModeValue('brand.50', 'gray.800')} minH={'100vh'}>
+      <Div
+        shadow={'md'}
+        py={5}
+        px={5}
+        background={useColorModeValue('white', 'gray.900')}
+      >
         <HStack align={'stretch'} spacing={5}>
           <Avatar
             src={institution.photo}
@@ -139,7 +155,7 @@ export default function CreateAdmissionApplication({
         </HStack>
       </Div>
       <Div
-        bg={'white'}
+        bg={useColorModeValue('white', 'gray.900')}
         mx={'auto'}
         shadow={'md'}
         rounded={'md'}
@@ -281,28 +297,41 @@ export default function CreateAdmissionApplication({
                 formKey="previous_school_attended"
               />
 
-              {form.data.guardians.map((guardian: GuardianProp, index) => (
-                <GuardianForm
-                  index={index}
-                  key={index}
-                  guardian={guardian}
-                  form={form}
-                />
-              ))}
+              <Div
+                border={'3px solid'}
+                borderColor={'brand.50'}
+                borderRadius={'5px'}
+                w={'100%'}
+                p={4}
+                ps={10}
+              >
+                {form.data.guardians.map((guardian: GuardianProp, index) => (
+                  <GuardianForm
+                    index={index}
+                    key={index}
+                    guardian={guardian}
+                    form={form}
+                  />
+                ))}
+              </Div>
 
-              <HStack align={'stretch'} mt={5}>
-                <FormButton isLoading={form.processing} title="Submit Form" />
+              <HStack align={'stretch'}>
                 <Spacer />
                 <BrandButton
+                  leftIcon={<Icon as={PlusIcon} />}
                   title="Add New Guardian"
                   type={'button'}
                   onClick={() => {
                     form.setValue('guardians', [
                       ...form.data.guardians,
-                      {} as GuardianProp,
+                      emptyGuardian,
                     ]);
                   }}
                 />
+              </HStack>
+              <Divider my={2} />
+              <HStack align={'stretch'}>
+                <FormButton isLoading={form.processing} title="Submit Form" />
               </HStack>
             </VStack>
           </GridItem>
@@ -380,13 +409,19 @@ function GuardianForm({
   guardian: GuardianProp;
   form: any;
 }) {
+  const { toastError } = useMyToast();
   return (
     <VStack mt={10}>
       <HStack width="full" justify="flex-end" align={'stretch'}>
         <BrandButton
           title="Remove this Guardian Record"
+          type={'button'}
           onClick={() => {
-            const guardians = form.data.guardians as [];
+            const guardians = form.data.guardians ?? [];
+            if (guardians.length === 1) {
+              toastError('You must have at least one guardian');
+              return;
+            }
             guardians.splice(index, 1);
             form.setValue('guardians', guardians);
           }}

@@ -31,7 +31,7 @@ export default function SelectInstitution({ institutions }: Props) {
             mx={2}
           >
             <Div
-              bg={'white'}
+              bg={useColorModeValue('white', 'gray.800')}
               p={4}
               shadow={'md'}
               rounded={'md'}

@@ -1,5 +1,5 @@
 import { Div } from '@/components/semantic';
-import { Button, Icon, Text } from '@chakra-ui/react';
+import { Button, Icon, Text, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { ArrowDownIcon } from '@heroicons/react/24/solid';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
@@ -43,7 +43,7 @@ export default function BuyAdmissionApplication({
         rounded={'md'}
         border={'1px solid'}
         borderColor={'green.600'}
-        bg={'green.50'}
+        bg={useColorModeValue('green.50', 'gray.900')}
         textAlign={'center'}
         p={8}
       >

@@ -14,7 +14,7 @@ import { ProSidebarProvider } from 'react-pro-sidebar';
 import './style/app.css';
 
 const config: ThemeConfig = {
-  initialColorMode: 'dark',
+  initialColorMode: 'light',
   useSystemColorMode: false,
 };
 

@@ -12,16 +12,6 @@ interface Props {
 export default function Message({ title, message }: Props) {
   return (
     <CenteredLayout boxProps={{ maxW: '800px' }}>
-      {/* <Div
-        rounded={'md'}
-        border={'1px solid'}
-        borderColor={'green.600'}
-        bg={'green.50'}
-        textAlign={'center'}
-        p={8}
-        mx={'auto'}
-        maxW={'800px'}
-      > */}
       <Text fontSize={'2xl'} color={'green.600'}>
         {title}
       </Text>
