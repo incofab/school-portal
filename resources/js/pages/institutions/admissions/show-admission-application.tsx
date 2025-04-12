@@ -49,6 +49,7 @@ export default function Profile({ admissionApplication }: Props) {
     { label: 'Last Name', value: admissionApplication.last_name },
     { label: 'Other Names', value: admissionApplication.other_names },
     { label: 'Gender', value: admissionApplication.gender },
+    { label: 'Application No', value: admissionApplication.application_no },
     { label: 'Date of Birth', value: admissionApplication.dob },
     { label: 'Religion', value: admissionApplication.religion },
     { label: 'Local Govt. Area', value: admissionApplication.lga },

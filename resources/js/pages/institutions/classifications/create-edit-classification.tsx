@@ -150,7 +150,7 @@ export default function CreateOrUpdateClassification({
                   size={'md'}
                   colorScheme="brand"
                 >
-                  All students offer the number of subjects
+                  All students offer the same number of subjects
                 </Checkbox>
               </FormControl>
 

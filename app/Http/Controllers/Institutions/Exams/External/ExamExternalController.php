@@ -105,7 +105,7 @@ class ExamExternalController extends Controller
 
     $admissionApplication = AdmissionApplication::query()
       ->where('application_no', $data['application_no'])
-      ->with('institutionUser')
+      // ->with('institutionUser')
       ->firstOrFail();
 
     abort_unless(

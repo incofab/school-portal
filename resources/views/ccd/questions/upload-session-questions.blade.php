@@ -23,7 +23,7 @@
 				<small><i>Note: Formulars and formatted content may not appear as expected</i></small>
 			</div>
 			<hr>
-			<form method="POST" action="{{instRoute('questions.upload.store', $courseSession)}}"
+			<form method="POST" action="{{instRoute('questions.upload.store', $courseable->getMorphedId())}}"
 				enctype="multipart/form-data" >
 				@include('common.form_message')
 				@csrf

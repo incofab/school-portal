@@ -37,7 +37,7 @@ class AdmissionApplicationController extends Controller
 
   function index()
   {
-    $query = AdmissionApplication::query();
+    $query = AdmissionApplication::query()->with('admissionForm');
     return Inertia::render(
       'institutions/admissions/list-admission-applications',
       [
@@ -128,7 +128,7 @@ class AdmissionApplicationController extends Controller
     Institution $institution,
     AdmissionApplication $admissionApplication
   ) {
-    $admissionApplication->load('applicationGuardians');
+    $admissionApplication->load('applicationGuardians', 'admissionForm');
 
     return Inertia::render(
       'institutions/admissions/show-admission-application',

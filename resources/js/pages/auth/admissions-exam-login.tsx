@@ -15,7 +15,7 @@ import route from '@/util/route';
 
 export default function AdmissionExamLogin() {
   const { data, setData, post, processing, errors } = useForm({
-    student_code: '',
+    event_code: '',
     application_no: '',
   });
 
@@ -24,21 +24,21 @@ export default function AdmissionExamLogin() {
   };
 
   return (
-    <CenteredLayout title="Student Login">
+    <CenteredLayout title="Admission Exam Login">
       <VStack
         spacing={4}
         align={'stretch'}
         as={'form'}
         onSubmit={preventNativeSubmit(handleSubmit)}
       >
-        <FormControl isInvalid={!!errors.student_code}>
-          <FormLabel>Student Code</FormLabel>
+        <FormControl isInvalid={!!errors.event_code}>
+          <FormLabel>Event Code</FormLabel>
           <Input
             type="text"
-            value={data.student_code}
-            onChange={(e) => setData('student_code', e.currentTarget.value)}
+            value={data.event_code}
+            onChange={(e) => setData('event_code', e.currentTarget.value)}
           />
-          <FormErrorMessage>{errors.student_code}</FormErrorMessage>
+          <FormErrorMessage>{errors.event_code}</FormErrorMessage>
         </FormControl>
         <FormControl isInvalid={!!errors.application_no}>
           <FormLabel>Application no</FormLabel>

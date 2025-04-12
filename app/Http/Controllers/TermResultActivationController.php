@@ -169,7 +169,8 @@ class TermResultActivationController extends Controller
     if (!$pin->term_result_id) {
       return true;
     }
-    return $pin->termResult->academic_session_id ===
+    return ($pin->academic_session_id ??
+      $pin->termResult->academic_session_id) ===
       $termResult->academic_session_id;
   }
 }

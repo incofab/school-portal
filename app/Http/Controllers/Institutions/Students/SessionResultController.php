@@ -26,9 +26,7 @@ class SessionResultController extends Controller
   {
     $currentUser = currentUser();
     $query = $this->getQuery($currentUser);
-    SessionResultUITableFilters::make($request->all(), $query)
-      ->filterQuery()
-      ->sortQuery();
+    SessionResultUITableFilters::make($request->all(), $query)->filterQuery();
     $query->with('student.user', 'classification', 'academicSession');
 
     return inertia('institutions/list-session-results', [

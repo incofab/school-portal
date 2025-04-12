@@ -142,8 +142,9 @@ class StudentManagementController extends Controller
     $student->delete();
     $institutionUser->delete();
     if (
-      $user
-        ->institutionUsers()
+      DB::table('institution_users')
+        ->where('user_id', $user->id)
+        ->where('deleted_at', null)
         ->get()
         ->count() < 1
     ) {

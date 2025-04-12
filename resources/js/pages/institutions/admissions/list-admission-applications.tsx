@@ -45,9 +45,17 @@ export default function ListAdmissionApplication({
       label: 'Last Name',
       value: 'last_name',
     },
+    // {
+    //   label: 'Intended Class',
+    //   value: 'intended_class_of_admission',
+    // },
     {
-      label: 'Intended Class',
-      value: 'intended_class_of_admission',
+      label: 'Application No',
+      value: 'application_no',
+    },
+    {
+      label: 'Form',
+      value: 'admission_form.title',
     },
     {
       label: 'Admission Status',

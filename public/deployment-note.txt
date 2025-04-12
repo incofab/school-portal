@@ -8,3 +8,5 @@
 ** Create event_participants table to move classes and groups out of events table
 
 ** Make the type column in the event table an index
+
+** Allow free admission forms with price 0

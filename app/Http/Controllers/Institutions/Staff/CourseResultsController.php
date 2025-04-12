@@ -146,7 +146,10 @@ class CourseResultsController extends Controller
         $courseResult->teacher_user_id == $currentUser->id,
       403
     );
-    $courseResult->load('student.classification');
+    $courseResult->load([
+      'student' => fn($q) => $q->withTrashed(),
+      'student.classification'
+    ]);
     $classification = $courseResult->student->classification;
 
     $courseId = $courseResult->course_id;

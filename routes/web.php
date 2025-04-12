@@ -56,7 +56,7 @@ Route::group(['prefix' => '{institution}/admissions/', 'as' => 'institutions.'],
         ->name('admissions.letter');
     Route::get('/{admissionApplication}/preview', [Admissions\AdmissionApplicationController::class, 'previewAdmissionApplication'])
         ->name('admission-applications.preview');
-    Route::post('/admission-forms/{admissionForm}/buy/{admissionApplication?}', [Admissions\AdmissionApplicationController::class, 'buyAdmissionForm'])
+    Route::any('/admission-forms/{admissionForm}/buy/{admissionApplication?}', [Admissions\AdmissionApplicationController::class, 'buyAdmissionForm'])
         ->name('admission-forms.buy');
 });
 

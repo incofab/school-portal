@@ -8,6 +8,7 @@ use App\Models\Institution;
 use App\Models\Student;
 
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\assertDatabaseMissing;
 
 beforeEach(function () {
   $this->institution = Institution::factory()->create();
@@ -127,4 +128,20 @@ it('records course result for multiple students', function () {
     ->exam->toBe(floatval(30))
     ->result->toBe(floatval(30 + 10 + 10));
   expect(count($courseResult2['assessment_values']))->toBe(2);
+});
+
+it('deletes an existing course result', function () {
+  [$c1, $c2] = CourseResult::factory(2)
+    ->withInstitution($this->institution)
+    ->create();
+
+  actingAs($this->instAdmin)
+    ->deleteJson(
+      route('institutions.course-results.destroy', [
+        $this->institution->uuid,
+        $c1
+      ])
+    )
+    ->assertOk();
+  assertDatabaseMissing('course_results', ['id' => $c1->id]);
 });
