@@ -41,7 +41,7 @@ import ChangeStudentClassModal from '@/components/modals/change-student-class-mo
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import DownloadResultRecordingSheetModal from '@/components/modals/download-result-recording-sheet-modal';
 import useIsStaff from '@/hooks/use-is-staff';
-import { InertiaLink } from '@inertiajs/inertia-react';
+import { InertiaLink } from '@inertiajs/inertia-react'; 
 
 interface Props {
   user: User;

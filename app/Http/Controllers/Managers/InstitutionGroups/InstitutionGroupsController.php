@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Managers\InstitutionGroups;
 
 use App\Actions\RegisterInstitutionGroup;
+use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
+use App\Models\Institution;
 use App\Models\InstitutionGroup;
 use App\Models\User;
 use DB;
 use Illuminate\Http\Request;
+use Storage;
 use Inertia\Inertia;
 
 class InstitutionGroupsController extends Controller
@@ -83,12 +86,53 @@ class InstitutionGroupsController extends Controller
     ]);
   }
 
+  public function uploadBanner(
+    Request $request,
+    InstitutionGroup $institutionGroup
+  ) {
+    $request->validate([
+      'banner' => [
+        'required',
+        'image',
+        'mimes:jpg,png,jpeg',
+        'max:1024',
+
+        function ($attribute, $value, $fail) {
+          $image = getimagesize($value);
+          $width = 1500;
+          $height = 860;
+
+          if ($image[0] !== $width) {
+            $fail("The $attribute width must be $width pixels.");
+          }
+
+          if ($image[1] !== $height) {
+            $fail("The $attribute height must be $height pixels.");
+          }
+        }
+      ]
+    ]);
+
+    $imagePath = $request->banner->store(
+      S3Folder::InstitutionGroupBanners->value,
+      's3_public'
+    );
+    $publicUrl = Storage::disk('s3_public')->url($imagePath);
+
+    $institutionGroup->fill(['banner' => $publicUrl])->save();
+
+    return response()->json([
+      'url' => $publicUrl
+    ]);
+  }
+
   function update(Request $request, InstitutionGroup $institutionGroup)
   {
     $this->authorize('update', $institutionGroup);
     $data = $request->validate([
       'name' => ['required', 'string', 'max:255'],
-      'loan_limit' => ['required', 'integer', 'min:0']
+      'loan_limit' => ['required', 'integer', 'min:0'],
+      'website' => ['required', 'string', 'max:50']
     ]);
     $institutionGroup->update($data);
     return $this->ok();

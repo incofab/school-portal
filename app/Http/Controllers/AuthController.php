@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\InstitutionBackgroundImage;
+use App\Models\Institution;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +16,9 @@ class AuthController extends Controller
 {
   public function showLogin()
   {
-    return Inertia::render('auth/login');
+    return Inertia::render('auth/login', [
+      'imageUrl' => InstitutionBackgroundImage::getBackgroundImage()
+    ]);
   }
 
   public function login()
@@ -37,7 +41,9 @@ class AuthController extends Controller
 
   public function showForgotPassword()
   {
-    return Inertia::render('auth/forgot-password');
+    return Inertia::render('auth/forgot-password', [
+      'imageUrl' => InstitutionBackgroundImage::getBackgroundImage()
+    ]);
   }
 
   public function forgotPassword()
@@ -57,7 +63,8 @@ class AuthController extends Controller
   {
     return Inertia::render('auth/reset-password', [
       'email' => request()->email,
-      'token' => $token
+      'token' => $token,
+      'imageUrl' => InstitutionBackgroundImage::getBackgroundImage()
     ]);
   }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\InstitutionBackgroundImage;
 use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -10,7 +11,9 @@ class StudentAuthController extends Controller
 {
   public function showLogin()
   {
-    return Inertia::render('auth/student-login');
+    return Inertia::render('auth/student-login', [
+      'imageUrl' => InstitutionBackgroundImage::getBackgroundImage()
+    ]);
   }
 
   public function login()
