@@ -10,7 +10,7 @@ import FormControlBox from '@/components/forms/form-control-box';
 import { BrandButton } from '@/components/buttons';
 import CenteredLayout from '@/components/centered-layout';
 
-export default function StudentLogin() {
+export default function StudentLogin({ imageUrl }: { imageUrl?: string }) {
   const { toastError, toastSuccess } = useMyToast();
   const [shouldEnterPassword, setShouldEnterPassword] = useState(false);
   const form = useWebForm({
@@ -43,7 +43,7 @@ export default function StudentLogin() {
   }
 
   return (
-    <CenteredLayout title="Student Login">
+    <CenteredLayout title="Student Login" bgImage={imageUrl}>
       <VStack
         spacing={4}
         align={'stretch'}

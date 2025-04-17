@@ -19,7 +19,13 @@ import PasswordInput from '@/components/password-input';
 import CenteredLayout from '@/components/centered-layout';
 import { Institution } from '@/types/models';
 
-export default function Login({ institution }: { institution?: Institution }) {
+export default function Login({
+  institution,
+  imageUrl,
+}: {
+  institution?: Institution;
+  imageUrl?: string;
+}) {
   const { message, csrfToken } = useSharedProps();
   const toast = useToast();
   const form = useForm({
@@ -71,7 +77,11 @@ export default function Login({ institution }: { institution?: Institution }) {
   }, [csrfToken]);
 
   return (
-    <CenteredLayout title="Login">
+    <CenteredLayout
+      title="Login"
+      bgImage={imageUrl}
+      boxProps={{ opacity: 0.92 }}
+    >
       <VStack
         spacing={4}
         align={'stretch'}

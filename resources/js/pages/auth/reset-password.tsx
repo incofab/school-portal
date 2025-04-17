@@ -18,9 +18,10 @@ import CenteredLayout from '@/components/centered-layout';
 interface Props {
   email: string;
   token: string;
+  imageUrl?: string;
 }
 
-export default function ResetPassword({ email, token }: Props) {
+export default function ResetPassword({ email, token, imageUrl }: Props) {
   const form = useForm({
     password: '',
     password_confirmation: '',
@@ -41,7 +42,7 @@ export default function ResetPassword({ email, token }: Props) {
   }
 
   return (
-    <CenteredLayout title="Reset Password">
+    <CenteredLayout title="Reset Password" bgImage={imageUrl}>
       <form onSubmit={preventNativeSubmit(handleSubmit)}>
         <FormControl isRequired mb={6} isInvalid={!!form.errors.email}>
           <FormLabel>Email:</FormLabel>

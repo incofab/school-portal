@@ -52,7 +52,7 @@ class UpdateInstitutionUserController extends Controller
     ]);
   }
 
-  // Mainly for staff, students are editted elsewhere
+  // Mainly for staff, students are editted elsewhere 
   function update(
     CreateStaffRequest $request,
     Institution $institution,

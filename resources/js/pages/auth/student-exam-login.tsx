@@ -13,7 +13,7 @@ import { useForm } from '@inertiajs/react';
 import { preventNativeSubmit } from '@/util/util';
 import route from '@/util/route';
 
-export default function StudentExamLogin() {
+export default function StudentExamLogin({ imageUrl }: { imageUrl?: string }) {
   const { data, setData, post, processing, errors } = useForm({
     student_code: '',
     event_code: '',
@@ -24,7 +24,7 @@ export default function StudentExamLogin() {
   };
 
   return (
-    <CenteredLayout title="Student Login">
+    <CenteredLayout title="Student Login" bgImage={imageUrl}>
       <VStack
         spacing={4}
         align={'stretch'}
