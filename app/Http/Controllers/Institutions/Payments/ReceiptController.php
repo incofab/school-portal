@@ -3,8 +3,8 @@ namespace App\Http\Controllers\Institutions\Payments;
 
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
+use App\Models\Institution;
 use App\Models\Receipt;
-use App\Models\ReceiptType;
 use App\Support\UITableFilters\ReceiptUITableFilters;
 
 class ReceiptController extends Controller
@@ -17,30 +17,41 @@ class ReceiptController extends Controller
     ]);
   }
 
-  function index()
+  function index(Institution $institution)
   {
-    $query = ReceiptUITableFilters::make(request()->all(), Receipt::query())
+    $query = ReceiptUITableFilters::make(
+      request()->all(),
+      Receipt::query()->select('receipts.*')
+    )
       ->filterQuery()
       ->getQuery();
 
     $numOfPayments = (clone $query)->count('receipts.id');
-    $totalAmountPaid = (clone $query)->sum('receipts.total_amount');
+    $totalAmountPaid = (clone $query)->sum('receipts.amount_paid');
+    $totalAmountRemaining = (clone $query)->sum('receipts.amount_remaining');
 
     $query
-      ->with(
-        // 'user.institutionUser.student',
-        'user.student',
-        'academicSession',
-        'approvedBy',
-        'receiptType'
-      )
+      ->with('user.student', 'academicSession', 'fee')
       ->withCount('feePayments');
-    // dd(json_encode($query->get(), JSON_PRETTY_PRINT));
+
     return inertia('institutions/payments/list-receipts', [
-      'receiptTypes' => ReceiptType::query()->get(),
       'receipts' => paginateFromRequest($query->latest('id')),
       'num_of_payments' => $numOfPayments,
-      'total_amount_paid' => $totalAmountPaid
+      'total_amount_paid' => $totalAmountPaid,
+      'total_amount_remaining' => $totalAmountRemaining
+    ]);
+  }
+
+  function show(Institution $institution, Receipt $receipt)
+  {
+    return inertia('institutions/payments/show-receipt', [
+      'receipt' => $receipt->load(
+        'user',
+        'academicSession',
+        'fee',
+        'feePayments.confirmedBy',
+        'feePayments.payable'
+      )
     ]);
   }
 }

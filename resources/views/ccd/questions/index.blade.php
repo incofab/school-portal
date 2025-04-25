@@ -14,7 +14,7 @@
 			<div class="tile-title p-2">
 				<div class="clearfix">
 					<div class="float-left">All Questions for {{$courseable->getName()}}</div>
-					<a href="{{instRoute('questions.create', [$courseable])}}" class="btn btn-success float-right" >
+					<a href="{{instRoute('questions.create', [$courseable->getMorphedId()])}}" class="btn btn-success float-right" >
 						<i class="fa fa-plus"></i> New
 					</a>
 				</div>

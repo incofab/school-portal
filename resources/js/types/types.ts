@@ -1,9 +1,18 @@
 // import { useColorModeValue } from '@chakra-ui/react';
-import { AdmissionApplication, Student, TokenUser, User } from './models';
+import {
+  AdmissionApplication,
+  Classification,
+  ClassificationGroup,
+  Institution,
+  Student,
+  TokenUser,
+  User,
+} from './models';
 
 export type Nullable<T> = T | null;
 export type KeyValue<T = string> = { [key: string]: T };
 export type GenericUser = TokenUser | User | Student | AdmissionApplication;
+export type Feeable = Classification | ClassificationGroup | Institution;
 export type Examable = GenericUser;
 
 // export const bgWhite = useColorModeValue('white', 'gray.900');
@@ -260,4 +269,16 @@ export interface TimetableCell {
     coordinator_user_id?: number;
     coordinator_name?: string;
   }[];
+}
+
+export interface FeeItem {
+  title: string;
+  amount: number;
+}
+
+export enum FeeCategoryType {
+  Institution = 'institution',
+  Classification = 'classification',
+  ClassificationGroup = 'classification-group',
+  Association = 'association',
 }

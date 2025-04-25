@@ -8,6 +8,7 @@ use App\Enums\ManagerRole;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Validation\Rules\Enum;
@@ -95,17 +96,20 @@ class User extends Authenticatable
     )->withTimestamps();
   }
 
-  function institutionUsers()
+  function institutionUsers(): HasMany
   {
     return $this->hasMany(InstitutionUser::class);
   }
 
   function institutionUser()
   {
-    return $this->institutionUsers()
-      ->where('institution_id', currentInstitution()->id)
-      ->with('student');
-  } 
+    return $this->hasOne(InstitutionUser::class)
+      ->latestOfMany()
+      ->where('institution_id', currentInstitution()->id);
+    // return $this->institutionUsers()
+    //   ->where('institution_id', currentInstitution()->id)
+    //   ->with('student');
+  }
 
   function courseTeachers()
   {
@@ -200,5 +204,10 @@ class User extends Authenticatable
   function guardianStudents()
   {
     return $this->hasMany(GuardianStudent::class, 'guardian_user_id', 'id');
+  }
+
+  function receipts()
+  {
+    return $this->hasMany(Receipt::class);
   }
 }

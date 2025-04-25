@@ -3,9 +3,6 @@ import useSharedProps from '@/hooks/use-shared-props';
 import SideBarToggleButton from './sidebar-toggle-button';
 import {
   HStack,
-  Input,
-  InputGroup,
-  InputLeftElement,
   Icon,
   Spacer,
   Text,
@@ -20,13 +17,14 @@ import {
 } from '@chakra-ui/react';
 import {
   BellIcon,
-  MagnifyingGlassIcon,
   MoonIcon,
   SunIcon,
   UserIcon,
 } from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import route from '@/util/route';
+import { Div } from '@/components/semantic';
+import startCase from 'lodash/startCase';
 
 export default function DashboardHeader() {
   const { currentUser } = useSharedProps();
@@ -38,7 +36,8 @@ export default function DashboardHeader() {
       boxShadow={'0px 2px 6px rgba(0, 0, 0, 0.1)'}
     >
       <SideBarToggleButton />
-      <InputGroup
+      <TermSessionDisplay />
+      {/* <InputGroup
         maxWidth={'300px'}
         size={'xs'}
         ml={2}
@@ -49,7 +48,7 @@ export default function DashboardHeader() {
           children={<Icon as={MagnifyingGlassIcon} color="gray.300" />}
         />
         <Input type="text" placeholder="Search..." />
-      </InputGroup>
+      </InputGroup> */}
       <Spacer />
       <IconButton
         aria-label={'Toggle light and dark moon'}
@@ -85,5 +84,20 @@ export default function DashboardHeader() {
         </MenuList>
       </Menu>
     </HStack>
+  );
+}
+
+function TermSessionDisplay() {
+  const { currentTerm, currentAcademicSession, currentInstitution } =
+    useSharedProps();
+
+  if (!currentInstitution) return <></>;
+
+  return (
+    <Div>
+      <Text as={'span'} fontWeight={'bold'}>
+        {startCase(currentTerm)} Term, {currentAcademicSession.title} Session
+      </Text>
+    </Div>
   );
 }

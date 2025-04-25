@@ -1,14 +1,19 @@
 <?php
 
 use App\Enums\NotificationChannelsType;
-use App\Enums\NotificationReceiversType;
 use App\Enums\SchoolNotificationPurpose;
 use App\Models\Classification;
+use App\Models\Fee;
+use App\Models\FeeCategory;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
-use App\Models\ReceiptType;
+use App\Models\Receipt;
 use App\Models\SchoolNotification;
 use App\Models\Student;
+use App\Models\User;
+use App\Support\MorphMap;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 
@@ -17,6 +22,7 @@ use function Pest\Laravel\assertDatabaseHas;
  */
 
 beforeEach(function () {
+  Mail::fake();
   $this->institution = Institution::factory()->create();
   $this->institutionUser = InstitutionUser::factory()
     ->withInstitution($this->institution)
@@ -24,17 +30,7 @@ beforeEach(function () {
   $this->admin = $this->institution->createdBy;
   $this->user = $this->institutionUser->user;
 
-  $this->student = Student::factory()
-    ->withInstitution($this->institution)
-    ->create();
-
-  $this->classification = Classification::factory(3)
-    ->for($this->institution)
-    ->create();
-
-  $this->classificationIds = $this->classification->pluck('id')->toArray();
-
-  $this->receiptType = ReceiptType::factory()
+  $this->fee = Fee::factory()
     ->institution($this->institution)
     ->create();
 });
@@ -48,159 +44,70 @@ it('can render the create payment notification page', function () {
   $response->assertInertia(
     fn($assert) => $assert
       ->component('institutions/payment-notifications/create-notification')
-      ->has('receiptTypes')
-      ->has('classification')
+      ->has('fees')
   );
 });
 
-it('can store a payment notification for all students', function () {
+it('can store a payment notification for all owing students', function () {
+  $classification = Classification::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  [$student1, $student2, $student3] = Student::factory(3)
+    ->withInstitution($this->institution, $classification)
+    ->guardian($this->institution)
+    ->create();
+
+  $feeCategory = FeeCategory::factory()
+    ->fee($this->fee)
+    ->feeable($classification)
+    ->create();
+
+  // Users how have paid will be exempted
+  Receipt::factory()
+    ->fee($this->fee)
+    ->student($student3)
+    ->create([
+      'amount' => $this->fee->amount,
+      'amount_remaining' => 0,
+      'amount_paid' => $this->fee->amount
+    ]);
+
+  Receipt::factory()
+    ->fee($this->fee)
+    ->student($student1)
+    ->create([
+      'amount' => $this->fee->amount,
+      'amount_remaining' => 100,
+      'amount_paid' => $this->fee->amount - 100
+    ]);
+
   //== Data
   $data = [
-    'receipt_type_id' => $this->receiptType->id,
-    'reference' => fake()
-      ->unique()
-      ->word(),
-    'receiver' => NotificationReceiversType::AllClasses->value,
-    'classification_ids' => null,
+    'fee_id' => $this->fee->id,
+    'reference' => Str::orderedUuid(),
     'channel' => NotificationChannelsType::Email->value
   ];
 
-  //== Query
-  $response = actingAs($this->admin)->postJson(
-    route('institutions.payment-notifications.store', $this->institution),
-    $data
-  );
+  actingAs($this->admin)
+    ->postJson(
+      route('institutions.payment-notifications.store', $this->institution),
+      $data
+    )
+    ->assertOk();
 
-  //==
-  if ($data['receiver'] === NotificationReceiversType::AllClasses->value) {
-    $receiverType = 'classification-group';
-  }
-
-  if ($data['receiver'] === NotificationReceiversType::SpecificClass->value) {
-    $receiverType = 'classification';
-  }
-
-  //== Assert
-  $response->assertOk();
   assertDatabaseHas('school_notifications', [
     'reference' => $data['reference'],
     'sender_user_id' => $this->admin->id,
-    'receiver_type' => $receiverType,
-    'institution_id' => $this->institution->id,
-    'purpose' => SchoolNotificationPurpose::Receipt->value
-  ]);
-});
-
-it('can store a payment notification for specific class', function () {
-  //== Data
-  $data = [
-    'receipt_type_id' => $this->receiptType->id,
-    'reference' => fake()
-      ->unique()
-      ->word(),
-    'receiver' => NotificationReceiversType::SpecificClass->value,
-    'classification_ids' => $this->classificationIds,
-    'channel' => NotificationChannelsType::Email->value
-  ];
-
-  //== Query
-  $response = actingAs($this->admin)->postJson(
-    route('institutions.payment-notifications.store', $this->institution),
-    $data
-  );
-
-  //==
-  if ($data['receiver'] === NotificationReceiversType::AllClasses->value) {
-    $receiverType = 'classification-group';
-  }
-
-  if ($data['receiver'] === NotificationReceiversType::SpecificClass->value) {
-    $receiverType = 'classification';
-  }
-
-  // Assert
-  $response->assertOk();
-  assertDatabaseHas('school_notifications', [
-    'reference' => $data['reference'],
-    'sender_user_id' => $this->admin->id,
-    'receiver_type' => $receiverType,
-    // 'receiver_ids' => json_encode($this->classificationIds),
+    'receiver_type' => MorphMap::key(User::class),
     'institution_id' => $this->institution->id,
     'purpose' => SchoolNotificationPurpose::Receipt->value
   ]);
   expect(
-    SchoolNotification::where('reference', $data['reference'])->first()
-  )->receiver_ids->toMatchArray($this->classificationIds);
-});
-
-it(
-  'validates required fields when storing a payment notification',
-  function () {
-    // Arrange
-    $data = [];
-
-    // Act
-    $response = actingAs($this->admin)->postJson(
-      route('institutions.payment-notifications.store', $this->institution),
-      $data
-    );
-
-    // Assert
-    $response->assertStatus(422); //Validation Failed
-    $response->assertJsonValidationErrors([
-      'receipt_type_id',
-      'receiver',
-      'channel'
-    ]);
-  }
-);
-
-it('validates classification ids are valid', function () {
-  // Arrange
-  $data = [
-    'receipt_type_id' => $this->receiptType->id,
-    'reference' => fake()
-      ->unique()
-      ->word(),
-    'receiver' => NotificationReceiversType::SpecificClass->value,
-    'classification_ids' => [9999],
-    'channel' => NotificationChannelsType::Email->value
-  ];
-
-  // Act
-  $response = actingAs($this->admin)->postJson(
-    route('institutions.payment-notifications.store', $this->institution),
-    $data
-  );
-
-  // Assert
-  $response->assertStatus(422); //Validation Failed
-  $response->assertJsonValidationErrors(['classification_ids.0']);
-});
-
-it('validates reference is unique', function () {
-  // Arrange
-  $existingNotification = SchoolNotification::factory()->create([
-    'institution_id' => $this->institution->id,
-    'sender_user_id' => $this->admin->id
+    SchoolNotification::where('reference', $data['reference'])
+      ->first()
+      ->receiver_ids->toArray()
+  )->toEqualCanonicalizing([
+    $student1->guardian?->id,
+    $student2->guardian?->id
   ]);
-
-  $data = [
-    'receipt_type_id' => $this->receiptType->id,
-    'reference' => $existingNotification->reference,
-    'receiver' => NotificationReceiversType::SpecificClass->value,
-    'classification_ids' => $this->classificationIds,
-    'channel' => NotificationChannelsType::Email->value,
-    'receiver_ids' => null
-  ];
-
-  // Act
-  $response = actingAs($this->admin)->postJson(
-    route('institutions.payment-notifications.store', $this->institution),
-    $data
-  );
-
-  // Assert
-  $response->assertStatus(422); //Validation Failed
-  $response->assertJsonValidationErrors(['reference']);
 });

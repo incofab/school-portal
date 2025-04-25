@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ReceiptStatus;
 use App\Enums\TermType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,52 +17,42 @@ class Receipt extends Model
   public $casts = [
     'institution_id' => 'integer',
     'user_id' => 'integer',
-    'receipt_type_id' => 'integer',
+    'fee_id' => 'integer',
+    'amount_remaining' => 'float',
+    'amount_paid' => 'float',
+    'amount' => 'float',
+    'term' => TermType::class,
     'academic_session_id' => 'integer',
-    'classification_id' => 'integer',
-    'classification_group_id' => 'integer',
-    'approved_by_user_id' => 'integer',
-    'term' => TermType::class
+    'status' => ReceiptStatus::class
   ];
 
-  static function generateReference()
+  function paymentsSum()
   {
-    do {
-      $randomNumber = randomDigits(12);
-    } while (self::where('reference', $randomNumber)->exists());
-    return $randomNumber;
+    return $this->feePayments->sum(fn($item) => $item->amount);
   }
 
-  function receiptType()
-  {
-    return $this->belongsTo(ReceiptType::class);
-  }
   function user()
   {
     return $this->belongsTo(User::class);
   }
-  function approvedBy()
-  {
-    return $this->belongsTo(User::class, 'approved_by_user_id');
-  }
+
   function academicSession()
   {
     return $this->belongsTo(AcademicSession::class);
   }
-  function classification()
+
+  function fee()
   {
-    return $this->belongsTo(Classification::class);
+    return $this->belongsTo(Fee::class);
   }
-  function classificationGroup()
-  {
-    return $this->belongsTo(ClassificationGroup::class);
-  }
-  function institution()
-  {
-    return $this->belongsTo(Institution::class);
-  }
+
   function feePayments()
   {
     return $this->hasMany(FeePayment::class);
+  }
+
+  function institution()
+  {
+    return $this->belongsTo(Institution::class);
   }
 }

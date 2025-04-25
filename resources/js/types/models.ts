@@ -2,6 +2,8 @@ import {
   EventType,
   Examable,
   ExamAttempt,
+  Feeable,
+  FeeItem,
   InstitutionUserType,
   ManagerRole,
   TermType,
@@ -332,67 +334,53 @@ export interface CourseTeacher extends Row {
   classification?: Classification;
 }
 
-export interface ReceiptType extends InstitutionRow {
-  title: string;
-  descriptions: string;
-}
-
 export interface Fee extends InstitutionRow {
   title: string;
   amount: number;
   payment_interval: string;
-  receipt_type_id: number;
-  classification_group_id?: number;
-  classification_id?: number;
-  receipt_type?: ReceiptType;
-  classification?: Classification;
-  classification_group?: ClassificationGroup;
+  term?: string;
+  academic_session_id?: number;
+  fee_items?: FeeItem[];
+  academic_session?: AcademicSession;
+  fee_categories: FeeCategory[];
+}
+
+export interface FeeCategory extends InstitutionRow {
+  fee_id: number;
+  feeable_type: string;
+  feeable_id: number;
+  fee?: Fee;
+  feeable?: Feeable;
 }
 
 export interface Receipt extends InstitutionRow {
-  receipt_type_id: number;
   user_id: number;
+  fee_id: number;
   academic_session_id?: number;
   term?: string;
-  reference: string;
-  title: string;
-  classification_id: number;
-  classification_group_id: number;
-  total_amount: number;
-  approved_at: string;
-  approved_by_user_id: number;
-  receipt_type?: ReceiptType;
-  user?: User;
+  amount: number;
+  amount_paid: number;
+  amount_remaining: number;
+  status?: string;
   academic_session: AcademicSession;
-  classification?: Classification;
-  classification_group?: ClassificationGroup;
   fee_payments?: FeePayment[];
+  user?: User;
+  fee?: Fee;
 }
 
 export interface FeePayment extends InstitutionRow {
   fee_id: number;
-  user_id: number;
   receipt_id: number;
-  academic_session_id: number;
-  term: string;
-  fee_amount: number;
-  amount_paid: number;
-  amount_remaining: number;
-  fee?: Fee;
-  user?: User;
-  academic_session: AcademicSession;
-  fee_payment_tracks?: FeePaymentTrack[];
-}
-
-export interface FeePaymentTrack extends Row {
-  fee_payment_id: number;
-  confirmed_by_user_id: number;
   amount: number;
-  reference: string;
+  confirmed_by_user_id?: number;
   method?: string;
-  transaction_reference?: string;
-  fee_payment?: FeePayment;
+  reference?: string;
+  fee?: Fee;
+  receipt?: Receipt;
   confirmed_by?: User;
+  payable_type: string;
+  payable_id: number;
+  payable?: User;
 }
 
 export interface InstitutionSetting extends InstitutionRow {
@@ -498,6 +486,18 @@ export interface GuardianStudent extends InstitutionRow {
   relationship: string;
   guardian?: User;
   student?: Student;
+}
+
+export interface Association extends InstitutionRow {
+  title: string;
+  description: string;
+}
+
+export interface UserAssociation extends InstitutionRow {
+  institution_user_id: number;
+  association_id: number;
+  institution_user?: InstitutionUser;
+  association?: Association;
 }
 
 export interface RegistrationRequest extends Row {
@@ -711,7 +711,7 @@ export interface FeesToPay extends Row {
 }
 
 export interface FeeSummary extends Row {
-  receipt_type: ReceiptType;
+  // receipt_type: ReceiptType;
   fees_to_pay: FeesToPay;
   total_amount_to_pay: number;
   total_amount_of_the_receipt_type: number;

@@ -37,6 +37,7 @@ class MorphMap
     'assessment' => Models\Assessment::class,
     'assignment' => Models\Assignment::class,
     'assignment-submission' => Models\AssignmentSubmission::class,
+    'association' => Models\Association::class,
     'attendance' => Models\Attendance::class,
     'classification' => Models\Classification::class,
     'classification-group' => Models\ClassificationGroup::class,
@@ -52,7 +53,6 @@ class MorphMap
     'exam-courseable' => Models\ExamCourseable::class,
     'fee' => Models\Fee::class,
     'fee-payment' => Models\FeePayment::class,
-    'fee-payment-track' => Models\FeePaymentTrack::class,
     'funding' => Models\Funding::class,
     'guardian-student' => Models\GuardianStudent::class,
     'institution' => Models\Institution::class,
@@ -70,7 +70,6 @@ class MorphMap
     'pin-generator' => Models\PinGenerator::class,
     'question' => Models\Question::class,
     'receipt' => Models\Receipt::class,
-    'receipt-type' => Models\ReceiptType::class,
     'registration-request' => Models\RegistrationRequest::class,
     'result-comment-template' => Models\ResultCommentTemplate::class,
     'result-publication' => Models\ResultPublication::class,
@@ -84,6 +83,7 @@ class MorphMap
     'token-user' => Models\TokenUser::class,
     'topic' => Models\Topic::class,
     'transaction' => Models\Transaction::class,
-    'user' => Models\User::class
+    'user' => Models\User::class,
+    'user-association' => Models\UserAssociation::class
   ];
 }

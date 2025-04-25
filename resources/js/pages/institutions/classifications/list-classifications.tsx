@@ -176,6 +176,15 @@ export default function ListClassification({ classifications }: Props) {
                     </MenuItem>
                     <MenuItem
                       as={InertiaLink}
+                      href={instRoute('user-associations.create', [
+                        'classification',
+                        row.id,
+                      ])}
+                    >
+                      Add to Divisions
+                    </MenuItem>
+                    <MenuItem
+                      as={InertiaLink}
                       href={instRoute('pins.classification.student-pin-tiles', [
                         row,
                       ])}

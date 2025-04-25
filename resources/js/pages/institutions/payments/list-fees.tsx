@@ -1,6 +1,6 @@
 import React from 'react';
 import { Fee } from '@/types/models';
-import { HStack, IconButton, Icon } from '@chakra-ui/react';
+import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -16,6 +16,10 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
+import { formatAsCurrency } from '@/util/util';
+import feeableUtil from '@/util/feeable-util';
+import { Div } from '@/components/semantic';
+import { LabelText } from '@/components/result-helper-components';
 
 interface Props {
   fees: PaginationResponse<Fee>;
@@ -41,20 +45,30 @@ export default function ListFees({ fees }: Props) {
       value: 'title',
     },
     {
-      label: 'Receipt Category',
-      value: 'receipt_type.title',
-    },
-    {
       label: 'Amount',
       value: 'amount',
     },
     {
-      label: 'Class Group',
-      value: 'classification_group.title',
+      label: 'Items',
+      render: (row) => (
+        <Div>
+          {row.fee_items?.map((item) => (
+            <LabelText
+              key={item.title}
+              label={item.title}
+              text={formatAsCurrency(item.amount)}
+            />
+          ))}
+        </Div>
+      ),
+      // .join(', ')}`,
     },
     {
-      label: 'Class',
-      value: 'classification.title',
+      label: 'Sectors',
+      render: (row) =>
+        row.fee_categories
+          ?.map((item) => feeableUtil(item.feeable).getName())
+          .join(', '),
     },
     {
       label: 'Interval',

@@ -21,7 +21,6 @@ import {
   CurrencyDollarIcon,
 } from '@heroicons/react/24/solid';
 import { InstitutionUserType } from '@/types/types';
-import useIsStaff from '@/hooks/use-is-staff';
 import useInstitutionRole from '@/hooks/use-institution-role';
 import { InstitutionGroup } from '@/types/models';
 import { formatAsCurrency } from '@/util/util';

@@ -379,6 +379,11 @@ export default function SideBarLayout() {
           route: instRoute('result-publications.index'),
           roles: [InstitutionUserType.Admin],
         },
+        {
+          label: 'Student/Staff Divisions',
+          route: instRoute('associations.index'),
+          roles: [InstitutionUserType.Admin],
+        },
       ],
     },
     {
@@ -407,13 +412,8 @@ export default function SideBarLayout() {
       roles: [...accountant, ...studentOrAlumni],
       sub_items: [
         {
-          label: 'Fee Types',
+          label: 'Fees',
           route: instRoute('fees.index'),
-          roles: accountant,
-        },
-        {
-          label: 'Add Fee Type',
-          route: instRoute('fees.create'),
           roles: accountant,
         },
         {
@@ -430,21 +430,16 @@ export default function SideBarLayout() {
           ? [
               {
                 label: 'Receipts',
-                route: instRoute('students.receipts.index', [student]),
+                route: instRoute('students.receipts.index', [student.id]),
                 roles: studentOrAlumni,
               },
               {
                 label: 'Pay Fees',
-                route: instRoute('students.fee-payments.create', [student]),
+                route: instRoute('students.fee-payments.create', [student.id]),
                 roles: studentOrAlumni,
               },
             ]
           : []),
-        {
-          label: 'Receipt Types',
-          route: instRoute('receipt-types.index'),
-          roles: accountant,
-        },
       ],
     },
     {

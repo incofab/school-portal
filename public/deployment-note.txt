@@ -10,3 +10,22 @@
 ** Make the type column in the event table an index
 
 ** Allow free admission forms with price 0
+
+associations
+id, institution_id, title, description
+
+user_associations table
+id, institution_id, institution_user_id, association_id
+
+#Fees rework
+fees table
+id, institution_id, title, amount, payment_interval, term, academic_session_id, fee_items
+
+fee_categories_table
+id, institution_id, fee_id, feeable_type, feeable_id
+
+fee_payments table
+id, institution_id, fee_id, amount, confirmed_by_user_id, channel, reference
+
+receipts table
+id, institution_id, fee_id, user_id, amount_paid, amount_remaining, status, term, academic_session_id

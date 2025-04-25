@@ -230,14 +230,13 @@ Route::post('/pin-generators/store', [Web\Pins\PinGeneratorController::class, 's
 
 Route::get('/fees/search', [Web\Payments\FeeController::class, 'search'])->name('fees.search');
 Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
-Route::get('/fee-payments/multi', [Web\Payments\MultiFeePaymentController::class, 'create'])->name('fee-payments.multi-fee-payment.create');
-Route::post('/fee-payments/multi', [Web\Payments\MultiFeePaymentController::class, 'store'])->name('fee-payments.multi-fee-payment.store');
+
 Route::get('/fee-payments/download/{classification}/{receiptType}', [Web\Payments\FeePaymentController::class, 'download'])->name('fee-payments.download');
 Route::post('/fee-payments/upload', [Web\Payments\FeePaymentController::class, 'upload'])->name('fee-payments.upload');
-Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['edit', 'update']);
-Route::get('/receipt-types/search', [Web\Payments\ReceiptTypeController::class, 'search'])->name('receipt-types.search');
-Route::resource('/receipt-types', Web\Payments\ReceiptTypeController::class)->except(['edit', 'create']);
+Route::get('/fee-payments/index/{fee?}', [Web\Payments\FeePaymentController::class, 'index'])->name('fee-payments.index');
+Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['index', 'edit', 'update']);
 Route::get('/receipts', [Web\Payments\ReceiptController::class, 'index'])->name('receipts.index');
+Route::get('/receipts/{receipt}', [Web\Payments\ReceiptController::class, 'show'])->name('receipts.show');
 
 Route::get('/settings/search', [Web\InstitutionSettingController::class, 'search'])->name('settings.search');
 Route::resource('/settings', Web\InstitutionSettingController::class)->only(['index', 'create', 'store']);
@@ -282,6 +281,14 @@ Route::post('/admission-applications/{admissionApplication}/update-status', [Web
   ->name('admission-applications.update-status');
 
 Route::resource('admission-forms', Web\Admissions\AdmissionFormController::class);
+
+Route::resource('associations', Web\Associations\AssociationController::class)->except('edit', 'create');
+
+Route::get('user-associations/index/{association}', [Web\Associations\UserAssociationController::class, 'index'])->name('user-associations.index');
+Route::get('user-associations/create/{morphClass?}/{morphId?}', [Web\Associations\UserAssociationController::class, 'create'])->name('user-associations.create');
+Route::post('user-associations/store', [Web\Associations\UserAssociationController::class, 'store'])->name('user-associations.store');
+Route::delete('user-associations/{userAssociation}/destroy', [Web\Associations\UserAssociationController::class, 'destroy'])->name('user-associations.destroy');
+
 
 include base_path('routes/assignment.php');
 include base_path('routes/attendance.php');

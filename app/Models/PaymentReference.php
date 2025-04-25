@@ -60,7 +60,7 @@ class PaymentReference extends Model
   }
 
   /**
-   * The entity being paid for, it is nullable
+   * The entity this payment is meant for, it is nullable
    * Morphs to AdmissionForm|null
    */
   function paymentable()

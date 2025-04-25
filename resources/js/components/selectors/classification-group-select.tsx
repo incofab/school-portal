@@ -1,11 +1,17 @@
 import React from 'react';
 import { ClassificationGroup } from '@/types/models';
-import { Props } from 'react-select';
+import { MultiValue, Props } from 'react-select';
 import SingleQuerySelect from '../dropdown-select/single-query-select';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import { SelectOptionType } from '@/types/types';
 
 interface MyProps {
-  selectValue?: number | string;
+  selectValue?:
+    | string
+    | number
+    | SelectOptionType<number>
+    | MultiValue<SelectOptionType<number>>
+    | null;
   classificationGroups: ClassificationGroup[];
 }
 

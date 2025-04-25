@@ -97,7 +97,10 @@ export function getSelectOption(
     : ({} as Nullable<SelectOptionType<number>>);
 }
 
-export function generateRandomString(length: number = 10): string {
+export function generateRandomString(
+  length: number = 10,
+  addPrecision: boolean = false
+): string {
   const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
@@ -106,7 +109,9 @@ export function generateRandomString(length: number = 10): string {
     const randomIndex = Math.floor(Math.random() * characters.length);
     result += characters.charAt(randomIndex);
   }
-
+  if (addPrecision) {
+    result = `${Date.now().toPrecision()}${result}`;
+  }
   return result;
 }
 

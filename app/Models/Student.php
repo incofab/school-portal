@@ -30,6 +30,19 @@ class Student extends Model
     return new StudentQueryBuilder($query);
   }
 
+  function studentFees($allFees = null)
+  {
+    $allFees = $allFees ?? Fee::all();
+    $studentFees = [];
+    /** @var Fee $fee */
+    foreach ($allFees as $key => $fee) {
+      if ($fee->forStudent($this, $this->classification)) {
+        $studentFees[] = $fee;
+      }
+    }
+    return $studentFees;
+  }
+
   static function generateStudentID()
   {
     $prefix = date('Y');
