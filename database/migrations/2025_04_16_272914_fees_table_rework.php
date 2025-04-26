@@ -1,6 +1,5 @@
 <?php
 
-use App\Actions\Dummy\ReworkFees;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -8,11 +7,6 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
   public function up()
   {
-    if (!ReworkFees::make()->isBackedUp()) {
-      dd('You need to backup first');
-      return;
-    }
-
     Schema::dropIfExists('fee_payment_tracks');
     Schema::dropIfExists('fee_payments');
     Schema::dropIfExists('receipts');

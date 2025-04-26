@@ -162,6 +162,7 @@ class ReworkFees
       $formatted[] = [
         'Institution' => $receipt->institution->name,
         'ReceiptType' => $receipt->receiptType->title,
+        'User Id' => $receipt->user_id,
         'Student' => $receipt->user->full_name,
         'Amount' => $receipt->total_amount,
         'Term' => $receipt->term->value,
