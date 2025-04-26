@@ -16,7 +16,7 @@ import { preventNativeSubmit } from '@/util/util';
 import route from '@/util/route';
 import CenteredLayout from '@/components/centered-layout';
 
-export default function ForgotPassword() {
+export default function ForgotPassword({ imageUrl }: { imageUrl?: string }) {
   const toast = useToast();
   const form = useForm({
     email: '',
@@ -34,7 +34,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <CenteredLayout title="Forgot Password">
+    <CenteredLayout title="Forgot Password" bgImage={imageUrl}>
       <form onSubmit={preventNativeSubmit(handleSubmit)}>
         <FormControl mb={6} isRequired isInvalid={!!form.errors.email}>
           <FormLabel>Email</FormLabel>

@@ -23,6 +23,8 @@ Route::get('/institution-groups/search', [Web\InstitutionGroups\InstitutionGroup
     ->name('institution-groups.search');
 Route::resource('institution-groups', Web\InstitutionGroups\InstitutionGroupsController::class)
     ->except('show');
+Route::post('/institution-groups/{institution_group}/upload-photo', [Web\InstitutionGroups\InstitutionGroupsController::class, 'uploadBanner'])
+  ->name('institution-groups.upload-banner');
 
 Route::get('/registration-requests/search', [Web\RegistrationRequests\RegistrationRequestsController::class, 'search'])
     ->name('registration-requests.search');

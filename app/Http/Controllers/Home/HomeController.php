@@ -24,7 +24,9 @@ class HomeController extends Controller
    */
   public function index()
   {
+    $scheme = request()->getScheme(); // 'http' or 'https'
     $currentDomain = request()->getHost();
+
     $isForEdumanager =
       $currentDomain == 'localhost' ||
       str_contains($currentDomain, 'edumanager.ng');
@@ -33,7 +35,13 @@ class HomeController extends Controller
       return view('home.index', []);
     }
 
-    return redirect("$currentDomain/login");
+    //= Taking care of "localho.st:8000"
+    $currentDomain = str_contains($currentDomain, 'localho.st')
+      ? 'localho.st:8000'
+      : $currentDomain;
+
+    //= Return
+    return redirect()->away("$scheme://$currentDomain/login");
   }
 
   public function monnifyCheckout(Request $request)

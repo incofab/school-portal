@@ -54,6 +54,8 @@ export interface InstitutionGroup extends Row {
   credit_wallet: number;
   debt_wallet: number;
   loan_limit: number;
+  website: string;
+  banner: string;
   // wallet_balance: number;
 }
 export interface Institution extends Row {
