@@ -65,8 +65,9 @@ export default function CreateOrUpdateFee({
     title: fee?.title ?? '',
     amount: fee?.amount ?? '',
     payment_interval: fee?.payment_interval ?? FeePaymentInterval.Termly,
-    term: fee?.term ?? currentTerm,
-    academic_session_id: fee?.academic_session_id ?? currentAcademicSessionId,
+    term: fee?.term ?? currentTerm ?? '',
+    academic_session_id: (fee?.academic_session_id ??
+      currentAcademicSessionId) as number | string,
     fee_items: fee?.fee_items ?? [{ title: '', amount: 0 }],
     fee_categories:
       fee?.fee_categories.map((item) => ({
@@ -118,34 +119,52 @@ export default function CreateOrUpdateFee({
                 <EnumSelect
                   selectValue={webForm.data.payment_interval}
                   enumData={FeePaymentInterval}
-                  onChange={(e: any) =>
-                    webForm.setValue('payment_interval', e.value)
-                  }
+                  onChange={(e: any) => {
+                    const interval = e.value;
+                    webForm.setData({
+                      ...webForm.data,
+                      payment_interval: interval,
+                      academic_session_id:
+                        interval == FeePaymentInterval.OneTime
+                          ? ''
+                          : webForm.data.academic_session_id,
+                      term:
+                        interval == FeePaymentInterval.Termly
+                          ? webForm.data.term
+                          : '',
+                    });
+                  }}
                 />
               </FormControlBox>
-
-              <FormControlBox form={webForm as any} formKey="term" title="Term">
-                <EnumSelect
-                  selectValue={webForm.data.term}
-                  enumData={TermType}
-                  onChange={(e: any) => webForm.setValue('term', e.value)}
-                />
-              </FormControlBox>
-
-              <FormControlBox
-                form={webForm as any}
-                formKey="academic_session_id"
-                title="Academic Session"
-              >
-                <AcademicSessionSelect
-                  selectValue={webForm.data.academic_session_id}
-                  isMulti={false}
-                  isClearable={true}
-                  onChange={(e: any) =>
-                    webForm.setValue('academic_session_id', e?.value)
-                  }
-                />
-              </FormControlBox>
+              {webForm.data.payment_interval == FeePaymentInterval.Termly && (
+                <FormControlBox
+                  form={webForm as any}
+                  formKey="term"
+                  title="Term"
+                >
+                  <EnumSelect
+                    selectValue={webForm.data.term}
+                    enumData={TermType}
+                    onChange={(e: any) => webForm.setValue('term', e.value)}
+                  />
+                </FormControlBox>
+              )}
+              {webForm.data.payment_interval != FeePaymentInterval.OneTime && (
+                <FormControlBox
+                  form={webForm as any}
+                  formKey="academic_session_id"
+                  title="Academic Session"
+                >
+                  <AcademicSessionSelect
+                    selectValue={webForm.data.academic_session_id}
+                    isMulti={false}
+                    isClearable={true}
+                    onChange={(e: any) =>
+                      webForm.setValue('academic_session_id', e?.value)
+                    }
+                  />
+                </FormControlBox>
+              )}
 
               <FeeItems feeItems={webForm.data.fee_items} webForm={webForm} />
 

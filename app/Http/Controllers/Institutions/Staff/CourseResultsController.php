@@ -159,13 +159,15 @@ class CourseResultsController extends Controller
 
     $courseResult->delete();
 
-    EvaluateCourseResultForClass::run(
-      $classification,
-      $courseId,
-      $academicSessionId,
-      $term,
-      $forMidTerm
-    );
+    if ($classification) {
+      EvaluateCourseResultForClass::run(
+        $classification,
+        $courseId,
+        $academicSessionId,
+        $term,
+        $forMidTerm
+      );
+    }
 
     return $this->ok();
   }

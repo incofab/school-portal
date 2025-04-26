@@ -6,6 +6,7 @@ use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\Fee;
 use App\Models\FeePayment;
+use App\Models\Receipt;
 use App\Support\MorphMap;
 use DB;
 
@@ -103,7 +104,8 @@ class ReworkFees
   {
     $data = [];
     $receiptTypes = DB::table('receipt_types')
-      ->with('fees.feePayments')
+      // ->with('fees.feePayments')
+      ->latest('institution_id')
       ->get();
     foreach ($receiptTypes as $key => $receiptType) {
       $fees = Fee::query()
@@ -141,5 +143,41 @@ class ReworkFees
       $data[] = $feeData;
     }
     return $data;
+  }
+
+  function downloadPayments()
+  {
+    $receipts = \App\Models\Receipt::query()
+      ->with(
+        'receiptType',
+        'user',
+        'feePayments.fee',
+        'academicSession',
+        'classification'
+      )
+      ->oldest('institution_id')
+      ->get();
+    $formatted = [];
+    foreach ($receipts as $key => $receipt) {
+      $formatted[] = [
+        'Institution' => $receipt->institution->name,
+        'ReceiptType' => $receipt->receiptType->title,
+        'Student' => $receipt->user->full_name,
+        'Amount' => $receipt->total_amount,
+        'Term' => $receipt->term->value,
+        'Academic Session' => $receipt->academicSession?->title,
+        'Class' => $receipt->classification?->title,
+        'Reference' => $receipt->reference,
+        'Instalments' => $receipt->feePayments
+          ?->map(
+            fn($payment) => "{$payment->fee?->title} = {$payment->amount_paid}"
+          )
+          ->join(', ')
+      ];
+    }
+    return (new \App\Actions\GenericExport(
+      $formatted,
+      'receipts.xlsx'
+    ))->download();
   }
 }

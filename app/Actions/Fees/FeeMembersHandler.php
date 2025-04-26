@@ -17,7 +17,8 @@ class FeeMembersHandler
     $this->ids = [
       MorphMap::key(Classification::class) => [],
       MorphMap::key(ClassificationGroup::class) => [],
-      MorphMap::key(Institution::class) => []
+      MorphMap::key(Institution::class) => [],
+      MorphMap::key(Association::class) => []
     ];
   }
 

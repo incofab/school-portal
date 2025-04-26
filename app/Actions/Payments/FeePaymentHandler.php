@@ -23,9 +23,10 @@ class FeePaymentHandler
 
   /**
    * @param array{
-   *     reference: string,
-   *     user_id?: int|null,
-   *     amount: float,
+   *  reference: string,
+   *  user_id?: int|null,
+   *  amount: float,
+   *  method?: string
    * } $data
    */
   function create(

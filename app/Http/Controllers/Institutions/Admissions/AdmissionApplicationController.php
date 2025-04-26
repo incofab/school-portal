@@ -101,29 +101,6 @@ class AdmissionApplicationController extends Controller
     return $this->ok();
   }
 
-  /*
-  * Moved to preview previewAdmissionApplication() function
-  public function successMessage(
-    Institution $institution,
-    AdmissionApplication $admissionApplication
-  ) {
-    $admissionApplication->load('admissionForm');
-    if (!$admissionApplication->hasBeenPaid()) {
-      return Inertia::render(
-        'institutions/admissions/buy-admission-application',
-        ['admissionApplication' => $admissionApplication]
-      );
-    }
-    return Inertia::render(
-      'institutions/admissions/admission-application-success',
-      [
-        'institution' => $institution,
-        'admissionApplication' => $admissionApplication
-      ]
-    );
-  }
-  */
-
   public function show(
     Institution $institution,
     AdmissionApplication $admissionApplication
@@ -134,7 +111,6 @@ class AdmissionApplicationController extends Controller
       'institutions/admissions/show-admission-application',
       [
         'admissionApplication' => $admissionApplication
-        // 'applicationGuardians' => $admissionApplication->applicationGuardians
       ]
     );
   }
@@ -155,11 +131,11 @@ class AdmissionApplicationController extends Controller
       'admissionForm.academicSession',
       'admissionFormPurchase'
     );
+
     if (!$admissionApplication->hasBeenPaid()) {
-      return redirect(
-        instRoute('admission-forms.buy', [
-          $admissionApplication->admission_form_id
-        ])
+      return Inertia::render(
+        'institutions/admissions/buy-admission-application',
+        ['admissionApplication' => $admissionApplication]
       );
     }
 

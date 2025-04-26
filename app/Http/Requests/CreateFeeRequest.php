@@ -38,7 +38,10 @@ class CreateFeeRequest extends FormRequest
       'amount' => ['required', 'numeric', 'min:1'],
       'payment_interval' => ['nullable', new Enum(PaymentInterval::class)],
       'academic_session_id' => [
-        Rule::requiredIf(empty($this->fee)),
+        Rule::requiredIf(
+          empty($this->fee) &&
+            $this->payment_interval != PaymentInterval::OneTime->value
+        ),
         'exists:academic_sessions,id'
       ],
       'term' => ['nullable', new Enum(TermType::class)],

@@ -59,25 +59,20 @@ class FeePaymentReminderMail extends Mailable implements ShouldQueue
   {
     parent::send($mailer);
 
-    $receipt = $this->fee
-      ->receipts()
-      ->where('user_id', $this->student->user_id)
-      ->first();
-    $payments = $this->fee->feePayments;
-
     //== Save to DB.
     // Render the markdown content to HTML using the Markdown class
     $markdown = new Markdown(view(), config('mail.markdown'));
-    $bodyContent = $markdown->renderText('mail.payment-notification-mail', [
+    $bodyContent = $markdown->renderText('mail.fee-payment-reminder-mail', [
       'fee' => $this->fee,
-      'receipt' => $receipt,
-      'feePayments' => $payments,
-      'student' => $this->student
+      'guardian' => $this->guardian,
+      'student' => $this->student,
+      'schoolNotification' => $this->schoolNotification,
+      'institution' => $this->institution
     ]);
 
     $data = [
       'institution_id' => $this->institution->id,
-      'sender_user_id' => null,
+      'sender_user_id' => $this->institution->user_id,
       'subject' => 'Payment Reminer',
       'body' => $bodyContent,
       'recipient_category' => MessageRecipientCategory::Single->value,

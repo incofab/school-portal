@@ -20,6 +20,14 @@ return new class extends Migration {
     Schema::dropIfExists('fees');
     Schema::dropIfExists('receipt_types');
 
+    deleteMigrationEntry([
+      '2024_05_31_237821_receipts_management_records',
+      '2023_06_17_503158_create_fee_payment_tracks_table',
+      '2023_06_17_489391_create_fee_payments_table',
+      '2023_06_17_472053_create_fees_table',
+      '2025_03_19_261901_add_paymentable_to_fee_payments_table'
+    ]);
+
     Schema::create('fees', function (Blueprint $table) {
       $table->id();
       $table

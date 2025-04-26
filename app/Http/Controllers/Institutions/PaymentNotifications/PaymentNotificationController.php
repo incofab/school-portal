@@ -29,6 +29,7 @@ class PaymentNotificationController extends Controller
   {
   }
 
+  /** @deprecated */
   public function create(Institution $institution)
   {
     return inertia('institutions/payment-notifications/create-notification', [
@@ -45,7 +46,6 @@ class PaymentNotificationController extends Controller
         'required',
         new ValidateUniqueRule(SchoolNotification::class)
       ],
-      // 'message' => ['nullable', 'string'],
       'channel' => ['required', new Enum(NotificationChannelsType::class)]
     ]);
 

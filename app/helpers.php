@@ -139,3 +139,27 @@ if (!function_exists('sanitizeFilename')) {
     return $extension ? "{$sanitized}.{$extension}" : $sanitized;
   }
 }
+
+if (!function_exists('deleteMigrationEntry')) {
+  /** Helper to delete migration files
+   * @param array $filenames with the .php extension. Remember to manually delete the file from migrations folder
+   */
+  function deleteMigrationEntry(array $filenames): void
+  {
+    \DB::table('migrations')
+      ->whereIn('migration', $filenames)
+      ->delete();
+
+    // foreach ($filenames as $key => $filename) {
+    //   $filePath = database_path("migrations/$filename.php");
+    //   if (!\File::exists($filePath)) {
+    //     continue;
+    //   }
+    //   try {
+    //     File::delete($filePath);
+    //   } catch (\Exception $e) {
+    //     info("Error deleting file: {$filePath} | {$e->getMessage()}");
+    //   }
+    // }
+  }
+}

@@ -231,8 +231,8 @@ Route::post('/pin-generators/store', [Web\Pins\PinGeneratorController::class, 's
 Route::get('/fees/search', [Web\Payments\FeeController::class, 'search'])->name('fees.search');
 Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
 
-Route::get('/fee-payments/download/{classification}/{receiptType}', [Web\Payments\FeePaymentController::class, 'download'])->name('fee-payments.download');
-Route::post('/fee-payments/upload', [Web\Payments\FeePaymentController::class, 'upload'])->name('fee-payments.upload');
+// Route::get('/fee-payments/download/{classification}/{receiptType}', [Web\Payments\FeePaymentController::class, 'download'])->name('fee-payments.download');
+// Route::post('/fee-payments/upload', [Web\Payments\FeePaymentController::class, 'upload'])->name('fee-payments.upload');
 Route::get('/fee-payments/index/{fee?}', [Web\Payments\FeePaymentController::class, 'index'])->name('fee-payments.index');
 Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['index', 'edit', 'update']);
 Route::get('/receipts', [Web\Payments\ReceiptController::class, 'index'])->name('receipts.index');
@@ -343,4 +343,4 @@ Route::get('/timetables/{classification}/class', [Web\Timetables\TimetableContro
 Route::resource('/timetables', Web\Timetables\TimetableController::class);
 
 
-Route::resource('/payment-notifications', Web\PaymentNotifications\PaymentNotificationController::class);
+Route::post('/payment-notifications', [Web\PaymentNotifications\PaymentNotificationController::class, 'store'])->name('payment-notifications.store');

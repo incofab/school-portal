@@ -2,6 +2,7 @@
 namespace App\Support\Payments\Processors;
 
 use App\Actions\Payments\FeePaymentHandler;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use App\Models\Fee;
 use App\Support\Res;
@@ -34,7 +35,8 @@ class FeePaymentProcessor extends PaymentProcessor
       [
         'reference' => $this->paymentReference->reference,
         'user_id' => $this->paymentReference->user_id,
-        'amount' => $this->paymentReference->amount
+        'amount' => $this->paymentReference->amount,
+        'method' => PaymentMethod::Card->value
       ],
       $fee,
       $this->paymentReference->payable

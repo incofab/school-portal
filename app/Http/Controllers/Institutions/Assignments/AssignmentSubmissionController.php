@@ -173,7 +173,7 @@ class AssignmentSubmissionController extends Controller
   {
     $courseTeacher = CourseTeacher::where('user_id', $user->id)
       ->where('course_id', $assignment->course_id)
-      ->whereIn('classification_id', $assignment->classification_ids)
+      ->whereIn('classification_id', $assignment->classification_ids ?? [])
       ->first();
 
     if (!$courseTeacher) {

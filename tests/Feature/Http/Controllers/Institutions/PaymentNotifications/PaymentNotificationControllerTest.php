@@ -35,19 +35,6 @@ beforeEach(function () {
     ->create();
 });
 
-it('can render the create payment notification page', function () {
-  $response = actingAs($this->admin)->getJson(
-    route('institutions.payment-notifications.create', $this->institution)
-  );
-
-  $response->assertOk();
-  $response->assertInertia(
-    fn($assert) => $assert
-      ->component('institutions/payment-notifications/create-notification')
-      ->has('fees')
-  );
-});
-
 it('can store a payment notification for all owing students', function () {
   $classification = Classification::factory()
     ->withInstitution($this->institution)
