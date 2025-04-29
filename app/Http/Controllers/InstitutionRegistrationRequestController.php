@@ -17,10 +17,12 @@ class InstitutionRegistrationRequestController extends Controller
   public function create($partner = null)
   {
     if (!empty($partner)) {
-      $partner = User::where('username', $partner)->first();
+      $partner = User::where('username', $partner)
+        ->orWhere('id', $partner)
+        ->first();
       $fileExists = file_exists(public_path("partners/$partner.webp"));
       $imageUrl = $fileExists ? asset("partners/$partner.webp") : null;
-    }else{
+    } else {
       $imageUrl = InstitutionBackgroundImage::getBackgroundImage();
     }
 

@@ -296,8 +296,8 @@ include base_path('routes/exam.php');
 include base_path('routes/student_routes.php');
 
 Route::get('/transactions/{walletType?}', [Web\Fundings\TransactionController::class, 'index'])->name('transactions.index');
-Route::get('/fundings/{walletType?}', [Web\Fundings\FundingsController::class, 'index'])->name('fundings.index');
 Route::resource('/fundings', Web\Fundings\FundingsController::class)->only('create', 'store');
+Route::get('/fundings/{walletType?}', [Web\Fundings\FundingsController::class, 'index'])->name('fundings.index');
 Route::resource('/result-publications', Web\ResultPublications\ResultPublicationsController::class)->only('index', 'create', 'store');
 
 //A route named 'topics' already exist in 'ccd' route file, hence I use 'inst-topics'

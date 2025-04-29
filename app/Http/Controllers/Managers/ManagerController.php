@@ -34,7 +34,15 @@ class ManagerController extends Controller
   {
     $data = $request->validate([
       ...User::generalRule(),
-      'username' => ['required', 'unique:users,username'],
+      'username' => [
+        'required',
+        'unique:users,username',
+        function ($attr, $value, $fail) {
+          if (ctype_digit($value)) {
+            $fail('Username cannot contain only digits');
+          }
+        }
+      ],
       'role' => [
         'required',
         new Enum(ManagerRole::class),
@@ -45,11 +53,12 @@ class ManagerController extends Controller
         }
       ]
     ]);
-    $user = User::query()->create(
-      collect($data)
+    $user = User::query()->create([
+      ...collect($data)
         ->except('role')
-        ->toArray()
-    );
+        ->toArray(),
+      'password' => bcrypt('password')
+    ]);
     $user->assignRole($data['role']);
     return $this->ok();
   }

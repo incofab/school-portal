@@ -28,12 +28,15 @@ import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 import EditStudentCodeModal from '@/components/modals/edit-student-code-modal';
+import { Div } from '@/components/semantic';
 
 interface Props {
   students: PaginationResponse<Student>;
+  studentCount: number;
+  alumniCount: number;
 }
 
-function ListStudents({ students }: Props) {
+function ListStudents({ students, studentCount, alumniCount }: Props) {
   const { instRoute } = useInstitutionRoute();
   const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
@@ -179,6 +182,9 @@ function ListStudents({ students }: Props) {
           }
         />
         <SlabBody>
+          <Div>
+            Students: {studentCount} | Alumni: {alumniCount}
+          </Div>
           <ServerPaginatedTable
             scroll={true}
             headers={headers}

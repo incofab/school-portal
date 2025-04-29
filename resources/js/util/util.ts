@@ -33,6 +33,11 @@ export function formatAsCurrency(num: number) {
   return formatter.format(num);
 }
 
+export function numberFormat(num: number) {
+  const formatter1 = new Intl.NumberFormat();
+  return formatter1.format(num);
+}
+
 export function resizeImage(file: Blob, maxWidth: number, maxHeight: number) {
   return new Promise((resolve) => {
     Resizer.createResizedImage(

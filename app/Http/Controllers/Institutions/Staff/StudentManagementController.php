@@ -15,23 +15,33 @@ use App\Http\Requests\CreateStudentRequest;
 use App\Actions\Users\DownloadStudentRecordingSheet;
 use App\Support\UITableFilters\StudentUITableFilters;
 use App\Actions\Users\InsertStudentFromRecordingSheet;
+use App\Enums\InstitutionUserType;
 use Illuminate\Validation\Rule;
 
 class StudentManagementController extends Controller
 {
-  function index(Request $request)
+  function index(Request $request, Institution $institution)
   {
     $query = Student::query()->select('students.*');
     StudentUITableFilters::make($request->all(), $query)
       ->filterQuery()
-      ->joinUser()
       ->getQuery()
       ->latest('users.last_name');
+    $countQuery = Student::query()->forInstitution($institution->id);
+
+    $studentCount = (clone $countQuery)
+      ->where('institution_users.role', InstitutionUserType::Student)
+      ->count();
+    $alumniCount = (clone $countQuery)
+      ->where('institution_users.role', InstitutionUserType::Alumni)
+      ->count();
 
     return inertia('institutions/students/list-students', [
       'students' => paginateFromRequest(
         $query->with('user', 'classification')->latest('students.id')
-      )
+      ),
+      'studentCount' => $studentCount,
+      'alumniCount' => $alumniCount
     ]);
   }
 

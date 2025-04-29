@@ -22,9 +22,7 @@ class DownloadClassStudentsController extends Controller
     StudentUITableFilters::make(
       [...$request->all(), 'classification' => $classification->id],
       $query
-    )
-      ->joinUser()
-      ->filterQuery();
+    )->filterQuery();
 
     $students = $query
       ->with('user')
