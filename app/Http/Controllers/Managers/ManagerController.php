@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Managers;
 
 use App\Enums\ManagerRole;
 use App\Http\Controllers\Controller;
+use App\Models\Partner;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
@@ -11,7 +12,12 @@ class ManagerController extends Controller
 {
   function dashboard(Request $request)
   {
-    return inertia('managers/dashboard');
+    $user = currentUser();
+    $commissionBalance = $user->isPartner()? $user->partner->wallet : 0;
+
+    return inertia('managers/dashboard', [
+      'commissionBalance' => $commissionBalance
+    ]); 
   }
 
   function index(Request $request)
@@ -43,14 +49,32 @@ class ManagerController extends Controller
             $fail('Admin role cannot be added through this form');
           }
         }
-      ]
+      ],
+      'commission' => ['nullable', 'numeric', 'min:0'],
+      'referral_email' => ['nullable', 'exists:users,email'],
+      'referral_commission' => ['nullable', 'numeric', 'min:0']
     ]);
+
     $user = User::query()->create(
       collect($data)
-        ->except('role')
+        ->except('role', 'commission', 'referral_email', 'referral_commission')
         ->toArray()
     );
+
     $user->assignRole($data['role']);
+
+    //= Create Partner's Record
+    if ($data['role'] === ManagerRole::Partner->value) {
+      $refUser = User::where('email', $data['referral_email'])->first();
+
+      Partner::create([
+        'user_id' => $user->id,
+        'commission' => $data['commission'],
+        'referral_user_id' => $refUser?->id,
+        'referral_commission' => $data['referral_commission'] ?? null
+      ]);
+    }
+
     return $this->ok();
   }
 

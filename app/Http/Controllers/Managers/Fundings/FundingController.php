@@ -72,6 +72,6 @@ class FundingController extends Controller
       $validated['remark'] ?? null
     );
 
-    return $this->ok();
+    return $this->ok(); 
   }
 }

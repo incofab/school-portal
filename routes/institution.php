@@ -289,8 +289,8 @@ include base_path('routes/exam.php');
 include base_path('routes/student_routes.php');
 
 Route::get('/transactions/{walletType?}', [Web\Fundings\TransactionController::class, 'index'])->name('transactions.index');
-Route::get('/fundings/{walletType?}', [Web\Fundings\FundingsController::class, 'index'])->name('fundings.index');
 Route::resource('/fundings', Web\Fundings\FundingsController::class)->only('create', 'store');
+Route::get('/fundings/{walletType?}', [Web\Fundings\FundingsController::class, 'index'])->name('fundings.index');
 Route::resource('/result-publications', Web\ResultPublications\ResultPublicationsController::class)->only('index', 'create', 'store');
 
 //A route named 'topics' already exist in 'ccd' route file, hence I use 'inst-topics'
@@ -337,3 +337,12 @@ Route::resource('/timetables', Web\Timetables\TimetableController::class);
 
 
 Route::resource('/payment-notifications', Web\PaymentNotifications\PaymentNotificationController::class);
+
+//== BANK ACCOUNT DETAILS 
+Route::get('/inst-bank-accounts/{bankAccount}/edit', [Web\BankAccounts\BankAccountController::class, 'edit'])->name('inst-bank-accounts.edit');
+Route::put('/inst-bank-accounts/{bankAccount}', [Web\BankAccounts\BankAccountController::class, 'update'])->name('inst-bank-accounts.update');
+Route::delete('/inst-bank-accounts/{bankAccount}', [Web\BankAccounts\BankAccountController::class, 'destroy'])->name('inst-bank-accounts.destroy');
+Route::resource('/inst-bank-accounts', Web\BankAccounts\BankAccountController::class)->except('edit', 'update', 'delete');
+
+//== WITHDRAWALS
+Route::resource('/inst-withdrawals', Web\Withdrawals\WithdrawalController::class);

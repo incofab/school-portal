@@ -33,6 +33,10 @@ class Topic extends Model
   static function createRule()
   {
     return [
+      'term' => ['required'],
+      'week_number' => ['required', 'integer'],
+      'user_id' => ['nullable', new ValidateExistsRule(User::class)],
+
       'title' => ['required', 'string'],
       'description' => ['required', 'string'],
       'classification_group_id' => [
@@ -44,6 +48,15 @@ class Topic extends Model
       'is_used_by_institution_group' => ['required', 'boolean'],
       'institution_id' => ['required']
     ];
+  }
+
+  static function createRule2()
+  {
+    // Get the base rules and modify them for the scenario where $topic is provided
+    $rules = self::createRule();
+    $rules['term'][0] = 'nullable'; // Make term nullable for this case
+    $rules['week_number'] = ['nullable', 'integer']; // Make week_number nullable
+    return $rules;
   }
 
   public function institutionGroup()

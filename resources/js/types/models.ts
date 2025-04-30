@@ -129,6 +129,21 @@ export interface TimetableCoordinator extends InstitutionRow {
   timetable?: Timetable;
 }
 
+export interface Withdrawal extends InstitutionRow {
+  amount: number;
+  status: string;
+  bank_account?: BankAccount;
+  paid_at: string;
+  remark: string;
+}
+
+export interface BankAccount extends InstitutionRow {
+  bank_name: string;
+  account_name: string;
+  account_number: string;
+  withdrawals_count: number;
+}
+
 export interface InstitutionUser extends InstitutionRow {
   user_id: number;
   role: InstitutionUserType;

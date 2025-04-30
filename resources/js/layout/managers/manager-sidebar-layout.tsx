@@ -37,6 +37,14 @@ export default function ManagerSideBarLayout() {
       route: route('managers.dashboard'),
     },
     {
+      label: 'Bank Accounts',
+      route: route('managers.bank-accounts.index'),
+    },
+    {
+      label: 'Withdrawals',
+      route: route('managers.withdrawals.index'),
+    },
+    {
       label: 'Managers',
       route: route('managers.index'),
       roles: [ManagerRole.Admin],

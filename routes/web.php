@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Home as Home;
 use App\Http\Controllers as Web;
+use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\Institutions\Exams\External as External;
 use App\Http\Controllers\Institutions\Admissions as Admissions;
 

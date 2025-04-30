@@ -105,7 +105,7 @@ class User extends Authenticatable
     return $this->institutionUsers()
       ->where('institution_id', currentInstitution()->id)
       ->with('student');
-  } 
+  }
 
   function courseTeachers()
   {
@@ -200,5 +200,10 @@ class User extends Authenticatable
   function guardianStudents()
   {
     return $this->hasMany(GuardianStudent::class, 'guardian_user_id', 'id');
+  }
+
+  function partner()
+  {
+    return $this->hasOne(Partner::class);
   }
 }

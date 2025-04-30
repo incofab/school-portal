@@ -400,6 +400,16 @@ export default function SideBarLayout() {
           route: instRoute('transactions.index'),
           roles: [InstitutionUserType.Admin],
         },
+        {
+          label: 'Bank Accounts',
+          route: instRoute('inst-bank-accounts.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Withdrawals',
+          route: instRoute('inst-withdrawals.index'),
+          roles: [InstitutionUserType.Admin],
+        },
       ],
     },
     {

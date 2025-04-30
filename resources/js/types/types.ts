@@ -234,6 +234,12 @@ export enum AdmissionStatusType {
   Declined = 'declined',
 }
 
+export enum WithdrawalStatusType {
+  // Pending = 'pending',
+  Paid = 'paid',
+  Declined = 'declined',
+}
+
 export interface ExamAttempt {
   [questionId: string | number]: string;
 }
