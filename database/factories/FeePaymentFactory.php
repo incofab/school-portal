@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Fee;
 use App\Models\Institution;
 use App\Models\Receipt;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Str;
 
 class FeePaymentFactory extends Factory
 {
@@ -23,16 +23,9 @@ class FeePaymentFactory extends Factory
       'institution_id' => Institution::factory(),
       'fee_id' => Fee::factory(),
       'receipt_id' => Receipt::factory(),
-      'academic_session_id' => AcademicSession::factory(),
-      'user_id' => fn($attr) => User::factory()->student(
-        Institution::find($attr['institution_id'])
-      ),
-      'fee_amount' => fake()->randomNumber(4, true),
-      'amount_paid' => fake()->randomNumber(3, true),
-      'amount_remaining' => fn($attr) => $attr['fee_amount'] -
-        $attr['amount_paid'],
-
-      'term' => fake()->randomElement(TermType::cases())->value
+      'amount' => fake()->randomNumber(4, true),
+      'method' => fake()->word(),
+      'reference' => Str::orderedUuid()
     ];
   }
 
@@ -41,7 +34,6 @@ class FeePaymentFactory extends Factory
     return $this->state(
       fn(array $attributes) => [
         'institution_id' => $institution->id,
-        'user_id' => User::factory()->student($institution),
         'fee_id' => Fee::factory()->institution($institution)
       ]
     );

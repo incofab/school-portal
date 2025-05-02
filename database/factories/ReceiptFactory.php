@@ -4,14 +4,11 @@ namespace Database\Factories;
 
 use App\Enums\TermType;
 use App\Models\AcademicSession;
-use App\Models\Classification;
-use App\Models\ClassificationGroup;
+use App\Models\Fee;
 use App\Models\Institution;
-use App\Models\ReceiptType;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class ReceiptFactory extends Factory
 {
@@ -27,24 +24,14 @@ class ReceiptFactory extends Factory
       'user_id' => fn($attr) => User::factory()->student(
         Institution::find($attr['institution_id'])
       ),
-      'receipt_type_id' => fn($attr) => ReceiptType::factory()->institution(
+      'fee_id' => fn($attr) => User::factory()->student(
         Institution::find($attr['institution_id'])
       ),
-      'classification_id' => fn(
-        $attr
-      ) => Classification::factory()->withInstitution(
-        Institution::find($attr['institution_id'])
-      ),
-      'classification_group_id' => fn(
-        $attr
-      ) => ClassificationGroup::factory()->withInstitution(
-        Institution::find($attr['institution_id'])
-      ),
+      'amount' => fake()->randomNumber(4, true),
+      'amount_remaining' => 0,
+      'amount_paid' => 0,
       'academic_session_id' => AcademicSession::factory(),
-      'term' => fake()->randomElement(TermType::cases())->value,
-      'reference' => Str::uuid(),
-      'title' => fake()->sentence(),
-      'total_amount' => fake()->randomNumber(5, true)
+      'term' => fake()->randomElement(TermType::cases())->value
     ];
   }
 
@@ -54,13 +41,19 @@ class ReceiptFactory extends Factory
       fn(array $attributes) => [
         'institution_id' => $institution->id,
         'user_id' => User::factory()->student($institution),
-        'receipt_type_id' => ReceiptType::factory()->institution($institution),
-        'classification_id' => Classification::factory()->withInstitution(
-          $institution
-        ),
-        'classification_group_id' => ClassificationGroup::factory()->withInstitution(
-          $institution
-        )
+        'fee_id' => Fee::factory()->institution($institution)
+      ]
+    );
+  }
+
+  public function fee(Fee $fee): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'institution_id' => $fee->institution_id,
+        'fee_id' => $fee->id,
+        'academic_session_id' => $fee->academic_session_id,
+        'term' => $fee->term
       ]
     );
   }

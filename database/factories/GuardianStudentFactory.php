@@ -35,4 +35,18 @@ class GuardianStudentFactory extends Factory
       ];
     });
   }
+
+  public function guardianUser(User $user): static
+  {
+    return $this->state(
+      fn(array $attributes) => ['guardian_user_id' => $user->id]
+    );
+  }
+
+  public function student(Student $student): static
+  {
+    return $this->state(
+      fn(array $attributes) => ['student_id' => $student->id]
+    );
+  }
 }

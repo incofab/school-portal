@@ -4,8 +4,10 @@ namespace Database\Factories;
 
 use App\Enums\InstitutionUserType;
 use App\Models\Classification;
+use App\Models\GuardianStudent;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -59,6 +61,20 @@ class StudentFactory extends Factory
             $institutionUser->institution
           )
       ];
+    });
+  }
+
+  function guardian(Institution $institution)
+  {
+    return $this->afterCreating(function (Student $student) use ($institution) {
+      $guardian = User::factory()
+        ->guardian($institution)
+        ->create();
+      GuardianStudent::factory()
+        ->withInstitution($institution)
+        ->student($student)
+        ->guardianUser($guardian)
+        ->create();
     });
   }
 }

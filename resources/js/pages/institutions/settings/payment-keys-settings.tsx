@@ -19,7 +19,9 @@ import { Div } from '@/components/semantic';
 
 interface Props {}
 
+/** @deprecated Not in use for now. All institutions pay through our paystack */
 export default function PaymentKeysSettings({}: Props) {
+  return <></>;
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const { paymentKeys } = useSharedProps();

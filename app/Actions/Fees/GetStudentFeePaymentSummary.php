@@ -1,13 +1,11 @@
 <?php
 namespace App\Actions\Fees;
 
-use App\Enums\Grade;
+use App\DTO\FeePaymentSummaryDto;
 use App\Enums\PaymentInterval;
 use App\Models\Classification;
-use App\Models\CourseResult;
 use App\Models\Fee;
 use App\Models\FeePayment;
-use App\Models\ReceiptType;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -21,12 +19,14 @@ class GetStudentFeePaymentSummary
   ) {
   }
 
-  private function getStudentFees(ReceiptType|null $receiptType = null)
+  private function getStudentFees()
   {
     $fees = Fee::query()
-      ->forReceiptType($receiptType)
-      ->forClass($this->classification)
-      ->get();
+      ->with('feeCategories')
+      ->get()
+      ->filter(
+        fn(Fee $fee) => $fee->forStudent($this->student, $this->classification)
+      );
     return $fees;
   }
 
@@ -34,6 +34,7 @@ class GetStudentFeePaymentSummary
   {
     $feePayments = FeePayment::select('fee_payments.*')
       ->join('fees', 'fees.id', 'fee_payments.fee_id')
+      ->join('receipts', 'receipts.id', 'fees.receipt_id')
       ->whereIn('fee_payments.fee_id', $fees->pluck('id'))
       ->where('fee_payments.user_id', $this->student->user_id)
       ->where(function ($qq) {
@@ -41,18 +42,16 @@ class GetStudentFeePaymentSummary
           ->where(
             fn($q) => $q
               ->where('fees.payment_interval', PaymentInterval::Termly)
-              ->where('fee_payments.term', $this->term)
+              ->where('receipts.term', $this->term)
           )
           ->orWhere(
             fn($q) => $q
               ->where('fees.payment_interval', PaymentInterval::Sessional)
-              ->where(
-                'fee_payments.academic_session_id',
-                $this->academicSessionId
-              )
+              ->where('receipts.academic_session_id', $this->academicSessionId)
           )
           ->orWhere('fees.payment_interval', PaymentInterval::OneTime);
       })
+      ->with('receipt')
       ->latest('id')
       ->groupBy('fee_id')
       ->get();
@@ -62,67 +61,37 @@ class GetStudentFeePaymentSummary
   /**
    * Get student's fee payment summary for a particular receipt type
    */
-  function getPaymentSummary(
-    ReceiptType|null $receiptType = null,
-    $includePaidFees = false
-  ) {
-    $fees = $this->getStudentFees($receiptType);
+  function getPaymentSummary($includePaidFees = false)
+  {
+    $fees = $this->getStudentFees();
     $feePayments = $this->getStudentFeePayments($fees);
-    $feesToPay = [];
-    $totalAmountToPay = 0;
-    $totalAmountOfTheReceiptType = 0; //This is the total value of all the fees in the ReceiptType.
+    $dto = new FeePaymentSummaryDto();
 
     foreach ($fees as $key => $fee) {
       $feePayment = $feePayments
         ->filter(fn($item) => $item->fee_id === $fee->id)
         ->first();
 
-      $totalAmountOfTheReceiptType += $fee->amount;
-
       if (!$feePayment) {
-        $totalAmountToPay += $fee->amount;
-        $feesToPay[] = [
+        $dto->updateTotalAmountToPay($fee->amount);
+        $dto->addFeesToPay([
           'amount_paid' => 0,
           'amount_remaining' => $fee->amount,
           'title' => $fee->title,
           'is_part_payment' => false
-        ];
+        ]);
         continue;
       }
-
-      if ($feePayment->amount_remaining > 0 || $includePaidFees) {
-        $totalAmountToPay += $feePayment->amount_remaining;
-        $feesToPay[] = [
-          'amount_paid' => $fee->amount - $feePayment->amount_remaining,
-          'amount_remaining' => $feePayment->amount_remaining,
+      if ($includePaidFees) {
+        $dto->updateTotalAmountToPay($feePayment->receipt->amount_remaining);
+        $dto->addFeesToPay([
+          'amount_paid' => $feePayment->receipt->amount_paid,
+          'amount_remaining' => $feePayment->receipt->amount_remaining,
           'title' => $fee->title,
-          'is_part_payment' => $feePayment->amount_remaining > 0
-        ];
+          'is_part_payment' => $feePayment->receipt->amount_remaining > 0
+        ]);
       }
     }
-    return [$feesToPay, $totalAmountToPay, $totalAmountOfTheReceiptType];
-  }
-
-  /**
-   * Get student fee payment summary for all the receipt type in a particular class, term and session
-   */
-  function getStudentReceiptPaymentSummary(Collection $receiptTypes)
-  {
-    $processedReceiptTypes = [];
-    foreach ($receiptTypes as $key => $receiptType) {
-      [
-        $feesToPay,
-        $totalAmountToPay,
-        $totalAmountOfTheReceiptType
-      ] = $this->getPaymentSummary($receiptType);
-
-      $processedReceiptTypes[] = [
-        'receipt_type' => $receiptType,
-        'fees_to_pay' => $feesToPay,
-        'total_amount_to_pay' => $totalAmountToPay,
-        'total_amount_of_the_receipt_type' => $totalAmountOfTheReceiptType
-      ];
-    }
-    return $processedReceiptTypes;
+    return $dto;
   }
 }

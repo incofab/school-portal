@@ -6,13 +6,18 @@ import { PaginationResponse } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import { Div } from '@/components/semantic';
+import DateTimeDisplay from '@/components/date-time-display';
+import { formatAsCurrency } from '@/util/util';
 
 interface Props {
   feePayments: PaginationResponse<FeePayment>;
-  receipt: Receipt;
+  receipt?: Receipt;
 }
 
-function ListStudentFeePayments({ feePayments, receipt }: Props) {
+export default function ListStudentFeePayments({
+  feePayments,
+  receipt,
+}: Props) {
   const headers: ServerPaginatedTableHeader<FeePayment>[] = [
     {
       label: 'Fee',
@@ -20,23 +25,27 @@ function ListStudentFeePayments({ feePayments, receipt }: Props) {
     },
     {
       label: 'Session',
-      value: 'academic_session.title',
+      value: 'receipt.academic_session.title',
     },
     {
       label: 'Term',
-      value: 'term',
+      value: 'receipt.term',
     },
     {
-      label: 'Fee Amount',
-      value: 'fee_amount',
+      label: 'Amount',
+      value: 'amount',
     },
     {
       label: 'Amount Paid',
-      value: 'amount_paid',
+      value: 'receipt.amount_paid',
     },
     {
       label: 'Amount Rem.',
-      value: 'amount_remaining',
+      value: 'receipt.amount_remaining',
+    },
+    {
+      label: 'Date',
+      render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
     },
   ];
 
@@ -44,9 +53,15 @@ function ListStudentFeePayments({ feePayments, receipt }: Props) {
     <DashboardLayout>
       <Slab>
         <SlabHeading
-          title={receipt.receipt_type?.title ?? 'My Payments'}
+          title={receipt?.fee?.title ?? 'My Payments'}
           rightElement={
-            <Div fontWeight={'bold'}>Total Amount: {receipt.total_amount}</Div>
+            <>
+              {receipt && (
+                <Div fontWeight={'bold'}>
+                  Total Amount: {formatAsCurrency(receipt?.amount)}
+                </Div>
+              )}
+            </>
           }
         />
         <SlabBody>
@@ -62,5 +77,3 @@ function ListStudentFeePayments({ feePayments, receipt }: Props) {
     </DashboardLayout>
   );
 }
-
-export default ListStudentFeePayments;

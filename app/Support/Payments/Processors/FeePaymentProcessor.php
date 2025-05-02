@@ -1,8 +1,10 @@
 <?php
 namespace App\Support\Payments\Processors;
 
-use App\Actions\Payments\RecordMultiFeePayments;
+use App\Actions\Payments\FeePaymentHandler;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
+use App\Models\Fee;
 use App\Support\Res;
 use App\Support\TransactionHandler;
 use DB;
@@ -21,25 +23,23 @@ class FeePaymentProcessor extends PaymentProcessor
       return $res;
     }
 
-    $feeIds = $this->paymentReference->meta['fee_ids'] ?? [];
-    if (empty($feeIds)) {
-      return failRes('Fee records not found');
+    $fee = $this->paymentReference->paymentable;
+    if (!($fee instanceof Fee)) {
+      return failRes('Fee record not found');
     }
 
     DB::beginTransaction();
     $this->paymentReference->confirmPayment();
 
-    $fees = RecordMultiFeePayments::run(
+    FeePaymentHandler::make($this->paymentReference->institution)->create(
       [
+        'reference' => $this->paymentReference->reference,
         'user_id' => $this->paymentReference->user_id,
-        'academic_session_id' =>
-          $this->paymentReference->meta['academic_session_id'] ?? null,
-        'term' => $this->paymentReference->meta['term'] ?? null,
-        'method' => null,
-        'transaction_reference' => null,
-        'fee_ids' => $feeIds
+        'amount' => $this->paymentReference->amount,
+        'method' => PaymentMethod::Card->value
       ],
-      $this->paymentReference->institution
+      $fee,
+      $this->paymentReference->payable
     );
 
     TransactionHandler::makeFromPaymentReference(
@@ -47,7 +47,7 @@ class FeePaymentProcessor extends PaymentProcessor
     )->topupCreditWallet(
       $this->paymentReference->amount,
       $this->paymentReference,
-      'Fee payment for: ' . $fees->map(fn($item) => $item->title)->join(', ')
+      'Fee payment for: ' . $fee->title
     );
 
     DB::commit();

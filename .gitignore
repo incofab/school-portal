@@ -24,6 +24,7 @@ yarn-error.log
 
 # Ignore the error log file
 /public/errorlog.txt
+/public/fees.json
 
 # ide helpers
 _ide_helper_models.php

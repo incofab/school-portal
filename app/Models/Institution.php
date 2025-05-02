@@ -153,11 +153,6 @@ class Institution extends Model
     return $this->hasMany(Fee::class);
   }
 
-  function receiptTypes()
-  {
-    return $this->hasMany(ReceiptType::class);
-  }
-
   function receipts()
   {
     return $this->hasMany(Receipt::class);
@@ -241,6 +236,11 @@ class Institution extends Model
   public function admissionForms()
   {
     return $this->hasMany(AdmissionForm::class);
+  }
+
+  public function associations()
+  {
+    return $this->hasMany(Association::class);
   }
 
   public function students()

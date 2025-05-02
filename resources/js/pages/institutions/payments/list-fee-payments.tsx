@@ -1,5 +1,5 @@
 import React from 'react';
-import { Fee, FeePayment, ReceiptType } from '@/types/models';
+import { Fee, FeePayment } from '@/types/models';
 import {
   HStack,
   IconButton,
@@ -25,33 +25,27 @@ import RecordFeePaymentModal from '@/components/modals/record-fee-payment-modal'
 import useModalToggle from '@/hooks/use-modal-toggle';
 import FeePaymentTableFilters from '@/components/table-filters/fee-payment-table-filters';
 import startCase from 'lodash/startCase';
-import UploadFeePaymentModal from '@/components/modals/upload-fee-payment-modal';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { LabelText } from '@/components/result-helper-components';
 import { formatAsCurrency } from '@/util/util';
 
 interface Props {
   feePayments: PaginationResponse<FeePayment>;
-  receiptTypes: ReceiptType[];
   fees: Fee[];
   num_of_payments?: number;
   total_amount_paid?: number;
-  pending_amount?: number;
 }
 
 export default function ListFeePayments({
   feePayments,
   fees,
-  receiptTypes,
   num_of_payments,
   total_amount_paid,
-  pending_amount,
 }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const recordFeePaymentModalToggle = useModalToggle();
-  const uploadPaymentModalToggle = useModalToggle();
   const feePaymentFilterToggle = useModalToggle();
   const isAdmin = useIsAdmin();
 
@@ -70,32 +64,32 @@ export default function ListFeePayments({
     },
     {
       label: 'Student',
-      value: 'user.full_name',
+      value: 'receipt.user.full_name',
     },
     {
       label: 'Fee Amount',
-      value: 'fee_amount',
+      value: 'fee.amount',
     },
     {
       label: 'Amount Paid',
-      value: 'amount_paid',
+      value: 'receipt.amount_paid',
     },
     {
       label: 'Balance',
-      value: 'amount_remaining',
+      value: 'receipt.amount_remaining',
     },
     {
-      label: 'Instalments',
-      value: 'fee_payment_tracks_count',
+      label: 'Confirmed By',
+      value: 'confirmed_by.full_name',
     },
     {
       label: 'Session',
-      value: 'academic_session.title',
+      value: 'receipt.academic_session.title',
     },
     {
       label: 'Term',
       value: 'term',
-      render: (row) => startCase(row.term),
+      render: (row) => startCase(row.receipt?.term),
     },
     ...(isAdmin
       ? [
@@ -105,8 +99,8 @@ export default function ListFeePayments({
               <HStack>
                 <LinkButton
                   variant={'link'}
-                  href={instRoute('fee-payments.show', [row])}
-                  title="Details"
+                  href={instRoute('receipts.show', [row.receipt_id])}
+                  title="Receipt"
                 />
                 <DestructivePopover
                   label={'Delete this fee'}
@@ -135,20 +129,7 @@ export default function ListFeePayments({
           rightElement={
             <HStack>
               <BrandButton
-                title={'Upload Payment'}
-                onClick={uploadPaymentModalToggle.open}
-              />
-              <Button
-                variant={'solid'}
-                colorScheme="brand"
-                as={InertiaLink}
-                href={instRoute('fee-payments.multi-fee-payment.create')}
-                size={'sm'}
-              >
-                Multi Record Payment
-              </Button>
-              <BrandButton
-                title={'Record Single Payment'}
+                title={'Record Payment'}
                 onClick={recordFeePaymentModalToggle.open}
               />
             </HStack>
@@ -160,10 +141,6 @@ export default function ListFeePayments({
             <LabelText
               label="Total Amount Paid"
               text={formatAsCurrency(total_amount_paid ?? 0)}
-            />
-            <LabelText
-              label="Total Pending Payment"
-              text={formatAsCurrency(pending_amount ?? 0)}
             />
           </VStack>
           <Divider my={3} />
@@ -181,11 +158,6 @@ export default function ListFeePayments({
       <RecordFeePaymentModal
         fees={fees}
         {...recordFeePaymentModalToggle.props}
-        onSuccess={() => Inertia.reload({ only: ['feePayments'] })}
-      />
-      <UploadFeePaymentModal
-        receiptTypes={receiptTypes}
-        {...uploadPaymentModalToggle.props}
         onSuccess={() => Inertia.reload({ only: ['feePayments'] })}
       />
       <FeePaymentTableFilters {...feePaymentFilterToggle.props} />

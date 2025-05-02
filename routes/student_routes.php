@@ -10,9 +10,10 @@ Route::get('dummy', function() {
 
 Route::get('/students/search', Web\Students\SearchStudentController::class)->name('students.search');
 
-Route::get('/receipts/{receipt:reference}/show', [Web\Students\StudentFeePaymentController::class, 'showReceipt'])->name('receipts.show');
+Route::get('/receipts/{receipt}/print', [Web\Students\StudentFeePaymentController::class, 'printReceipt'])->name('receipts.print');
 
-Route::get('/receipt-type-fees/{student}/{classification}/{term}/{academicSession}/show', [Web\Students\StudentFeePaymentController::class, 'showReceiptTypeFee'])->name('receipt-type-fees.show');
+// Route::get('/receipt-type-fees/{student}/{classification}/{term}/{academicSession}/show', [Web\Students\StudentFeePaymentController::class, 'showReceiptTypeFee'])
+// ->name('receipt-type-fees.show');
 
 Route::prefix('students/{student}')->name('students.')->middleware(['student.access'])->group(function () {
     Route::get('term-result-detail/{classification}/{academicSession}/{term}/{forMidTerm}', Web\Students\StudentTermResultDetailController::class)

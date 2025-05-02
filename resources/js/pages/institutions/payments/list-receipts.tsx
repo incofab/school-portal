@@ -20,7 +20,7 @@ interface Props {
   total_amount_paid?: number;
 }
 
-export default function ListReceiptTypes({
+export default function ListReceipts({
   receipts,
   num_of_payments,
   total_amount_paid,
@@ -34,8 +34,12 @@ export default function ListReceiptTypes({
       render: (row: Receipt) => <DisplayUserFullname user={row.user} />,
     },
     {
-      label: 'Category',
-      value: 'receipt_type.title',
+      label: 'Fee',
+      value: 'fee.title',
+    },
+    {
+      label: 'Amount',
+      value: 'amount',
     },
     {
       label: 'Term',
@@ -46,27 +50,20 @@ export default function ListReceiptTypes({
       value: 'academic_session.title',
     },
     {
-      label: 'Amount',
-      value: 'total_amount',
+      label: 'Balance',
+      value: 'amount_remaining',
+    },
+    {
+      label: 'Status',
+      value: 'status',
     },
     {
       label: 'Actions',
       render: (row: Receipt) => (
         <HStack spacing={1}>
-          {row.user?.student && (
-            <LinkButton
-              variant={'ghost'}
-              href={instRoute('students.fee-payments.index', [
-                row.user?.student?.id,
-                row.id,
-              ])}
-              colorScheme={'brand'}
-              title="Payments"
-            />
-          )}
           <LinkButton
             variant={'ghost'}
-            href={instRoute('receipts.show', [row.reference])}
+            href={instRoute('receipts.show', [row.id])}
             colorScheme={'brand'}
             title="View"
           />
@@ -100,7 +97,6 @@ export default function ListReceiptTypes({
               'classification',
               'studentUser',
               'fee',
-              'receiptType',
             ]}
             onFilterButtonClick={receiptFilterToggle.open}
           />

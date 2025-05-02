@@ -64,7 +64,7 @@ return new class extends Migration {
 
     // Add payment morph to payment references table
     Schema::table('payment_references', function (Blueprint $table) {
-      $table->nullableMorphs('paymentable');
+      $table->nullableMorphs('paymentable'); // The entity the payment is meant for
     });
   }
 

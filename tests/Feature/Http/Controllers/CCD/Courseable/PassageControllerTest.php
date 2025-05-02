@@ -108,7 +108,7 @@ test('updates an existing passage', function ($class) {
   );
 
   $response->assertRedirect();
-  expect(Passage::first()->passage)->toBe('Updated Passage Text');
+  expect($passage->fresh()->passage)->toBe('Updated Passage Text');
 })->with([[CourseSession::class], [EventCourseable::class]]);
 
 test('destroy deletes an passage', function ($class) {

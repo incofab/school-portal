@@ -131,7 +131,7 @@ abstract class BaseUITableFilter
     return $this;
   }
 
-  protected function getTerm($default = null)
+  public function getTerm($default = null)
   {
     return $this->requestGet('term') ??
       ($this->useCurrentTerm
@@ -139,7 +139,7 @@ abstract class BaseUITableFilter
         : null);
   }
 
-  protected function getAcademicSession($default = null)
+  public function getAcademicSession($default = null)
   {
     return $this->requestGet('academicSession') ??
       ($this->useCurrentTerm

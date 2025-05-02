@@ -1,14 +1,18 @@
 <?php
 namespace App\Http\Controllers\Institutions\Payments;
 
+use App\Actions\Payments\RecordFee;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateFeeRequest;
+use App\Models\AcademicSession;
+use App\Models\Association;
 use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\Fee;
 use App\Models\Institution;
-use App\Models\ReceiptType;
+use App\Support\UITableFilters\FeeUITableFilters;
+use Illuminate\Http\Request;
 
 class FeeController extends Controller
 {
@@ -20,15 +24,17 @@ class FeeController extends Controller
     ])->except(['index', 'search']);
   }
 
-  function index()
+  function index(Request $request)
   {
-    $query = Fee::query()->with(
-      'receiptType',
-      'classification',
-      'classificationGroup'
-    );
+    $filter = FeeUITableFilters::make(
+      $request->all(),
+      Fee::query()
+    )->filterQuery();
+    $query = $filter->getQuery()->with('feeCategories.feeable');
     return inertia('institutions/payments/list-fees', [
-      'fees' => paginateFromRequest($query)
+      'fees' => paginateFromRequest($query),
+      'term' => $filter->getTerm(),
+      'academicSession' => AcademicSession::find($filter->getAcademicSession())
     ]);
   }
 
@@ -41,7 +47,8 @@ class FeeController extends Controller
           fn($q, $search) => $q->where('title', 'like', "%$search%")
         )
         ->orderBy('title')
-        ->with('receiptType', 'classification', 'classificationGroup')
+        ->with('feeCategories')
+        ->take(100)
         ->get()
     ]);
   }
@@ -49,7 +56,7 @@ class FeeController extends Controller
   function create()
   {
     return inertia('institutions/payments/create-edit-fee', [
-      'receiptTypes' => ReceiptType::all(),
+      'associations' => Association::all(),
       'classificationGroups' => ClassificationGroup::all(),
       'classifications' => Classification::all()
     ]);
@@ -58,15 +65,16 @@ class FeeController extends Controller
   function store(CreateFeeRequest $request, Institution $institution)
   {
     $data = $request->validated();
-    $fee = $institution->fees()->create($data);
+    $fee = RecordFee::run($data, $institution);
     return $this->ok(['fee' => $fee]);
   }
 
   function edit(Institution $institution, Fee $fee)
   {
+    $fee->load('feeCategories.feeable');
     return inertia('institutions/payments/create-edit-fee', [
+      'associations' => Association::all(),
       'fee' => $fee,
-      'receiptTypes' => ReceiptType::all(),
       'classificationGroups' => ClassificationGroup::all(),
       'classifications' => Classification::all()
     ]);
@@ -74,7 +82,7 @@ class FeeController extends Controller
 
   function update(Institution $institution, Fee $fee, CreateFeeRequest $request)
   {
-    $fee->fill($request->validated())->save();
+    RecordFee::run($request->validated(), $institution, $fee);
     return $this->ok();
   }
 

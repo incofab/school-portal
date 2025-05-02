@@ -72,7 +72,7 @@ class ClassResultInfoController extends Controller
   function setNextTermResumptionDate(
     Institution $institution,
     Request $request,
-    ClassificationGroup $classificationGroup = null
+    ?ClassificationGroup $classificationGroup = null
   ) {
     $data = $request->validate([
       'next_term_resumption_date' => ['required', 'date'],

@@ -13,7 +13,9 @@ use App\Models\TermDetail;
 
 class SettingsHandler
 {
-  function __construct(private array $settings) {}
+  function __construct(private array $settings)
+  {
+  }
 
   function all()
   {
@@ -39,9 +41,6 @@ class SettingsHandler
 
   static function makeFromInstitution(Institution $institution): static
   {
-    if (self::$instance) {
-      return self::$instance;
-    }
     $institutionSettings = $institution->institutionSettings ?? [];
     self::$instance = self::make($institutionSettings);
     return self::$instance;
@@ -108,8 +107,8 @@ class SettingsHandler
     ) ??
       ($default === 'fetch'
         ? AcademicSession::query()
-        ->latest('id')
-        ->first()?->id
+          ->latest('id')
+          ->first()?->id
         : $default);
   }
 
@@ -134,10 +133,10 @@ class SettingsHandler
     }
     return [
       "{$table}academic_session_id" =>
-      $academicSessionId ?? $this->getCurrentAcademicSession(),
+        $academicSessionId ?? $this->getCurrentAcademicSession(),
       "{$table}term" => $term ?? $this->getCurrentTerm(),
       "{$table}for_mid_term" =>
-      $forMidTerm === null ? $this->isOnMidTerm() : $forMidTerm
+        $forMidTerm === null ? $this->isOnMidTerm() : $forMidTerm
     ];
   }
 

@@ -31,28 +31,28 @@ class UserFactory extends Factory
     ];
   }
 
-  public function student(Institution $institution = null): static
+  public function student(?Institution $institution = null): static
   {
     return $this->institutionUser($institution, InstitutionUserType::Student);
   }
 
-  public function teacher(Institution $institution = null): static
+  public function teacher(?Institution $institution = null): static
   {
     return $this->institutionUser($institution, InstitutionUserType::Teacher);
   }
 
-  public function admin(Institution $institution = null): static
+  public function admin(?Institution $institution = null): static
   {
     return $this->institutionUser($institution, InstitutionUserType::Admin);
   }
 
-  public function guardian(Institution $institution = null): static
+  public function guardian(?Institution $institution = null): static
   {
     return $this->institutionUser($institution, InstitutionUserType::Guardian);
   }
 
   public function institutionUser(
-    Institution $institution = null,
+    ?Institution $institution = null,
     $role = InstitutionUserType::Admin
   ): static {
     return $this->afterCreating(

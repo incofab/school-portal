@@ -65,7 +65,7 @@ export default function RecordFeePaymentModal({
     webForm.setData({
       ...webForm.data,
       amount: '',
-      reference: `${currentInstitution.id} - ${generateRandomString(16)}`,
+      reference: `G${currentInstitution.id}${generateRandomString(16)}`,
       method: '',
       user_id: {} as SelectOptionType<number>,
     });

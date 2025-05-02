@@ -2,17 +2,14 @@
 
 namespace App\Jobs;
 
-use App\Actions\Fees\GetStudentFeePaymentSummary;
 use App\Enums\MessageRecipientCategory;
 use App\Enums\MessageStatus;
 use App\Enums\NotificationChannelsType;
+use App\Models\Fee;
 use App\Models\Message;
 use App\Models\MessageRecipient;
-use App\Models\Institution;
-use App\Models\ReceiptType;
 use App\Models\Student;
 use App\Models\User;
-use App\Support\SettingsHandler;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,25 +21,11 @@ class SendBulksms implements ShouldQueue
 {
   use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-  public $feesToPay;
-  public $totalFeesToPay;
-  public User $user;
-  public User $guardian;
-  public Institution $currentInstitution;
-
   public function __construct(
     public Student $student,
-    public ReceiptType $receiptType
+    public User $guardian,
+    public Fee $fee
   ) {
-    $this->user = currentUser();
-    $this->currentInstitution = $student->classification->institution;
-    $this->guardian = $student->guardian;
-
-    $settingshandler = SettingsHandler::makeFromInstitution($this->currentInstitution);
-    
-    [$this->feesToPay, $this->totalFeesToPay] = (new GetStudentFeePaymentSummary(
-      $student, $student->classification, $settingshandler->getCurrentTerm(), $settingshandler->getCurrentAcademicSession()
-    ))->getPaymentSummary($receiptType);
   }
 
   /**
@@ -52,10 +35,10 @@ class SendBulksms implements ShouldQueue
   {
     $msg =
       "Dear Parent,\nThis is a gentle reminder that the 
-      {$this->receiptType->title} for {$this->student->user->last_name}
+      {$this->fee->title} for {$this->student->user->last_name}
       {$this->student->user->first_name}
       , is due for payment.\nThe total amount is N" .
-      number_format($this->totalFeesToPay) .
+      number_format($this->fee->amount) .
       ".\nThank you.";
 
     $data = [
@@ -72,9 +55,9 @@ class SendBulksms implements ShouldQueue
 
     //==Save to Database.
     $data = [
-      'institution_id' => $this->currentInstitution->id,
-      'sender_user_id' => $this->user->id,
-      'subject' => 'Payment Notification',
+      'institution_id' => $this->fee->institution_id,
+      'sender_user_id' => $this->fee->institution->user_id,
+      'subject' => 'Payment Reminder',
       'body' => $msg,
       'recipient_category' => MessageRecipientCategory::Single->value,
       'channel' => NotificationChannelsType::Sms,
@@ -84,7 +67,7 @@ class SendBulksms implements ShouldQueue
     $message = Message::create($data);
 
     $data2 = [
-      'institution_id' => $this->currentInstitution->id,
+      'institution_id' => $this->fee->institution_id,
       'recipient_contact' => $this->guardian->phone,
       'recipient_type' => $this->guardian->getMorphClass(),
       'recipient_id' => $this->guardian->id,

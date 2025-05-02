@@ -15,74 +15,54 @@ class ReceiptUITableFilters extends BaseUITableFilter
   {
     return [
       'user' => ['sometimes', 'integer'],
-      'receiptType' => ['sometimes', 'integer'],
-      'studentClass' => ['sometimes', 'integer'],
-      'classification' => ['sometimes', 'integer'],
-      'classificationGroup' => ['sometimes', 'integer'],
+      'paymentableType' => ['sometimes', 'string'],
+      'paymentableId' => ['sometimes', 'integer'],
       'academicSession' => ['sometimes', 'integer'],
-      'approvedBy' => ['sometimes', 'integer'],
       'term' => ['sometimes', new Enum(TermType::class)]
     ];
   }
 
   protected function generalSearch(string $search)
   {
+    return $this;
   }
 
-  /** Important for sorting list by student names */
-  public function joinStudent(): static
+  public function joinFee(): static
   {
     $this->callOnce(
-      'joinStudent',
-      fn() => $this->baseQuery
-        ->join('users', 'users.id', 'receipts.user_id')
-        ->join('students', 'students.user_id', 'users.id')
+      'joinFee',
+      fn() => $this->baseQuery->join('fees', 'fees.id', 'receipts.fee_id')
     );
     return $this;
   }
 
   protected function directQuery()
   {
-    if ($this->requestGet('studentClass')) {
-      $this->joinStudent();
-    }
+    $this->joinFee();
 
     $this->baseQuery
       ->when(
         $this->requestGet('institution_id'),
-        fn($q, $value) => $q->where('institution_id', $value)
-      )
-      ->when(
-        $this->requestGet('receiptType'),
-        fn($q, $value) => $q->where('receipt_type_id', $value)
+        fn($q, $value) => $q->where('receipts.institution_id', $value)
       )
       ->when(
         $this->requestGet('user'),
-        fn($q, $value) => $q->where('user_id', $value)
+        fn($q, $value) => $q->where('receipts.user_id', $value)
       )
       ->when(
-        $this->requestGet('studentClass'),
-        fn($q, $value) => $q->where('students.classification_id', $value)
-      )
-      ->when(
-        $this->requestGet('classification'),
-        fn($q, $value) => $q->where('classification_id', $value)
-      )
-      ->when(
-        $this->requestGet('classificationGroup'),
-        fn($q, $value) => $q->where('classification_group_id', $value)
-      )
-      ->when(
-        $this->requestGet('approvedBy'),
-        fn($q, $value) => $q->where('approved_by_user_id', $value)
+        $this->requestGet('paymentableType') &&
+          $this->requestGet('paymentableId'),
+        fn($q, $value) => $q
+          ->where('fees.paymentable_type', $this->requestGet('paymentableType'))
+          ->where('fees.paymentable_id', $this->requestGet('paymentableId'))
       )
       ->when(
         $this->requestGet('academicSession'),
-        fn($q, $value) => $q->where('academic_session_id', $value)
+        fn($q, $value) => $q->where('receipts.academic_session_id', $value)
       )
       ->when(
         $this->requestGet('term'),
-        fn($q, $value) => $q->where('term', $value)
+        fn($q, $value) => $q->where('receipts.term', $value)
       );
 
     return $this;

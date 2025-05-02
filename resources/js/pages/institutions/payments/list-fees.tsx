@@ -1,13 +1,20 @@
 import React from 'react';
 import { Fee } from '@/types/models';
-import { HStack, IconButton, Icon } from '@chakra-ui/react';
+import {
+  HStack,
+  IconButton,
+  Icon,
+  Text,
+  Popover,
+  Tooltip,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
-import { LinkButton } from '@/components/buttons';
+import { BrandButton, LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
@@ -16,6 +23,12 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
+import { formatAsCurrency } from '@/util/util';
+import feeableUtil from '@/util/feeable-util';
+import { Div } from '@/components/semantic';
+import { LabelText } from '@/components/result-helper-components';
+import { useModalValueToggle } from '@/hooks/use-modal-toggle';
+import CreateFeeReminderModal from '@/components/modals/create-fee-reminder-modal';
 
 interface Props {
   fees: PaginationResponse<Fee>;
@@ -25,6 +38,7 @@ export default function ListFees({ fees }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
+  const reminderToggle = useModalValueToggle<Fee>();
   const isAdmin = useIsAdmin();
 
   async function deleteItem(obj: Fee) {
@@ -41,20 +55,29 @@ export default function ListFees({ fees }: Props) {
       value: 'title',
     },
     {
-      label: 'Receipt Category',
-      value: 'receipt_type.title',
-    },
-    {
       label: 'Amount',
       value: 'amount',
     },
     {
-      label: 'Class Group',
-      value: 'classification_group.title',
+      label: 'Items',
+      render: (row) => (
+        <Div>
+          {row.fee_items?.map((item) => (
+            <LabelText
+              key={item.title}
+              label={item.title}
+              text={formatAsCurrency(item.amount)}
+            />
+          ))}
+        </Div>
+      ),
     },
     {
-      label: 'Class',
-      value: 'classification.title',
+      label: 'Sectors',
+      render: (row) =>
+        row.fee_categories
+          ?.map((item) => feeableUtil(item.feeable).getName())
+          .join(', '),
     },
     {
       label: 'Interval',
@@ -66,6 +89,15 @@ export default function ListFees({ fees }: Props) {
             label: 'Action',
             render: (row: Fee) => (
               <HStack>
+                <Tooltip label="Send Reminder" title={'Send Reminder'}>
+                  <IconButton
+                    aria-label={'Send Reminder'}
+                    icon={<Icon as={ClockIcon} />}
+                    variant={'ghost'}
+                    colorScheme={'brand'}
+                    onClick={() => reminderToggle.open(row)}
+                  />
+                </Tooltip>
                 <IconButton
                   aria-label={'Edit Fee'}
                   icon={<Icon as={PencilIcon} />}
@@ -112,6 +144,14 @@ export default function ListFees({ fees }: Props) {
           />
         </SlabBody>
       </Slab>
+      {reminderToggle.state && (
+        <CreateFeeReminderModal
+          selectedFee={reminderToggle.state}
+          {...reminderToggle.props}
+          fees={fees.data}
+          onSuccess={() => {}}
+        />
+      )}
     </DashboardLayout>
   );
 }

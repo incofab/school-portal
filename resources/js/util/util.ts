@@ -33,6 +33,11 @@ export function formatAsCurrency(num: number) {
   return formatter.format(num);
 }
 
+export function numberFormat(num: number) {
+  const formatter1 = new Intl.NumberFormat();
+  return formatter1.format(num);
+}
+
 export function resizeImage(file: Blob, maxWidth: number, maxHeight: number) {
   return new Promise((resolve) => {
     Resizer.createResizedImage(
@@ -97,7 +102,10 @@ export function getSelectOption(
     : ({} as Nullable<SelectOptionType<number>>);
 }
 
-export function generateRandomString(length: number = 10): string {
+export function generateRandomString(
+  length: number = 10,
+  addPrecision: boolean = false
+): string {
   const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
@@ -106,7 +114,9 @@ export function generateRandomString(length: number = 10): string {
     const randomIndex = Math.floor(Math.random() * characters.length);
     result += characters.charAt(randomIndex);
   }
-
+  if (addPrecision) {
+    result = `${Date.now().toPrecision()}${result}`;
+  }
   return result;
 }
 

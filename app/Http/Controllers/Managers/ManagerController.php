@@ -13,11 +13,11 @@ class ManagerController extends Controller
   function dashboard(Request $request)
   {
     $user = currentUser();
-    $commissionBalance = $user->isPartner()? $user->partner->wallet : 0;
+    $commissionBalance = $user->isPartner() ? $user->partner->wallet : 0;
 
     return inertia('managers/dashboard', [
       'commissionBalance' => $commissionBalance
-    ]); 
+    ]);
   }
 
   function index(Request $request)
@@ -40,7 +40,15 @@ class ManagerController extends Controller
   {
     $data = $request->validate([
       ...User::generalRule(),
-      'username' => ['required', 'unique:users,username'],
+      'username' => [
+        'required',
+        'unique:users,username',
+        function ($attr, $value, $fail) {
+          if (ctype_digit($value)) {
+            $fail('Username cannot contain only digits');
+          }
+        }
+      ],
       'role' => [
         'required',
         new Enum(ManagerRole::class),
@@ -55,12 +63,18 @@ class ManagerController extends Controller
       'referral_commission' => ['nullable', 'numeric', 'min:0']
     ]);
 
-    $user = User::query()->create(
-      collect($data)
-        ->except('role', 'commission', 'referral_email', 'referral_commission')
-        ->toArray()
-    );
+    // $user = User::query()->create(
+    //   collect($data)
+    //     ->except('role', 'commission', 'referral_email', 'referral_commission')
+    //     ->toArray()
+    // );
 
+    $user = User::query()->create([
+      ...collect($data)
+        ->except('role', 'commission', 'referral_email', 'referral_commission')
+        ->toArray(),
+      'password' => bcrypt('password')
+    ]);
     $user->assignRole($data['role']);
 
     //= Create Partner's Record

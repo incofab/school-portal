@@ -9,7 +9,6 @@ import EnumSelect from '../dropdown-select/enum-select';
 import useSharedProps from '@/hooks/use-shared-props';
 import StudentSelect from '../selectors/student-select';
 import FeeSelect from '../selectors/fee-select';
-import ReceiptTypeSelect from '../selectors/receipt-type-select';
 
 interface Props {
   isOpen: boolean;
@@ -26,7 +25,6 @@ export default function ReceiptTableFilters({ isOpen, onClose }: Props) {
     studentClass: params.studentClass ?? '',
     user: params.user ?? '',
     fee: params.fee ?? '',
-    receiptType: params.receiptType ?? '',
   }));
 
   return (
@@ -67,30 +65,10 @@ export default function ReceiptTableFilters({ isOpen, onClose }: Props) {
           }
         />
       </FilterFormControlBox>
-      {/*       
-      <FilterFormControlBox title="Class">
-        <ClassificationSelect
-          selectValue={filters.classification}
-          isClearable={true}
-          onChange={(e: any) =>
-            setFilters({ ...filters, classification: e?.value })
-          }
-        />
-      </FilterFormControlBox>
-    */}
       <FilterFormControlBox title="Fee">
         <FeeSelect
           selectValue={filters.fee}
           onChange={(e: any) => setFilters({ ...filters, fee: e?.value })}
-          isClearable={true}
-        />
-      </FilterFormControlBox>
-      <FilterFormControlBox title="Receipt Type">
-        <ReceiptTypeSelect
-          selectValue={filters.receiptType}
-          onChange={(e: any) =>
-            setFilters({ ...filters, receiptType: e?.value })
-          }
           isClearable={true}
         />
       </FilterFormControlBox>
