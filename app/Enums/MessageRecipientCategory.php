@@ -9,6 +9,7 @@ enum MessageRecipientCategory: string
   case Classification = 'classification';
   case ClassificationGroup = 'classification-group';
   case Institution = 'institution';
+  case Association = 'association';
   case Single = 'single';
   case Multiple = 'multiple';
 }

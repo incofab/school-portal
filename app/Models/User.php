@@ -81,6 +81,10 @@ class User extends Authenticatable
     );
   }
 
+  // function scopeLoadInstitutionUser($query, $institutionId) {
+  //   return $query->with(['institutionUser--'])
+  // }
+
   /** Institutions created by this user */
   function createdInstitutions()
   {
@@ -103,9 +107,13 @@ class User extends Authenticatable
 
   function institutionUser()
   {
+    $currentInstitution = currentInstitution();
+    if (!$currentInstitution) {
+      return null;
+    }
     return $this->hasOne(InstitutionUser::class)
       ->latestOfMany()
-      ->where('institution_id', currentInstitution()->id);
+      ->where('institution_id', $currentInstitution->id);
     // return $this->institutionUsers()
     //   ->where('institution_id', currentInstitution()->id)
     //   ->with('student');

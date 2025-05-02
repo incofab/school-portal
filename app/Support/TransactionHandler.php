@@ -116,6 +116,9 @@ class TransactionHandler
 
   private function recordTransaction()
   {
+    if ($this->amount < 1) {
+      return throw new Exception('Amount cannot be zero or less');
+    }
     if ($this->bat < 0) {
       return throw new Exception('Wallet balance cannot be negative');
     }

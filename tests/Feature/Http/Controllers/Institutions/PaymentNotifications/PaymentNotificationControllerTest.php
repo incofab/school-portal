@@ -1,18 +1,19 @@
 <?php
 
 use App\Enums\NotificationChannelsType;
+use App\Enums\PriceLists\PriceType;
 use App\Enums\SchoolNotificationPurpose;
 use App\Models\Classification;
 use App\Models\Fee;
 use App\Models\FeeCategory;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
+use App\Models\PriceList;
 use App\Models\Receipt;
 use App\Models\SchoolNotification;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\MorphMap;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
@@ -24,6 +25,8 @@ use function Pest\Laravel\assertDatabaseHas;
 beforeEach(function () {
   Mail::fake();
   $this->institution = Institution::factory()->create();
+  $this->institutionGroup = $this->institution->institutionGroup;
+  $this->institutionGroup->fill(['credit_wallet' => 1000])->save();
   $this->institutionUser = InstitutionUser::factory()
     ->withInstitution($this->institution)
     ->create();
@@ -33,6 +36,16 @@ beforeEach(function () {
   $this->fee = Fee::factory()
     ->institution($this->institution)
     ->create();
+
+  $this->price = 10;
+  $priceList1 = PriceList::factory()
+    ->for($this->institution->institutionGroup)
+    ->type(PriceType::EmailSending)
+    ->create(['amount' => $this->price]);
+  $priceList2 = PriceList::factory()
+    ->for($this->institution->institutionGroup)
+    ->type(PriceType::SmsSending)
+    ->create(['amount' => $this->price]);
 });
 
 it('can store a payment notification for all owing students', function () {
@@ -97,4 +110,8 @@ it('can store a payment notification for all owing students', function () {
     $student1->guardian?->id,
     $student2->guardian?->id
   ]);
+
+  expect($this->institutionGroup->fresh()->credit_wallet)->toBe(
+    $this->institutionGroup->credit_wallet - $this->price * 2
+  );
 });

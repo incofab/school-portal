@@ -6,8 +6,10 @@ use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\Fee;
 use App\Models\Institution;
+use App\Models\Student;
 use App\Models\User;
 use App\Support\MorphMap;
+use Illuminate\Support\Collection;
 
 class FeeMembersHandler
 {
@@ -22,10 +24,9 @@ class FeeMembersHandler
     ];
   }
 
-  function getFeeMembers(Fee $fee, $forOwingMembers = false)
+  function getFeeMembers(Fee $fee, $forOwingMembers = false): Collection
   {
     $feeCategories = $fee->feeCategories;
-
     /** @var FeeCategory $feeCategory */
     foreach ($feeCategories as $key => $feeCategory) {
       array_push(

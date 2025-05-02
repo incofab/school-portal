@@ -282,3 +282,10 @@ export enum FeeCategoryType {
   ClassificationGroup = 'classification-group',
   Association = 'association',
 }
+
+export enum MessageRecipientType {
+  Institution = 'institution',
+  Classification = 'classification',
+  ClassificationGroup = 'classification-group',
+  Association = 'association',
+}

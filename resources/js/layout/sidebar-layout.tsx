@@ -384,6 +384,11 @@ export default function SideBarLayout() {
           route: instRoute('associations.index'),
           roles: [InstitutionUserType.Admin],
         },
+        {
+          label: 'SMS/Email Messages',
+          route: instRoute('messages.index'),
+          roles: [InstitutionUserType.Admin],
+        },
       ],
     },
     {

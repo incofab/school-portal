@@ -718,3 +718,28 @@ export interface FeeSummary extends Row {
   total_amount_to_pay: number;
   total_amount_of_the_receipt_type: number;
 }
+
+export interface Message extends InstitutionRow {
+  sender_user_id: number;
+  subject?: string;
+  body: string;
+  channel: string;
+  recipient_category: string;
+  status: string;
+  sent_at: string;
+  meta?: string;
+  messageable_type?: string;
+  messageable_id?: number;
+  messageable?: User | Institution;
+  sender?: User;
+  recipients?: MessageRecipient[];
+}
+
+export interface MessageRecipient extends InstitutionRow {
+  message_id: number;
+  recipient_contact: string;
+  recipient_type?: string;
+  recipient_id?: number;
+  recipient: string;
+  message?: Message;
+}

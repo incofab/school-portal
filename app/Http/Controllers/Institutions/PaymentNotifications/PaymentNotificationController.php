@@ -49,13 +49,15 @@ class PaymentNotificationController extends Controller
       'channel' => ['required', new Enum(NotificationChannelsType::class)]
     ]);
 
-    (new RecordFeePaymentReminder(
+    $res = (new RecordFeePaymentReminder(
       currentUser(),
       $data,
       $institution,
       $feeExistRule->getModel()
     ))->run();
 
-    return $this->ok();
+    return $res->isSuccessful()
+      ? $this->ok()
+      : $this->message($res->getMessage(), 403);
   }
 }

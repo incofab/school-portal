@@ -15,7 +15,7 @@ Route::get('dummy', function () {
   // Mail::to('email@email.com')->queue(new AdmissionLetterMail(User::first()));
   // return new InstitutionMessageMail('Welcome', 'This is a welcome message');
   $url = "https://texturl.com";
-  return new AdmissionLetterMail(User::first(), $url);
+  // return new AdmissionLetterMail(User::first(), $url);
 })->name('dummy');
 
 Route::get('/dashboard', [Web\InstitutionController::class, 'index'])
@@ -344,3 +344,7 @@ Route::resource('/timetables', Web\Timetables\TimetableController::class);
 
 
 Route::post('/payment-notifications', [Web\PaymentNotifications\PaymentNotificationController::class, 'store'])->name('payment-notifications.store');
+
+Route::get('/messages/index', [Web\Staff\MessageController::class, 'index'])->name('messages.index');
+Route::post('/messages/store', [Web\Staff\MessageController::class, 'store'])->name('messages.store');
+Route::get('/messages/create', [Web\Staff\MessageController::class, 'create'])->name('messages.create');

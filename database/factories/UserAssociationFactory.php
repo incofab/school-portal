@@ -19,9 +19,7 @@ class UserAssociationFactory extends Factory
     return [
       'institution_id' => Institution::factory(),
       'association_id' => Association::factory(),
-      'institution_user_id' => InstitutionUser::factory(),
-      'title' => fake()->word(),
-      'description' => fake()->paragraph()
+      'institution_user_id' => InstitutionUser::factory()
     ];
   }
 
@@ -38,27 +36,31 @@ class UserAssociationFactory extends Factory
     );
   }
 
-  public function association(Association $association): static
-  {
+  public function association(
+    Association $association,
+    ?InstitutionUser $institutionUser = null
+  ): static {
     return $this->state(
       fn(array $attributes) => [
         'association_id' => $association->id,
         'institution_id' => $association->institution_id,
-        'institution_user_id' => InstitutionUser::factory()->withInstitution(
-          $association->institution
-        )
+        'institution_user_id' =>
+          $institutionUser?->id ??
+          InstitutionUser::factory()->withInstitution($association->institution)
       ]
     );
   }
-  public function institutionUser(InstitutionUser $institutionUser): static
-  {
+  public function institutionUser(
+    InstitutionUser $institutionUser,
+    ?Association $association = null
+  ): static {
     return $this->state(
       fn(array $attributes) => [
         'institution_user_id' => $institutionUser->id,
         'institution_id' => $institutionUser->institution_id,
-        'association_id' => Association::factory()->institution(
-          $institutionUser->institution
-        )
+        'association_id' =>
+          $association?->id ??
+          Association::factory()->institution($institutionUser->institution)
       ]
     );
   }
