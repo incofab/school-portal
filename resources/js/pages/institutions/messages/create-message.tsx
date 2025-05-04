@@ -9,6 +9,7 @@ import {
   Checkbox,
   FormControl,
   SimpleGrid,
+  Text,
   Textarea,
   VStack,
 } from '@chakra-ui/react';
@@ -63,6 +64,13 @@ export default function CreateMessage({
 
   function toCustomContact() {
     return webForm.data.messageable_type == '';
+  }
+
+  function isEmail() {
+    return webForm.data.channel === NotificationChannelsType.Email;
+  }
+  function isSms() {
+    return webForm.data.channel === NotificationChannelsType.Sms;
   }
 
   return (
@@ -211,7 +219,7 @@ export default function CreateMessage({
               />
             </FormControlBox>
 
-            {webForm.data.channel === NotificationChannelsType.Email && (
+            {isEmail() && (
               <InputForm
                 form={webForm as any}
                 formKey="subject"
@@ -226,13 +234,26 @@ export default function CreateMessage({
               isRequired
             >
               <Textarea
-                onChange={(e) =>
-                  webForm.setValue('message', e.currentTarget.value)
-                }
+                onChange={(e) => {
+                  if (isSms() && e.currentTarget.value.length > 145) {
+                    // webForm.setValue(
+                    //   'message',
+                    //   e.currentTarget.value.substring(0, 145)
+                    // );
+                    return;
+                  }
+                  webForm.setValue('message', e.currentTarget.value);
+                }}
+                value={webForm.data.message}
                 noOfLines={3}
               >
                 {webForm.data.message}
               </Textarea>
+              {isSms() && (
+                <Text fontSize={'xs'} opacity={0.8}>
+                  {webForm.data.message.length} Characters
+                </Text>
+              )}
             </FormControlBox>
 
             {!toCustomContact() && (

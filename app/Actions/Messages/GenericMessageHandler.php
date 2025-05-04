@@ -2,7 +2,6 @@
 namespace App\Actions\Messages;
 
 use App\Enums\NotificationChannelsType;
-use App\Enums\PriceLists\PriceType;
 use App\Jobs\SendBulksms;
 use App\Mail\InstitutionMessageMail;
 use App\Models\Association;
@@ -10,17 +9,14 @@ use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\GuardianStudent;
 use App\Models\Institution;
-use App\Models\Message;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\Res;
-use App\Support\TransactionHandler;
 use DB;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 class GenericMessageHandler
 {
@@ -168,7 +164,7 @@ class GenericMessageHandler
 
     if ($channel === NotificationChannelsType::Sms->value) {
       SendBulksms::dispatch(
-        $this->message,
+        $this->getSmsMessage(),
         $receivers->join(','),
         $messageModel,
         $this->institution
@@ -187,42 +183,8 @@ class GenericMessageHandler
     return successRes();
   }
 
-  function applyCharges(
-    Collection $receivers,
-    $channel,
-    Message $messageModel
-  ): Res {
-    $institutionGroup = $this->institution->institutionGroup;
-    $instGroupPriceList = $institutionGroup
-      ->pricelists()
-      ->where(
-        'type',
-        $channel === NotificationChannelsType::Sms->value
-          ? PriceType::SmsSending->value
-          : PriceType::EmailSending->value
-      )
-      ->first();
-
-    if (!$instGroupPriceList) {
-      return failRes('Price List has not been set');
-    }
-
-    $amountToPay = $receivers->count() * $instGroupPriceList->amount;
-
-    if ($amountToPay > $institutionGroup->credit_wallet) {
-      return failRes('Insufficient wallet balance');
-    }
-
-    if ($amountToPay > 0) {
-      TransactionHandler::make(
-        $this->institution,
-        Str::orderedUuid()
-      )->deductCreditWallet(
-        $amountToPay,
-        $messageModel,
-        "Sent {$receivers->count()} $channel message(s)"
-      );
-    }
-    return successRes();
+  function getSmsMessage()
+  {
+    return substr($this->institution->name, 0, 8) . PHP_EOL . $this->message;
   }
 }

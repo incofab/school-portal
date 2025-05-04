@@ -53,14 +53,10 @@ class MessageController extends Controller
   public function store(Institution $institution, Request $request)
   {
     $validateMorph = new ValidateMorphRule('messageable');
+    $forEmail = $request->channel === NotificationChannelsType::Email->value;
     $data = $request->validate([
-      'message' => ['required', 'string'],
-      'subject' => [
-        Rule::requiredIf(
-          $request->channel === NotificationChannelsType::Email->value
-        ),
-        'string'
-      ],
+      'message' => ['required', 'string', 'max:' . ($forEmail ? 1000 : 145)],
+      'subject' => [Rule::requiredIf($forEmail), 'string'],
       'reference' => [
         'required',
         new ValidateUniqueRule(SchoolNotification::class)

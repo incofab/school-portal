@@ -221,6 +221,7 @@ export enum PriceType {
 }
 
 export enum PaymentStructure {
+  PerUnit = 'per-unit',
   PerTerm = 'per-term',
   PerSession = 'per-session',
   PerStudentPerTerm = 'per-student-per-term',

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Actions\SeedInitialAssessment;
+use App\Actions\SeedSetupData;
 use App\Enums\InstitutionUserType;
 use App\Models\Institution;
 use App\Models\InstitutionGroup;
@@ -21,7 +21,7 @@ class InstitutionFactory extends Factory
           'role' => InstitutionUserType::Admin
         ]
       );
-      SeedInitialAssessment::run($model);
+      SeedSetupData::run($model);
     });
   }
 
