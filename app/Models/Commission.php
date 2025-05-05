@@ -11,6 +11,13 @@ class Commission extends Model
 
   protected $guarded = [];
 
+  protected $casts = [
+    'institution_group_id' => 'integer',
+    'partner_id' => 'integer',
+    'commissionable_id' => 'integer',
+    'amount' => 'float'
+  ];
+
   public function institutionGroup()
   {
     return $this->belongsTo(InstitutionGroup::class);
@@ -19,5 +26,11 @@ class Commission extends Model
   public function partner()
   {
     return $this->belongsTo(Partner::class);
+  }
+
+  // Transaction | null
+  function commissionable()
+  {
+    return $this->morphTo('commissionable');
   }
 }

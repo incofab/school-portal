@@ -47,7 +47,7 @@ class TransactionHandler
     return new self(
       $paymentReference->institution,
       $paymentReference->reference
-    );
+    ); 
   }
 
   function topupDebtWallet(
@@ -111,7 +111,7 @@ class TransactionHandler
     $this->amount = $amount;
     $this->bbt = $this->institutionGroup->credit_wallet;
     $this->bat = $this->bbt - $this->amount;
-    $this->recordTransaction();
+    return $this->recordTransaction();
   }
 
   private function recordTransaction()
@@ -126,7 +126,7 @@ class TransactionHandler
       $this->institutionGroup->fill(['credit_wallet' => $this->bat])->save();
     }
 
-    Transaction::query()->firstOrCreate(
+    $dTransaction = Transaction::query()->firstOrCreate(
       ['reference' => $this->reference],
       [
         'institution_group_id' => $this->institutionGroup->id,
@@ -141,5 +141,7 @@ class TransactionHandler
         'remark' => $this->remark
       ]
     );
+
+    return $dTransaction;
   }
 }

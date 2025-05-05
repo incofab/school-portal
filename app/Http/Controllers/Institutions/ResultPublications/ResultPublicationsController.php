@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Institutions\ResultPublications;
+namespace App\Http\Controllers\Institutions\ResultPublications; 
 
 use App\Enums\PriceLists\PriceType;
 use App\Models\Institution;
@@ -9,6 +9,8 @@ use App\Models\Classification;
 use App\Support\SettingsHandler;
 use App\Http\Controllers\Controller;
 use App\Models\ResultPublication;
+use App\Models\Student;
+use App\Models\TermResult;
 use App\Rules\ValidateExistsRule;
 use App\Support\ResultPublications\PublishResult;
 

@@ -139,6 +139,25 @@ export interface Withdrawal extends InstitutionRow {
   remark: string;
 }
 
+export interface Partner extends InstitutionRow {
+  user_id: number;
+  user?: User;
+  commission: number;
+  referral_id: number;
+  referral?: Partner;
+  referral_commission: number;
+  wallet: number;
+}
+
+export interface Commission extends InstitutionRow {
+  institution_group: InstitutionGroup;
+  partner?: Partner;
+  commissionable_id?: number;
+  commissionable_type?: string;
+  commissionable?: Transaction;
+  amount: number;
+}
+
 export interface BankAccount extends InstitutionRow {
   bank_name: string;
   account_name: string;

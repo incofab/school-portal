@@ -12,6 +12,7 @@ use App\Enums\TransactionType;
 use App\Models\InstitutionGroup;
 use App\Models\Partner;
 use App\Models\UserTransaction;
+use App\Support\CommissionHandler;
 use App\Support\Fundings\RecordFunding;
 use App\Support\MorphMap;
 
@@ -58,6 +59,14 @@ class WithdrawalController extends Controller
       return $this->message('Insufficient Wallet Balance.', 401);
     }
 
+    //= Deduct Balance, Save to Withdrawals DB Table, and Save to Transactions DB Table
+    CommissionHandler::make($reqReference)->debitPartner(
+      $partner,
+      $reqAmount,
+      $reqBankAccountId
+    );
+
+    /*
     //= Deduct balance
     $partner->update([
       'wallet' => $newFundBalance
@@ -86,6 +95,7 @@ class WithdrawalController extends Controller
       'reference' => $reqReference,
       'remark' => null
     ]);
+    */
 
     return $this->ok();
   }
@@ -125,6 +135,14 @@ class WithdrawalController extends Controller
 
       //= Partner
       if ($withdrawableType === MorphMap::key(Partner::class)) {
+        //= Refund the Partner, and save record to UserTransaction DB Table
+        $partner = Partner::find($withdrawableId);
+        CommissionHandler::make($withdrawalReference)->refundPartner(
+          $partner,
+          $withdrawal
+        );
+
+        /*
         $partner = Partner::find($withdrawableId);
         $currentBalance = floatval($partner->wallet);
         $newBalance = $currentBalance + $withdrawalAmount;
@@ -146,6 +164,7 @@ class WithdrawalController extends Controller
           'reference' => $withdrawalReference,
           'remark' => null
         ]);
+        */
       }
     }
 

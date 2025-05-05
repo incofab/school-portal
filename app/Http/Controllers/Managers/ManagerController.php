@@ -63,12 +63,6 @@ class ManagerController extends Controller
       'referral_commission' => ['nullable', 'numeric', 'min:0']
     ]);
 
-    // $user = User::query()->create(
-    //   collect($data)
-    //     ->except('role', 'commission', 'referral_email', 'referral_commission')
-    //     ->toArray()
-    // );
-
     $user = User::query()->create([
       ...collect($data)
         ->except('role', 'commission', 'referral_email', 'referral_commission')
@@ -84,7 +78,7 @@ class ManagerController extends Controller
       Partner::create([
         'user_id' => $user->id,
         'commission' => $data['commission'],
-        'referral_user_id' => $refUser?->id,
+        'referral_id' => $refUser?->partner?->id,
         'referral_commission' => $data['referral_commission'] ?? null
       ]);
     }

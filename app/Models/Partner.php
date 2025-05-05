@@ -11,20 +11,43 @@ class Partner extends Model
   use HasFactory, HasRoles;
 
   protected $guarded = [];
+  protected $casts = [
+    'referral_id' => 'integer',
+    'commission' => 'float',
+    'referral_commission' => 'float',
+    'user_id' => 'integer',
+    'wallet' => 'float'
+  ];
 
   public function user()
   {
     return $this->belongsTo(User::class);
   }
 
-  public function referralUser()
+  /**
+   * Parent partner. Retrieves the partner the referred the current partner
+   */
+  public function referral()
   {
-    return $this->belongsTo(User::class, 'referral_user_id');
+    return $this->belongsTo(Partner::class, 'referral_id');
+  }
+
+  /**
+   * Children partners. All partners referred by the current partner
+   */
+  public function referrals()
+  {
+    return $this->hasMany(Partner::class, 'referral_id');
   }
 
   function bankAccounts()
   {
     return $this->morphMany(BankAccount::class, 'accountable');
+  }
+
+  function commissions()
+  {
+    return $this->hasMany(Commission::class);
   }
 
   function withdrawals()

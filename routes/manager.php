@@ -67,5 +67,8 @@ Route::resource('billings', Web\Billings\BillingsController::class);
 //== BANK ACCOUNT DETAILS
 Route::resource('/bank-accounts', Web\BankAccounts\BankAccountController::class);
 
+//== COMMISSIONS
+Route::resource('/commissions', Web\Commissions\CommissionController::class);
+
 //== WITHDRAWALS
 Route::resource('/withdrawals', Web\Withdrawals\WithdrawalController::class);

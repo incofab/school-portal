@@ -43,6 +43,7 @@ class MorphMap
     'classification' => Models\Classification::class,
     'classification-group' => Models\ClassificationGroup::class,
     'class-result-info' => Models\ClassResultInfo::class,
+    'commission' => Models\Commission::class,
     'course' => Models\Course::class,
     'course-result' => Models\CourseResult::class,
     'course-result-info' => Models\CourseResultInfo::class,

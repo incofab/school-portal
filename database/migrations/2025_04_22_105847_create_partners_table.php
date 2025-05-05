@@ -15,10 +15,10 @@ return new class extends Migration {
         ->onDelete('cascade');
       $table->decimal('commission', 10, 2);
       $table
-        ->foreignId('referral_user_id')
+        ->foreignId('referral_id')
         ->nullable()
-        ->constrained('users')
-        ->onDelete('set null');
+        ->constrained('partners')
+        ->nullOnDelete();
       $table->decimal('referral_commission', 10, 2)->default(0.0);
       $table->decimal('wallet', 10, 2)->default(0.0);
       $table->timestamps();

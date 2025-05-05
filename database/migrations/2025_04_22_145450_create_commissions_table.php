@@ -17,7 +17,8 @@ return new class extends Migration {
         ->foreignId('partner_id')
         ->constrained('partners')
         ->onDelete('cascade');
-      $table->decimal('commission', 10, 2);
+      $table->decimal('amount', 10, 2);
+      $table->nullableMorphs('commissionable');
       $table->timestamps();
     });
   }
