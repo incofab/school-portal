@@ -545,6 +545,18 @@ export interface RegistrationRequest extends Row {
   partner: User;
 }
 
+export interface PartnerRegistrationRequest extends Row {
+  first_name: string;
+  last_name: string;
+  other_names: string;
+  phone: string;
+  email: string;
+  username: string;
+  gender: string;
+  password: string;
+  referral?: Partner;
+}
+
 export interface Question extends InstitutionRow {
   question_no: number;
   question: string;

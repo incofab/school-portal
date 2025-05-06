@@ -14,7 +14,7 @@ import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Gender, ManagerRole } from '@/types/types';
 
-interface Props {}
+interface Props {} 
 
 export default function CreateManager({}: Props) {
   const { handleResponseToast } = useMyToast();
@@ -35,7 +35,7 @@ export default function CreateManager({}: Props) {
   });
 
   // Watch role change to show/hide extra fields
-  const isPartner = form.data.role === ManagerRole.Partner;
+  const isPartner = form.data.role === ManagerRole.Partner; 
 
   const submit = async () => {
     const res = await form.submit((data, web) => {

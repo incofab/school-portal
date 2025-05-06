@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Managers;
 
+use App\Actions\RecordUsers\RecordPartner;
 use App\Enums\ManagerRole;
 use App\Http\Controllers\Controller;
 use App\Models\Partner;
@@ -38,51 +39,29 @@ class ManagerController extends Controller
 
   function store(Request $request)
   {
-    $data = $request->validate([
-      ...User::generalRule(),
-      'username' => [
-        'required',
-        'unique:users,username',
-        function ($attr, $value, $fail) {
-          if (ctype_digit($value)) {
-            $fail('Username cannot contain only digits');
-          }
-        }
-      ],
-      'role' => [
-        'required',
-        new Enum(ManagerRole::class),
-        function ($attr, $value, $fail) {
-          if ($value === ManagerRole::Admin->value) {
-            $fail('Admin role cannot be added through this form');
-          }
-        }
-      ],
-      'commission' => ['nullable', 'numeric', 'min:0'],
-      'referral_email' => ['nullable', 'exists:users,email'],
-      'referral_commission' => ['nullable', 'numeric', 'min:0']
-    ]);
+    $data = $request->validate(Partner::createRule());
 
-    $user = User::query()->create([
-      ...collect($data)
-        ->except('role', 'commission', 'referral_email', 'referral_commission')
-        ->toArray(),
-      'password' => bcrypt('password')
-    ]);
-    $user->assignRole($data['role']);
+    RecordPartner::make()->create($data);
 
-    //= Create Partner's Record
-    if ($data['role'] === ManagerRole::Partner->value) {
-      $refUser = User::where('email', $data['referral_email'])->first();
+    // $user = User::query()->create([
+    //   ...collect($data)
+    //     ->except('role', 'commission', 'referral_email', 'referral_commission')
+    //     ->toArray(),
+    //   'password' => bcrypt('password')
+    // ]);
+    // $user->assignRole($data['role']);
 
-      Partner::create([
-        'user_id' => $user->id,
-        'commission' => $data['commission'],
-        'referral_id' => $refUser?->partner?->id,
-        'referral_commission' => $data['referral_commission'] ?? null
-      ]);
-    }
+    // //= Create Partner's Record
+    // if ($data['role'] === ManagerRole::Partner->value) {
+    //   $refUser = User::where('email', $data['referral_email'])->first();
 
+    //   Partner::create([
+    //     'user_id' => $user->id,
+    //     'commission' => $data['commission'],
+    //     'referral_id' => $refUser?->partner?->id,
+    //     'referral_commission' => $data['referral_commission'] ?? null
+    //   ]);
+    // }
     return $this->ok();
   }
 

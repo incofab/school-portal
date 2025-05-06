@@ -41,6 +41,10 @@ export default function ManagerSideBarLayout() {
       route: route('managers.bank-accounts.index'),
     },
     {
+      label: 'Commissions',
+      route: route('managers.commissions.index'),
+    },
+    {
       label: 'Withdrawals',
       route: route('managers.withdrawals.index'),
     },
@@ -48,6 +52,11 @@ export default function ManagerSideBarLayout() {
       label: 'Managers',
       route: route('managers.index'),
       roles: [ManagerRole.Admin],
+    },
+    {
+      label: 'Partnership Requests',
+      roles: [ManagerRole.Admin],
+      route: route('managers.partner-registration-requests.index'),
     },
     {
       label: 'Fundings',

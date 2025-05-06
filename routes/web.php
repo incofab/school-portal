@@ -66,6 +66,10 @@ Route::group(['middleware' => ['guest']], function () {
     Route::post('login', [Web\AuthController::class, 'login'])->name('login.store');
     Route::get('register/{partner?}', [Web\InstitutionRegistrationRequestController::class, 'create'])->name('registration-requests.create');
     Route::post('register/{partner?}', [Web\InstitutionRegistrationRequestController::class, 'store'])->name('registration-requests.store');
+
+    Route::get('partner-registration', [Web\PartnerRegistrationRequestController::class, 'create'])->name('partner-registration-requests.create');
+    Route::post('partner-registration', [Web\PartnerRegistrationRequestController::class, 'store'])->name('partner-registration-requests.store');
+
     Route::get('registration-completed/{registrationRequest}', [Web\InstitutionRegistrationRequestController::class, 'registrationCompleted'])
         ->name('registration-requests.completed-message');
 

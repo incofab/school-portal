@@ -37,6 +37,13 @@ Route::post('/registration-requests/create-institution/{institutionGroup}/{regis
 Route::delete('/registration-requests/{registrationRequest}', [Web\RegistrationRequests\RegistrationRequestsController::class, 'destroy'])
     ->name('registration-requests.destroy');
 
+Route::get('partner-registrations', [Web\PartnerRequests\PartnerRegistrationRequestsController::class, 'index'])->name('partner-registration-requests.index');
+Route::post('/partner-registrations/{partnerRegistrationRequest}/onboard', [Web\PartnerRequests\PartnerRegistrationRequestsController::class, 'onboardPartner'])
+->name('partner-registration-requests.onboard');
+Route::delete('/partner-registrations/{partnerRegistrationRequest}', [Web\PartnerRequests\PartnerRegistrationRequestsController::class, 'destroy'])
+->name('partner-registration-requests.destroy');
+
+
 //Admin section
 Route::group(['middleware' => 'admin'], function () {
     /*
