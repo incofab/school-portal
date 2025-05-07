@@ -22,13 +22,6 @@ class TopicController extends Controller
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
     ]);
-
-    // $this->allowedRoles([InstitutionUserType::Admin])->except(
-    //   'index',
-    //   'subTopicIndex',
-    //   'show',
-    //   'search'
-    // );
   }
 
   //== Listing

@@ -1,10 +1,12 @@
 <?php
 
+use App\Enums\TermType;
 use App\Models\ClassificationGroup;
 use App\Models\Institution;
 use App\Models\User;
 use App\Models\Topic;
 use App\Models\Course;
+use App\Models\CourseTeacher;
 use App\Models\InstitutionUser;
 use App\Models\SchemeOfWork;
 use App\Models\Student;
@@ -28,6 +30,7 @@ beforeEach(function () {
   $this->student = Student::factory()
     ->withInstitution($this->institution)
     ->create();
+  $this->classification = $this->student->classification;
 });
 
 it('tests the index page', function () {
@@ -58,6 +61,13 @@ it('stores topic data', function () {
     'institution' => $this->institution->uuid
   ]);
 
+  $courseTeacher = CourseTeacher::factory()
+    ->withInstitution($this->institution)
+    ->create([
+      'course_id' => $this->course->id,
+      'classification_id' => $this->classification->id
+    ]);
+
   actingAs($this->admin)
     ->postJson($route, [])
     ->assertJsonValidationErrors(['title', 'description', 'course_id']);
@@ -69,10 +79,11 @@ it('stores topic data', function () {
 
   postJson($route, [
     ...$topicData,
+    'term' => TermType::First->value,
+    'week_number' => 1,
     'is_used_by_institution_group' => false,
-    'classification_group_id' => ClassificationGroup::factory()
-      ->for($this->institution)
-      ->create()->id
+    'user_id' => $courseTeacher->user_id,
+    'classification_group_id' => $this->classification->classification_group_id
   ])->assertOk();
 
   assertDatabaseCount('topics', 1);

@@ -97,9 +97,11 @@ test('updates an existing passage', function ($class) {
     ->for($courseable, 'courseable')
     ->create();
 
-  $newData = Passage::factory()->raw([
-    'passage' => 'Updated Passage Text'
-  ]);
+  $newData = Passage::factory()
+    ->courseable($courseable)
+    ->raw([
+      'passage' => 'Updated Passage Text'
+    ]);
 
   $response = actingAs($this->instAdmin)->put(
     route('institutions.passages.update', [$this->institution, $passage]),

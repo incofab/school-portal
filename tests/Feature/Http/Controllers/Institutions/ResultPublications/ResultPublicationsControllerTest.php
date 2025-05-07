@@ -13,8 +13,6 @@ use App\Models\ResultPublication;
 use App\Models\TermResult;
 use App\Support\SettingsHandler;
 use App\Models\Partner;
-use App\Models\Transaction;
-use App\Models\Commission;
 
 use function Pest\Laravel\postJson;
 
@@ -49,13 +47,8 @@ beforeEach(function () {
     ->priceLists()
     ->where('type', PriceType::ResultChecking)
     ->first();
-
-  // Create a PriceList for Result Checking
-  $this->priceList = PriceList::factory()
-    ->for($this->institutionGroup)
-    ->type(PriceType::ResultChecking)
-    ->create();
   $this->priceList->update(['amount' => 100]);
+
   $this->institutionGroup
     ->fill(['credit_wallet' => $this->priceList->amount * 10])
     ->save();
