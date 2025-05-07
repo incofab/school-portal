@@ -221,6 +221,7 @@ export enum PriceType {
 }
 
 export enum PaymentStructure {
+  PerUnit = 'per-unit',
   PerTerm = 'per-term',
   PerSession = 'per-session',
   PerStudentPerTerm = 'per-student-per-term',
@@ -283,6 +284,13 @@ export interface FeeItem {
 }
 
 export enum FeeCategoryType {
+  Institution = 'institution',
+  Classification = 'classification',
+  ClassificationGroup = 'classification-group',
+  Association = 'association',
+}
+
+export enum MessageRecipientType {
   Institution = 'institution',
   Classification = 'classification',
   ClassificationGroup = 'classification-group',

@@ -12,7 +12,7 @@ class RegisterInstitution
   public static function run(
     InstitutionGroup $institutionGroup,
     array $data,
-    callable $callback = null
+    ?callable $callback = null
   ) {
     DB::beginTransaction();
     $user = $institutionGroup->user;
@@ -26,10 +26,13 @@ class RegisterInstitution
         'user_id' => $user->id,
         'institution_group_id' => $institutionGroup->id
       ]);
-    SeedInitialAssessment::run($institution);
+
+    SeedSetupData::run($institution);
+
     if ($callback) {
       $callback();
     }
+
     DB::commit();
   }
 }

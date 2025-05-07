@@ -95,7 +95,7 @@ function TermSessionDisplay() {
 
   return (
     <Div>
-      <Text as={'span'} fontWeight={'bold'}>
+      <Text as={'span'} fontWeight={'bold'} size={'sm'}>
         {startCase(currentTerm)} Term, {currentAcademicSession.title} Session
       </Text>
     </Div>

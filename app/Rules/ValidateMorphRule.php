@@ -51,7 +51,7 @@ class ValidateMorphRule implements ValidationRule
     $this->morphModel = $model;
   }
 
-  function getModel(): Model
+  function getModel(): ?Model
   {
     return $this->morphModel;
   }

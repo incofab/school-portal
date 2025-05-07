@@ -117,7 +117,7 @@ class Controller extends BaseController
 
   protected function res(
     Res $res,
-    string $successRoute = null,
+    ?string $successRoute = null,
     $failureRoute = null
   ) {
     if ($res->success && $successRoute) {

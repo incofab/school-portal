@@ -4,6 +4,8 @@ namespace Database\Factories;
 
 use App\Enums\InstitutionUserType;
 use App\Models\Institution;
+use App\Models\InstitutionUser;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -38,6 +40,24 @@ class InstitutionUserFactory extends Factory
       fn(array $attributes) => [
         'role' => InstitutionUserType::Teacher->value
       ]
+    );
+  }
+
+  public function student(Institution $institution): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'role' => InstitutionUserType::Student->value,
+        'institution_id' => $institution->id
+      ]
+    )->afterCreating(
+      fn(
+        InstitutionUser $institutionUser
+      ) => Student::factory()->withInstitution(
+        $institutionUser->institution,
+        null,
+        $institutionUser
+      )
     );
   }
 

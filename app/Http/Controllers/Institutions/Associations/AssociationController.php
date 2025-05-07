@@ -23,21 +23,6 @@ class AssociationController extends Controller
     ]);
   }
 
-  // function create(Institution $institution)
-  // {
-  //   return Inertia::render('institutions/associations/create-association', [
-  //     'associations' => Association::all()
-  //   ]);
-  // }
-
-  // function edit(Institution $institution, Association $association)
-  // {
-  //   return Inertia::render('institutions/associations/create-association', [
-  //     'associations' => Association::all(),
-  //     'association' => $association
-  //   ]);
-  // }
-
   public function store(Request $request, Institution $institution)
   {
     $validatedData = $request->validate(Association::createRule($institution));
