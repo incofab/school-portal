@@ -48,7 +48,7 @@ class InstitutionGroup extends Model
     return $this->hasMany(Funding::class)->latest();
   }
 
-  public function pricelists()
+  public function priceLists()
   {
     return $this->hasMany(PriceList::class);
   }

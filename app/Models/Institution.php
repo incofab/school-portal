@@ -48,6 +48,8 @@ class Institution extends Model
   public function resolveRouteBinding($value, $field = null)
   {
     $user = currentUser();
+    $field = $field ?? 'uuid';
+    // $field = 'uuid';
     $institutionModel = Institution::query()
       ->select('institutions.*')
       ->join(
@@ -55,7 +57,7 @@ class Institution extends Model
         'institution_users.institution_id',
         'institutions.id'
       )
-      ->where('uuid', $value)
+      ->where($field, $value)
       ->when(
         $user && !$user->isManager(),
         fn($q) => $q

@@ -38,14 +38,15 @@ beforeEach(function () {
     ->create();
 
   $this->price = 10;
-  $priceList1 = PriceList::factory()
-    ->for($this->institution->institutionGroup)
-    ->type(PriceType::EmailSending)
-    ->create(['amount' => $this->price]);
-  $priceList2 = PriceList::factory()
-    ->for($this->institution->institutionGroup)
-    ->type(PriceType::SmsSending)
-    ->create(['amount' => $this->price]);
+
+  $this->institutionGroup
+    ->priceLists()
+    ->where('type', PriceType::EmailSending)
+    ->update(['amount' => $this->price]);
+  $this->institutionGroup
+    ->priceLists()
+    ->where('type', PriceType::SmsSending)
+    ->update(['amount' => $this->price]);
 });
 
 it('can store a payment notification for all owing students', function () {

@@ -35,7 +35,7 @@ class AdmissionApplicationController extends Controller
     ]);
   }
 
-  function index()
+  function index(Institution $institution)
   {
     $query = AdmissionApplication::query()->with('admissionForm');
     return Inertia::render(

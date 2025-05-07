@@ -91,7 +91,7 @@ class LessonPlanController extends Controller
   function storeOrUpdate(
     Institution $institution,
     Request $request,
-    LessonPlan $lessonPlan = null
+    ?LessonPlan $lessonPlan = null
   ) {
     $data = $request->validate(LessonPlan::createRule());
 

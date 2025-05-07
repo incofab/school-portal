@@ -27,7 +27,8 @@ class PassageFactory extends Factory
     return $this->state(
       fn(array $attributes) => [
         'courseable_type' => $courseable->getMorphClass(),
-        'courseable_id' => $courseable->id
+        'courseable_id' => $courseable->id,
+        'institution_id' => $courseable->institution_id
       ]
     );
   }

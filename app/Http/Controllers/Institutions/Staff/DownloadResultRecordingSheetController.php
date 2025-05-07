@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Institutions\Staff;
 use App\Actions\CourseResult\DownloadResultRecordingSheet;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DownloadResultRecordingSheetRequest;
+use App\Models\Institution;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadResultRecordingSheetController extends Controller
 {
-  public function __invoke(DownloadResultRecordingSheetRequest $request)
-  {
+  public function __invoke(
+    Institution $institution,
+    DownloadResultRecordingSheetRequest $request
+  ) {
     $excelWriter = DownloadResultRecordingSheet::run(
       $request->classificationObj,
       $request->academicSessionObj,

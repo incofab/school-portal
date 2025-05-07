@@ -38,11 +38,16 @@ beforeEach(function () {
   // Create an Institution Group
   $this->institutionGroup = $this->institution->institutionGroup;
 
+  $this->priceList = $this->institutionGroup
+    ->priceLists()
+    ->where('type', PriceType::ResultChecking)
+    ->first();
   // Create a PriceList for Result Checking
-  $this->priceList = PriceList::factory()
-    ->for($this->institutionGroup)
-    ->type(PriceType::ResultChecking)
-    ->create();
+  // $this->priceList = PriceList::factory()
+  //   ->for($this->institutionGroup)
+  //   ->type(PriceType::ResultChecking)
+  //   ->create();
+
   $this->institutionGroup
     ->fill(['credit_wallet' => $this->priceList->amount * 10])
     ->save();

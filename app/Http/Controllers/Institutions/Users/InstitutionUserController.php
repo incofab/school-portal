@@ -18,7 +18,7 @@ use Storage;
 
 class InstitutionUserController extends Controller
 {
-  public function create()
+  public function create(Institution $institution)
   {
     return inertia('institutions/users/create-edit-user');
   }
@@ -30,7 +30,7 @@ class InstitutionUserController extends Controller
     return $this->ok();
   }
 
-  public function downloadTemplate()
+  public function downloadTemplate(Institution $institution)
   {
     $excelWriter = DownloadStaffRecordingSheet::run();
     $filename = 'staff-recording-template.xlsx';
@@ -59,8 +59,10 @@ class InstitutionUserController extends Controller
     return $this->ok();
   }
 
-  function idCards(Institution $institution, Classification $classification = null)
-  {
+  function idCards(
+    Institution $institution,
+    ?Classification $classification = null
+  ) {
     if (!empty($classification)) {
       //Returns Students
       $persons = $classification
@@ -72,7 +74,9 @@ class InstitutionUserController extends Controller
       $persons = InstitutionUser::whereNotIn('role', [
         InstitutionUserType::Student->value,
         InstitutionUserType::Alumni->value
-      ])->with('user')->get();
+      ])
+        ->with('user')
+        ->get();
     }
 
     return inertia('institutions/students/staff-id-cards', [

@@ -24,7 +24,7 @@ class CoursesController extends Controller
     ]);
   }
 
-  function index(Request $request)
+  function index(Institution $institution, Request $request)
   {
     $query = Course::query()->select('courses.*');
     CoursesUITableFilters::make($request->all(), $query)->filterQuery();
@@ -34,7 +34,7 @@ class CoursesController extends Controller
     ]);
   }
 
-  function search(Request $request)
+  function search(Institution $institution, Request $request)
   {
     $query = Course::query()->when(
       $request->search,
@@ -45,7 +45,7 @@ class CoursesController extends Controller
     ]);
   }
 
-  function create()
+  function create(Institution $institution)
   {
     return Inertia::render('institutions/courses/create-edit-course', []);
   }
@@ -64,7 +64,7 @@ class CoursesController extends Controller
     return $this->ok();
   }
 
-  function store(CreateCourseRequest $request)
+  function store(Institution $institution, CreateCourseRequest $request)
   {
     $data = $request->validated();
     currentInstitution()

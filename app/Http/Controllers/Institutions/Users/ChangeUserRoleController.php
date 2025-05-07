@@ -31,7 +31,7 @@ class ChangeUserRoleController extends Controller
     return $this->ok();
   }
 
-  function canChangeRole($prevRole, $newRole)
+  private function canChangeRole($prevRole, $newRole)
   {
     if ($prevRole === InstitutionUserType::Student->value) {
       abort_unless(

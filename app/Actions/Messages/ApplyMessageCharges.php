@@ -25,7 +25,7 @@ class ApplyMessageCharges
   {
     $institutionGroup = $this->institution->institutionGroup;
     $instGroupPriceList = $institutionGroup
-      ->pricelists()
+      ->priceLists()
       ->where(
         'type',
         $channel === NotificationChannelsType::Sms->value

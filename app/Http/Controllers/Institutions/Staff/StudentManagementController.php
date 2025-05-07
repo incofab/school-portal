@@ -71,7 +71,7 @@ class StudentManagementController extends Controller
     ]);
   }
 
-  public function create()
+  public function create(Institution $institution)
   {
     return inertia('institutions/students/create-edit-student', [
       'classification' => Classification::all()
@@ -92,7 +92,7 @@ class StudentManagementController extends Controller
     ]);
   }
 
-  public function downloadTemplate()
+  public function downloadTemplate(Institution $institution)
   {
     $excelWriter = DownloadStudentRecordingSheet::run();
     $filename = 'student-recording-template.xlsx';

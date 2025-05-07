@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Institutions\Users;
 
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
+use App\Models\Institution;
 use App\Models\InstitutionUser;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -61,14 +62,14 @@ class ListInstitutionUserController extends Controller
   /**
    * Display a listing of the resource.
    */
-  public function index(Request $request)
+  public function index(Institution $institution, Request $request)
   {
     return Inertia::render('institutions/users/list-institution-users', [
       'institutionUsers' => paginateFromRequest($this->getQuery())
     ]);
   }
 
-  public function search()
+  public function search(Institution $institution)
   {
     return response()->json([
       'result' => paginateFromRequest($this->getQuery())

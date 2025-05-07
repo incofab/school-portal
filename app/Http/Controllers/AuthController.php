@@ -35,8 +35,9 @@ class AuthController extends Controller
         'email' => ['invalid credentials']
       ]);
     }
-
-    return redirect()->intended(RouteServiceProvider::HOME);
+    return $this->ok();
+    // return redirect()->route('home');
+    // return redirect()->intended(route('user.dashboard'));
   }
 
   public function showForgotPassword()

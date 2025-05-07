@@ -25,7 +25,7 @@ class CourseTeachersController extends Controller
     ]);
   }
 
-  function index(Request $request, Institution $institution, User $user = null)
+  function index(Request $request, Institution $institution, ?User $user = null)
   {
     $query = ($user
       ? $user->courseTeachers()->getQuery()
@@ -41,7 +41,7 @@ class CourseTeachersController extends Controller
     ]);
   }
 
-  function search(Request $request)
+  function search(Institution $institution, Request $request)
   {
     $query = CourseTeacher::query()->select('course_teachers.*');
     CourseTeachersUITableFilters::make($request->all(), $query)->filterQuery();
@@ -54,7 +54,7 @@ class CourseTeachersController extends Controller
     ]);
   }
 
-  function create(?User $user = null)
+  function create(Institution $institution, ?User $user = null)
   {
     return Inertia::render('institutions/staff/register-course-teacher', [
       'courses' => Course::all(),

@@ -38,7 +38,7 @@ class CourseResultsController extends Controller
     );
   }
 
-  public function index(Request $request)
+  public function index(Institution $institution, Request $request)
   {
     $query = CourseResult::query()->select('course_results.*');
     CourseResultsUITableFilters::make($request->all(), $query)

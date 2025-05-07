@@ -51,7 +51,7 @@ class ResultPublicationsController extends Controller
     $settingHandler = SettingsHandler::makeFromRoute();
     $institutionGroup = $institution->institutionGroup;
     $instGroupPriceList = $institutionGroup
-      ->pricelists()
+      ->priceLists()
       ->where('type', PriceType::ResultChecking->value)
       ->first();
 

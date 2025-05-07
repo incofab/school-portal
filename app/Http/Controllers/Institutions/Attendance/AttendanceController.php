@@ -7,21 +7,18 @@ use App\Models\Attendance;
 use App\Models\Institution;
 use Illuminate\Http\Request;
 use App\Enums\AttendanceType;
-use App\Models\InstitutionUser;
 use Illuminate\Validation\Rule;
-use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Support\UITableFilters\AttendanceUITableFilters;
 
 class AttendanceController extends Controller
 {
-  function create()
+  function create(Institution $institution)
   {
     return Inertia::render('institutions/attendances/create-attendance', []);
   }
 
-  public function index(Request $request)
+  public function index(Request $request, Institution $institution)
   {
     $query = AttendanceUITableFilters::make(
       $request->all(),
@@ -39,7 +36,7 @@ class AttendanceController extends Controller
     );
   }
 
-  public function search(Request $request)
+  public function search(Request $request, Institution $institution)
   {
     $query = AttendanceUITableFilters::make(
       $request->all(),

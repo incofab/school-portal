@@ -16,7 +16,7 @@ class PromoteStudentsController extends Controller
   public function create(
     Institution $institution,
     ClassificationGroup $classificationGroup,
-    ClassificationGroup $destinationClassificatiinGroup = null
+    ?ClassificationGroup $destinationClassificatiinGroup = null
   ) {
     $currentAcademicSessionId = SettingsHandler::makeFromRoute()->getCurrentAcademicSession();
     $sessionResults = SessionResult::query()

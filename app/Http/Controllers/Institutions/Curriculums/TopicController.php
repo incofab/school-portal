@@ -30,7 +30,7 @@ class TopicController extends Controller
   }
 
   //== Listing
-  public function index(Institution $institution, Topic $topic = null)
+  public function index(Institution $institution, ?Topic $topic = null)
   {
     $query = Topic::query()
       ->when(
@@ -65,7 +65,7 @@ class TopicController extends Controller
   }
 
   //== Create/Edit Topic
-  function createOrEdit(Institution $institution, Topic $topic = null)
+  function createOrEdit(Institution $institution, ?Topic $topic = null)
   {
     $parentTopics = Topic::whereNull('parent_topic_id')->get();
 
@@ -98,7 +98,7 @@ class TopicController extends Controller
     ]);
   }
 
-  function search(Request $request)
+  function search(Request $request, Institution $institution)
   {
     $query = Topic::query()->when(
       $request->search,
@@ -110,12 +110,14 @@ class TopicController extends Controller
   function storeOrUpdate(
     Institution $institution,
     Request $request,
-    Topic $topic = null
+    ?Topic $topic = null
   ) {
     $data = $request->validate(Topic::createRule());
 
     $data = [
-      ...collect($data)->except('is_used_by_institution_group')->toArray(),
+      ...collect($data)
+        ->except('is_used_by_institution_group')
+        ->toArray(),
       'institution_id' => $institution->id,
       'institution_group_id' => $data['is_used_by_institution_group']
         ? $institution->institutionGroup->id
@@ -134,7 +136,11 @@ class TopicController extends Controller
   function destroy(Institution $institution, Topic $topic)
   {
     $hasSubTopics = Topic::where('parent_topic_id', $topic->id)->exists();
-    $hasSchemeOfWork = $topic->schemeOfWorks()->get()->count() > 0;
+    $hasSchemeOfWork =
+      $topic
+        ->schemeOfWorks()
+        ->get()
+        ->count() > 0;
 
     if ($hasSubTopics || $hasSchemeOfWork) {
       return $this->message(

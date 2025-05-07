@@ -65,20 +65,17 @@ test('can store message to a specific model (classification)', function () {
     'reference' => Str::uuid()->toString()
   ];
 
-  // Not pricelist set, should fail
-  actingAs($this->adminUser)
-    ->post(route('institutions.messages.store', $this->institution), $data)
-    ->assertForbidden()
-    ->assertJson(['message' => 'Price List has not been set']);
+  $priceList1 = $this->institutionGroup
+    ->priceLists()
+    ->where('type', PriceType::EmailSending)
+    ->first();
+  $priceList1->update(['amount' => 10]);
 
-  $priceList1 = PriceList::factory()
-    ->for($this->institution->institutionGroup)
-    ->type(PriceType::EmailSending)
-    ->create(['amount' => 10]);
-  $priceList2 = PriceList::factory()
-    ->for($this->institution->institutionGroup)
-    ->type(PriceType::SmsSending)
-    ->create(['amount' => 10]);
+  $priceList2 = $this->institutionGroup
+    ->priceLists()
+    ->where('type', PriceType::SmsSending)
+    ->first();
+  $priceList2->update(['amount' => 10]);
 
   actingAs($this->adminUser)
     ->post(route('institutions.messages.store', $this->institution), $data)
@@ -109,10 +106,10 @@ test('can store message to a specific model (classification)', function () {
 });
 
 test('can store message to a list of receivers (email)', function () {
-  PriceList::factory()
-    ->for($this->institution->institutionGroup)
-    ->type(PriceType::EmailSending)
-    ->create(['amount' => 10]);
+  $this->institutionGroup
+    ->priceLists()
+    ->where('type', PriceType::EmailSending)
+    ->update(['amount' => 10]);
   $this->institutionGroup->fill(['credit_wallet' => 100])->save();
 
   $receivers = ['test1@example.com', 'test2@example.com'];

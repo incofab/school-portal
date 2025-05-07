@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InstitutionUserStatus;
 use App\Enums\InstitutionUserType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +19,8 @@ class InstitutionUser extends Model
   protected $casts = [
     'role' => InstitutionUserType::class,
     'institution_id' => 'integer',
-    'user_id' => 'integer'
+    'user_id' => 'integer',
+    'status' => InstitutionUserStatus::class
   ];
 
   function hasRole(InstitutionUserType $role): bool

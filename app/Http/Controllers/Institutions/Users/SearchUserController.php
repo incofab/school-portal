@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Institutions\Users;
 
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
+use App\Models\Institution;
 use App\Models\User;
 use App\Support\UITableFilters\UserUITableFilters;
 use Illuminate\Http\Request;
 
 class SearchUserController extends Controller
 {
-  public function __invoke(Request $request)
+  public function __invoke(Institution $institution, Request $request)
   {
     $institutionUser = currentInstitutionUser();
     abort_if(

@@ -38,7 +38,7 @@ class RouteServiceProvider extends ServiceProvider
    */
   public function boot()
   {
-    Route::model('institution', Institution::class);
+    // Route::model('institution', Institution::class);
 
     $this->configureRateLimiting();
 

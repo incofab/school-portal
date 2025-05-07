@@ -54,8 +54,7 @@ test('index displays passages for a course session', function ($class) {
 test('store creates a new passage', function ($class) {
   $courseable = $this->courseable[$class];
   $data = Passage::factory()
-    ->for($this->institution)
-    ->for($courseable, 'courseable')
+    ->courseable($courseable)
     ->raw();
 
   $response = actingAs($this->instAdmin)->post(

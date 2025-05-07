@@ -25,7 +25,7 @@ class LearningEvaluationDomainController extends Controller
   function index(
     Request $request,
     Institution $institution,
-    LearningEvaluationDomain $learningEvaluationDomain = null
+    ?LearningEvaluationDomain $learningEvaluationDomain = null
   ) {
     return Inertia::render(
       'institutions/learning-evaluations/list-learning-evaluation-domains',
@@ -41,7 +41,7 @@ class LearningEvaluationDomainController extends Controller
   function store(
     Request $request,
     Institution $institution,
-    LearningEvaluationDomain $learningEvaluationDomain = null
+    ?LearningEvaluationDomain $learningEvaluationDomain = null
   ) {
     $data = $request->validate([
       'title' => [

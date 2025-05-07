@@ -34,6 +34,8 @@ beforeEach(function () {
   Queue::fake(); // Fake the queue to check for SendBulksms job
 
   $this->institution = Institution::factory()->create();
+
+  /** @var InstitutionGroup $institutionGroup */
   $this->institutionGroup = $this->institution->institutionGroup;
   $this->institutionGroup->fill(['credit_wallet' => 1000])->save(); // Set initial credit
 
@@ -55,14 +57,15 @@ beforeEach(function () {
   // Set up price lists
   $this->emailPrice = 10;
   $this->smsPrice = 15;
-  PriceList::factory()
-    ->for($this->institution->institutionGroup)
-    ->type(PriceType::EmailSending)
-    ->create(['amount' => $this->emailPrice]);
-  PriceList::factory()
-    ->for($this->institution->institutionGroup)
-    ->type(PriceType::SmsSending)
-    ->create(['amount' => $this->smsPrice]);
+
+  $this->institutionGroup
+    ->priceLists()
+    ->where('type', PriceType::EmailSending)
+    ->update(['amount' => $this->emailPrice]);
+  $this->institutionGroup
+    ->priceLists()
+    ->where('type', PriceType::SmsSending)
+    ->update(['amount' => $this->smsPrice]);
 
   // Student 1: Owes money, has guardian with email and phone
   [$this->student1, $this->student2] = Student::factory(2)
@@ -123,7 +126,6 @@ it('sends fee payment reminders via email successfully', function () {
   Mail::assertNotQueued(FeePaymentReminderMail::class, function ($mail) {
     return $mail->hasTo($this->guardian3->email);
   });
-
   // Assert wallet deduction
   $expectedCost = 2 * $this->emailPrice;
   expect($this->institutionGroup->fresh()->credit_wallet)->toBe(
