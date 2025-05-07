@@ -5,7 +5,7 @@ use App\Http\Controllers\Managers as Web;
 
 Route::get('/dummy', function () {
     dd('dskmsdsf');
-});
+}); 
 
 Route::get('/', [Web\ManagerController::class, 'dashboard'])
     ->name('dashboard');
@@ -37,6 +37,13 @@ Route::post('/registration-requests/create-institution/{institutionGroup}/{regis
 Route::delete('/registration-requests/{registrationRequest}', [Web\RegistrationRequests\RegistrationRequestsController::class, 'destroy'])
     ->name('registration-requests.destroy');
 
+Route::get('partner-registrations', [Web\PartnerRequests\PartnerRegistrationRequestsController::class, 'index'])->name('partner-registration-requests.index');
+Route::post('/partner-registrations/{partnerRegistrationRequest}/onboard', [Web\PartnerRequests\PartnerRegistrationRequestsController::class, 'onboardPartner'])
+->name('partner-registration-requests.onboard');
+Route::delete('/partner-registrations/{partnerRegistrationRequest}', [Web\PartnerRequests\PartnerRegistrationRequestsController::class, 'destroy'])
+->name('partner-registration-requests.destroy');
+
+
 //Admin section
 Route::group(['middleware' => 'admin'], function () {
     /*
@@ -63,3 +70,12 @@ Route::group(['middleware' => 'admin'], function () {
 Route::post('funding/record-debt', [Web\Fundings\FundingController::class, 'recordDebt'])->name('funding.record-debt');
 Route::resource('funding', Web\Fundings\FundingController::class);
 Route::resource('billings', Web\Billings\BillingsController::class);
+
+//== BANK ACCOUNT DETAILS
+Route::resource('/bank-accounts', Web\BankAccounts\BankAccountController::class);
+
+//== COMMISSIONS
+Route::resource('/commissions', Web\Commissions\CommissionController::class);
+
+//== WITHDRAWALS
+Route::resource('/withdrawals', Web\Withdrawals\WithdrawalController::class);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FormControl, Input, VStack } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
@@ -14,7 +14,7 @@ import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Gender, ManagerRole } from '@/types/types';
 
-interface Props {}
+interface Props {} 
 
 export default function CreateManager({}: Props) {
   const { handleResponseToast } = useMyToast();
@@ -29,7 +29,13 @@ export default function CreateManager({}: Props) {
     password: '',
     password_confirmation: '',
     role: '',
+    commission: '', // New field for commission
+    referral_email: '', // New field for referral user email
+    referral_commission: '', // New field for referral commission
   });
+
+  // Watch role change to show/hide extra fields
+  const isPartner = form.data.role === ManagerRole.Partner; 
 
   const submit = async () => {
     const res = await form.submit((data, web) => {
@@ -49,6 +55,7 @@ export default function CreateManager({}: Props) {
           <SlabBody>
             <Div as={'form'} onSubmit={preventNativeSubmit(submit)} p={6}>
               <VStack spacing={4} align={'stretch'}>
+                {/* Existing form fields */}
                 <FormControlBox
                   form={form}
                   title="First Name"
@@ -160,6 +167,54 @@ export default function CreateManager({}: Props) {
                     required
                   />
                 </FormControlBox>
+
+                {/* Extra fields for 'Partner' role */}
+                {isPartner && (
+                  <>
+                    <FormControlBox
+                      form={form}
+                      title="Commission"
+                      formKey="commission"
+                    >
+                      <Input
+                        type="number"
+                        onChange={(e) =>
+                          form.setValue('commission', e.currentTarget.value)
+                        }
+                        value={form.data.commission}
+                      />
+                    </FormControlBox>
+                    <FormControlBox
+                      form={form}
+                      title="Referral User Email"
+                      formKey="referral_email"
+                    >
+                      <Input
+                        type="email"
+                        onChange={(e) =>
+                          form.setValue('referral_email', e.currentTarget.value)
+                        }
+                        value={form.data.referral_email}
+                      />
+                    </FormControlBox>
+                    <FormControlBox
+                      form={form}
+                      title="Referral Commission"
+                      formKey="referral_commission"
+                    >
+                      <Input
+                        type="number"
+                        onChange={(e) =>
+                          form.setValue(
+                            'referral_commission',
+                            e.currentTarget.value
+                          )
+                        }
+                        value={form.data.referral_commission}
+                      />
+                    </FormControlBox>
+                  </>
+                )}
               </VStack>
               <FormControl mt={2}>
                 <FormButton isLoading={form.processing} />

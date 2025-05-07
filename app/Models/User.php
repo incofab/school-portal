@@ -214,6 +214,11 @@ class User extends Authenticatable
     return $this->hasMany(GuardianStudent::class, 'guardian_user_id', 'id');
   }
 
+  function partner()
+  {
+    return $this->hasOne(Partner::class);
+  }
+
   function receipts()
   {
     return $this->hasMany(Receipt::class);

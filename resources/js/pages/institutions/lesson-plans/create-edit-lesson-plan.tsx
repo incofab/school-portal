@@ -102,7 +102,7 @@ export default function CreateOrUpdateTopic({
                 lessonPlanCourseTeachers={lessonPlanCourseTeachers ?? []}
                 onChange={(e: any) => setCourseTeacher(e)}
               />
-            </FormControlBox>
+            </FormControlBox> 
 
             <FormControlBox
               title="Objective"

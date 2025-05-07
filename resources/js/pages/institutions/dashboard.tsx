@@ -50,7 +50,7 @@ interface ItemCardProps {
 interface Props {
   institutionGroup: InstitutionGroup;
   isSetupComplete: string;
-}
+} 
 
 function DashboardItemCard(prop: ItemCardProps) {
   return (
@@ -104,6 +104,7 @@ function InstitutionDashboard({ institutionGroup, isSetupComplete }: Props) {
     InstitutionUserType.Admin,
     InstitutionUserType.Accountant,
   ];
+  
   const items: ItemCardProps[] = [
     {
       title: 'Users',

@@ -5,7 +5,7 @@ import MySelect from '../dropdown-select/my-select';
 interface Props {
   lessonPlanCourseTeachers: CourseTeacher[];
   selectValue?: number;
-}
+} 
 
 export default function LessonPlanCourseTeacherSelect({
   lessonPlanCourseTeachers,

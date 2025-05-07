@@ -343,8 +343,20 @@ Route::get('/timetables/{classification}/class', [Web\Timetables\TimetableContro
 Route::resource('/timetables', Web\Timetables\TimetableController::class);
 
 
-Route::post('/payment-notifications', [Web\PaymentNotifications\PaymentNotificationController::class, 'store'])->name('payment-notifications.store');
+
+Route::resource('/payment-notifications', Web\PaymentNotifications\PaymentNotificationController::class);
+//Route::post('/payment-notifications', [Web\PaymentNotifications\PaymentNotificationController::class, 'store'])->name('payment-notifications.store');
+
+//== BANK ACCOUNT DETAILS 
+Route::get('/inst-bank-accounts/{bankAccount}/edit', [Web\BankAccounts\BankAccountController::class, 'edit'])->name('inst-bank-accounts.edit');
+Route::put('/inst-bank-accounts/{bankAccount}', [Web\BankAccounts\BankAccountController::class, 'update'])->name('inst-bank-accounts.update');
+Route::delete('/inst-bank-accounts/{bankAccount}', [Web\BankAccounts\BankAccountController::class, 'destroy'])->name('inst-bank-accounts.destroy');
+Route::resource('/inst-bank-accounts', Web\BankAccounts\BankAccountController::class)->except('edit', 'update', 'delete');
+
+//== WITHDRAWALS
+Route::resource('/inst-withdrawals', Web\Withdrawals\WithdrawalController::class);
 
 Route::get('/messages/index', [Web\Staff\MessageController::class, 'index'])->name('messages.index');
 Route::post('/messages/store', [Web\Staff\MessageController::class, 'store'])->name('messages.store');
 Route::get('/messages/create', [Web\Staff\MessageController::class, 'create'])->name('messages.create');
+
