@@ -12,8 +12,15 @@ use App\Models\PriceList;
 use App\Models\ResultPublication;
 use App\Models\TermResult;
 use App\Support\SettingsHandler;
+use App\Models\Partner;
+use App\Models\Transaction;
+use App\Models\Commission;
 
 use function Pest\Laravel\postJson;
+
+/**
+ * ./vendor/bin/pest --filter ResultPublicationsControllerTest
+ */
 
 // Setup shared data
 beforeEach(function () {
@@ -42,12 +49,13 @@ beforeEach(function () {
     ->priceLists()
     ->where('type', PriceType::ResultChecking)
     ->first();
-  // Create a PriceList for Result Checking
-  // $this->priceList = PriceList::factory()
-  //   ->for($this->institutionGroup)
-  //   ->type(PriceType::ResultChecking)
-  //   ->create();
 
+  // Create a PriceList for Result Checking
+  $this->priceList = PriceList::factory()
+    ->for($this->institutionGroup)
+    ->type(PriceType::ResultChecking)
+    ->create();
+  $this->priceList->update(['amount' => 100]);
   $this->institutionGroup
     ->fill(['credit_wallet' => $this->priceList->amount * 10])
     ->save();
@@ -478,4 +486,57 @@ it('publishes result with loan', function () {
   expect($this->institutionGroup->fresh())->debt_wallet->toBe(
     $this->priceList->amount
   );
+});
+
+it('credits partners after successful result publication', function () {
+  $this->priceList
+    ->fill(['payment_structure' => PaymentStructure::PerTerm])
+    ->save();
+  // 1) Arrange: give the institution group a single partner, with a known commission rate
+  $referringPartner = Partner::factory()
+    ->withReferral($this->institutionGroup)
+    ->create();
+  $partner = $referringPartner->referrals()->first();
+
+  // 2) Create some TermResult records to publish
+  $termResults = TermResult::factory(5)
+    ->withInstitution($this->institution)
+    ->for($this->academicSession, 'academicSession')
+    ->create([
+      'classification_id' => $this->classes->first()->id,
+      'term' => $this->term->value
+    ]);
+
+  $payload = [
+    'classifications' => [$this->classes->first()->id]
+  ];
+
+  // 3) Act: hit the store endpoint
+  postJson(
+    route('institutions.result-publications.store', $this->institution),
+    $payload
+  )->assertOk();
+
+  // 4) Find the newly created publication and its related transaction
+  $publication = ResultPublication::latest()->first();
+  $transaction = $publication->transaction;
+
+  // 5) Calculate what the partner *should* have received
+  $totalAmountPaid = $this->priceList->amount;
+  $partnerCommissionRate = $partner->commission / 100;
+  $expectedCommission = $totalAmountPaid * $partnerCommissionRate;
+
+  // 6) Assert: there is a commission record tying that partner to this transaction
+  $this->assertDatabaseHas('commissions', [
+    'partner_id' => $referringPartner->id,
+    'commissionable_id' => $transaction->id,
+    'commissionable_type' => $transaction->getMorphClass(),
+    'amount' => $totalAmountPaid * ($partner->referral_commission / 100)
+  ]);
+  $this->assertDatabaseHas('commissions', [
+    'partner_id' => $partner->id,
+    'commissionable_id' => $transaction->id,
+    'commissionable_type' => $transaction->getMorphClass(),
+    'amount' => $expectedCommission
+  ]);
 });

@@ -112,4 +112,4 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
       />
     </ManagerDashboardLayout>
   );
-}
+} 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\ResultPublications;
+namespace App\Support\ResultPublications; 
 
 use Exception;
 use App\Models\User;
@@ -14,6 +14,7 @@ use App\Support\SettingsHandler;
 use App\Models\ResultPublication;
 use App\Support\Fundings\FundingHandler;
 use App\Enums\PriceLists\PaymentStructure;
+use App\Support\CommissionHandler;
 use App\Support\TransactionHandler;
 use DB;
 
@@ -23,6 +24,7 @@ abstract class PublishResult
   protected $academicSessionId;
   protected $term;
   protected InstitutionGroup $institutionGroup;
+
   function __construct(
     protected User $staffUser,
     protected Institution $institution,
@@ -80,10 +82,18 @@ abstract class PublishResult
     ]);
 
     if ($amountToPay > 0) {
-      TransactionHandler::make(
+      $reference = Str::orderedUuid();
+
+      $dTransaction = TransactionHandler::make(
         $this->institution,
-        Str::orderedUuid()
+        $reference
       )->deductCreditWallet($amountToPay, $publication, 'Result Publication');
+
+      CommissionHandler::make($reference)->creditPartners(
+        $this->institutionGroup,
+        $amountToPay,
+        $dTransaction
+      );
     }
     DB::commit();
 

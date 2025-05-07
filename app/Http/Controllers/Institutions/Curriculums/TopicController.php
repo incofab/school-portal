@@ -10,6 +10,8 @@ use App\Models\ClassificationGroup;
 use App\Http\Controllers\Controller;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
+use App\Models\LessonPlan;
+use App\Models\SchemeOfWork;
 
 class TopicController extends Controller
 {
@@ -112,11 +114,22 @@ class TopicController extends Controller
     Request $request,
     ?Topic $topic = null
   ) {
-    $data = $request->validate(Topic::createRule());
+    // $data = $request->validate(Topic::createRule());
 
-    $data = [
+    //= Check if there's a topic and use the corresponding validation rule
+    $data = $request->validate(
+      $topic ? Topic::createRule2() : Topic::createRule()
+    );
+
+    //= For Topic
+    $params_topic = [
       ...collect($data)
-        ->except('is_used_by_institution_group')
+        ->except(
+          'is_used_by_institution_group',
+          'term',
+          'week_number',
+          'user_id'
+        )
         ->toArray(),
       'institution_id' => $institution->id,
       'institution_group_id' => $data['is_used_by_institution_group']
@@ -124,13 +137,103 @@ class TopicController extends Controller
         : null
     ];
 
+    //== CREATE NEW RECORDS
     if (empty($topic)) {
-      Topic::create($data);
-    } else {
-      $topic->update($data);
+      //= For SchemeOfWork
+      $params_scheme_of_work = [
+        'term' => $data['term'],
+        'week_number' => $data['week_number'],
+        'learning_objectives' => 'NA',
+        'resources' => 'NA',
+        'institution_id' => $institution->id,
+        'institution_group_id' => $data['is_used_by_institution_group']
+          ? $institution->institutionGroup->id
+          : null
+      ];
+
+      //= For LessonPlan
+      $getCourseTeacher = $this->getCourseTeacher($data);
+
+      if (!$getCourseTeacher) {
+        return $this->message(
+          'This teacher is not assigned to this class subject.',
+          401
+        );
+      }
+
+      $params_lesson_plan = [
+        'course_teacher_id' => $getCourseTeacher->id,
+        'objective' => 'NA',
+        'activities' => 'NA',
+        'content' => 'NA',
+        'institution_id' => $institution->id,
+        'institution_group_id' => $data['is_used_by_institution_group']
+          ? $institution->institutionGroup->id
+          : null
+      ];
+
+      //== Create Topic
+      $newTopic = Topic::create($params_topic);
+
+      //== Create Scheme_Of_Work
+      $newSchemeOfWork = SchemeOfWork::create([
+        ...$params_scheme_of_work,
+        'topic_id' => $newTopic->id
+      ]);
+
+      //== Create LessonPlan
+      LessonPlan::create([
+        ...$params_lesson_plan,
+        'scheme_of_work_id' => $newSchemeOfWork->id
+      ]);
+    }
+
+    //== UPDATE EXISTING RECORDS
+    if (!empty($topic)) {
+      //= Update $topic only.
+      $topic->update($params_topic);
     }
 
     return $this->ok();
+  }
+
+  function getCourseTeacher($data)
+  {
+    $institutionUser = currentInstitutionUser();
+    $user = $institutionUser->user;
+
+    if ($institutionUser->isTeacher()) {
+      $userId = $user->id;
+    }
+
+    if ($institutionUser->isAdmin()) {
+      $userId = $data['user_id'];
+    }
+
+    $reqClassGroupId = $data['classification_group_id'];
+
+    if (is_int($reqClassGroupId)) {
+      $getClassGroup = ClassificationGroup::find($reqClassGroupId);
+    } else {
+      // Parent Topic was selected, hence $reqClassGroup is not an integer.
+      $reqParentTopicId = $data['parent_topic_id'];
+      $getParentTopic = Topic::find($reqParentTopicId);
+      $getClassGroup = ClassificationGroup::find(
+        $getParentTopic->classification_group_id
+      );
+    }
+
+    $classGroup_classification_ids = $getClassGroup
+      ->classifications()
+      ->pluck('id')
+      ->toArray();
+
+    $courseTeacher = CourseTeacher::where('course_id', $data['course_id'])
+      ->where('user_id', $userId)
+      ->whereIn('classification_id', $classGroup_classification_ids)
+      ->first();
+
+    return $courseTeacher;
   }
 
   function destroy(Institution $institution, Topic $topic)

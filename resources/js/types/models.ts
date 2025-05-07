@@ -131,6 +131,40 @@ export interface TimetableCoordinator extends InstitutionRow {
   timetable?: Timetable;
 }
 
+export interface Withdrawal extends InstitutionRow {
+  amount: number;
+  status: string;
+  bank_account?: BankAccount;
+  paid_at: string;
+  remark: string;
+}
+
+export interface Partner extends InstitutionRow {
+  user_id: number;
+  user?: User;
+  commission: number;
+  referral_id: number;
+  referral?: Partner;
+  referral_commission: number;
+  wallet: number;
+}
+
+export interface Commission extends InstitutionRow {
+  institution_group: InstitutionGroup;
+  partner?: Partner;
+  commissionable_id?: number;
+  commissionable_type?: string;
+  commissionable?: Transaction;
+  amount: number;
+}
+
+export interface BankAccount extends InstitutionRow {
+  bank_name: string;
+  account_name: string;
+  account_number: string;
+  withdrawals_count: number;
+}
+
 export interface InstitutionUser extends InstitutionRow {
   user_id: number;
   role: InstitutionUserType;
@@ -509,6 +543,18 @@ export interface RegistrationRequest extends Row {
   institution_registered_at: string;
   institution_group_registered_at: string;
   partner: User;
+}
+
+export interface PartnerRegistrationRequest extends Row {
+  first_name: string;
+  last_name: string;
+  other_names: string;
+  phone: string;
+  email: string;
+  username: string;
+  gender: string;
+  password: string;
+  referral?: Partner;
 }
 
 export interface Question extends InstitutionRow {

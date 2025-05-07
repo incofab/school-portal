@@ -4,7 +4,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { ClassificationGroup, Topic } from '@/types/models';
+import { User, ClassificationGroup, Topic } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -16,8 +16,14 @@ import { Input } from '@chakra-ui/react';
 import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
 import CourseSelect from '@/components/selectors/course-select';
 import TopicSelect from '@/components/selectors/topic-select';
+import { InstitutionUserType, TermType } from '@/types/types';
+import useSharedProps from '@/hooks/use-shared-props';
+import EnumSelect from '@/components/dropdown-select/enum-select';
+import StaffSelect from '@/components/selectors/staff-select';
+import useIsAdmin from '@/hooks/use-is-admin';
 
 interface Props {
+  user?: User;
   topic?: Topic;
   parentTopics: Topic[];
   classificationGroups: ClassificationGroup[];
@@ -26,21 +32,27 @@ interface Props {
 const tinymceApiKey = import.meta.env.VITE_TINYMCE_API_KEY;
 
 export default function CreateOrUpdateTopic({
+  user,
   topic,
   parentTopics,
   classificationGroups,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
+  const isAdmin = useIsAdmin();
+  const { currentTerm } = useSharedProps();
   const [shouldBeDisabled, setShouldBeDisabled] = useState(
     topic?.parent_topic_id ? true : false
   );
 
   const webForm = useWebForm({
+    term: topic ? topic.scheme_of_works?.[0]?.term : currentTerm,
+    week_number: topic ? topic.scheme_of_works?.[0]?.week_number : '',
     title: topic ? topic.title : '',
     description: topic ? topic.description : '',
     classification_group_id: topic ? topic.classification_group_id : '',
     course_id: topic ? topic.course_id : '',
+    user_id: user ? { label: user.full_name, value: user.id } : null,
     parent_topic_id: topic ? topic.parent_topic_id : '',
     is_used_by_institution_group: topic
       ? topic.institution_group_id !== null
@@ -75,7 +87,7 @@ export default function CreateOrUpdateTopic({
     const res = await webForm.submit((data, web) => {
       return web.post(
         instRoute('inst-topics.store-or-update', topic ? [topic] : undefined),
-        data
+        { ...data, user_id: data.user_id?.value }
       );
 
       // return topic
@@ -100,6 +112,39 @@ export default function CreateOrUpdateTopic({
               as={'form'}
               onSubmit={preventNativeSubmit(submit)}
             >
+              {!topic && (
+                <>
+                  <FormControlBox
+                    form={webForm as any}
+                    title="Term"
+                    formKey="term"
+                    isRequired
+                  >
+                    <EnumSelect
+                      selectValue={webForm.data.term}
+                      enumData={TermType}
+                      onChange={(e: any) => webForm.setValue('term', e?.value)}
+                    />
+                  </FormControlBox>
+
+                  <FormControlBox
+                    form={webForm as any}
+                    title="Week Number"
+                    formKey="week_number"
+                    isRequired
+                  >
+                    <Input
+                      type="number"
+                      onChange={(e) =>
+                        webForm.setValue('week_number', e.currentTarget.value)
+                      }
+                      value={webForm.data.week_number}
+                      required
+                    />
+                  </FormControlBox>
+                </>
+              )}
+
               <FormControlBox
                 form={webForm as any}
                 formKey={'classification_group_id'}
@@ -134,6 +179,25 @@ export default function CreateOrUpdateTopic({
                   isDisabled={shouldBeDisabled}
                 />
               </FormControlBox>
+
+              {isAdmin && !topic && (
+                <>
+                  <FormControlBox
+                    title="Teacher"
+                    form={webForm as any}
+                    formKey="user_id"
+                  >
+                    <StaffSelect
+                      value={webForm.data.user_id}
+                      isClearable={true}
+                      rolesIn={[InstitutionUserType.Teacher]}
+                      onChange={(e) => webForm.setValue('user_id', e)}
+                      isMulti={false}
+                      required
+                    />
+                  </FormControlBox>
+                </>
+              )}
 
               <FormControlBox
                 form={webForm as any}

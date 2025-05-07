@@ -23,7 +23,7 @@ class AttendanceFactory extends Factory
             'signed_in_at' => now()->subDay(1),
             'signed_out_at' => now(),
         ];
-    }
+    } 
 
     public function institution(Institution $institution)
     {

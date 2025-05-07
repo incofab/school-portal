@@ -63,4 +63,14 @@ class InstitutionGroup extends Model
   {
     return $this->hasMany(SchemeOfWork::class);
   }
+
+  function bankAccounts()
+  {
+    return $this->morphMany(BankAccount::class, 'accountable');
+  }
+
+  function withdrawals()
+  {
+    return $this->morphMany(Withdrawal::class, 'withdrawable');
+  }
 }

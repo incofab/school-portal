@@ -13,7 +13,7 @@ use Inertia\Inertia;
 
 class RegistrationRequestsController extends Controller
 {
-  public function index()
+  public function index() 
   {
     $user = currentUser();
     $query = $this->getQuery($user)->notRegistered();

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SchemeOfWork extends Model
 {
-    use HasFactory, InstitutionScope, SoftDeletes;
+    use HasFactory, InstitutionScope, SoftDeletes; 
     protected $table = 'scheme_of_works';
     protected $guarded = [];
 
