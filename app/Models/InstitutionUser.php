@@ -28,6 +28,11 @@ class InstitutionUser extends Model
     return $this->role === $role;
   }
 
+  function isSuspended(): bool
+  {
+    return $this->status === InstitutionUserStatus::Suspended;
+  }
+
   function isAdmin()
   {
     return $this->hasRole(InstitutionUserType::Admin);

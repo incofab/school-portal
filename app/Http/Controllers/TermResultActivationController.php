@@ -43,6 +43,12 @@ class TermResultActivationController extends Controller
       ->with('user', 'institutionUser.institution')
       ->firstOrFail();
 
+    if ($student->institutionUser->isSuspended()) {
+      throw ValidationException::withMessages([
+        'student_code' => 'Access denied. Please contact school authorities'
+      ]);
+    }
+
     if (
       $institution->institution_group_id !==
       $student->institutionUser->institution->institution_group_id

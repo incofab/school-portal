@@ -53,8 +53,7 @@ test('index displays instructions for a course session', function ($class) {
 test('store creates a new instruction', function ($class) {
   $courseable = $this->courseable[$class];
   $data = Instruction::factory()
-    ->for($this->institution)
-    ->for($courseable, 'courseable')
+    ->courseable($courseable)
     ->raw();
 
   $response = actingAs($this->instAdmin)->post(
@@ -72,8 +71,7 @@ test('store creates a new instruction', function ($class) {
 test('edit displays a form to edit an instruction', function ($class) {
   $courseable = $this->courseable[$class];
   $instruction = Instruction::factory()
-    ->for($this->institution)
-    ->for($courseable, 'courseable')
+    ->courseable($courseable)
     ->create();
 
   $response = actingAs($this->instAdmin)->get(
@@ -93,13 +91,14 @@ test('edit displays a form to edit an instruction', function ($class) {
 test('updates an existing instruction', function ($class) {
   $courseable = $this->courseable[$class];
   $instruction = Instruction::factory()
-    ->for($this->institution)
-    ->for($courseable, 'courseable')
+    ->courseable($courseable)
     ->create();
 
-  $newData = Instruction::factory()->raw([
-    'instruction' => 'Updated Instruction Text'
-  ]);
+  $newData = Instruction::factory()
+    ->courseable($courseable)
+    ->raw([
+      'instruction' => 'Updated Instruction Text'
+    ]);
 
   $response = actingAs($this->instAdmin)->put(
     route('institutions.instructions.update', [
@@ -116,8 +115,7 @@ test('updates an existing instruction', function ($class) {
 test('destroy deletes an instruction', function ($class) {
   $courseable = $this->courseable[$class];
   $instruction = Instruction::factory()
-    ->for($this->institution)
-    ->for($courseable, 'courseable')
+    ->courseable($courseable)
     ->create();
 
   $response = actingAs($this->instAdmin)->get(
