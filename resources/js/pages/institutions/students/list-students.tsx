@@ -29,6 +29,7 @@ import useWebForm from '@/hooks/use-web-form';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 import EditStudentCodeModal from '@/components/modals/edit-student-code-modal';
 import { Div } from '@/components/semantic';
+import SuspensionToggleButton from '@/domain/institutions/user-profile/suspension-toggle-button';
 
 interface Props {
   students: PaginationResponse<Student>;
@@ -109,6 +110,15 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
       value: 'created_at',
       render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
       sortKey: 'createdAt',
+    },
+    {
+      label: 'Suspended',
+      render: (row) =>
+        row.institution_user ? (
+          <SuspensionToggleButton institutionUser={row.institution_user} />
+        ) : (
+          <></>
+        ),
     },
     {
       label: 'Action',

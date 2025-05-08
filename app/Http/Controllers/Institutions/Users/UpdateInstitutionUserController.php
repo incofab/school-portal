@@ -114,12 +114,12 @@ class UpdateInstitutionUserController extends Controller
   function updateStatus(
     Request $request,
     Institution $institution,
-    InstitutionUser $editInstitutionUser
+    InstitutionUser $institutionUser
   ) {
     $request->validate([
       'status' => ['required', new Enum(InstitutionUserStatus::class)]
     ]);
-    $editInstitutionUser->fill(['status' => $request->status])->update();
+    $institutionUser->fill(['status' => $request->status])->save();
     return $this->ok();
   }
 }

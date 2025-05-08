@@ -296,3 +296,8 @@ export enum MessageRecipientType {
   ClassificationGroup = 'classification-group',
   Association = 'association',
 }
+
+export enum InstitutionUserStatus {
+  Active = 'active',
+  Suspended = 'suspended',
+}

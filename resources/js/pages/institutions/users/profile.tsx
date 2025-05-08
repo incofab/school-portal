@@ -41,7 +41,8 @@ import ChangeStudentClassModal from '@/components/modals/change-student-class-mo
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import DownloadResultRecordingSheetModal from '@/components/modals/download-result-recording-sheet-modal';
 import useIsStaff from '@/hooks/use-is-staff';
-import { InertiaLink } from '@inertiajs/inertia-react'; 
+import { InertiaLink } from '@inertiajs/inertia-react';
+import SuspensionToggleButton from '@/domain/institutions/user-profile/suspension-toggle-button';
 
 interface Props {
   user: User;
@@ -173,6 +174,10 @@ export default function Profile({ user, institutionUser }: Props) {
           <Grid templateColumns={{ lg: 'repeat(3, 1fr)' }} gap={4}>
             <GridItem colSpan={{ lg: 2 }}>
               <Dt contentData={profileData} spacing={4} labelWidth={'150px'} />
+              <SuspensionToggleButton
+                institutionUser={institutionUser}
+                showLabel={true}
+              />
             </GridItem>
             <GridItem colSpan={{ lg: 1 }}>
               <HStack>

@@ -35,10 +35,11 @@ class StudentManagementController extends Controller
     $alumniCount = (clone $countQuery)
       ->where('institution_users.role', InstitutionUserType::Alumni)
       ->count();
-
     return inertia('institutions/students/list-students', [
       'students' => paginateFromRequest(
-        $query->with('user', 'classification')->latest('students.id')
+        $query
+          ->with('user', 'classification', 'institutionUser')
+          ->latest('students.id')
       ),
       'studentCount' => $studentCount,
       'alumniCount' => $alumniCount
