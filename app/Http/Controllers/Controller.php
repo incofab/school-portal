@@ -7,7 +7,6 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Arr;
-use App\Core\ErrorCodes;
 use App\Enums\InstitutionUserType;
 use App\Models\TokenUser;
 use App\Support\Res;
@@ -46,7 +45,6 @@ class Controller extends BaseController
     bool $success,
     string $message,
     $data = [],
-    $errorCode = ErrorCodes::OK,
     $httpStatusCode = 200
   ) {
     $arr = [
@@ -58,11 +56,14 @@ class Controller extends BaseController
     return response()->json($arr, $httpStatusCode);
   }
 
-  function emitResponseRet(array $ret)
+  function successApiRes($data = [], $message = '')
   {
-    $ret['error_code'] = $ret['success'] ? ErrorCodes::OK : ErrorCodes::FAILED;
+    return $this->apiRes(true, $message, $data);
+  }
 
-    return response()->json($ret);
+  function failApiRes($data = [], $message = '')
+  {
+    return $this->apiRes(false, $message, $data, 400);
   }
 
   function apiEmitResponse($data)

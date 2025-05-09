@@ -86,6 +86,6 @@ class ExamController extends Controller
 
     DB::commit();
 
-    return $this->apiEmitResponse(['message' => 'Exam records updated']);
+    return $this->successApiRes([], 'Exam records updated');
   }
 }

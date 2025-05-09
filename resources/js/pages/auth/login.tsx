@@ -38,11 +38,12 @@ export default function Login({
     const res = await webForm.submit((data, web) =>
       web.post(route('login.store'), data)
     );
-    console.log(res);
+    // console.log(res);
 
     if (!handleResponseToast(res)) return;
 
     Inertia.visit(route('user.dashboard'));
+    // window.location.href = route('user.dashboard');
   }
 
   useEffect(() => {

@@ -8,6 +8,6 @@ class InstitutionController extends Controller
 {
   function show(Institution $institution)
   {
-    return $this->apiEmitResponse($institution);
+    return $this->successApiRes($institution);
   }
 }

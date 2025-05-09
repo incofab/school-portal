@@ -25,15 +25,13 @@ class EventController extends Controller
       })
       ->toArray();
 
-    return $this->apiEmitResponse($events);
+    return $this->successApiRes($events);
   }
 
   function show(Institution $institution, Event $event)
   {
     $event->load('eventCourseables.courseable.course');
-    return $this->apiEmitResponse(
-      MockEventHandler::make()->formatEvent($event)
-    );
+    return $this->successApiRes(MockEventHandler::make()->formatEvent($event));
   }
 
   function deepShow(Institution $institution, Event $event)
@@ -44,7 +42,7 @@ class EventController extends Controller
       'eventCourseables.courseable.instructions',
       'eventCourseables.courseable.questions'
     );
-    return $this->apiEmitResponse(
+    return $this->successApiRes(
       MockEventHandler::make()->formatEvent($event, true)
     );
   }
