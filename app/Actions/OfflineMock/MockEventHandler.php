@@ -28,7 +28,8 @@ class MockEventHandler
         'description',
         'starts_at',
         'num_of_subjects',
-        'status'
+        'status',
+        'duration'
       ),
       'event_courses' => $event
         ->eventCourseables()

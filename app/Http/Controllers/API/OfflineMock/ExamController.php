@@ -3,6 +3,7 @@ namespace App\Http\Controllers\API\OfflineMock;
 
 use App\Http\Controllers\Controller;
 use App\Models\CourseSession;
+use App\Models\Event;
 use App\Models\Exam;
 use App\Models\ExamCourseable;
 use App\Models\Institution;
@@ -13,6 +14,13 @@ use Illuminate\Http\Request;
 
 class ExamController extends Controller
 {
+  function index(Institution $institution, Event $event)
+  {
+    // Todo: This will be completed when Event Participants is implemeted
+    // use the participants to get the users, then call MockExamHandler to format it
+    return [];
+  }
+
   function uploadEventResult(Institution $institution, Request $request)
   {
     $request->validate([

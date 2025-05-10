@@ -47,5 +47,7 @@ Route::group(['middleware' => [], 'prefix' => '/offline-mock/institutions/{insti
     Route::any('events', [OfflineMock\EventController::class, 'index'])->name('events.index');
     Route::any('events/{event}/show', [OfflineMock\EventController::class, 'show'])->name('events.show');
     Route::any('events/{event}/deep-show', [OfflineMock\EventController::class, 'deepShow'])->name('events.deep-show');
+    Route::any('events/{event:code}/deep-show-by-code', [OfflineMock\EventController::class, 'deepShow'])->name('events.deep-show-by-code');
+    Route::any('events/{event}/exams', [OfflineMock\ExamController::class, 'index'])->name('events.exams.index');
     Route::any('exams/upload', [OfflineMock\ExamController::class, 'uploadEventResult'])->name('exams.upload');
 });

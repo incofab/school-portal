@@ -113,6 +113,19 @@ it(
           ->except('event_courses', 'status', 'starts_at')
           ->toArray()
       );
+    // Also works with event code
+    $response = $this->getJson(
+      route('offline-mock.events.deep-show-by-code', [
+        'institution' => $this->institution->code,
+        'event' => $event->code
+      ])
+    )
+      ->assertOk()
+      ->assertJson(
+        collect($expectedData)
+          ->except('event_courses', 'status', 'starts_at')
+          ->toArray()
+      );
     // Additional checks for presence of detailed data
     $responseData = $response->json();
     expect(
