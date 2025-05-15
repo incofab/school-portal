@@ -211,7 +211,7 @@ export default function CreateOrUpdateTopic({
                     updateForm(e?.value);
                   }}
                   selectValue={webForm.data.parent_topic_id}
-                  isMulti={false}
+                  isMulti={true}
                   isClearable={true}
                 />
               </FormControlBox>

@@ -129,6 +129,10 @@ Route::delete('/guardians/remove-dependent/{student}', Web\Guardians\RemoveDepen
 
 Route::get('/courses/search', [Web\CoursesController::class, 'search'])
   ->name('courses.search');
+Route::get('/courses/practice-questions', [Web\CoursesController::class, 'viewPracticeQuestions'])
+  ->name('courses.view-practice-questions');
+Route::post('/courses/practice-questions', [Web\CoursesController::class, 'generatePracticeQuestions'])
+  ->name('courses.practice-questions');
 Route::resource('/courses', Web\CoursesController::class);
 
 Route::get('/users/{user}/profile', [Web\Users\UpdateInstitutionUserController::class, 'profile'])

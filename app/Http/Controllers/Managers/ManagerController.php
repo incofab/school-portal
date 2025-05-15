@@ -49,7 +49,7 @@ class ManagerController extends Controller
     //     ->toArray(),
     //   'password' => bcrypt('password')
     // ]);
-    // $user->assignRole($data['role']);
+    // $user->assignRole($data['role']); 
 
     // //= Create Partner's Record
     // if ($data['role'] === ManagerRole::Partner->value) {
@@ -62,6 +62,13 @@ class ManagerController extends Controller
     //     'referral_commission' => $data['referral_commission'] ?? null
     //   ]);
     // }
+    return $this->ok();
+  }
+
+  function update(User $user, Request $request)
+  {
+    $data = $request->validate(User::generalRule($user->id));
+    $user->update($data);
     return $this->ok();
   }
 

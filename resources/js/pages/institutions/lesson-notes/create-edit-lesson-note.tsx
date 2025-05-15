@@ -84,7 +84,7 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
     if (!handleResponseToast(response)) {
       return;
     }
-  };
+  }; 
 
   return (
     <DashboardLayout>

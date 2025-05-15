@@ -23,7 +23,7 @@ interface Props {
 
 export default function RegisterCourseTeacher({ user }: Props) {
   const { handleResponseToast } = useMyToast();
-  const { instRoute } = useInstitutionRoute();
+  const { instRoute } = useInstitutionRoute(); 
 
   const webForm = useWebForm({
     user_id: user ? { label: user.full_name, value: user.id } : null,

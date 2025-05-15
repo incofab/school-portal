@@ -14,7 +14,7 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Div } from '../semantic';
 import { StudentClassMovement } from '@/types/models';
 import FormControlBox from '../forms/form-control-box';
-import ClassificationSelect from '../selectors/classification-select';
+import ClassificationSelect from '../selectors/classification-select'; 
 
 interface Props {
   isOpen: boolean;

@@ -14,7 +14,7 @@ use App\Models\CourseTeacher;
 use App\Models\ClassificationGroup;
 use App\Http\Controllers\Controller;
 use App\Models\Topic;
-use App\Support\UITableFilters\LessonNoteUITableFilters;
+use App\Support\UITableFilters\LessonNoteUITableFilters; 
 
 class LessonNoteController extends Controller
 {
@@ -76,8 +76,8 @@ class LessonNoteController extends Controller
 
   function createOrEdit(
     Institution $institution,
-    LessonPlan $lessonPlan = null,
-    LessonNote $lessonNote = null
+    ?LessonPlan $lessonPlan = null,
+    ?LessonNote $lessonNote = null
   ) {
     //== Create New Lesson Note ==
     if (!empty($lessonPlan)) {

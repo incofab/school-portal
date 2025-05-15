@@ -31,7 +31,7 @@ export default function CreateManager({}: Props) {
     role: '',
     commission: '', // New field for commission
     referral_email: '', // New field for referral user email
-    referral_commission: '', // New field for referral commission
+    referral_commission: '', // New field for referral commission 
   });
 
   // Watch role change to show/hide extra fields

@@ -21,7 +21,7 @@ export default function DataSelect<T extends { [key: string]: any }>({
 }: MyProps<T> & Props) {
   // console.log('main', data.main);
   // if (!data.main) {
-  //   data.main = [];
+  //   data.main = []; 08037569098
   // }
   return (
     <MySelect
