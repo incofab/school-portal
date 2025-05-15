@@ -29,10 +29,15 @@ class Message extends Model
 
   function sender()
   {
-    return $this->belongsTo(User::class);
+    return $this->belongsTo(User::class, 'sender_user_id');
   }
 
-  function recipients()
+  function recipient()
+  {
+    return $this->morphTo('recipient');
+  }
+
+  function messageRecipients()
   {
     return $this->hasMany(MessageRecipient::class);
   }

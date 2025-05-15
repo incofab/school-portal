@@ -32,6 +32,7 @@ import {
 } from '@chakra-ui/react';
 import CenteredBox from '@/components/centered-box';
 import { LinkButton } from '@/components/buttons';
+import { EnvelopeIcon } from '@heroicons/react/24/outline';
 
 interface ItemCardProps {
   route: string;
@@ -185,6 +186,13 @@ function InstitutionDashboard({ institutionGroup, isSetupComplete }: Props) {
       route: instRoute('guardians.list-dependents'),
       icon: UsersIcon,
       roles: [InstitutionUserType.Guardian],
+    },
+    {
+      title: 'SMS/Email',
+      desc: 'Send Emails/SMS Messages',
+      route: instRoute('messages.index'),
+      icon: EnvelopeIcon,
+      roles: [InstitutionUserType.Admin, InstitutionUserType.Accountant],
     },
   ];
 

@@ -121,7 +121,7 @@ class UserAssociationController extends Controller
 
   function destroy(Institution $institution, UserAssociation $userAssociation)
   {
-    $userAssociation->delete();
+    $userAssociation->forceDelete();
     return $this->ok();
   }
 }

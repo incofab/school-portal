@@ -2,14 +2,10 @@
 
 namespace App\Mail;
 
-use App\Enums\MessageRecipientCategory;
 use App\Enums\MessageStatus;
-use App\Enums\NotificationChannelsType;
 use App\Models\Message;
-use App\Models\MessageRecipient;
 use App\Models\Fee;
 use App\Models\Institution;
-use App\Models\SchoolNotification;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -30,7 +26,7 @@ class FeePaymentReminderMail extends Mailable implements ShouldQueue
     public Student $student,
     public User $guardian,
     public Fee $fee,
-    private SchoolNotification $schoolNotification
+    private int $messageId
   ) {
     $this->institution = $fee->institution;
     $this->guardian = $student->guardian;
@@ -59,40 +55,28 @@ class FeePaymentReminderMail extends Mailable implements ShouldQueue
   {
     parent::send($mailer);
 
-    //== Save to DB.
     // Render the markdown content to HTML using the Markdown class
     $markdown = new Markdown(view(), config('mail.markdown'));
+
+    $messageModel = Message::find($this->messageId);
+    if ($messageModel->body) {
+      return;
+    }
+
     $bodyContent = $markdown->renderText('mail.fee-payment-reminder-mail', [
       'fee' => $this->fee,
       'guardian' => $this->guardian,
       'student' => $this->student,
-      'schoolNotification' => $this->schoolNotification,
       'institution' => $this->institution
     ]);
 
-    $data = [
-      'institution_id' => $this->institution->id,
-      'sender_user_id' => $this->institution->user_id,
-      'subject' => 'Payment Reminer',
-      'body' => $bodyContent,
-      'recipient_category' => MessageRecipientCategory::Single->value,
-      'channel' => NotificationChannelsType::Email->value,
-      'status' => MessageStatus::Sent->value,
-      'sent_at' => now(),
-      'messageable_type' => $this->schoolNotification->getMorphClass(),
-      'messageable_id' => $this->schoolNotification->id
-    ];
-    $message = Message::create($data);
-
-    $data2 = [
-      'institution_id' => $this->institution->id,
-      'recipient_contact' => $this->guardian->email,
-      'recipient_type' => $this->guardian->getMorphClass(),
-      'recipient_id' => $this->guardian->id,
-      'message_id' => $message->id
-    ];
-
-    MessageRecipient::create($data2);
+    $messageModel
+      ->fill([
+        'body' => $bodyContent,
+        'sent_at' => now(),
+        'status' => MessageStatus::Sent->value
+      ])
+      ->save();
   }
 
   /**

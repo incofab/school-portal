@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Institution;
+use App\Models\Association;
+use App\Models\UserAssociation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AssociationFactory extends Factory
@@ -25,6 +27,15 @@ class AssociationFactory extends Factory
   {
     return $this->state(
       fn(array $attributes) => ['institution_id' => $institution->id]
+    );
+  }
+
+  public function userAssociation($count = 1)
+  {
+    return $this->afterCreating(
+      fn(Association $association) => UserAssociation::factory($count)
+        ->association($association)
+        ->create()
     );
   }
 }

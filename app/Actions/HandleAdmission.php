@@ -37,24 +37,8 @@ class HandleAdmission
 
     $destinationPath = 'avatars/users/' . $fileName;
 
-    /*
-    //== Use the Storage facade to put the image in the S3 bucket
-    Storage::disk('s3_public')->put(
-      $destinationPath,
-      file_get_contents($sourcePath)
-    );
-    */
-
     Storage::disk('s3_public')->move($sourcePath, $destinationPath);
     $destinationUrl = Storage::disk('s3_public')->url($destinationPath);
-    // $destinationUrl =
-    // $parts[0] .
-    // '//' .
-    // $parts[2] .
-    // '/' .
-    // env('AWS_BUCKET') .
-    // '/avatars/users/' .
-    // $fileName;
 
     DB::beginTransaction();
     $student = RecordStudent::make($this->institution, [
@@ -81,12 +65,5 @@ class HandleAdmission
       }
     }
     DB::commit();
-
-    // $dUrl = route('institutions.admission-applications.letter', [
-    //   'institution' => $this->institution->uuid,
-    //   'student' => $student->id
-    // ]);
-
-    //Mail::to($admissionApplication->fathers_email)->queue(new AdmissionLetterMail(User::first(), $dUrl));
   }
 }
