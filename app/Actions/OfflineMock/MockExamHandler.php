@@ -66,6 +66,8 @@ class MockExamHandler
             'score' => 0,
             'status' => ExamStatus::Pending->value,
             'num_of_questions' => 0,
+            'course_code' => $course->code,
+            'session' => $courseSession->session,
             'course_session' => [
               'id' => $courseSession->id,
               'session' => $courseSession->session,

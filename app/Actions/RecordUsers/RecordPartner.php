@@ -6,6 +6,7 @@ use App\Enums\ManagerRole;
 use App\Models\Partner;
 use App\Models\PartnerRegistrationRequest;
 use App\Models\User;
+use Hash;
 use Illuminate\Support\Facades\DB;
 
 class RecordPartner
@@ -42,7 +43,7 @@ class RecordPartner
       ...collect($userData)
         ->except('role', 'commission', 'referral_email', 'referral_commission')
         ->toArray(),
-      'password' => bcrypt('password')
+      'password' => Hash::make('password')
     ]);
     $user->assignRole($userData['role']);
 
@@ -61,7 +62,6 @@ class RecordPartner
     DB::commit();
   }
 
-
   /**
    * @param array{
    *  commission: float,
@@ -69,15 +69,24 @@ class RecordPartner
    *  referral_commission?: float,
    * } $extraData
    */
-  function createFromPartnerRequest(PartnerRegistrationRequest $partnerRegistrationRequest, array $extraData)
-  {
+  function createFromPartnerRequest(
+    PartnerRegistrationRequest $partnerRegistrationRequest,
+    array $extraData
+  ) {
     $this->create([
-      ...$partnerRegistrationRequest->only('first_name', 'last_name', 'other_names', 'phone', 'gender', 'email', 'username'),
+      ...$partnerRegistrationRequest->only(
+        'first_name',
+        'last_name',
+        'other_names',
+        'phone',
+        'gender',
+        'email',
+        'username'
+      ),
       ...$extraData,
       'role' => ManagerRole::Partner->value
     ]);
 
     $partnerRegistrationRequest->delete();
   }
-
 }

@@ -119,6 +119,15 @@ class UpdateInstitutionUserController extends Controller
     $request->validate([
       'status' => ['required', new Enum(InstitutionUserStatus::class)]
     ]);
+    $status = $request->status;
+
+    abort_if(
+      $status === InstitutionUserStatus::Suspended->value &&
+        currentInstitutionUser()->id === $institutionUser->id,
+      403,
+      'You cannot suspend yourself'
+    );
+
     $institutionUser->fill(['status' => $request->status])->save();
     return $this->ok();
   }

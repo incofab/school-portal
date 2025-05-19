@@ -55,7 +55,9 @@ class RecordStudent
     $student = $this->createUpdateStudent(
       $user,
       [
-        'code' => $this->data['code'] ?? Student::generateStudentID(),
+        'code' => empty(trim($this->data['code'] ?? ''))
+          ? Student::generateStudentID()
+          : trim($this->data['code']),
         ...collect($this->data)
           ->only('classification_id', 'guardian_phone')
           ->toArray()

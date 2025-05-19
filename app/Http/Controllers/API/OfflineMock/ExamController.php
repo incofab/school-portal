@@ -45,8 +45,11 @@ class ExamController extends Controller
 
     DB::beginTransaction();
 
+    $success = [];
+    $fail = [];
     foreach ($exams as $exam) {
       if (empty($exam['attempts'])) {
+        $fail[] = $this->uploadStatus($exam['exam_no'], 'No attempts found');
         continue;
       }
       $code = explode('-', $exam['exam_no'])[1] ?? null;
@@ -54,6 +57,7 @@ class ExamController extends Controller
         ->where('code', $code)
         ->first();
       if (!$student) {
+        $fail[] = $this->uploadStatus($exam['exam_no'], 'Student not found');
         continue;
       }
       $createdExam = Exam::query()->updateOrCreate(
@@ -90,10 +94,19 @@ class ExamController extends Controller
             ->toArray()
         );
       }
+      $success[] = $this->uploadStatus($exam['exam_no']);
     }
 
     DB::commit();
 
-    return $this->successApiRes([], 'Exam records updated');
+    return $this->successApiRes(
+      ['uploaded' => $success, 'failed_uploads' => $fail],
+      'Exam records updated'
+    );
+  }
+
+  private function uploadStatus($examNo, $message = '')
+  {
+    return ['exam_no' => $examNo, 'message' => $message];
   }
 }
