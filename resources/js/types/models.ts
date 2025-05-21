@@ -225,12 +225,12 @@ export enum OptionLetter {
 
 export interface PracticeQuestion{
   question: string;
-  // a: string;
-  // b: string;
-  // c: string;
-  // d: string;
-  correct_answer: string;
-  [OptionLetter]: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  answer: string;
+  // [OptionLetter]: string;
 }
 
 export interface Course extends InstitutionRow {

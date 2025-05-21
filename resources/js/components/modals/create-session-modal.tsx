@@ -1,9 +1,9 @@
 import React from 'react';
-import { Button, HStack, VStack, Input } from '@chakra-ui/react';
+import { Button, HStack, VStack, Input, Textarea } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
 import useMyToast from '@/hooks/use-my-toast';
-import { Course, PracticeQuestion, Topic, User } from '@/types/models';
+import { Course, CourseSession, PracticeQuestion, Topic, User } from '@/types/models';
 import FormControlBox from '../forms/form-control-box';
 import route from '@/util/route';
 import EnumSelect from '../dropdown-select/enum-select';
@@ -12,16 +12,17 @@ import TopicSelect from '../selectors/topic-select';
 import { MultiValue } from 'react-select';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Inertia } from '@inertiajs/inertia';
+import InputForm from '../forms/input-form';
 
 interface Props {
   course: Course;
   isOpen: boolean;
   onClose(): void;
-  // onSuccess(practiceQuestions?: string): void;
-  onSuccess(practiceQuestions?: PracticeQuestion[]): void;
+  // onSuccess(): void;
+  onSuccess(newCourse: Course): void;
 }
 
-export default function PracticeQuestionModal({
+export default function CreateSessionModal({
   isOpen,
   onSuccess,
   onClose,
@@ -30,16 +31,14 @@ export default function PracticeQuestionModal({
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
-    course: course,
-    topic_ids: null as Nullable<MultiValue<SelectOptionType<number>>>,
+    session: '',
+    category: '',
+    general_instructions: '',
   });
 
   const onSubmit = async () => {
     const res = await webForm.submit((data, web) =>
-      web.post(instRoute('courses.practice-questions'), {
-        ...data,
-        topic_ids: data.topic_ids?.map((item) => item.value),
-      })
+      web.post(instRoute('course-sessions.store', [course]), data)
     );
 
     if (!handleResponseToast(res)) {
@@ -47,31 +46,33 @@ export default function PracticeQuestionModal({
     }
     
     onClose();
-    // onSuccess(res.data.practice_questions);
-    onSuccess();
+    onSuccess(res.data.new_course_data);
+    // onSuccess();
   };
 
   return (
     <GenericModal
       props={{ isOpen, onClose }}
-      headerContent={`Course Practice Questions`}
+      headerContent={`Create Session - `+course.title}
       bodyContent={
-        <VStack spacing={3}>
+        <VStack spacing={3} align={'stretch'}>
+          <InputForm form={webForm as any} formKey="session" title="Session" isRequired/>
+          <InputForm form={webForm as any} formKey="category" title="category" />         
+          
           <FormControlBox
             form={webForm as any}
-            title="Select Topics"
-            formKey="topic_ids"
+            title="General Instructions [optional]"
+            formKey="general_instructions"
           >
-            <TopicSelect
-              topics={course.topics}
-              onChange={(e: any) => webForm.setValue('topic_ids', e)}
-              value={webForm.data.topic_ids}
-              isMulti={true}
-              isClearable={true}
-            />
+            <Textarea
+              onChange={(e) =>
+                webForm.setValue('general_instructions', e.currentTarget.value)
+              }
+            ></Textarea>
           </FormControlBox>
         </VStack>
       }
+
       footerContent={
         <HStack spacing={2}>
           <Button variant={'ghost'} onClick={onClose}>

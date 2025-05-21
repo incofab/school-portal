@@ -133,6 +133,8 @@ Route::get('/courses/practice-questions', [Web\CoursesController::class, 'viewPr
   ->name('courses.view-practice-questions');
 Route::post('/courses/practice-questions', [Web\CoursesController::class, 'generatePracticeQuestions'])
   ->name('courses.practice-questions');
+Route::post('/courses/insert-questions/{courseSession}', [Web\CoursesController::class, 'insertQuestionsToQuestionbank'])
+  ->name('courses.insert-questions');
 Route::resource('/courses', Web\CoursesController::class);
 
 Route::get('/users/{user}/profile', [Web\Users\UpdateInstitutionUserController::class, 'profile'])
@@ -240,6 +242,10 @@ Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
 Route::get('/fee-payments/index/{fee?}', [Web\Payments\FeePaymentController::class, 'index'])->name('fee-payments.index');
 Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['index', 'edit', 'update']);
 Route::get('/receipts', [Web\Payments\ReceiptController::class, 'index'])->name('receipts.index');
+
+Route::get('/receipts/universal-receipt/{user}', [Web\Payments\ReceiptController::class, 'printUniversalReceipt'])
+  ->name('receipts.print-universal-receipt');
+
 Route::get('/receipts/{receipt}', [Web\Payments\ReceiptController::class, 'show'])->name('receipts.show');
 
 Route::get('/settings/search', [Web\InstitutionSettingController::class, 'search'])->name('settings.search');

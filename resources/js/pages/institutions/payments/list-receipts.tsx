@@ -1,5 +1,5 @@
 import React from 'react';
-import { Receipt } from '@/types/models';
+import { Receipt, User } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
@@ -7,12 +7,13 @@ import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 import { Divider, HStack, VStack } from '@chakra-ui/react';
-import { LinkButton } from '@/components/buttons';
+import { BrandButton, LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import ReceiptTableFilters from '@/components/table-filters/receipt-table-filters';
-import useModalToggle from '@/hooks/use-modal-toggle';
+import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import { LabelText } from '@/components/result-helper-components';
 import { formatAsCurrency } from '@/util/util';
+import UniversalReceiptModal from '@/components/modals/universal-receipt-modal';
 
 interface Props {
   receipts: PaginationResponse<Receipt>;
@@ -27,6 +28,8 @@ export default function ListReceipts({
 }: Props) {
   const { instRoute } = useInstitutionRoute();
   const receiptFilterToggle = useModalToggle();
+  const universalReceiptModalToggle = useModalValueToggle<any>();
+
   const headers: ServerPaginatedTableHeader<Receipt>[] = [
     {
       label: 'Student',
@@ -75,7 +78,15 @@ export default function ListReceipts({
   return (
     <DashboardLayout>
       <Slab>
-        <SlabHeading title="List Receipts" />
+        <SlabHeading title="List Receipts" 
+          rightElement={
+            <BrandButton 
+              variant={'ghost'}
+              onClick={() => universalReceiptModalToggle.open({})}
+              title='Print Universal Receipt'
+            />
+          }
+        /> 
         <SlabBody>
           <VStack align={'stretch'}>
             <LabelText label="Number of Payments" text={num_of_payments} />
@@ -103,6 +114,13 @@ export default function ListReceipts({
         </SlabBody>
       </Slab>
       <ReceiptTableFilters {...receiptFilterToggle.props} />
+
+      {universalReceiptModalToggle.state && (
+        <UniversalReceiptModal
+          {...universalReceiptModalToggle.props}
+          onSuccess={() => {}}
+        />
+      )}
     </DashboardLayout>
   );
 }

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Student } from '@/types/models';
+import React, { useState } from 'react';
+import { Student, User } from '@/types/models';
 import { HStack, IconButton, Icon, Button, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -29,6 +29,7 @@ import useWebForm from '@/hooks/use-web-form';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 import EditStudentCodeModal from '@/components/modals/edit-student-code-modal';
 import { Div } from '@/components/semantic';
+import UniversalReceiptModal from '@/components/modals/universal-receipt-modal';
 
 interface Props {
   students: PaginationResponse<Student>;
@@ -38,6 +39,7 @@ interface Props {
 
 function ListStudents({ students, studentCount, alumniCount }: Props) {
   const { instRoute } = useInstitutionRoute();
+  const [selectedUser, setSelectedUser] = useState<User>();
   const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
   const { params } = useQueryString();
@@ -46,6 +48,7 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
   const studentUploadModalToggle = useModalToggle();
   const editStudentModalToggle = useModalValueToggle<Student | null>();
   const deleteForm = useWebForm({});
+  const universalReceiptModalToggle = useModalValueToggle<User | undefined>();
 
   async function deleteItem(obj: Student) {
     const res = await deleteForm.submit((data, web) =>
@@ -123,6 +126,13 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
             colorScheme={'brand'}
           />
           {isAdmin && (
+            <>
+            <BrandButton 
+              variant={'ghost'}
+              onClick={() => openUniversalReceiptModal(row.user)}
+              title='Receipts'
+            />
+
             <DestructivePopover
               label={`Delete ${row.user?.full_name} from the student record. This is irreversible, be careful!!!`}
               onConfirm={() => deleteItem(row)}
@@ -135,11 +145,17 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
                 colorScheme={'red'}
               />
             </DestructivePopover>
+            </>
           )}
         </HStack>
       ),
     },
   ];
+
+  function openUniversalReceiptModal(user: User|undefined){
+    setSelectedUser(user);
+    universalReceiptModalToggle.open(user)
+  }
 
   return (
     <DashboardLayout>
@@ -208,6 +224,14 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
           />
         )}
       </Slab>
+
+      {universalReceiptModalToggle.state && (
+        <UniversalReceiptModal
+          {...universalReceiptModalToggle.props}
+          user={selectedUser}
+          onSuccess={() => {}}
+        />
+      )}
     </DashboardLayout>
   );
 }

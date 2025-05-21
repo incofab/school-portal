@@ -63,7 +63,7 @@ class StudentFeePaymentController extends Controller
     return inertia('institutions/students/payments/list-student-receipts', [
       'fees' => Fee::query()->get(),
       'receipts' => paginateFromRequest($query->latest('id')),
-      'student' => $student
+      'student' => $student->load('user')
     ]);
   }
 

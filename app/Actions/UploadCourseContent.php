@@ -88,7 +88,7 @@ class UploadCourseContent
 
     $questionsArr = json_decode(file_get_contents($questionsFile), true);
 
-    Question::multiInsert($courseSession, $questionsArr);
+    Question::multiInsert($courseSession, $questionsArr); 
   }
 
   private static function transferImages(

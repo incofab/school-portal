@@ -53,7 +53,7 @@ class QuestionController extends Controller
       successRes('Question created'),
       instRoute('questions.create', [$morphable->getMorphedId()])
     );
-  }
+  } 
 
   private function storeQuestion(
     Institution $institution,

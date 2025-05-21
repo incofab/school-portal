@@ -132,7 +132,7 @@ export default function SelectFeeCategoryModal({
   return (
     <GenericModal
       props={{ isOpen, onClose }}
-      headerContent={'Attach student to guardian'}
+      headerContent={"Students' Category"}
       bodyContent={
         <VStack spacing={2} align={'stretch'}>
           <Text>Who are these payment meant for?</Text>
