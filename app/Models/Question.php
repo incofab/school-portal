@@ -36,7 +36,7 @@ class Question extends Model
         Rule::exists('topics', 'id')
       ]
     ];
-  }
+  } 
 
   static function multiInsert(CourseSession $courseSession, array $questions)
   {
@@ -93,5 +93,16 @@ class Question extends Model
   function courseable()
   {
     return $this->morphTo();
+  }
+
+  /**
+   * Set the answer attribute to uppercase before saving it.
+   *
+   * @param  string  $value
+   * @return void
+   */
+  public function setAnswerAttribute($value)
+  {
+    $this->attributes['answer'] = strtoupper($value); // Convert to uppercase
   }
 }

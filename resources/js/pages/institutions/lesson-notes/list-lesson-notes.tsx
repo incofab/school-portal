@@ -59,7 +59,7 @@ export default function ListLessonNotes({
       render: (row) => <Text>{row.course?.title}</Text>,
     },
     {
-      label: 'Topic',
+      label: 'Title',
       value: 'title',
       render: (row) => <Text>{row.title}</Text>,
     },

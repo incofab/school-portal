@@ -11,8 +11,14 @@ import ManagerDashboardLayout from '@/layout/managers/manager-dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
-import { TrashIcon } from '@heroicons/react/24/solid';
+import {
+  TrashIcon,
+  PencilIcon,
+  PencilSquareIcon,
+} from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
+import { useModalValueToggle } from '@/hooks/use-modal-toggle';
+import EditManagerModal from '@/components/modals/edit-manager-modal';
 
 interface UserWithMeta extends User {
   partner_institution_groups_count: number;
@@ -24,6 +30,7 @@ interface Props {
 export default function ListManagers({ managers }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
+  const editManagerModalToggle = useModalValueToggle<UserWithMeta>();
 
   async function deleteManager(manager: User) {
     if (!window.confirm('Do you want to delete this Manager?')) {
@@ -76,6 +83,12 @@ export default function ListManagers({ managers }: Props) {
             onClick={() => deleteManager(row)}
             isDisabled={row.partner_institution_groups_count > 0}
           />
+          <IconButton
+            aria-label="Edit Manager"
+            colorScheme={'brand'}
+            icon={<Icon as={PencilIcon} />}
+            onClick={() => editManagerModalToggle.open(row)}
+          />
         </HStack>
       ),
     },
@@ -108,6 +121,14 @@ export default function ListManagers({ managers }: Props) {
           />
         </SlabBody>
       </Slab>
+
+      {editManagerModalToggle.state && (
+        <EditManagerModal
+          {...editManagerModalToggle.props}
+          manager={editManagerModalToggle.state}
+          onSuccess={() => Inertia.reload()}
+        />
+      )}
     </ManagerDashboardLayout>
   );
 }

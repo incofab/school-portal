@@ -14,7 +14,7 @@ use App\Models\CourseTeacher;
 use App\Models\ClassificationGroup;
 use App\Http\Controllers\Controller;
 use App\Models\Topic;
-use App\Support\UITableFilters\LessonNoteUITableFilters;
+use App\Support\UITableFilters\LessonNoteUITableFilters; 
 
 class LessonNoteController extends Controller
 {

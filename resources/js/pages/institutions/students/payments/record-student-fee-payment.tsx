@@ -31,7 +31,6 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const { currentAcademicSessionId, currentTerm } = useSharedProps();
-  console.log('dkskdks', fees);
 
   const webForm = useWebForm({
     term: currentTerm,

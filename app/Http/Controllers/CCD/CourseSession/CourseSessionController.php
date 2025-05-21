@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseSession;
 use App\Models\Institution;
+use Illuminate\Http\Request;
 
 class CourseSessionController extends Controller
 {
@@ -20,7 +21,7 @@ class CourseSessionController extends Controller
       'course' => $course,
       'courses' => Course::all()
     ]);
-  }
+  } 
 
   function create(Institution $institution, Course $course)
   {
@@ -30,7 +31,7 @@ class CourseSessionController extends Controller
     ]);
   }
 
-  function store(Institution $institution, Course $course)
+  function store(Institution $institution, Course $course, Request $request)
   {
     $data = request()->validate(CourseSession::createRule());
 
@@ -45,6 +46,10 @@ class CourseSessionController extends Controller
         ],
         $data
       );
+
+    if ($request->expectsJson()) {
+      return $this->ok(['new_course_data' => $course->load('sessions')]);
+    }
 
     return $this->res(
       successRes('Course session record created'),

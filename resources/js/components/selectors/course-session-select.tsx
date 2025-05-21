@@ -1,18 +1,16 @@
 import React from 'react';
-import { BankAccount, InstitutionGroup } from '@/types/models';
+import { CourseSession} from '@/types/models';
 import { Props } from 'react-select';
-import SingleQuerySelect from '../dropdown-select/single-query-select';
-import route from '@/util/route';
 import MySelect from '../dropdown-select/my-select';
 
 interface MyProps {
   selectValue?: number | string;
-  bankAccounts: BankAccount[];
+  courseSessions: CourseSession[];
 }
 
-export default function BankAccountSelect({
+export default function CourseSessionSelect({
   selectValue,
-  bankAccounts,
+  courseSessions,
   ...props
 }: MyProps & Props) {
   return (
@@ -20,8 +18,8 @@ export default function BankAccountSelect({
       {...props}
       selectValue={selectValue}
       getOptions={() =>
-        bankAccounts.map((item) => ({
-          label: `${item?.bank_name}  -  ${item?.account_number}`,
+        courseSessions.map((item) => ({
+          label: `${item?.session}`,
           value: item.id,
         }))
       }

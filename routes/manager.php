@@ -63,6 +63,8 @@ Route::group(['middleware' => 'admin'], function () {
         ->name('create');
     Route::post('/store', [Web\ManagerController::class, 'store'])
         ->name('store');
+    Route::post('/update/{user}', [Web\ManagerController::class, 'update'])
+        ->name('update');
     Route::delete('/destroy/{user}', [Web\ManagerController::class, 'destroy'])
         ->name('destroy');
 });

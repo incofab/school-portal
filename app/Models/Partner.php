@@ -10,7 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Partner extends Model
 {
-  use HasFactory, HasRoles;
+  use HasFactory, HasRoles; 
 
   protected $guarded = [];
   protected $casts = [

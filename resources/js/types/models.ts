@@ -218,12 +218,31 @@ export interface StudentClassMovement extends InstitutionRow {
   revert_reference?: StudentClassMovement;
 }
 
+export enum OptionLetter {
+  A = 'a',
+  B = 'b',
+  C = 'c',
+  D = 'd',
+}
+
+export interface PracticeQuestion{
+  question: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  answer: string;
+  // [OptionLetter]: string;
+}
+
 export interface Course extends InstitutionRow {
   title: string;
   code: string;
   category: string;
   description: string;
   sessions: CourseSession[];
+  
+  topics?: Topic[];
 }
 
 export interface Student extends Row {

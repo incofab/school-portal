@@ -74,7 +74,7 @@ class Student extends Model
   {
     return $this->belongsTo(Classification::class);
   }
-
+ 
   function course()
   {
     return $this->hasMany(Course::class);
