@@ -8,7 +8,7 @@ use App\Models\ClassificationGroup;
 
 class ClassificationGroupController extends Controller
 {
-  public function index()
+  public function index(Institution $institution)
   {
     $query = ClassificationGroup::query()->withCount('classifications');
     return inertia(
@@ -19,7 +19,7 @@ class ClassificationGroupController extends Controller
     );
   }
 
-  public function create()
+  public function create(Institution $institution)
   {
     return inertia(
       'institutions/classification-groups/create-edit-classification-groups'
@@ -75,7 +75,7 @@ class ClassificationGroupController extends Controller
     return $this->ok();
   }
 
-  function search()
+  function search(Institution $institution)
   {
     return response()->json([
       'result' => ClassificationGroup::query()

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\CourseSession;
+use App\Models\EventCourseable;
 use App\Models\Institution;
 use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -12,11 +13,13 @@ class PassageFactory extends Factory
 {
   public function definition(): array
   {
+    $from = fake()->randomNumber(1);
+    $to = $from + fake()->randomNumber(1) + 1;
     return [
       'institution_id' => Institution::factory(),
       'passage' => fake()->paragraph(),
-      'from' => fake()->randomNumber(1),
-      'to' => fake()->randomNumber(2),
+      'from' => $from,
+      'to' => $to,
       'courseable_type' => MorphMap::key(CourseSession::class),
       'courseable_id' => CourseSession::factory()
     ];
@@ -24,10 +27,15 @@ class PassageFactory extends Factory
 
   public function courseable(Model $courseable): static
   {
+    $institutionId =
+      $courseable instanceof EventCourseable
+        ? $courseable->event->institution_id
+        : $courseable->institution_id;
     return $this->state(
       fn(array $attributes) => [
         'courseable_type' => $courseable->getMorphClass(),
-        'courseable_id' => $courseable->id
+        'courseable_id' => $courseable->id,
+        'institution_id' => $institutionId
       ]
     );
   }

@@ -33,7 +33,7 @@ class FundingsController extends Controller
     ]);
   }
 
-  function create()
+  function create(Institution $institution)
   {
     return inertia('institutions/fundings/create-funding');
   }

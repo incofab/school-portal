@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\CCD\QuestionController;
 use App\Http\Controllers\Institutions\Attendance\AttendanceController;
+use App\Http\Controllers\API\OfflineMock;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,4 +39,15 @@ Route::group(['middleware' => []], function () {
 
 Route::group(['middleware' => []], function () {
     Route::any('/ccd/institution/{institution_id}/question/create/{sessionId}', [QuestionController::class, 'apiCreate'])->name('api.ccd.question.create');
+});
+
+Route::group(['middleware' => [], 'prefix' => '/offline-mock/institutions/{institution:code}', 'as' => 'offline-mock.'], function () {
+    Route::any('show-institution', [OfflineMock\InstitutionController::class, 'show'])->name('institutions.show');
+    
+    Route::any('events', [OfflineMock\EventController::class, 'index'])->name('events.index');
+    Route::any('events/{event}/show', [OfflineMock\EventController::class, 'show'])->name('events.show');
+    Route::any('events/{event}/deep-show', [OfflineMock\EventController::class, 'deepShow'])->name('events.deep-show');
+    Route::any('events/{event:code}/deep-show-by-code', [OfflineMock\EventController::class, 'deepShow'])->name('events.deep-show-by-code');
+    Route::any('events/{event}/exams', [OfflineMock\ExamController::class, 'index'])->name('events.exams.index');
+    Route::any('exams/upload', [OfflineMock\ExamController::class, 'uploadEventResult'])->name('exams.upload');
 });

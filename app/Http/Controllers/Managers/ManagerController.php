@@ -2,12 +2,10 @@
 namespace App\Http\Controllers\Managers;
 
 use App\Actions\RecordUsers\RecordPartner;
-use App\Enums\ManagerRole;
 use App\Http\Controllers\Controller;
 use App\Models\Partner;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\Enum;
 
 class ManagerController extends Controller
 {

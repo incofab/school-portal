@@ -13,8 +13,6 @@ use App\Models\ResultPublication;
 use App\Models\TermResult;
 use App\Support\SettingsHandler;
 use App\Models\Partner;
-use App\Models\Transaction;
-use App\Models\Commission;
 
 use function Pest\Laravel\postJson;
 
@@ -45,12 +43,12 @@ beforeEach(function () {
   // Create an Institution Group
   $this->institutionGroup = $this->institution->institutionGroup;
 
-  // Create a PriceList for Result Checking
-  $this->priceList = PriceList::factory()
-    ->for($this->institutionGroup)
-    ->type(PriceType::ResultChecking)
-    ->create();
+  $this->priceList = $this->institutionGroup
+    ->priceLists()
+    ->where('type', PriceType::ResultChecking)
+    ->first();
   $this->priceList->update(['amount' => 100]);
+
   $this->institutionGroup
     ->fill(['credit_wallet' => $this->priceList->amount * 10])
     ->save();
@@ -58,7 +56,6 @@ beforeEach(function () {
   // Authenticate a User
   $this->actingAs($this->instAdmin);
 });
-
 
 // Test index method
 it(
@@ -483,7 +480,6 @@ it('publishes result with loan', function () {
     $this->priceList->amount
   );
 });
-
 
 it('credits partners after successful result publication', function () {
   $this->priceList

@@ -16,7 +16,7 @@ class AssociationController extends Controller
     $this->allowedRoles([InstitutionUserType::Admin]);
   }
 
-  public function index(Request $request)
+  public function index(Request $request, Institution $institution)
   {
     return Inertia::render('institutions/associations/list-associations', [
       'associations' => Association::all()

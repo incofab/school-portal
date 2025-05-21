@@ -24,7 +24,7 @@ class FeeController extends Controller
     ])->except(['index', 'search']);
   }
 
-  function index(Request $request)
+  function index(Request $request, Institution $institution)
   {
     $filter = FeeUITableFilters::make(
       $request->all(),
@@ -38,7 +38,7 @@ class FeeController extends Controller
     ]);
   }
 
-  function search()
+  function search(Institution $institution)
   {
     return response()->json([
       'result' => Fee::query()
@@ -53,7 +53,7 @@ class FeeController extends Controller
     ]);
   }
 
-  function create()
+  function create(Institution $institution)
   {
     return inertia('institutions/payments/create-edit-fee', [
       'associations' => Association::all(),

@@ -6,13 +6,16 @@ use App\Actions\CourseResult\DownloadCourseResult;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DownloadCourseResultSheetRequest;
 use App\Models\CourseResult;
+use App\Models\Institution;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadCourseResultSheetController extends Controller
 {
-  public function __invoke(DownloadCourseResultSheetRequest $request)
-  {
+  public function __invoke(
+    Institution $institution,
+    DownloadCourseResultSheetRequest $request
+  ) {
     $query = CourseResult::query()->select('course_results.*');
     CourseResultsUITableFilters::make($request->all(), $query)->filterQuery();
 

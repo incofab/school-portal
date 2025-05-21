@@ -24,7 +24,7 @@ class ResultCommentTemplateController extends Controller
   function index(
     Request $request,
     Institution $institution,
-    ResultCommentTemplate $resultCommentTemplate = null
+    ?ResultCommentTemplate $resultCommentTemplate = null
   ) {
     return Inertia::render(
       'institutions/result-comments/list-result-comment-templates',
@@ -42,7 +42,7 @@ class ResultCommentTemplateController extends Controller
   function store(
     Request $request,
     Institution $institution,
-    ResultCommentTemplate $resultCommentTemplate = null
+    ?ResultCommentTemplate $resultCommentTemplate = null
   ) {
     $data = $request->validate([
       'comment' => ['nullable', 'string'],

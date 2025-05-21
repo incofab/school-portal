@@ -115,7 +115,7 @@ class LessonNoteController extends Controller
     $lessonPlanId = $lessonNote
       ? $lessonNote->lesson_plan_id
       : $data['lesson_plan_id'];
-    
+
     $getLessonPlan = LessonPlan::where('id', $lessonPlanId)
       ->with('schemeOfWork.topic', 'courseTeacher')
       ->first();
@@ -196,7 +196,7 @@ class LessonNoteController extends Controller
     return $this->ok();
   }
 
-  function generateAiNote(Request $request)
+  function generateAiNote(Request $request, Institution $institution)
   {
     //$model = 'gemma-3-27b-it';
     //$model = 'gemini-1.5-pro';

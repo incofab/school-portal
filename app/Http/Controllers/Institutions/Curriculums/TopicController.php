@@ -22,13 +22,6 @@ class TopicController extends Controller
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
     ]);
-
-    // $this->allowedRoles([InstitutionUserType::Admin])->except(
-    //   'index',
-    //   'subTopicIndex',
-    //   'show',
-    //   'search'
-    // );
   }
 
   //== Listing
@@ -67,7 +60,7 @@ class TopicController extends Controller
   }
 
   //== Create/Edit Topic
-  function createOrEdit(Institution $institution, Topic $topic = null)
+  function createOrEdit(Institution $institution, ?Topic $topic = null)
   {
     $parentTopics = Topic::whereNull('parent_topic_id')->get();
 
@@ -100,7 +93,7 @@ class TopicController extends Controller
     ]);
   }
 
-  function search(Request $request)
+  function search(Request $request, Institution $institution)
   {
     $query = Topic::query()->when(
       $request->search,

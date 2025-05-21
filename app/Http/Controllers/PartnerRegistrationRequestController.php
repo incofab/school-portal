@@ -3,18 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Institution;
 use App\Models\PartnerRegistrationRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class PartnerRegistrationRequestController extends Controller
 {
-  public function create()
+  public function create(Institution $institution)
   {
     return inertia('auth/register-partner');
   }
 
-  public function store(Request $request)
+  public function store(Request $request, Institution $institution)
   {
     $data = $request->validate([
       ...User::generalRule(),

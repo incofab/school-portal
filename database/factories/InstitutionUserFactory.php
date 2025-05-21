@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\InstitutionUserStatus;
 use App\Enums\InstitutionUserType;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
@@ -21,7 +22,8 @@ class InstitutionUserFactory extends Factory
     return [
       'user_id' => User::factory(),
       'institution_id' => Institution::factory(),
-      'role' => fake()->randomElement(InstitutionUserType::cases())
+      'role' => fake()->randomElement(InstitutionUserType::cases()),
+      'status' => InstitutionUserStatus::Active->value
     ];
   }
 

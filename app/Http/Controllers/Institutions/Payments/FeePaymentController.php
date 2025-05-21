@@ -23,7 +23,7 @@ class FeePaymentController extends Controller
     ])->except(['index', 'search', 'show']);
   }
 
-  function index(?Fee $fee = null)
+  function index(Institution $institution, ?Fee $fee = null)
   {
     $query = FeePaymentUITableFilters::make(
       [...request()->all(), ...$fee ? ['fee' => $fee->id] : []],
@@ -43,7 +43,7 @@ class FeePaymentController extends Controller
     ]);
   }
 
-  function create()
+  function create(Institution $institution)
   {
     return inertia('institutions/payments/record-fee-payment', [
       'fee' => Fee::query()->get()

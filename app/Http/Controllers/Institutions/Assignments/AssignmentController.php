@@ -3,19 +3,13 @@
 namespace App\Http\Controllers\Institutions\Assignments;
 
 use App\Actions\RecordAssignment;
-use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Assignment;
 use App\Models\Institution;
 use Illuminate\Http\Request;
-use App\Models\CourseTeacher;
-use App\Support\SettingsHandler;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AssignmentRequest;
-use App\Models\AssignmentSubmission;
-use App\Models\Classification;
-use App\Models\InstitutionUser;
 use App\Support\Queries\AssignmentQueryBuilder;
 use App\Support\UITableFilters\AssignmentUITableFilters;
 
@@ -60,7 +54,7 @@ class AssignmentController extends Controller
     ]);
   }
 
-  function create()
+  function create(Institution $institution)
   {
     return Inertia::render('institutions/assignments/create-edit-assignment');
   }

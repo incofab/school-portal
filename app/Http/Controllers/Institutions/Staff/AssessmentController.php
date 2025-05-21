@@ -21,7 +21,7 @@ class AssessmentController extends Controller
     $this->allowedRoles([InstitutionUserType::Admin]);
   }
 
-  function search(Request $request)
+  function search(Institution $institution, Request $request)
   {
     $query = AssessmentUITableFilters::make(
       $request->all(),

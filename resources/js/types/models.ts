@@ -4,6 +4,7 @@ import {
   ExamAttempt,
   Feeable,
   FeeItem,
+  InstitutionUserStatus,
   InstitutionUserType,
   ManagerRole,
   TermType,
@@ -168,6 +169,7 @@ export interface BankAccount extends InstitutionRow {
 export interface InstitutionUser extends InstitutionRow {
   user_id: number;
   role: InstitutionUserType;
+  status: InstitutionUserStatus;
   user?: User;
   student?: Student;
 }
@@ -252,6 +254,7 @@ export interface Student extends Row {
   guardian_phone: string;
   classification?: Classification;
   user?: User;
+  institution_user?: InstitutionUser;
   course_results?: CourseResult[];
   guardian?: User;
 }

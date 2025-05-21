@@ -18,7 +18,7 @@ class InstitutionSettingController extends Controller
     $this->allowedRoles([InstitutionUserType::Admin]);
   }
 
-  function index()
+  function index(Institution $institution)
   {
     $query = InstitutionSetting::query();
     return inertia('institutions/settings/list-institution-settings', [
@@ -26,7 +26,7 @@ class InstitutionSettingController extends Controller
     ]);
   }
 
-  function search()
+  function search(Institution $institution)
   {
     return response()->json([
       'result' => InstitutionSetting::query()
@@ -39,7 +39,7 @@ class InstitutionSettingController extends Controller
     ]);
   }
 
-  function create()
+  function create(Institution $institution)
   {
     return inertia('institutions/settings/create-edit-institution-settings', [
       'settings' => SettingsHandler::makeFromRoute()->all()

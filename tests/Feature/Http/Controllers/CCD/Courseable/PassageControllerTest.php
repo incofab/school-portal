@@ -8,7 +8,6 @@ use App\Models\Institution;
 use App\Models\Passage;
 
 use function Pest\Laravel\actingAs;
-use function PHPUnit\Framework\assertTrue;
 
 beforeEach(function () {
   $this->institution = Institution::factory()->create();
@@ -25,8 +24,8 @@ beforeEach(function () {
     ->institution($this->institution)
     ->create();
   $this->courseable = [
-    CourseSession::class => $this->courseSession,
-    EventCourseable::class => $this->eventCourseable
+    EventCourseable::class => $this->eventCourseable,
+    CourseSession::class => $this->courseSession
   ];
 });
 
@@ -54,8 +53,7 @@ test('index displays passages for a course session', function ($class) {
 test('store creates a new passage', function ($class) {
   $courseable = $this->courseable[$class];
   $data = Passage::factory()
-    ->for($this->institution)
-    ->for($courseable, 'courseable')
+    ->courseable($courseable)
     ->raw();
 
   $response = actingAs($this->instAdmin)->post(
@@ -94,13 +92,14 @@ test('edit displays a form to edit an passage', function ($class) {
 test('updates an existing passage', function ($class) {
   $courseable = $this->courseable[$class];
   $passage = Passage::factory()
-    ->for($this->institution)
-    ->for($courseable, 'courseable')
+    ->courseable($courseable)
     ->create();
 
-  $newData = Passage::factory()->raw([
-    'passage' => 'Updated Passage Text'
-  ]);
+  $newData = Passage::factory()
+    ->courseable($courseable)
+    ->raw([
+      'passage' => 'Updated Passage Text'
+    ]);
 
   $response = actingAs($this->instAdmin)->put(
     route('institutions.passages.update', [$this->institution, $passage]),

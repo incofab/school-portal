@@ -23,7 +23,7 @@ class ClassificationController extends Controller
     ]);
   }
 
-  function index(Request $request)
+  function index(Request $request, Institution $institution)
   {
     $query = Classification::query()
       ->when(
@@ -37,7 +37,7 @@ class ClassificationController extends Controller
     ]);
   }
 
-  function search()
+  function search(Institution $institution)
   {
     return response()->json([
       'result' => Classification::query()
@@ -50,7 +50,7 @@ class ClassificationController extends Controller
     ]);
   }
 
-  function create()
+  function create(Institution $institution)
   {
     return inertia('institutions/classifications/create-edit-classification', [
       'classificationGroups' => ClassificationGroup::all()

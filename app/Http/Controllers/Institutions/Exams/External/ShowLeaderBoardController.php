@@ -13,7 +13,7 @@ class ShowLeaderBoardController extends Controller
   public function __invoke(
     Request $request,
     Institution $institution,
-    Event $event = null
+    ?Event $event = null
   ) {
     $tokenUser = $this->getTokenUserFromCookie();
 

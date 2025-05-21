@@ -3,7 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\Course;
+use App\Models\CourseSession;
 use App\Models\Institution;
+use App\Models\Instruction;
+use App\Models\Passage;
+use App\Models\Question;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CourseSessionFactory extends Factory
@@ -36,6 +40,33 @@ class CourseSessionFactory extends Factory
         'institution_id' => $course->institution_id,
         'course_id' => $course
       ]
+    );
+  }
+
+  public function questions($count = 2): static
+  {
+    return $this->afterCreating(
+      fn(CourseSession $courseSession) => Question::factory($count)
+        ->courseable($courseSession)
+        ->create()
+    );
+  }
+
+  public function passages($count = 2): static
+  {
+    return $this->afterCreating(
+      fn(CourseSession $courseSession) => Passage::factory($count)
+        ->courseable($courseSession)
+        ->create()
+    );
+  }
+
+  public function instructions($count = 2): static
+  {
+    return $this->afterCreating(
+      fn(CourseSession $courseSession) => Instruction::factory($count)
+        ->courseable($courseSession)
+        ->create()
     );
   }
 }

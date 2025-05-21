@@ -51,7 +51,7 @@ class ExamExternalController extends Controller
     ]);
   }
 
-  function studentExamLoginStore(Request $request)
+  function studentExamLoginStore(Request $request, Institution $institution)
   {
     $data = $request->validate([
       'event_code' => ['required', 'string'],
@@ -89,12 +89,12 @@ class ExamExternalController extends Controller
     );
   }
 
-  function admissionExamLoginCreate()
+  function admissionExamLoginCreate(Institution $institution)
   {
     return Inertia::render('auth/admissions-exam-login');
   }
 
-  function admissionExamLoginStore(Request $request)
+  function admissionExamLoginStore(Request $request, Institution $institution)
   {
     $data = $request->validate([
       'event_code' => ['required', 'string'],

@@ -26,7 +26,7 @@ class ClassResultInfoController extends Controller
     ]);
   }
 
-  public function index(Request $request)
+  public function index(Institution $institution, Request $request)
   {
     $query = ClassResultInfo::query()->select('class_result_info.*');
     ClassResultInfoUITableFilters::make($request->all(), $query)->filterQuery();

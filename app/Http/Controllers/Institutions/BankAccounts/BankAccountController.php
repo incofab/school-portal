@@ -21,7 +21,7 @@ class BankAccountController extends Controller
     ]);
   }
 
-  public function create()
+  public function create(Institution $institution)
   {
     return Inertia::render(
       'institutions/bank-accounts/create-edit-bank-account'

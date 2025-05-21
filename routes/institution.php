@@ -145,6 +145,8 @@ Route::put('/users/{editInstitutionUser}/update', [Web\Users\UpdateInstitutionUs
   ->name('users.update');
 Route::post('/users/{user}/upload-photo', [Web\Users\UpdateInstitutionUserController::class, 'uploadPhoto'])
   ->name('users.upload-photo');
+Route::post('/institution-users/{institutionUser}/update-status', [Web\Users\UpdateInstitutionUserController::class, 'updateStatus'])
+  ->name('institution-users.update-status');
 Route::get('/users/idcards/{classification?}', [Web\Users\InstitutionUserController::class, 'idCards'])
   ->name('users.idcards');
 Route::resource('/users', Web\Users\InstitutionUserController::class)

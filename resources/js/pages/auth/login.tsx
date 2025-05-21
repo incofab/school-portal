@@ -8,16 +8,17 @@ import {
   FormLabel,
   HStack,
   Input,
-  useToast,
   VStack,
 } from '@chakra-ui/react';
-import { InertiaLink, useForm } from '@inertiajs/inertia-react';
+import { InertiaLink } from '@inertiajs/inertia-react';
 import React, { useEffect, useRef } from 'react';
 import useSharedProps from '@/hooks/use-shared-props';
 import { Inertia } from '@inertiajs/inertia';
 import PasswordInput from '@/components/password-input';
 import CenteredLayout from '@/components/centered-layout';
 import { Institution } from '@/types/models';
+import useMyToast from '@/hooks/use-my-toast';
+import useWebForm from '@/hooks/use-web-form';
 
 export default function Login({
   institution,
@@ -27,28 +28,28 @@ export default function Login({
   imageUrl?: string;
 }) {
   const { message, csrfToken } = useSharedProps();
-  const toast = useToast();
-  const form = useForm({
+  const { toastError, toastSuccess, handleResponseToast } = useMyToast();
+  const webForm = useWebForm({
     email: '',
     password: '',
   });
 
-  function onSubmit() {
-    form.post(route('login.store'));
+  async function onSubmit() {
+    const res = await webForm.submit((data, web) =>
+      web.post(route('login.store'), data)
+    );
+    // console.log(res);
+
+    if (!handleResponseToast(res)) return;
+
+    Inertia.visit(route('user.dashboard'));
+    // window.location.href = route('user.dashboard');
   }
 
   useEffect(() => {
-    message?.error &&
-      toast({
-        title: message.error,
-        status: 'error',
-      });
+    message?.error && toastError(message.error);
 
-    message?.success &&
-      toast({
-        title: message.success,
-        status: 'success',
-      });
+    message?.success && toastSuccess(message.success);
   }, [message]);
 
   const isSessionTimedOut = useRef(false);
@@ -88,24 +89,26 @@ export default function Login({
         as={'form'}
         onSubmit={preventNativeSubmit(onSubmit)}
       >
-        <FormControl isInvalid={!!form.errors.email}>
+        <FormControl isInvalid={!!webForm.errors.email}>
           <FormLabel htmlFor="email">Email address</FormLabel>
           <Input
             id="email"
             type="text"
-            value={form.data.email}
-            onChange={(e) => form.setData('email', e.currentTarget.value)}
+            value={webForm.data.email}
+            onChange={(e) => webForm.setValue('email', e.currentTarget.value)}
           />
-          <FormErrorMessage>{form.errors.email}</FormErrorMessage>
+          <FormErrorMessage>{webForm.errors.email}</FormErrorMessage>
         </FormControl>
-        <FormControl isInvalid={!!form.errors.password}>
+        <FormControl isInvalid={!!webForm.errors.password}>
           <FormLabel htmlFor="password">Password</FormLabel>
           <PasswordInput
             id={'password'}
-            value={form.data.password}
-            onChange={(e) => form.setData('password', e.currentTarget.value)}
+            value={webForm.data.password}
+            onChange={(e) =>
+              webForm.setValue('password', e.currentTarget.value)
+            }
           />
-          <FormErrorMessage>{form.errors.password}</FormErrorMessage>
+          <FormErrorMessage>{webForm.errors.password}</FormErrorMessage>
         </FormControl>
         <HStack align={'stretch'} justify={'space-between'}>
           <Button
@@ -128,7 +131,7 @@ export default function Login({
           </Button>
         </HStack>
         <Button
-          isLoading={form.processing}
+          isLoading={webForm.processing}
           loadingText="Logging in"
           type="submit"
           colorScheme={'brand'}

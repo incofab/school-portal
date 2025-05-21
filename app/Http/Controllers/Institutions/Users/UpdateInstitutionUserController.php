@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions\Users;
 
 use App\Actions\RecordStaff;
+use App\Enums\InstitutionUserStatus;
 use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateStaffRequest;
@@ -10,6 +11,7 @@ use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 use Storage;
 
 class UpdateInstitutionUserController extends Controller
@@ -52,7 +54,7 @@ class UpdateInstitutionUserController extends Controller
     ]);
   }
 
-  // Mainly for staff, students are editted elsewhere 
+  // Mainly for staff, students are editted elsewhere
   function update(
     CreateStaffRequest $request,
     Institution $institution,
@@ -107,5 +109,26 @@ class UpdateInstitutionUserController extends Controller
       403,
       'This user is not part of your institution'
     );
+  }
+
+  function updateStatus(
+    Request $request,
+    Institution $institution,
+    InstitutionUser $institutionUser
+  ) {
+    $request->validate([
+      'status' => ['required', new Enum(InstitutionUserStatus::class)]
+    ]);
+    $status = $request->status;
+
+    abort_if(
+      $status === InstitutionUserStatus::Suspended->value &&
+        currentInstitutionUser()->id === $institutionUser->id,
+      403,
+      'You cannot suspend yourself'
+    );
+
+    $institutionUser->fill(['status' => $request->status])->save();
+    return $this->ok();
   }
 }

@@ -49,13 +49,18 @@ class InsertStudentFromRecordingSheet
     $rows = range(3, $totalRows);
 
     foreach ($rows as $row) {
+      $firstName = trim(
+        $this->getValue(StudentRecordingSheetColumn::FirstName . $row) ?? ''
+      );
+      $lastName = trim(
+        $this->getValue(StudentRecordingSheetColumn::LastName . $row) ?? ''
+      );
+      if (empty($firstName) && empty($lastName)) {
+        continue;
+      }
       $data[] = [
-        'first_name' => $this->getValue(
-          StudentRecordingSheetColumn::FirstName . $row
-        ),
-        'last_name' => $this->getValue(
-          StudentRecordingSheetColumn::LastName . $row
-        ),
+        'first_name' => $firstName,
+        'last_name' => $lastName,
         'other_names' => $this->getValue(
           StudentRecordingSheetColumn::OtherNames . $row
         ),

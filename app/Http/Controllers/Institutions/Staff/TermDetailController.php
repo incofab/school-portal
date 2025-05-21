@@ -19,8 +19,10 @@ class TermDetailController extends Controller
     ]);
   }
 
-  public function index(Institution $institution, TermDetail $termDetail = null)
-  {
+  public function index(
+    Institution $institution,
+    ?TermDetail $termDetail = null
+  ) {
     $termDetail =
       $termDetail ?? SettingsHandler::makeFromRoute()->fetchCurrentTermDetail();
     $termDetail->load('academicSession');
