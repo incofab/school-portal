@@ -74,6 +74,7 @@ export default function Template4({
           },
         ]
       : []),
+    { label: 'No of Class', value: classResultInfo.num_of_students },
   ];
 
   const principalComment =

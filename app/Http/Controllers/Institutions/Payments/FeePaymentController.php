@@ -73,7 +73,8 @@ class FeePaymentController extends Controller
       $data,
       $feeValidation->getModel(),
       null,
-      currentUser()
+      currentUser(),
+      allowOverPayment: false
     );
 
     return $this->ok(['feePayment' => $feePayment]);

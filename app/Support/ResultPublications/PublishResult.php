@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\ResultPublications; 
+namespace App\Support\ResultPublications;
 
 use Exception;
 use App\Models\User;
@@ -78,7 +78,10 @@ abstract class PublishResult
     ]);
 
     TermResult::whereIn('id', $this->resultsToPublish->pluck('id'))->update([
-      'result_publication_id' => $publication->id
+      'result_publication_id' => $publication->id,
+      ...$this->settingHandler->resultActivationRequired()
+        ? []
+        : ['is_activated' => true]
     ]);
 
     if ($amountToPay > 0) {

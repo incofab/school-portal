@@ -21,6 +21,12 @@ Route::any(
 )->name('pdf-bridge-download');
 
 Route::get('dummy1', function () {
+    // dd('skdksdk');
+    return Mail::to('incofabikenna@gmail.com')->send(new \App\Mail\InstitutionMessageMail(
+        \App\Models\Institution::first(),
+        'Subject of this email',
+        'This is a test message for my testing',
+    ));
     die('Dummy page');
 });
 

@@ -16,4 +16,5 @@ enum InstitutionSettingType: string
   case UsesMidTermResult = 'uses-mid-term-result';
   case Stamp = 'stamp';
   case PaymentKeys = 'payment-keys';
+  case ResultActivationRequired = 'result-activation-required';
 }

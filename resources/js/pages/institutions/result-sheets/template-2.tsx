@@ -169,8 +169,8 @@ export default function Template2({
             </Flex>
             <Flex mt={1} flexDirection={'row'} justifyContent={'space-between'}>
               <LabelText
-                label="Class Population"
-                text={classResultInfo.num_of_courses}
+                label="No of Class"
+                text={classResultInfo.num_of_students}
               />
               <LabelText
                 label="Term"

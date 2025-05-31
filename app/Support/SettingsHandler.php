@@ -79,6 +79,16 @@ class SettingsHandler
     );
   }
 
+  function resultActivationRequired()
+  {
+    return boolval(
+      $this->getValue(
+        InstitutionSettingType::ResultActivationRequired->value,
+        true
+      )
+    );
+  }
+
   /** Indicates whether the school is currently on Mid or Full term */
   function isOnMidTerm()
   {

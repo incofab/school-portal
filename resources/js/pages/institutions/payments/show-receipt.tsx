@@ -8,10 +8,16 @@ import DataTable, { TableHeader } from '@/components/data-table';
 import DateTimeDisplay from '@/components/date-time-display';
 import { Div } from '@/components/semantic';
 import Dt from '@/components/dt';
-import { Divider, Text } from '@chakra-ui/react';
+import { Divider, Icon, IconButton, Text } from '@chakra-ui/react';
 import startCase from 'lodash/startCase';
 import { LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import DestructivePopover from '@/components/destructive-popover';
+import useWebForm from '@/hooks/use-web-form';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useMyToast from '@/hooks/use-my-toast';
+import { Inertia } from '@inertiajs/inertia';
+import { TrashIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   receipt: Receipt;
@@ -19,6 +25,18 @@ interface Props {
 
 export default function ShowReceipt({ receipt }: Props) {
   const { instRoute } = useInstitutionRoute();
+  const deleteForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
+  const isAdmin = useIsAdmin();
+
+  async function deleteItem(obj: FeePayment) {
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(instRoute('fee-payments.destroy', [obj.id]))
+    );
+    handleResponseToast(res);
+    Inertia.reload({ only: ['receipt'] });
+  }
+
   const contentData: SelectOptionType<string>[] = [
     { label: 'Student', value: receipt.user!.full_name },
     { label: 'Fee Type', value: receipt.fee!.title },
@@ -55,6 +73,27 @@ export default function ShowReceipt({ receipt }: Props) {
       value: 'created_at',
       render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
     },
+    ...(isAdmin
+      ? [
+          {
+            label: 'Action',
+            render: (row: FeePayment) => (
+              <DestructivePopover
+                label={'Delete this fee'}
+                onConfirm={() => deleteItem(row)}
+                isLoading={deleteForm.processing}
+              >
+                <IconButton
+                  aria-label={'Delete payment'}
+                  icon={<Icon as={TrashIcon} />}
+                  variant={'ghost'}
+                  colorScheme={'red'}
+                />
+              </DestructivePopover>
+            ),
+          },
+        ]
+      : []),
   ];
   return (
     <DashboardLayout>

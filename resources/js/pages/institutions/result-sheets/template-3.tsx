@@ -48,7 +48,7 @@ export default function Template3({
 
   const resultSummary1 = [
     { label: 'Student Name', value: student.user?.full_name },
-    { label: 'Number In Class', value: classResultInfo.num_of_students },
+    { label: 'No In Class', value: classResultInfo.num_of_students },
     {
       label: 'Total Marks Obtainable',
       value: classResultInfo.max_obtainable_score,

@@ -1,6 +1,13 @@
 import React from 'react';
 import { Exam, ExamCourseable } from '@/types/models';
-import { HStack, IconButton, Icon, Divider, VStack } from '@chakra-ui/react';
+import {
+  HStack,
+  IconButton,
+  Icon,
+  Divider,
+  VStack,
+  Spacer,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -14,8 +21,9 @@ import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import { LabelText } from '@/components/result-helper-components';
 import tokenUserUtil from '@/util/token-user-util';
-import { LinkButton } from '@/components/buttons';
+import { BrandButton, LinkButton } from '@/components/buttons';
 import useIsStaff from '@/hooks/use-is-staff';
+import { PageTitle } from '@/components/page-header';
 
 interface Props {
   exam: Exam;
@@ -25,6 +33,7 @@ interface Props {
 export default function ListExamCourseables({ exam, examCourseables }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
+  const reEvaluateForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isStaff = useIsStaff();
 
@@ -32,7 +41,18 @@ export default function ListExamCourseables({ exam, examCourseables }: Props) {
     const res = await deleteForm.submit((data, web) =>
       web.delete(instRoute('exam-courseables.destroy', [obj.id]))
     );
-    handleResponseToast(res);
+    if (!handleResponseToast(res)) return;
+    Inertia.reload({ only: ['examCourseables'] });
+  }
+
+  async function reEvaluate() {
+    if (!window.confirm('Are you sure you want to re-evaluate this exam?')) {
+      return;
+    }
+    const res = await reEvaluateForm.submit((data, web) =>
+      web.post(instRoute('end-exam', [exam.id]) + `?re_evaluate=true`)
+    );
+    if (!handleResponseToast(res)) return;
     Inertia.reload({ only: ['examCourseables'] });
   }
 
@@ -101,7 +121,17 @@ export default function ListExamCourseables({ exam, examCourseables }: Props) {
   return (
     <DashboardLayout>
       <Slab>
-        <SlabHeading title="Exam Subjects" />
+        <SlabHeading>
+          <HStack>
+            <PageTitle>Exam Subjects</PageTitle>
+            <Spacer />
+            <BrandButton
+              onClick={reEvaluate}
+              isLoading={reEvaluateForm.processing}
+              title={'Re-Evaluate'}
+            />
+          </HStack>
+        </SlabHeading>
         <SlabBody>
           <VStack align={'stretch'} spacing={2}>
             {details.map((item) => (

@@ -37,10 +37,7 @@ class ExamAttemptFileHandler
       $examFileContent['exam'] = $this->exam;
     }
 
-    $ret = file_put_contents(
-      $file,
-      json_encode($examFileContent, JSON_PRETTY_PRINT)
-    );
+    $ret = $this->save($file, json_encode($examFileContent, JSON_PRETTY_PRINT));
 
     if ($ret === false) {
       return $this->res(false, 'Exam file failed to create');
@@ -106,10 +103,7 @@ class ExamAttemptFileHandler
 
     $examFileContent['attempts'] = $savedAttempts;
 
-    $ret = file_put_contents(
-      $file,
-      json_encode($examFileContent, JSON_PRETTY_PRINT)
-    );
+    $ret = $this->save($file, json_encode($examFileContent, JSON_PRETTY_PRINT));
 
     if ($ret === false) {
       return $this->res(false, 'Exam file failed to recorded attempt');
@@ -179,5 +173,51 @@ class ExamAttemptFileHandler
     }
 
     return "$baseFolder/$filename.$ext";
+  }
+
+  private function save($filename, $data)
+  {
+    //file_put_contents($filename, $data);
+    // 1. Open the file for writing (or creating if it doesn't exist)
+    // 'c+' mode opens the file for read/write, and creates it if it doesn't exist,
+    // but does not truncate it like 'w+' would. This is often safer for locking scenarios.
+    $fileHandle = fopen($filename, 'c+');
+
+    if ($fileHandle === false) {
+      return $this->res(false, 'Error: Could not open file for writing.');
+    }
+
+    // 2. Acquire an exclusive lock (LOCK_EX)
+    // LOCK_EX means only one process can hold this lock at a time.
+    // By default, flock() will block until the lock can be acquired.
+    if (flock($fileHandle, LOCK_EX)) {
+      // 3. IMPORTANT: Truncate the file if you want to overwrite it
+      // Without ftruncate, new data would be appended by default or overwrite existing data
+      // up to the length of the new data.
+      ftruncate($fileHandle, 0);
+
+      // 4. Move the file pointer to the beginning (important after truncating)
+      rewind($fileHandle);
+
+      // 5. Write the data
+      fwrite($fileHandle, $data);
+
+      // 6. Flush the output buffer to ensure data is written to disk
+      fflush($fileHandle);
+
+      // 7. Release the lock
+      flock($fileHandle, LOCK_UN);
+
+      // 8. Close the file handle
+      fclose($fileHandle);
+      return $this->res(true, 'Data successfully written and lock released.');
+    } else {
+      // 8. Close the file handle
+      fclose($fileHandle);
+      return $this->res(
+        false,
+        'Error: Could not obtain file lock. Another process might be writing.'
+      );
+    }
   }
 }

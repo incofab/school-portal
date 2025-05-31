@@ -32,31 +32,14 @@ beforeEach(function () {
     ->courseable($this->eventCourseables->first()->courseable)
     ->create(['num_of_questions' => 5]);
 
-  //   $this->examData = $this->exam->only([
-  //     'id',
-  //     'event_id',
-  //     'exam_no',
-  //     'time_remaining',
-  //     'start_time',
-  //     'pause_time',
-  //     'end_time',
-  //     'status',
-  //     'num_of_questions'
-  //   ]);
   $this->examAttemptFileHandler = ExamAttemptFileHandler::make($this->exam);
   $this->filePath = $this->examAttemptFileHandler->getFullFilepath();
-  //   $this->baseFolder =
-  //     __DIR__ . "/../../public/exams/event_{$this->exam->event_id}";
-  //   $this->filePath = "$this->baseFolder/exam_{$this->exam->exam_no}.edr";
 });
 
 afterEach(function () {
   if (File::exists($this->filePath)) {
     File::delete($this->filePath);
   }
-  //   if (File::exists($this->baseFolder)) {
-  //     File::deleteDirectory($this->baseFolder);
-  //   }
 });
 
 it('creates an exam file', function () {

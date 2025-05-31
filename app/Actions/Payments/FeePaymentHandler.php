@@ -9,6 +9,7 @@ use App\Models\Receipt;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class FeePaymentHandler
 {
@@ -33,7 +34,8 @@ class FeePaymentHandler
     array $data,
     Fee $fee,
     ?Model $payable = null,
-    ?User $staff = null
+    ?User $staff = null,
+    ?bool $allowOverPayment = false
   ) {
     $userId = $data['user_id'] ?? null;
 
@@ -52,6 +54,12 @@ class FeePaymentHandler
     $amount = $data['amount'];
     $amountPaid = $receipt?->paymentsSum() + $amount;
     $amountRemaining = $fee->amount - $amountPaid;
+
+    if ($amountRemaining < 0 && !$allowOverPayment) {
+      return throw ValidationException::withMessages([
+        'amount' => 'Overpayment not allowed'
+      ]);
+    }
 
     DB::beginTransaction();
     $receipt = Receipt::query()->updateOrCreate($bindingData, [

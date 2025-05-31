@@ -7,6 +7,7 @@ import {
   HStack,
   Input,
   Spacer,
+  Switch,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -60,14 +61,19 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
     ),
     [InstitutionSettingType.CurrentlyOnMidTerm]:
       settings[InstitutionSettingType.CurrentlyOnMidTerm]?.value,
+    [InstitutionSettingType.ResultActivationRequired]: Boolean(
+      parseInt(
+        settings[InstitutionSettingType.ResultActivationRequired]?.value ?? 1
+      )
+    ),
   } as { [key: string]: any });
 
-  const submit = async (activeSetting: InstitutionSettingType) => {
+  const submit = async (activeSetting: InstitutionSettingType, value?: any) => {
     setActiveSetting(activeSetting);
     const res = await webForm.submit((data, web) => {
       return web.post(instRoute('settings.store'), {
         key: activeSetting,
-        value: data[activeSetting],
+        value: value ?? data[activeSetting],
       });
     });
     if (!handleResponseToast(res)) return;
@@ -172,6 +178,40 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   size={'md'}
                 />
               </HStack>
+
+              <FormLabel border={'1px solid #999999AA'} p={2} borderRadius={5}>
+                <Switch
+                  isChecked={
+                    webForm.data[
+                      InstitutionSettingType.ResultActivationRequired
+                    ] === true
+                  }
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    let message =
+                      'If you diable this, Students will be able to check their results without requiring activation pins.';
+                    if (!isChecked && !window.confirm(message)) {
+                      return;
+                    }
+                    webForm.setValue(
+                      InstitutionSettingType.ResultActivationRequired,
+                      isChecked
+                    );
+                    submit(
+                      InstitutionSettingType.ResultActivationRequired,
+                      isChecked
+                    );
+                  }}
+                  colorScheme={'brand'}
+                  disabled={
+                    activeSetting ===
+                      InstitutionSettingType.ResultActivationRequired &&
+                    webForm.processing
+                  }
+                  pr={3}
+                />
+                Result Activation Required
+              </FormLabel>
               {/* 
               {webForm.data[InstitutionSettingType.UsesMidTermResult] && (
                 <>

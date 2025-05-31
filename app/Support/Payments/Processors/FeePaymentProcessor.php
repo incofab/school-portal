@@ -39,7 +39,8 @@ class FeePaymentProcessor extends PaymentProcessor
         'method' => PaymentMethod::Card->value
       ],
       $fee,
-      $this->paymentReference->payable
+      $this->paymentReference->payable,
+      allowOverPayment: true
     );
 
     TransactionHandler::makeFromPaymentReference(

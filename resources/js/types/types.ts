@@ -147,6 +147,7 @@ export enum InstitutionSettingType {
   CurrentlyOnMidTerm = 'currently-on-mid-term',
   Stamp = 'stamp',
   PaymentKeys = 'payment-keys',
+  ResultActivationRequired = 'result-activation-required',
 }
 
 export enum ResultSettingType {

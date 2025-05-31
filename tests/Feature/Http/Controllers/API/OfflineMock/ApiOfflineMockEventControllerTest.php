@@ -36,13 +36,13 @@ it(
       $event2->fresh(['eventCourseables.courseable.course'])
     );
 
-    $response = $this->getJson(
+    getJson(
       route('offline-mock.events.index', [
         'institution' => $this->institution->code
       ])
     )
       ->assertOk()
-      ->assertJsonCount(2);
+      ->assertJsonCount(2, 'data');
   }
 );
 
@@ -64,11 +64,11 @@ it('returns a single formatted event', function () {
     ])
   )
     ->assertOk()
-    ->assertJson(
-      collect($expectedData)
+    ->assertJson([
+      'data' => collect($expectedData)
         ->except('starts_at', 'status')
         ->toArray()
-    );
+    ]);
 });
 
 it(
@@ -108,11 +108,11 @@ it(
       ])
     )
       ->assertOk()
-      ->assertJson(
-        collect($expectedData)
+      ->assertJson([
+        'data' => collect($expectedData)
           ->except('event_courses', 'status', 'starts_at')
           ->toArray()
-      );
+      ]);
     // Also works with event code
     $response = $this->getJson(
       route('offline-mock.events.deep-show-by-code', [
@@ -121,13 +121,13 @@ it(
       ])
     )
       ->assertOk()
-      ->assertJson(
-        collect($expectedData)
+      ->assertJson([
+        'data' => collect($expectedData)
           ->except('event_courses', 'status', 'starts_at')
           ->toArray()
-      );
+      ]);
     // Additional checks for presence of detailed data
-    $responseData = $response->json();
+    $responseData = $response->json('data');
     expect(
       $responseData['event_courses'][0]['course_session']['questions']
     )->toHaveCount(2);
