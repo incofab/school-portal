@@ -93,7 +93,7 @@ class CoursesController extends Controller
   }
 
   //= using A.I
-  function generatePracticeQuestions(Request $request)
+  function generatePracticeQuestions(Institution $institution, Request $request)
   {    
     $institutionUser = currentInstitutionUser();
 
@@ -121,7 +121,7 @@ class CoursesController extends Controller
 
     foreach ($res_parts as $res_part) {
       $resQuestions .= $res_part['text'];
-    }    
+    }
 
     $practiceQuestions = str_replace('```json', '', $resQuestions);
     $practiceQuestions = str_replace('```', '', $practiceQuestions);
@@ -140,7 +140,7 @@ class CoursesController extends Controller
     // return $this->ok(['practice_questions' => $practiceQuestions]);
   }
 
-  function viewPracticeQuestions()
+  function viewPracticeQuestions(Institution $institution)
   {
     $practiceData = Session::get('practiceData', []);
 
