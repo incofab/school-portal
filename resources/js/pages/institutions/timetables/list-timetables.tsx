@@ -16,6 +16,7 @@ import useWebForm from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
 import useIsAdmin from '@/hooks/use-is-admin';
+import useIsStaff from '@/hooks/use-is-staff';
 
 interface Props {
   timetables: Timetable[];
@@ -34,7 +35,7 @@ export default function ListTimetables({
   const createEditTimetableModalToggle = useModalValueToggle<TimetableCell>();
   const [formattedTableState, setFormattedTableState] =
     useState<FormattedTimetable>([]);
-  const isAdmin = useIsAdmin();
+  const isStaff = useIsStaff();
 
   function getActionableName(timetable: Timetable) {
     if (timetable.actionable_type === TimetableActionableType.Course) {
@@ -138,7 +139,7 @@ export default function ListTimetables({
                   />
                 ))}
 
-                {isAdmin && (
+                {isStaff && (
                   <IconButton
                     colorScheme={'brand'}
                     variant={'outline'}
@@ -196,7 +197,7 @@ function Cell({
   const deleteForm = useWebForm({});
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
-  const isAdmin = useIsAdmin();
+  const isStaff = useIsStaff();
 
   async function deleteItem(cell: TimetableCell) {
     const res = await deleteForm.submit((data, web) =>
@@ -257,7 +258,7 @@ function Cell({
             {cell ? `${cell.start_time} - ${cell.end_time}` : ''}{' '}
           </Text>
 
-          {isAdmin && (
+          {isStaff && (
             <IconButton
               colorScheme={'red'}
               variant={'ghost'}
@@ -275,7 +276,7 @@ function Cell({
             {cell.actionable_name}
           </Text>
 
-          {isAdmin && (
+          {isStaff && (
             <DestructivePopover
               label={'Delete this activity'}
               onConfirm={() => deleteItem(cell)}
