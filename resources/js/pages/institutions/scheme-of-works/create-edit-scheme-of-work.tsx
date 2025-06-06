@@ -108,11 +108,7 @@ export default function CreateOrUpdateTopic({ schemeOfWork, topicId }: Props) {
                 <Editor
                   // onInit={(evt, editor) => (editorRef.current = editor)}
                   apiKey={tinymceApiKey}
-                  initialValue={`${
-                    schemeOfWork
-                      ? schemeOfWork.learning_objectives
-                      : '<p>..Type the Learning Objectives..</p>'
-                  } `}
+                  initialValue={schemeOfWork?.learning_objectives}
                   init={{
                     height: 300,
                     menubar: true,
@@ -140,13 +136,8 @@ export default function CreateOrUpdateTopic({ schemeOfWork, topicId }: Props) {
                 isRequired
               >
                 <Editor
-                  // onInit={(evt, editor) => (editorRef.current = editor)}
                   apiKey={tinymceApiKey}
-                  initialValue={`${
-                    schemeOfWork
-                      ? schemeOfWork.resources
-                      : '<p>..Type the Resources..</p>'
-                  } `}
+                  initialValue={schemeOfWork?.resources}
                   init={{
                     height: 200,
                     menubar: true,

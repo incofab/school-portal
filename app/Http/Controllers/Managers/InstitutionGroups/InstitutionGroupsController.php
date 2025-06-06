@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Managers\InstitutionGroups;
 use App\Actions\RegisterInstitutionGroup;
 use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
-use App\Models\Institution;
 use App\Models\InstitutionGroup;
 use App\Models\User;
-use DB;
 use Illuminate\Http\Request;
 use Storage;
 use Inertia\Inertia;
@@ -24,6 +22,7 @@ class InstitutionGroupsController extends Controller
         'institutionGroups' => paginateFromRequest(
           InstitutionGroup::getQueryForManager($user)
             ->withCount('institutions')
+            ->with('partner')
             ->latest('id')
         )
       ]

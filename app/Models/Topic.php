@@ -38,7 +38,7 @@ class Topic extends Model
       'user_id' => ['nullable', new ValidateExistsRule(User::class)],
 
       'title' => ['required', 'string'],
-      'description' => ['required', 'string'],
+      'description' => ['nullable', 'string'],
       'classification_group_id' => [
         'required',
         new ValidateExistsRule(ClassificationGroup::class)

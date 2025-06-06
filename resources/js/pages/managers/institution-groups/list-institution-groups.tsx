@@ -45,6 +45,10 @@ export default function ListInstitutionGropus({ institutionGroups }: Props) {
 
   const headers: ServerPaginatedTableHeader<InstitutionGroupWithMeta>[] = [
     {
+      label: 'Partner',
+      value: 'partner.full_name',
+    },
+    {
       label: 'Name',
       value: 'name',
     },

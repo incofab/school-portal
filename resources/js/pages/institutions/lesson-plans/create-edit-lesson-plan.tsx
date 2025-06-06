@@ -102,7 +102,7 @@ export default function CreateOrUpdateTopic({
                 lessonPlanCourseTeachers={lessonPlanCourseTeachers ?? []}
                 onChange={(e: any) => setCourseTeacher(e)}
               />
-            </FormControlBox> 
+            </FormControlBox>
 
             <FormControlBox
               title="Objective"
@@ -113,11 +113,7 @@ export default function CreateOrUpdateTopic({
               <Editor
                 // onInit={(evt, editor) => (editorRef.current = editor)}
                 apiKey={tinymceApiKey}
-                initialValue={`${
-                  lessonPlan
-                    ? lessonPlan.objective
-                    : '<p>..Type the Objectives..</p>'
-                } `}
+                initialValue={lessonPlan?.objective}
                 init={{
                   height: 300,
                   menubar: true,
@@ -147,11 +143,7 @@ export default function CreateOrUpdateTopic({
               <Editor
                 // onInit={(evt, editor) => (editorRef.current = editor)}
                 apiKey={tinymceApiKey}
-                initialValue={`${
-                  lessonPlan
-                    ? lessonPlan.activities
-                    : '<p>..Type the Activities..</p>'
-                } `}
+                initialValue={lessonPlan?.activities}
                 init={{
                   height: 300,
                   menubar: true,
@@ -179,13 +171,8 @@ export default function CreateOrUpdateTopic({
               isRequired
             >
               <Editor
-                // onInit={(evt, editor) => (editorRef.current = editor)}
                 apiKey={tinymceApiKey}
-                initialValue={`${
-                  lessonPlan
-                    ? lessonPlan.content
-                    : '<p>..Type the Content..</p>'
-                } `}
+                initialValue={lessonPlan?.content}
                 init={{
                   height: 300,
                   menubar: true,

@@ -235,16 +235,11 @@ export default function CreateOrUpdateTopic({
                 title="Description"
                 form={webForm as any}
                 formKey="description"
-                isRequired
               >
                 <Editor
                   // onInit={(evt, editor) => (editorRef.current = editor)}
                   apiKey={tinymceApiKey}
-                  initialValue={`${
-                    topic
-                      ? topic.description
-                      : '<p>..Type the Topic Description..</p>'
-                  } `}
+                  initialValue={topic?.description}
                   init={{
                     height: 300,
                     menubar: true,

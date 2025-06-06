@@ -1,7 +1,6 @@
 <?php
 namespace App\Actions\RecordUsers;
 
-use App\Enums\InstitutionUserType;
 use App\Enums\ManagerRole;
 use App\Models\Partner;
 use App\Models\PartnerRegistrationRequest;
@@ -43,7 +42,7 @@ class RecordPartner
       ...collect($userData)
         ->except('role', 'commission', 'referral_email', 'referral_commission')
         ->toArray(),
-      'password' => Hash::make('password')
+      'password' => Hash::make($userData['password'] ?? 'password')
     ]);
     $user->assignRole($userData['role']);
 
@@ -81,7 +80,8 @@ class RecordPartner
         'phone',
         'gender',
         'email',
-        'username'
+        'username',
+        'password'
       ),
       ...$extraData,
       'role' => ManagerRole::Partner->value

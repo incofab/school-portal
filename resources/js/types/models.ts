@@ -57,6 +57,7 @@ export interface InstitutionGroup extends Row {
   loan_limit: number;
   website: string;
   banner: string;
+  partner?: User;
   // wallet_balance: number;
 }
 export interface Institution extends Row {
@@ -225,7 +226,7 @@ export enum OptionLetter {
   D = 'd',
 }
 
-export interface PracticeQuestion{
+export interface PracticeQuestion {
   question: string;
   option_a: string;
   option_b: string;
@@ -241,7 +242,7 @@ export interface Course extends InstitutionRow {
   category: string;
   description: string;
   sessions: CourseSession[];
-  
+
   topics?: Topic[];
 }
 

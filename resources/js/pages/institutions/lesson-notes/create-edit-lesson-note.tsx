@@ -84,7 +84,7 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
     if (!handleResponseToast(response)) {
       return;
     }
-  }; 
+  };
 
   return (
     <DashboardLayout>
@@ -123,11 +123,7 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
                 <Editor
                   // onInit={(evt, editor) => (editorRef.current = editor)}
                   apiKey={tinymceApiKey}
-                  initialValue={`${
-                    lessonNote
-                      ? lessonNote.content
-                      : '<p>..Type the Note Content..</p>'
-                  } `}
+                  initialValue={lessonNote?.content}
                   init={{
                     height: 300,
                     menubar: true,

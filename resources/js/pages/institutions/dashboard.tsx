@@ -50,7 +50,7 @@ interface ItemCardProps {
 interface Props {
   institutionGroup: InstitutionGroup;
   isSetupComplete: string;
-} 
+}
 
 function DashboardItemCard(prop: ItemCardProps) {
   return (
@@ -100,11 +100,12 @@ function InstitutionDashboard({ institutionGroup, isSetupComplete }: Props) {
   const student = currentInstitutionUser.student;
   const { forTeacher } = useInstitutionRole();
   const { instRoute } = useInstitutionRoute();
+  const isAdmin = currentInstitutionUser.role === InstitutionUserType.Admin;
   const accountant = [
     InstitutionUserType.Admin,
     InstitutionUserType.Accountant,
   ];
-  
+
   const items: ItemCardProps[] = [
     {
       title: 'Users',
@@ -198,7 +199,7 @@ function InstitutionDashboard({ institutionGroup, isSetupComplete }: Props) {
 
   return (
     <DashboardLayout>
-      {!isSetupComplete ? (
+      {!isSetupComplete && isAdmin ? (
         <CenteredBox mb={5}>
           <Alert status="error" variant="left-accent">
             <AlertIcon />
