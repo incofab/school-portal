@@ -98,7 +98,7 @@ export default function ListInstitutionGropus({ institutionGroups }: Props) {
               size={'sm'}
               icon={<Icon as={PlusIcon} />}
               as={InertiaLink}
-              href={route('managers.institutions.create')}
+              href={route('managers.institutions.create', [row.id])}
             />
           </Tooltip>
         </HStack>

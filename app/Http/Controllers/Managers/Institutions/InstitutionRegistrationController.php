@@ -10,10 +10,11 @@ use Illuminate\Http\Request;
 
 class InstitutionRegistrationController extends Controller
 {
-  public function create()
+  public function create(?InstitutionGroup $institutionGroup = null)
   {
     $user = currentUser();
     return inertia('managers/institutions/create-institution', [
+      'institutionGroup' => $institutionGroup,
       'institutionGroups' => InstitutionGroup::getQueryForManager($user)->get()
     ]);
   }
@@ -29,22 +30,6 @@ class InstitutionRegistrationController extends Controller
       ->firstOrFail();
 
     RegisterInstitution::run($institutionGroup, $data);
-
-    /*
-    DB::beginTransaction();
-    $user = $institutionGroup->user;
-    $institution = $user
-      ->institutions()
-      ->withPivotValue('role', InstitutionUserType::Admin)
-      ->create([
-        ...$data,
-        'code' => Institution::generateInstitutionCode(),
-        'uuid' => Str::orderedUuid(),
-        'user_id' => $user->id
-      ]);
-    SeedSetupData::run($institution);
-    DB::commit();
-    */
 
     return redirect()->intended(route('managers.institutions.index'));
   }
