@@ -83,4 +83,4 @@ export default function ListWithdrawals({ bankAccounts, withdrawals }: Props) {
       />
     </DashboardLayout>
   );
-}
+} 

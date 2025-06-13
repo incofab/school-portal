@@ -272,4 +272,14 @@ class Institution extends Model
       $query->where('role', InstitutionUserType::Teacher);
     });
   }
+
+  function expenses()
+  {
+    return $this->hasMany(Expense::class);
+  }
+
+  function expenseCategories()
+  {
+    return $this->hasMany(ExpenseCategory::class);
+  }
 }

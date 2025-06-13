@@ -411,6 +411,16 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin],
         },
         {
+          label: 'Expenses',
+          route: instRoute('expenses.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Expense Categorires',
+          route: instRoute('expense-categories.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
           label: 'Bank Accounts',
           route: instRoute('inst-bank-accounts.index'),
           roles: [InstitutionUserType.Admin],

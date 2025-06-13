@@ -1,25 +1,25 @@
 import React from 'react';
 import route from '@/util/route';
-import { AcademicSession } from '@/types/models';
+import { ExpenseCategory } from '@/types/models';
 import { Props } from 'react-select';
 import SingleQuerySelect from '../dropdown-select/single-query-select';
 
 interface MyProps {
   selectValue?: number | string;
-  academicSessions?: AcademicSession[];
+  expenseCategories?: ExpenseCategory[];
 }
 
-export default function AcademicSessionSelect({
+export default function ExpenseCategorySelect({
   selectValue,
-  academicSessions,
+  expenseCategories,
   ...props
 }: MyProps & Props) {
   return (
     <SingleQuerySelect
       {...props}
       selectValue={selectValue}
-      dataList={academicSessions}
-      searchUrl={route('academic-sessions.search')}
+      dataList={expenseCategories}
+      searchUrl={route('expense-categories.search')}
       label={'title'}
     />
   );

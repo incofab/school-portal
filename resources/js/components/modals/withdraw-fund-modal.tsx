@@ -20,7 +20,7 @@ interface Props {
   isOpen: boolean;
   onClose(): void;
   onSuccess(): void;
-}
+} 
 
 export default function WithdrawFundModal({
   isOpen,

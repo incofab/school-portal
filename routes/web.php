@@ -47,6 +47,8 @@ Route::get('institutions/search', Web\SearchInstitutionController::class)
     ->name('institutions.search');
 Route::get('academic-sessions/search', [Web\AcademicSessionController::class, 'search'])
     ->name('academic-sessions.search');
+Route::get('/expense-categories/search', [Web\Institutions\Expenses\ExpenseCategoryController ::class, 'search'])
+    ->name('expense-categories.search');
 Route::post('activate-result', [Web\TermResultActivationController::class, 'store'])
     ->name('activate-term-result.store');
 

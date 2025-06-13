@@ -403,6 +403,26 @@ export interface Fee extends InstitutionRow {
   fee_categories: FeeCategory[];
 }
 
+export interface Expense extends InstitutionRow {
+  title: string;
+  description: string;
+  amount: number;
+  academic_session_id?: number;
+  term?: string;
+  expense_date: string;
+  expense_category_id: number;
+  created_by: number;
+
+  academic_session?: AcademicSession;
+  expense_category: ExpenseCategory;
+  institution_user?: InstitutionUser;
+}
+
+export interface ExpenseCategory extends InstitutionRow {
+  title: string;
+  description: string;
+}
+
 export interface FeeCategory extends InstitutionRow {
   fee_id: number;
   feeable_type: string;

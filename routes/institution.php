@@ -372,3 +372,6 @@ Route::get('/messages/index', [Web\Staff\MessageController::class, 'index'])->na
 Route::post('/messages/store', [Web\Staff\MessageController::class, 'store'])->name('messages.store');
 Route::get('/messages/create', [Web\Staff\MessageController::class, 'create'])->name('messages.create');
 
+//== Expenses and ExpensesCategory
+Route::resource('/expenses', Web\Expenses\ExpenseController::class);
+Route::resource('/expense-categories', Web\Expenses\ExpenseCategoryController::class);
