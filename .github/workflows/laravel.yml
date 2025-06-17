@@ -9,6 +9,9 @@ on:
 jobs:
   laravel-tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./school-portal
     services:
       mysql:
         image: mysql:8.0
