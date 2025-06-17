@@ -9,9 +9,6 @@ on:
 jobs:
   laravel-tests:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ../school-portal
     services:
       mysql:
         image: mysql:8.0
@@ -34,14 +31,13 @@ jobs:
       - name: Debug - List contents of current directory
         run: ls -F # This will show you what files are in the current working directory
 
-      - name: Install dependencies
-        run: composer install --no-progress --prefer-dist
-
       - uses: actions/checkout@v4
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      
       - name: Generate key
         run: php artisan key:generate
 
