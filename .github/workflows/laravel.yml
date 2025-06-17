@@ -65,8 +65,8 @@ jobs:
       #     mkdir -p database
       #     touch database/database.sqlite
 
-      - name: Build frontend (React via Inertia)
-        run: npm run build
+      # - name: Build frontend (React via Inertia)
+      #   run: npm run build
         
       - name: Run migrations
         run: php artisan migrate --force
