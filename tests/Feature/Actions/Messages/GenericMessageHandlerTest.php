@@ -39,15 +39,6 @@ beforeEach(function () {
     return [$student, $student->guardian];
   };
   [$this->student, $this->guardian] = ($this->createStudent)();
-
-  $this->institutionGroup
-    ->priceLists()
-    ->where('type', PriceType::EmailSending)
-    ->update(['amount' => 10]);
-  $this->institutionGroup
-    ->priceLists()
-    ->where('type', PriceType::SmsSending)
-    ->update(['amount' => 10]);
 });
 
 it('sends email to users of a classification', function () {

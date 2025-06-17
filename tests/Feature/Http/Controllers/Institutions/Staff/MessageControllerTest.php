@@ -65,18 +65,6 @@ test('can store message to a specific model (classification)', function () {
     'reference' => Str::uuid()->toString()
   ];
 
-  $priceList1 = $this->institutionGroup
-    ->priceLists()
-    ->where('type', PriceType::EmailSending)
-    ->first();
-  $priceList1->update(['amount' => 10]);
-
-  $priceList2 = $this->institutionGroup
-    ->priceLists()
-    ->where('type', PriceType::SmsSending)
-    ->first();
-  $priceList2->update(['amount' => 10]);
-
   actingAs($this->adminUser)
     ->post(route('institutions.messages.store', $this->institution), $data)
     ->assertForbidden()
@@ -101,15 +89,12 @@ test('can store message to a specific model (classification)', function () {
     'recipient_id' => $classification->id
   ]);
   expect($this->institutionGroup->fresh()->credit_wallet)->toBe(
-    $this->institutionGroup->credit_wallet - $priceList1->amount * 2
+    $this->institutionGroup->credit_wallet - config('services.sms-charge') * 2
   );
 });
 
 test('can store message to a list of receivers (email)', function () {
-  $this->institutionGroup
-    ->priceLists()
-    ->where('type', PriceType::EmailSending)
-    ->update(['amount' => 10]);
+  Config::set('services.email-charge', 10);
   $this->institutionGroup->fill(['credit_wallet' => 100])->save();
 
   $receivers = ['test1@example.com', 'test2@example.com'];

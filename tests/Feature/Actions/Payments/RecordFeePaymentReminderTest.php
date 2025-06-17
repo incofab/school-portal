@@ -18,6 +18,7 @@ use App\Models\SchoolNotification;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\MorphMap;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
@@ -58,14 +59,8 @@ beforeEach(function () {
   $this->emailPrice = 10;
   $this->smsPrice = 15;
 
-  $this->institutionGroup
-    ->priceLists()
-    ->where('type', PriceType::EmailSending)
-    ->update(['amount' => $this->emailPrice]);
-  $this->institutionGroup
-    ->priceLists()
-    ->where('type', PriceType::SmsSending)
-    ->update(['amount' => $this->smsPrice]);
+  Config::set('services.sms-charge', $this->smsPrice);
+  Config::set('services.email-charge', $this->emailPrice);
 
   // Student 1: Owes money, has guardian with email and phone
   [$this->student1, $this->student2] = Student::factory(2)
@@ -288,32 +283,28 @@ it('fails if institution has insufficient wallet balance', function () {
   expect($this->institutionGroup->fresh()->credit_wallet)->toBe(floatval(1));
 });
 
-it('fails if price list is not set for the channel', function () {
-  // Delete the email price list
-  PriceList::where('institution_group_id', $this->institutionGroup->id)
-    ->where('type', PriceType::EmailSending->value)
-    ->delete();
+// it('fails if price list is not set for the channel', function () {
 
-  $data = [
-    'reference' => $this->reference,
-    'channel' => NotificationChannelsType::Email->value
-  ];
+//   $data = [
+//     'reference' => $this->reference,
+//     'channel' => NotificationChannelsType::Email->value
+//   ];
 
-  $action = new RecordFeePaymentReminder(
-    $this->adminUser,
-    $data,
-    $this->institution,
-    $this->fee
-  );
-  $res = $action->run();
+//   $action = new RecordFeePaymentReminder(
+//     $this->adminUser,
+//     $data,
+//     $this->institution,
+//     $this->fee
+//   );
+//   $res = $action->run();
 
-  expect($res->isSuccessful())->toBeFalse();
-  expect($res->getMessage())->toBe('Price List has not been set');
+//   expect($res->isSuccessful())->toBeFalse();
+//   expect($res->getMessage())->toBe('Price List has not been set');
 
-  // Assert SchoolNotification was created
-  assertDatabaseHas('school_notifications', ['reference' => $this->reference]);
-  // Assert Message was created
-  assertDatabaseHas('messages', ['subject' => 'Fee Payment Reminder']);
-  // Assert no emails were queued
-  Mail::assertNothingQueued();
-});
+//   // Assert SchoolNotification was created
+//   assertDatabaseHas('school_notifications', ['reference' => $this->reference]);
+//   // Assert Message was created
+//   assertDatabaseHas('messages', ['subject' => 'Fee Payment Reminder']);
+//   // Assert no emails were queued
+//   Mail::assertNothingQueued();
+// });

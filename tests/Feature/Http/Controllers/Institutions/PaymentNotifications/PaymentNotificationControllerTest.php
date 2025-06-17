@@ -1,14 +1,12 @@
 <?php
 
 use App\Enums\NotificationChannelsType;
-use App\Enums\PriceLists\PriceType;
 use App\Enums\SchoolNotificationPurpose;
 use App\Models\Classification;
 use App\Models\Fee;
 use App\Models\FeeCategory;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
-use App\Models\PriceList;
 use App\Models\Receipt;
 use App\Models\SchoolNotification;
 use App\Models\Student;
@@ -21,7 +19,6 @@ use function Pest\Laravel\assertDatabaseHas;
 /**
  * ./vendor/bin/pest --filter PaymentNotificationControllerTest
  */
-
 beforeEach(function () {
   Mail::fake();
   $this->institution = Institution::factory()->create();
@@ -39,14 +36,8 @@ beforeEach(function () {
 
   $this->price = 10;
 
-  $this->institutionGroup
-    ->priceLists()
-    ->where('type', PriceType::EmailSending)
-    ->update(['amount' => $this->price]);
-  $this->institutionGroup
-    ->priceLists()
-    ->where('type', PriceType::SmsSending)
-    ->update(['amount' => $this->price]);
+  Config::set('services.sms-charge', $this->price);
+  Config::set('services.email-charge', $this->price);
 });
 
 it('can store a payment notification for all owing students', function () {
