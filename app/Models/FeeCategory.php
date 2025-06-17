@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\MorphMap;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,20 @@ class FeeCategory extends Model
     'fee_id' => 'integer',
     'feeable_id' => 'integer'
   ];
+
+  function forClass(Classification $classification)
+  {
+    if ($this->feeable_type == MorphMap::key(Institution::class)) {
+      return true;
+    }
+    if ($this->feeable_type == MorphMap::key(Classification::class)) {
+      return $this->feeable_id == $classification->id;
+    }
+    if ($this->feeable_type == MorphMap::key(ClassificationGroup::class)) {
+      return $this->feeable_id == $classification->classification_group_id;
+    }
+    return false;
+  }
 
   function fee()
   {

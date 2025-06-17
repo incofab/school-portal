@@ -13,6 +13,9 @@ return [
     |
     */
 
+  'sms-charge' => env('SMS_CHARGE', 7),
+  'email-charge' => env('EMAIL_CHARGE', 3),
+
   'mailgun' => [
     'domain' => env('MAILGUN_DOMAIN'),
     'secret' => env('MAILGUN_SECRET'),

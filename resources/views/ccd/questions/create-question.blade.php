@@ -154,36 +154,23 @@
 		cursor: pointer;
 	}
 </style>
-{{-- 
-@include('ccd.questions._handle_image_base_url_script', ['courseSession' => $courseSession])
+<script src="https://cdn.tiny.cloud/1/x5fywb7rhiv5vwkhx145opfx4rsh70ytqkiq2mizrg73qwc2/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
-	function handleImages() {
-		$('form[name="record-question"]').find('.useEditor').each(function(i, ele) {
-			var $ele = $(ele);
-			var varStr = $ele.val();
-			var $parsedHtml = $($.parseHTML(`<div>${varStr}</div>`));
-			$parsedHtml.find('img').each(function(j, e) {
-				var $img = $(e);
-				var src = $img.attr('src');
-				var alt = $img.attr('alt');
-				$img.attr('src', getImageBaseUrl(src, alt));
-			});
-			$ele.val($parsedHtml.html());
-		});
-	}
+tinymce.init({
+	selector: '.useEditor',
+	plugins: 'image code charmap',
+
+	charmap_append: [
+		[0x2600, 'sun'],
+		[0x20A6, 'naira'],
+		[0x2601, 'cloud']
+	],
+
+	// enable title field in the Image dialog
+	image_title: true, 
+
+	toolbar: 'undo redo | link image | code | bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,',
+});
 </script>
-
-@include('ccd._question_tinymce', [
-	'uploadURL' => instRoute('api.questions.image-upload', $courseSession),
-	'imagePath' => asset(config('app.image-content-folder')."{$courseSession->course_id}/{$courseSession->id}")
-])
-
-@if(!isset($edit))
-	<script src="{{asset('js/add-question.js')}}"></script>
-	<script>
-		var addQuestionAPI = "{{instRoute('api.questions.store', $courseSession)}}";
-		var currentQuestionNo = {{$questionNo}};
-	</script>
-@endif --}}
 
 @endsection

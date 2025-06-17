@@ -36,54 +36,54 @@ class Fee extends Model
     return $this->payment_interval === PaymentInterval::Termly;
   }
 
-  /** @deprecated */
-  static function scopeForClass($query, Classification $classification)
-  {
-    return $query->where(function ($qq) use ($classification) {
-      $qq
-        ->where(
-          fn($q) => $q
-            ->whereNull('classification_group_id')
-            ->whereNull('classification_id')
-        )
-        ->orWhere(
-          fn($q) => $q
-            ->whereNotNull('classification_group_id')
-            ->where(
-              'classification_group_id',
-              $classification->classification_group_id
-            )
-        )
-        ->orWhere(
-          fn($q) => $q
-            ->whereNull('classification_group_id')
-            ->where('classification_id', $classification->id)
-        );
-    });
-  }
+  // /** @deprecated */
+  // static function scopeForClass($query, Classification $classification)
+  // {
+  //   return $query->where(function ($qq) use ($classification) {
+  //     $qq
+  //       ->where(
+  //         fn($q) => $q
+  //           ->whereNull('classification_group_id')
+  //           ->whereNull('classification_id')
+  //       )
+  //       ->orWhere(
+  //         fn($q) => $q
+  //           ->whereNotNull('classification_group_id')
+  //           ->where(
+  //             'classification_group_id',
+  //             $classification->classification_group_id
+  //           )
+  //       )
+  //       ->orWhere(
+  //         fn($q) => $q
+  //           ->whereNull('classification_group_id')
+  //           ->where('classification_id', $classification->id)
+  //       );
+  //   });
+  // }
 
   function forStudent(Student $student, Classification $classification)
   {
     $isForStudent = false;
     foreach ($this->feeCategories as $key => $feeCategory) {
-      if ($feeCategory->feeable_type == MorphMap::key(Institution::class)) {
+      if ($feeCategory->forClass($classification)) {
         $isForStudent = true;
         break;
       }
+
       // Check association
-      if ($feeCategory->feeable_type == MorphMap::key(Classification::class)) {
-        $isForStudent = $feeCategory->feeable_id == $classification->id;
-        break;
-      }
-      if (
-        $feeCategory->feeable_type == MorphMap::key(ClassificationGroup::class)
-      ) {
-        $isForStudent =
-          $feeCategory->feeable_id == $classification->classification_group_id;
-        break;
-      }
     }
     return $isForStudent;
+  }
+
+  function forClass(Classification $classification)
+  {
+    foreach ($this->feeCategories as $key => $feeCategory) {
+      if ($feeCategory->forClass($classification)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function institution()

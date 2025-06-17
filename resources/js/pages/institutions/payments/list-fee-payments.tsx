@@ -28,6 +28,7 @@ import startCase from 'lodash/startCase';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { LabelText } from '@/components/result-helper-components';
 import { formatAsCurrency } from '@/util/util';
+import RetrievePaymentSummaryModal from '@/components/modals/retrieve-payment-summary-modal';
 
 interface Props {
   feePayments: PaginationResponse<FeePayment>;
@@ -47,6 +48,7 @@ export default function ListFeePayments({
   const { handleResponseToast } = useMyToast();
   const recordFeePaymentModalToggle = useModalToggle();
   const feePaymentFilterToggle = useModalToggle();
+  const retrievePaymentSummaryModal = useModalToggle();
   const isAdmin = useIsAdmin();
 
   async function deleteItem(obj: FeePayment) {
@@ -129,6 +131,11 @@ export default function ListFeePayments({
           rightElement={
             <HStack>
               <BrandButton
+                title={'Payment Summary'}
+                onClick={retrievePaymentSummaryModal.open}
+                variant={'outline'}
+              />
+              <BrandButton
                 title={'Record Payment'}
                 onClick={recordFeePaymentModalToggle.open}
               />
@@ -161,6 +168,7 @@ export default function ListFeePayments({
         onSuccess={() => Inertia.reload({ only: ['feePayments'] })}
       />
       <FeePaymentTableFilters {...feePaymentFilterToggle.props} />
+      <RetrievePaymentSummaryModal {...retrievePaymentSummaryModal.props} />
     </DashboardLayout>
   );
 }

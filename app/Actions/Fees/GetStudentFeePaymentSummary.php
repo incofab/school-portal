@@ -1,12 +1,15 @@
 <?php
 namespace App\Actions\Fees;
 
-use App\DTO\FeePaymentSummaryDto;
+use App\DTO\StudentFeePaymentSummaryDto;
+use App\DTO\FeeSummaryDto;
 use App\Enums\PaymentInterval;
 use App\Models\Classification;
 use App\Models\Fee;
 use App\Models\FeePayment;
 use App\Models\Student;
+use App\Models\User;
+use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Collection;
 
 class GetStudentFeePaymentSummary
@@ -34,9 +37,13 @@ class GetStudentFeePaymentSummary
   {
     $feePayments = FeePayment::select('fee_payments.*')
       ->join('fees', 'fees.id', 'fee_payments.fee_id')
-      ->join('receipts', 'receipts.id', 'fees.receipt_id')
+      ->join('receipts', 'receipts.id', 'fee_payments.receipt_id')
       ->whereIn('fee_payments.fee_id', $fees->pluck('id'))
-      ->where('fee_payments.user_id', $this->student->user_id)
+      ->where(
+        fn($q) => $q
+          ->where('fee_payments.payable_type', MorphMap::key(User::class))
+          ->where('fee_payments.payable_id', $this->student->user_id)
+      )
       ->where(function ($qq) {
         $qq
           ->where(
@@ -65,7 +72,7 @@ class GetStudentFeePaymentSummary
   {
     $fees = $this->getStudentFees();
     $feePayments = $this->getStudentFeePayments($fees);
-    $dto = new FeePaymentSummaryDto();
+    $dto = new StudentFeePaymentSummaryDto($this->student);
 
     foreach ($fees as $key => $fee) {
       $feePayment = $feePayments
@@ -74,22 +81,28 @@ class GetStudentFeePaymentSummary
 
       if (!$feePayment) {
         $dto->updateTotalAmountToPay($fee->amount);
-        $dto->addFeesToPay([
-          'amount_paid' => 0,
-          'amount_remaining' => $fee->amount,
-          'title' => $fee->title,
-          'is_part_payment' => false
-        ]);
+        $dto->addPaymentSummary(
+          FeeSummaryDto::new(
+            amount_paid: 0,
+            amount_remaining: $fee->amount,
+            title: $fee->title,
+            is_part_payment: false,
+            fee_id: $fee->id
+          )
+        );
         continue;
       }
       if ($includePaidFees) {
         $dto->updateTotalAmountToPay($feePayment->receipt->amount_remaining);
-        $dto->addFeesToPay([
-          'amount_paid' => $feePayment->receipt->amount_paid,
-          'amount_remaining' => $feePayment->receipt->amount_remaining,
-          'title' => $fee->title,
-          'is_part_payment' => $feePayment->receipt->amount_remaining > 0
-        ]);
+        $dto->addPaymentSummary(
+          FeeSummaryDto::new(
+            amount_paid: $feePayment->receipt->amount_paid,
+            amount_remaining: $feePayment->receipt->amount_remaining,
+            title: $fee->title,
+            is_part_payment: $feePayment->receipt->amount_remaining > 0,
+            fee_id: $fee->id
+          )
+        );
       }
     }
     return $dto;

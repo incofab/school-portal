@@ -50,16 +50,16 @@ class SeedSetupData
   private function seedPriceList()
   {
     $priceLists = [
-      [
-        'type' => PriceType::EmailSending->value,
-        'payment_structure' => PaymentStructure::PerUnit->value,
-        'amount' => 3
-      ],
-      [
-        'type' => PriceType::SmsSending->value,
-        'payment_structure' => PaymentStructure::PerUnit->value,
-        'amount' => 7
-      ],
+      // [
+      //   'type' => PriceType::EmailSending->value,
+      //   'payment_structure' => PaymentStructure::PerUnit->value,
+      //   'amount' => 3
+      // ],
+      // [
+      //   'type' => PriceType::SmsSending->value,
+      //   'payment_structure' => PaymentStructure::PerUnit->value,
+      //   'amount' => 7
+      // ],
       [
         'type' => PriceType::ResultChecking->value,
         'payment_structure' => PaymentStructure::PerStudentPerTerm->value,
