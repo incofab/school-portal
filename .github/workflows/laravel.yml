@@ -40,15 +40,10 @@ jobs:
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: '16.x'
-
       - name: Install Dependencies
         run: |
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-          npm install
+          npm ci
       
       - name: Generate key
         run: php artisan key:generate
@@ -70,6 +65,9 @@ jobs:
       #     mkdir -p database
       #     touch database/database.sqlite
 
+      - name: Build frontend (React via Inertia)
+        run: npm run build
+        
       - name: Run migrations
         run: php artisan migrate --force
 
