@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Institutions\Withdrawals;
 
+use App\Actions\Payments\WithdrawalHandler;
 use App\Http\Controllers\Controller;
-use App\Enums\WithdrawalStatus;
 use App\Models\Institution;
-use App\Models\Withdrawal;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
-use App\Support\Fundings\RecordFunding;
 
 class WithdrawalController extends Controller
 {
@@ -34,35 +32,21 @@ class WithdrawalController extends Controller
       'reference' => 'required|string'
     ]);
 
-    $reqBankAccountId = $validated['bank_account_id'];
-    $reqAmount = $validated['amount'];
-    $reqReference = $validated['reference'];
-
     $institutionGroup = $institution->institutionGroup;
-    $currentFundBalance = floatval($institutionGroup->credit_wallet);
-    $newFundBalance = $currentFundBalance - $reqAmount;
-
-    if ($newFundBalance < 0) {
-      //Return Error - Insufficient Wallet Balance
-      return $this->message('Insufficient Wallet Balance.', 401);
-    }
-
-    //= Save to Withdrawals DB Table
-    $withdrawal = Withdrawal::create([
-      'bank_account_id' => $reqBankAccountId,
-      'withdrawable_type' => $institutionGroup->getMorphClass(),
-      'withdrawable_id' => $institutionGroup->id,
-      'amount' => $reqAmount,
-      'status' => WithdrawalStatus::Pending->value,
-      'reference' => $reqReference
-    ]);
-
-    //= Deduct the InstGroup -AND- Save record to Transactions Table
-    RecordFunding::make(
+    $bankAccount = $institutionGroup
+      ->bankAccounts()
+      ->where('id', $validated['bank_account_id'])
+      ->firstOrFail();
+    $res = WithdrawalHandler::make()->recordInstitutionWithdrawal(
       $institutionGroup,
-      currentUser()
-    )->recordCreditDeduction($reqAmount, $reqReference, $withdrawal, null);
+      $bankAccount,
+      currentUser(),
+      $validated['amount'],
+      $validated['reference']
+    );
 
-    return $this->ok();
+    return $res->isSuccessful()
+      ? $this->ok()
+      : $this->message($res->getMessage(), 401);
   }
 }

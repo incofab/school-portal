@@ -2,7 +2,6 @@
 namespace App\Support;
 
 use App\Enums\TransactionType;
-use App\Enums\WithdrawalStatus;
 use App\Models\Commission;
 use App\Models\InstitutionGroup;
 use App\Models\Partner;
@@ -28,7 +27,7 @@ class CommissionHandler
     ?Model $commissionable
   ) {
     $partner = $institutionGroup->partner?->partner;
-    
+
     if (!$partner) {
       return;
     }
@@ -63,16 +62,8 @@ class CommissionHandler
   }
 
   //= Debit a Partner's Wallet ::: When he/she request for withdrawal
-  function debitPartner(Partner $partner, float $amount, int $bankAccountId)
+  function debitPartner(Partner $partner, float $amount, Model $transactionable)
   {
-    $transactionable = Withdrawal::create([
-      'bank_account_id' => $bankAccountId,
-      'withdrawable_type' => $partner->getMorphClass(), //Partner
-      'withdrawable_id' => $partner->id,
-      'amount' => $amount,
-      'status' => WithdrawalStatus::Pending->value,
-      'reference' => $this->reference
-    ]);
     $this->recordTransaction(
       $amount,
       $partner,

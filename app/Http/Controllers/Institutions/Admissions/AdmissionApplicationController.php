@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions\Admissions;
 
 use App\Actions\Admisssions\RecordAdmissionApplication;
+use App\Actions\GenericExport;
 use App\Actions\HandleAdmission;
 use App\DTO\PaymentReferenceDto;
 use App\Enums\AdmissionStatusType;
@@ -15,6 +16,7 @@ use App\Enums\Payments\PaymentPurpose;
 use App\Http\Controllers\Controller;
 use App\Models\AdmissionApplication;
 use App\Http\Requests\AdmissionApplicationRequest;
+use App\Http\Requests\UploadAdmissionApplicationRequest;
 use App\Models\AdmissionForm;
 use App\Models\Classification;
 use App\Rules\ValidateExistsRule;
@@ -35,13 +37,17 @@ class AdmissionApplicationController extends Controller
     ]);
   }
 
-  function index(Institution $institution)
+  function index(Institution $institution, ?AdmissionForm $admissionForm = null)
   {
-    $query = AdmissionApplication::query()->with('admissionForm');
+    $query = (
+      $admissionForm?->admissionApplications()->getQuery() ??
+      AdmissionApplication::query()
+    )->with('admissionForm');
     return Inertia::render(
       'institutions/admissions/list-admission-applications',
       [
-        'admissionApplications' => paginateFromRequest($query)
+        'admissionApplications' => paginateFromRequest($query),
+        'admissionForm' => $admissionForm
       ]
     );
   }
@@ -67,6 +73,36 @@ class AdmissionApplicationController extends Controller
     );
 
     return $this->ok(['admissionApplication' => $admissionApplication]);
+  }
+
+  public function downloadTemplate(Institution $institution)
+  {
+    $columnKeyMapping = RecordAdmissionApplication::$sheetColumnMapping;
+    $filename = 'application-recording-template.xlsx';
+    $headers = array_values($columnKeyMapping);
+    $headers = array_map(
+      fn($item) => ucfirst(str_replace(['_', '-'], ' ', $item)),
+      $headers
+    );
+
+    return (new GenericExport([], $filename, $headers))->download();
+  }
+
+  function uploadAdmissionApplication(
+    Institution $institution,
+    AdmissionForm $admissionForm,
+    UploadAdmissionApplicationRequest $request
+  ) {
+    $data = $request->validated();
+    $reference = $request->reference;
+    foreach ($data['applications'] as $key => $item) {
+      (new RecordAdmissionApplication($institution))->run($admissionForm, [
+        ...$item,
+        'admission_form_id' => $admissionForm->id,
+        'reference' => "$reference-$key"
+      ]);
+    }
+    return $this->ok();
   }
 
   public function updateStatus(

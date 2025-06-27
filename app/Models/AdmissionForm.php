@@ -48,4 +48,9 @@ class AdmissionForm extends Model
   {
     return $this->hasMany(AdmissionFormPurchase::class);
   }
+
+  public function admissionApplications()
+  {
+    return $this->hasMany(AdmissionApplication::class);
+  }
 }

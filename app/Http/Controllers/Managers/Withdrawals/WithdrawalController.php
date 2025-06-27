@@ -2,19 +2,13 @@
 
 namespace App\Http\Controllers\Managers\Withdrawals;
 
-use Illuminate\Validation\Rules\Enum;
+use App\Actions\Payments\WithdrawalHandler;
 use App\Http\Controllers\Controller;
 use App\Enums\WithdrawalStatus;
 use Illuminate\Http\Request;
 use App\Models\Withdrawal;
 use Inertia\Inertia;
-use App\Enums\TransactionType;
-use App\Models\InstitutionGroup;
-use App\Models\Partner;
-use App\Models\UserTransaction;
-use App\Support\CommissionHandler;
-use App\Support\Fundings\RecordFunding;
-use App\Support\MorphMap;
+use Illuminate\Validation\Rule;
 
 class WithdrawalController extends Controller
 {
@@ -45,135 +39,45 @@ class WithdrawalController extends Controller
       'reference' => 'required|string'
     ]);
 
-    $reqBankAccountId = $validated['bank_account_id'];
-    $reqAmount = $validated['amount'];
-    $reqReference = $validated['reference'];
+    $partner = currentUser()->partner;
+    $bankAccount = $partner
+      ->bankAccounts()
+      ->where('id', $validated['bank_account_id'])
+      ->firstOrFail();
 
-    $user = currentUser();
-    $partner = $user->partner;
-    $currentFundBalance = floatval($partner->wallet);
-    $newFundBalance = $currentFundBalance - $reqAmount;
-
-    if ($newFundBalance < 0) {
-      //Return Error - Insufficient Wallet Balance
-      return $this->message('Insufficient Wallet Balance.', 401);
-    }
-
-    //= Deduct Balance, Save to Withdrawals DB Table, and Save to Transactions DB Table
-    CommissionHandler::make($reqReference)->debitPartner(
+    $res = WithdrawalHandler::make()->recordPartnerWithdrawal(
       $partner,
-      $reqAmount,
-      $reqBankAccountId
+      $bankAccount,
+      $validated['amount'],
+      $validated['reference']
     );
 
-    /*
-    //= Deduct balance
-    $partner->update([
-      'wallet' => $newFundBalance
-    ]);
-
-    //= Save to Withdrawals DB Table
-    $withdrawal = Withdrawal::create([
-      'bank_account_id' => $reqBankAccountId,
-      'withdrawable_type' => $partner->getMorphClass(),
-      'withdrawable_id' => $partner->id,
-      'amount' => $reqAmount,
-      'status' => WithdrawalStatus::Pending->value,
-      'reference' => $reqReference
-    ]);
-
-    //= Save to Transactions Table
-    UserTransaction::Create([
-      'type' => TransactionType::Debit,
-      'amount' => $reqAmount,
-      'bbt' => $currentFundBalance,
-      'bat' => $newFundBalance,
-      'entity_type' => $partner->getMorphClass(),
-      'entity_id' => $partner->id,
-      'transactionable_type' => $withdrawal->getMorphClass(),
-      'transactionable_id' => $withdrawal->id,
-      'reference' => $reqReference,
-      'remark' => null
-    ]);
-    */
-
-    return $this->ok();
+    return $res->isSuccessful()
+      ? $this->ok()
+      : $this->message($res->getMessage(), 401);
   }
 
   public function update(Withdrawal $withdrawal, Request $request)
   {
     $request->validate([
-      'status' => ['required', new Enum(WithdrawalStatus::class)],
+      'status' => [
+        'required',
+        Rule::in([
+          WithdrawalStatus::Declined->value,
+          WithdrawalStatus::Paid->value
+        ])
+      ],
       'remark' => ['nullable', 'string']
     ]);
 
-    $reqStatus = $request->status;
-    $reqRemark = $request->remark ?? null;
-    $withdrawalAmount = floatval($withdrawal->amount);
-    $withdrawalReference = $withdrawal->reference;
-
-    //= If the Status is DECLINED, refund the user.
-    if ($reqStatus === WithdrawalStatus::Declined->value) {
-      $withdrawableType = $withdrawal->withdrawable_type;
-      $withdrawableId = $withdrawal->withdrawable_id;
-
-      //= InstitutionGroup
-      if ($withdrawableType === MorphMap::key(InstitutionGroup::class)) {
-        $institutionGroup = InstitutionGroup::find($withdrawableId);
-
-        //Refund the User and Add record to Transaction DB Table
-        RecordFunding::make(
-          $institutionGroup,
-          currentUser()
-        )->recordCreditTopup(
-          $withdrawalAmount,
-          $withdrawalReference,
-          $withdrawal,
-          null
-        );
-      }
-
-      //= Partner
-      if ($withdrawableType === MorphMap::key(Partner::class)) {
-        //= Refund the Partner, and save record to UserTransaction DB Table
-        $partner = Partner::find($withdrawableId);
-        CommissionHandler::make($withdrawalReference)->refundPartner(
-          $partner,
-          $withdrawal
-        );
-
-        /*
-        $partner = Partner::find($withdrawableId);
-        $currentBalance = floatval($partner->wallet);
-        $newBalance = $currentBalance + $withdrawalAmount;
-
-        $partner->update([
-          'wallet' => $newBalance
-        ]);
-
-        //Add record to UserTransaction DB Table
-        UserTransaction::Create([
-          'type' => TransactionType::Credit,
-          'amount' => $withdrawalAmount,
-          'bbt' => $currentBalance,
-          'bat' => $newBalance,
-          'entity_type' => $partner->getMorphClass(),
-          'entity_id' => $partner->id,
-          'transactionable_type' => $withdrawal->getMorphClass(),
-          'transactionable_id' => $withdrawal->id,
-          'reference' => $withdrawalReference,
-          'remark' => null
-        ]);
-        */
-      }
+    $status = $request->status;
+    $remark = $request->remark;
+    $user = currentUser();
+    if ($status === WithdrawalStatus::Declined->value) {
+      WithdrawalHandler::make()->declineWithdrawal($withdrawal, $user, $remark);
+    } elseif ($status === WithdrawalStatus::Paid->value) {
+      WithdrawalHandler::make()->confirmWithdrawal($withdrawal, $user, $remark);
     }
-
-    $withdrawal->update([
-      'status' => $reqStatus,
-      'remark' => $reqRemark,
-      'paid_at' => now()
-    ]);
-
     return $this->ok();
   }
 }

@@ -16,7 +16,8 @@ class AcademicSessionSeeder extends Seeder
     $arr = [
       ['title' => '2022/2023'],
       ['title' => '2023/2024'],
-      ['title' => '2024/2025']
+      ['title' => '2024/2025'],
+      ['title' => '2025/2026']
     ];
     foreach ($arr as $key => $item) {
       AcademicSession::query()->firstOrCreate($item);

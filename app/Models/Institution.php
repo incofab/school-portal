@@ -165,6 +165,11 @@ class Institution extends Model
     return $this->hasMany(FeePayment::class);
   }
 
+  function paymentReferences()
+  {
+    return $this->hasMany(PaymentReference::class);
+  }
+
   function institutionSettings()
   {
     return $this->hasMany(InstitutionSetting::class);

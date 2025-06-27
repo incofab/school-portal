@@ -101,6 +101,7 @@ class FeePaymentController extends Controller
     ]);
   }
 
+  // Todo: write a test for this function
   function feePaymentSummary(Institution $institution, Request $request)
   {
     $classRule = new ValidateExistsRule(Classification::class);
