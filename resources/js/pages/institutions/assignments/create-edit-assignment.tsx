@@ -23,6 +23,7 @@ import { MultiValue, SingleValue } from 'react-select';
 import ClassificationSelect from '@/components/selectors/classification-select';
 import CourseSelect from '@/components/selectors/course-select';
 import useSharedProps from '@/hooks/use-shared-props';
+import TinyMceEditor from '@/components/tinymce-editor';
 
 // TODO :: When Assignment is available (EDIT), how do I display the classification_ids into the 'Select Class / Classes'.
 interface Props {
@@ -159,23 +160,8 @@ export default function CreateOrUpdateEvent({ assignment }: Props) {
                 formKey="content"
                 isRequired
               >
-                <Editor
-                  // onInit={(evt, editor) => (editorRef.current = editor)}
-                  apiKey={tinymceApiKey}
+                <TinyMceEditor
                   initialValue={assignment?.content}
-                  init={{
-                    height: 300,
-                    menubar: true,
-                    plugins: [
-                      'advlist autolink lists link image charmap print preview anchor',
-                      'searchreplace visualblocks code fullscreen',
-                      'insertdatetime media table paste code help wordcount',
-                    ],
-                    toolbar:
-                      'undo redo | formatselect | bold italic backcolor | alignleft aligncenter  alignright alignjustify | bullist numlist outdent indent |  removeformat',
-                    content_style:
-                      'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                  }}
                   value={webForm.data.content}
                   onEditorChange={(content: string) =>
                     webForm.setValue('content', content)

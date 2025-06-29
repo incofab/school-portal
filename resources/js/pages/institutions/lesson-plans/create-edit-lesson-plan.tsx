@@ -14,6 +14,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { SingleValue } from 'react-select';
 import { SelectOptionType } from '@/types/types';
 import LessonPlanCourseTeacherSelect from '@/components/selectors/lesson-plan-course-teacher-select';
+import TinyMceEditor from '@/components/tinymce-editor';
 
 interface Props {
   schemeOfWork?: SchemeOfWork;
@@ -110,23 +111,8 @@ export default function CreateOrUpdateTopic({
               formKey="objective"
               isRequired
             >
-              <Editor
-                // onInit={(evt, editor) => (editorRef.current = editor)}
-                apiKey={tinymceApiKey}
+              <TinyMceEditor
                 initialValue={lessonPlan?.objective}
-                init={{
-                  height: 300,
-                  menubar: true,
-                  plugins: [
-                    'advlist autolink lists link image charmap print preview anchor',
-                    'searchreplace visualblocks code fullscreen',
-                    'insertdatetime media table paste code help wordcount',
-                  ],
-                  toolbar:
-                    'undo redo | formatselect | bold italic backcolor | alignleft aligncenter  alignright alignjustify | bullist numlist outdent indent |  removeformat',
-                  content_style:
-                    'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                }}
                 value={webForm.data.objective}
                 onEditorChange={(objective: string) =>
                   webForm.setValue('objective', objective)
@@ -140,23 +126,8 @@ export default function CreateOrUpdateTopic({
               formKey="activities"
               isRequired
             >
-              <Editor
-                // onInit={(evt, editor) => (editorRef.current = editor)}
-                apiKey={tinymceApiKey}
+              <TinyMceEditor
                 initialValue={lessonPlan?.activities}
-                init={{
-                  height: 300,
-                  menubar: true,
-                  plugins: [
-                    'advlist autolink lists link image charmap print preview anchor',
-                    'searchreplace visualblocks code fullscreen',
-                    'insertdatetime media table paste code help wordcount',
-                  ],
-                  toolbar:
-                    'undo redo | formatselect | bold italic backcolor | alignleft aligncenter  alignright alignjustify | bullist numlist outdent indent |  removeformat',
-                  content_style:
-                    'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                }}
                 value={webForm.data.activities}
                 onEditorChange={(activities: string) =>
                   webForm.setValue('activities', activities)
@@ -170,22 +141,8 @@ export default function CreateOrUpdateTopic({
               formKey="content"
               isRequired
             >
-              <Editor
-                apiKey={tinymceApiKey}
+              <TinyMceEditor
                 initialValue={lessonPlan?.content}
-                init={{
-                  height: 300,
-                  menubar: true,
-                  plugins: [
-                    'advlist autolink lists link image charmap print preview anchor',
-                    'searchreplace visualblocks code fullscreen',
-                    'insertdatetime media table paste code help wordcount',
-                  ],
-                  toolbar:
-                    'undo redo | formatselect | bold italic backcolor | alignleft aligncenter  alignright alignjustify | bullist numlist outdent indent |  removeformat',
-                  content_style:
-                    'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                }}
                 value={webForm.data.content}
                 onEditorChange={(content: string) =>
                   webForm.setValue('content', content)

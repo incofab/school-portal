@@ -33,7 +33,7 @@
 				<div class="form-group">
 					<label for="" >Question No</label>
 					<input type="number" name="question_no" value="{{$questionNo}}"  
-						readonly="{{$edit ? false : true}}"
+						{{$edit ? '' : 'readonly'}}
 						class="form-control" style="max-width: 80px" />
 				</div>
 				
@@ -154,6 +154,8 @@
 		cursor: pointer;
 	}
 </style>
+@include('common._tinymce')
+{{-- 
 <script src="https://cdn.tiny.cloud/1/x5fywb7rhiv5vwkhx145opfx4rsh70ytqkiq2mizrg73qwc2/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
 tinymce.init({
@@ -171,6 +173,6 @@ tinymce.init({
 
 	toolbar: 'undo redo | link image | code | bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,',
 });
-</script>
+</script> --}}
 
 @endsection
