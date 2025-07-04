@@ -245,21 +245,37 @@ function DisplayQuestion({
 }) {
   const attemptManager = examUtil.getAttemptManager();
   const questions = examCourseable.courseable!.questions!;
-  // console.log('questions', examCourseable.courseable!.course?.code, questions);
 
   const question =
     questions[examUtil.getTabManager().getCurrentQuestionIndex()];
-  const questionImageHandler = new QuestionImageHandler(
-    examCourseable.courseable!
-  );
+  const courseable = examCourseable.courseable!;
+  const questionImageHandler = new QuestionImageHandler(courseable);
   if (!question) {
     return null;
   }
+  const passage = courseable.passages?.find(
+    (item) =>
+      question.question_no >= item.from && question.question_no <= item.to
+  );
+  const instruction = courseable.instructions?.find(
+    (item) =>
+      question.question_no >= item.from && question.question_no <= item.to
+  );
+
   return (
     <VStack align={'stretch'} className="question-container">
       <Text fontWeight={'bold'}>
         Question {question.question_no} of {questions.length}
       </Text>
+      {passage && (
+        <Text my={2} dangerouslySetInnerHTML={{ __html: passage.passage }} />
+      )}
+      {instruction && (
+        <Text
+          my={2}
+          dangerouslySetInnerHTML={{ __html: instruction.instruction }}
+        />
+      )}
       <Text
         my={2}
         dangerouslySetInnerHTML={{

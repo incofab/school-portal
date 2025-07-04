@@ -599,6 +599,24 @@ export interface CourseSession extends InstitutionRow {
   general_instruction: string;
   course?: Course;
   questions?: Question[];
+  instructions?: Instruction[];
+  passages?: Passage[];
+}
+
+export interface Passage extends InstitutionRow {
+  from: number;
+  to: number;
+  passage: string;
+  courseable_type: string;
+  courseable_id: number;
+}
+
+export interface Instruction extends InstitutionRow {
+  from: number;
+  to: number;
+  instruction: string;
+  courseable_type: string;
+  courseable_id: number;
 }
 
 export interface Event extends InstitutionRow {

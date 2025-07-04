@@ -44,4 +44,27 @@ function initTinymce() {
 $(function() {
 	initTinymce();
 });
+/*
+$('form[name="record-question"]').on('submit', function (e) {
+  e.preventDefault();
+  if (!confirm('Are you sure?')) return false;
+  tinyMCE.triggerSave();
+
+  $(this)
+    .find('input, select, textarea')
+    .each(function (index, element) {
+      if (element.name) {
+        element.value = (element.value + '').replaceAll(
+          ' xmlns="http://www.w3.org/1998/Math/MathML"',
+          ''
+        );
+      }
+    });
+
+  var ans = $(this).find('input[name="answer"]:checked').val();
+  $(this).find('input[name="answer"]').val(ans);
+  this.submit();
+  return false;
+});
+*/
 </script>

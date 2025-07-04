@@ -21,8 +21,8 @@ class Passage extends Model
     return [
       'from' => ['required', 'integer'],
       'to' => ['required', 'integer', 'gte:from'],
-      'passage' => ['required', 'string'],
-      'courseable_id' => ['required']
+      'passage' => ['required', 'string']
+      // 'courseable_id' => ['required']
     ];
   }
 
