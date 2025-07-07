@@ -39,6 +39,7 @@ class ConvertSheetToArray
     $rows = range($startingRow + 1, $totalRows);
     foreach ($rows as $row) {
       $dataItem = [];
+      $emptyRow = true;
       foreach ($this->columnKeyMapping as $excelColumn => $dataKey) {
         $key = $dataKey;
         $value = trim(
@@ -49,8 +50,13 @@ class ConvertSheetToArray
           $value = $dataKey->handleValue($value);
         }
         $dataItem[$key] = $value;
+        if ($emptyRow) {
+          $emptyRow = empty($value);
+        }
       }
-      $data[] = $dataItem;
+      if (!$emptyRow) {
+        $data[] = $dataItem;
+      }
     }
     // dd(json_encode($data, JSON_PRETTY_PRINT));
     return $data;

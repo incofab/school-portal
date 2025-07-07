@@ -210,7 +210,13 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   }
                   pr={3}
                 />
-                Result Activation Required
+                <span>Result Activation Required</span>
+                <Div fontSize={11} mt={2} color={'red'}>
+                  <i>
+                    Be careful, turning this off means your students won't need
+                    Pins to check result after publishing
+                  </i>
+                </Div>
               </FormLabel>
               {/* 
               {webForm.data[InstitutionSettingType.UsesMidTermResult] && (
