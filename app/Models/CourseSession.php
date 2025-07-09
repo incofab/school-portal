@@ -39,19 +39,4 @@ class CourseSession extends QuestionCourseable
   {
     return "{$this->course->title} {$this->session}";
   }
-
-  // function questions()
-  // {
-  //   return $this->morphMany(Question::class, 'courseable');
-  // }
-
-  // function instructions()
-  // {
-  //   return $this->morphMany(Instruction::class, 'courseable');
-  // }
-
-  // function passages()
-  // {
-  //   return $this->morphMany(Passage::class, 'courseable');
-  // }
 }

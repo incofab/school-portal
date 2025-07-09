@@ -11,6 +11,14 @@ use Storage;
 
 class RecordAdmissionApplication
 {
+  static $sheetColumnMapping = [
+    'A' => 'first_name',
+    'B' => 'last_name',
+    'C' => 'other_names',
+    'D' => 'gender',
+    'E' => 'guardian_no',
+    'F' => 'intended_class_of_admission'
+  ];
   function __construct(private Institution $institution)
   {
   }
@@ -20,7 +28,7 @@ class RecordAdmissionApplication
     $applicantData = collect($data)
       ->except('guardians')
       ->toArray();
-    $guardiansData = $data['guardians'];
+    $guardiansData = $data['guardians'] ?? [];
 
     /** @var ?UploadedFile $photo */
     $photo = $data['photo'] ?? null;

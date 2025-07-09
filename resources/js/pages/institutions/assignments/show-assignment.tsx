@@ -11,8 +11,8 @@ import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
 import { preventNativeSubmit } from '@/util/util';
 import FormControlBox from '@/components/forms/form-control-box';
-import { Editor } from '@tinymce/tinymce-react';
 import { FormButton } from '@/components/buttons';
+import TinyMceEditor from '@/components/tinymce-editor';
 
 interface Props {
   assignment: Assignment;
@@ -71,23 +71,8 @@ export default function ShowAssignment({ assignment }: Props) {
                 formKey="content"
                 isRequired
               >
-                <Editor
-                  // onInit={(evt, editor) => (editorRef.current = editor)}
-                  apiKey={tinymceApiKey}
+                <TinyMceEditor
                   initialValue=""
-                  init={{
-                    height: 300,
-                    menubar: true,
-                    plugins: [
-                      'advlist autolink lists link image charmap print preview anchor',
-                      'searchreplace visualblocks code fullscreen',
-                      'insertdatetime media table paste code help wordcount',
-                    ],
-                    toolbar:
-                      'undo redo | formatselect | bold italic backcolor | alignleft aligncenter  alignright alignjustify | bullist numlist outdent indent |  removeformat',
-                    content_style:
-                      'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                  }}
                   value={webForm.data.answer}
                   onEditorChange={(answer: string) =>
                     webForm.setValue('answer', answer)

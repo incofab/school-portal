@@ -23,6 +23,7 @@ import { MultiValue, SingleValue } from 'react-select';
 import ClassificationSelect from '@/components/selectors/classification-select';
 import CourseSelect from '@/components/selectors/course-select';
 import useSharedProps from '@/hooks/use-shared-props';
+import TinyMceEditor from '@/components/tinymce-editor';
 
 // TODO :: When Assignment is available (EDIT), how do I display the classification_ids into the 'Select Class / Classes'.
 interface Props {
@@ -31,20 +32,18 @@ interface Props {
 
 const tinymceApiKey = import.meta.env.VITE_TINYMCE_API_KEY;
 
-export default function CreateOrUpdateEvent({
-  assignment,
-}: Props) {
+export default function CreateOrUpdateEvent({ assignment }: Props) {
   const isAdmin = useIsAdmin();
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const { currentInstitutionUser } = useSharedProps();
-  
+
   const webForm = useWebForm({
     course_id: assignment ? assignment.course_id : '',
-    classification_ids: (assignment?.classifications?.map((item) => ({
+    classification_ids: assignment?.classifications?.map((item) => ({
       label: item.title,
-      value: item.id
-    }))) as Nullable<MultiValue<SelectOptionType<number>>>,
+      value: item.id,
+    })) as Nullable<MultiValue<SelectOptionType<number>>>,
     max_score: assignment ? assignment.max_score : '',
     expires_at: assignment ? assignment.expires_at : '',
     content: '',
@@ -52,9 +51,10 @@ export default function CreateOrUpdateEvent({
 
   const submit = async () => {
     const res = await webForm.submit((data, web) => {
-      const requestData = {...data, 
+      const requestData = {
+        ...data,
         institution_user_id: currentInstitutionUser.id,
-        classification_ids: data.classification_ids?.map((item) => item.value)
+        classification_ids: data.classification_ids?.map((item) => item.value),
       };
 
       return assignment
@@ -106,7 +106,9 @@ export default function CreateOrUpdateEvent({
                   selectValue={webForm.data.classification_ids}
                   isMulti={true}
                   isClearable={true}
-                  onChange={(e: any) => webForm.setValue('classification_ids', e)}
+                  onChange={(e: any) =>
+                    webForm.setValue('classification_ids', e)
+                  }
                   required
                 />
               </FormControlBox>
@@ -158,27 +160,8 @@ export default function CreateOrUpdateEvent({
                 formKey="content"
                 isRequired
               >
-                <Editor
-                  // onInit={(evt, editor) => (editorRef.current = editor)}
-                  apiKey={tinymceApiKey}
-                  initialValue={`${
-                    assignment
-                      ? assignment.content
-                      : '<p>..Type the Question..</p>'
-                  } `}
-                  init={{
-                    height: 300,
-                    menubar: true,
-                    plugins: [
-                      'advlist autolink lists link image charmap print preview anchor',
-                      'searchreplace visualblocks code fullscreen',
-                      'insertdatetime media table paste code help wordcount',
-                    ],
-                    toolbar:
-                      'undo redo | formatselect | bold italic backcolor | alignleft aligncenter  alignright alignjustify | bullist numlist outdent indent |  removeformat',
-                    content_style:
-                      'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                  }}
+                <TinyMceEditor
+                  initialValue={assignment?.content}
                   value={webForm.data.content}
                   onEditorChange={(content: string) =>
                     webForm.setValue('content', content)

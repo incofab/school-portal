@@ -112,8 +112,8 @@ it('can end an exam', function () {
   expect($this->exam->status)->toBe(ExamStatus::Ended);
   expect($this->exam->pause_time)->toBeNull();
   expect($this->exam->end_time)->toBeNull();
-  expect($this->exam->time_remaining)->toBe(0);
-  expect($this->exam->score)->toBe(2);
+  expect($this->exam->time_remaining)->toBe(floatval(0));
+  expect($this->exam->score)->toBe(floatval(2));
   expect($this->exam->num_of_questions)->toBe(2);
   expect($this->exam->attempts->toArray())->toEqual($studentAttempts);
 });
@@ -125,5 +125,5 @@ it('can re-evaluate an already ended exam', function () {
   expect($this->exam->status)->toBe(ExamStatus::Ended);
   expect($this->exam->pause_time)->toBeNull();
   expect($this->exam->end_time)->toBeNull();
-  expect($this->exam->time_remaining)->toBe(0);
+  expect($this->exam->time_remaining)->toBe(floatval(0));
 });

@@ -31,7 +31,7 @@
 				<div class="form-group">
 					<label for="" >General Instructions</label>
 					<textarea name="general_instructions" id="" rows="4" class="form-control" 
-						><?= old('general_instructions', $edit?->general_instructions) ?></textarea>
+						>{{old('general_instructions', $edit?->general_instructions)}}</textarea>
 				</div>
 				
 				<div class="form-group">

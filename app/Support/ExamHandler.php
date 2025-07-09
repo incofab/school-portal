@@ -63,7 +63,7 @@ class ExamHandler
       ->fill([
         'start_time' => $this->exam->start_time ?? now(), //Maintain original start_time
         'pause_time' => null,
-        'end_time' => now()->addSecond($duration),
+        'end_time' => now()->addSeconds(floatval($duration)),
         'time_remaining' => null,
         'status' => ExamStatus::Active
       ])

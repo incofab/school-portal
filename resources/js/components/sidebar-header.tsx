@@ -24,6 +24,18 @@ export const SidebarHeader = ({ ...props }: BoxProps) => {
           {currentInstitution.name}
         </Text>
       </HStack>
+      <Text
+        color={'brand.300'}
+        fontSize={'md'}
+        width={'full'}
+        fontWeight={'semibold'}
+        whiteSpace={'nowrap'}
+        m={0}
+        mt={2}
+        p={0}
+      >
+        {currentInstitution.code}
+      </Text>
       <Divider background={'brand.50'} />
     </Div>
   );

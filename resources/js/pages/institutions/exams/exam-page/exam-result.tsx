@@ -10,6 +10,7 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import CenteredBox from '@/components/centered-box';
 import tokenUserUtil from '@/util/token-user-util';
 import useIsStudent from '@/hooks/use-is-student';
+import route from '@/util/route';
 
 interface Props {
   exam: Exam;
@@ -105,7 +106,8 @@ export default function ExamResult({ exam }: Props) {
           <LinkButton
             title="Home"
             href={
-              isStudent ? instRoute('dashboard') : instRoute('external.home')
+              route('login')
+              // isStudent ? instRoute('dashboard') : instRoute('external.home')
             }
           />
         </VStack>

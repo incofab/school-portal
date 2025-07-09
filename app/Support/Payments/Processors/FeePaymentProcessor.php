@@ -13,7 +13,7 @@ class FeePaymentProcessor extends PaymentProcessor
 {
   function handleCallback(): Res
   {
-    if ($this->paymentReference->status == PaymentStatus::Confirmed) {
+    if ($this->paymentReference->status != PaymentStatus::Pending) {
       return failRes('Payment already resolved');
     }
 

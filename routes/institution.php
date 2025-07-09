@@ -241,6 +241,7 @@ Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
 
 // Route::get('/fee-payments/download/{classification}/{receiptType}', [Web\Payments\FeePaymentController::class, 'download'])->name('fee-payments.download');
 // Route::post('/fee-payments/upload', [Web\Payments\FeePaymentController::class, 'upload'])->name('fee-payments.upload');
+Route::get('/fee-payments/summary', [Web\Payments\FeePaymentController::class, 'feePaymentSummary'])->name('fee-payments.summary');
 Route::get('/fee-payments/index/{fee?}', [Web\Payments\FeePaymentController::class, 'index'])->name('fee-payments.index');
 Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['index', 'edit', 'update']);
 Route::get('/receipts', [Web\Payments\ReceiptController::class, 'index'])->name('receipts.index');
@@ -288,7 +289,10 @@ Route::delete('/learning-evaluations/destroy/{learningEvaluation}', [Web\Staff\L
 Route::post('/set-term-result-learning-evaluation/{termResult?}', [Web\Staff\LearningEvaluationController::class, 'setTermResultEvaluation'])
   ->name('set-term-result-learning-evaluation');
 
-Route::resource('/admission-applications', Web\Admissions\AdmissionApplicationController::class)->except('store');
+Route::get('/admission-applications/download-recording-template', [Web\Admissions\AdmissionApplicationController::class, 'downloadTemplate'])->name('admission-applications.download-recording-template');
+Route::get('/admission-applications/index/{admissionForm?}', [Web\Admissions\AdmissionApplicationController::class, 'index'])->name('admission-applications.index');
+Route::post('admission-forms/{admissionForm}/admission-applications/upload', [Web\Admissions\AdmissionApplicationController::class, 'uploadAdmissionApplication'])->name('admission-forms.admission-applications.upload');
+Route::resource('/admission-applications', Web\Admissions\AdmissionApplicationController::class)->except('store', 'index');
 Route::post('/admission-applications/{admissionApplication}/update-status', [Web\Admissions\AdmissionApplicationController::class, 'updateStatus'])
   ->name('admission-applications.update-status');
 

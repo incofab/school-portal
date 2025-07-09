@@ -50,7 +50,7 @@ export default function CreateOrUpdateEvent({
   >([]);
   const webForm = useWebForm({
     title: event?.title ?? '',
-    description: event?.description ?? '',
+    // description: event?.description ?? '',
     duration: event?.duration ?? '',
     status: event?.status ?? '',
     starts_at: event?.starts_at ?? '',
@@ -121,11 +121,11 @@ export default function CreateOrUpdateEvent({
                 title="Event title"
                 isRequired
               />
-              <InputForm
+              {/* <InputForm
                 form={webForm as any}
                 formKey="description"
                 title="Description [optional]"
-              />
+              /> */}
               <InputForm
                 form={webForm as any}
                 formKey="duration"

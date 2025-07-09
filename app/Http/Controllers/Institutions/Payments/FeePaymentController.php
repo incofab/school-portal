@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers\Institutions\Payments;
 
+use App\Actions\Fees\GetClassFeePaymentSummary;
 use App\Actions\Payments\FeePaymentHandler;
 use App\Enums\InstitutionUserType;
+use App\Enums\TermType;
 use App\Http\Controllers\Controller;
+use App\Models\AcademicSession;
+use App\Models\Classification;
 use App\Models\Fee;
 use App\Models\FeePayment;
 use App\Models\Institution;
 use App\Rules\ValidateExistsRule;
+use App\Support\SettingsHandler;
 use App\Support\UITableFilters\FeePaymentUITableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class FeePaymentController extends Controller
 {
@@ -92,6 +98,48 @@ class FeePaymentController extends Controller
         'receipt.user',
         'receipt.academicSession'
       )
+    ]);
+  }
+
+  // Todo: write a test for this function
+  function feePaymentSummary(Institution $institution, Request $request)
+  {
+    $classRule = new ValidateExistsRule(Classification::class);
+    $data = $request->validate([
+      'classification_id' => ['required', $classRule],
+      'term' => ['nullable', new Enum(TermType::class)],
+      'academic_session_id' => ['nullable', 'integer'],
+      'download' => ['nullable', 'boolean']
+    ]);
+
+    $classification = $classRule->getModel();
+    $settingsHandler = SettingsHandler::makeFromRoute();
+    $term = $data['term'] ?? $settingsHandler->getCurrentTerm();
+    $academicSession = AcademicSession::findOrFail(
+      $data['academic_session_id'] ??
+        $settingsHandler->getCurrentAcademicSession()
+    );
+
+    [$feePaymentSummaries, $fees] = (new GetClassFeePaymentSummary(
+      $classification,
+      $term,
+      $academicSession->id
+    ))->run();
+
+    if ($request->download) {
+      return GetClassFeePaymentSummary::downloadAsExcel(
+        $fees,
+        $feePaymentSummaries
+      );
+    }
+
+    // dd(json_encode($feePaymentSummaries, JSON_PRETTY_PRINT));
+    return inertia('institutions/payments/fee-payment-summary', [
+      'fees' => $fees,
+      'feePaymentSummaries' => $feePaymentSummaries,
+      'term' => $term,
+      'academicSession' => $academicSession,
+      'classification' => $classification
     ]);
   }
 

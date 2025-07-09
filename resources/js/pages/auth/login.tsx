@@ -8,6 +8,10 @@ import {
   FormLabel,
   HStack,
   Input,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   VStack,
 } from '@chakra-ui/react';
 import { InertiaLink } from '@inertiajs/inertia-react';
@@ -140,7 +144,40 @@ export default function Login({
           Login
         </Button>
         <HStack align={'stretch'} justify={'space-between'}>
-          <Button
+          <Menu>
+            <MenuButton
+              as={Button}
+              variant={'link'}
+              colorScheme={'brand'}
+              fontWeight={'normal'}
+            >
+              Exam Login
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                as={InertiaLink}
+                href={route('student.exam.login.create')}
+                py={2}
+              >
+                Student Test
+              </MenuItem>
+              <MenuItem
+                as={InertiaLink}
+                href={route('admissions.exam.login.create')}
+                py={2}
+              >
+                Admission Exam
+              </MenuItem>
+              <MenuItem
+                as={InertiaLink}
+                href={route('student.exam.login.create')}
+                py={2}
+              >
+                Recruitment Text
+              </MenuItem>
+            </MenuList>
+          </Menu>
+          {/* <Button
             as={InertiaLink}
             href={route('student.exam.login.create')}
             colorScheme={'brand'}
@@ -148,7 +185,7 @@ export default function Login({
             float={'right'}
           >
             Exam Login
-          </Button>
+          </Button> */}
           {!institution && (
             <Div textAlign={'center'}>
               <InertiaLink href={route('registration-requests.create')}>

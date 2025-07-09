@@ -18,12 +18,10 @@ use App\Enums\PriceLists\PriceType;
 use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\InstitutionSetting;
-use App\Models\InstitutionUser;
 use App\Models\PriceList;
 use App\Models\Student;
 use App\Models\TermResult;
 use Spatie\Permission\Models\Role;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class MyRefillDatabaseSeeder extends Seeder
 {
@@ -32,6 +30,10 @@ class MyRefillDatabaseSeeder extends Seeder
    */
   public function run(): void
   {
+    // This will never run in production
+    if (!config('app.debug')) {
+      return;
+    }
     // $this->createRoles();
     // $this->createAcademicSession();
     // $this->createManager(1);

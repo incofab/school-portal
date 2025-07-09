@@ -2,7 +2,6 @@
 namespace App\Actions\Messages;
 
 use App\Enums\NotificationChannelsType;
-use App\Enums\PriceLists\PriceType;
 use App\Models\Institution;
 use App\Models\Message;
 use App\Support\Res;
@@ -24,21 +23,11 @@ class ApplyMessageCharges
   function run(Collection $receivers, $channel, Message $messageModel): Res
   {
     $institutionGroup = $this->institution->institutionGroup;
-    $instGroupPriceList = $institutionGroup
-      ->priceLists()
-      ->where(
-        'type',
-        $channel === NotificationChannelsType::Sms->value
-          ? PriceType::SmsSending->value
-          : PriceType::EmailSending->value
-      )
-      ->first();
-
-    if (!$instGroupPriceList) {
-      return failRes('Price List has not been set');
-    }
-
-    $amountToPay = $receivers->count() * $instGroupPriceList->amount;
+    $charge =
+      $channel === NotificationChannelsType::Sms->value
+        ? config('services.sms-charge')
+        : config('services.email-charge');
+    $amountToPay = $receivers->count() * $charge;
 
     if ($amountToPay > $institutionGroup->credit_wallet) {
       return failRes('Insufficient wallet balance');

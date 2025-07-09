@@ -14,6 +14,7 @@ import FormControlBox from '@/components/forms/form-control-box';
 import { Editor } from '@tinymce/tinymce-react';
 import { Input } from '@chakra-ui/react';
 import { NoteStatusType } from '@/types/types';
+import TinyMceEditor from '@/components/tinymce-editor';
 
 interface Props {
   lessonPlan?: LessonPlan;
@@ -84,7 +85,7 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
     if (!handleResponseToast(response)) {
       return;
     }
-  }; 
+  };
 
   return (
     <DashboardLayout>
@@ -120,27 +121,8 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
                 formKey="content"
                 isRequired
               >
-                <Editor
-                  // onInit={(evt, editor) => (editorRef.current = editor)}
-                  apiKey={tinymceApiKey}
-                  initialValue={`${
-                    lessonNote
-                      ? lessonNote.content
-                      : '<p>..Type the Note Content..</p>'
-                  } `}
-                  init={{
-                    height: 300,
-                    menubar: true,
-                    plugins: [
-                      'advlist autolink lists link image charmap print preview anchor',
-                      'searchreplace visualblocks code fullscreen',
-                      'insertdatetime media table paste code help wordcount',
-                    ],
-                    toolbar:
-                      'undo redo | formatselect | bold italic backcolor | alignleft aligncenter  alignright alignjustify | bullist numlist outdent indent |  removeformat',
-                    content_style:
-                      'body { font-family:Helvetica,Arial,sans-serif; font-size:14px;}',
-                  }}
+                <TinyMceEditor
+                  initialValue={lessonNote?.content}
                   value={webForm.data.content}
                   onEditorChange={(content: string) =>
                     webForm.setValue('content', content)

@@ -3,11 +3,9 @@
 use App\Enums\TermType;
 use App\Models\ClassificationGroup;
 use App\Models\Institution;
-use App\Models\User;
 use App\Models\Topic;
 use App\Models\Course;
 use App\Models\CourseTeacher;
-use App\Models\InstitutionUser;
 use App\Models\SchemeOfWork;
 use App\Models\Student;
 use Inertia\Testing\AssertableInertia;
@@ -18,7 +16,6 @@ use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertSoftDeleted;
 use function Pest\Laravel\postJson;
 use function PHPUnit\Framework\assertEquals;
-use function PHPUnit\Framework\assertNotNull;
 
 beforeEach(function () {
   $this->institution = Institution::factory()->create();
@@ -70,7 +67,7 @@ it('stores topic data', function () {
 
   actingAs($this->admin)
     ->postJson($route, [])
-    ->assertJsonValidationErrors(['title', 'description', 'course_id']);
+    ->assertJsonValidationErrors(['title', 'course_id']);
 
   $topicData = Topic::factory()
     ->course($this->course)

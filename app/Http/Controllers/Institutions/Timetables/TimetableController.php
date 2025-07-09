@@ -119,6 +119,7 @@ class TimetableController extends Controller
         array_map(fn($item) => $item['coordinator_user_id'], $coordinators)
       )
       ->delete();
+    return $this->ok();
   }
 
   function destroy(Institution $institution, Timetable $timetable)

@@ -23,13 +23,17 @@ class GenericExport
 
   private function handleHeaders()
   {
-    if (empty($this->headers)) {
-      $this->headers = array_keys($this->data[0] ?? []);
-      $this->headers = array_map(
-        fn($item) => ucfirst(str_replace(['_', '-'], ' ', $item)),
-        $this->headers
-      );
+    if (!empty($this->headers)) {
+      return $this->headers;
     }
+    if (empty($this->data)) {
+      throw new Exception('No data to export');
+    }
+    $this->headers = array_keys($this->data[0] ?? []);
+    $this->headers = array_map(
+      fn($item) => ucfirst(str_replace(['_', '-'], ' ', $item)),
+      $this->headers
+    );
     return $this->headers;
   }
 
@@ -77,7 +81,7 @@ class GenericExport
   function validateEntries()
   {
     if (empty($this->data)) {
-      throw new Exception('No data to export');
+      return;
     }
     if (count($this->data[0]) !== count($this->headers)) {
       throw new Exception('Invalid headers');

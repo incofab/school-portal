@@ -11,7 +11,7 @@ class CourseTeachersUITableFilters extends BaseUITableFilter
   protected function extraValidationRules(): array
   {
     return [
-      'user' => ['sometimes', 'integer'],
+      'teacher' => ['sometimes', 'integer'],
       'course' => ['sometimes', 'integer'],
       'classification' => ['sometimes', 'integer']
     ];
@@ -58,16 +58,10 @@ class CourseTeachersUITableFilters extends BaseUITableFilter
 
   protected function directQuery()
   {
-    $this->when(
-      $this->requestGet('institution_id') ||
-        $this->requestGet('classification'),
-      fn(self $that) => $that->joinClassification()
-    )
-      // ->when($this->requestGet('course'), fn(self $that) => $that->joinCourse())
-      // ->when($this->requestGet('user'), fn(self $that) => $that->joinUser())
-      ->baseQuery->when(
+    $this->baseQuery
+      ->when(
         $this->requestGet('institution_id'),
-        fn($q, $value) => $q->where('classifications.institution_id', $value)
+        fn($q, $value) => $q->where('course_teachers.institution_id', $value)
       )
       ->when(
         $this->requestGet('classification'),
@@ -78,7 +72,7 @@ class CourseTeachersUITableFilters extends BaseUITableFilter
         fn($q, $value) => $q->where('course_teachers.course_id', $value)
       )
       ->when(
-        $this->requestGet('user'),
+        $this->requestGet('teacher'),
         fn($q, $value) => $q->where('course_teachers.user_id', $value)
       );
 

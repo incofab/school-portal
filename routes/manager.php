@@ -10,7 +10,7 @@ Route::get('/dummy', function () {
 Route::get('/', [Web\ManagerController::class, 'dashboard'])
     ->name('dashboard');
 
-Route::get('institutions/create', [Web\Institutions\InstitutionRegistrationController::class, 'create'])
+Route::get('institutions/create/{institutionGroup?}', [Web\Institutions\InstitutionRegistrationController::class, 'create'])
     ->name('institutions.create');
 Route::post('institutions/store', [Web\Institutions\InstitutionRegistrationController::class, 'store'])
     ->name('institutions.store');

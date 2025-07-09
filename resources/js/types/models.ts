@@ -57,6 +57,7 @@ export interface InstitutionGroup extends Row {
   loan_limit: number;
   website: string;
   banner: string;
+  partner?: User;
   // wallet_balance: number;
 }
 export interface Institution extends Row {
@@ -290,7 +291,7 @@ export enum OptionLetter {
   D = 'd',
 }
 
-export interface PracticeQuestion{
+export interface PracticeQuestion {
   question: string;
   option_a: string;
   option_b: string;
@@ -306,7 +307,7 @@ export interface Course extends InstitutionRow {
   category: string;
   description: string;
   sessions: CourseSession[];
-  
+
   topics?: Topic[];
 }
 
@@ -683,6 +684,24 @@ export interface CourseSession extends InstitutionRow {
   general_instruction: string;
   course?: Course;
   questions?: Question[];
+  instructions?: Instruction[];
+  passages?: Passage[];
+}
+
+export interface Passage extends InstitutionRow {
+  from: number;
+  to: number;
+  passage: string;
+  courseable_type: string;
+  courseable_id: number;
+}
+
+export interface Instruction extends InstitutionRow {
+  from: number;
+  to: number;
+  instruction: string;
+  courseable_type: string;
+  courseable_id: number;
 }
 
 export interface Event extends InstitutionRow {

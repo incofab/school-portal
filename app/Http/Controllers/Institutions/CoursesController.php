@@ -13,7 +13,6 @@ use App\Models\CourseSession;
 use App\Models\Institution;
 use App\Models\LessonNote;
 use App\Models\Question;
-use App\Models\Student;
 use App\Support\UITableFilters\CoursesUITableFilters;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -93,27 +92,32 @@ class CoursesController extends Controller
   }
 
   //= using A.I
-  function generatePracticeQuestions(Institution $institution, Request $request)
-  {    
+  function generatePracticeQuestions(Request $request, Institution $institution)
+  {
     $institutionUser = currentInstitutionUser();
 
-    if($institutionUser->isStudent()){
-      $className = $institutionUser->student->classification->classificationGroup->title;
-      $className = "of ".$className;
-    }else{
+    if ($institutionUser->isStudent()) {
+      $className =
+        $institutionUser->student->classification->classificationGroup->title;
+      $className = 'of ' . $className;
+    } else {
       $className = '';
     }
-    
 
     $topicIds = $request->topic_ids;
-    $lessonNotes = LessonNote::whereIn('topic_id', $topicIds)->where('status', NoteStatusType::Published->value)->get();
+    $lessonNotes = LessonNote::whereIn('topic_id', $topicIds)
+      ->where('status', NoteStatusType::Published->value)
+      ->get();
 
-    if(count($lessonNotes) < 1){ 
-      return $this->message("No Lesson Notes Found", 401);
+    if (count($lessonNotes) < 1) {
+      return $this->message(
+        'You have to set Lesson Notes for this topic first',
+        401
+      );
     }
 
     $question = "You are a class teacher $className in a Nigerian Basic Education School. Analyze the following Lesson Notes and generate 20 objective questions aimed at helping the student prepare for upcoming class assessment test. Each question should have 4 options (option_a, option_b, option_c, option_d) where only one option is the correct answer. Return the response as an JSON Object, where each object's-item contains the following keys: 'question', 'option_a', 'option_b', 'option_c', 'option_d', 'answer'. The value of the 'answer' should indicate the correct option (a,b,c,d - NOT 'option_a', 'option_b', 'option_c', 'option_d'). Do not include comments, side comments, stylings, meta tags, etc. Here are the lesson Notes :: $lessonNotes";
-    
+
     $res = GoogleAiHelper::ask($question);
 
     $res_parts = $res['candidates'][0]['content']['parts'];
@@ -147,16 +151,21 @@ class CoursesController extends Controller
     $course = $practiceData['course'];
     $practiceQuestions = $practiceData['practiceQuestions'];
 
-    if(count($practiceQuestions) < 1){
+    if (count($practiceQuestions) < 1) {
       abort('404', 'No Receipt Found');
     }
 
     $institutionUser = currentInstitutionUser();
 
-    return Inertia::render($institutionUser->isStaff() ? 'institutions/courses/practice-questions-teacher' : 'institutions/courses/practice-questions-student', [
-      'course' => $course,
-      'practiceQuestions' => $practiceQuestions
-    ]);
+    return Inertia::render(
+      $institutionUser->isStaff()
+        ? 'institutions/courses/practice-questions-teacher'
+        : 'institutions/courses/practice-questions-student',
+      [
+        'course' => $course,
+        'practiceQuestions' => $practiceQuestions
+      ]
+    );
   }
 
   function insertQuestionsToQuestionbank(
@@ -166,11 +175,14 @@ class CoursesController extends Controller
   ) {
     $questions = $request->questions;
 
-    $lastQuestion = $courseSession->questions()->latest('question_no')->first();
+    $lastQuestion = $courseSession
+      ->questions()
+      ->latest('question_no')
+      ->first();
     $nextQuestionNo = intval($lastQuestion?->question_no) + 1;
 
     foreach ($questions as $index => $question) {
-      $questions[$index]["question_no"] = $nextQuestionNo + $index;
+      $questions[$index]['question_no'] = $nextQuestionNo + $index;
     }
 
     Question::multiInsert($courseSession, $questions);

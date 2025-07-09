@@ -16,12 +16,16 @@ import { InstitutionGroup } from '@/types/models';
 
 interface Props {
   institutionGroups: InstitutionGroup[];
+  institutionGroup: InstitutionGroup | null;
 }
 
-export default function UpdateInstitutionGroup({ institutionGroups }: Props) {
+export default function UpdateInstitutionGroup({
+  institutionGroups,
+  institutionGroup,
+}: Props) {
   const { handleResponseToast } = useMyToast();
   const webForm = useWebForm({
-    institution_group_id: '',
+    institution_group_id: institutionGroup?.id ?? '',
     name: '',
     phone: '',
     email: '',

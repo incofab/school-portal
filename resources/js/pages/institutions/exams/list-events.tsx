@@ -180,7 +180,7 @@ export default function ListEvents({
         <SlabHeading
           title="List Events"
           rightElement={
-            isAdmin ? (
+            isAdmin || isStaff ? (
               <LinkButton href={instRoute('events.create')} title={'New'} />
             ) : (
               <></>

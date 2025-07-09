@@ -1,0 +1,85 @@
+name: Laravel
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: edumanager
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, bcmath, pdo, pdo_mysql, dom, curl
+          coverage: none
+          tools: composer:v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Debug - List contents of current directory
+        run: ls -F # This will show you what files are in the current working directory
+
+      - uses: actions/checkout@v4
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+      - name: Install Dependencies
+        run: |
+          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+          npm ci
+      
+      - name: Generate key
+        run: php artisan key:generate
+        
+      - name: Configure DB
+        run: |
+          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+          sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i 's/DB_PORT=.*/DB_PORT=3306/' .env
+          sed -i 's/DB_DATABASE=.*/DB_DATABASE=edumanager/' .env
+          sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env
+    
+      - name: Directory Permissions
+        run: chmod -R 777 storage bootstrap/cache
+
+      # - name: Create Database
+      #   run: |
+      #     mkdir -p database
+      #     touch database/database.sqlite
+
+      # - name: Build frontend (React via Inertia)
+      #   run: npm run build
+        
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run Seeder
+        run: php artisan db:seed
+
+      - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: edumanager
+          DB_USERNAME: root
+          DB_PASSWORD: root
+        run: ./vendor/bin/pest

@@ -1,7 +1,7 @@
 <?php
 $name = 'Edumanager';
 $phone = '09035316014';
-$email = 'edumanager.ng@gmail.com'; //'support@edumanager.ng';
+$email = 'support@edumanager.ng'; //'edumanager.ng@gmail.com';
 $address = 'Lagos Nigeria';
 
 $faqList = [
@@ -185,6 +185,7 @@ $testimonials = [
             </ul>
           </li>-->
           <li><a href="#contact">Contact</a></li>
+          <li><a href="https://edumanager.ng/partner-registration">Be a Partner</a></li>
           <li><a href="<?= route('login') ?>">Login/Register</a></li>
         </ul>
       </nav><!-- .navbar -->
@@ -205,7 +206,7 @@ $testimonials = [
           <p>Discover the power of streamlined education, the heartbeat of efficient school management - where every click unlocks endless possibilities.</p>
           <div class="d-flex justify-content-center justify-content-lg-start">
             <a href="#about" class="btn-get-started">Get Started</a>
-            <a href="https://www.youtube.com/watch?v=LXb3EKWsInQ" class="glightbox btn-watch-video d-flex align-items-center"><i class="bi bi-play-circle"></i><span>Watch Video</span></a>
+            <a href="https://edumanager.ng/partner-registration" class="btn-watch-video d-flex align-items-center"><span>Become a Partner</span></a>
           </div>
         </div>
         <div class="col-lg-6 order-1 order-lg-2">

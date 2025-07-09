@@ -11,7 +11,6 @@ import { FormButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
-import { Editor } from '@tinymce/tinymce-react';
 import { Input } from '@chakra-ui/react';
 import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
 import CourseSelect from '@/components/selectors/course-select';
@@ -21,6 +20,7 @@ import useSharedProps from '@/hooks/use-shared-props';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import StaffSelect from '@/components/selectors/staff-select';
 import useIsAdmin from '@/hooks/use-is-admin';
+import TinyMceEditor from '@/components/tinymce-editor';
 
 interface Props {
   user?: User;
@@ -235,29 +235,9 @@ export default function CreateOrUpdateTopic({
                 title="Description"
                 form={webForm as any}
                 formKey="description"
-                isRequired
               >
-                <Editor
-                  // onInit={(evt, editor) => (editorRef.current = editor)}
-                  apiKey={tinymceApiKey}
-                  initialValue={`${
-                    topic
-                      ? topic.description
-                      : '<p>..Type the Topic Description..</p>'
-                  } `}
-                  init={{
-                    height: 300,
-                    menubar: true,
-                    plugins: [
-                      'advlist autolink lists link image charmap print preview anchor',
-                      'searchreplace visualblocks code fullscreen',
-                      'insertdatetime media table paste code help wordcount',
-                    ],
-                    toolbar:
-                      'undo redo | formatselect | bold italic backcolor | alignleft aligncenter  alignright alignjustify | bullist numlist outdent indent |  removeformat',
-                    content_style:
-                      'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                  }}
+                <TinyMceEditor
+                  initialValue={topic?.description}
                   value={webForm.data.description}
                   onEditorChange={(description: string) =>
                     webForm.setValue('description', description)

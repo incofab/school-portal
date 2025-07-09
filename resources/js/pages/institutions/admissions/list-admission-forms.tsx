@@ -8,15 +8,17 @@ import { PaginationResponse } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import { TrashIcon } from '@heroicons/react/24/solid';
+import { CloudArrowUpIcon, TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
 import DateTimeDisplay from '@/components/date-time-display';
-import { BrandButton, LinkButton } from '@/components/buttons';
+import { LinkButton } from '@/components/buttons';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { InertiaLink } from '@inertiajs/inertia-react';
+import { useModalValueToggle } from '@/hooks/use-modal-toggle';
+import UploadAdmissionApplicationModal from '@/components/modals/upload-admission-applications-modal';
 
 interface Props {
   admissionForms: PaginationResponse<AdmissionForm>;
@@ -26,6 +28,7 @@ export default function ListAdmissionForms({ admissionForms }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
+  const uploadModal = useModalValueToggle<AdmissionForm>();
   const isAdmin = useIsAdmin();
 
   async function deleteItem(obj: AdmissionForm) {
@@ -72,6 +75,18 @@ export default function ListAdmissionForms({ admissionForms }: Props) {
                   variant={'ghost'}
                   colorScheme={'brand'}
                 />
+                <IconButton
+                  aria-label={'Upload Admission Applications'}
+                  icon={<Icon as={CloudArrowUpIcon} />}
+                  variant={'ghost'}
+                  colorScheme={'brand'}
+                  onClick={() => uploadModal.open(row)}
+                />
+                <LinkButton
+                  variant={'link'}
+                  href={instRoute('admission-applications.index', [row.id])}
+                  title="Applications"
+                />
                 <DestructivePopover
                   label={'Delete this Admission form'}
                   onConfirm={() => deleteItem(row)}
@@ -113,6 +128,17 @@ export default function ListAdmissionForms({ admissionForms }: Props) {
           />
         </SlabBody>
       </Slab>
+      {uploadModal.state && (
+        <UploadAdmissionApplicationModal
+          {...uploadModal.props}
+          admissionForm={uploadModal.state}
+          onSuccess={() =>
+            Inertia.visit(
+              instRoute('admission-applications.index', [uploadModal.state!.id])
+            )
+          }
+        />
+      )}
     </DashboardLayout>
   );
 }

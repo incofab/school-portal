@@ -65,12 +65,7 @@ it('store admission application data', function () {
 
   postJson($route, [
     'admission_form_id' => $this->admissionForm->id
-  ])->assertJsonValidationErrors([
-    'reference',
-    'first_name',
-    'last_name',
-    'guardians'
-  ]);
+  ])->assertJsonValidationErrors(['reference', 'first_name', 'last_name']);
 
   $admissionApplicationData = AdmissionApplication::factory()
     ->admissionForm($this->admissionForm)

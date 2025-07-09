@@ -17,6 +17,7 @@ import TopicSelect from '@/components/selectors/topic-select';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { TermType } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
+import TinyMceEditor from '@/components/tinymce-editor';
 
 interface Props {
   schemeOfWork?: SchemeOfWork;
@@ -105,27 +106,8 @@ export default function CreateOrUpdateTopic({ schemeOfWork, topicId }: Props) {
                 formKey="learning_objectives"
                 isRequired
               >
-                <Editor
-                  // onInit={(evt, editor) => (editorRef.current = editor)}
-                  apiKey={tinymceApiKey}
-                  initialValue={`${
-                    schemeOfWork
-                      ? schemeOfWork.learning_objectives
-                      : '<p>..Type the Learning Objectives..</p>'
-                  } `}
-                  init={{
-                    height: 300,
-                    menubar: true,
-                    plugins: [
-                      'advlist autolink lists link image charmap print preview anchor',
-                      'searchreplace visualblocks code fullscreen',
-                      'insertdatetime media table paste code help wordcount',
-                    ],
-                    toolbar:
-                      'undo redo | formatselect | bold italic backcolor | alignleft aligncenter  alignright alignjustify | bullist numlist outdent indent |  removeformat',
-                    content_style:
-                      'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                  }}
+                <TinyMceEditor
+                  initialValue={schemeOfWork?.learning_objectives}
                   value={webForm.data.learning_objectives}
                   onEditorChange={(learningObjectives: string) =>
                     webForm.setValue('learning_objectives', learningObjectives)
@@ -139,27 +121,8 @@ export default function CreateOrUpdateTopic({ schemeOfWork, topicId }: Props) {
                 formKey="resources"
                 isRequired
               >
-                <Editor
-                  // onInit={(evt, editor) => (editorRef.current = editor)}
-                  apiKey={tinymceApiKey}
-                  initialValue={`${
-                    schemeOfWork
-                      ? schemeOfWork.resources
-                      : '<p>..Type the Resources..</p>'
-                  } `}
-                  init={{
-                    height: 200,
-                    menubar: true,
-                    plugins: [
-                      'advlist autolink lists link image charmap print preview anchor',
-                      'searchreplace visualblocks code fullscreen',
-                      'insertdatetime media table paste code help wordcount',
-                    ],
-                    toolbar:
-                      'undo redo | formatselect | bold italic backcolor | alignleft aligncenter  alignright alignjustify | bullist numlist outdent indent |  removeformat',
-                    content_style:
-                      'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                  }}
+                <TinyMceEditor
+                  initialValue={schemeOfWork?.resources}
                   value={webForm.data.resources}
                   onEditorChange={(resources: string) =>
                     webForm.setValue('resources', resources)

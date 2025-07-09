@@ -22,6 +22,7 @@ class PaymentReference extends Model
     'user_id' => 'integer',
     'payable_id' => 'integer',
     'paymentable_id' => 'integer',
+    'processed_at' => 'datetime',
     'merchant' => PaymentMerchantType::class,
     'status' => PaymentStatus::class,
     'method' => PaymentMethod::class,
@@ -33,6 +34,18 @@ class PaymentReference extends Model
   function confirmPayment()
   {
     $this->fill(['status' => PaymentStatus::Confirmed])->save();
+  }
+
+  function scopeConfirmed($query)
+  {
+    return $query->where('payment_references.status', PaymentStatus::Confirmed);
+  }
+
+  function scopeIsProcessed($query, $forProcessed = true)
+  {
+    return $forProcessed
+      ? $query->whereNotNull('processed_at')
+      : $query->whereNull('processed_at');
   }
 
   public function user()

@@ -19,6 +19,12 @@ class Exam extends Model
     'start_time' => 'datetime',
     'pause_time' => 'datetime',
     'end_time' => 'datetime',
+    'event_id' => 'integer',
+    'institution_id' => 'integer',
+    'time_remaining' => 'float',
+    'examable_id' => 'integer',
+    'num_of_questions' => 'integer',
+    'score' => 'float',
     'attempts' => AsArrayObject::class
   ];
 

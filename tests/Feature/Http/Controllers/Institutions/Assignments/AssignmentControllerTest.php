@@ -1,6 +1,5 @@
 <?php
 
-use App\Actions\RecordAssignment;
 use App\Enums\AssignmentStatus;
 use App\Models\Assignment;
 use App\Models\Course;
@@ -9,15 +8,12 @@ use App\Models\Institution;
 use App\Models\User;
 use App\Models\Classification;
 use App\Models\InstitutionUser;
-use App\Models\AssignmentSubmission;
 use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\ClassificationGroup;
 use App\Models\Student;
 use Carbon\Carbon;
-use function Pest\Laravel\getJson;
-use function Pest\Laravel\postJson;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
@@ -75,7 +71,6 @@ beforeEach(function () {
     'user_id' => $this->teacher->id
   ]);
 });
-
 
 it('admin can view assignments', function () {
   Assignment::factory(3)
@@ -166,19 +161,19 @@ it('admin can create an assignment', function () {
     'academic_session_id' => $academicSessionId,
     'term' => TermType::First->value,
     'status' => AssignmentStatus::Active->value,
-    'max_score' => fake()->randomNumber(2),
+    'max_score' => fake()->randomNumber(2) + 1,
     'content' => fake()->sentence(),
     'expires_at' => now()
       ->addDays(10)
       ->toDateTimeString()
   ];
 
-  $response = actingAs($this->admin)->postJson(
-    route('institutions.assignments.store', $this->institution),
-    [...$assignmentData, 'classification_ids' => $classificationIds]
-  );
-
-  $response->assertStatus(200);
+  actingAs($this->admin)
+    ->postJson(route('institutions.assignments.store', $this->institution), [
+      ...$assignmentData,
+      'classification_ids' => $classificationIds
+    ])
+    ->assertStatus(200);
   assertDatabaseHas('assignments', $assignmentData);
 });
 
@@ -192,7 +187,7 @@ it('admin cannot create assignment with invalid data', function () {
     'academic_session_id' => $academicSessionId,
     'term' => TermType::First->value,
     'status' => AssignmentStatus::Active->value,
-    'max_score' => fake()->randomNumber(2),
+    'max_score' => fake()->randomNumber(2) + 1,
     'content' => '', //= *Required - hence, Invalid submission.
     'expires_at' => now()->addDays(10)
   ];

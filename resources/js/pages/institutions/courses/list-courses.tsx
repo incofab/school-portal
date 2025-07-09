@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { Course, PracticeQuestion } from '@/types/models';
-import { HStack, IconButton, Icon, Button, Text, RadioGroup, VStack, Radio, Box } from '@chakra-ui/react';
+import {
+  HStack,
+  IconButton,
+  Icon,
+  Button,
+  Text,
+  RadioGroup,
+  VStack,
+  Radio,
+  Box,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -12,8 +22,6 @@ import { ServerPaginatedTableHeader } from '@/components/server-paginated-table'
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import {
-  XCircleIcon,
-  CheckCircleIcon,
   CloudArrowUpIcon,
   PlusIcon,
   TrashIcon,
@@ -22,10 +30,9 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
-import useIsStudent from '@/hooks/use-is-student';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import PracticeQuestionModal from '@/components/modals/practice-question-modal';
-import { Div } from '@/components/semantic';
+import useIsTeacher from '@/hooks/use-is-teacher';
 
 interface Props {
   courses: PaginationResponse<Course>;
@@ -36,7 +43,7 @@ export default function ListCourse({ courses }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
-  const isStudent = useIsStudent();
+  const isTeacher = useIsTeacher();
   const practiceQuestionModalToggle = useModalValueToggle<Course>();
 
   async function deleteItem(obj: Course) {
@@ -56,25 +63,26 @@ export default function ListCourse({ courses }: Props) {
       label: 'Action',
       render: (row: Course) => (
         <HStack>
-        <BrandButton
-          onClick={() => practiceQuestionModalToggle.open(row)}
-          leftIcon={<Icon as={PlusIcon} />}
-          variant={'ghost'}
-          colorScheme={'brand'}
-          title="Practice Question"
-        />
+          <BrandButton
+            onClick={() => practiceQuestionModalToggle.open(row)}
+            leftIcon={<Icon as={PlusIcon} />}
+            variant={'ghost'}
+            colorScheme={'brand'}
+            title="Practice Question"
+          />
+          {(isAdmin || isTeacher) && (
+            <Button
+              as={'a'}
+              href={instRoute('course-sessions.index', [row.id])}
+              variant={'link'}
+              colorScheme={'brand'}
+            >
+              Question Bank
+            </Button>
+          )}
 
-        {isAdmin && (
+          {isAdmin && (
             <>
-              <Button
-                as={'a'}
-                href={instRoute('course-sessions.index', [row.id])}
-                variant={'link'}
-                colorScheme={'brand'}
-              >
-                Question Bank
-              </Button>
-
               <IconButton
                 aria-label={'Upload Content'}
                 icon={<Icon as={CloudArrowUpIcon} />}
@@ -105,31 +113,25 @@ export default function ListCourse({ courses }: Props) {
                   colorScheme={'red'}
                 />
               </DestructivePopover>
-
             </>
-          )
-        }
-
+          )}
         </HStack>
       ),
     },
   ];
 
-  function redirectUser(){
+  function redirectUser() {
     Inertia.visit(instRoute('courses.view-practice-questions'));
   }
 
   return (
     <DashboardLayout>
-      <Slab>        
+      <Slab>
         <SlabHeading
           title="List Subjects"
           rightElement={
             isAdmin ? (
-              <LinkButton
-                href={instRoute('courses.create')}
-                title={'New'}
-              />
+              <LinkButton href={instRoute('courses.create')} title={'New'} />
             ) : (
               ''
             )
