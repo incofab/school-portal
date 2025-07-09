@@ -78,4 +78,14 @@ class InstitutionUser extends Model
   {
     return $this->hasMany(TimetableCoordinator::class);
   }
+
+  function staffSalaries()
+  {
+    return $this->hasMany(StaffSalary::class);
+  }
+
+  function salaryAdjustments()
+  {
+    return $this->hasMany(SalaryAdjustment::class);
+  }
 }

@@ -37,7 +37,7 @@ class ExpenseController extends Controller
     return Inertia::render('institutions/expenses/create-edit-expense', [
       'expenseCategories' => $institution->expenseCategories,
     ]);
-  }
+  } 
 
   public function store(Institution $institution, StoreExpenseRequest $request)
   {
@@ -60,7 +60,7 @@ class ExpenseController extends Controller
 
     public function update(Institution $institution, StoreExpenseRequest $request, Expense $expense)
     {
-      $validatedData = $request->validate();
+      $validatedData = $request->validated();
       $expense->fill($validatedData)->save();
       return $this->ok();
     }

@@ -174,6 +174,71 @@ export interface InstitutionUser extends InstitutionRow {
   student?: Student;
 }
 
+export interface SalaryType extends InstitutionRow {
+  title: string;
+  description: string;
+  type: string;
+  parent_id: number;
+  percentage: number;
+
+  parent?: SalaryType;
+}
+
+export interface AdjustmentType extends InstitutionRow {
+  title: string;
+  description: string;
+  type: string;
+  parent_id: number;
+  percentage: string;
+
+  parent?: SalaryType;
+}
+
+export interface StaffSalary extends InstitutionRow {
+  institution_user_id: number;
+  salary_type_id: number;
+  amount: number;	
+  description?: string;
+  actual_amount: number;
+
+  institution_user?: InstitutionUser;
+  salary_type?: SalaryType;
+}
+
+export interface SalaryAdjustment extends InstitutionRow {
+  institution_user_id: number;
+  adjustment_type_id: number;
+  amount: number;	
+  month: string;
+  year: number;
+  description?: string;
+  actual_amount: number;
+
+  institution_user?: InstitutionUser;
+  adjustment_type?: AdjustmentType;
+  salary_type?: SalaryType;
+}
+
+export interface PayrollSummary extends InstitutionRow {
+  amount: number;
+  total_deduction: number;
+  total_bonuses: number;
+  month: string;
+  year: number;
+}
+
+export interface Payroll extends InstitutionRow {
+  institution_user_id: number;
+  net_amount: number;
+  total_deductions: number;
+  total_bonuses: number;
+  income: number;
+  payroll_summary_id: number;
+
+  institution_user?: InstitutionUser;
+  payroll_summary?: PayrollSummary;
+}
+
 export interface Attendance extends InstitutionRow {
   // institution_id: number;
   institution_staff_user_id: number;

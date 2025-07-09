@@ -19,6 +19,7 @@ import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
+import useIsStaff from '@/hooks/use-is-staff';
 
 interface Props {
   institutionUsers: PaginationResponse<InstitutionUser>;
@@ -93,7 +94,7 @@ export default function ListStudents({ institutionUsers }: Props) {
         </HStack>
       ),
     },
-  ];
+  ]; 
 
   return (
     <DashboardLayout>

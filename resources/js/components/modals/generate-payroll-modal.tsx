@@ -1,42 +1,36 @@
-import React, {useState} from 'react';
-import { Button, HStack, Input, Textarea, VStack } from '@chakra-ui/react';
+import React from 'react';
+import { Button, HStack, VStack } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
 import useMyToast from '@/hooks/use-my-toast';
-import FormControlBox from '../forms/form-control-box';
-import { ExpenseCategory } from '@/types/models';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import FormControlBox from '../forms/form-control-box';
+import EnumSelect from '../dropdown-select/enum-select';
+import { YearMonth } from '@/types/types';
+import YearSelect from '../selectors/year-select';
 
 interface Props {
     isOpen: boolean;
     onClose(): void;
     onSuccess(): void;
-
-    expenseCategory: ExpenseCategory;
 }
 
-export default function CreateEditExpenseCategoryModal({
+export default function GeneratePayrollModal({
     isOpen,
     onSuccess,
     onClose,
-    expenseCategory,
 }: Props) {
     const { handleResponseToast } = useMyToast();
     const { instRoute } = useInstitutionRoute();
-    
+
     const webForm = useWebForm({
-        title: expenseCategory.title ?? '',
-        description: expenseCategory.description ?? '',
+        month: '',
+        year: '',
     });
 
-    const isUpdate = expenseCategory.id;
 
     const onSubmit = async () => {
-        const res = await webForm.submit((data, web) =>
-            isUpdate
-                ? web.put(instRoute('expense-categories.update', [expenseCategory]), data)
-                : web.post(instRoute('expense-categories.store'), data)
-        );
+        const res = await webForm.submit((data, web) => web.post(instRoute('generate-payroll'), data));
 
         if (!handleResponseToast(res)) {
             return;
@@ -50,34 +44,42 @@ export default function CreateEditExpenseCategoryModal({
     return (
         <GenericModal
             props={{ isOpen, onClose }}
-            headerContent={`${isUpdate ? 'Update' : 'Create'} Expense Category`}
+            headerContent={`Generate Payroll`}
             bodyContent={
-                <VStack spacing={2}>
+                <VStack spacing={3}>
+
                     <FormControlBox
                         form={webForm as any}
-                        title="Title"
-                        formKey="title"
-                        isRequired
+                        title="Month"
+                        formKey="month"
                     >
-                        <Input
-                            type="text"
-                            onChange={(e) => webForm.setValue('title', e.currentTarget.value)}
-                            value={webForm.data.title}
+                        <EnumSelect
+                            enumData={YearMonth}
+                            selectValue={webForm.data.month}
+                            isMulti={false}
+                            isClearable={true}
+                            onChange={(e: any) => webForm.setValue('month', e?.value)}
+                            required
                         />
                     </FormControlBox>
 
                     <FormControlBox
                         form={webForm as any}
-                        title="Description [optional]"
-                        formKey="description"
+                        title="Year"
+                        formKey="year"
+                        isRequired
                     >
-                        <Textarea
-                        value={webForm.data.description}
-                            onChange={(e) =>
-                                webForm.setValue('description', e.currentTarget.value)
+                        <YearSelect
+                            selectValue={webForm.data.year}
+                            isMulti={false}
+                            isClearable={true}
+                            onChange={(e: any) =>
+                                webForm.setValue('year', e?.value)
                             }
-                        ></Textarea>
+                            required
+                        />
                     </FormControlBox>
+
                 </VStack>
             }
             footerContent={
@@ -90,7 +92,7 @@ export default function CreateEditExpenseCategoryModal({
                         onClick={onSubmit}
                         isLoading={webForm.processing}
                     >
-                        Submit
+                        Create
                     </Button>
                 </HStack>
             }
