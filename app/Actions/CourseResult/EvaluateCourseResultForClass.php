@@ -78,12 +78,11 @@ class EvaluateCourseResultForClass
       'min_score' => $minScore,
       'max_score' => $maxScore
     ];
-
-    DB::beginTransaction();
     $courseResultInfo = CourseResultInfo::query()->updateOrCreate(
       $bindingData,
       $data
     );
+    DB::beginTransaction();
     $this->recordCoursePosition($scoreByStudents);
     DB::commit();
   }
