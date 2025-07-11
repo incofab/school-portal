@@ -376,3 +376,18 @@ Route::get('/messages/index', [Web\Staff\MessageController::class, 'index'])->na
 Route::post('/messages/store', [Web\Staff\MessageController::class, 'store'])->name('messages.store');
 Route::get('/messages/create', [Web\Staff\MessageController::class, 'create'])->name('messages.create');
 
+//== Expenses and ExpensesCategory
+Route::resource('/expenses', Web\Expenses\ExpenseController::class);
+Route::resource('/expense-categories', Web\Expenses\ExpenseCategoryController::class);
+
+//== PAYROLL
+Route::resource('/staff-salaries', Web\StaffSalaries\StaffSalariesController::class);
+Route::resource('/salary-types', Web\SalaryTypes\SalaryTypesController::class);
+Route::resource('/adjustment-types', Web\AdjustmentTypes\AdjustmentTypesController::class);
+
+Route::get('/payroll-salary-adjustments/{payroll}', [Web\SalaryAdjustments\SalaryAdjustmentsController::class, 'payrollSalaryAdjustments'])->name('salary-adjustments.payroll');
+Route::resource('/salary-adjustments', Web\SalaryAdjustments\SalaryAdjustmentsController::class);
+
+Route::post('/generate-payroll', [Web\Payrolls\PayrollsController::class, 'generatePayroll'])->name('generate-payroll');
+Route::resource('/payrolls', Web\Payrolls\PayrollsController::class);
+Route::resource('/payroll-summaries', Web\PayrollSummaries\PayrollSummariesController::class);

@@ -5,6 +5,7 @@ namespace App\Support\UITableFilters;
 use App\Support\SettingsHandler;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 abstract class BaseUITableFilter
 {
@@ -33,7 +34,7 @@ abstract class BaseUITableFilter
   private function validateRequestData(): static
   {
     $this->requestData = Validator::validate($this->requestData, [
-      'sortDir' => ['required_with:sortKey', 'string'],
+      'sortDir' => ['required_with:sortKey', 'string', Rule::in('asc', 'desc')],
       'sortKey' => ['required_with:sortDir', 'string'],
       'search' => ['nullable', 'string'],
       'institution_id' => ['sometimes', 'integer'],
@@ -60,8 +61,8 @@ abstract class BaseUITableFilter
 
   private function sortQuery(): static
   {
-    $sortDir = $this->requestData['sortDir'] ?? null;
-    $sortKey = $this->requestData['sortKey'] ?? null;
+    $sortDir = $this->requestGet('sortDir');
+    $sortKey = $this->requestGet('sortKey');
     $columnName = $this->sortableColumns[$sortKey] ?? null;
 
     if (empty($columnName)) {
