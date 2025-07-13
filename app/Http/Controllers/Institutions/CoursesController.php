@@ -94,6 +94,10 @@ class CoursesController extends Controller
   //= using A.I
   function generatePracticeQuestions(Request $request, Institution $institution)
   {
+    $request->validate([
+      'topic_ids' => ['required', 'array', 'min:1'],
+      'topics.*' => ['required', 'integer']
+    ]);
     $institutionUser = currentInstitutionUser();
 
     if ($institutionUser->isStudent()) {
@@ -104,8 +108,7 @@ class CoursesController extends Controller
       $className = '';
     }
 
-    $topicIds = $request->topic_ids;
-    $lessonNotes = LessonNote::whereIn('topic_id', $topicIds)
+    $lessonNotes = LessonNote::whereIn('topic_id', $request->topic_ids)
       ->where('status', NoteStatusType::Published->value)
       ->get();
 

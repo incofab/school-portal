@@ -29,7 +29,8 @@ class ClassResultInfoAction
     Classification $classification,
     int $academicSessionId,
     string|TermType $term,
-    bool $forMidTerm
+    bool $forMidTerm,
+    bool $forceCalculateTermResult = false
   ): ClassResultInfo {
     $queryCourseResults = CourseResult::query()
       ->where('classification_id', $classification->id)
@@ -84,7 +85,11 @@ class ClassResultInfoAction
       $data
     );
 
-    ProcessTermResult::run($classResultInfo);
+    ProcessTermResult::run(
+      $classification->institution,
+      $classResultInfo,
+      $forceCalculateTermResult
+    );
     DB::commit();
 
     return $classResultInfo;

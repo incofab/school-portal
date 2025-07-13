@@ -140,11 +140,16 @@ export default function ListClassResultInfo({
   return (
     <DashboardLayout>
       <Div>
-        <BrandButton
-          title="Set Resumption Date"
-          onClick={setResumptionDateModalToggle.open}
-          my={2}
-        />
+        <HStack justifyContent={'space-between'} my={2}>
+          <BrandButton
+            title="Set Resumption Date"
+            onClick={setResumptionDateModalToggle.open}
+          />
+          <LinkButton
+            href={instRoute('course-results.class-sheet.upload')}
+            title="Upload Class Sheet"
+          />
+        </HStack>
         <Slab>
           <SlabHeading
             title="Class Result Analysis"

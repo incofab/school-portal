@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Institutions\Staff;
 
+use App\Actions\CourseResult\ClassResultInfoAction;
 use App\Actions\CourseResult\EvaluateCourseResultForClass;
+use App\Actions\CourseResult\RecordClassSheet;
 use App\Actions\CourseResult\RecordCourseResult;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RecordCourseResultRequest;
+use App\Http\Requests\UploadClassSheetRequest;
 use App\Models\Assessment;
+use App\Models\Classification;
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;
 use App\Models\Institution;
@@ -27,14 +31,16 @@ class CourseResultsController extends Controller
     ]);
   }
 
-  private function validateUser(CourseTeacher $courseTeacher)
+  private function validateUser(?CourseTeacher $courseTeacher)
   {
+    $msg = 'You cannot record result for this course';
+    abort_unless($courseTeacher, 403, $msg);
     $teacher = $courseTeacher->user;
     $user = currentUser();
     abort_if(
       !$user->isInstitutionAdmin() && !$teacher->is(currentUser()),
       403,
-      'You cannot record result for this course'
+      $msg
     );
   }
 
@@ -131,6 +137,31 @@ class CourseResultsController extends Controller
       );
     }
     DB::commit();
+
+    return response()->json(['ok' => true]);
+  }
+
+  public function uploadClassSheetView(Institution $institution)
+  {
+    return Inertia::render('institutions/courses/upload-class-sheet', [
+      'classifications' => $institution->classifications()->get()
+    ]);
+  }
+
+  public function uploadClassSheetStore(
+    Institution $institution,
+    UploadClassSheetRequest $request
+  ) {
+    $data = $request->validated();
+    $classificationId = $data['classification_id'];
+    $classification = Classification::query()->findOrFail($classificationId);
+
+    (new RecordClassSheet(
+      $institution,
+      $data,
+      currentUser(),
+      $classification
+    ))->run();
 
     return response()->json(['ok' => true]);
   }

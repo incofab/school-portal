@@ -1,4 +1,5 @@
 // import { useColorModeValue } from '@chakra-ui/react';
+import { MultiValue } from 'react-select';
 import {
   AdmissionApplication,
   Classification,
@@ -14,6 +15,13 @@ export type KeyValue<T = string> = { [key: string]: T };
 export type GenericUser = TokenUser | User | Student | AdmissionApplication;
 export type Feeable = Classification | ClassificationGroup | Institution;
 export type Examable = GenericUser;
+export type SelectValue =
+  | number
+  | string
+  | SelectOptionType<number | string>
+  | MultiValue<SelectOptionType<number | string>>
+  | null
+  | undefined;
 
 // export const bgWhite = useColorModeValue('white', 'gray.900');
 // export const bgBrand = useColorModeValue('brand.50', 'gray.800');
