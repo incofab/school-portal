@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import useWebForm from '@/hooks/use-web-form';
-import { MultiValue, Props } from 'react-select';
+import { Props } from 'react-select';
 import DataSelect from '../dropdown-select/data-select';
-import { SelectOptionType } from '@/types/types';
+import { SelectValue } from '@/types/types';
 
 interface MyProps<T> {
-  selectValue?: number | string | SelectOptionType<number> | MultiValue<SelectOptionType<number>> | null;
+  selectValue?: SelectValue;
   dataList?: T[];
   searchUrl: string;
   label: string | ((data: T) => string);

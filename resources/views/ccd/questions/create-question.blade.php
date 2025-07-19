@@ -58,37 +58,37 @@
 				</div>
 
 				<div class="row">
-					<div class="col-6">
+					<div class="col-md-6">
 						<div class="form-group">
-							<label for="" >Option A</label>
+							<label for="" class="mb-0">Option A</label>
 							<textarea name="option_a" rows="3" class="form-control useEditor" 
 								>{{old('option_a', $edit?->option_a)}}</textarea>
 						</div>
 					</div>
-					<div class="col-6">
+					<div class="col-md-6">
 						<div class="form-group">
-							<label for="" >Option B</label>
+							<label for="" class="mb-0" >Option B</label>
 							<textarea name="option_b" rows="3" class="form-control useEditor" 
 								>{{old('option_b', $edit?->option_b)}}</textarea>
 						</div>
 					</div>
-					<div class="col-6">
+					<div class="col-md-6">
 						<div class="form-group">
-							<label for="" >Option C</label>
+							<label for="" class="mb-0" >Option C</label>
 							<textarea name="option_c" rows="3" class="form-control useEditor" 
 								>{{old('option_c', $edit?->option_c)}}</textarea>
 						</div>
 					</div>
-					<div class="col-6">
+					<div class="col-md-6">
 						<div class="form-group">
-							<label for="" >Option D</label>
+							<label for="" class="mb-0" >Option D</label>
 							<textarea name="option_d" rows="3" class="form-control useEditor" 
 								>{{old('option_d', $edit?->option_d)}}</textarea>
 						</div>
 					</div>
-					<div class="col-6">
+					<div class="col-md-6">
 						<div class="form-group">
-							<label for="" >Option E</label>
+							<label for="" class="mb-0" >Option E</label>
 							<textarea name="option_e" rows="3" class="form-control useEditor" 
 								>{{old('option_e', $edit?->option_e)}}</textarea>
 						</div>
@@ -97,35 +97,35 @@
 				
 				<div class="form-group mt-2">
 					<div><label>Answer</label></div>
-					<div class="form-check-inline px-3 py-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
+					<div class="form-check-inline px-3 py-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
 						<label class="form-check-label">
 							<input type="radio" class="form-check-input" name="answer" 
 								@checked(old('answer', $edit?->answer) === 'A')
 								value="A"> A
 						</label>
 					</div>
-					<div class="form-check-inline ml-2 px-3 py-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
+					<div class="form-check-inline mx-2 px-3 py-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
 						<label class="form-check-label">
 							<input type="radio" class="form-check-input" name="answer" 
 							@checked(old('answer', $edit?->answer) === 'B')
 								value="B"> B
 						</label>
 					</div>
-					<div class="form-check-inline ml-2 px-3 py-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
+					<div class="form-check-inline mx-2 px-3 py-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
 						<label class="form-check-label">
 							<input type="radio" class="form-check-input" name="answer" 
 							@checked(old('answer', $edit?->answer) === 'C')
 								value="C"> C
 						</label>
 					</div>
-					<div class="form-check-inline ml-2 px-3 py-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
+					<div class="form-check-inline mx-2 px-3 py-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
 						<label class="form-check-label">
 							<input type="radio" class="form-check-input" name="answer" 
 							@checked(old('answer', $edit?->answer) === 'D')
 								value="D"> D
 						</label>
 					</div>
-					<div class="form-check-inline ml-2 px-3 py-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
+					<div class="form-check-inline px-3 py-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
 						<label class="form-check-label">
 							<input type="radio" class="form-check-input" name="answer" 
 							@checked(old('answer', $edit?->answer) === 'E')

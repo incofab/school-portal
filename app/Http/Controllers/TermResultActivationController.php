@@ -80,6 +80,7 @@ class TermResultActivationController extends Controller
     if ($count === 0) {
       $latestTermResult = $this->getLatestResult($student);
       if ($latestTermResult) {
+        $this->checkForPublication($latestTermResult);
         return $this->successRes(
           $latestTermResult->institution,
           $latestTermResult
@@ -92,12 +93,23 @@ class TermResultActivationController extends Controller
     }
 
     if ($count === 1) {
+      $this->checkForPublication($termResults->first());
       return $this->activateResult($termResults->first(), $pin, $student);
     }
 
     return response()->json([
       'has_multiple_results' => true,
       'term_results' => $termResults
+    ]);
+  }
+
+  private function checkForPublication(TermResult $termResult)
+  {
+    if ($termResult->isPublished()) {
+      return;
+    }
+    throw ValidationException::withMessages([
+      'pin' => 'Result has not been published yet, contact school admin'
     ]);
   }
 

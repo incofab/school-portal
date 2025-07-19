@@ -77,7 +77,7 @@ class ProcessSessionResult
     array $mappedTermResult,
     $availableTerms
   ) {
-    if (in_array(TermType::Third, $availableTerms)) {
+    if (!in_array(TermType::Third, $availableTerms)) {
       return;
     }
 

@@ -191,6 +191,10 @@ Route::delete('/course-results/{courseResult}/destroy', [Web\Staff\CourseResults
   ->name('course-results.destroy');
 Route::post('/course-results/upload/{courseTeacher}', [Web\Staff\CourseResultsController::class, 'upload'])
   ->name('course-results.upload');
+Route::get('/course-results/class-sheet/upload', [Web\Staff\CourseResultsController::class, 'uploadClassSheetView'])
+  ->name('course-results.class-sheet.upload');
+Route::post('/course-results/class-sheet/upload', [Web\Staff\CourseResultsController::class, 'uploadClassSheetStore'])
+  ->name('course-results.class-sheet.upload.store');
 Route::get('/course-results/download', Web\Staff\DownloadCourseResultSheetController::class)
   ->name('course-results.download');
 Route::get('/download-result-recording-sheet', Web\Staff\DownloadResultRecordingSheetController::class)

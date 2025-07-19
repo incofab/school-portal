@@ -31,6 +31,10 @@ class QuestionImageHandler {
   }
 
   getImageUrl(src: string, alt: string) {
+    const base64DataIndex = src.indexOf('data:');
+    if (base64DataIndex > -1) {
+      return src;
+    }
     let filename = this.getUrlLastPath(src) ?? '';
     if (!this.isValidImage(filename)) {
       filename = alt;

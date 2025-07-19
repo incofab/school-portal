@@ -21,6 +21,11 @@ class ConvertSheetToArray
     $this->sheetData = $this->spreadsheet->getActiveSheet();
   }
 
+  function setColumnMapping(array $columnKeyMapping)
+  {
+    $this->columnKeyMapping = $columnKeyMapping;
+  }
+
   // Example
   // private $columnKeyMapping = [
   //   'A' => 'question' | SheetValueHandler,
@@ -30,6 +35,22 @@ class ConvertSheetToArray
   //   'E' => 'option_d',
   //   'F' => 'answer',
   // ];
+
+  function getSheetData()
+  {
+    return $this->sheetData;
+  }
+
+  function getRowData($row = 1)
+  {
+    $rowData = [];
+    $maxColumns = $this->sheetData->getHighestDataColumn($row);
+    $columns = range('A', $maxColumns);
+    foreach ($columns as $key => $column) {
+      $rowData[$column] = $this->sheetData->getCell($column . $row)->getValue();
+    }
+    return $rowData;
+  }
 
   function run($startingRow = 1)
   {
@@ -51,7 +72,7 @@ class ConvertSheetToArray
         }
         $dataItem[$key] = $value;
         if ($emptyRow) {
-          $emptyRow = empty($value);
+          $emptyRow = $value == null || $value == '';
         }
       }
       if (!$emptyRow) {

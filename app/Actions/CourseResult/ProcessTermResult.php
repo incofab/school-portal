@@ -14,15 +14,25 @@ use Illuminate\Validation\ValidationException;
 
 class ProcessTermResult
 {
-  private Institution $institution;
-  public function __construct(private ClassResultInfo $classResultInfo)
-  {
-    $this->institution = currentInstitution();
+  // private Institution $institution;
+  public function __construct(
+    private Institution $institution,
+    private ClassResultInfo $classResultInfo,
+    private bool $forceCalculateTermResult = false
+  ) {
+    // $this->institution = currentInstitution();
   }
 
-  public static function run(ClassResultInfo $classResultInfo)
-  {
-    return (new self($classResultInfo))->execute();
+  public static function run(
+    Institution $institution,
+    ClassResultInfo $classResultInfo,
+    bool $forceCalculateTermResult = false
+  ) {
+    return (new self(
+      $institution,
+      $classResultInfo,
+      $forceCalculateTermResult
+    ))->execute();
   }
 
   private function execute()
@@ -110,7 +120,10 @@ class ProcessTermResult
     array $studentsResultDetails,
     Classification $classification
   ) {
-    if (!$classification->has_equal_subjects) {
+    if (
+      !$classification->has_equal_subjects ||
+      $this->forceCalculateTermResult
+    ) {
       return true;
     }
 
@@ -118,7 +131,10 @@ class ProcessTermResult
       ->where('classification_id', $classification->id)
       ->count();
 
-    if (count($studentsResultDetails) !== $totalClassStudents) {
+    if (
+      !$this->forceCalculateTermResult &&
+      count($studentsResultDetails) !== $totalClassStudents
+    ) {
       throw ValidationException::withMessages([
         'error' => 'You have to record results for all students first'
       ]);
