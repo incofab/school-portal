@@ -141,7 +141,7 @@ export default function SideBarLayout() {
     {
       label: 'Timetable',
       route: instRoute('timetables.index'),
-      roles: [InstitutionUserType.Student, InstitutionUserType.Teacher],
+      roles: [...teachers, InstitutionUserType.Student],
     },
     {
       label: 'Subject',
