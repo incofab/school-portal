@@ -59,6 +59,37 @@ export default function SideBarLayout() {
           },
         ]
       : []),
+      {
+      label: 'Payroll',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'Payroll',
+          route: instRoute('payroll-summaries.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Salary Types',
+          route: instRoute('salary-types.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Adjustment Types',
+          route: instRoute('adjustment-types.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Staff Salaries',
+          route: instRoute('staff-salaries.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Salary Adjustments',
+          route: instRoute('salary-adjustments.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
     {
       label: 'Staff',
       roles: [InstitutionUserType.Admin],
@@ -408,6 +439,16 @@ export default function SideBarLayout() {
         {
           label: 'All Transactions',
           route: instRoute('transactions.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Expenses',
+          route: instRoute('expenses.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Expense Categorires',
+          route: instRoute('expense-categories.index'),
           roles: [InstitutionUserType.Admin],
         },
         {

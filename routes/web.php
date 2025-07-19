@@ -47,6 +47,12 @@ Route::get('institutions/search', Web\SearchInstitutionController::class)
     ->name('institutions.search');
 Route::get('academic-sessions/search', [Web\AcademicSessionController::class, 'search'])
     ->name('academic-sessions.search');
+Route::get('/expense-categories/search', [Web\Institutions\Expenses\ExpenseCategoryController ::class, 'search'])
+    ->name('expense-categories.search');
+Route::get('/salary-types/search', [Web\Institutions\SalaryTypes\SalaryTypesController::class, 'search'])
+    ->name('salary-types.search');
+Route::get('/adjustment-types/search', [Web\Institutions\AdjustmentTypes\AdjustmentTypesController::class, 'search'])
+    ->name('adjustment-types.search');
 Route::post('activate-result', [Web\TermResultActivationController::class, 'store'])
     ->name('activate-term-result.store');
 
