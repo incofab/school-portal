@@ -185,7 +185,7 @@ export interface SalaryType extends InstitutionRow {
   parent?: SalaryType;
 }
 
-export interface AdjustmentType extends InstitutionRow {
+export interface PayrollAdjustmentType extends InstitutionRow {
   title: string;
   description: string;
   type: string;
@@ -195,29 +195,28 @@ export interface AdjustmentType extends InstitutionRow {
   parent?: SalaryType;
 }
 
-export interface StaffSalary extends InstitutionRow {
+export interface Salary extends InstitutionRow {
   institution_user_id: number;
   salary_type_id: number;
-  amount: number;	
+  amount: number;
   description?: string;
-  actual_amount: number;
 
   institution_user?: InstitutionUser;
   salary_type?: SalaryType;
 }
 
-export interface SalaryAdjustment extends InstitutionRow {
+export interface PayrollAdjustment extends InstitutionRow {
   institution_user_id: number;
-  adjustment_type_id: number;
-  amount: number;	
-  month: string;
-  year: number;
+  payroll_adjustment_type_id: number;
+  amount: number;
+  // month: string;
+  // year: number;
   description?: string;
-  actual_amount: number;
 
   institution_user?: InstitutionUser;
-  adjustment_type?: AdjustmentType;
+  payroll_adjustment_type?: PayrollAdjustmentType;
   salary_type?: SalaryType;
+  payroll_summary?: PayrollSummary;
 }
 
 export interface PayrollSummary extends InstitutionRow {
@@ -226,14 +225,16 @@ export interface PayrollSummary extends InstitutionRow {
   total_bonuses: number;
   month: string;
   year: number;
+  payrolls_count?: number;
 }
 
 export interface Payroll extends InstitutionRow {
   institution_user_id: number;
-  net_amount: number;
+  tax: number;
+  net_salary: number;
   total_deductions: number;
   total_bonuses: number;
-  income: number;
+  gross_salary: number;
   payroll_summary_id: number;
 
   institution_user?: InstitutionUser;

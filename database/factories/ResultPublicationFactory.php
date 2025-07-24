@@ -25,18 +25,21 @@ class ResultPublicationFactory extends Factory
       'academic_session_id' => AcademicSession::factory(),
       'staff_user_id' => User::factory(),
       'term' => fake()->randomElement(TermType::cases())->value,
-      'payment_structure' => fake()->randomElement(PaymentStructure::cases())->value,
-      'num_of_results' => fake()->numberBetween(600, 1000),
-      'amount' => fake()->numberBetween(600, 3600)
+      'payment_structure' => fake()->randomElement(PaymentStructure::cases())
+        ->value,
+      'num_of_results' => fake()->numberBetween(600, 1000)
+      // 'amount' => fake()->numberBetween(600, 3600)
     ];
   }
 
   function institution(Institution $institution)
   {
-    return $this->state(fn($attr) => [
-      'institution_id' => $institution,
-      'institution_group_id' => $institution->institution_group_id,
-      'staff_user_id' => User::factory()->admin($institution),
-    ]);
+    return $this->state(
+      fn($attr) => [
+        'institution_id' => $institution,
+        'institution_group_id' => $institution->institution_group_id,
+        'staff_user_id' => User::factory()->admin($institution)
+      ]
+    );
   }
 }

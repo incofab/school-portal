@@ -56,25 +56,6 @@ class ExpenseController extends Controller
     return $this->ok();
   }
 
-  //== We decided to disable the ability to Edit/Update an Expense.
-  //== If a user made a mistake during entry, he/she should delete it and re-enter the correct data
-  /*
-    public function edit(Institution $institution, Expense $expense)
-    {
-      return Inertia::render('institutions/expenses/create-edit-expense',[
-        'expenseCategories' => $institution->expenseCategories,
-        'expense' => $expense
-      ]);
-    }
-
-    public function update(Institution $institution, StoreExpenseRequest $request, Expense $expense)
-    {
-      $validatedData = $request->validated();
-      $expense->fill($validatedData)->save();
-      return $this->ok();
-    }
-  */
-
   function destroy(Institution $institution, Expense $expense)
   {
     $expense->delete();

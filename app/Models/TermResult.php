@@ -76,4 +76,9 @@ class TermResult extends Model
   {
     return $this->belongsTo(AcademicSession::class);
   }
+
+  function resultPublication()
+  {
+    return $this->belongsTo(ResultPublication::class);
+  }
 }

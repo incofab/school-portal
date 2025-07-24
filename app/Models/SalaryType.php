@@ -2,23 +2,36 @@
 
 namespace App\Models;
 
+use App\Enums\TransactionType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-/** @Deprecated */
 class SalaryType extends Model
 {
-  use HasFactory, SoftDeletes, InstitutionScope;
+  use HasFactory, InstitutionScope;
 
   protected $table = 'salary_types';
   protected $guarded = [];
   protected $casts = [
-    'type' => 'string'
+    'percentage' => 'float',
+    'type' => TransactionType::class,
+    'institution_id' => 'integer',
+    'parent_id' => 'integer'
   ];
+
+  // Scopes
+  public function scopeCredit($query)
+  {
+    return $query->where('type', TransactionType::Credit);
+  }
+
+  public function scopeDebit($query)
+  {
+    return $query->where('type', TransactionType::Debit);
+  }
 
   // Relationships
   public function parent(): BelongsTo
@@ -31,40 +44,13 @@ class SalaryType extends Model
     return $this->hasMany(SalaryType::class, 'parent_id');
   }
 
-  public function staffSalaries(): HasMany
+  public function salaries(): HasMany
   {
-    return $this->hasMany(StaffSalary::class);
+    return $this->hasMany(Salary::class);
   }
 
-  // Scopes
-  public function scopeCredit($query)
+  public function institution(): BelongsTo
   {
-    return $query->where('type', 'credit');
-  }
-
-  public function scopeDebit($query)
-  {
-    return $query->where('type', 'debit');
-  }
-
-  public function scopeByInstitution($query, $institutionId)
-  {
-    return $query->where('institution_id', $institutionId);
-  }
-
-  public function scopeParents($query)
-  {
-    return $query->whereNull('parent_id');
-  }
-
-  // Accessors
-  public function getIsParentAttribute(): bool
-  {
-    return is_null($this->parent_id);
-  }
-
-  public function getHasChildrenAttribute(): bool
-  {
-    return $this->children()->count() > 0;
+    return $this->belongsTo(Institution::class);
   }
 }

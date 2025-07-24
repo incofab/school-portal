@@ -1,12 +1,11 @@
 import React from 'react';
-import route from '@/util/route';
 import { ExpenseCategory } from '@/types/models';
 import { Props } from 'react-select';
-import SingleQuerySelect from '../dropdown-select/single-query-select';
+import DataSelect from '../dropdown-select/data-select';
 
 interface MyProps {
   selectValue?: number | string;
-  expenseCategories?: ExpenseCategory[];
+  expenseCategories: ExpenseCategory[];
 }
 
 export default function ExpenseCategorySelect({
@@ -15,12 +14,14 @@ export default function ExpenseCategorySelect({
   ...props
 }: MyProps & Props) {
   return (
-    <SingleQuerySelect
+    <DataSelect
       {...props}
       selectValue={selectValue}
-      dataList={expenseCategories}
-      searchUrl={route('expense-categories.search')}
-      label={'title'}
+      data={{
+        main: expenseCategories,
+        label: 'title',
+        value: 'id',
+      }}
     />
   );
-} 
+}

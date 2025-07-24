@@ -22,32 +22,15 @@ class Payroll extends Model
   protected $table = 'payroll';
   protected $guarded = [];
   protected $casts = [
-    'total_salary' => 'decimal:2',
-    'tax' => 'decimal:2',
-    'net_salary' => 'decimal:2',
-    'total_deductions' => 'decimal:2',
-    'total_bonuses' => 'decimal:2',
+    'gross_salary' => 'float',
+    'tax' => 'float',
+    'net_salary' => 'float',
+    'total_deductions' => 'float',
+    'total_bonuses' => 'float',
     'meta' => AsArrayObject::class
   ];
 
-  // Relationships
-  public function payrollSummary(): BelongsTo
-  {
-    return $this->belongsTo(PayrollSummary::class);
-  }
-
-  // Note: Assuming you have an InstitutionUser model
-  public function institutionUser(): BelongsTo
-  {
-    return $this->belongsTo(InstitutionUser::class);
-  }
-
   // Scopes
-  public function scopeByInstitution($query, $institutionId)
-  {
-    return $query->where('institution_id', $institutionId);
-  }
-
   public function scopeByUser($query, $userId)
   {
     return $query->where('institution_user_id', $userId);
@@ -58,40 +41,18 @@ class Payroll extends Model
     return $query->where('payroll_summary_id', $summaryId);
   }
 
-  // Accessors
-  public function getFormattedNetAmountAttribute(): string
+  // Relationships
+  public function payrollSummary(): BelongsTo
   {
-    return number_format($this->net_amount, 2);
+    return $this->belongsTo(PayrollSummary::class);
   }
 
-  public function getFormattedTotalDeductionsAttribute(): string
+  public function institutionUser(): BelongsTo
   {
-    return number_format($this->total_deductions, 2);
+    return $this->belongsTo(InstitutionUser::class);
   }
-
-  public function getFormattedTotalBonusesAttribute(): string
+  public function institution(): BelongsTo
   {
-    return number_format($this->total_bonuses, 2);
-  }
-
-  public function getFormattedIncomeAttribute(): string
-  {
-    return number_format($this->income, 2);
-  }
-
-  public function getGrossAmountAttribute(): float
-  {
-    return $this->income + $this->total_bonuses;
-  }
-
-  public function getFormattedGrossAmountAttribute(): string
-  {
-    return number_format($this->gross_amount, 2);
-  }
-
-  // Get period from related payroll summary
-  public function getPeriodAttribute(): string
-  {
-    return $this->payrollSummary ? $this->payrollSummary->period : '';
+    return $this->belongsTo(Institution::class);
   }
 }

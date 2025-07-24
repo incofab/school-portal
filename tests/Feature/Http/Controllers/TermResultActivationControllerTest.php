@@ -6,6 +6,7 @@ use App\Models\Pin;
 use App\Models\Student;
 use App\Models\TermResult;
 use App\Models\Institution;
+use App\Models\ResultPublication;
 
 use function Pest\Laravel\postJson;
 
@@ -13,9 +14,13 @@ beforeEach(function () {
   $this->institution = Institution::factory()->create();
   $this->instAdmin = $this->institution->createdBy;
   $this->academicSession = AcademicSession::factory()->create();
+  $this->resultPublication = ResultPublication::factory()
+    ->institution($this->institution)
+    ->create();
   $this->termResult = TermResult::factory()
     ->withInstitution($this->institution)
     ->for($this->academicSession)
+    ->for($this->resultPublication)
     ->create();
   $this->student = $this->termResult->student;
 
@@ -201,6 +206,7 @@ it('uses same pin to activate other results in the same session', function () {
   $termResult2 = TermResult::factory()
     ->withInstitution($this->institution)
     ->for($this->academicSession)
+    ->for($this->resultPublication)
     ->forStudent($this->student)
     ->create(['term' => TermType::Second->value]);
 
@@ -214,6 +220,7 @@ it('uses same pin to activate other results in the same session', function () {
   $academicSession2TermResult = TermResult::factory()
     ->withInstitution($this->institution)
     ->for($academicSession2)
+    ->for($this->resultPublication)
     ->forStudent($this->student)
     ->create();
 

@@ -1,12 +1,11 @@
 import React from 'react';
-import route from '@/util/route';
 import { SalaryType } from '@/types/models';
 import { Props } from 'react-select';
-import SingleQuerySelect from '../dropdown-select/single-query-select';
+import DataSelect from '../dropdown-select/data-select';
 
 interface MyProps {
   selectValue?: number | string;
-  salaryTypes?: SalaryType[];
+  salaryTypes: SalaryType[];
 }
 
 export default function SalaryTypeSelect({
@@ -15,12 +14,14 @@ export default function SalaryTypeSelect({
   ...props
 }: MyProps & Props) {
   return (
-    <SingleQuerySelect
+    <DataSelect
       {...props}
       selectValue={selectValue}
-      dataList={salaryTypes}
-      searchUrl={route('salary-types.search')}
-      label={'title'}
+      data={{
+        main: salaryTypes,
+        label: 'title',
+        value: 'id',
+      }}
     />
   );
-} 
+}

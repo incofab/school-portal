@@ -385,13 +385,14 @@ Route::resource('/expenses', Web\Expenses\ExpenseController::class);
 Route::resource('/expense-categories', Web\Expenses\ExpenseCategoryController::class);
 
 //== PAYROLL
-Route::resource('/staff-salaries', Web\StaffSalaries\StaffSalariesController::class);
-Route::resource('/salary-types', Web\SalaryTypes\SalaryTypesController::class);
-Route::resource('/adjustment-types', Web\AdjustmentTypes\AdjustmentTypesController::class);
+Route::get('/payroll-adjustments/{payroll}', [Web\Payrolls\PayrollAdjustmentsController::class, 'payrollAdjustments'])->name('payroll-adjustments.payroll');
+Route::get('/payroll-adjustments/{payrollSummary}', [Web\Payrolls\PayrollAdjustmentsController::class, 'index'])->name('payroll-adjustments.index');
+Route::resource('/payroll-adjustments', Web\Payrolls\PayrollAdjustmentsController::class)->parameters(['payroll-adjustments' => 'payrollAdjustment'])->except('index');
 
-Route::get('/payroll-salary-adjustments/{payroll}', [Web\SalaryAdjustments\SalaryAdjustmentsController::class, 'payrollSalaryAdjustments'])->name('salary-adjustments.payroll');
-Route::resource('/salary-adjustments', Web\SalaryAdjustments\SalaryAdjustmentsController::class);
+Route::resource('/salaries', Web\Payrolls\SalariesController::class);
+Route::resource('/salary-types', Web\Payrolls\SalaryTypesController::class);
+Route::resource('/payroll-adjustment-types', Web\Payrolls\PayrollAdjustmentTypesController::class);
 
-Route::post('/generate-payroll', [Web\Payrolls\PayrollsController::class, 'generatePayroll'])->name('generate-payroll');
+Route::post('payroll-summaries/{payrollSummary}/generate-payroll', [Web\Payrolls\PayrollsController::class, 'generatePayroll'])->name('payroll-summaries.generate-payroll');
 Route::resource('/payrolls', Web\Payrolls\PayrollsController::class);
-Route::resource('/payroll-summaries', Web\PayrollSummaries\PayrollSummariesController::class);
+Route::resource('/payroll-summaries', Web\Payrolls\PayrollSummariesController::class);

@@ -12,9 +12,9 @@ class UserTransaction extends Model
   protected $guarded = [];
 
   protected $casts = [
-    'amount' => 'decimal:2',
-    'bbt' => 'decimal:2',
-    'bat' => 'decimal:2',
+    'amount' => 'float',
+    'bbt' => 'float',
+    'bat' => 'float',
     'meta' => 'array'
   ];
 

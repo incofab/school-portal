@@ -280,12 +280,11 @@ class Institution extends Model
 
   public function staff()
   {
-    return $this->hasMany(InstitutionUser::class)
-      ->whereIn('role', [
-        InstitutionUserType::Teacher,
-        InstitutionUserType::Accountant,
-        InstitutionUserType::Admin
-      ]);
+    return $this->hasMany(InstitutionUser::class)->whereIn('role', [
+      InstitutionUserType::Teacher,
+      InstitutionUserType::Accountant,
+      InstitutionUserType::Admin
+    ]);
   }
 
   function expenses()
@@ -303,29 +302,29 @@ class Institution extends Model
     return $this->hasMany(SalaryType::class);
   }
 
-  function parentSalaryTypes()
+  // function parentSalaryTypes()
+  // {
+  //   return $this->hasMany(SalaryType::class)->whereNull('parent_id');
+  // }
+
+  function salaries()
   {
-    return $this->hasMany(SalaryType::class)->whereNull('parent_id');
+    return $this->hasMany(Salary::class);
   }
 
-  function staffSalaries()
+  function payrollAdjustmentTypes()
   {
-    return $this->hasMany(StaffSalary::class);
-  }
-
-  function adjustmentTypes()
-  {
-    return $this->hasMany(AdjustmentType::class);
+    return $this->hasMany(PayrollAdjustmentType::class);
   }
 
   function parentAdjustmentTypes()
   {
-    return $this->hasMany(AdjustmentType::class)->whereNull('parent_id');
+    return $this->hasMany(PayrollAdjustmentType::class)->whereNull('parent_id');
   }
 
-  function salaryAdjustments()
+  function payrollAdjustments()
   {
-    return $this->hasMany(SalaryAdjustment::class);
+    return $this->hasMany(PayrollAdjustment::class);
   }
 
   function payrolls()

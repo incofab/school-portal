@@ -40,7 +40,7 @@ class ExpenseCategoryController extends Controller
 
   function store(Request $request, Institution $institution)
   {
-    $data = $request->validate(ExpenseCategory::createRule($institution));
+    $data = $request->validate(ExpenseCategory::createRule());
 
     $institution->expenseCategories()->create($data);
     return $this->ok();
@@ -51,10 +51,7 @@ class ExpenseCategoryController extends Controller
     Institution $institution,
     ExpenseCategory $expenseCategory
   ) {
-    $data = $request->validate(
-      ExpenseCategory::createRule($institution, $expenseCategory)
-    );
-
+    $data = $request->validate(ExpenseCategory::createRule($expenseCategory));
     $expenseCategory->fill($data)->save();
     return $this->ok();
   }

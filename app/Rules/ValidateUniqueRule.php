@@ -4,7 +4,6 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * The main reason for this rule over the Laravel "unique" rule is that it will instantiate the model
@@ -13,10 +12,26 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ValidateUniqueRule implements ValidationRule
 {
+  private array $ignore = [];
   function __construct(
     private string $modelClass,
     private string $column = 'reference'
   ) {
+  }
+
+  function ignore($value, $column = 'id'): static
+  {
+    $this->ignore[] = [$column, '!=', $value];
+    return $this;
+  }
+
+  function when($condition, $callback): static
+  {
+    if ($condition) {
+      $callback($this);
+      return $this;
+    }
+    return $this;
   }
 
   /**
@@ -29,6 +44,7 @@ class ValidateUniqueRule implements ValidationRule
     $model = (new $this->modelClass())
       ->query()
       ->where($this->column, $value)
+      ->when($this->ignore, fn($q) => $q->where($this->ignore))
       ->first();
 
     if ($model) {
