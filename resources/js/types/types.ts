@@ -117,6 +117,21 @@ export enum WeekDay {
   Sunday = '6',
 }
 
+export enum YearMonth {
+  January = 'january',
+  Febuary = 'febuary',
+  March = 'march',
+  April = 'april',
+  May = 'may',
+  June = 'june',
+  July = 'july',
+  August = 'august',
+  September = 'september',
+  October = 'october',
+  November = 'november',
+  December = 'december',
+}
+
 export enum Attendance {
   In = 'in',
   Out = 'out',

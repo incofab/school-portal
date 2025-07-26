@@ -25,6 +25,19 @@ class ClassResultInfo extends Model
     'next_term_resumption_date' => 'date'
   ];
 
+  /**
+   * @return \Illuminate\Database\Eloquent\Builder<\App\Models\CourseResult>
+   */
+  function courseResultsQuery()
+  {
+    return CourseResult::query()->where([
+      'course_results.academic_session_id' => $this->academic_session_id,
+      'course_results.classification_id' => $this->classification_id,
+      'course_results.term' => $this->term,
+      'course_results.for_mid_term' => $this->for_mid_term
+    ]);
+  }
+
   public function classification()
   {
     return $this->belongsTo(Classification::class);

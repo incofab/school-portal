@@ -1,7 +1,7 @@
 import React from 'react';
-import { MultiValue, Props } from 'react-select';
+import { Props } from 'react-select';
 import MySelect from './my-select';
-import { SelectOptionType } from '@/types/types';
+import { SelectValue } from '@/types/types';
 
 interface MyProps<T> {
   data: {
@@ -9,7 +9,7 @@ interface MyProps<T> {
     label: string | ((data: T) => string);
     value: any;
   };
-  selectValue?: string | number | SelectOptionType<number> | MultiValue<SelectOptionType<number>> | null;
+  selectValue?: SelectValue;
   refreshKey?: string;
 }
 

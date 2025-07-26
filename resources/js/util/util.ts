@@ -194,7 +194,7 @@ export function isTimeExpired(timeString?: string): boolean {
 }
 
 export function generateUniqueString(prefix: any) {
-  return `${prefix}-${Date.now()}-${Math.random()
+  return `${prefix ? prefix + '-' : ''}${Date.now()}-${Math.random()
     .toString(36)
     .substring(2, 15)}`;
 }

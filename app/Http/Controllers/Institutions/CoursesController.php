@@ -123,7 +123,7 @@ class CoursesController extends Controller
 
     $res = GoogleAiHelper::ask($question);
 
-    $res_parts = $res['candidates'][0]['content']['parts'];
+    $res_parts = $res['candidates'][0]['content']['parts'] ?? [];
     $resQuestions = '';
 
     foreach ($res_parts as $res_part) {

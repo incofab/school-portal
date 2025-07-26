@@ -188,84 +188,6 @@ export default function SideBarLayout() {
       route: instRoute('lesson-notes.index'),
       roles: [InstitutionUserType.Student],
     },
-
-    /*
-    {
-      label: 'Topics',
-      roles: [InstitutionUserType.Admin],
-      sub_items: [
-        {
-          label: 'All Topics',
-          route: instRoute('inst-topics.index'),
-          roles: [InstitutionUserType.Admin],
-        },
-        {
-          label: 'Add Topic',
-          route: instRoute('inst-topics.create-or-edit'),
-          roles: [InstitutionUserType.Admin],
-        },
-      ],
-    },
-
-    {
-      label: 'Scheme of Work',
-      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
-      sub_items: [
-        {
-          label: 'All Scheme of Works',
-          route: instRoute('scheme-of-works.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
-        },
-        {
-          label: 'Add Scheme of Work',
-          route: instRoute('scheme-of-works.create'),
-          roles: [InstitutionUserType.Admin],
-        },
-      ],
-    },
-
-    {
-      label: 'Lesson Plans',
-      route: instRoute('lesson-plans.index'),
-      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
-    },
-
-    {
-      label: 'Lesson Notes',
-      route: instRoute('lesson-notes.index'),
-      roles: [
-        InstitutionUserType.Student,
-        InstitutionUserType.Admin,
-        InstitutionUserType.Teacher,
-      ],
-    },
-
-    {
-      label: 'Notes',
-      roles: [
-        InstitutionUserType.Student,
-        InstitutionUserType.Admin,
-        InstitutionUserType.Teacher,
-      ],
-      sub_items: [
-        {
-          label: 'All Note Topics',
-          route: instRoute('note-topics.index'),
-          roles: [
-            InstitutionUserType.Student,
-            InstitutionUserType.Admin,
-            InstitutionUserType.Teacher,
-          ],
-        },
-        {
-          label: 'Add Note Topic',
-          route: instRoute('note-topics.create'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
-        },
-      ],
-    },
-    */
-
     {
       label: 'Assignments',
       roles: [
@@ -411,6 +333,16 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin],
         },
         {
+          label: 'Expenses',
+          route: instRoute('expenses.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Expense Categorires',
+          route: instRoute('expense-categories.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
           label: 'Bank Accounts',
           route: instRoute('inst-bank-accounts.index'),
           roles: [InstitutionUserType.Admin],
@@ -485,6 +417,32 @@ export default function SideBarLayout() {
           route: instRoute('learning-evaluations.index'),
           roles: [InstitutionUserType.Admin],
         },
+      ],
+    },
+    {
+      label: 'Payroll',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'Payroll',
+          route: instRoute('payroll-summaries.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Salary Components',
+          route: instRoute('salary-types.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Salaries',
+          route: instRoute('salaries.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        // {
+        //   label: 'Bonuses/Deductions',
+        //   route: instRoute('payroll-adjustments.index'),
+        //   roles: [InstitutionUserType.Admin],
+        // },
       ],
     },
     {

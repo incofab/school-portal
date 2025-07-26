@@ -6,6 +6,7 @@ use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\Institution;
+use App\Models\ResultPublication;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -41,6 +42,7 @@ class TermResultFactory extends Factory
       ];
     });
   }
+
   public function forStudent(Student $student): static
   {
     return $this->state(function (array $attributes) use ($student) {

@@ -15,7 +15,7 @@ return new class extends Migration {
     Schema::create('topics', function (Blueprint $table) {
       $table->bigIncrements('id');
       $table->unsignedBigInteger('course_id');
-      $table->string('title')->unique();
+      $table->string('title');
       $table->text('description')->nullable(true);
 
       $table->timestamps();

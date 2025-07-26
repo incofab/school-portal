@@ -118,6 +118,10 @@ export default function ListCourseResults({
       value: 'result',
     },
     {
+      label: 'Position',
+      value: 'position',
+    },
+    {
       label: 'Grade',
       value: 'grade',
     },

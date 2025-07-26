@@ -59,17 +59,17 @@ export default function ListInstitutionGropus({ institutionGroups }: Props) {
     {
       label: 'Credit',
       value: 'credit_wallet',
-      render: (row) => '₦ ' + NumberFormatter(row.credit_wallet),
+      render: (row) => '₦' + NumberFormatter(row.credit_wallet),
     },
     {
       label: 'Debt',
       value: 'debt_wallet',
-      render: (row) => '₦ ' + NumberFormatter(row.debt_wallet),
+      render: (row) => '₦' + NumberFormatter(row.debt_wallet),
     },
     {
       label: 'Loan Limit',
       value: 'loan_limit',
-      render: (row) => '₦ ' + NumberFormatter(row.loan_limit),
+      render: (row) => '₦' + NumberFormatter(row.loan_limit),
     },
     {
       label: 'Action',

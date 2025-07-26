@@ -175,6 +175,85 @@ export interface InstitutionUser extends InstitutionRow {
   student?: Student;
 }
 
+export interface SalaryType extends InstitutionRow {
+  title: string;
+  description: string;
+  type: string;
+  parent_id: number;
+  percentage: number;
+
+  parent?: SalaryType;
+}
+
+export interface PayrollAdjustmentType extends InstitutionRow {
+  title: string;
+  description: string;
+  type: string;
+  parent_id: number;
+  percentage: string;
+
+  parent?: SalaryType;
+}
+
+export interface Salary extends InstitutionRow {
+  institution_user_id: number;
+  salary_type_id: number;
+  amount: number;
+  description?: string;
+
+  institution_user?: InstitutionUser;
+  salary_type?: SalaryType;
+}
+
+export interface PayrollAdjustment extends InstitutionRow {
+  institution_user_id: number;
+  payroll_adjustment_type_id: number;
+  amount: number;
+  // month: string;
+  // year: number;
+  description?: string;
+
+  institution_user?: InstitutionUser;
+  payroll_adjustment_type?: PayrollAdjustmentType;
+  salary_type?: SalaryType;
+  payroll_summary?: PayrollSummary;
+}
+
+export interface PayrollSummary extends InstitutionRow {
+  amount: number;
+  total_tax: number;
+  total_deduction: number;
+  total_bonuses: number;
+  month: string;
+  year: number;
+  evaluated_at?: string;
+  payrolls_count?: number;
+}
+
+export interface Payroll extends InstitutionRow {
+  institution_user_id: number;
+  tax: number;
+  net_salary: number;
+  total_deductions: number;
+  total_bonuses: number;
+  gross_salary: number;
+  payroll_summary_id: number;
+  meta?: {
+    salaries: {
+      type: TransactionType;
+      amount: number;
+      title: string;
+    }[];
+    adjustments: {
+      type: TransactionType;
+      amount: number;
+      title: string;
+    }[];
+  };
+  institution_user?: InstitutionUser;
+  payroll_summary?: PayrollSummary;
+}
+
 export interface Attendance extends InstitutionRow {
   // institution_id: number;
   institution_staff_user_id: number;
@@ -402,6 +481,26 @@ export interface Fee extends InstitutionRow {
   fee_items?: FeeItem[];
   academic_session?: AcademicSession;
   fee_categories: FeeCategory[];
+}
+
+export interface Expense extends InstitutionRow {
+  title: string;
+  description: string;
+  amount: number;
+  academic_session_id?: number;
+  term?: string;
+  expense_date: string;
+  expense_category_id: number;
+  created_by: number;
+
+  academic_session?: AcademicSession;
+  expense_category: ExpenseCategory;
+  institution_user?: InstitutionUser;
+}
+
+export interface ExpenseCategory extends InstitutionRow {
+  title: string;
+  description: string;
 }
 
 export interface FeeCategory extends InstitutionRow {

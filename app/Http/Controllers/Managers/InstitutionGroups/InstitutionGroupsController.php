@@ -131,7 +131,7 @@ class InstitutionGroupsController extends Controller
     $data = $request->validate([
       'name' => ['required', 'string', 'max:255'],
       'loan_limit' => ['required', 'integer', 'min:0'],
-      'website' => ['required', 'string', 'max:50']
+      'website' => ['nullable', 'string', 'max:50']
     ]);
     $institutionGroup->update($data);
     return $this->ok();

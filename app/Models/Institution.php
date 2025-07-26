@@ -277,4 +277,53 @@ class Institution extends Model
       $query->where('role', InstitutionUserType::Teacher);
     });
   }
+
+  public function staff()
+  {
+    return $this->hasMany(InstitutionUser::class)->whereIn('role', [
+      InstitutionUserType::Teacher,
+      InstitutionUserType::Accountant,
+      InstitutionUserType::Admin
+    ]);
+  }
+
+  function expenses()
+  {
+    return $this->hasMany(Expense::class);
+  }
+
+  function expenseCategories()
+  {
+    return $this->hasMany(ExpenseCategory::class);
+  }
+
+  function salaryTypes()
+  {
+    return $this->hasMany(SalaryType::class);
+  }
+
+  function salaries()
+  {
+    return $this->hasMany(Salary::class);
+  }
+
+  function payrollAdjustmentTypes()
+  {
+    return $this->hasMany(PayrollAdjustmentType::class);
+  }
+
+  function payrollAdjustments()
+  {
+    return $this->hasMany(PayrollAdjustment::class);
+  }
+
+  function payrolls()
+  {
+    return $this->hasMany(Payroll::class);
+  }
+
+  function payrollSummaries()
+  {
+    return $this->hasMany(PayrollSummary::class);
+  }
 }

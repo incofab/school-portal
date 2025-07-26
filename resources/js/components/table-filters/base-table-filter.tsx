@@ -27,7 +27,7 @@ export default function BaseTableFilter({
 }: Props & PropsWithChildren) {
   function onSave() {
     const url = new URL(window.location.href);
-
+    
     Object.entries(filters).forEach(([key, value]) => {
       setUrlFilterOptions(key, filters, url);
     });
