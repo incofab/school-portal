@@ -438,11 +438,11 @@ export default function SideBarLayout() {
           route: instRoute('salaries.index'),
           roles: [InstitutionUserType.Admin],
         },
-        {
-          label: 'Bonuses/Deductions',
-          route: instRoute('payroll-adjustments.index'),
-          roles: [InstitutionUserType.Admin],
-        },
+        // {
+        //   label: 'Bonuses/Deductions',
+        //   route: instRoute('payroll-adjustments.index'),
+        //   roles: [InstitutionUserType.Admin],
+        // },
       ],
     },
     {

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Institutions\Payrolls;
 
-use App\Actions\Payrolls\GeneratePayroll;
 use App\Models\Institution;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
-use App\Models\PayrollSummary;
+use App\Models\Payroll;
 
 class PayrollsController extends Controller
 {
@@ -18,12 +17,11 @@ class PayrollsController extends Controller
     ]);
   }
 
-  public function generatePayroll(
-    Institution $institution,
-    PayrollSummary $payrollSummary
-  ) {
-    abort_if($payrollSummary->isEvaluated(), 403, 'Payroll already evaluated');
-    (new GeneratePayroll($institution, $payrollSummary))->run();
-    return $this->ok();
+  function show(Institution $institution, Payroll $payroll)
+  {
+    $payroll->load('institutionUser.user', 'payrollSummary');
+    return inertia('institutions/payrolls/show-payroll', [
+      'payroll' => $payroll
+    ]);
   }
 }

@@ -26,6 +26,7 @@ class CourseResult extends Model
     'for_mid_term' => 'boolean',
     'assessment_values' => AsArrayObject::class
   ];
+
   public function rule()
   {
     return [

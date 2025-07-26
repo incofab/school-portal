@@ -221,10 +221,12 @@ export interface PayrollAdjustment extends InstitutionRow {
 
 export interface PayrollSummary extends InstitutionRow {
   amount: number;
+  total_tax: number;
   total_deduction: number;
   total_bonuses: number;
   month: string;
   year: number;
+  evaluated_at?: string;
   payrolls_count?: number;
 }
 
@@ -236,7 +238,18 @@ export interface Payroll extends InstitutionRow {
   total_bonuses: number;
   gross_salary: number;
   payroll_summary_id: number;
-
+  meta?: {
+    salaries: {
+      type: TransactionType;
+      amount: number;
+      title: string;
+    }[];
+    adjustments: {
+      type: TransactionType;
+      amount: number;
+      title: string;
+    }[];
+  };
   institution_user?: InstitutionUser;
   payroll_summary?: PayrollSummary;
 }

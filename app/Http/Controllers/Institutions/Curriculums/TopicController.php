@@ -111,7 +111,7 @@ class TopicController extends Controller
 
     //= Check if there's a topic and use the corresponding validation rule
     $data = $request->validate(
-      $topic ? Topic::createRule2() : Topic::createRule()
+      $topic ? Topic::createRule2($topic) : Topic::createRule($topic)
     );
 
     //= For Topic

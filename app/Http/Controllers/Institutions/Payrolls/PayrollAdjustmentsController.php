@@ -33,8 +33,9 @@ class PayrollAdjustmentsController extends Controller
       'institutions/payroll-adjustments/list-payroll-adjustments',
       [
         'payrollAdjustments' => paginateFromRequest($query),
-        'payrollAdjustmentTypes' => $institution->payrollAdjustmentTypes,
-        'parentAdjustmentTypes' => $institution->parentAdjustmentTypes
+        'payrollAdjustmentTypes' => $institution
+          ->payrollAdjustmentTypes()
+          ->get()
       ]
     );
   }
@@ -55,12 +56,13 @@ class PayrollAdjustmentsController extends Controller
     return inertia('institutions/payrolls/list-payroll-adjustments', [
       'payrollAdjustments' => paginateFromRequest($query),
       'payrollAdjustmentTypes' => $institution->payrollAdjustmentTypes()->get(),
-      'parentAdjustmentTypes' => $institution->parentAdjustmentTypes()->get()
+      'payrollSummary' => $payrollSummary
     ]);
   }
 
   public function store(
     Institution $institution,
+    PayrollSummary $payrollSummary,
     PayrollAdjustmentRequest $request
   ) {
     $validatedData = $request->validated();
@@ -69,6 +71,7 @@ class PayrollAdjustmentsController extends Controller
       ->findOrFail($validatedData['payroll_adjustment_type_id']);
 
     (new PayrollAdjustmentHandler($institution))->createMultiple(
+      $payrollSummary,
       $adjustmentType,
       $validatedData
     );

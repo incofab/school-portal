@@ -18,7 +18,7 @@ import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, CloudArrowDownIcon } from '@heroicons/react/24/outline';
 import route from '@/util/route';
 import useSharedProps from '@/hooks/use-shared-props';
 import SetResumptionDateModal from '@/components/modals/set-resumption-date-modal';
@@ -58,6 +58,19 @@ export default function ListClassResultInfo({
     onClose();
     Inertia.reload({ only: ['classResultInfo'] });
   };
+
+  function downloadResults(classResultInfo: ClassResultInfo) {
+    if (
+      !window.confirm(
+        `Download ${classResultInfo.classification?.title} results?`
+      )
+    ) {
+      return;
+    }
+    window.location.href = instRoute('class-result-info.download', [
+      classResultInfo.id,
+    ]);
+  }
 
   const headers: ServerPaginatedTableHeader<ClassResultInfo>[] = [
     {
@@ -118,6 +131,14 @@ export default function ListClassResultInfo({
               forMidTerm: row.for_mid_term,
             })}
             title="Student Results"
+          />
+          <IconButton
+            aria-label="Download"
+            icon={<Icon as={CloudArrowDownIcon} />}
+            colorScheme="brand"
+            size="sm"
+            variant={'ghost'}
+            onClick={() => downloadResults(row)}
           />
           <DestructivePopover
             label={`Do you want to recalculate the results for this ${row.classification?.title}?`}

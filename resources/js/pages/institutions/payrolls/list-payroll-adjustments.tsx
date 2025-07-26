@@ -1,5 +1,9 @@
 import React from 'react';
-import { PayrollAdjustmentType, PayrollAdjustment } from '@/types/models';
+import {
+  PayrollAdjustmentType,
+  PayrollAdjustment,
+  PayrollSummary,
+} from '@/types/models';
 import { PaginationResponse, TransactionType } from '@/types/types';
 import { IconButton, Icon, HStack, Text, Badge } from '@chakra-ui/react';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -16,16 +20,18 @@ import ServerPaginatedTable, {
 } from '@/components/server-paginated-table';
 import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
-import { formatAsCurrency } from '@/util/util';
+import { formatAsCurrency, ucFirst } from '@/util/util';
 import CreateEditPayrollAdjustmentModal from '@/components/modals/payrolls/create-edit-payroll-adjustment-modal';
 import { PlusIcon } from '@heroicons/react/24/solid';
 
 interface Props {
+  payrollSummary: PayrollSummary;
   payrollAdjustments: PaginationResponse<PayrollAdjustment>;
   payrollAdjustmentTypes: PayrollAdjustmentType[];
 }
 
 export default function ListPayrollAdjustments({
+  payrollSummary,
   payrollAdjustments,
   payrollAdjustmentTypes,
 }: Props) {
@@ -63,7 +69,9 @@ export default function ListPayrollAdjustments({
       label: 'Month/Year',
       render: (row) => (
         <Text whiteSpace={'nowrap'}>
-          {row.payroll_summary?.month + ', ' + row.payroll_summary?.year}
+          {`${ucFirst(row.payroll_summary?.month)}, ${
+            row.payroll_summary?.year
+          }`}
         </Text>
       ),
     },
@@ -125,7 +133,9 @@ export default function ListPayrollAdjustments({
     <DashboardLayout>
       <Slab>
         <SlabHeading
-          title="Salary Adjustments"
+          title={`Bonuses/Deductions - ${ucFirst(payrollSummary.month)}, ${
+            payrollSummary.year
+          }`}
           rightElement={
             <HStack>
               <BrandButton
@@ -151,6 +161,7 @@ export default function ListPayrollAdjustments({
 
       {editPayrollAdjustmentModal.state != undefined && (
         <CreateEditPayrollAdjustmentModal
+          payrollSummary={payrollSummary}
           payrollAdjustment={editPayrollAdjustmentModal.state ?? null}
           payrollAdjustmentTypes={payrollAdjustmentTypes}
           {...editPayrollAdjustmentModal.props}

@@ -210,6 +210,8 @@ Route::get('/course-result-info/index', Web\Staff\ListCourseResultInfoController
 
 Route::get('/class-result-info/index', [Web\Staff\ClassResultInfoController::class, 'index'])
   ->name('class-result-info.index');
+Route::get('/class-result-info/{classResultInfo}/download', [Web\Staff\ClassResultInfoController::class, 'downloadClassResult'])
+  ->name('class-result-info.download');
 Route::post('/class-result-info/calculate/{classification}', [Web\Staff\ClassResultInfoController::class, 'calculate'])
   ->name('class-result-info.calculate');
 Route::post('/class-result-info/recalculate/{classResultInfo}', [Web\Staff\ClassResultInfoController::class, 'reCalculate'])
@@ -386,13 +388,15 @@ Route::resource('/expense-categories', Web\Expenses\ExpenseCategoryController::c
 
 //== PAYROLL
 Route::get('/payroll-adjustments/{payroll}', [Web\Payrolls\PayrollAdjustmentsController::class, 'payrollAdjustments'])->name('payroll-adjustments.payroll');
-Route::get('/payroll-adjustments/{payrollSummary}', [Web\Payrolls\PayrollAdjustmentsController::class, 'index'])->name('payroll-adjustments.index');
-Route::resource('/payroll-adjustments', Web\Payrolls\PayrollAdjustmentsController::class)->parameters(['payroll-adjustments' => 'payrollAdjustment'])->except('index');
+Route::get('/payroll-summaries/{payrollSummary}/payroll-adjustments', [Web\Payrolls\PayrollAdjustmentsController::class, 'index'])->name('payroll-summaries.payroll-adjustments.index');
+Route::post('/payroll-summaries/{payrollSummary}/payroll-adjustments', [Web\Payrolls\PayrollAdjustmentsController::class, 'store'])->name('payroll-summaries.payroll-adjustments.store');
+Route::resource('/payroll-adjustments', Web\Payrolls\PayrollAdjustmentsController::class)->parameters(['payroll-adjustments' => 'payrollAdjustment'])->except('index', 'store');
 
 Route::resource('/salaries', Web\Payrolls\SalariesController::class);
 Route::resource('/salary-types', Web\Payrolls\SalaryTypesController::class);
 Route::resource('/payroll-adjustment-types', Web\Payrolls\PayrollAdjustmentTypesController::class);
 
-Route::post('payroll-summaries/{payrollSummary}/generate-payroll', [Web\Payrolls\PayrollsController::class, 'generatePayroll'])->name('payroll-summaries.generate-payroll');
 Route::resource('/payrolls', Web\Payrolls\PayrollsController::class);
+Route::post('payroll-summaries/{payrollSummary}/generate-payroll', [Web\Payrolls\PayrollSummariesController::class, 'generatePayroll'])->name('payroll-summaries.generate-payroll');
+Route::get('payroll-summaries/{payrollSummary}/download', [Web\Payrolls\PayrollSummariesController::class, 'downloadPayrollSummary'])->name('payroll-summaries.download');
 Route::resource('/payroll-summaries', Web\Payrolls\PayrollSummariesController::class);

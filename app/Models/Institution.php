@@ -302,11 +302,6 @@ class Institution extends Model
     return $this->hasMany(SalaryType::class);
   }
 
-  // function parentSalaryTypes()
-  // {
-  //   return $this->hasMany(SalaryType::class)->whereNull('parent_id');
-  // }
-
   function salaries()
   {
     return $this->hasMany(Salary::class);
@@ -315,11 +310,6 @@ class Institution extends Model
   function payrollAdjustmentTypes()
   {
     return $this->hasMany(PayrollAdjustmentType::class);
-  }
-
-  function parentAdjustmentTypes()
-  {
-    return $this->hasMany(PayrollAdjustmentType::class)->whereNull('parent_id');
   }
 
   function payrollAdjustments()

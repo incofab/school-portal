@@ -31,11 +31,15 @@ beforeEach(function () {
 it('lists all payroll adjustments for an institution', function () {
   PayrollAdjustment::factory()
     ->for($this->institution)
+    ->for($this->payrollSummary)
     ->count(2)
     ->create();
 
   getJson(
-    route('institutions.payroll-adjustments.index', $this->institution->uuid)
+    route('institutions.payroll-summaries.payroll-adjustments.index', [
+      $this->institution->uuid,
+      $this->payrollSummary
+    ])
   )
     ->assertOk()
     ->assertSee('payrollAdjustments');
@@ -78,7 +82,10 @@ it('stores a new payroll adjustment', function () {
   ];
 
   postJson(
-    route('institutions.payroll-adjustments.store', $this->institution->uuid),
+    route('institutions.payroll-summaries.payroll-adjustments.store', [
+      $this->institution->uuid,
+      $this->payrollSummary
+    ]),
     $payload
   )->assertOk();
 

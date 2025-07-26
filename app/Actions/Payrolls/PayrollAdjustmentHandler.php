@@ -19,19 +19,14 @@ class PayrollAdjustmentHandler
    *  description: string,
    *  amount?: float,
    *  institution_user_id: int,
-   *  month?: string,
-   *  year?: int,
    *  reference: string
    * } $data
    */
-  function create(PayrollAdjustmentType $adjustmentType, $data)
-  {
-    $payrollSummary = PayrollSummary::getPayrollSummary(
-      $this->institution->id,
-      $data['month'],
-      $data['year']
-    );
-
+  function create(
+    PayrollSummary $payrollSummary,
+    PayrollAdjustmentType $adjustmentType,
+    $data
+  ) {
     $suppliedAmount = $data['amount'] ?? 0;
     $amount = $this->getAmount(
       $adjustmentType,
@@ -61,16 +56,17 @@ class PayrollAdjustmentHandler
    *  description: string,
    *  amount?: float,
    *  institution_user_ids: int[],
-   *  month?: string,
-   *  year?: int,
    *  reference: string
    * } $data
    */
-  function createMultiple(PayrollAdjustmentType $payrollAdjustmentType, $data)
-  {
+  function createMultiple(
+    PayrollSummary $payrollSummary,
+    PayrollAdjustmentType $payrollAdjustmentType,
+    $data
+  ) {
     foreach ($data['institution_user_ids'] as $key => $institutionUserId) {
       $data['institution_user_id'] = $institutionUserId;
-      $this->create($payrollAdjustmentType, [
+      $this->create($payrollSummary, $payrollAdjustmentType, [
         ...collect($data)
           ->except('institution_user_ids')
           ->toArray(),

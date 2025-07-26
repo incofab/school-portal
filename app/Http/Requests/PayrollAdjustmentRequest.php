@@ -39,8 +39,8 @@ class PayrollAdjustmentRequest extends FormRequest
             'integer',
             new ValidateExistsRule(PayrollAdjustmentType::class)
           ],
-          'month' => ['required', 'string', new Enum(YearMonth::class)],
-          'year' => 'required|integer|min:2023|max:' . $currentYear + 2,
+          // 'month' => ['required', 'string', new Enum(YearMonth::class)],
+          // 'year' => 'required|integer|min:2023|max:' . $currentYear + 2,
           'institution_user_ids' => 'required|min:1',
           'institution_user_ids.*' =>
             'required|integer|exists:institution_users,id',

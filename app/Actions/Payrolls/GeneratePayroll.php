@@ -32,7 +32,7 @@ class GeneratePayroll
       $payrollAdjustments = $staff
         ->payrollAdjustments()
         ->where('payroll_summary_id', $this->payrollSummary->id)
-        ->with(['payrollAdjustmentType'])
+        ->with('payrollAdjustmentType')
         ->get();
 
       [$salary, $salaryDeduction, $salBreakdown] = $this->calcSalaries(

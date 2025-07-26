@@ -4,7 +4,7 @@ import { PaginationResponse } from '@/types/types';
 import { IconButton, Icon, HStack, Text, Badge } from '@chakra-ui/react';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import DashboardLayout from '@/layout/dashboard-layout';
-import { BrandButton } from '@/components/buttons';
+import { BrandButton, LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
@@ -12,8 +12,11 @@ import ServerPaginatedTable, {
 import useModalToggle from '@/hooks/use-modal-toggle';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
-import { formatAsCurrency } from '@/util/util';
+import { formatAsCurrency, ucFirst } from '@/util/util';
 import { EyeIcon } from '@heroicons/react/24/solid';
+import useWebForm from '@/hooks/use-web-form';
+import useMyToast from '@/hooks/use-my-toast';
+import { Inertia } from '@inertiajs/inertia';
 
 interface Props {
   payrolls: PaginationResponse<Payroll>;
@@ -23,10 +26,33 @@ interface Props {
 export default function ListPayrolls({ payrolls, payrollSummary }: Props) {
   const { instRoute } = useInstitutionRoute();
   const userFilterToggle = useModalToggle();
+  const { handleResponseToast } = useMyToast();
+  const webForm = useWebForm({});
+
+  async function generatePayroll() {
+    if (!window.confirm('Are you sure you want to re-evaluate this payroll?')) {
+      return;
+    }
+    const res = await webForm.submit((data, web) =>
+      web.post(
+        instRoute('payroll-summaries.generate-payroll', {
+          id: payrollSummary.id,
+          re_evaluate: true,
+        }),
+        data
+      )
+    );
+
+    if (!handleResponseToast(res)) {
+      return;
+    }
+
+    Inertia.reload({ only: ['payrolls'] });
+  }
 
   const headers: ServerPaginatedTableHeader<Payroll>[] = [
     {
-      label: 'Staff Name',
+      label: 'Name',
       render: (row) => (
         <DisplayUserFullname user={row.institution_user?.user} />
       ),
@@ -63,23 +89,18 @@ export default function ListPayrolls({ payrolls, payrollSummary }: Props) {
         </Text>
       ),
     },
-
     {
       label: 'Action',
       render: (row) => (
         <HStack>
-          {row.total_bonuses > 0 || row.total_deductions > 0 ? (
-            <IconButton
-              as={InertiaLink}
-              aria-label={'View Adjustments'}
-              icon={<Icon as={EyeIcon} />}
-              href={instRoute('payroll-adjustments.payroll', [row.id])}
-              variant={'ghost'}
-              colorScheme={'brand'}
-            />
-          ) : (
-            ''
-          )}
+          <IconButton
+            as={InertiaLink}
+            aria-label={'View Adjustments'}
+            icon={<Icon as={EyeIcon} />}
+            href={instRoute('payrolls.show', [row.id])}
+            variant={'ghost'}
+            colorScheme={'brand'}
+          />
         </HStack>
       ),
     },
@@ -89,7 +110,19 @@ export default function ListPayrolls({ payrolls, payrollSummary }: Props) {
     <DashboardLayout>
       <Slab>
         <SlabHeading
-          title={`Staff Payments - ${payrollSummary.month}, ${payrollSummary.year}`}
+          title={`Staff Payments - ${ucFirst(payrollSummary.month)}, ${
+            payrollSummary.year
+          }`}
+          rightElement={
+            <HStack>
+              {payrollSummary.evaluated_at && (
+                <BrandButton
+                  title={'Re-Evaluate'}
+                  onClick={() => generatePayroll()}
+                />
+              )}
+            </HStack>
+          }
         />
         <SlabBody>
           <ServerPaginatedTable

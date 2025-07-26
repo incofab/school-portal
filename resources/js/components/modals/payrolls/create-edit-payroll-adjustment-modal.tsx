@@ -12,7 +12,11 @@ import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import { PayrollAdjustmentType, PayrollAdjustment } from '@/types/models';
+import {
+  PayrollAdjustmentType,
+  PayrollAdjustment,
+  PayrollSummary,
+} from '@/types/models';
 import FormControlBox from '../../forms/form-control-box';
 import EnumSelect from '../../dropdown-select/enum-select';
 import {
@@ -29,12 +33,13 @@ import YearSelect from '../../selectors/year-select';
 import { Inertia } from '@inertiajs/inertia';
 import CreateEditAdjustmentTypeModal from './create-edit-adjustment-type-modal';
 import { MultiValue } from 'react-select';
-import { generateUniqueString } from '@/util/util';
+import { generateUniqueString, ucFirst } from '@/util/util';
 
 interface Props {
   isOpen: boolean;
   onClose(): void;
   onSuccess(): void;
+  payrollSummary: PayrollSummary;
   payrollAdjustment?: PayrollAdjustment;
   payrollAdjustmentTypes: PayrollAdjustmentType[];
 }
@@ -43,6 +48,7 @@ export default function CreateEditPayrollAdjustmentModal({
   isOpen,
   onSuccess,
   onClose,
+  payrollSummary,
   payrollAdjustment,
   payrollAdjustmentTypes,
 }: Props) {
@@ -56,8 +62,6 @@ export default function CreateEditPayrollAdjustmentModal({
       payrollAdjustment?.payroll_adjustment_type_id ?? '',
     description: payrollAdjustment?.description ?? '',
     amount: payrollAdjustment?.amount ?? '',
-    month: '',
-    year: '',
     institution_user_ids: (isUpdate
       ? [
           {
@@ -73,16 +77,21 @@ export default function CreateEditPayrollAdjustmentModal({
     const res = await webForm.submit(async (data, web) => {
       return isUpdate
         ? web.put(
-            instRoute('payroll-adjustments.update', [payrollAdjustment]),
+            instRoute('payroll-adjustments.update', [payrollAdjustment.id]),
             data
           )
-        : web.post(instRoute('payroll-adjustments.store'), {
-            ...data,
-            reference: reference,
-            institution_user_ids: data.institution_user_ids?.map(
-              (item) => item.value
-            ),
-          });
+        : web.post(
+            instRoute('payroll-summaries.payroll-adjustments.store', [
+              payrollSummary.id,
+            ]),
+            {
+              ...data,
+              reference: reference,
+              institution_user_ids: data.institution_user_ids?.map(
+                (item) => item.value
+              ),
+            }
+          );
     });
 
     if (!handleResponseToast(res)) {
@@ -93,12 +102,15 @@ export default function CreateEditPayrollAdjustmentModal({
     webForm.reset();
     onSuccess();
   };
+  const monthYear = `${ucFirst(payrollSummary.month)}, ${payrollSummary.year}`;
 
   return (
     <>
       <GenericModal
         props={{ isOpen, onClose }}
-        headerContent={`${isUpdate ? 'Update' : 'Create'} Salary Adjustment`}
+        headerContent={`${
+          isUpdate ? 'Update' : 'Create'
+        } Salary Adjustment for ${monthYear}`}
         bodyContent={
           <VStack spacing={3}>
             <FormControlBox
@@ -163,7 +175,7 @@ export default function CreateEditPayrollAdjustmentModal({
                 value={webForm.data.amount}
               />
             </FormControlBox>
-            {!isUpdate && (
+            {/* {!isUpdate && (
               <>
                 <FormControlBox
                   form={webForm as any}
@@ -195,7 +207,7 @@ export default function CreateEditPayrollAdjustmentModal({
                   />
                 </FormControlBox>
               </>
-            )}
+            )} */}
 
             <FormControlBox
               form={webForm as any}

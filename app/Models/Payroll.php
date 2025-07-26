@@ -12,7 +12,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * Payroll model
  * @property array{
- *  salaries: array<string, float>
+ *  salaries: array {
+ *    type: string,
+ *    amount: float,
+ *    title: string
+ *  }[],
+ *  adjustments: array {
+ *    type: string,
+ *    amount: float,
+ *    title: string
+ *  }[]
  * } $meta
  */
 class Payroll extends Model
