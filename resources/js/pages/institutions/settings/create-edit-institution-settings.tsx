@@ -178,7 +178,9 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   size={'md'}
                 />
               </HStack>
-
+              <Spacer height={3} />
+              <Divider />
+              <Text>Pin Usage Count</Text>
               <HStack spacing={2}>
                 <FormControl>
                   <DataSelect
@@ -211,6 +213,7 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   size={'md'}
                 />
               </HStack>
+              <Spacer height={3} />
               <FormLabel border={'1px solid #999999AA'} p={2} borderRadius={5}>
                 <Switch
                   isChecked={
