@@ -29,7 +29,7 @@ class Topic extends Model
       'course_id' => ['required', new ValidateExistsRule(Course::class)],
       'title' => [
         'required',
-        (new ValidateUniqueRule(Topic::class, 'title'))->ignore($topic->id)
+        (new ValidateUniqueRule(Topic::class, 'title'))->ignore($topic?->id)
       ]
     ];
   }

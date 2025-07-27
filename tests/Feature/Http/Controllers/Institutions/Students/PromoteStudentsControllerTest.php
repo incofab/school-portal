@@ -59,7 +59,6 @@ it('moves students to another class based on session result', function () {
 
   actingAs($this->instAdmin)
     ->postJson($this->route, $requestData)
-    ->dump()
     ->assertOk();
 
   foreach ($sessionResults as $key => $sessionResult) {

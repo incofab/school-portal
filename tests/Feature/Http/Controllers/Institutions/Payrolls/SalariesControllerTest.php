@@ -40,7 +40,6 @@ it('displays salaries index page', function () {
         ->component('institutions/payrolls/list-salaries')
         ->has('salaries.data')
         ->has('salaryTypes')
-        ->has('parentSalaryTypes')
     );
 });
 

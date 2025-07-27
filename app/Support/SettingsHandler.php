@@ -185,6 +185,8 @@ class SettingsHandler
 
   function getPinUsageCount()
   {
-    return $this->getValue(InstitutionSettingType::PinUsageCount->value) ?? 1;
+    return intval(
+      $this->getValue(InstitutionSettingType::PinUsageCount->value) ?? 1
+    );
   }
 }

@@ -188,8 +188,7 @@ class TermResultActivationController extends Controller
     if (!$pin->term_result_id) {
       return true;
     }
-
-    $settingHandler = SettingsHandler::makeFromRoute();
+    $settingHandler = SettingsHandler::makeFromInstitution($pin->institution);
     if ($settingHandler->getPinUsageCount() == 1) {
       return false;
     }

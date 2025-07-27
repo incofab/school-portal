@@ -6,6 +6,7 @@ use App\Models\Pin;
 use App\Models\Student;
 use App\Models\TermResult;
 use App\Models\Institution;
+use App\Models\InstitutionSetting;
 use App\Models\ResultPublication;
 
 use function Pest\Laravel\postJson;
@@ -24,34 +25,10 @@ beforeEach(function () {
     ->create();
   $this->student = $this->termResult->student;
 
-  // $this->successRoute = route('institutions.students.result-sheet', [
-  //   $this->institution->uuid,
-  //   $this->termResult->student_id,
-  //   $this->termResult->classification_id,
-  //   $this->termResult->academic_session_id,
-  //   $this->termResult->term,
-  //   $this->termResult->for_mid_term ? 1 : 0
-  // ]);
+  $this->pinUsageSetting = InstitutionSetting::factory()
+    ->pinUsageSingle($this->institution)
+    ->create();
 });
-
-// it('handles used pin', function () {
-//   $pin = Pin::factory()
-//     ->withInstitution($this->institution)
-//     ->forStudent($this->student)
-//     ->for($this->academicSession)
-//     ->used()
-//     ->create();
-
-//   postJson(route('activate-term-result.store'), [
-//     'student_code' => $this->student->code,
-//     'pin' => $pin->pin
-//   ])->assertJsonValidationErrorFor('pin');
-//   $pin->fill(['term_result_id' => $this->termResult->id])->save();
-//   postJson(route('activate-term-result.store'), [
-//     'student_code' => $this->student->code,
-//     'pin' => $pin->pin
-//   ])->assertOk();
-// });
 
 it('should handle invalid pin', function () {
   postJson(route('activate-term-result.store'), [
@@ -210,6 +187,12 @@ it('uses same pin to activate other results in the same session', function () {
     ->forStudent($this->student)
     ->create(['term' => TermType::Second->value]);
 
+  postJson(route('activate-term-result.store'), [
+    'student_code' => $this->student->code,
+    'pin' => $pin->pin
+  ])->assertJsonValidationErrorFor('pin');
+
+  $this->pinUsageSetting->fill(['value' => 3])->save();
   postJson(route('activate-term-result.store'), [
     'student_code' => $this->student->code,
     'pin' => $pin->pin

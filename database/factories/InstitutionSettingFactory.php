@@ -38,7 +38,7 @@ class InstitutionSettingFactory extends Factory
     );
   }
 
-  public function term(Institution $institution, string $term = null): static
+  public function term(Institution $institution, ?string $term = null): static
   {
     return $this->state(
       fn(array $attributes) => [
@@ -51,7 +51,7 @@ class InstitutionSettingFactory extends Factory
 
   public function academicSession(
     Institution $institution,
-    AcademicSession $academicSession = null
+    ?AcademicSession $academicSession = null
   ): static {
     return $this->state(
       fn(array $attributes) => [
@@ -60,5 +60,26 @@ class InstitutionSettingFactory extends Factory
         'value' => $academicSession ?? AcademicSession::factory()
       ]
     );
+  }
+
+  public function pinUsageCount(Institution $institution, int $value): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'institution_id' => $institution->id,
+        'key' => InstitutionSettingType::PinUsageCount->value,
+        'value' => $value
+      ]
+    );
+  }
+
+  public function pinUsageSingle(Institution $institution): static
+  {
+    return $this->pinUsageCount($institution, 1);
+  }
+
+  public function pinUsageSession(Institution $institution): static
+  {
+    return $this->pinUsageCount($institution, 3);
   }
 }
