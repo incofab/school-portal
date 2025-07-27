@@ -7,6 +7,7 @@ use App\Models\Institution;
 use App\Models\Pin;
 use App\Models\Student;
 use App\Models\TermResult;
+use App\Support\SettingsHandler;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use URL;
@@ -187,7 +188,12 @@ class TermResultActivationController extends Controller
     if (!$pin->term_result_id) {
       return true;
     }
-    return false;
+
+    $settingHandler = SettingsHandler::makeFromRoute();
+    if ($settingHandler->getPinUsageCount() == 1) {
+      return false;
+    }
+
     return ($pin->academic_session_id ??
       $pin->termResult->academic_session_id) ===
       $termResult->academic_session_id;

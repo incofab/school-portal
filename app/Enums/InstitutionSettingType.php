@@ -17,4 +17,5 @@ enum InstitutionSettingType: string
   case Stamp = 'stamp';
   case PaymentKeys = 'payment-keys';
   case ResultActivationRequired = 'result-activation-required';
+  case PinUsageCount = 'pin-usage-count';
 }

@@ -182,4 +182,9 @@ class SettingsHandler
         'for_mid_term' => $this->isOnMidTerm()
       ]);
   }
+
+  function getPinUsageCount()
+  {
+    return $this->getValue(InstitutionSettingType::PinUsageCount->value) ?? 1;
+  }
 }

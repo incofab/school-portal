@@ -21,11 +21,7 @@ import { BrandButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import EnumSelect from '@/components/dropdown-select/enum-select';
-import {
-  InstitutionSettingType,
-  ResultTemplate,
-  TermType,
-} from '@/types/types';
+import { InstitutionSettingType, TermType } from '@/types/types';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import useSharedProps from '@/hooks/use-shared-props';
 import { Div } from '@/components/semantic';
@@ -37,6 +33,7 @@ import {
 import { resizeImage } from '@/util/util';
 import ResultSettings from './result-settings';
 import PaymentKeysSettings from './payment-keys-settings';
+import DataSelect from '@/components/dropdown-select/data-select';
 
 interface Props {
   settings: { [key: string]: InstitutionSetting };
@@ -65,6 +62,9 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
       parseInt(
         settings[InstitutionSettingType.ResultActivationRequired]?.value ?? 1
       )
+    ),
+    [InstitutionSettingType.PinUsageCount]: Boolean(
+      parseInt(settings[InstitutionSettingType.PinUsageCount]?.value ?? 1)
     ),
   } as { [key: string]: any });
 
@@ -179,6 +179,38 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                 />
               </HStack>
 
+              <HStack spacing={2}>
+                <FormControl>
+                  <DataSelect
+                    data={{
+                      main: [
+                        { label: 'Once', value: 1 },
+                        { label: 'Session', value: 3 },
+                      ],
+                      label: 'label',
+                      value: 'value',
+                    }}
+                    selectValue={
+                      webForm.data[InstitutionSettingType.PinUsageCount]
+                    }
+                    onChange={(e: any) =>
+                      webForm.setValue(
+                        InstitutionSettingType.PinUsageCount,
+                        e.value
+                      )
+                    }
+                  />
+                </FormControl>
+                <BrandButton
+                  title="Update"
+                  onClick={() => submit(InstitutionSettingType.PinUsageCount)}
+                  isLoading={
+                    activeSetting === InstitutionSettingType.PinUsageCount &&
+                    webForm.processing
+                  }
+                  size={'md'}
+                />
+              </HStack>
               <FormLabel border={'1px solid #999999AA'} p={2} borderRadius={5}>
                 <Switch
                   isChecked={

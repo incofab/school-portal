@@ -8,7 +8,9 @@ use Illuminate\Validation\Rules\Enum;
 class CourseResultsUITableFilters extends BaseUITableFilter
 {
   protected array $sortableColumns = [
-    'createdAt' => 'created_at'
+    'createdAt' => 'created_at',
+    'result' => 'result',
+    'position' => 'position'
   ];
 
   protected function extraValidationRules(): array

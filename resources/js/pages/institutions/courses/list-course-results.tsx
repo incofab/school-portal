@@ -116,10 +116,12 @@ export default function ListCourseResults({
     {
       label: 'Result',
       value: 'result',
+      sortKey: 'result',
     },
     {
       label: 'Position',
       value: 'position',
+      sortKey: 'position',
     },
     {
       label: 'Grade',
