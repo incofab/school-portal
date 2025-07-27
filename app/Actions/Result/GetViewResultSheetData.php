@@ -44,7 +44,7 @@ class GetViewResultSheetData
       ->with('classification')
       ->first();
 
-    // abort_unless($termResult, 404, 'Result not found');
+    abort_unless($termResult, 404, 'Result not found');
 
     // if (currentUser()->id == $student->user_id) {
     //   abort_unless(
