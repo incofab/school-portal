@@ -263,7 +263,8 @@ export default function Template4({
                       Exam
                     </th>
                     <th>Total</th>
-                    <th>Subject Position</th>
+                    {!hidePosition && <th>Subject Position</th>}
+                    <th>Grade</th>
                     <th>Remark</th>
                   </tr>
                 </thead>
@@ -295,12 +296,12 @@ export default function Template4({
                         <td style={{ fontWeight: 'bold' }}>
                           {courseResult.result}
                         </td>
-                        <td>
-                          {showGrade
-                            ? grade
-                            : ResultUtil.formatPosition(courseResult.position)}
-                        </td>
-                        {/* <td>{ResultUtil.getRemark(courseResult.grade)}</td> */}
+                        {!hidePosition && (
+                          <td>
+                            {ResultUtil.formatPosition(courseResult.position)}
+                          </td>
+                        )}
+                        <td>{grade}</td>
                         <td>{remark}</td>
                       </tr>
                     );

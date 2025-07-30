@@ -16,7 +16,7 @@ import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
 import '@/../../public/style/result/template-3.css';
 import ImagePaths from '@/util/images';
-import ResultUtil, { ResultProps } from '@/util/result-util';
+import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
 import ResultSheetLayout from './result-sheet-layout';
 
@@ -33,6 +33,7 @@ export default function Template3({
   resultCommentTemplate,
 }: ResultProps) {
   const { currentInstitution, stamp } = useSharedProps();
+  const { hidePosition, showGrade } = useResultSetting();
   // const teachersComment =
   //   termResult.teacher_comment ?? getGrade(termResult.average)[3];
 
@@ -66,7 +67,9 @@ export default function Template3({
     { label: 'Average', value: termResult.average },
     {
       label: 'Position',
-      value: ResultUtil.formatPosition(termResult.position),
+      value: hidePosition
+        ? ResultUtil.getGrade(termResult.average, resultCommentTemplate).remark
+        : ResultUtil.formatPosition(termResult.position),
     },
   ];
 
@@ -276,7 +279,7 @@ export default function Template3({
                     ))}
                     <th>Exam</th>
                     <th>Total</th>
-                    <th>Subject Position</th>
+                    {!hidePosition && <th>Subject Position</th>}
                     <th>Grade</th>
                     <th>Highest Score</th>
                     <th>Lowest Score</th>
@@ -308,7 +311,7 @@ export default function Template3({
                         <td style={{ fontWeight: 'bold' }}>
                           {courseResult.result}
                         </td>
-                        <td>{courseResult.position}</td>
+                        {!hidePosition && <td>{courseResult.position}</td>}
                         <td style={{ fontWeight: 'bold' }}>{grade}</td>
                         <td>
                           {

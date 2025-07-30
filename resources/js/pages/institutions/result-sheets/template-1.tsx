@@ -23,7 +23,7 @@ import startCase from 'lodash/startCase';
 import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
 import ImagePaths from '@/util/images';
-import ResultUtil, { ResultProps } from '@/util/result-util';
+import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import ResultSheetLayout from './result-sheet-layout';
 import ResultDownloadButton from './result-download-button';
 
@@ -51,6 +51,7 @@ export default function Template1({
   signed_url,
 }: ResultProps) {
   const { currentInstitution, stamp } = useSharedProps();
+  const { hidePosition, showGrade } = useResultSetting();
 
   const principalComment =
     termResult.principal_comment ??
@@ -187,9 +188,11 @@ export default function Template1({
                     <th>
                       <VerticalText text="Grade" />
                     </th>
-                    <th>
-                      <VerticalText text="Position" />
-                    </th>
+                    {!hidePosition && (
+                      <th>
+                        <VerticalText text="Position" />
+                      </th>
+                    )}
                     <th>
                       <VerticalText text="Class Average" />
                     </th>
@@ -216,7 +219,7 @@ export default function Template1({
                         <td>{courseResult.result}</td>
                         {/* <td>{courseResult.grade}</td> */}
                         <td>{grade}</td>
-                        <td>{courseResult.position}</td>
+                        {!hidePosition && <td>{courseResult.position}</td>}
                         <td>
                           {
                             courseResultInfoData[courseResult.course_id]

@@ -23,7 +23,7 @@ import startCase from 'lodash/startCase';
 import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
 import ImagePaths from '@/util/images';
-import ResultUtil, { ResultProps } from '@/util/result-util';
+import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import { GradingTable } from '@/components/result-helper-components';
 import ResultSheetLayout from './result-sheet-layout';
 
@@ -39,6 +39,7 @@ export default function Template2({
   resultCommentTemplate,
 }: ResultProps) {
   const { currentInstitution } = useSharedProps();
+  const { hidePosition, showGrade } = useResultSetting();
 
   function VerticalText({ text }: { text: string }) {
     return <Text className="vertical-header">{text}</Text>;
@@ -189,13 +190,13 @@ export default function Template2({
                       <th>CA</th>
                       <th>Exam</th>
                       <th>Total</th>
-                      <th>Subject Position</th>
                       <th>Grade</th>
+                      <th>{hidePosition ? 'Remark' : 'Subject Position'}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {courseResults.map((courseResult) => {
-                      const { grade } = ResultUtil.getGrade(
+                      const { grade, remark } = ResultUtil.getGrade(
                         courseResult.result,
                         resultCommentTemplate
                       );
@@ -205,8 +206,10 @@ export default function Template2({
                           <td>{getAssessmentScore(courseResult)}</td>
                           <td>{courseResult.exam}</td>
                           <td>{courseResult.result}</td>
-                          <td>{courseResult.position}</td>
                           <td>{grade}</td>
+                          <td>
+                            {hidePosition ? remark : courseResult.position}
+                          </td>
                         </tr>
                       );
                     })}
