@@ -17,7 +17,7 @@ abstract class PaymentMerchant
     $this->merchant = $merchant;
   }
 
-  public static function createPaymentReference(
+  protected function createPaymentReference(
     PaymentReferenceDto $paymentReferenceDto
   ): PaymentReference {
     $post = [
@@ -40,6 +40,11 @@ abstract class PaymentMerchant
     bool $generateReferenceOnly = false
   );
 
+  function completePayment(PaymentReference $paymentReference)
+  {
+    $paymentReference->confirmPayment();
+  }
+
   abstract function verify(PaymentReference $paymentReference): Res;
 
   /**
@@ -53,6 +58,8 @@ abstract class PaymentMerchant
         return new PaymentPaystack($merchant);
       case PaymentMerchantType::Rave->value:
         return new PaymentRave($merchant);
+      case PaymentMerchantType::UserWallet->value:
+        return new PaymentWallet($merchant);
       default:
         throw new Exception("Invalid merchant ($merchant)");
         break;

@@ -107,7 +107,7 @@ class PaystackController extends Controller
 
     $paymentProcessor = PaymentProcessor::make($paymentRef);
 
-    $res = $paymentProcessor->handleCallback();
+    $res = $paymentProcessor->processPayment();
 
     return redirect($paymentRef->redirect_url ?? route('home'))->with(
       $res->isSuccessful() ? 'message' : 'error',

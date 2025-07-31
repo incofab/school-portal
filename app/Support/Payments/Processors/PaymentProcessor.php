@@ -53,13 +53,13 @@ abstract class PaymentProcessor
     return $res;
   }
 
-  abstract function handleCallback(): Res;
+  abstract function processPayment(): Res;
 
-  public function handleCallbackWithTransaction()
+  public function processPaymentWithTransaction()
   {
     DB::beginTransaction();
 
-    $ret = $this->handleCallback();
+    $ret = $this->processPayment();
 
     if ($ret->isNotSuccessful()) {
       DB::rollBack();

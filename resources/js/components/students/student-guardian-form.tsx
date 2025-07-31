@@ -1,4 +1,6 @@
-import React from 'react';
+import { WebForm } from '@/hooks/use-web-form';
+import { Student, User } from '@/types/models';
+import { Div } from '../semantic';
 import {
   FormControl,
   FormLabel,
@@ -6,25 +8,8 @@ import {
   Input,
   Select,
   Text,
-  VStack,
 } from '@chakra-ui/react';
-import DashboardLayout from '@/layout/dashboard-layout';
-import useWebForm, { WebForm } from '@/hooks/use-web-form';
-import { preventNativeSubmit } from '@/util/util';
-import { Inertia } from '@inertiajs/inertia';
-import { Classification, Student, User } from '@/types/models';
-import Slab, { SlabBody, SlabHeading } from '@/components/slab';
-import CenteredBox from '@/components/centered-box';
-import { FormButton } from '@/components/buttons';
-import useMyToast from '@/hooks/use-my-toast';
-import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Gender, GuardianRelationship } from '@/types/types';
-import { Div } from '@/components/semantic';
-
-interface Props {
-  students: Student[];
-  classification: Classification;
-}
 
 interface FormRecord {
   [student_id: number]: User & {
@@ -32,60 +17,13 @@ interface FormRecord {
   };
 }
 
-export default function RecordClassStudentsGuardians({
-  students,
-  classification,
-}: Props) {
-  const { handleResponseToast } = useMyToast();
-  const { instRoute } = useInstitutionRoute();
-  const webForm = useWebForm({
-    guardians: {} as FormRecord,
-  });
-
-  const submit = async () => {
-    const res = await webForm.submit((data, web) =>
-      web.post(
-        instRoute('guardians.classifications.store', [classification]),
-        data
-      )
-    );
-    if (!handleResponseToast(res)) return;
-    Inertia.visit(instRoute('guardians.index'));
-  };
-
-  return (
-    <DashboardLayout>
-      <Div>
-        <CenteredBox maxW={'700px'}>
-          <Slab>
-            <SlabHeading
-              title={`Record Guardians for ${classification.title} students`}
-            />
-            <SlabBody>
-              <VStack
-                spacing={4}
-                as={'form'}
-                onSubmit={preventNativeSubmit(submit)}
-              >
-                {students.map((student) =>
-                  studentGuardianForm(student, webForm)
-                )}
-                <FormControl>
-                  <FormButton isLoading={webForm.processing} />
-                </FormControl>
-              </VStack>
-            </SlabBody>
-          </Slab>
-        </CenteredBox>
-      </Div>
-    </DashboardLayout>
-  );
-}
-
-function studentGuardianForm(
-  student: Student,
-  webForm: WebForm<{ guardians: FormRecord }, Record<'guardians', string>>
-) {
+export function StudentGuardianForm({
+  student,
+  webForm,
+}: {
+  student: Student;
+  webForm: WebForm<{ guardians: FormRecord }, Record<'guardians', string>>;
+}) {
   const guardian = webForm.data.guardians[student.id] ?? {};
   if (student.guardian) {
     return (

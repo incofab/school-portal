@@ -10,7 +10,7 @@ use DB;
 
 class AdmissionFormPurchaseProcessor extends PaymentProcessor
 {
-  function handleCallback(): Res
+  function processPayment(): Res
   {
     if ($this->paymentReference->status == PaymentStatus::Confirmed) {
       return failRes('Payment already resolved');
@@ -26,7 +26,7 @@ class AdmissionFormPurchaseProcessor extends PaymentProcessor
       $this->paymentReference->meta['admission_application_id'];
 
     DB::beginTransaction();
-    $this->paymentReference->confirmPayment();
+    $this->paymentMerchant->completePayment($this->paymentReference);
 
     $admissionFormPurchase = AdmissionFormPurchase::query()->firstOrCreate(
       ['reference' => $this->paymentReference->reference],

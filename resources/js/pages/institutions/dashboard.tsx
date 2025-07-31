@@ -2,6 +2,7 @@ import React from 'react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import {
   Box,
+  Flex,
   Icon,
   SimpleGrid,
   Text,
@@ -32,7 +33,8 @@ import {
 } from '@chakra-ui/react';
 import CenteredBox from '@/components/centered-box';
 import { LinkButton } from '@/components/buttons';
-import { EnvelopeIcon } from '@heroicons/react/24/outline';
+import { EnvelopeIcon, WalletIcon } from '@heroicons/react/24/outline';
+import { Div } from '@/components/semantic';
 
 interface ItemCardProps {
   route: string;
@@ -96,11 +98,13 @@ function DashboardItemCard(prop: ItemCardProps) {
 }
 
 function InstitutionDashboard({ institutionGroup, isSetupComplete }: Props) {
-  const { currentInstitutionUser } = useSharedProps();
+  const { currentInstitutionUser, currentUser } = useSharedProps();
   const student = currentInstitutionUser.student;
   const { forTeacher } = useInstitutionRole();
   const { instRoute } = useInstitutionRoute();
   const isAdmin = currentInstitutionUser.role === InstitutionUserType.Admin;
+  const isGuardian =
+    currentInstitutionUser.role === InstitutionUserType.Guardian;
   const accountant = [
     InstitutionUserType.Admin,
     InstitutionUserType.Accountant,
@@ -216,7 +220,31 @@ function InstitutionDashboard({ institutionGroup, isSetupComplete }: Props) {
       ) : (
         ''
       )}
-
+      {isGuardian && (
+        <Div
+          bg={'white'}
+          p={4}
+          my={2}
+          borderRadius={'5px'}
+          boxShadow="md"
+          cursor="pointer"
+          _hover={{ bg: 'gray.100' }}
+          // onClick={() => navigate("/parent/payment")}
+          transition="background 0.2s"
+        >
+          <Flex align="center" gap={4}>
+            <Icon as={WalletIcon} boxSize={8} color="brand.500" />
+            <Div>
+              <Text fontSize="lg" fontWeight="bold">
+                Bal: ₦{currentUser.wallet?.toLocaleString()}
+              </Text>
+              <Text fontSize="sm" color="gray.500">
+                Fund your wallet to pay fees and other payments
+              </Text>
+            </Div>
+          </Flex>
+        </Div>
+      )}
       <SimpleGrid spacing={6} columns={{ base: 1, sm: 2, md: 3 }}>
         {items.map(function (item) {
           if (item.roles && !item.roles.includes(currentInstitutionUser.role)) {

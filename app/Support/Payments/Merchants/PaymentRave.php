@@ -1,7 +1,7 @@
 <?php
 namespace App\Support\Payments\Merchants;
 
-use App\Core\RaveHelper;
+// use App\Core\RaveHelper;
 use App\DTO\PaymentReferenceDto;
 use App\Models\PaymentReference;
 use App\Support\Res;
@@ -12,7 +12,7 @@ class PaymentRave extends PaymentMerchant
     PaymentReferenceDto $paymentReferenceDto,
     bool $generateReferenceOnly = false
   ) {
-    $paymentReference = self::createPaymentReference($paymentReferenceDto);
+    $paymentReference = $this->createPaymentReference($paymentReferenceDto);
     $ret = successRes('', [
       'reference' => $paymentReference->reference
     ]);
@@ -32,6 +32,7 @@ class PaymentRave extends PaymentMerchant
 
   function verify(PaymentReference $paymentReference): Res
   {
+    return failRes('');
     // return RaveHelper::make()->verifyReference($paymentReference->reference);
   }
 }

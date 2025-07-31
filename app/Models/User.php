@@ -40,7 +40,8 @@ class User extends Authenticatable
    * @var array
    */
   protected $casts = [
-    'email_verified_at' => 'datetime'
+    'email_verified_at' => 'datetime',
+    'wallet' => 'float'
   ];
 
   public static function generalRule($userId = null, $prefix = '')

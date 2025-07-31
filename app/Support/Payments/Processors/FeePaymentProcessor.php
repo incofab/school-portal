@@ -11,7 +11,7 @@ use DB;
 
 class FeePaymentProcessor extends PaymentProcessor
 {
-  function handleCallback(): Res
+  function processPayment(): Res
   {
     if ($this->paymentReference->status != PaymentStatus::Pending) {
       return failRes('Payment already resolved');
@@ -29,7 +29,7 @@ class FeePaymentProcessor extends PaymentProcessor
     }
 
     DB::beginTransaction();
-    $this->paymentReference->confirmPayment();
+    $this->paymentMerchant->completePayment($this->paymentReference);
 
     FeePaymentHandler::make($this->paymentReference->institution)->create(
       [

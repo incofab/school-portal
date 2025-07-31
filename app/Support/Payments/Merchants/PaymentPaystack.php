@@ -13,7 +13,7 @@ class PaymentPaystack extends PaymentMerchant
     PaymentReferenceDto $paymentReferenceDto,
     bool $generateReferenceOnly = false
   ) {
-    $paymentReference = self::createPaymentReference($paymentReferenceDto);
+    $paymentReference = $this->createPaymentReference($paymentReferenceDto);
     $ret = successRes('', [
       'reference' => $paymentReference->reference
     ]);

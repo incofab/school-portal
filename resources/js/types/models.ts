@@ -38,6 +38,7 @@ export interface User extends Row {
   username: string;
   is_welfare: boolean;
   gender: string;
+  wallet: number;
   roles?: Role[];
   institution_user?: InstitutionUser;
   student?: Student;

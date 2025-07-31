@@ -58,8 +58,8 @@ it('can handle a successful admission form purchase callback', function () {
   // Create the processor
   $processor = AdmissionFormPurchaseProcessor::make($this->paymentReference);
 
-  // Call the handleCallback method
-  $result = $processor->handleCallbackWithTransaction();
+  // Call the processPayment method
+  $result = $processor->processPaymentWithTransaction();
 
   // Assertions
   expect($result->isSuccessful())->toBeTrue();
@@ -108,7 +108,7 @@ it('can handle a successful admission form purchase callback', function () {
 it('fails if payment is already resolved', function () {
   $this->paymentReference->update(['status' => PaymentStatus::Confirmed]);
   $processor = AdmissionFormPurchaseProcessor::make($this->paymentReference);
-  $result = $processor->handleCallbackWithTransaction();
+  $result = $processor->processPaymentWithTransaction();
   // Assertions
   expect($result->isSuccessful())->toBeFalse();
   expect($result->message)->toBe('Payment already resolved');
@@ -147,8 +147,8 @@ it(
     // Create the processor
     $processor = AdmissionFormPurchaseProcessor::make($this->paymentReference);
 
-    // Call the handleCallback method
-    $result = $processor->handleCallbackWithTransaction();
+    // Call the processPayment method
+    $result = $processor->processPaymentWithTransaction();
 
     // Assertions
     expect($result->isSuccessful())->toBeTrue();

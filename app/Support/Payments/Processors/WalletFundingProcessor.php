@@ -7,7 +7,7 @@ use DB;
 
 class WalletFundingProcessor extends PaymentProcessor
 {
-  function handleCallback(): Res
+  function processPayment(): Res
   {
     $res = $this->verify();
 
@@ -17,7 +17,7 @@ class WalletFundingProcessor extends PaymentProcessor
 
     DB::beginTransaction();
 
-    $this->paymentReference->confirmPayment();
+    $this->paymentMerchant->completePayment($this->paymentReference);
 
     $res = FundingHandler::makeFromPaymentRef(
       $this->paymentReference,
