@@ -31,6 +31,11 @@ class Receipt extends Model
     return $this->feePayments->sum(fn($item) => $item->amount);
   }
 
+  function hasPaid()
+  {
+    return $this->status === ReceiptStatus::Paid && $this->amount_remaining < 1;
+  }
+
   function user()
   {
     return $this->belongsTo(User::class);

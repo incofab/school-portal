@@ -23,6 +23,9 @@ export type SelectValue =
   | null
   | undefined;
 
+export const BvnNinReminderMessage =
+  'You need to update your NIN or BVN to get your Bank Account Information. With this Account, you will be able to pay fees and other payments from the comfort of your home';
+
 // export const bgWhite = useColorModeValue('white', 'gray.900');
 // export const bgBrand = useColorModeValue('brand.50', 'gray.800');
 // export const bgGreen = useColorModeValue('green.50', 'gray.800');
@@ -326,4 +329,12 @@ export enum MessageRecipientType {
 export enum InstitutionUserStatus {
   Active = 'active',
   Suspended = 'suspended',
+}
+
+export enum PaymentMerchantType {
+  Monnify = 'monnify',
+  PaymentPoint = 'payment-point',
+  Paystack = 'paystack',
+  Rave = 'rave',
+  UserWallet = 'user-wallet',
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TextProps } from '@chakra-ui/react';
+import { BoxProps, Text, TextProps } from '@chakra-ui/react';
 import { Div } from './semantic';
 import { ResultCommentTemplate } from '@/types/models';
 
@@ -39,14 +39,15 @@ export const LabelText = function ({
   text,
   labelProps,
   textProps,
+  ...props
 }: {
   label: string;
   text: string | number | undefined | React.ReactNode;
   labelProps?: TextProps;
   textProps?: TextProps;
-}) {
+} & BoxProps) {
   return (
-    <Div>
+    <Div {...props}>
       <Text
         as={'span'}
         fontWeight={'semibold'}

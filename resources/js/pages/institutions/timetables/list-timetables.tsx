@@ -15,7 +15,6 @@ import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
-import useIsAdmin from '@/hooks/use-is-admin';
 import useIsStaff from '@/hooks/use-is-staff';
 
 interface Props {

@@ -5,7 +5,6 @@ use App\Enums\TransactionType;
 use App\Models\Commission;
 use App\Models\InstitutionGroup;
 use App\Models\Partner;
-use App\Models\UserTransaction;
 use App\Models\Withdrawal;
 use Illuminate\Database\Eloquent\Model;
 
@@ -103,25 +102,33 @@ class CommissionHandler
     Model $transactionable,
     $remark = ''
   ) {
-    $bbt = $partner->wallet;
-    $bat =
-      $transactionType === TransactionType::Credit
-        ? $bbt + $amount
-        : $bbt - $amount;
-    $partner->fill(['wallet' => $bat])->save();
+    UserTransactionHandler::recordTransaction(
+      amount: $amount,
+      entity: $partner,
+      transactionType: $transactionType,
+      transactionable: $transactionable,
+      reference: $this->reference,
+      remark: $remark
+    );
+    // $bbt = $partner->wallet;
+    // $bat =
+    //   $transactionType === TransactionType::Credit
+    //     ? $bbt + $amount
+    //     : $bbt - $amount;
+    // $partner->fill(['wallet' => $bat])->save();
 
-    //= Save to UserTransactions DB Table
-    UserTransaction::Create([
-      'type' => $transactionType,
-      'amount' => $amount,
-      'bbt' => $bbt,
-      'bat' => $bat,
-      'entity_type' => $partner->getMorphClass(),
-      'entity_id' => $partner->id,
-      'transactionable_type' => $transactionable?->getMorphClass(),
-      'transactionable_id' => $transactionable?->id,
-      'reference' => $this->reference,
-      'remark' => $remark
-    ]);
+    // //= Save to UserTransactions DB Table
+    // UserTransaction::Create([
+    //   'type' => $transactionType,
+    //   'amount' => $amount,
+    //   'bbt' => $bbt,
+    //   'bat' => $bat,
+    //   'entity_type' => $partner->getMorphClass(),
+    //   'entity_id' => $partner->id,
+    //   'transactionable_type' => $transactionable?->getMorphClass(),
+    //   'transactionable_id' => $transactionable?->id,
+    //   'reference' => $this->reference,
+    //   'remark' => $remark
+    // ]);
   }
 }

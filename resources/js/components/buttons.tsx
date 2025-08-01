@@ -1,6 +1,9 @@
 import React from 'react';
-import { Button, ButtonProps, FormControl } from '@chakra-ui/react';
+import { Button, ButtonProps, FormControl, HStack } from '@chakra-ui/react';
 import { InertiaLink, InertiaLinkProps } from '@inertiajs/inertia-react';
+import { Div } from './semantic';
+import useSharedProps from '@/hooks/use-shared-props';
+import { formatAsCurrency } from '@/util/util';
 
 interface Props {
   title?: string;
@@ -52,5 +55,17 @@ export function LinkButton({
     >
       {title ?? 'New'}
     </Button>
+  );
+}
+
+export function PayFromWalletButton({ title, ...props }: Props & ButtonProps) {
+  const { currentUser } = useSharedProps();
+  return (
+    <Div>
+      <BrandButton title={title} {...props} />
+      <Div textAlign={'center'} mt={1}>
+        Bal: {formatAsCurrency(currentUser.wallet)}
+      </Div>
+    </Div>
   );
 }

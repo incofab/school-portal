@@ -1,26 +1,24 @@
 import React from 'react';
-import { Divider, FormControl, VStack } from '@chakra-ui/react';
+import { Divider, FormControl, HStack, Icon, VStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
-import {
-  Classification,
-  ClassificationGroup,
-  Fee,
-  Student,
-} from '@/types/models';
+import { Fee, Student } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
-import { FormButton } from '@/components/buttons';
+import { FormButton, PayFromWalletButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
-import { TermType } from '@/types/types';
+import { PaymentMerchantType, TermType } from '@/types/types';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import useSharedProps from '@/hooks/use-shared-props';
 import FeeSelect from '@/components/selectors/fee-select';
 import InputForm from '@/components/forms/input-form';
+import useIsGuardian from '@/hooks/use-is-guardian';
+import { CreditCardIcon, WalletIcon } from '@heroicons/react/24/outline';
+import { Div } from '@/components/semantic';
 
 interface Props {
   student: Student;
@@ -31,6 +29,7 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const { currentAcademicSessionId, currentTerm } = useSharedProps();
+  const isGuardian = useIsGuardian();
 
   const webForm = useWebForm({
     term: currentTerm,
@@ -39,7 +38,7 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
     amount: 0,
   });
 
-  const submit = async () => {
+  const submit = async (merchant: string) => {
     const res = await webForm.submit((data, web) =>
       web.post(instRoute('students.fee-payments.store', [student.id]), data)
     );
@@ -55,12 +54,7 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
         <Slab>
           <SlabHeading title={`Pay Fees`} />
           <SlabBody>
-            <VStack
-              spacing={4}
-              as={'form'}
-              onSubmit={preventNativeSubmit(submit)}
-              align={'stretch'}
-            >
+            <VStack spacing={4} align={'stretch'}>
               <FormControlBox
                 form={webForm as any}
                 title="Fee Category"
@@ -113,11 +107,23 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
               />
               <Divider />
               <FormControl>
-                <FormButton
-                  isLoading={webForm.processing}
-                  title="Pay Now"
-                  float={'right'}
-                />
+                <HStack justifyContent={'space-between'} verticalAlign={'top'}>
+                  <PayFromWalletButton
+                    title={'Pay From Wallet'}
+                    leftIcon={<Icon as={WalletIcon} />}
+                    onClick={() => submit(PaymentMerchantType.UserWallet)}
+                  />
+                  <Div>
+                    <FormButton
+                      isLoading={webForm.processing}
+                      title="Pay Now"
+                      float={'right'}
+                      leftIcon={<Icon as={CreditCardIcon} />}
+                      onClick={() => submit(PaymentMerchantType.Paystack)}
+                    />
+                    <Div dangerouslySetInnerHTML={{ __html: '&nbsp;' }}></Div>
+                  </Div>
+                </HStack>
               </FormControl>
             </VStack>
           </SlabBody>

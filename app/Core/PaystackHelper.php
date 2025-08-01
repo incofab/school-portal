@@ -3,6 +3,7 @@
 namespace App\Core;
 
 use App\DTO\PaymentKeyDto;
+use App\Models\Bank;
 use App\Models\Institution;
 use App\Support\SettingsHandler;
 use Illuminate\Support\Facades\Http;
@@ -22,7 +23,7 @@ class PaystackHelper
     $paystackKeys = SettingsHandler::make(
       $institution->institutionSettings
     )->getPaystackKeys();
-    // Use system keys if school didn't provide any 
+    // Use system keys if school didn't provide any
     if (empty($paystackKeys->getPublicKey())) {
       return self::make();
     }
@@ -106,6 +107,53 @@ class PaystackHelper
       'status' => $res->json('data.status'),
       'amount' => $amount,
       'result' => $res->json()
+    ]);
+  }
+
+  function listBanks()
+  {
+    $url = 'https://api.paystack.co/bank';
+    $privateKey = $this->paystackKeys->getPrivateKey();
+    $res = Http::withToken($privateKey)
+      ->contentType('application/json')
+      ->get($url);
+
+    if (!$res->ok()) {
+      return failRes($res->json('message', 'Transaction NOT successful'));
+    }
+
+    $banks = $res->json('data') ?? [];
+    foreach ($banks as $key => $bank) {
+      if (empty($bank['active'])) {
+        continue;
+      }
+      Bank::query()->firstOrCreate(
+        ['bank_code' => $bank['code']],
+        [
+          'bank_name' => $bank['name'],
+          'support_account_verification' => $bank['enabled_for_verification']
+        ]
+      );
+    }
+    return successRes('');
+  }
+
+  function validateBankAccount($bankCode, $accountNumber)
+  {
+    $url = "https://api.paystack.co/bank/resolve?account_number=$accountNumber&bank_code=$bankCode";
+    $res = Http::withToken($this->paystackKeys->getPrivateKey())
+      ->contentType('application/json')
+      ->get($url);
+
+    if (!$res->ok() || !$res->json('status')) {
+      return failRes($res->json('message', 'Transaction NOT successful'));
+    }
+
+    $result = $res->json('data');
+    return successRes('Account validated', [
+      'account_number' => $result['account_number'],
+      'account_name' => $result['account_name'],
+      'bank_code' => $$bankCode
     ]);
   }
 

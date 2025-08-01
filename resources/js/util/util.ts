@@ -25,12 +25,12 @@ export function preventNativeSubmit<
   };
 }
 
-export function formatAsCurrency(num: number) {
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'NGN',
-  });
-  return formatter.format(num);
+export function formatAsCurrency(num?: number) {
+  // const formatter = new Intl.NumberFormat('en-US', {
+  //   style: 'currency',
+  //   currency: 'NGN',
+  // });
+  return `₦${new Intl.NumberFormat().format(num ?? 0)}`;
 }
 
 export function numberFormat(num: number) {
@@ -201,4 +201,9 @@ export function generateUniqueString(prefix: any) {
 
 export function ucFirst(str?: string) {
   return startCase(str);
+}
+
+export function copyToClipboard(text: string, message?: string) {
+  navigator.clipboard.writeText(text);
+  alert(message ?? 'Copied to clipboard');
 }

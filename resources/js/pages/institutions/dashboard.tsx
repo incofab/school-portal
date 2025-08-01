@@ -3,10 +3,14 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import {
   Box,
   Flex,
+  HStack,
   Icon,
+  IconButton,
   SimpleGrid,
+  Stack,
   Text,
   useColorModeValue,
+  VStack,
 } from '@chakra-ui/react';
 import useSharedProps from '@/hooks/use-shared-props';
 import { InertiaLink } from '@inertiajs/inertia-react';
@@ -21,10 +25,10 @@ import {
   UsersIcon,
   CurrencyDollarIcon,
 } from '@heroicons/react/24/solid';
-import { InstitutionUserType } from '@/types/types';
+import { BvnNinReminderMessage, InstitutionUserType } from '@/types/types';
 import useInstitutionRole from '@/hooks/use-institution-role';
-import { InstitutionGroup } from '@/types/models';
-import { formatAsCurrency } from '@/util/util';
+import { InstitutionGroup, ReservedAccount, User } from '@/types/models';
+import { copyToClipboard, formatAsCurrency } from '@/util/util';
 import {
   Alert,
   AlertIcon,
@@ -33,8 +37,17 @@ import {
 } from '@chakra-ui/react';
 import CenteredBox from '@/components/centered-box';
 import { LinkButton } from '@/components/buttons';
-import { EnvelopeIcon, WalletIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowRightIcon,
+  ClipboardIcon,
+  EnvelopeIcon,
+  WalletIcon,
+} from '@heroicons/react/24/outline';
 import { Div } from '@/components/semantic';
+import UpdateBvnNinForm from '@/components/users/update-bvn-nin-form';
+import { LabelText } from '@/components/result-helper-components';
+import useModalToggle from '@/hooks/use-modal-toggle';
+import ListReservedAccountsModal from '@/components/modals/users/list-reserved-accounts-modal';
 
 interface ItemCardProps {
   route: string;
@@ -52,6 +65,7 @@ interface ItemCardProps {
 interface Props {
   institutionGroup: InstitutionGroup;
   isSetupComplete: string;
+  reservedAccounts: ReservedAccount[];
 }
 
 function DashboardItemCard(prop: ItemCardProps) {
@@ -97,7 +111,11 @@ function DashboardItemCard(prop: ItemCardProps) {
   );
 }
 
-function InstitutionDashboard({ institutionGroup, isSetupComplete }: Props) {
+export default function InstitutionDashboard({
+  institutionGroup,
+  isSetupComplete,
+  reservedAccounts,
+}: Props) {
   const { currentInstitutionUser, currentUser } = useSharedProps();
   const student = currentInstitutionUser.student;
   const { forTeacher } = useInstitutionRole();
@@ -221,28 +239,12 @@ function InstitutionDashboard({ institutionGroup, isSetupComplete }: Props) {
         ''
       )}
       {isGuardian && (
-        <Div
-          bg={'white'}
-          p={4}
-          my={2}
-          borderRadius={'5px'}
-          boxShadow="md"
-          cursor="pointer"
-          _hover={{ bg: 'gray.100' }}
-          // onClick={() => navigate("/parent/payment")}
-          transition="background 0.2s"
-        >
-          <Flex align="center" gap={4}>
-            <Icon as={WalletIcon} boxSize={8} color="brand.500" />
-            <Div>
-              <Text fontSize="lg" fontWeight="bold">
-                Bal: ₦{currentUser.wallet?.toLocaleString()}
-              </Text>
-              <Text fontSize="sm" color="gray.500">
-                Fund your wallet to pay fees and other payments
-              </Text>
-            </Div>
-          </Flex>
+        <Div my={2} w={'full'}>
+          <WalletDisplay
+            user={currentUser}
+            reservedAccounts={reservedAccounts}
+          />
+          <UpdateBvnNinForm mt={2} bg={'white'} w={'full'} />
         </Div>
       )}
       <SimpleGrid spacing={6} columns={{ base: 1, sm: 2, md: 3 }}>
@@ -257,4 +259,91 @@ function InstitutionDashboard({ institutionGroup, isSetupComplete }: Props) {
   );
 }
 
-export default InstitutionDashboard;
+function WalletDisplay({
+  user,
+  reservedAccounts,
+}: {
+  user: User;
+  reservedAccounts: ReservedAccount[];
+}) {
+  const listReservedAccountModalToggle = useModalToggle();
+  const reservedAccount = reservedAccounts[0] ?? null;
+  return (
+    <Div
+      bg={'white'}
+      p={4}
+      borderRadius={'5px'}
+      boxShadow="md"
+      _hover={{ bg: 'gray.100' }}
+      transition="background 0.2s"
+    >
+      <Stack
+        direction={{ base: 'column', md: 'row' }}
+        justify={'space-between'}
+      >
+        <Flex align="center" gap={4}>
+          <Icon as={WalletIcon} boxSize={8} color="brand.500" />
+          <Div>
+            <Text fontSize="lg" fontWeight="bold">
+              Bal: {formatAsCurrency(user.wallet)}
+            </Text>
+            <Text fontSize="sm" color="gray.500">
+              Fund your wallet to pay fees and other payments
+            </Text>
+          </Div>
+        </Flex>
+        <HStack>
+          {reservedAccount ? (
+            <VStack align={'end'} spacing={1} w={'full'}>
+              <LabelText
+                label="Bank Name"
+                text={reservedAccount.bank_name}
+                width={'250px'}
+              />
+              <LabelText
+                label="Account No"
+                lineHeight={'2rem'}
+                width={'250px'}
+                text={
+                  <HStack align={'stretch'} justify={'space-between'}>
+                    <Text>{reservedAccount.account_number}</Text>
+                    <IconButton
+                      aria-label={'Copy'}
+                      icon={<Icon as={ClipboardIcon} />}
+                      size={'sm'}
+                      onClick={() =>
+                        copyToClipboard(
+                          reservedAccount.account_number,
+                          `Account number ${reservedAccount.account_number} copied`
+                        )
+                      }
+                      variant={'unstyled'}
+                    />
+                  </HStack>
+                }
+              />
+              <LabelText
+                label="Account Name"
+                text={reservedAccount.account_name}
+                width={'250px'}
+              />
+            </VStack>
+          ) : (
+            <Div px={4}>{BvnNinReminderMessage}</Div>
+          )}
+          <IconButton
+            aria-label="More"
+            icon={<Icon as={ArrowRightIcon} />}
+            onClick={() => listReservedAccountModalToggle.open()}
+            px={3}
+            py={2}
+          />
+        </HStack>
+      </Stack>
+      <ListReservedAccountsModal
+        {...listReservedAccountModalToggle.props}
+        reservedAccounts={reservedAccounts}
+      />
+    </Div>
+  );
+}

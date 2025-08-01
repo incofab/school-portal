@@ -51,4 +51,9 @@ class Classification extends Model
   {
     return $this->hasMany(SessionResult::class);
   }
+
+  function timetables()
+  {
+    return $this->hasMany(Timetable::class);
+  }
 }

@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Home as Home;
 use App\Http\Controllers as Web;
-use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\Institutions\Exams\External as External;
 use App\Http\Controllers\Institutions\Admissions as Admissions;
 
@@ -21,6 +20,11 @@ Route::any(
 )->name('pdf-bridge-download');
 
 Route::get('dummy1', function () {
+    $user = \App\Models\User::where('email', 'guard2@email.com')->first();
+    $res = \App\Core\MonnifyHelper::make()->getReservedAccounts($user);
+
+    // $res = \App\Core\MonnifyHelper::make()->listBanks();
+    dd($res->toArray());
     // dd('skdksdk');
     return Mail::to('incofabikenna@gmail.com')->send(new \App\Mail\InstitutionMessageMail(
         \App\Models\Institution::first(),
@@ -43,6 +47,8 @@ Route::get('/activate-result/{instUuid}', function ($instUuid) {
     return "Result $termResults";
 });
 
+Route::get('banks/search', [Web\BankController::class, 'search'])->name('banks.search');
+Route::any('bank-accounts/validate', [Web\BankController::class, 'validateBankAccount'])->name('bank-accounts.validate');
 Route::get('institutions/search', Web\SearchInstitutionController::class)
     ->name('institutions.search');
 Route::get('academic-sessions/search', [Web\AcademicSessionController::class, 'search'])
@@ -107,6 +113,8 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('users.password.edit');
     Route::put('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'update'])
         ->name('users.password.update');
+    Route::put('users/bvn-nin/update', [Web\Users\UserController::class, 'updateBvnNin'])
+        ->name('users.bvn-nin.update');
 
     Route::group(['middleware' => ['manager']], function () {
         Route::get('impersonate/users/{user}', Web\Impersonate\ImpersonateUserController::class)->name('users.impersonate');
@@ -137,6 +145,10 @@ Route::any('/privacy-policy', [Home\HomeController::class, 'privacyPolicy'])->na
 Route::any('/paystack/callback', [Home\PaystackController::class, 'callback'])->name('paystack.callback');
 Route::any('/paystack/verify-reference', [Home\PaystackController::class, 'verifyReference'])->name('paystack.verify-reference');
 Route::any('/paystack/webhook', [Home\PaystackController::class, 'webhook'])->name('paystack.webhook');
+
+Route::any('/monnify/callback', [Home\MonnifyController::class, 'callback'])->name('monnify.callback');
+Route::any('/monnify/verify-reference', [Home\MonnifyController::class, 'verifyReference'])->name('monnify.verify-reference');
+Route::any('/monnify/webhook', [Home\MonnifyController::class, 'webhook'])->name('monnify.webhook');
 
 Route::get('/app-not-activated', External\NotActivatedErrorController::class);
 

@@ -51,5 +51,17 @@ return [
 
   'ai_keys' => [
     'gemini-api-key' => env('GEMINI_API_KEY')
+  ],
+
+  'rave' => [
+    'secret' => env('RAVE_SECRET_KEY'),
+    'public' => env('RAVE_PUBLIC_KEY'),
+    'hash-key' => '(`1~.()3,ckjd2*846@sa7@)+>?%ds$*dw7ew,.;]'
+  ],
+
+  'monnify' => [
+    'secret' => env('MONNIFY_SECRET_KEY'),
+    'public' => env('MONNIFY_PUBLIC_KEY'),
+    'contract-code' => env('MONNIFY_CONTRACT_CODE')
   ]
 ];

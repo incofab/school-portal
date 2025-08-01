@@ -30,11 +30,12 @@ class FeePaymentProcessor extends PaymentProcessor
 
     DB::beginTransaction();
     $this->paymentMerchant->completePayment($this->paymentReference);
+    $user = $this->paymentReference->payable;
 
     FeePaymentHandler::make($this->paymentReference->institution)->create(
       [
         'reference' => $this->paymentReference->reference,
-        'user_id' => $this->paymentReference->user_id,
+        'user_id' => $user->id ?? $this->paymentReference->user_id,
         'amount' => $this->paymentReference->amount,
         'method' => PaymentMethod::Card->value
       ],

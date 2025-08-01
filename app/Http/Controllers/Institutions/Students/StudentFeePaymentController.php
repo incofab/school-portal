@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Students;
 
+use App\Actions\Payments\FeePaymentHandler;
 use App\DTO\PaymentReferenceDto;
 use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\Payments\PaymentPurpose;
@@ -15,6 +16,7 @@ use App\Models\Receipt;
 use App\Models\Student;
 use App\Rules\ValidateExistsRule;
 use App\Support\Payments\Merchants\PaymentMerchant;
+use App\Support\Payments\Processors\PaymentProcessor;
 use App\Support\SettingsHandler;
 use App\Support\UITableFilters\FeePaymentUITableFilters;
 use App\Support\UITableFilters\ReceiptUITableFilters;
@@ -112,6 +114,9 @@ class StudentFeePaymentController extends Controller
     ]);
 
     $fee = $feeRule->getModel();
+    $hasAlreadyPaid = FeePaymentHandler::getReceipt($fee, $student->user);
+    abort_if($hasAlreadyPaid, 403, 'Fee already paid');
+
     $amount = $data['amount'] ?? $fee->amount;
     $user = currentUser();
     $settingshandler = SettingsHandler::makeFromRoute();
@@ -135,10 +140,16 @@ class StudentFeePaymentController extends Controller
         'term' => $data['term'] ?? $settingshandler->getCurrentTerm()
       ]
     );
+
     [$res, $paymentReference] = PaymentMerchant::make($merchant)->init(
       $paymentReferenceDto
     );
+
     abort_unless($res->isSuccessful(), 403, $res->getMessage());
+    if ($merchant === PaymentMerchantType::UserWallet->value) {
+      $res = PaymentProcessor::make($paymentReference)->processPayment();
+      return $this->ok($res->toArray());
+    }
     return $this->ok($res->toArray());
   }
 }

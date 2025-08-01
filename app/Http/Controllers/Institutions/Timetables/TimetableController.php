@@ -21,17 +21,18 @@ class TimetableController extends Controller
   }
 
   //
-  function index(Request $request, Institution $institution)
-  {
+  function index(
+    Request $request,
+    Institution $institution,
+    ?Classification $classification = null
+  ) {
     $institutionUser = currentInstitutionUser();
-
     if ($institutionUser->isStudent()) {
       $student = $institutionUser
-        ?->student()
+        ->student()
         ->with('classification')
         ->first();
-      $classification = Classification::find($student->classification_id);
-      return $this->classTimetable($institution, $classification);
+      return $this->classTimetable($institution, $student->classification);
     }
 
     if ($institutionUser->isTeacher()) {
@@ -39,16 +40,26 @@ class TimetableController extends Controller
         'institution_user_id',
         $institutionUser->id
       )->pluck('timetable_id');
-      $getTimetables = Timetable::whereIn('id', $getCoordinationIds)
+      $timetables = Timetable::whereIn('id', $getCoordinationIds)
         ->with('timetableCoordinators.institutionUser.user')
         ->with('actionable')
-        ->orderBy('start_time', 'asc')
+        ->oldest('start_time')
         ->get();
 
       return inertia('institutions/timetables/list-timetables')->with([
-        'timetables' => $getTimetables
+        'timetables' => $timetables
       ]);
     }
+    $classifications = Classification::all();
+    $classification = $classification ?? $classifications->first();
+    return inertia('institutions/timetables/list-timetables', [
+      'timetables' => $classification
+        ->timetables()
+        ->with('timetableCoordinators.institutionUser.user', 'actionable')
+        ->get(),
+      'classifications' => $classifications,
+      'classification' => $classification
+    ]);
   }
 
   public function classTimetable(

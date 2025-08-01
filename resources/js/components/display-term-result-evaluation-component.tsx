@@ -29,6 +29,9 @@ export default function DisplayTermResultEvaluation({
   const headers = {} as { [key: string]: string };
 
   learningEvaluations.map((item) => {
+    if (!item.learning_evaluation_domain) {
+      return;
+    }
     const domain = item.learning_evaluation_domain!;
     const rowIndex = rowIndexTrack[domain.title] ?? 0;
 

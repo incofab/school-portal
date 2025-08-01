@@ -12,9 +12,9 @@ class PaymentReferenceDto
     public string $merchant,
     public int|float $amount,
     public PaymentPurpose $purpose,
-    private ?Model $payable = null,
-    private ?Model $paymentable = null,
-    public $user_id = null,
+    private ?Model $payable = null, // The entity making the payment
+    private ?Model $paymentable = null, // The entity this payment is made for
+    public $user_id = null, // The logged in user making initiating this transaction
     public ?string $reference = null,
     public ?string $redirect_url = null,
     public array $meta = []

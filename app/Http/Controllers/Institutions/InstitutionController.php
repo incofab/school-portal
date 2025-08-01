@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Institutions;
 
 use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Institutions\TodoList\TodoListController;
 use App\Models\Institution;
+use App\Models\ReservedAccount;
 use App\Support\SetupChecklistHandler;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -20,9 +20,13 @@ class InstitutionController extends Controller
     )->isSetupComplete();
 
     $institutionGroup = currentInstitution()->institutionGroup;
+
     return inertia('institutions/dashboard', [
       'institutionGroup' => $institutionGroup,
-      'isSetupComplete' => $isSetupComplete
+      'isSetupComplete' => $isSetupComplete,
+      'reservedAccounts' => currentInstitutionUser()->isGuardian()
+        ? ReservedAccount::getReservedAccounts(currentUser(), true)
+        : []
     ]);
   }
 

@@ -9,13 +9,15 @@ return new class extends Migration {
   {
     Schema::table('users', function (Blueprint $table) {
       $table->float('wallet', 10, 2)->default(0);
+      $table->string('bvn')->nullable();
+      $table->string('nin')->nullable();
     });
   }
 
   public function down(): void
   {
     Schema::table('users', function (Blueprint $table) {
-      $table->dropColumn('wallet');
+      $table->dropColumn('wallet', 'bvn', 'nin');
     });
   }
 };

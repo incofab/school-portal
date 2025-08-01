@@ -20,7 +20,7 @@ return new class extends Migration {
       $table->decimal('bat', 15, 2);
       $table->morphs('entity'); //'The entity initiating the transaction. i.e Partner, User, etc'
       $table->morphs('transactionable'); //The nature of the transaction. i.e Funding, Withdrawal
-      $table->string('reference');
+      $table->string('reference')->index();
       $table->text('remark')->nullable();
       $table->json('meta')->nullable();
       $table->timestamps();

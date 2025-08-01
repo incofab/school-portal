@@ -26,13 +26,13 @@ class User extends Authenticatable
    */
   protected $guarded = [];
 
-  protected $appends = ['full_name', 'photo_url'];
+  protected $appends = ['full_name', 'photo_url', 'has_bvn', 'has_nin'];
   /**
    * The attributes that should be hidden for arrays.
    *
    * @var array
    */
-  protected $hidden = ['password', 'remember_token'];
+  protected $hidden = ['password', 'remember_token', 'bvn', 'nin'];
 
   /**
    * The attributes that should be cast to native types.
@@ -80,6 +80,21 @@ class User extends Authenticatable
     return Attribute::make(
       get: fn() => "{$this->first_name} {$this->other_names} {$this->last_name}"
     );
+  }
+
+  protected function hasBvn(): Attribute
+  {
+    return Attribute::make(get: fn() => !empty($this->bvn));
+  }
+
+  protected function hasNin(): Attribute
+  {
+    return Attribute::make(get: fn() => !empty($this->nin));
+  }
+
+  function getReference()
+  {
+    return str_pad($this->id, 12, '0', STR_PAD_LEFT);
   }
 
   // function scopeLoadInstitutionUser($query, $institutionId) {
@@ -140,6 +155,11 @@ class User extends Authenticatable
   function exams()
   {
     return $this->morphMany(Exam::class, 'examable');
+  }
+
+  function reservedAccounts()
+  {
+    return $this->morphMany(ReservedAccount::class, 'reservable');
   }
 
   function hasInstitutionRole(InstitutionUserType|array $role): bool

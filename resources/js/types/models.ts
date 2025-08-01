@@ -26,6 +26,7 @@ export interface AcademicSession extends Row {
 export interface Role extends Row {
   name: ManagerRole;
 }
+
 export interface User extends Row {
   first_name: string;
   last_name: string;
@@ -39,6 +40,8 @@ export interface User extends Row {
   is_welfare: boolean;
   gender: string;
   wallet: number;
+  has_bvn: boolean;
+  has_nin: boolean;
   roles?: Role[];
   institution_user?: InstitutionUser;
   student?: Student;
@@ -162,10 +165,12 @@ export interface Commission extends InstitutionRow {
 }
 
 export interface BankAccount extends InstitutionRow {
+  bank_code: string;
   bank_name: string;
   account_name: string;
   account_number: string;
   withdrawals_count: number;
+  is_primary: boolean;
 }
 
 export interface InstitutionUser extends InstitutionRow {
@@ -929,4 +934,23 @@ export interface MessageRecipient extends InstitutionRow {
   recipient_id?: number;
   recipient: string;
   message?: Message;
+}
+
+export interface ReservedAccount extends Row {
+  reservable_id: number;
+  reservable_type: string;
+  bank_name: string;
+  bank_code?: string;
+  account_name: string;
+  account_number: string;
+  reference: string;
+  reservable?: User;
+}
+
+export interface Bank extends Row {
+  country_code: string;
+  bank_name: string;
+  bank_code?: string;
+  status?: string;
+  support_account_verification?: boolean;
 }

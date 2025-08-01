@@ -18,18 +18,12 @@ import {
   PayrollSummary,
 } from '@/types/models';
 import FormControlBox from '../../forms/form-control-box';
-import EnumSelect from '../../dropdown-select/enum-select';
-import {
-  InstitutionUserType,
-  SelectOptionType,
-  YearMonth,
-} from '@/types/types';
+import { InstitutionUserType, SelectOptionType } from '@/types/types';
 import AdjustmentTypeSelect from '../../selectors/payroll-adjustment-type-select';
 import { PlusIcon } from '@heroicons/react/24/solid';
 import { Div } from '@/components/semantic';
 import InstitutionUserSelect from '../../selectors/institution-user-select';
 import useModalToggle from '@/hooks/use-modal-toggle';
-import YearSelect from '../../selectors/year-select';
 import { Inertia } from '@inertiajs/inertia';
 import CreateEditAdjustmentTypeModal from './create-edit-adjustment-type-modal';
 import { MultiValue } from 'react-select';

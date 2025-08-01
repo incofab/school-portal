@@ -92,6 +92,19 @@ class FeePaymentHandler
     return [$receipt, $feePayment];
   }
 
+  static function getReceipt(Fee $fee, User $user): Receipt|null
+  {
+    $bindingData = [
+      'fee_id' => $fee->id,
+      'user_id' => $user->id,
+      'academic_session_id' => $fee->academic_session_id,
+      'term' => $fee->term
+    ];
+    return Receipt::query()
+      ->where($bindingData)
+      ->first();
+  }
+
   function delete(FeePayment $feePayment)
   {
     $receipt = $feePayment->receipt;

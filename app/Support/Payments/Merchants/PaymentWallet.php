@@ -4,9 +4,8 @@ namespace App\Support\Payments\Merchants;
 use App\DTO\PaymentReferenceDto;
 use App\Enums\TransactionType;
 use App\Models\PaymentReference;
-use App\Models\UserTransaction;
 use App\Support\Res;
-use Exception;
+use App\Support\UserTransactionHandler;
 
 class PaymentWallet extends PaymentMerchant
 {
@@ -26,27 +25,13 @@ class PaymentWallet extends PaymentMerchant
   {
     parent::completePayment($paymentReference);
 
-    $user = $paymentReference->user;
-    $amount = $paymentReference->amount;
-    $bbt = $user->wallet - $amount;
-    if ($bbt < 0) {
-      throw new Exception('User wallet cannot be zero or less');
-    }
-
-    UserTransaction::Create([
-      'type' => TransactionType::Debit,
-      'amount' => $amount,
-      'bbt' => $user->wallet,
-      'bat' => $bbt,
-      'entity_type' => $user->getMorphClass(),
-      'entity_id' => $user->id,
-      'transactionable_type' => $paymentReference->getMorphClass(),
-      'transactionable_id' => $paymentReference->id,
-      'reference' => $paymentReference->reference
-      // 'remark' => ''
-    ]);
-
-    $user->fill(['wallet' => $bbt])->save();
+    UserTransactionHandler::recordTransaction(
+      amount: $paymentReference->amount,
+      entity: $paymentReference->user,
+      transactionType: TransactionType::Debit,
+      transactionable: $paymentReference,
+      reference: $paymentReference->reference
+    );
   }
 
   function verify(PaymentReference $paymentReference): Res
