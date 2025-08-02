@@ -46,6 +46,14 @@ class BankAccountController extends Controller
     StoreBankAccountRequest $request
   ) {
     $validated = $request->validated();
+
+    if ($request->is_primary) {
+      $institution->institutionGroup
+        ->bankAccounts()
+        ->where('is_primary', true)
+        ->where('id', '!=', $bankAccount->id)
+        ->update(['is_primary' => false]);
+    }
     $bankAccount->update([...collect($validated)->except('institution_id')]);
     return $this->ok();
   }
@@ -56,13 +64,17 @@ class BankAccountController extends Controller
   ) {
     $validated = $request->validated();
     $institutionGroup = $institution->institutionGroup;
-    $accountableType = $institutionGroup->getMorphClass();
-    $accountableId = $institutionGroup->id;
 
+    if ($request->is_primary) {
+      $institutionGroup
+        ->bankAccounts()
+        ->where('is_primary', true)
+        ->update(['is_primary' => false]);
+    }
     BankAccount::create([
       ...collect($validated)->except('institution_id'),
-      'accountable_type' => $accountableType,
-      'accountable_id' => $accountableId
+      'accountable_type' => $institutionGroup->getMorphClass(),
+      'accountable_id' => $institutionGroup->id
     ]);
 
     return $this->ok();

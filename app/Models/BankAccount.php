@@ -11,6 +11,11 @@ class BankAccount extends Model
   use HasFactory, SoftDeletes;
 
   protected $guarded = [];
+  protected $casts = [
+    'is_primary' => 'boolean',
+    'institution_id' => 'integer',
+    'accountable_id' => 'integer'
+  ];
 
   // Partner | InstitutionGroup
   public function accountable()

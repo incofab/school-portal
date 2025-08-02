@@ -9,14 +9,9 @@ use App\Support\Res;
 use Http;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Arr;
-use Str;
 
 class MonnifyHelper
 {
-  const PERCENTAGE_CHARGE = 1;
-  const CHARGE_START_AMOUNT = 500;
-  const CHARGE_STOP_AMOUNT = 10000;
-
   const BASE_URL = 'https://api.monnify.com/api/'; //'https://sandbox.monnify.com/api/v1/';
   const BASE_URL_SANDBOX = 'https://sandbox.monnify.com/api/';
 
@@ -203,23 +198,6 @@ class MonnifyHelper
     ]);
   }
 
-  function getCharge($amount)
-  {
-    $amount = (int) $amount;
-
-    $charge = ceil((self::PERCENTAGE_CHARGE / 100) * $amount);
-
-    if ($charge < 50 && $amount > 1000) {
-      return 50;
-    }
-
-    if ($charge < 20) {
-      return 20;
-    }
-
-    return $charge > 100 ? 100 : $charge;
-  }
-
   function execCurl($url, $data, $method = 'POST', bool $useAuth = false): Res
   {
     $token = null;
@@ -253,25 +231,7 @@ class MonnifyHelper
       }
       return successRes('', ['result' => $res->json('responseBody')]);
     } catch (\Throwable $th) {
-      return failRes('Errro processing data');
+      return failRes('Errro processing data: ' . $th->getMessage());
     }
-  }
-
-  function test()
-  {
-    $str = '';
-    //         $i = 0;
-    //         $enteredAmount = 2000;
-    //         $addCharge = $this->addPaystackCharge($enteredAmount);
-    //         $removeCharge = $this->removePaystackCharge($addCharge);
-    //         $i++;
-    //         $str = "($i). enteredAmount=$enteredAmount <br />addCharge=$addCharge <br />removeCharge=$removeCharge";
-    //         $str .= '<br /><br />';
-    echo '<br />Charge 200 = ' . $this->getCharge(200);
-    echo '<br />Charge 500 = ' . $this->getCharge(500);
-    echo '<br />Charge 501 = ' . $this->getCharge(501);
-    echo '<br />Charge 1000 = ' . $this->getCharge(1000);
-    echo '<br />Charge 10000 = ' . $this->getCharge(10000);
-    die('Done');
   }
 }
