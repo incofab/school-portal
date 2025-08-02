@@ -39,8 +39,6 @@ export default function RetrievePaymentSummaryModal({
       ...webForm.data,
       classification_id: webForm.data.classification_id?.value,
     });
-    console.log('URL', url);
-
     Inertia.visit(url);
   }
 

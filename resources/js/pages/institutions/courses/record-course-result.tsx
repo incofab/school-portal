@@ -61,8 +61,12 @@ export default function RecordCourseResult({
   assessments,
 }: Props) {
   const { handleResponseToast } = useMyToast();
-  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
-    useSharedProps();
+  const {
+    currentAcademicSessionId,
+    currentTerm,
+    usesMidTermResult,
+    lockTermSession,
+  } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const [assessmentValue, setAssessmentValue] = useState<{
     [key: string]: number | string;
@@ -147,6 +151,7 @@ export default function RecordCourseResult({
                       webForm.setValue('academic_session_id', e?.value)
                     }
                     required
+                    isDisabled={lockTermSession}
                   />
                 </FormControlBox>
                 <FormControlBox
@@ -161,6 +166,7 @@ export default function RecordCourseResult({
                     isClearable={true}
                     onChange={(e: any) => webForm.setValue('term', e?.value)}
                     required
+                    isDisabled={lockTermSession}
                   />
                 </FormControlBox>
                 <FormControlBox

@@ -84,7 +84,7 @@ class MonnifyController extends Controller
     $res = MonnifyHelper::make()->getTransactionStatus($reference);
     abort_unless($res->isSuccessful(), 200, $res->message);
 
-    $settlementAmount = $res->result['settlementAmount'];
+    $settlementAmount = $res->amount;
     $destinationAccountInformation = $post['destinationAccountInformation'];
     /** @var ReservedAccount $reservedAccount */
     $reservedAccount = ReservedAccount::query()

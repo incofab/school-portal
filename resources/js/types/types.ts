@@ -175,6 +175,7 @@ export enum InstitutionSettingType {
   PaymentKeys = 'payment-keys',
   ResultActivationRequired = 'result-activation-required',
   PinUsageCount = 'pin-usage-count',
+  LockTermSession = 'lock-term-session',
 }
 
 export enum ResultSettingType {

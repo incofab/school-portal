@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormControl, HStack, VStack } from '@chakra-ui/react';
+import { Checkbox, FormControl, HStack, VStack } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import { Inertia } from '@inertiajs/inertia';
 import { BankAccount } from '@/types/models';
@@ -31,6 +31,7 @@ export default function CreateEditBankAccountForm({
     bank_name: bankAccount?.bank_name ?? '',
     account_name: bankAccount?.account_name ?? '',
     account_number: bankAccount?.account_number ?? '',
+    is_primary: bankAccount?.is_primary ?? false,
   });
 
   async function validateAccountNumber() {
@@ -104,6 +105,19 @@ export default function CreateEditBankAccountForm({
         title="Account Name"
         isDisabled={true}
       />
+
+      <FormControl>
+        <Checkbox
+          isChecked={webForm.data.is_primary}
+          onChange={(e) =>
+            webForm.setValue('is_primary', e.currentTarget.checked)
+          }
+          size={'md'}
+          colorScheme="brand"
+        >
+          Make this your primary bank account
+        </Checkbox>
+      </FormControl>
 
       <FormControl>
         <FormButton isLoading={webForm.processing} onClick={() => submit()} />

@@ -2,7 +2,6 @@ import React from 'react';
 import { Divider, FormControl, HStack, Icon, VStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
-import { preventNativeSubmit } from '@/util/util';
 import { Fee, Student } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
@@ -16,9 +15,9 @@ import AcademicSessionSelect from '@/components/selectors/academic-session-selec
 import useSharedProps from '@/hooks/use-shared-props';
 import FeeSelect from '@/components/selectors/fee-select';
 import InputForm from '@/components/forms/input-form';
-import useIsGuardian from '@/hooks/use-is-guardian';
 import { CreditCardIcon, WalletIcon } from '@heroicons/react/24/outline';
 import { Div } from '@/components/semantic';
+import { Inertia } from '@inertiajs/inertia';
 
 interface Props {
   student: Student;
@@ -28,8 +27,8 @@ interface Props {
 export default function RecordStudentFeePayment({ student, fees }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSessionId, currentTerm } = useSharedProps();
-  const isGuardian = useIsGuardian();
+  const { currentAcademicSessionId, currentTerm, lockTermSession } =
+    useSharedProps();
 
   const webForm = useWebForm({
     term: currentTerm,
@@ -40,11 +39,18 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
 
   const submit = async (merchant: string) => {
     const res = await webForm.submit((data, web) =>
-      web.post(instRoute('students.fee-payments.store', [student.id]), data)
+      web.post(instRoute('students.fee-payments.store', [student.id]), {
+        ...data,
+        merchant: merchant,
+      })
     );
 
     if (!handleResponseToast(res)) return;
 
+    if (merchant === PaymentMerchantType.UserWallet) {
+      Inertia.visit(instRoute('students.receipts.index', [student.id]));
+      return;
+    }
     window.location.href = res.data.authorization_url;
   };
 
@@ -89,6 +95,7 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
                   onChange={(e: any) =>
                     webForm.setValue('academic_session_id', e?.value)
                   }
+                  isDisabled={lockTermSession}
                 />
               </FormControlBox>
               <FormControlBox form={webForm as any} title="Term" formKey="term">
@@ -98,6 +105,7 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
                   isMulti={false}
                   isClearable={true}
                   onChange={(e: any) => webForm.setValue('term', e?.value)}
+                  isDisabled={lockTermSession}
                 />
               </FormControlBox>
               <InputForm
@@ -107,11 +115,18 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
               />
               <Divider />
               <FormControl>
-                <HStack justifyContent={'space-between'} verticalAlign={'top'}>
+                <HStack justifyContent={'space-between'} align={'start'}>
                   <PayFromWalletButton
                     title={'Pay From Wallet'}
                     leftIcon={<Icon as={WalletIcon} />}
-                    onClick={() => submit(PaymentMerchantType.UserWallet)}
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          'Are you sure you want to pay from wallet?'
+                        )
+                      )
+                        submit(PaymentMerchantType.UserWallet);
+                    }}
                   />
                   <Div>
                     <FormButton
@@ -121,7 +136,6 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
                       leftIcon={<Icon as={CreditCardIcon} />}
                       onClick={() => submit(PaymentMerchantType.Paystack)}
                     />
-                    <Div dangerouslySetInnerHTML={{ __html: '&nbsp;' }}></Div>
                   </Div>
                 </HStack>
               </FormControl>

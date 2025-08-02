@@ -18,4 +18,5 @@ enum InstitutionSettingType: string
   case PaymentKeys = 'payment-keys';
   case ResultActivationRequired = 'result-activation-required';
   case PinUsageCount = 'pin-usage-count';
+  case LockTermSession = 'lock-term-session';
 }

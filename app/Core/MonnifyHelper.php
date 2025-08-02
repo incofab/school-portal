@@ -154,7 +154,10 @@ class MonnifyHelper
         'OVERPAID'
       ])
     ) {
-      return $res;
+      return successRes($res->message, [
+        'result' => $res->result,
+        'amount' => $res->result['settlementAmount']
+      ]);
     }
     return failRes($res->getMessage(), $res->result);
   }
@@ -217,7 +220,7 @@ class MonnifyHelper
     return $charge > 100 ? 100 : $charge;
   }
 
-  function execCurl($url, $data, $method = 'POST', bool $useAuth = false)
+  function execCurl($url, $data, $method = 'POST', bool $useAuth = false): Res
   {
     $token = null;
     if ($useAuth) {

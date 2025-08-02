@@ -244,7 +244,11 @@ export default function InstitutionDashboard({
             user={currentUser}
             reservedAccounts={reservedAccounts}
           />
-          <UpdateBvnNinForm mt={2} bg={'white'} w={'full'} />
+          <UpdateBvnNinForm
+            mt={2}
+            bg={useColorModeValue('white', 'gray.900')}
+            w={'full'}
+          />
         </Div>
       )}
       <SimpleGrid spacing={6} columns={{ base: 1, sm: 2, md: 3 }}>
@@ -270,12 +274,12 @@ function WalletDisplay({
   const reservedAccount = reservedAccounts[0] ?? null;
   return (
     <Div
-      bg={'white'}
+      bg={useColorModeValue('white', 'gray.900')}
       p={4}
       borderRadius={'5px'}
       boxShadow="md"
-      _hover={{ bg: 'gray.100' }}
-      transition="background 0.2s"
+      // _hover={{ bg: 'gray.100' }}
+      // transition="background 0.2s"
     >
       <Stack
         direction={{ base: 'column', md: 'row' }}

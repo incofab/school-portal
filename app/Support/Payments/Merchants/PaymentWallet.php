@@ -38,6 +38,8 @@ class PaymentWallet extends PaymentMerchant
   {
     $user = $paymentReference->user;
     $success = $user->wallet >= $paymentReference->amount;
-    return $success ? successRes('') : failRes('Insufficient wallet balance');
+    return $success
+      ? successRes('', ['amount' => $paymentReference->amount])
+      : failRes('Insufficient wallet balance');
   }
 }

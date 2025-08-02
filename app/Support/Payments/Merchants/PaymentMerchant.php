@@ -60,6 +60,8 @@ abstract class PaymentMerchant
         return new PaymentRave($merchant);
       case PaymentMerchantType::UserWallet->value:
         return new PaymentWallet($merchant);
+      case PaymentMerchantType::Monnify->value:
+        return new PaymentMonnify($merchant);
       default:
         throw new Exception("Invalid merchant ($merchant)");
         break;

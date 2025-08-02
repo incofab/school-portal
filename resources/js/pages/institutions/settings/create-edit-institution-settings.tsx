@@ -178,8 +178,42 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   size={'md'}
                 />
               </HStack>
-              <Spacer height={3} />
-              <Divider />
+              <Divider my={3} />
+              <FormLabel border={'1px solid #999999AA'} p={2} borderRadius={5}>
+                <Switch
+                  isChecked={
+                    webForm.data[InstitutionSettingType.LockTermSession] ===
+                    true
+                  }
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    let message =
+                      'Disabling this will allow change of term and session when filling out results';
+                    if (!isChecked && !window.confirm(message)) {
+                      return;
+                    }
+                    webForm.setValue(
+                      InstitutionSettingType.LockTermSession,
+                      isChecked
+                    );
+                    submit(InstitutionSettingType.LockTermSession, isChecked);
+                  }}
+                  colorScheme={'brand'}
+                  disabled={
+                    activeSetting === InstitutionSettingType.LockTermSession &&
+                    webForm.processing
+                  }
+                  pr={3}
+                />
+                <span>Allow Term and Session Change</span>
+                <Div fontSize={11} mt={2} color={'red'}>
+                  <i>
+                    Be careful, turning this off means you can change term and
+                    session when filling out results
+                  </i>
+                </Div>
+              </FormLabel>
+              <Divider my={3} />
               <Text>Pin Usage Count</Text>
               <HStack spacing={2}>
                 <FormControl>

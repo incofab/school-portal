@@ -43,8 +43,12 @@ export default function TransferEventResultModal({
   const isAdmin = useIsAdmin();
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
-    useSharedProps();
+  const {
+    currentAcademicSessionId,
+    currentTerm,
+    usesMidTermResult,
+    lockTermSession,
+  } = useSharedProps();
   const webForm = useWebForm({
     academic_session_id: currentAcademicSessionId,
     term: currentTerm,
@@ -108,6 +112,7 @@ export default function TransferEventResultModal({
               onChange={(e: any) =>
                 webForm.setValue('academic_session_id', e?.value)
               }
+              isDisabled={lockTermSession}
               required
             />
           </FormControlBox>
@@ -117,6 +122,7 @@ export default function TransferEventResultModal({
               selectValue={webForm.data.term}
               isClearable={true}
               onChange={(e: any) => webForm.setValue('term', e?.value)}
+              isDisabled={lockTermSession}
               required
             />
           </FormControlBox>

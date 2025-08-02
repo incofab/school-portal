@@ -6,6 +6,7 @@ use App\Support\Res;
 use App\Support\UserTransactionHandler;
 use DB;
 
+/** @deprecated Not in use at the moment */
 class UserWalletFundingProcessor extends PaymentProcessor
 {
   function processPayment(): Res

@@ -37,8 +37,7 @@ export default function SetResumptionDateModal({
 }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
-    useSharedProps();
+  const { currentAcademicSessionId, currentTerm } = useSharedProps();
   const webForm = useWebForm({
     academic_session_id: currentAcademicSessionId,
     term: currentTerm,

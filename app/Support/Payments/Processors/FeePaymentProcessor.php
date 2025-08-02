@@ -54,6 +54,6 @@ class FeePaymentProcessor extends PaymentProcessor
 
     DB::commit();
 
-    return successRes('Admission form purchased successfully');
+    return successRes('Fee Payment processed successfully');
   }
 }

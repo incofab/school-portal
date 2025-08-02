@@ -14,7 +14,12 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { Classification, ClassificationGroup, Expense, ExpenseCategory } from '@/types/models';
+import {
+  Classification,
+  ClassificationGroup,
+  Expense,
+  ExpenseCategory,
+} from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -45,7 +50,8 @@ export default function CreateEditExpense({
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSessionId, currentTerm } = useSharedProps();
+  const { currentAcademicSessionId, currentTerm, lockTermSession } =
+    useSharedProps();
 
   function today() {
     return new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
@@ -55,33 +61,12 @@ export default function CreateEditExpense({
     title: expense?.title ?? '',
     description: expense?.description ?? '',
     amount: expense?.amount ?? '',
-    academic_session_id: expense?.academic_session_id ?? currentAcademicSessionId,
+    academic_session_id:
+      expense?.academic_session_id ?? currentAcademicSessionId,
     term: expense?.term ?? currentTerm,
     expense_date: expense?.expense_date ?? today(),
     expense_category_id: expense?.expense_category_id ?? '',
   });
-
-  /*
-    const submit = async () => {
-      const res = await webForm.submit((data, web) => {
-        const postData = {
-          ...data,
-          form_teacher_id: data.form_teacher_id?.value,
-        };
-        return classification
-          ? web.put(
-              instRoute('classifications.update', [classification]),
-              postData
-            )
-          : web.post(instRoute('classifications.store'), postData);
-      });
-
-      if (!handleResponseToast(res)) {
-        return;
-      }
-      Inertia.visit(instRoute('classifications.index'));
-    };
-  */
 
   const onSubmit = async () => {
     const res = await webForm.submit(async (data, web) => {
@@ -100,14 +85,12 @@ export default function CreateEditExpense({
     <DashboardLayout>
       <CenteredBox>
         <Slab>
-          <SlabHeading
-            title={`${expense ? 'Update' : 'Create'} Expense`}
-          />
+          <SlabHeading title={`${expense ? 'Update' : 'Create'} Expense`} />
           <SlabBody>
             <VStack
               spacing={4}
               as={'form'}
-            // onSubmit={preventNativeSubmit(submit)}
+              // onSubmit={preventNativeSubmit(submit)}
             >
               <FormControlBox
                 form={webForm as any}
@@ -117,7 +100,9 @@ export default function CreateEditExpense({
               >
                 <Input
                   type="text"
-                  onChange={(e) => webForm.setValue('title', e.currentTarget.value)}
+                  onChange={(e) =>
+                    webForm.setValue('title', e.currentTarget.value)
+                  }
                   value={webForm.data.title}
                 />
               </FormControlBox>
@@ -142,7 +127,9 @@ export default function CreateEditExpense({
               >
                 <Input
                   type="number"
-                  onChange={(e) => webForm.setValue('amount', e.currentTarget.value)}
+                  onChange={(e) =>
+                    webForm.setValue('amount', e.currentTarget.value)
+                  }
                   value={webForm.data.amount}
                 />
               </FormControlBox>
@@ -160,6 +147,7 @@ export default function CreateEditExpense({
                   onChange={(e: any) =>
                     webForm.setValue('academic_session_id', e?.value)
                   }
+                  isDisabled={lockTermSession}
                   required
                 />
               </FormControlBox>
@@ -176,6 +164,7 @@ export default function CreateEditExpense({
                   isMulti={false}
                   isClearable={true}
                   onChange={(e: any) => webForm.setValue('term', e?.value)}
+                  isDisabled={lockTermSession}
                   required
                 />
               </FormControlBox>
@@ -190,7 +179,9 @@ export default function CreateEditExpense({
                   type="date"
                   max={today()}
                   value={webForm.data.expense_date}
-                  onChange={(e: any) => webForm.setValue('expense_date', e.target.value)}
+                  onChange={(e: any) =>
+                    webForm.setValue('expense_date', e.target.value)
+                  }
                 />
               </FormControlBox>
 

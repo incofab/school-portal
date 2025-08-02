@@ -6,7 +6,6 @@ use App\Http\Requests\StoreBankAccountRequest;
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
 use App\Models\Institution;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BankAccountController extends Controller
@@ -14,7 +13,10 @@ class BankAccountController extends Controller
   //
   public function index(Institution $institution)
   {
-    $bankAccounts = $institution->institutionGroup->bankAccounts()->get();
+    $bankAccounts = $institution->institutionGroup
+      ->bankAccounts()
+      ->withCount('withdrawals')
+      ->get();
 
     return Inertia::render('institutions/bank-accounts/list-bank-accounts', [
       'bankAccounts' => $bankAccounts

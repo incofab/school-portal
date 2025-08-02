@@ -17,18 +17,22 @@ export function FormControlButton({ title, ...props }: Props & ButtonProps) {
   );
 }
 
-export function FormButton({ title, ...props }: Props & ButtonProps) {
+export function FormButton({ title, children, ...props }: Props & ButtonProps) {
   return (
     <Button colorScheme={'brand'} type={'submit'} mt={2} size={'sm'} {...props}>
-      {title ?? 'Submit'}
+      {title ?? children ?? 'Submit'}
     </Button>
   );
 }
 
-export function BrandButton({ title, ...props }: Props & ButtonProps) {
+export function BrandButton({
+  title,
+  children,
+  ...props
+}: Props & ButtonProps) {
   return (
     <Button colorScheme={'brand'} type={'submit'} size={'sm'} {...props}>
-      {title ?? 'Submit'}
+      {title ?? children ?? 'Submit'}
     </Button>
   );
 }
@@ -63,7 +67,7 @@ export function PayFromWalletButton({ title, ...props }: Props & ButtonProps) {
   return (
     <Div>
       <BrandButton title={title} {...props} />
-      <Div textAlign={'center'} mt={1}>
+      <Div textAlign={'center'} mt={1} fontSize={'sm'}>
         Bal: {formatAsCurrency(currentUser.wallet)}
       </Div>
     </Div>

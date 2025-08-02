@@ -74,5 +74,8 @@ function prepareSettings(institutionSettings?: InstitutionSetting[]) {
     paymentKeys: settings[InstitutionSettingType.PaymentKeys]?.value as {
       [key: string]: PaymentKey;
     },
+    lockTermSession: Boolean(
+      parseInt(settings[InstitutionSettingType.LockTermSession]?.value ?? 1)
+    ),
   };
 }

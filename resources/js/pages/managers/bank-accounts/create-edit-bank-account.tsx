@@ -20,7 +20,11 @@ export default function CreateOrEditBankAccount({ bankAccount }: Props) {
           />
           <SlabBody>
             <CreateEditBankAccountForm
-              updateUrl={route('managers.bank-accounts.update', [bankAccount])}
+              updateUrl={
+                bankAccount
+                  ? route('managers.bank-accounts.update', [bankAccount])
+                  : ''
+              }
               createUrl={route('managers.bank-accounts.store')}
               bankAccount={bankAccount}
             />

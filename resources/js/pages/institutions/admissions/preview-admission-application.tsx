@@ -6,6 +6,7 @@ import {
   Flex,
   HStack,
   Text,
+  useColorModeValue,
   VStack,
 } from '@chakra-ui/react';
 import React from 'react';
@@ -24,7 +25,7 @@ export default function PreviewAdmissionApplication({
 }: Props) {
   const admissionForm = admissionApplication.admission_form;
   return (
-    <Div bg={'white'} minH={'100vh'}>
+    <Div bg={useColorModeValue('white', 'gray.900')} minH={'100vh'}>
       <Div pt={5} px={5} mt={3}>
         <HStack align={'stretch'} spacing={5} justifyContent={'center'}>
           <Avatar

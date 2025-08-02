@@ -36,8 +36,12 @@ export default function RecordFeePaymentModal({
   fees,
 }: Props) {
   const { handleResponseToast } = useMyToast();
-  const { currentInstitution, currentAcademicSessionId, currentTerm } =
-    useSharedProps();
+  const {
+    currentInstitution,
+    currentAcademicSessionId,
+    currentTerm,
+    lockTermSession,
+  } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const [classId, setClassId] = useState<undefined | number>(undefined);
   const webForm = useWebForm({
@@ -100,6 +104,7 @@ export default function RecordFeePaymentModal({
               onChange={(e: any) =>
                 webForm.setValue('academic_session_id', e?.value)
               }
+              isDisabled={lockTermSession}
             />
           </FormControlBox>
           <FormControlBox form={webForm as any} title="Term" formKey="term">
@@ -109,6 +114,7 @@ export default function RecordFeePaymentModal({
               isMulti={false}
               isClearable={true}
               onChange={(e: any) => webForm.setValue('term', e?.value)}
+              isDisabled={lockTermSession}
             />
           </FormControlBox>
           <FormControl>

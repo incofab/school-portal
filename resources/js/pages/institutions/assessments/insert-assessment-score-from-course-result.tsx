@@ -12,7 +12,6 @@ import FormControlBox from '@/components/forms/form-control-box';
 import ClassificationSelect from '@/components/selectors/classification-select';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import EnumSelect from '@/components/dropdown-select/enum-select';
-import CourseTeacherSelect from '@/components/selectors/course-teacher-select';
 import { preventNativeSubmit } from '@/util/util';
 import { FormButton } from '@/components/buttons';
 import { Inertia } from '@inertiajs/inertia';
@@ -27,8 +26,12 @@ export default function InsertAssessmentScoreFromCourseResult({
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const { currentAcademicSessionId, currentTerm, usesMidTermResult } =
-    useSharedProps();
+  const {
+    currentAcademicSessionId,
+    currentTerm,
+    usesMidTermResult,
+    lockTermSession,
+  } = useSharedProps();
 
   const [fromDate, setFromDate] = useState({
     academic_session_id: currentAcademicSessionId,
@@ -110,6 +113,7 @@ export default function InsertAssessmentScoreFromCourseResult({
                   onChange={(e: any) =>
                     setFromDate({ ...fromDate, academic_session_id: e?.value })
                   }
+                  isDisabled={lockTermSession}
                   required
                 />
               </FormControlBox>
@@ -125,6 +129,7 @@ export default function InsertAssessmentScoreFromCourseResult({
                   onChange={(e: any) =>
                     setFromDate({ ...fromDate, term: e?.value })
                   }
+                  isDisabled={lockTermSession}
                   required
                 />
               </FormControlBox>
@@ -193,6 +198,7 @@ export default function InsertAssessmentScoreFromCourseResult({
                   onChange={(e: any) =>
                     setToDate({ ...toDate, academic_session_id: e?.value })
                   }
+                  isDisabled={lockTermSession}
                   required
                 />
               </FormControlBox>
@@ -208,6 +214,7 @@ export default function InsertAssessmentScoreFromCourseResult({
                   onChange={(e: any) =>
                     setToDate({ ...toDate, term: e?.value })
                   }
+                  isDisabled={lockTermSession}
                   required
                 />
               </FormControlBox>
