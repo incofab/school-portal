@@ -45,8 +45,6 @@ class WithdrawalController extends Controller
       $validated['reference']
     );
 
-    return $res->isSuccessful()
-      ? $this->ok()
-      : $this->message($res->getMessage(), 401);
+    return $this->apiRes($res, 401);
   }
 }

@@ -35,8 +35,6 @@ class BankController extends Controller
       $request->bank_code,
       $request->account_number
     );
-    return $res->isSuccessful()
-      ? $this->ok($res->toArray())
-      : $this->message($res->message, 403);
+    return $this->apiRes($res);
   }
 }

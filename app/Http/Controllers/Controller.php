@@ -41,30 +41,29 @@ class Controller extends BaseController
       ->withErrors(Arr::get($ret, 'val'));
   }
 
-  function apiRes(
-    bool $success,
-    string $message,
-    $data = [],
-    $httpStatusCode = 200
-  ) {
+  function apiRes(Res $res, $failErrorCode = 403)
+  {
+    return response()->json(
+      $res->toArray(),
+      $res->isSuccessful() ? 200 : $failErrorCode
+    );
+  }
+
+  /** Mostly used by external apis */
+  function successApiRes($data = [], $message = '')
+  {
     $arr = [
-      'success' => $success,
+      'success' => true,
       'message' => $message,
       'data' => $data
     ];
-
-    return response()->json($arr, $httpStatusCode);
+    return response()->json($arr, 200);
   }
 
-  function successApiRes($data = [], $message = '')
-  {
-    return $this->apiRes(true, $message, $data);
-  }
-
-  function failApiRes($data = [], $message = '')
-  {
-    return $this->apiRes(false, $message, $data, 400);
-  }
+  // function failApiRes($data = [], $message = '')
+  // {
+  //   return $this->apiRes(failRes($message, $data));
+  // }
 
   function apiEmitResponse($data)
   {
@@ -106,9 +105,9 @@ class Controller extends BaseController
     return $tokenUser;
   }
 
-  protected function ok($data = [])
+  protected function ok($data = [], $status = 200)
   {
-    return response()->json(['ok' => true, ...$data]);
+    return response()->json(['ok' => true, ...$data], $status);
   }
 
   protected function message(string $message, $status = 200)

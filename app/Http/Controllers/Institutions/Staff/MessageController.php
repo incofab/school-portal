@@ -99,8 +99,6 @@ class MessageController extends Controller
       $res = $handler->sendToReceivers($receivers, $data['channel']);
     }
 
-    return $res->isSuccessful()
-      ? $this->ok()
-      : $this->message($res->getMessage(), 403);
+    return $this->apiRes($res, 403);
   }
 }

@@ -114,7 +114,7 @@ test('can store message to a list of receivers (email)', function () {
   actingAs($this->adminUser)
     ->post(route('institutions.messages.store', $this->institution), $data)
     ->assertOk()
-    ->assertJson(['ok' => true]);
+    ->assertJson(['success' => true]);
 
   // Assert message was recorded in DB
   $this->assertDatabaseHas('messages', [

@@ -56,8 +56,6 @@ class PaymentNotificationController extends Controller
       $feeExistRule->getModel()
     ))->run();
 
-    return $res->isSuccessful()
-      ? $this->ok()
-      : $this->message($res->getMessage(), 403);
+    return $this->apiRes($res, 403);
   }
 }
