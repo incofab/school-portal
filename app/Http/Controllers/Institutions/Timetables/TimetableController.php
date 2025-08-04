@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use App\Models\Classification;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
+use App\Models\Course;
 use App\Models\InstitutionUser;
+use App\Models\SchoolActivity;
 use App\Models\TimetableCoordinator;
 use App\Rules\ValidateExistsRule;
 use Illuminate\Validation\Rule;
@@ -21,11 +23,8 @@ class TimetableController extends Controller
   }
 
   //
-  function index(
-    Request $request,
-    Institution $institution,
-    ?Classification $classification = null
-  ) {
+  function index(Request $request, Institution $institution)
+  {
     $institutionUser = currentInstitutionUser();
     if ($institutionUser->isStudent()) {
       $student = $institutionUser
@@ -51,15 +50,11 @@ class TimetableController extends Controller
       ]);
     }
     $classifications = Classification::all();
-    $classification = $classification ?? $classifications->first();
-    return inertia('institutions/timetables/list-timetables', [
-      'timetables' => $classification
-        ->timetables()
-        ->with('timetableCoordinators.institutionUser.user', 'actionable')
-        ->get(),
-      'classifications' => $classifications,
-      'classification' => $classification
-    ]);
+    if ($classifications->isNotEmpty()) {
+      return $this->classTimetable($institution, $classifications->first());
+    } else {
+      return redirect(instRoute('dashboard'));
+    }
   }
 
   public function classTimetable(
@@ -74,7 +69,10 @@ class TimetableController extends Controller
 
     return inertia('institutions/timetables/list-timetables')->with([
       'timetables' => $getTimetables,
-      'classificationId' => $classification->id
+      'classification' => $classification,
+      'classifications' => Classification::all(),
+      'courses' => Course::all(),
+      'schoolActivities' => SchoolActivity::all()
     ]);
   }
 

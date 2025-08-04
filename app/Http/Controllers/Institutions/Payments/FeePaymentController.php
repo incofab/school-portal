@@ -40,7 +40,12 @@ class FeePaymentController extends Controller
 
     $numOfPayments = (clone $query)->count('fee_payments.id');
     $totalAmountPaid = (clone $query)->sum('fee_payments.amount');
-    $query->with('receipt.academicSession', 'receipt.user', 'fee');
+    $query->with(
+      'receipt.academicSession',
+      'receipt.user',
+      'fee',
+      'confirmedBy'
+    );
     return inertia('institutions/payments/list-fee-payments', [
       'fees' => Fee::query()->get(),
       'feePayments' => paginateFromRequest($query->latest('id')),

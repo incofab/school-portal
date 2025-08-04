@@ -2,10 +2,8 @@
 namespace App\Http\Controllers\Institutions\Payments;
 
 use App\Enums\InstitutionUserType;
-use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
-use Illuminate\Support\Facades\Session;
 use App\Models\Institution;
 use App\Models\Receipt;
 use App\Models\Student;
@@ -66,7 +64,6 @@ class ReceiptController extends Controller
     User $user,
     Request $request
   ) {
-
     $receipts = $user
       ->receipts()
       ->where('term', $request->term)
@@ -98,5 +95,4 @@ class ReceiptController extends Controller
 
     // return $this->ok();
   }
-
 }

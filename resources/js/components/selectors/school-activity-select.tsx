@@ -6,12 +6,12 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface MyProps {
   selectValue?: number | string;
-  schoolActivity?: SchoolActivity[];
+  schoolActivities?: SchoolActivity[];
 }
 
 export default function SchoolActivitySelect({
   selectValue,
-  schoolActivity,
+  schoolActivities,
   ...props
 }: MyProps & Props) {
   const { instRoute } = useInstitutionRoute();
@@ -19,7 +19,7 @@ export default function SchoolActivitySelect({
     <SingleQuerySelect
       {...props}
       selectValue={selectValue}
-      dataList={schoolActivity}
+      dataList={schoolActivities}
       searchUrl={instRoute('school-activities.search')}
       label={'title'}
     />

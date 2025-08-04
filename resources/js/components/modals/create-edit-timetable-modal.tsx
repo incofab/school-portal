@@ -23,10 +23,13 @@ import MySelect from '../dropdown-select/my-select';
 import StaffSelect from '../selectors/staff-select';
 import SchoolActivitySelect from '../selectors/school-activity-select';
 import { TrashIcon } from '@heroicons/react/24/outline';
+import { Course, SchoolActivity } from '@/types/models';
 
 interface Props {
   timetableCell: TimetableCell;
   classificationId: number;
+  courses: Course[];
+  schoolActivities: SchoolActivity[];
   isOpen: boolean;
   onClose(): void;
   onSuccess(timetableCell: TimetableCell): void;
@@ -39,6 +42,8 @@ const mins = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 export default function CreateEditTimetableModal({
   timetableCell,
   classificationId,
+  courses,
+  schoolActivities,
   isOpen,
   onSuccess,
   onClose,
@@ -82,6 +87,8 @@ export default function CreateEditTimetableModal({
 
           <ActionSelect
             actionId={webForm.data.actionable_id}
+            courses={courses}
+            schoolActivities={schoolActivities}
             setActionId={(id, label) =>
               webForm.setData({
                 ...webForm.data,
@@ -217,11 +224,15 @@ function ActionSelect({
   setActionId,
   actionType,
   setActionType,
+  courses,
+  schoolActivities,
 }: {
   actionId?: number;
   setActionId: (id: number, label: string) => void;
   actionType?: TimetableActionableType;
   setActionType: (type: TimetableActionableType) => void;
+  courses: Course[];
+  schoolActivities: SchoolActivity[];
 }) {
   return (
     <VStack align={'stretch'}>
@@ -231,22 +242,27 @@ function ActionSelect({
         isMulti={false}
         isClearable={true}
         onChange={(e: any) => setActionType(e.value)}
+        required={true}
       />
       {actionType === TimetableActionableType.Course && (
         <CourseSelect
-          value={actionId}
+          courses={courses}
+          selectValue={actionId}
           isClearable={true}
           onChange={(e: any) => setActionId(e.value, e.label)}
           isMulti={false}
+          required={true}
         />
       )}
 
       {actionType === TimetableActionableType.SchoolActivity && (
         <SchoolActivitySelect
-          value={actionId}
+          schoolActivities={schoolActivities}
+          selectValue={actionId}
           isClearable={true}
           onChange={(e: any) => setActionId(e.value, e.label)}
           isMulti={false}
+          required={true}
         />
       )}
     </VStack>

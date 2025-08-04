@@ -12,6 +12,8 @@ import {
   IconButton,
   Collapse,
   Icon,
+  Stack,
+  Wrap,
 } from '@chakra-ui/react';
 import {
   PencilIcon,
@@ -49,11 +51,14 @@ export const SlabHeading = ({
     {children ? (
       children
     ) : (
-      <HStack>
+      <Wrap
+        // direction={{ base: 'column', md: 'row' }}
+        justify={'space-between'}
+        spacing={3}
+      >
         <PageTitle>{title}</PageTitle>
-        <Spacer />
         {rightElement}
-      </HStack>
+      </Wrap>
     )}
     <Divider mt={2} />
   </Heading>

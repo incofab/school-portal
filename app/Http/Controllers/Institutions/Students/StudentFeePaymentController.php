@@ -114,10 +114,11 @@ class StudentFeePaymentController extends Controller
     ]);
 
     $fee = $feeRule->getModel();
-    $hasAlreadyPaid = FeePaymentHandler::getReceipt($fee, $student->user);
+    $receipt = FeePaymentHandler::getReceipt($fee, $student->user);
+    $hasAlreadyPaid = $receipt?->hasPaid() ?? false;
     abort_if($hasAlreadyPaid, 403, 'Fee already paid');
 
-    $amount = $data['amount'] ?? $fee->amount;
+    $amount = $data['amount'] ?? ($receipt?->amount_remaining ?? $fee->amount);
     $user = currentUser();
     $settingshandler = SettingsHandler::makeFromRoute();
 

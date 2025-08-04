@@ -25,7 +25,6 @@ import RecordFeePaymentModal from '@/components/modals/record-fee-payment-modal'
 import useModalToggle from '@/hooks/use-modal-toggle';
 import FeePaymentTableFilters from '@/components/table-filters/fee-payment-table-filters';
 import startCase from 'lodash/startCase';
-import { InertiaLink } from '@inertiajs/inertia-react';
 import { LabelText } from '@/components/result-helper-components';
 import { formatAsCurrency } from '@/util/util';
 import RetrievePaymentSummaryModal from '@/components/modals/retrieve-payment-summary-modal';
@@ -68,18 +67,18 @@ export default function ListFeePayments({
       label: 'Student',
       value: 'receipt.user.full_name',
     },
+    // {
+    //   label: 'Fee Amount',
+    //   value: 'fee.amount',
+    // },
     {
-      label: 'Fee Amount',
-      value: 'fee.amount',
+      label: 'Amount',
+      value: 'amount',
     },
-    {
-      label: 'Amount Paid',
-      value: 'receipt.amount_paid',
-    },
-    {
-      label: 'Balance',
-      value: 'receipt.amount_remaining',
-    },
+    // {
+    //   label: 'Balance',
+    //   value: 'receipt.amount_remaining',
+    // },
     {
       label: 'Confirmed By',
       value: 'confirmed_by.full_name',

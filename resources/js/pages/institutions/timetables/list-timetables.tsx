@@ -1,11 +1,15 @@
-import React, { useEffect } from 'react';
-
+import React from 'react';
 import { useState } from 'react';
 import { Icon, VStack, HStack, Text, IconButton, Flex } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { PlusIcon } from '@heroicons/react/24/solid';
-import { Timetable, SchoolActivity, Course } from '@/types/models';
+import {
+  Timetable,
+  SchoolActivity,
+  Course,
+  Classification,
+} from '@/types/models';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import CreateEditTimetableModal from './../../../components/modals/create-edit-timetable-modal';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
@@ -16,11 +20,15 @@ import useWebForm from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
 import useIsStaff from '@/hooks/use-is-staff';
+import ClassificationSelect from '@/components/selectors/classification-select';
+import { Inertia } from '@inertiajs/inertia';
 
 interface Props {
   timetables: Timetable[];
-  classificationId: number;
-  // formatedTimetables?: FormattedTimetable;
+  classification: Classification;
+  classifications: Classification[];
+  courses: Course[];
+  schoolActivities: SchoolActivity[];
 }
 
 interface FormattedTimetable {
@@ -29,11 +37,15 @@ interface FormattedTimetable {
 
 export default function ListTimetables({
   timetables,
-  classificationId,
+  classification,
+  classifications,
+  courses,
+  schoolActivities,
 }: Props) {
   const createEditTimetableModalToggle = useModalValueToggle<TimetableCell>();
   const [formattedTableState, setFormattedTableState] =
-    useState<FormattedTimetable>([]);
+    useState<FormattedTimetable>(getFormattedTimetable());
+  const { instRoute } = useInstitutionRoute();
   const isStaff = useIsStaff();
 
   function getActionableName(timetable: Timetable) {
@@ -43,20 +55,44 @@ export default function ListTimetables({
     return (timetable.actionable as SchoolActivity)?.title;
   }
 
-  let f = {} as FormattedTimetable;
-  useEffect(() => {
-    f = {};
+  // let f = {} as FormattedTimetable;
+  // useEffect(() => {
+  //   f = {};
+  //   timetables.forEach((timetable) => {
+  //     const thisDay = f[timetable.day] ?? [];
+  //     if (!f[timetable.day]) {
+  //       f[timetable.day] = thisDay;
+  //     }
+  //     thisDay.push({
+  //       id: timetable.id,
+  //       day: timetable.day,
+  //       start_time: timetable.start_time,
+  //       end_time: timetable.end_time,
+  //       actionable_type: timetable.actionable_type,
+  //       actionable_id: timetable.actionable_id,
+  //       actionable_name: getActionableName(timetable),
+  //       coordinators: timetable.timetable_coordinators?.map((coordinator) => ({
+  //         coordinator_user_id: coordinator.institution_user!.id,
+  //         coordinator_name: coordinator.institution_user!.user!.full_name,
+  //       })),
+  //     });
+  //   });
+  //   setFormattedTableState(f);
+  // }, []);
 
+  function getFormattedTimetable() {
+    let fff = {} as FormattedTimetable;
     timetables.forEach((timetable) => {
-      const thisDay = f[timetable.day] ?? [];
-      if (!f[timetable.day]) {
-        f[timetable.day] = thisDay;
+      const thisDay = fff[timetable.day] ?? [];
+      if (!fff[timetable.day]) {
+        fff[timetable.day] = thisDay;
       }
 
       thisDay.push({
         id: timetable.id,
         day: timetable.day,
         start_time: timetable.start_time,
+        classification_id: timetable.classification_id,
         end_time: timetable.end_time,
         actionable_type: timetable.actionable_type,
         actionable_id: timetable.actionable_id,
@@ -67,8 +103,8 @@ export default function ListTimetables({
         })),
       });
     });
-    setFormattedTableState(f);
-  }, []);
+    return fff;
+  }
 
   function getNextTimeRange(
     prevCellStartTime: string,
@@ -109,7 +145,31 @@ export default function ListTimetables({
   return (
     <DashboardLayout>
       <Slab>
-        <SlabHeading title="Timetable" />
+        <SlabHeading
+          title="Timetable"
+          rightElement={
+            isStaff && (
+              <Div minW={'150px'}>
+                <ClassificationSelect
+                  classifications={classifications}
+                  selectValue={{
+                    label: classification.title,
+                    value: classification.id,
+                  }}
+                  isMulti={false}
+                  isClearable={true}
+                  onChange={(e: any) => {
+                    const id = e?.value;
+                    if (!id || id == classification.id) {
+                      return;
+                    }
+                    Inertia.visit(instRoute('timetables.classTimetable', [id]));
+                  }}
+                />
+              </Div>
+            )
+          }
+        />
 
         {/* Table */}
         <SlabBody overflowX="auto">
@@ -122,7 +182,7 @@ export default function ListTimetables({
                   p="2"
                   borderWidth="2px"
                   minW="120px"
-                  h="120px"
+                  h="110px"
                   display={'flex'}
                   alignItems={'center'}
                 >
@@ -154,18 +214,21 @@ export default function ListTimetables({
 
                       const startTimeRange =
                         cells[cells.length - 1]?.end_time ?? '08:00';
-                      cells.push({
+                      const cell = {
                         day: parsedkey,
                         start_time: startTimeRange,
+                        classification_id: classification.id,
                         end_time: getNextTimeRange(
                           prevCellStartTime,
                           prevCellEndTime
                         ),
-                      });
+                      };
+                      cells.push(cell);
                       setFormattedTableState({
                         ...formattedTableState,
                         [dayId]: cells,
                       });
+                      createEditTimetableModalToggle.open(cell);
                     }}
                   />
                 )}
@@ -177,7 +240,11 @@ export default function ListTimetables({
       {createEditTimetableModalToggle.state && (
         <CreateEditTimetableModal
           timetableCell={createEditTimetableModalToggle.state}
-          classificationId={classificationId}
+          classificationId={
+            createEditTimetableModalToggle.state.classification_id
+          }
+          courses={courses}
+          schoolActivities={schoolActivities}
           {...createEditTimetableModalToggle.props}
           onSuccess={() => window.location.reload()} // Reloads the page
         />
@@ -248,7 +315,7 @@ function Cell({
         p="2"
         borderWidth="2px"
         w="150px"
-        h="120px"
+        h="110px"
         borderColor={cellBorderColor ?? ''}
       >
         {/* Time Range:  */}
@@ -271,7 +338,7 @@ function Cell({
 
         {/* Action:  */}
         <Flex justify="space-between" my={1}>
-          <Text fontSize="sm" marginEnd="auto">
+          <Text fontSize="sm" marginEnd="auto" noOfLines={1}>
             {cell.actionable_name}
           </Text>
 

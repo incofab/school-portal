@@ -88,6 +88,7 @@ class FeeController extends Controller
 
   function destroy(Institution $institution, Fee $fee)
   {
+    abort_if($fee->feePayments()->first(), 403, 'Fee has payments');
     $fee->delete();
     return $this->ok();
   }

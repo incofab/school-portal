@@ -24,6 +24,11 @@ beforeEach(function () {
     ->institution($this->institution)
     ->student($this->student)
     ->create();
+
+  $this->guardian = GuardianStudent::factory()
+    ->withInstitution($this->institution)
+    ->student($this->student)
+    ->create();
 });
 
 it('can load the index page with fee payments and receipt', function () {
@@ -119,11 +124,7 @@ test(
       ->institution($this->institution)
       ->feeCategories()
       ->create();
-    $guardian = GuardianStudent::factory()
-      ->withInstitution($this->institution)
-      ->student($this->student)
-      ->create();
-    $guardianUser = $guardian->guardian;
+    $guardianUser = $this->guardian->guardian;
     $guardianUser->fill(['wallet' => $fee->amount])->save();
 
     actingAs($guardianUser)
@@ -163,3 +164,40 @@ test(
     ]);
   }
 );
+
+test('It aborts if fee is already paid', function () {
+  $fee = Fee::factory()
+    ->institution($this->institution)
+    ->feeCategories()
+    ->create();
+
+  $guardianUser = $this->guardian->guardian;
+  $guardianUser->fill(['wallet' => $fee->amount * 2])->save();
+
+  $route = route('institutions.students.fee-payments.store', [
+    $this->institution->uuid,
+    $this->student
+  ]);
+  $data = [
+    'fee_id' => $fee->id,
+    'academic_session_id' => $fee->academic_session_id,
+    'term' => $fee->term?->value,
+    'merchant' => PaymentMerchantType::UserWallet->value
+  ];
+
+  // Part payment
+  actingAs($guardianUser)
+    ->postJson($route, [...$data, 'amount' => $fee->amount / 2])
+    ->assertOk();
+
+  // Full payment
+  actingAs($guardianUser)
+    ->postJson($route, $data)
+    ->assertOk();
+
+  // Trying to pay again after full payment
+  actingAs($guardianUser)
+    ->postJson($route, $data)
+    ->dump()
+    ->assertForbidden();
+});

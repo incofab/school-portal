@@ -302,6 +302,7 @@ export interface TimetableCell {
   actionable_type?: string;
   actionable_id?: number;
   actionable_name?: string;
+  classification_id: number;
   coordinators?: {
     coordinator_user_id?: number;
     coordinator_name?: string;
