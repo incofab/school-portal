@@ -127,6 +127,7 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
                       )
                         submit(PaymentMerchantType.UserWallet);
                     }}
+                    isLoading={webForm.processing}
                   />
                   <Div>
                     <FormButton

@@ -35,8 +35,6 @@ export default function UpdateBvnNinForm({ ...props }: {} & BoxProps) {
   });
 
   async function submit() {
-    console.log('Submit called');
-
     const res = await webForm.submit((data, web) =>
       web.put(route('users.bvn-nin.update'), data)
     );

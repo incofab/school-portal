@@ -14,6 +14,8 @@ import {
   VStack,
   Text,
   SimpleGrid,
+  Stack,
+  Grid,
 } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { PaginationResponse } from '@/types/types';
@@ -36,7 +38,7 @@ import { BrandButton, LinkButton } from '@/components/buttons';
 
 interface Dependent extends Student {
   user: User;
-  student_id: Number;
+  student_id: number;
   classification: Classification;
 }
 
@@ -126,10 +128,10 @@ export default function ListDependents({ dependents }: Props) {
         <SlabHeading title="My Students" />
         <SlabBody>
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-            {dependents.data.map((student) => (
+            {dependents.data.map((dependant) => (
               <StudentCard
-                key={student.id}
-                student={student}
+                key={dependant.student_id}
+                dependant={dependant}
                 deleteItem={deleteItem}
                 isLoading={deleteForm.processing}
               />
@@ -142,15 +144,16 @@ export default function ListDependents({ dependents }: Props) {
 }
 
 function StudentCard({
-  student,
+  dependant,
   deleteItem,
   isLoading,
 }: {
-  student: Dependent;
+  dependant: Dependent;
   deleteItem: (obj: Dependent) => void;
   isLoading: boolean;
 }) {
   const { instRoute } = useInstitutionRoute();
+
   return (
     <Div
       bg={useColorModeValue('white', 'gray.900')}
@@ -164,36 +167,43 @@ function StudentCard({
       <HStack align="stretch" justify="space-between" mb={4} spacing={3}>
         <Avatar
           size="lg"
-          name={student.user.full_name}
-          src={student.user.photo_url}
+          name={dependant.user.full_name}
+          src={dependant.user.photo_url}
           border="2px solid"
           borderColor="gray.300"
         />
         <VStack align="start" spacing={1} w={'full'}>
           <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
-            {student.user.full_name}
+            {dependant.user.full_name}
           </Text>
           <Text fontSize="sm" color="gray.500">
-            Class: {student.classification.title}
+            Class: {dependant.classification.title}
           </Text>
           <Text fontSize="sm" color="gray.500">
-            Student Id: {student.code}
+            Student Id: {dependant.code}
           </Text>
         </VStack>
       </HStack>
 
-      <HStack spacing={3} flexWrap="wrap" mt={3}>
+      <Grid gridColumn={2} gap={4}>
         <LinkButton
-          title="Results"
-          href={instRoute('term-results.index', [student.user_id])}
+          title="Term Results"
+          href={instRoute('term-results.index', [dependant.user_id])}
         />
         <LinkButton
           title="Fees & Receipts"
-          href={instRoute('students.receipts.index', [student.student_id])}
+          href={instRoute('students.receipts.index', [dependant.student_id])}
+        />
+        <LinkButton
+          title="Session Results"
+          href={instRoute('students.session-results.index', [
+            dependant.student_id,
+          ])}
+          colorScheme={'blue'}
         />
         <DestructivePopover
-          label={`Remove ${student.user.full_name} as your child/ward?`}
-          onConfirm={() => deleteItem(student)}
+          label={`Remove ${dependant.user.full_name} as your child/ward?`}
+          onConfirm={() => deleteItem(dependant)}
           isLoading={isLoading}
         >
           <BrandButton
@@ -204,7 +214,7 @@ function StudentCard({
             title="Delete"
           />
         </DestructivePopover>
-      </HStack>
+      </Grid>
     </Div>
   );
 }

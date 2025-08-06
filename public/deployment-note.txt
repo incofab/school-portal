@@ -14,10 +14,12 @@
 - add sms/email button on dashboard
 - limit sms length to 145 characters
 - add text counter in front end
-- seed prices for institution group and seed prices when inst group is created
-- Learn claude AI
-- Add API keys for both SMS and Email providers
-- current tern and session size
 
--- Make reference column in user_transactions table an index
--- delete all account numbers
+
+- Send payslip to staff email on request
+- Batch payment processing for payroll
+- Filter on Expense throws an error
+- Download expense excel
+- Display expense salary
+- Account summary (Income and Expenses - profit/loss)
+- Record account numbers for staff

@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { AcademicSession, FeePayment, Receipt, Student, User } from '@/types/models';
+import React from 'react';
+import {
+  AcademicSession,
+  FeePayment,
+  Receipt,
+  Student,
+  User,
+} from '@/types/models';
 import { Div } from '@/components/semantic';
 import {
   Avatar,
@@ -11,15 +17,12 @@ import {
 } from '@chakra-ui/react';
 import DataTable, { TableHeader } from '@/components/data-table';
 import useSharedProps from '@/hooks/use-shared-props';
-import { dateTimeFormat, formatAsCurrency } from '@/util/util';
 import { LabelText } from '@/components/result-helper-components';
 import ImagePaths from '@/util/images';
-import { format } from 'date-fns';
 import ResultSheetLayout from '../../result-sheets/result-sheet-layout';
 import startCase from 'lodash/startCase';
 import DateTimeDisplay from '@/components/date-time-display';
 import { FeeItem, TermType } from '@/types/types';
-import CenteredBox from '@/components/centered-box';
 
 interface Props {
   receipts: Receipt[];
@@ -29,7 +32,13 @@ interface Props {
   academic_session: AcademicSession;
 }
 
-export default function PrintReceiptPage({ receipts, student, user, term, academic_session }: Props) {
+export default function PrintReceiptPage({
+  receipts,
+  student,
+  user,
+  term,
+  academic_session,
+}: Props) {
   const { currentInstitution, stamp } = useSharedProps();
 
   const feeItemTableHeaders: TableHeader<FeeItem>[] = [
@@ -71,8 +80,9 @@ export default function PrintReceiptPage({ receipts, student, user, term, academ
       ? [
           {
             label: 'Session',
-            value: `${term ? `${startCase(term)} Term, ` : ''
-            } ${academic_session?.title}`,
+            value: `${term ? `${startCase(term)} Term, ` : ''} ${
+              academic_session?.title
+            }`,
           },
         ]
       : []),
@@ -121,62 +131,84 @@ export default function PrintReceiptPage({ receipts, student, user, term, academ
           ))}
           {/* <DateTimeDisplay dateTime={receipt.created_at} /> */}
         </VStack>
-        <div className="table-container"> 
-            {receipts.map((receipt, i) => {
-                const feeItems = receipt.fee?.fee_items || [];
-                const leftItems = feeItems.filter((_, index) => index % 2 === 0); // 0-based: 0, 2, 4, ...
-                const rightItems = feeItems.filter((_, index) => index % 2 !== 0); // 1, 3, 5, ...
+        <div className="table-container">
+          {receipts.map((receipt, i) => {
+            const feeItems = receipt.fee?.fee_items || [];
+            const leftItems = feeItems.filter((_, index) => index % 2 === 0); // 0-based: 0, 2, 4, ...
+            const rightItems = feeItems.filter((_, index) => index % 2 !== 0); // 1, 3, 5, ...
 
-                return (
-                    <Div key={receipt.id}>
-                        <Text textAlign="center" fontSize="sm" mb={0} mt={6} fontWeight={'bold'}>
-                            {receipt.fee?.title}
-                            <Text color={'red'}>
-                                {receipt.amount_remaining > 0? `(${receipt.amount_remaining} Unpaid)` : ''}
-                            </Text>
-                        </Text>
+            return (
+              <Div key={receipt.id}>
+                <Text
+                  textAlign="center"
+                  fontSize="sm"
+                  mb={0}
+                  mt={6}
+                  fontWeight={'bold'}
+                >
+                  {receipt.fee?.title}
+                  <Text color={'red'}>
+                    {receipt.amount_remaining > 0
+                      ? `(${receipt.amount_remaining} Unpaid)`
+                      : ''}
+                  </Text>
+                </Text>
 
-                        <DataTable
-                            scroll={true}
-                            headers={feePaymentTableHeaders}
-                            data={receipt.fee_payments!}
-                            keyExtractor={(row) => row.id}
-                            hideSearchField={true}
-                            tableProps={{ className: 'result-table', variant:'striped' }}
-                        />
+                {receipt.fee_payments!.length > 0 && (
+                  <DataTable
+                    scroll={true}
+                    headers={feePaymentTableHeaders}
+                    data={receipt.fee_payments!}
+                    keyExtractor={(row) => row.id}
+                    hideSearchField={true}
+                    tableProps={{
+                      className: 'result-table',
+                      variant: 'striped',
+                    }}
+                  />
+                )}
 
-                        <HStack gap={3} key={i} alignItems={'top'}>
-                            <Div width={'50%'} height={'100%'}>
-                                <DataTable 
-                                scroll={true}
-                                headers={feeItemTableHeaders}
-                                data={leftItems}
-                                keyExtractor={(row) => row.title}
-                                hideSearchField={true}
-                                tableProps={{ className: 'result-table' }}
-                                />
-                            </Div>
+                <HStack gap={3} key={i} alignItems={'top'}>
+                  <Div width={'50%'} height={'100%'}>
+                    {leftItems.length > 0 && (
+                      <DataTable
+                        scroll={true}
+                        headers={feeItemTableHeaders}
+                        data={leftItems}
+                        keyExtractor={(row) => row.title}
+                        hideSearchField={true}
+                        tableProps={{ className: 'result-table' }}
+                      />
+                    )}
+                  </Div>
 
-                            <Div width={'50%'} height={'100%'}>
-                                <DataTable 
-                                scroll={true}
-                                headers={feeItemTableHeaders}
-                                data={rightItems}
-                                keyExtractor={(row) => row.title}
-                                hideSearchField={true}
-                                tableProps={{ className: 'result-table' }}
-                                />
-                            </Div>
-                        </HStack>
-                    </Div>
-                );
-            })}
+                  <Div width={'50%'} height={'100%'}>
+                    {rightItems.length > 0 && (
+                      <DataTable
+                        scroll={true}
+                        headers={feeItemTableHeaders}
+                        data={rightItems}
+                        keyExtractor={(row) => row.title}
+                        hideSearchField={true}
+                        tableProps={{ className: 'result-table' }}
+                      />
+                    )}
+                  </Div>
+                </HStack>
+              </Div>
+            );
+          })}
         </div>
-        <Divider my={5} /> 
-        {receipts.length > 0
-          ? <Text textAlign="center">Thank you for your payment!</Text>
-          : <Div textAlign={'center'} fontSize={'lg'}>No receipts found for {user.full_name} in {term ? `${startCase(term)} Term,` : '' } {academic_session?.title} Session</Div>
-        }
+        <Divider my={5} />
+        {receipts.length > 0 ? (
+          <Text textAlign="center">Thank you for your payment!</Text>
+        ) : (
+          <Div textAlign={'center'} fontSize={'lg'}>
+            No receipts found for {user.full_name} in{' '}
+            {term ? `${startCase(term)} Term,` : ''} {academic_session?.title}{' '}
+            Session
+          </Div>
+        )}
       </Div>
     </ResultSheetLayout>
   );

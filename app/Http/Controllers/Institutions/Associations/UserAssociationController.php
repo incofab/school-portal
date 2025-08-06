@@ -41,6 +41,7 @@ class UserAssociationController extends Controller
       ->with('institutionUser.user');
 
     return Inertia::render('institutions/associations/list-user-associations', [
+      'association' => $association,
       'associations' => Association::all(),
       'userAssociations' => paginateFromRequest($query)
     ]);

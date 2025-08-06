@@ -2,7 +2,7 @@ import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
 import useModalToggle from '@/hooks/use-modal-toggle';
-import { SessionResult } from '@/types/models';
+import { SessionResult, Student } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
 import React from 'react';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -14,9 +14,10 @@ import DisplayUserFullname from '@/domain/institutions/users/display-user-fullna
 
 interface Props {
   sessionResults: PaginationResponse<SessionResult>;
+  student?: Student;
 }
 
-export default function ListSessionResults({ sessionResults }: Props) {
+export default function ListSessionResults({ sessionResults, student }: Props) {
   const sessionResultFilterToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
 
@@ -61,7 +62,11 @@ export default function ListSessionResults({ sessionResults }: Props) {
   return (
     <DashboardLayout>
       <Slab>
-        <SlabHeading title="Session Results" />
+        <SlabHeading
+          title={`Session Results ${
+            student ? '' : `- ${student!.user?.full_name}`
+          }`}
+        />
         <SlabBody>
           <ServerPaginatedTable
             scroll={true}

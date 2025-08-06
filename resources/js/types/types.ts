@@ -122,7 +122,7 @@ export enum WeekDay {
 
 export enum YearMonth {
   January = 'january',
-  Febuary = 'febuary',
+  February = 'february',
   March = 'march',
   April = 'april',
   May = 'may',

@@ -5,8 +5,10 @@ use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\CourseResult;
 use App\Models\CourseResultInfo;
+use App\Models\GuardianStudent;
 use App\Models\Institution;
 use App\Models\SessionResult;
+use App\Models\Student;
 use App\Models\TermResult;
 use App\Models\User;
 use App\Support\UITableFilters\SessionResultUITableFilters;
@@ -22,7 +24,7 @@ class SessionResultController extends Controller
     return SessionResult::query();
   }
 
-  function index(Request $request, Institution $institution)
+  function index(Institution $institution, Request $request)
   {
     $currentUser = currentUser();
     $query = $this->getQuery($currentUser);
@@ -31,6 +33,23 @@ class SessionResultController extends Controller
 
     return inertia('institutions/list-session-results', [
       'sessionResults' => paginateFromRequest($query)
+    ]);
+  }
+
+  function indexByStudent(
+    Institution $institution,
+    Student $student,
+    Request $request
+  ) {
+    $this->authorize('view', $student);
+
+    $query = $student->sessionResults()->getQuery();
+    SessionResultUITableFilters::make($request->all(), $query)->filterQuery();
+    $query->with('student.user', 'classification', 'academicSession');
+
+    return inertia('institutions/list-session-results', [
+      'sessionResults' => paginateFromRequest($query),
+      'student' => $student->load('user')
     ]);
   }
 

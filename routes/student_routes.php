@@ -36,6 +36,8 @@ Route::prefix('students/{student}')->name('students.')->middleware(['student.acc
     
 Route::get('/session-results/index', [Web\Students\SessionResultController::class, 'index'])
     ->name('session-results.index');
+Route::get('/students/{student}/session-results/index', [Web\Students\SessionResultController::class, 'indexByStudent'])
+    ->name('students.session-results.index');
 Route::get('/session-results/{sessionResult}', [Web\Students\SessionResultController::class, 'show'])
     ->name('session-results.show');
 Route::delete('/session-results/{sessionResult}', [Web\Students\SessionResultController::class, 'destroy'])

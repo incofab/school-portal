@@ -28,6 +28,7 @@ export default function ListAssociations({
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
+  console.log('association', association);
 
   async function deleteItem(obj: UserAssociation) {
     const res = await deleteForm.submit((data, web) =>

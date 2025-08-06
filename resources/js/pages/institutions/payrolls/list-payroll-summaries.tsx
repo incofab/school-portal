@@ -11,7 +11,6 @@ import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
 import useModalToggle from '@/hooks/use-modal-toggle';
-import { InertiaLink } from '@inertiajs/inertia-react';
 import { formatAsCurrency, ucFirst } from '@/util/util';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';

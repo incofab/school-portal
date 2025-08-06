@@ -5,8 +5,8 @@ namespace App\Enums;
 enum YearMonth: string
 {
   case January = 'january';
-  case Febuary = 'febuary';
-  case Match = 'match';
+  case February = 'february';
+  case March = 'march';
   case April = 'april';
   case May = 'may';
   case June = 'june';

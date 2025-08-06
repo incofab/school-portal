@@ -66,6 +66,9 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
     [InstitutionSettingType.PinUsageCount]: Boolean(
       parseInt(settings[InstitutionSettingType.PinUsageCount]?.value ?? 1)
     ),
+    [InstitutionSettingType.LockTermSession]: Boolean(
+      parseInt(settings[InstitutionSettingType.LockTermSession]?.value ?? 1)
+    ),
   } as { [key: string]: any });
 
   const submit = async (activeSetting: InstitutionSettingType, value?: any) => {
@@ -205,7 +208,7 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   }
                   pr={3}
                 />
-                <span>Allow Term and Session Change</span>
+                <span>Lock Term and Session Change</span>
                 <Div fontSize={11} mt={2} color={'red'}>
                   <i>
                     Be careful, turning this off means you can change term and
