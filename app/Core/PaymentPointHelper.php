@@ -57,14 +57,14 @@ class PaymentPointHelper
     foreach ($bankAccounts as $key => $bankAccount) {
       $userData->reservedAccounts()->firstOrCreate(
         [
-          'reference' => $bankAccount['Reserved_Account_Id']
+          'merchant' => PaymentMerchantType::PaymentPoint,
+          'bank_code' => $bankAccount['bankCode']
         ],
         [
-          'merchant' => PaymentMerchantType::Monnify,
+          'reference' => $bankAccount['Reserved_Account_Id'],
           'account_name' => $bankAccount['accountName'],
           'account_number' => $bankAccount['accountNumber'],
-          'bank_name' => $bankAccount['bankName'],
-          'status' => 'ACTIVE'
+          'bank_name' => $bankAccount['bankName']
         ]
       );
     }

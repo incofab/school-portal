@@ -27,12 +27,23 @@ class SessionResultController extends Controller
   function index(Institution $institution, Request $request)
   {
     $currentUser = currentUser();
+    $institutionUser = currentInstitutionUser();
+    $student = $institutionUser
+      ?->student()
+      ->with('user')
+      ->first();
+    abort_unless(
+      $institutionUser->isAdmin() && $student,
+      403,
+      'You are not a student of this institution'
+    );
     $query = $this->getQuery($currentUser);
     SessionResultUITableFilters::make($request->all(), $query)->filterQuery();
     $query->with('student.user', 'classification', 'academicSession');
 
     return inertia('institutions/list-session-results', [
-      'sessionResults' => paginateFromRequest($query)
+      'sessionResults' => paginateFromRequest($query),
+      'student' => $student
     ]);
   }
 

@@ -34,6 +34,26 @@ Route::get('dummy1', function () {
     die('Dummy page');
 });
 
+Route::get('/no-mid-term/{instUuid}', function ($instUuid) {
+    $inst = \App\Models\Institution::where('uuid', $instUuid)->firstOrFail();
+    $inst->termResults()
+      ->where('for_mid_term', true)
+      ->update(['for_mid_term' => false]);
+    \App\Models\CourseResult::query()
+      ->where('institution_id', $inst->id)
+      ->where('for_mid_term', true)
+      ->update(['for_mid_term' => false]);
+    \App\Models\CourseResultInfo::query()
+      ->where('institution_id', $inst->id)
+      ->where('for_mid_term', true)
+      ->update(['for_mid_term' => false]);
+    \App\Models\ClassResultInfo::query()
+      ->where('institution_id', $inst->id)
+      ->where('for_mid_term', true)
+      ->update(['for_mid_term' => false]);
+      dd('Done');
+});
+
 Route::get('/activate-result/{instUuid}', function ($instUuid) {
     $inst = \App\Models\Institution::where('uuid', $instUuid)->firstOrFail();
     $termResults = \App\Models\TermResult::query()

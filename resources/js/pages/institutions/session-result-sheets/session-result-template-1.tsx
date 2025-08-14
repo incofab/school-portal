@@ -10,12 +10,12 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import { TermType } from '@/types/types';
 import ResultUtil from '@/util/result-util';
 import { Div } from '@/components/semantic';
-import { Avatar, Flex, HStack, Text, VStack } from '@chakra-ui/react';
+import { Avatar, Flex, HStack, Img, Text, VStack } from '@chakra-ui/react';
 import useSharedProps from '@/hooks/use-shared-props';
 import ImagePaths from '@/util/images';
 import { LabelText } from '@/components/result-helper-components';
 import '@/../../public/style/result-sheet.css';
-import '@/../../public/style/result/session-result.css'; 
+import '@/../../public/style/result/session-result.css';
 
 interface Props {
   sessionResult: SessionResult;
@@ -32,7 +32,7 @@ export default function SessionResultTemplate1({
   sessionResult,
   termResultDetails,
 }: Props) {
-  const { currentInstitution } = useSharedProps();
+  const { currentInstitution, stamp } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
 
   type TermRow = {
@@ -247,6 +247,11 @@ export default function SessionResultTemplate1({
             })}
           </tbody>
         </table>
+        {stamp && (
+          <Div textAlign={'end'}>
+            <Img src={stamp} alt="School stamp" display={'inline-block'} />
+          </Div>
+        )}
       </Div>
     </Div>
   );
