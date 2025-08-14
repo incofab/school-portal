@@ -87,18 +87,19 @@ class GetViewResultSheetData
       ->forMidTerm($termResult->for_mid_term)
       ->forTerm($term)
       ->get();
-    $resultCommentTemplate = ResultCommentTemplate::query()
-      ->where(
-        fn($q) => $q
-          ->whereNull('type')
-          ->orWhere(
-            'type',
-            $forMidTerm
-              ? ResultCommentTemplateType::MidTermResult
-              : ResultCommentTemplateType::FullTermResult
-          )
-      )
-      ->get();
+    $resultCommentTemplate = ResultCommentTemplate::getTemplate($forMidTerm);
+    // query()
+    //   ->where(
+    //     fn($q) => $q
+    //       ->whereNull('type')
+    //       ->orWhere(
+    //         'type',
+    //         $forMidTerm
+    //           ? ResultCommentTemplateType::MidTermResult
+    //           : ResultCommentTemplateType::FullTermResult
+    //       )
+    //   )
+    //   ->get();
 
     $viewData = [
       'institution' => currentInstitution(),

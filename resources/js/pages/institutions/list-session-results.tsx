@@ -64,7 +64,7 @@ export default function ListSessionResults({ sessionResults, student }: Props) {
       <Slab>
         <SlabHeading
           title={`Session Results ${
-            student ? '' : `- ${student!.user?.full_name}`
+            student ? `- ${student!.user?.full_name}` : ''
           }`}
         />
         <SlabBody>

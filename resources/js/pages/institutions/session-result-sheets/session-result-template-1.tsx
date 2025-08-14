@@ -4,6 +4,7 @@ import {
   SessionResult,
   CourseResultInfo,
   Course,
+  ResultCommentTemplate,
 } from '@/types/models';
 import React, { useMemo } from 'react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
@@ -19,6 +20,7 @@ import '@/../../public/style/result/session-result.css';
 
 interface Props {
   sessionResult: SessionResult;
+  resultCommentTemplate: ResultCommentTemplate[];
   termResultDetails: {
     [term: string]: {
       termResult: TermResult;
@@ -31,6 +33,7 @@ interface Props {
 export default function SessionResultTemplate1({
   sessionResult,
   termResultDetails,
+  resultCommentTemplate,
 }: Props) {
   const { currentInstitution, stamp } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
@@ -241,14 +244,21 @@ export default function SessionResultTemplate1({
                   {termDataCells(termRow.termCourseResult[TermType.Third])}
                   <td>{sessionTotal}</td>
                   <td>{sessionTotalAverage}</td>
-                  <td>{ResultUtil.getGrade(sessionTotalAverage).grade}</td>
+                  <td>
+                    {
+                      ResultUtil.getGrade(
+                        sessionTotalAverage,
+                        resultCommentTemplate
+                      ).grade
+                    }
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
         {stamp && (
-          <Div textAlign={'end'}>
+          <Div textAlign={'end'} mt={2}>
             <Img src={stamp} alt="School stamp" display={'inline-block'} />
           </Div>
         )}

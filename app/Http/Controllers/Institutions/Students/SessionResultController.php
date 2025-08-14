@@ -7,6 +7,7 @@ use App\Models\CourseResult;
 use App\Models\CourseResultInfo;
 use App\Models\GuardianStudent;
 use App\Models\Institution;
+use App\Models\ResultCommentTemplate;
 use App\Models\SessionResult;
 use App\Models\Student;
 use App\Models\TermResult;
@@ -33,7 +34,7 @@ class SessionResultController extends Controller
       ->with('user')
       ->first();
     abort_unless(
-      $institutionUser->isAdmin() && $student,
+      $institutionUser->isAdmin() || $student,
       403,
       'You are not a student of this institution'
     );
@@ -105,7 +106,8 @@ class SessionResultController extends Controller
           'student',
           'classification'
         ),
-        'termResultDetails' => $termResultDetails
+        'termResultDetails' => $termResultDetails,
+        'resultCommentTemplate' => ResultCommentTemplate::getTemplate(false)
       ]
     );
   }

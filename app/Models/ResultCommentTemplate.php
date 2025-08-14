@@ -19,6 +19,22 @@ class ResultCommentTemplate extends Model
     'type' => ResultCommentTemplateType::class
   ];
 
+  static function getTemplate(?bool $forMidTerm = false)
+  {
+    return ResultCommentTemplate::query()
+      ->where(
+        fn($q) => $q
+          ->whereNull('type')
+          ->orWhere(
+            'type',
+            $forMidTerm
+              ? ResultCommentTemplateType::MidTermResult
+              : ResultCommentTemplateType::FullTermResult
+          )
+      )
+      ->get();
+  }
+
   function institution()
   {
     return $this->belongsTo(Institution::class);
