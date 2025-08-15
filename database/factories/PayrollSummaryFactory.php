@@ -25,7 +25,7 @@ class PayrollSummaryFactory extends Factory
         ->optional()
         ->dateTimeThisYear(),
       'month' => fake()->monthName,
-      'year' => fake()->year
+      'year' => fake()->unique()->year
     ];
   }
 

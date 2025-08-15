@@ -198,6 +198,5 @@ test('It aborts if fee is already paid', function () {
   // Trying to pay again after full payment
   actingAs($guardianUser)
     ->postJson($route, $data)
-    ->dump()
     ->assertForbidden();
 });

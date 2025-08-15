@@ -18,7 +18,7 @@ import { LabelText } from '@/components/result-helper-components';
 import '@/../../public/style/result-sheet.css';
 import '@/../../public/style/result/session-result.css';
 
-interface Props {
+export interface SessionResultProps {
   sessionResult: SessionResult;
   resultCommentTemplate: ResultCommentTemplate[];
   termResultDetails: {
@@ -34,7 +34,7 @@ export default function SessionResultTemplate1({
   sessionResult,
   termResultDetails,
   resultCommentTemplate,
-}: Props) {
+}: SessionResultProps) {
   const { currentInstitution, stamp } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
 

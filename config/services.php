@@ -63,5 +63,11 @@ return [
     'secret' => env('MONNIFY_SECRET_KEY'),
     'public' => env('MONNIFY_PUBLIC_KEY'),
     'contract-code' => env('MONNIFY_CONTRACT_CODE')
+  ],
+
+  'payment-point' => [
+    'api-key' => env('PAYMENT_POINT_API_KEY'),
+    'secret' => env('PAYMENT_POINT_SECRET_KEY'),
+    'business-id' => env('PAYMENT_POINT_BUSINESS_ID')
   ]
 ];

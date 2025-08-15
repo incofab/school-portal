@@ -32,13 +32,13 @@ class PaymentPointHelper
     ]);
   }
 
-  function reserveAccount(User $userData): Res
+  function reserveAccount(User $user): Res
   {
     $url = $this->url('createVirtualAccount');
     $data = [
-      'email' => $userData->email,
-      'name' => $userData->firstname . ' ' . $userData->lastname,
-      'phoneNumber' => $userData->phone,
+      'email' => $user->email,
+      'name' => $user->firstname . ' ' . $user->lastname,
+      'phoneNumber' => $user->phone,
       'bankCode' => ['20946'],
       'businessId' => config('services.payment-point.business-id')
     ];
@@ -55,12 +55,13 @@ class PaymentPointHelper
     }
 
     foreach ($bankAccounts as $key => $bankAccount) {
-      $userData->reservedAccounts()->firstOrCreate(
+      $user->reservedAccounts()->firstOrCreate(
         [
           'merchant' => PaymentMerchantType::PaymentPoint,
           'bank_code' => $bankAccount['bankCode']
         ],
         [
+          // 'reference' => $user->getReference(),
           'reference' => $bankAccount['Reserved_Account_Id'],
           'account_name' => $bankAccount['accountName'],
           'account_number' => $bankAccount['accountNumber'],

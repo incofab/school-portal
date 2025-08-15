@@ -115,10 +115,6 @@ class MonnifyHelper
   function getReservedAccounts(User $user, bool $generateNew = true)
   {
     $reference = $user->getReference();
-    // $auth = $this->auth();
-    // if (!$auth->success) {
-    //   return $auth;
-    // }
 
     $url = $this->url('v2/bank-transfer/reserved-accounts/' . $reference);
     $res = $this->execCurl($url, [], 'GET', true);

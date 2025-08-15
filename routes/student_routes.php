@@ -38,6 +38,8 @@ Route::get('/session-results/index', [Web\Students\SessionResultController::clas
     ->name('session-results.index');
 Route::get('/students/{student}/session-results/index', [Web\Students\SessionResultController::class, 'indexByStudent'])
     ->name('students.session-results.index');
+Route::get('/classes/{classification}/session-results/{academicSession?}', [Web\Students\SessionResultController::class, 'classSessionResultSheet'])
+    ->name('classifications.session-results.index');
 Route::get('/session-results/{sessionResult}', [Web\Students\SessionResultController::class, 'show'])
     ->name('session-results.show');
 Route::delete('/session-results/{sessionResult}', [Web\Students\SessionResultController::class, 'destroy'])

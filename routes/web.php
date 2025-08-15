@@ -170,6 +170,8 @@ Route::any('/monnify/callback', [Home\MonnifyController::class, 'callback'])->na
 Route::any('/monnify/verify-reference', [Home\MonnifyController::class, 'verifyReference'])->name('monnify.verify-reference');
 Route::any('/monnify/webhook', [Home\MonnifyController::class, 'webhook'])->name('monnify.webhook');
 
+Route::any('/payment-point/webhook', [Home\PaymentPointController::class, 'webhook'])->name('payment-point.webhook');
+
 Route::get('/app-not-activated', External\NotActivatedErrorController::class);
 
 Route::get('/student/exam-login', [External\ExamExternalController::class, 'studentExamLoginCreate'])->name('student.exam.login.create');
