@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Institutions\Staff;
 
 use App\Actions\CourseResult\ClassResultInfoAction;
 use App\Actions\GenericExport;
+use App\Actions\Result\GetViewResultSheetData;
 use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
@@ -11,6 +12,7 @@ use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\ClassResultInfo;
 use App\Models\Institution;
+use App\Support\SettingsHandler;
 use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -178,5 +180,48 @@ class ClassResultInfoController extends Controller
         "{$classResultInfo->classification->title}_{$classResultInfo->academicSession->title}-results.xlsx"
       )
     ))->download();
+  }
+
+  public function viewClassResultSheets(
+    Request $request,
+    Institution $institution,
+    ClassResultInfo $classResultInfo
+  ) {
+    $classResultInfo->load('classification', 'academicSession');
+
+    $termResults = $classResultInfo
+      ->termResultsQuery()
+      ->with('student')
+      ->get();
+
+    abort_unless($termResults->count(), 404, 'Result not found');
+
+    $arr = [];
+    /** @var TermResult $termResult */
+    foreach ($termResults as $key => $termResult) {
+      if (!$termResult->isPublished()) {
+        continue;
+      }
+      $viewData = GetViewResultSheetData::run(
+        $institution,
+        $termResult->student,
+        $classResultInfo->classification,
+        $classResultInfo->academicSession,
+        $classResultInfo->term->value,
+        $classResultInfo->for_mid_term
+      );
+      $viewData['signed_url'] = $termResult->signedUrl();
+      $arr[] = $viewData;
+    }
+
+    $setting = SettingsHandler::makeFromRoute();
+    return inertia('institutions/result-sheets/class-result-sheets', [
+      'classification' => $classResultInfo->classification,
+      'academicSession' => $classResultInfo->academicSession,
+      'term' => $classResultInfo->term,
+      'forMidTerm' => $classResultInfo->for_mid_term,
+      'results' => $arr,
+      'resultTemplete' => $setting->getResultTemplate()
+    ]);
   }
 }

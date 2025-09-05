@@ -85,6 +85,7 @@
 			</div>
 		@endforeach
 		</div>
+		@include('common.paginate', ['paginatedData' => $allRecords])
 	</div>
 </div>
 

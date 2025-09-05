@@ -15,6 +15,7 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 import { BrandButton } from '@/components/buttons';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import RegisterPartnerFromRequestModal from '@/components/modals/register-partner-from-request-modal';
+import DateTimeDisplay from '@/components/date-time-display';
 
 interface Props {
   partnerRegistrationRequests: PaginationResponse<PartnerRegistrationRequest>;
@@ -63,6 +64,10 @@ export default function ListPartnerRegistrationRequests({
     {
       label: 'Referred by',
       render: (row) => row.referral?.user?.full_name ?? '',
+    },
+    {
+      label: 'Created At',
+      render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
     },
     {
       label: 'Action',

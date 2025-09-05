@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TermType;
+use App\Support\UITableFilters\TermResultUITableFilters;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,6 +37,22 @@ class ClassResultInfo extends Model
       'course_results.term' => $this->term,
       'course_results.for_mid_term' => $this->for_mid_term
     ]);
+  }
+
+  /**
+   * @return \Illuminate\Database\Eloquent\Builder<\App\Models\TermResult>
+   */
+  function termResultsQuery()
+  {
+    $params = [
+      'classification' => $this->classification_id,
+      'term' => $this->term,
+      'academicSession' => $this->academic_session_id,
+      'forMidTerm' => $this->for_mid_term
+    ];
+    return TermResultUITableFilters::make($params, TermResult::query())
+      ->filterQuery()
+      ->getQuery();
   }
 
   public function classification()

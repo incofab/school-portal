@@ -78,18 +78,19 @@ class ViewResultSheetController extends Controller
       );
     }
 
-    $viewData['signed_url'] = URL::temporarySignedRoute(
-      'institutions.students.result-sheet.signed',
-      now()->addHour(),
-      [
-        $institution->uuid,
-        $student,
-        $classification,
-        $academicSession,
-        $term,
-        $forMidTerm ? 1 : 0
-      ]
-    );
+    $viewData['signed_url'] = $termResult?->signedUrl();
+    // URL::temporarySignedRoute(
+    //   'institutions.students.result-sheet.signed',
+    //   now()->addHour(),
+    //   [
+    //     $institution->uuid,
+    //     $student,
+    //     $classification,
+    //     $academicSession,
+    //     $term,
+    //     $forMidTerm ? 1 : 0
+    //   ]
+    // );
 
     return $this->display($viewData);
   }

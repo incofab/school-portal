@@ -140,6 +140,11 @@ export default function ListClassResultInfo({
             variant={'ghost'}
             onClick={() => downloadResults(row)}
           />
+          <LinkButton
+            href={instRoute('class-result-info.result-sheets', [row.id])}
+            title="Result Sheets"
+            variant={'link'}
+          />
           <DestructivePopover
             label={`Do you want to recalculate the results for this ${row.classification?.title}?`}
             onConfirm={(onClose) => recalculateClassResultInfo(onClose, row)}

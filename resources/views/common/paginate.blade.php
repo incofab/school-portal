@@ -5,23 +5,24 @@ if (!isset($paginatedData)) {
   return;
 }
 
-$prevPageUrl = null;
-$nextPageUrl = null;
-$urlParams = [];
+$prevPageUrl = $paginatedData->previousPageUrl();
+$nextPageUrl = $paginatedData->nextPageUrl();
 
-$query = Arr::get(parse_url($_SERVER['REQUEST_URI']), 'query', '');
-parse_str($query, $urlParams);
-$currentUrl = url()->current(); //
+// $urlParams = [];
 
-if (!$paginatedData->onFirstPage()) {
-  $urlParams['page'] = $paginatedData->currentPage() - 1;
-  $prevPageUrl = $currentUrl . '?' . http_build_query($urlParams);
-}
+// $query = Arr::get(parse_url($_SERVER['REQUEST_URI'] ?? ''), 'query', '');
+// parse_str($query, $urlParams);
+// $currentUrl = url()->current(); //
 
-if ($paginatedData->hasMorePages()) {
-  $urlParams['page'] = $paginatedData->currentPage() + 1;
-  $nextPageUrl = $currentUrl . '?' . http_build_query($urlParams);
-}
+// if (!$paginatedData->onFirstPage()) {
+//   $urlParams['page'] = $paginatedData->currentPage() - 1;
+//   $prevPageUrl = $currentUrl . '?' . http_build_query($urlParams);
+// }
+
+// if ($paginatedData->hasMorePages()) {
+//   $urlParams['page'] = $paginatedData->currentPage() + 1;
+//   $nextPageUrl = $currentUrl . '?' . http_build_query($urlParams);
+// }
 ?>
 
 <div class="px-3 my-2 clearfix">

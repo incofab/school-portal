@@ -218,6 +218,8 @@ Route::post('/class-result-info/recalculate/{classResultInfo}', [Web\Staff\Class
   ->name('class-result-info.recalculate');
 Route::post('/class-result-info/set-resumption-date/{classificationGroup?}', [Web\Staff\ClassResultInfoController::class, 'setNextTermResumptionDate'])
   ->name('class-result-info.set-resumption-date');
+Route::get('/class-result-info/{classResultInfo}/result-sheets', [Web\Staff\ClassResultInfoController::class, 'viewClassResultSheets'])
+  ->name('class-result-info.result-sheets');
 
 Route::get('/term-results/index/{user?}', Web\ListTermResultController::class)
   ->name('term-results.index');

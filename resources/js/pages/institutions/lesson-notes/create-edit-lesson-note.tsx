@@ -15,6 +15,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Input } from '@chakra-ui/react';
 import { NoteStatusType } from '@/types/types';
 import TinyMceEditor from '@/components/tinymce-editor';
+import { Div } from '@/components/semantic';
 
 interface Props {
   lessonPlan?: LessonPlan;
@@ -90,6 +91,9 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
   return (
     <DashboardLayout>
       <CenteredBox>
+        <Div fontSize={'lg'} fontWeight={'bold'} mb={2}>
+          {lessonPlan?.scheme_of_work?.topic?.title}
+        </Div>
         <Slab>
           <SlabHeading
             title={`${lessonNote ? 'Update' : 'Create'} Lesson Note`}

@@ -16,7 +16,7 @@ class QuestionController extends Controller
     $query = $morphable->questions();
     $morphable->loadParent();
     return view('ccd/questions/index', [
-      'allRecords' => $query->paginate(100),
+      'allRecords' => paginateFromRequest($query), //$query->paginate(100),
       'courseable' => $morphable
     ]);
   }
@@ -53,7 +53,7 @@ class QuestionController extends Controller
       successRes('Question created'),
       instRoute('questions.create', [$morphable->getMorphedId()])
     );
-  } 
+  }
 
   private function storeQuestion(
     Institution $institution,

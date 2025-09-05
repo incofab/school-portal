@@ -36,20 +36,24 @@ Route::get('dummy1', function () {
 
 Route::get('/no-mid-term/{instUuid}', function ($instUuid) {
     $inst = \App\Models\Institution::where('uuid', $instUuid)->firstOrFail();
+    $b = [
+        'academic_session_id' => 4,
+        'term' => \App\Enums\TermType::Third,
+        'institution_id' => $inst->id,
+        'for_mid_term' => true,
+    ];
+    dd($inst->termResults()->where($b)->count());
     $inst->termResults()
-      ->where('for_mid_term', true)
+      ->where($b)
       ->update(['for_mid_term' => false]);
     \App\Models\CourseResult::query()
-      ->where('institution_id', $inst->id)
-      ->where('for_mid_term', true)
+      ->where($b)
       ->update(['for_mid_term' => false]);
     \App\Models\CourseResultInfo::query()
-      ->where('institution_id', $inst->id)
-      ->where('for_mid_term', true)
+      ->where($b)
       ->update(['for_mid_term' => false]);
     \App\Models\ClassResultInfo::query()
-      ->where('institution_id', $inst->id)
-      ->where('for_mid_term', true)
+      ->where($b)
       ->update(['for_mid_term' => false]);
       dd('Done');
 });

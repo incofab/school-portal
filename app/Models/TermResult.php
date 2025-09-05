@@ -6,6 +6,7 @@ use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use URL;
 
 class TermResult extends Model
 {
@@ -26,6 +27,22 @@ class TermResult extends Model
     'average' => 'float',
     'learning_evaluation' => AsArrayObject::class
   ];
+
+  function signedUrl()
+  {
+    return URL::temporarySignedRoute(
+      'institutions.students.result-sheet.signed',
+      now()->addHour(),
+      [
+        $this->institution->uuid,
+        $this->student_id,
+        $this->classification_id,
+        $this->academic_session_id,
+        $this->term->value,
+        $this->for_mid_term
+      ]
+    );
+  }
 
   function institution()
   {

@@ -16,6 +16,7 @@ import { BrandButton } from '@/components/buttons';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import RegisterInstitutionFromRequestModal from '@/components/modals/register-institution-from-request-modal';
 import RegisterInstitutionGroupFromRequestModal from '@/components/modals/register-institution-group-from-request-modal';
+import DateTimeDisplay from '@/components/date-time-display';
 
 interface Props {
   registrationRequests: PaginationResponse<RegistrationRequest>;
@@ -66,6 +67,10 @@ export default function ListRegistrationRequests({
       label: 'Status',
       render: (row) =>
         row.institution_registered_at === null ? 'Pending' : 'Registered',
+    },
+    {
+      label: 'Created At',
+      render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
     },
     {
       label: 'Action',

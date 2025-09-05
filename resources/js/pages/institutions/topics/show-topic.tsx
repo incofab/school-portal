@@ -19,13 +19,14 @@ interface Props {
 export default function ShowTopic({ topic, assignedCourseIds }: Props) {
   const { instRoute } = useInstitutionRoute();
   const isAdmin = useIsAdmin();
+  const isTeacher = useIsTeacher();
   const schemeOfWorks = topic.scheme_of_works!;
 
   return (
     <DashboardLayout>
       <CollapsibleSlab
         title={`Topic :: ${topic.title}`}
-        {...(isAdmin && {
+        {...((isAdmin || isTeacher) && {
           addNewRoute: instRoute('inst-topics.create-or-edit'),
           editRoute: instRoute('inst-topics.create-or-edit', [topic.id]),
           deleteRoute: instRoute('inst-topics.destroy', [topic.id]),
@@ -149,9 +150,8 @@ function LessonPlanDisplay({
         collapsed={true}
         title={'Lesson Plan ' + (index + 1)}
         rightElement={
-          (isAdmin ||
-            (isTeacher &&
-              assignedCourseIds?.includes(lessonPlan.course_teacher_id))) &&
+          (isAdmin || isTeacher) &&
+          // (isTeacher && assignedCourseIds?.includes(lessonPlan.course_teacher_id))) &&
           !lessonPlan.lesson_note && (
             <LinkButton
               href={instRoute('lesson-notes.create', [lessonPlan.id])}
@@ -161,9 +161,8 @@ function LessonPlanDisplay({
           )
         }
         addNewRoute={instRoute('lesson-plans.create', [schemeOfWork?.id])}
-        {...((isAdmin ||
-          (isTeacher &&
-            assignedCourseIds?.includes(lessonPlan.course_teacher_id))) && {
+        {...((isAdmin || isTeacher) && {
+          // (isTeacher && assignedCourseIds?.includes(lessonPlan.course_teacher_id))) && {
           editRoute: instRoute('lesson-plans.edit', [lessonPlan.id]),
           deleteRoute: instRoute('lesson-plans.destroy', [lessonPlan.id]),
         })}
@@ -210,9 +209,8 @@ function LessonPlanDisplay({
         <CollapsibleSlab
           collapsed={true}
           title={'Lesson Note for Lesson Plan ' + (index + 1)}
-          {...((isAdmin ||
-            (isTeacher &&
-              assignedCourseIds?.includes(lessonPlan.course_teacher_id))) && {
+          {...((isAdmin || isTeacher) && {
+            // (isTeacher && assignedCourseIds?.includes(lessonPlan.course_teacher_id))) && {
             editRoute: instRoute('lesson-notes.edit', [
               lessonPlan.lesson_note.id,
             ]),
