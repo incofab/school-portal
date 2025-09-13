@@ -17,7 +17,7 @@ class ProcessSessionResult
     private AcademicSession $academicSession,
     private Classification $classification
   ) {
-    $this->institution = currentInstitution();
+    $this->institution = $classification->institution;
   }
 
   public static function run(
@@ -87,17 +87,30 @@ class ProcessSessionResult
       'classification_id' => $this->classification->id
     ];
 
+    $arr = [];
     foreach ($studentsTotalScore as $studentId => $totalScore) {
       $studentMappedTermResult = $mappedTermResult[$studentId];
-      $bindingData['student_id'] = $studentId;
+      // $bindingData['student_id'] = $studentId;
       $average = $studentMappedTermResult->getAverage();
 
       $data = [
         'result' => $studentMappedTermResult->getTotal(),
         'average' => $average,
-        'grade' => GetGrade::run($average)
+        'grade' => GetGrade::run($average),
+        'student_id' => $studentId
       ];
-      SessionResult::query()->updateOrCreate($bindingData, $data);
+      $arr[] = $data;
+      // SessionResult::query()->updateOrCreate($bindingData, $data);
     }
+    // Sort and assign positions
+    collect($arr)
+      ->sortByDesc('average')
+      ->values()
+      ->each(function ($item, $key) use ($bindingData) {
+        SessionResult::query()->updateOrCreate(
+          [...$bindingData, 'student_id' => $item['student_id']],
+          [...$item, 'position' => $key + 1]
+        );
+      });
   }
 }

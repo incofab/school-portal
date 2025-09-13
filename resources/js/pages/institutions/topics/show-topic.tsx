@@ -42,7 +42,7 @@ export default function ShowTopic({ topic, assignedCourseIds }: Props) {
         </SlabBody>
       </CollapsibleSlab>
 
-      {isAdmin && schemeOfWorks.length === 0 && (
+      {isAdmin && isTeacher && schemeOfWorks.length === 0 && (
         <Button
           colorScheme="brand"
           variant={'solid'}
@@ -64,7 +64,7 @@ export default function ShowTopic({ topic, assignedCourseIds }: Props) {
                 ? `Scheme of Work ::  (Week ${schemeOfWork.week_number})`
                 : 'Scheme of Work'
             }
-            {...(isAdmin && {
+            {...((isAdmin || isTeacher) && {
               addNewRoute: instRoute('scheme-of-works.create', [topic.id]),
 
               ...(schemeOfWork && {

@@ -190,7 +190,10 @@ export default function CreateOrUpdateTopic({
                     <StaffSelect
                       value={webForm.data.user_id}
                       isClearable={true}
-                      rolesIn={[InstitutionUserType.Teacher]}
+                      rolesIn={[
+                        InstitutionUserType.Teacher,
+                        InstitutionUserType.Admin,
+                      ]}
                       onChange={(e) => webForm.setValue('user_id', e)}
                       isMulti={false}
                       required

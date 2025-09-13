@@ -461,6 +461,7 @@ export interface SessionResult extends InstitutionRow {
   academic_session_id: number;
   result: number;
   average: number;
+  position: number;
   result_max: number;
   grade: string;
   remark: string;

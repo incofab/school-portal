@@ -73,8 +73,8 @@ Route::post('/classification-groups/{classificationGroup}/promote-students', [We
 //     ->name('session-results.index');
 // Route::get('/session-results/{sessionResult}', [Web\Students\SessionResultController::class, 'show'])
 //     ->name('session-results.show');
-// Route::delete('/session-results/{sessionResult}', [Web\Students\SessionResultController::class, 'destroy'])
-//     ->name('session-results.destroy');
+Route::get('/course-session-results/{academicSession}/{classification}', [Web\Students\SessionResultController::class, 'showSessionCourseResult'])
+    ->name('course-session-results');
 
 // Route::get('/users/{user}/receipts', [Web\Students\StudentFeePaymentController::class, 'receipts'])->name('users.receipts.index');
 // Route::get('/users/{user}/fee-payments/{receipt}', [Web\Students\StudentFeePaymentController::class, 'index'])->name('users.fee-payments.index');

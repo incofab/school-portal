@@ -18,6 +18,8 @@ import { BrandButton, LinkButton } from '@/components/buttons';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 import SelectClassSessionResultModal from '@/components/modals/select-class-session-result-modal';
 import useIsAdmin from '@/hooks/use-is-admin';
+import SelectCourseSessionResultModal from '@/components/modals/results/select-course-session-result-modal';
+import { HStack } from '@chakra-ui/react';
 
 interface Props {
   sessionResults: PaginationResponse<SessionResult>;
@@ -34,6 +36,7 @@ export default function ListSessionResults({
 }: Props) {
   const sessionResultFilterToggle = useModalToggle();
   const selectClassSessionResultModal = useModalToggle();
+  const selectCourseSessionResultModal = useModalToggle();
   const isAdmin = useIsAdmin();
   const { instRoute } = useInstitutionRoute();
 
@@ -83,12 +86,20 @@ export default function ListSessionResults({
             student ? `- ${student!.user?.full_name}` : ''
           }`}
           rightElement={
-            isAdmin && (
-              <BrandButton
-                onClick={selectClassSessionResultModal.open}
-                title={'Class Seession Results'}
-              />
-            )
+            <HStack>
+              {isAdmin && (
+                <>
+                  <BrandButton
+                    onClick={selectClassSessionResultModal.open}
+                    title={'Class Seession Results'}
+                  />
+                  <BrandButton
+                    onClick={selectCourseSessionResultModal.open}
+                    title={'Seession Results Summary'}
+                  />
+                </>
+              )}
+            </HStack>
           }
         />
         <SlabBody>
@@ -105,6 +116,11 @@ export default function ListSessionResults({
         <SessionResultsTableFilters {...sessionResultFilterToggle.props} />
         <SelectClassSessionResultModal
           {...selectClassSessionResultModal.props}
+          classifications={classifications}
+          academicSessions={academicSessions}
+        />
+        <SelectCourseSessionResultModal
+          {...selectCourseSessionResultModal.props}
           classifications={classifications}
           academicSessions={academicSessions}
         />

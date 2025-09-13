@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Institutions\Students;
 
+use App\Actions\CourseResult\GenerateCourseSessionResult;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
@@ -73,34 +74,6 @@ class SessionResultController extends Controller
 
   function show(Institution $institution, SessionResult $sessionResult)
   {
-    // $binding = [
-    //   'academic_session_id' => $sessionResult->academic_session_id,
-    //   'classification_id' => $sessionResult->classification_id,
-    //   'student_id' => $sessionResult->student_id,
-    //   'for_mid_term' => false
-    // ];
-    // $termResultDetails = [];
-    // foreach (TermType::cases() as $key => $term) {
-    //   $binding['term'] = $term;
-    //   $termResultDetails[$term->value] = [
-    //     'termResult' => TermResult::query()
-    //       ->where($binding)
-    //       ->first(),
-    //     'courseResults' => CourseResult::query()
-    //       ->where($binding)
-    //       ->with('course')
-    //       ->get()
-    //       ->keyBy('course_id'),
-    //     'courseResultInfo' => CourseResultInfo::query()
-    //       ->where(
-    //         collect($binding)
-    //           ->except('student_id')
-    //           ->toArray()
-    //       )
-    //       ->get()
-    //       ->keyBy('course_id')
-    //   ];
-    // }
     return inertia(
       'institutions/session-result-sheets/session-result-template-1',
       [
@@ -178,6 +151,22 @@ class SessionResultController extends Controller
         ];
       }),
       'resultCommentTemplate' => ResultCommentTemplate::getTemplate(false),
+      'classification' => $classification
+    ]);
+  }
+
+  function showSessionCourseResult(
+    Institution $institution,
+    AcademicSession $academicSession,
+    Classification $classification
+  ) {
+    abort_unless(currentInstitutionUser()->isStaff(), 403);
+    $obj = new GenerateCourseSessionResult($classification, $academicSession);
+
+    return inertia('institutions/session-result-sheets/course-session-result', [
+      'courseSessionResults' => $obj->getCourseSessionResults(),
+      'courses' => $obj->getRelatedCourses(),
+      'academicSession' => $academicSession,
       'classification' => $classification
     ]);
   }
