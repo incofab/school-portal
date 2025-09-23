@@ -82,16 +82,34 @@ class GenerateCourseSessionResult
    * @return array {
    *  [student_id]: array {
    *    [course_id]: array {
-   *      first_term: float,
-   *      second_term: float,
-   *      third_term: float,
-   *      total: float
-   *    }
+   *      first_term: ?float,
+   *      second_term: ?float,
+   *      third_term: ?float,
+   *      total: float,
+   *      average: float,
+   *      student: Student,
+   *      position: ?float,
+   *    },
+   *    session_result: SessionResult,
+   *    session_result_data: {
+   *      total: float,
+   *      average: float,
+   *      position: ?float,
+   *    },
    *  }
    * }
    */
   public function getCourseSessionResults()
   {
+    collect($this->studentCourseSessionResults)
+      ->sortByDesc(fn(StudentCourseSessionResult $a) => $a->average)
+      ->values()
+      ->each(function (
+        StudentCourseSessionResult $studentCourseSessionResult,
+        $index
+      ) {
+        $studentCourseSessionResult->position = $index + 1;
+      });
     $arr = [];
     foreach (
       $this->studentCourseSessionResults
@@ -105,6 +123,9 @@ class GenerateCourseSessionResult
 
 class StudentCourseSessionResult
 {
+  public float $total = 0;
+  public float $average = 0;
+  public ?float $position = null;
   /** @var array<int, CourseScoreData> $courseTotalScore The total score (sum of every term) for each course */
   public array $courseScores = [];
   public function __construct(
@@ -118,17 +139,39 @@ class StudentCourseSessionResult
     $courseScoreData = $this->getCourseScoreData($courseResult);
     $courseScoreData->setScore($courseResult->term, $courseResult->result);
     $this->courseScores[$courseResult->course_id] = $courseScoreData;
+
+    $this->setTotalAndAverage();
   }
 
-  function getCourseScoreData(CourseResult $courseResult): CourseScoreData
+  function setTotalAndAverage()
   {
+    $this->total = 0;
+    $this->average = 0;
+    /** @var CourseScoreData $courseScoreData  */
+    foreach ($this->courseScores as $courseId => $courseScoreData) {
+      $this->total += $courseScoreData->average;
+    }
+    $coursesLen = count($this->courseScores);
+    $this->average = $coursesLen > 0 ? $this->total / $coursesLen : 0;
+  }
+
+  private function getCourseScoreData(
+    CourseResult $courseResult
+  ): CourseScoreData {
     return $this->courseScores[$courseResult->course_id] ??
       new CourseScoreData($courseResult);
   }
 
   function toArray()
   {
-    $arr = ['session_result' => $this->sessionResult];
+    $arr = [
+      'session_result' => $this->sessionResult,
+      'session_result_data' => [
+        'total' => round($this->total, 1),
+        'average' => round($this->average, 2),
+        'position' => $this->position
+      ]
+    ];
     foreach ($this->courseScores as $courseId => $courseScoreData) {
       $arr[$courseId] = $courseScoreData->toArray();
     }
@@ -138,10 +181,11 @@ class StudentCourseSessionResult
 
 class CourseScoreData
 {
-  public float $firstTerm = 0;
-  public float $secondTerm = 0;
-  public float $thirdTerm = 0;
+  public ?float $firstTerm = null;
+  public ?float $secondTerm = null;
+  public ?float $thirdTerm = null;
   public float $total = 0;
+  public float $average = 0;
 
   public Student $student;
 
@@ -160,6 +204,22 @@ class CourseScoreData
       $this->thirdTerm = $score;
     }
     $this->total = $this->firstTerm + $this->secondTerm + $this->thirdTerm;
+    $this->setAverage();
+  }
+
+  function setAverage()
+  {
+    $divisor = 0;
+    if (!is_null($this->firstTerm)) {
+      $divisor++;
+    }
+    if (!is_null($this->secondTerm)) {
+      $divisor++;
+    }
+    if (!is_null($this->thirdTerm)) {
+      $divisor++;
+    }
+    $this->average = $divisor > 0 ? $this->total / $divisor : 0;
   }
 
   function toArray()
@@ -169,7 +229,8 @@ class CourseScoreData
       'second_term' => $this->secondTerm,
       'third_term' => $this->thirdTerm,
       'total' => $this->total,
-      'student' => $this->student
+      'student' => $this->student,
+      'average' => round($this->average, 1)
     ];
   }
 }

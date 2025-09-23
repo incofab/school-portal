@@ -22,8 +22,14 @@ interface CourseSessionResultData {
     third_term: number;
     total: number;
     student: Student;
+    average: number;
   };
   session_result: SessionResult;
+  session_result_data: {
+    total: number;
+    average: number;
+    position: number | null;
+  };
 }
 
 interface Props {
@@ -51,24 +57,24 @@ export default function CourseSessionResult({
       label: course.code,
       render: (row: CourseSessionResultData) => {
         const courseSessionResult = row[course.id] ?? null;
-        return String(courseSessionResult.total);
+        return String(courseSessionResult?.average ?? '');
       },
     })),
     {
       label: 'Total',
-      value: 'session_result.result',
+      value: 'session_result_data.total',
     },
     {
       label: 'Average',
-      value: 'session_result.average',
+      value: 'session_result_data.average',
     },
-    {
-      label: 'Grade',
-      value: 'session_result.grade',
-    },
+    // {
+    //   label: 'Grade',
+    //   value: 'session_result.grade',
+    // },
     {
       label: 'Position',
-      value: 'session_result.position',
+      value: 'session_result_data.position',
     },
   ];
 
@@ -76,7 +82,7 @@ export default function CourseSessionResult({
     <ResultSheetLayout useBgStyle={true}>
       <Div
         mx={'auto'}
-        width={'900px'}
+        maxWidth={'1200px'}
         px={3}
         position={'relative'}
         id={'result-sheet'}
@@ -91,7 +97,7 @@ export default function CourseSessionResult({
               text-align: center;
               font-weight: bold;
             }
-            .result-table th:not(:first-child):not(:nth-last-child(-n+2)) > * {
+            .result-table th:not(:first-child) > * {
               height: 170px;                     
               display: inline-block;            /* needed for width + overflow */
               max-width: 12ch;                  /* limit-ish to 10 characters */
@@ -147,7 +153,10 @@ export default function CourseSessionResult({
             tableProps={{ className: 'result-table' }}
           />
         </Div>
+        <br />
       </Div>
+      <br />
+      <br />
     </ResultSheetLayout>
   );
 }

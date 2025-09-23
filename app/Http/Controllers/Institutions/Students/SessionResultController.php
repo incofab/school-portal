@@ -155,6 +155,7 @@ class SessionResultController extends Controller
     ]);
   }
 
+  /** Tabulated Session result for all students in a class arranged by their courses */
   function showSessionCourseResult(
     Institution $institution,
     AcademicSession $academicSession,

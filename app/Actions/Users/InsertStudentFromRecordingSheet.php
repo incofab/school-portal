@@ -75,7 +75,14 @@ class InsertStudentFromRecordingSheet
         'password_confirmation' => 'password'
       ];
     }
-
+    $duplicates = collect($data)
+      ->pluck('code')
+      ->duplicates();
+    abort_if(
+      $duplicates->isNotEmpty(),
+      401,
+      'Duplicate student code(s): ' . $duplicates->join(', ')
+    );
     $data = $this->validate($data);
 
     DB::beginTransaction();

@@ -44,6 +44,13 @@ class FullTermResult
       $this->thirdTermResult?->total_score;
   }
 
+  function getTotalAverage()
+  {
+    return $this->firstTermResult?->average +
+      $this->secondTermResult?->average +
+      $this->thirdTermResult?->average;
+  }
+
   function getCount()
   {
     $count = 0;

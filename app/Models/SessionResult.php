@@ -16,7 +16,10 @@ class SessionResult extends Model
     'classification_id' => 'integer',
     'academic_session_id' => 'integer',
     'institution_id' => 'integer',
-    'position' => 'integer'
+    'position' => 'integer',
+    'total_average' => 'float',
+    'result' => 'float',
+    'average' => 'float'
   ];
 
   function institution()
