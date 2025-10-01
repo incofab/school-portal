@@ -15,7 +15,11 @@ class SchemeOfWorkController extends Controller
   //
   public function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin])->except('index');
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ])->except('index');
+    $this->allowedRoles([InstitutionUserType::Admin])->only('destroy');
   }
 
   function create(Institution $institution, Topic $topic)

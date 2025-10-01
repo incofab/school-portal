@@ -58,6 +58,7 @@ class InsertStudentFromRecordingSheet
       if (empty($firstName) && empty($lastName)) {
         continue;
       }
+      $code = $this->getValue(StudentRecordingSheetColumn::Code . $row);
       $data[] = [
         'first_name' => $firstName,
         'last_name' => $lastName,
@@ -69,13 +70,19 @@ class InsertStudentFromRecordingSheet
           StudentRecordingSheetColumn::GuardianPhone . $row
         ),
         'phone' => $this->getValue(StudentRecordingSheetColumn::Phone . $row),
-        'code' => $this->getValue(StudentRecordingSheetColumn::Code . $row),
+        ...empty($code) ? [] : ['code' => $code],
         'email' => Str::orderedUuid() . '@email.com',
         'password' => 'password',
         'password_confirmation' => 'password'
       ];
     }
+    // info([
+    //   'duplicates' => collect($data)
+    //     ->whereNotNull('code')
+    //     ->pluck('code')
+    // ]);
     $duplicates = collect($data)
+      ->whereNotNull('code')
       ->pluck('code')
       ->duplicates();
     abort_if(
@@ -95,7 +102,7 @@ class InsertStudentFromRecordingSheet
 
   private function getValue(string $column)
   {
-    return $this->sheetData->getCell($column)->getValue();
+    return trim($this->sheetData->getCell($column)->getValue());
   }
 
   private function getGender($row)

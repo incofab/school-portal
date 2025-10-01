@@ -13,7 +13,7 @@ interface Props extends StackProps {
 interface ButtonSwitchItem {
   label: string;
   value: ValueType;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export default function ButtonSwitch({
@@ -43,7 +43,7 @@ export default function ButtonSwitch({
             cursor={'pointer'}
             justifyContent={'center'}
             _hover={{ backgroundColor: isActive ? '' : 'brand.50' }}
-            onClick={item.onClick}
+            onClick={isActive ? undefined : item.onClick}
             {...itemProps}
           >
             {item.label}

@@ -183,9 +183,9 @@ it('cannot delete a scheme of work with lesson plans', function () {
   $this->assertDatabaseHas('scheme_of_works', ['id' => $schemeOfWork->id]);
 });
 
-it('restricts non-admin access to scheme of work routes', function () {
+it('restricts non-admin/Teacher access to scheme of work routes', function () {
   $user = User::factory()
-    ->teacher($this->institution)
+    ->accountant($this->institution)
     ->create();
   $schemeOfWork = SchemeOfWork::factory()
     ->topic($this->topic)

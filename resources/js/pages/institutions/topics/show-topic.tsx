@@ -1,15 +1,20 @@
 import React from 'react';
-import { SchemeOfWork, LessonPlan, Topic } from '@/types/models';
+import { SchemeOfWork, LessonPlan, Topic, LessonNote } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { CollapsibleSlab, SlabBody } from '@/components/slab';
 import DOMPurify from 'dompurify';
 import { Div } from '@/components/semantic';
-import { Button, Heading } from '@chakra-ui/react';
+import { Button, Heading, Stack } from '@chakra-ui/react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { LinkButton } from '@/components/buttons';
 import useIsAdmin from '@/hooks/use-is-admin';
 import useIsTeacher from '@/hooks/use-is-teacher';
 import { InertiaLink } from '@inertiajs/inertia-react';
+import ButtonSwitch from '@/components/button-switch';
+import { NoteStatusType } from '@/types/types';
+import useWebForm from '@/hooks/use-web-form';
+import useMyToast from '@/hooks/use-my-toast';
+import { Inertia } from '@inertiajs/inertia';
 
 interface Props {
   topic: Topic;
@@ -144,6 +149,26 @@ function LessonPlanDisplay({
   const { instRoute } = useInstitutionRoute();
   const isAdmin = useIsAdmin();
   const isTeacher = useIsTeacher();
+
+  const toggleStatusForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
+
+  async function toggleStatus(obj: LessonNote) {
+    if (toggleStatusForm.processing) {
+      return;
+    }
+    if (
+      !window.confirm('Are you sure you want to change the publish status?')
+    ) {
+      return;
+    }
+    const res = await toggleStatusForm.submit((data, web) =>
+      web.post(instRoute('lesson-notes.toggle-publish', [obj.id]))
+    );
+    handleResponseToast(res);
+    Inertia.reload();
+  }
+
   return (
     <>
       <CollapsibleSlab
@@ -220,9 +245,35 @@ function LessonPlanDisplay({
           })}
         >
           <SlabBody>
-            <Heading size={'sm'} fontWeight={'bold'} paddingBottom="50px">
-              TITLE :: {lessonPlan.lesson_note.title}
-            </Heading>
+            <Stack
+              direction={{ base: 'column', md: 'row' }}
+              justifyContent="space-between"
+              alignItems={{ base: 'flex-start', md: 'top' }}
+            >
+              <Heading size={'sm'} fontWeight={'bold'} paddingBottom="50px">
+                TITLE :: {lessonPlan.lesson_note.title}
+              </Heading>
+              <ButtonSwitch
+                items={[
+                  {
+                    label: 'Draft',
+                    value: NoteStatusType.Draft,
+                    onClick: isAdmin
+                      ? () => toggleStatus(lessonPlan.lesson_note!)
+                      : undefined,
+                  },
+                  {
+                    label: 'Publish',
+                    value: NoteStatusType.Published,
+                    onClick: isAdmin
+                      ? () => toggleStatus(lessonPlan.lesson_note!)
+                      : undefined,
+                  },
+                ]}
+                value={lessonPlan.lesson_note.status}
+                _disabled={toggleStatusForm.processing ? 'disabled' : ''}
+              />
+            </Stack>
 
             <Heading size={'sm'} fontWeight={'bold'} paddingBottom="10px">
               CONTENT ::

@@ -24,6 +24,7 @@ class LessonNoteController extends Controller
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
     ])->except('index', 'show');
+    $this->allowedRoles([InstitutionUserType::Admin])->only('destroy');
   }
   //
 
@@ -136,9 +137,10 @@ class LessonNoteController extends Controller
       'course_id' => $courseId,
       'topic_id' => $topicId,
       'course_teacher_id' => $courseTeacherId,
-      'status' => $data['is_published']
-        ? NoteStatusType::Published
-        : NoteStatusType::Draft,
+      'status' => NoteStatusType::Draft,
+      // 'status' => $data['is_published']
+      //   ? NoteStatusType::Published
+      //   : NoteStatusType::Draft,
 
       'institution_id' => $institution->id,
       'institution_group_id' => $data['is_used_by_institution_group']
@@ -193,6 +195,26 @@ class LessonNoteController extends Controller
     }
 
     $lessonNote->delete();
+    return $this->ok();
+  }
+
+  function togglePublish(Institution $institution, LessonNote $lessonNote)
+  {
+    $institutionUser = currentInstitutionUser();
+    abort_unless(
+      $institutionUser->isAdmin(),
+      403,
+      'Only Admins can publish result'
+    );
+
+    $lessonNote
+      ->fill([
+        'status' =>
+          $lessonNote->status === NoteStatusType::Published
+            ? NoteStatusType::Draft
+            : NoteStatusType::Published
+      ])
+      ->save();
     return $this->ok();
   }
 

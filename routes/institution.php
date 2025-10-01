@@ -356,6 +356,7 @@ Route::get('/lesson-notes/{lessonPlan}/create', [Web\Curriculums\LessonNoteContr
 Route::get('/lesson-notes/{lessonNote}/edit', [Web\Curriculums\LessonNoteController::class, 'createOrEdit'])->name('lesson-notes.edit');
 Route::get('/lesson-notes/{lessonNote}', [Web\Curriculums\LessonNoteController::class, 'show'])->name('lesson-notes.show');
 Route::post('/lesson-notes/{lessonNote?}', [Web\Curriculums\LessonNoteController::class, 'storeOrUpdate'])->name('lesson-notes.store-or-update');
+Route::post('/lesson-notes/{lessonNote}/toggle-publish', [Web\Curriculums\LessonNoteController::class, 'togglePublish'])->name('lesson-notes.toggle-publish');
 Route::delete('/lesson-notes/{lessonNote}/destroy', [Web\Curriculums\LessonNoteController::class, 'destroy'])->name('lesson-notes.destroy');
 
 Route::get('/school-activities/search', [Web\SchoolActivities\SchoolActivityController::class, 'search'])

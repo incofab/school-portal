@@ -22,6 +22,7 @@ class TopicController extends Controller
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
     ]);
+    $this->allowedRoles([InstitutionUserType::Admin])->only('destroy');
   }
 
   //== Listing

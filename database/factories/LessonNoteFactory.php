@@ -19,39 +19,44 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class LessonNoteFactory extends Factory
 {
-    protected $model = LessonNote::class;
+  protected $model = LessonNote::class;
 
-    public function definition()
-    {
-        return [
-            'institution_id' => Institution::factory(),
-            'classification_group_id' => ClassificationGroup::factory(),
-            'classification_id' => Classification::factory(),
-            'lesson_plan_id' => LessonPlan::factory(),
-            'course_id' => Course::factory(),
-            'topic_id' => Topic::factory(),
-            'course_teacher_id' => CourseTeacher::factory(),
-            'term' => TermType::First->value,
-            'title' => $this->faker->text(100),
-            'content' => $this->faker->text(500),
-            'status' => NoteStatusType::Published->value,
-        ];
-    }
+  public function definition()
+  {
+    return [
+      'institution_id' => Institution::factory(),
+      'classification_group_id' => ClassificationGroup::factory(),
+      'classification_id' => Classification::factory(),
+      'lesson_plan_id' => LessonPlan::factory(),
+      'course_id' => Course::factory(),
+      'topic_id' => Topic::factory(),
+      'course_teacher_id' => CourseTeacher::factory(),
+      'term' => TermType::First->value,
+      'title' => $this->faker->text(100),
+      'content' => $this->faker->text(500),
+      'status' => NoteStatusType::Draft->value
+    ];
+  }
 
-    function lessonPlan(LessonPlan $lessonPlan,
-    Classification $classification = null)
-    {
-        return $this->state(fn($attr) => [
-            'lesson_plan_id' => $lessonPlan->id,
-            'institution_id' => $lessonPlan->institution_id,
-            'classification_id' => $classification ?? Classification::factory(),
-        ]);
-    }
+  function lessonPlan(
+    LessonPlan $lessonPlan,
+    ?Classification $classification = null
+  ) {
+    return $this->state(
+      fn($attr) => [
+        'lesson_plan_id' => $lessonPlan->id,
+        'institution_id' => $lessonPlan->institution_id,
+        'classification_id' => $classification ?? Classification::factory()
+      ]
+    );
+  }
 
-    function courseTeacher(CourseTeacher $courseTeacher)
-    {
-        return $this->state(fn($attr) => [
-            'course_teacher_id' => $courseTeacher->id,
-        ]);
-    }
+  function courseTeacher(CourseTeacher $courseTeacher)
+  {
+    return $this->state(
+      fn($attr) => [
+        'course_teacher_id' => $courseTeacher->id
+      ]
+    );
+  }
 }

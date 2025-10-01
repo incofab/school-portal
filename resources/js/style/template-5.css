@@ -15,11 +15,11 @@
     display: block !important;
   }
 }
-
+/*
 .a4-page:not(:first-child) .result-sheet-header {
   display: none;
 }
-
+*/
 .result-table thead tr {
   background-color: #00007e !important;
 }

@@ -43,6 +43,14 @@ class UserFactory extends Factory
     return $this->institutionUser($institution, InstitutionUserType::Teacher);
   }
 
+  public function accountant(?Institution $institution = null): static
+  {
+    return $this->institutionUser(
+      $institution,
+      InstitutionUserType::Accountant
+    );
+  }
+
   public function admin(?Institution $institution = null): static
   {
     return $this->institutionUser($institution, InstitutionUserType::Admin);

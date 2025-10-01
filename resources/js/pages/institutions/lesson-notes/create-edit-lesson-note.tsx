@@ -135,8 +135,8 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
               </FormControlBox>
 
               <FormControl>
-                <HStack justifyContent={'space-between'}>
-                  <Checkbox
+                <HStack justifyContent={'end'}>
+                  {/* <Checkbox
                     isChecked={webForm.data.is_published}
                     onChange={(e) =>
                       webForm.setData({
@@ -148,7 +148,7 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
                     colorScheme="brand"
                   >
                     Publish Instantly.
-                  </Checkbox>
+                  </Checkbox> */}
                   <BrandButton
                     size="xs"
                     variant={'outline'}

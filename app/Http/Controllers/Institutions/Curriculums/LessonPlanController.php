@@ -20,6 +20,7 @@ class LessonPlanController extends Controller
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
     ]);
+    $this->allowedRoles([InstitutionUserType::Admin])->only('destroy');
   }
 
   function createOrEdit(

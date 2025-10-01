@@ -4,7 +4,7 @@ import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
-import { PaginationResponse } from '@/types/types';
+import { NoteStatusType, PaginationResponse } from '@/types/types';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { LinkButton } from '@/components/buttons';
@@ -22,6 +22,7 @@ import useIsStudent from '@/hooks/use-is-student';
 import useIsTeacher from '@/hooks/use-is-teacher';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import LessonNoteTableFilters from '@/components/table-filters/lesson-note-table-filters';
+import ButtonSwitch from '@/components/button-switch';
 
 interface Props {
   lessonNotes: PaginationResponse<LessonNote>;
@@ -35,6 +36,7 @@ export default function ListLessonNotes({
   const lessonNoteFilterToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
+  const toggleStatusForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
   const isTeacher = useIsTeacher();
@@ -43,6 +45,14 @@ export default function ListLessonNotes({
   async function deleteItem(obj: LessonNote) {
     const res = await deleteForm.submit((data, web) =>
       web.delete(instRoute('lesson-notes.destroy', [obj.id]))
+    );
+    handleResponseToast(res);
+    Inertia.reload();
+  }
+
+  async function toggleStatus(obj: LessonNote) {
+    const res = await toggleStatusForm.submit((data, web) =>
+      web.post(instRoute('lesson-notes.toggle-publish', [obj.id]))
     );
     handleResponseToast(res);
     Inertia.reload();
@@ -62,6 +72,27 @@ export default function ListLessonNotes({
       label: 'Title',
       value: 'title',
       render: (row) => <Text>{row.title}</Text>,
+    },
+    {
+      label: 'Publish',
+      render: (row) => (
+        <ButtonSwitch
+          items={[
+            {
+              label: 'Draft',
+              value: NoteStatusType.Draft,
+              onClick: isAdmin ? () => toggleStatus(row) : undefined,
+            },
+            {
+              label: 'Publish',
+              value: NoteStatusType.Published,
+              onClick: isAdmin ? () => toggleStatus(row) : undefined,
+            },
+          ]}
+          value={row.status}
+          _disabled={toggleStatusForm.processing ? 'disabled' : ''}
+        />
+      ),
     },
     {
       label: 'Last Update',
