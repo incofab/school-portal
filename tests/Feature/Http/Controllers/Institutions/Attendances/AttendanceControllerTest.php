@@ -117,7 +117,7 @@ it(
 
     actingAs($this->admin)
       ->postJson($route, $payload)
-      ->assertStatus(400)
+      ->assertStatus(401)
       ->assertJson(['message' => 'No Signed-In Record Found.']);
   }
 );

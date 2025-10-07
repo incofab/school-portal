@@ -4,8 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\CCD\QuestionController;
-use App\Http\Controllers\Institutions\Attendance\AttendanceController;
 use App\Http\Controllers\API\OfflineMock;
+use App\Http\Controllers\API\Institutions as Inst;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +18,10 @@ use App\Http\Controllers\API\OfflineMock;
 |
 */
 
-Route::middleware(['auth:sanctum', 'institution.user'])->post('/{institution}/attendance', [AttendanceController::class, 'store']);
+Route::group(['middleware' => ['auth:sanctum', 'institution.user']], function () {
+    Route::post('/{institution:code}/attendance', [Inst\AttendanceController::class, 'store']);
+});
+
 Route::post('/login', [AuthController::class, 'login']); // Login route for API
 
 Route::middleware('auth:sanctum')->any('/user', function (Request $request) {

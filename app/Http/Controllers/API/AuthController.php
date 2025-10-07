@@ -16,12 +16,12 @@ class AuthController extends Controller
 {
   public function login(Request $request)
   {
-    $obj = new ValidateExistsRule(Institution::class, 'uuid');
+    $obj = new ValidateExistsRule(Institution::class, 'code');
 
     $validator = Validator::make($request->all(), [
       'email' => 'required|email',
       'password' => 'required',
-      'institution_uuid' => ['required', $obj]
+      'institution_code' => ['required', $obj]
     ]);
 
     if ($validator->fails()) {
@@ -67,7 +67,11 @@ class AuthController extends Controller
     return response()->json(
       [
         'message' => 'Login successful',
-        'token' => $token
+        'token' => $token,
+        'user' => $user,
+        'institution_group' => $institution->institutionGroup,
+        'institution' => $institution,
+        'institution_user' => $checkInstitutionUser
       ],
       200
     );

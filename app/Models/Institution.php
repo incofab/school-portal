@@ -326,4 +326,9 @@ class Institution extends Model
   {
     return $this->hasMany(PayrollSummary::class);
   }
+
+  function attendances()
+  {
+    return $this->hasMany(Attendance::class);
+  }
 }

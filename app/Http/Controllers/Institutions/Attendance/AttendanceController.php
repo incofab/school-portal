@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Attendance;
 
+use App\Actions\RecordAttendance;
 use Inertia\Inertia;
 use App\Models\Attendance;
 use App\Models\Institution;
@@ -53,54 +54,66 @@ class AttendanceController extends Controller
 
   public function store(Request $request, Institution $institution)
   {
-    $validatedData = $request->validate([
-      'institution_user_id' => 'required|exists:institution_users,id',
-      'remark' => 'nullable|string',
-      'type' => ['required', Rule::in(AttendanceType::values())],
-      'reference' => [
-        Rule::requiredIf($request->type === AttendanceType::In->value),
-        function ($attr, $value, $fail) use ($request) {
-          if ($request->type !== AttendanceType::In->value) {
-            return;
-          }
-          if (Attendance::where('reference', $request->reference)->exists()) {
-            $fail('Reference must me unique');
-          }
-        }
-      ]
-    ]);
-
+    $data = $request->validate(Attendance::createRule());
     $staffUser = currentInstitutionUser();
+    abort_unless(
+      $staffUser->isStaff(),
+      403,
+      'You are not authorized to record attendance'
+    );
 
-    if ($request->type === AttendanceType::In->value) {
-      Attendance::create([
-        ...collect($validatedData)->except('type'),
-        'institution_id' => $institution->id,
-        'institution_staff_user_id' => $staffUser->id,
-        'signed_in_at' => now()
-      ]);
-    } else {
-      // == Fetch the last signed_in record of the user, then sign him out.
+    $res = (new RecordAttendance($institution, $staffUser, $data))->run();
 
-      $lastSignIn = Attendance::where(
-        'institution_user_id',
-        $request->institution_user_id
-      )
-        ->whereNull('signed_out_at')
-        ->orderBy('created_at', 'desc')
-        ->first();
+    return $this->apiRes($res, 401);
+    ///
+    // $validatedData = $request->validate([
+    //   'institution_user_id' => 'required|exists:institution_users,id',
+    //   'remark' => 'nullable|string',
+    //   'type' => ['required', Rule::in(AttendanceType::values())],
+    //   'reference' => [
+    //     Rule::requiredIf($request->type === AttendanceType::In->value),
+    //     function ($attr, $value, $fail) use ($request) {
+    //       if ($request->type !== AttendanceType::In->value) {
+    //         return;
+    //       }
+    //       if (Attendance::where('reference', $request->reference)->exists()) {
+    //         $fail('Reference must me unique');
+    //       }
+    //     }
+    //   ]
+    // ]);
 
-      if (!$lastSignIn) {
-        return $this->message('No Signed-In Record Found.', 400);
-      }
+    // $staffUser = currentInstitutionUser();
 
-      $lastSignIn->update([
-        'remark' => $lastSignIn->remark . ' ' . $request->remark,
-        'signed_out_at' => now()
-      ]);
-    }
+    // if ($request->type === AttendanceType::In->value) {
+    //   Attendance::create([
+    //     ...collect($validatedData)->except('type'),
+    //     'institution_id' => $institution->id,
+    //     'institution_staff_user_id' => $staffUser->id,
+    //     'signed_in_at' => now()
+    //   ]);
+    // } else {
+    //   // == Fetch the last signed_in record of the user, then sign him out.
 
-    return $this->ok();
+    //   $lastSignIn = Attendance::where(
+    //     'institution_user_id',
+    //     $request->institution_user_id
+    //   )
+    //     ->whereNull('signed_out_at')
+    //     ->orderBy('created_at', 'desc')
+    //     ->first();
+
+    //   if (!$lastSignIn) {
+    //     return $this->message('No Signed-In Record Found.', 400);
+    //   }
+
+    //   $lastSignIn->update([
+    //     'remark' => $lastSignIn->remark . ' ' . $request->remark,
+    //     'signed_out_at' => now()
+    //   ]);
+    // }
+
+    // return $this->ok();
   }
 
   function destroy(Institution $institution, Attendance $attendance)
