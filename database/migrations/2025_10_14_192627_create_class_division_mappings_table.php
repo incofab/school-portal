@@ -13,7 +13,8 @@ return new class extends Migration {
     Schema::create('class_division_mappings', function (Blueprint $table) {
       $table->id();
       $table->foreignId('class_division_id')->constrained('class_divisions');
-      $table->foreignId('classification_id')->constrained('classifications');
+      $table->morphs('mappable');
+      // $table->foreignId('classification_id')->constrained('classifications');
       $table->timestamps();
     });
   }

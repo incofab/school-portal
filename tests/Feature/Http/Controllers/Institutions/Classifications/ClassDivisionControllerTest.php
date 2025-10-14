@@ -104,14 +104,15 @@ it('can add classifications to a class division', function () {
         $classDivision
       ]),
       [
-        'classification_id' => $this->classification->id
+        'classification_ids' => [$this->classification->id]
       ]
     )
     ->assertOk();
 
   assertDatabaseHas('class_division_mappings', [
     'class_division_id' => $classDivision->id,
-    'classification_id' => $this->classification->id
+    'mappable_id' => $this->classification->id,
+    'mappable_type' => $this->classification->getMorphClass()
   ]);
 });
 
@@ -133,6 +134,7 @@ it('can remove classifications from a class division', function () {
 
   assertDatabaseMissing('class_division_mappings', [
     'class_division_id' => $classDivision->id,
-    'classification_id' => $this->classification->id
+    'mappable_id' => $this->classification->id,
+    'mappable_type' => $this->classification->getMorphClass()
   ]);
 });

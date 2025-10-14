@@ -29,7 +29,11 @@ class Classification extends Model
 
   function classDivisions()
   {
-    return $this->belongsToMany(ClassDivision::class, 'class_division_mappings');
+    return $this->morphToMany(
+      ClassDivision::class,
+      'mappable',
+      'class_division_mappings'
+    );
   }
 
   function formTeacher()

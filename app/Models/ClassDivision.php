@@ -40,6 +40,10 @@ class ClassDivision extends Model
 
   function classifications()
   {
-    return $this->belongsToMany(Classification::class, 'class_division_mappings');
+    return $this->morphedByMany(
+      Classification::class,
+      'mappable',
+      'class_division_mappings'
+    );
   }
 }

@@ -7,6 +7,7 @@ use App\Models\ClassDivision;
 
 use App\Models\Classification;
 use App\Rules\ValidateExistsRule;
+use Illuminate\Http\Request;
 
 class ClassDivisionController extends Controller
 {
@@ -36,12 +37,12 @@ class ClassDivisionController extends Controller
     return $this->ok();
   }
 
-  function search(Institution $institution)
+  function search(Request $request, Institution $institution)
   {
     return response()->json([
       'result' => ClassDivision::query()
         ->when(
-          request('search'),
+          $request->search,
           fn($q, $search) => $q->where('title', 'like', "%$search%")
         )
         ->orderBy('title')
@@ -50,17 +51,21 @@ class ClassDivisionController extends Controller
   }
 
   public function storeClassification(
+    Request $request,
     Institution $institution,
     ClassDivision $classDivision
   ) {
-    request()->validate([
-      'classification_id' => [
+    $request->validate([
+      'classification_ids' => [
         'required',
+        'array',
         new ValidateExistsRule(Classification::class)
       ]
     ]);
 
-    $classDivision->classifications()->attach(request('classification_id'));
+    $classDivision
+      ->classifications()
+      ->syncWithoutDetaching($request->classification_ids);
 
     return $this->ok();
   }
