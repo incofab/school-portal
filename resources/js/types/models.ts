@@ -285,6 +285,10 @@ export interface ClassificationGroup extends InstitutionRow {
   classifications_count?: number;
 }
 
+export interface ClassDivision extends InstitutionRow {
+  title: string;
+}
+
 export interface StudentClassMovement extends InstitutionRow {
   user_id: number;
   source_classification_id: number;

@@ -43,6 +43,7 @@ class MorphMap
     'bank-account' => Models\BankAccount::class,
     'classification' => Models\Classification::class,
     'classification-group' => Models\ClassificationGroup::class,
+    'class-division' => Models\ClassDivision::class,
     'class-result-info' => Models\ClassResultInfo::class,
     'commission' => Models\Commission::class,
     'course' => Models\Course::class,

@@ -17,6 +17,7 @@ yarn-error.log
 /.vscode
 **/*.DS_Store
 .env.testing
+sample.txt
 
 
 # Ignore zipped files
