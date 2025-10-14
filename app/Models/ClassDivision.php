@@ -37,4 +37,9 @@ class ClassDivision extends Model
   {
     return $this->belongsTo(Institution::class);
   }
+
+  function classifications()
+  {
+    return $this->belongsToMany(Classification::class, 'class_division_mappings');
+  }
 }

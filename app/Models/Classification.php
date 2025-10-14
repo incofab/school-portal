@@ -27,6 +27,11 @@ class Classification extends Model
     return $this->belongsTo(ClassificationGroup::class);
   }
 
+  function classDivisions()
+  {
+    return $this->belongsToMany(ClassDivision::class, 'class_division_mappings');
+  }
+
   function formTeacher()
   {
     return $this->belongsTo(User::class, 'form_teacher_id');

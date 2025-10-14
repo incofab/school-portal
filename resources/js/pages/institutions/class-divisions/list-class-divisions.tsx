@@ -1,6 +1,14 @@
 import React from 'react';
-import { ClassDivision } from '@/types/models';
-import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
+import { ClassDivision, Classification } from '@/types/models';
+import {
+  HStack,
+  IconButton,
+  Icon,
+  Tag,
+  TagLabel,
+  TagCloseButton,
+  Wrap,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -10,7 +18,7 @@ import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { BrandButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import { TrashIcon } from '@heroicons/react/24/solid';
+import { TrashIcon, PlusIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
@@ -18,6 +26,7 @@ import useIsAdmin from '@/hooks/use-is-admin';
 
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import CreateEditClassDivisionModal from '@/components/modals/create-edit-class-division-modal';
+import AddClassificationsToClassDivisionModal from '@/components/modals/add-classifications-to-class-division-modal';
 
 interface Props {
   classdivisions: PaginationResponse<ClassDivision>;
@@ -29,6 +38,7 @@ export default function ListClassDivision({ classdivisions }: Props) {
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
   const createEditModal = useModalValueToggle<ClassDivision | undefined>();
+  const addClassificationsModal = useModalValueToggle<ClassDivision>();
 
   async function deleteItem(obj: ClassDivision) {
     const res = await deleteForm.submit((data, web) =>
@@ -40,10 +50,49 @@ export default function ListClassDivision({ classdivisions }: Props) {
     Inertia.reload();
   }
 
+  async function removeClassification(
+    classDivision: ClassDivision,
+    classification: Classification
+  ) {
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(
+        instRoute('class-divisions.classifications.destroy', [
+          classDivision,
+          classification,
+        ])
+      )
+    );
+    if (!handleResponseToast(res)) {
+      return;
+    }
+    Inertia.reload();
+  }
+
   const headers: ServerPaginatedTableHeader<ClassDivision>[] = [
     {
       label: 'Title',
       value: 'title',
+    },
+    {
+      label: 'Classifications',
+      render: (row) => (
+        <Wrap spacing={1}>
+          {row.classifications?.map((classification) => (
+            <Tag
+              size={'sm'}
+              key={classification.id}
+              borderRadius="full"
+              variant="solid"
+              colorScheme="brand"
+            >
+              <TagLabel>{classification.title}</TagLabel>
+              <TagCloseButton
+                onClick={() => removeClassification(row, classification)}
+              />
+            </Tag>
+          ))}
+        </Wrap>
+      ),
     },
     ...(isAdmin
       ? [
@@ -57,6 +106,14 @@ export default function ListClassDivision({ classdivisions }: Props) {
                   onClick={() => createEditModal.open(row)}
                   variant={'ghost'}
                   colorScheme={'brand'}
+                />
+
+                <IconButton
+                  aria-label={'Add Classifications'}
+                  icon={<Icon as={PlusIcon} />}
+                  onClick={() => addClassificationsModal.open(row)}
+                  variant={'ghost'}
+                  colorScheme={'green'}
                 />
 
                 <DestructivePopover
@@ -102,11 +159,20 @@ export default function ListClassDivision({ classdivisions }: Props) {
           />
         </SlabBody>
       </Slab>
-      <CreateEditClassDivisionModal
-        isOpen={createEditModal.isOpen}
-        onClose={createEditModal.close}
-        onSuccess={() => Inertia.reload()}
-      />
+      {(createEditModal.state || createEditModal.state === undefined) && (
+        <CreateEditClassDivisionModal
+          isOpen={createEditModal.isOpen}
+          onClose={createEditModal.close}
+          onSuccess={() => Inertia.reload()}
+        />
+      )}
+      {addClassificationsModal.state && (
+        <AddClassificationsToClassDivisionModal
+          classDivision={addClassificationsModal.state}
+          {...addClassificationsModal.props}
+          onSuccess={() => Inertia.reload()}
+        />
+      )}
     </DashboardLayout>
   );
 }

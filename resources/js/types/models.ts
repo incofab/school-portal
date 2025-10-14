@@ -287,6 +287,7 @@ export interface ClassificationGroup extends InstitutionRow {
 
 export interface ClassDivision extends InstitutionRow {
   title: string;
+  classifications?: Classification[];
 }
 
 export interface StudentClassMovement extends InstitutionRow {

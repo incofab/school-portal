@@ -4,6 +4,7 @@ namespace Tests\Feature\Http\Controllers\Institutions\Classifications;
 
 use App\Models\ClassDivision;
 use App\Models\Institution;
+use App\Models\Classification;
 
 use function Pest\Laravel\{
   actingAs,
@@ -15,6 +16,9 @@ use function Pest\Laravel\{
 beforeEach(function () {
   $this->institution = Institution::factory()->create();
   $this->admin = $this->institution->createdBy;
+  $this->classification = Classification::factory()
+    ->withInstitution($this->institution)
+    ->create();
 });
 
 it('can list class divisions', function () {
@@ -85,5 +89,50 @@ it('can delete a class division', function () {
 
   assertSoftDeleted('class_divisions', [
     'id' => $classDivision->id
+  ]);
+});
+
+it('can add classifications to a class division', function () {
+  $classDivision = ClassDivision::factory()
+    ->withInstitution($this->institution)
+    ->create();
+
+  actingAs($this->admin)
+    ->post(
+      route('institutions.class-divisions.classifications.store', [
+        $this->institution,
+        $classDivision
+      ]),
+      [
+        'classification_id' => $this->classification->id
+      ]
+    )
+    ->assertOk();
+
+  assertDatabaseHas('class_division_mappings', [
+    'class_division_id' => $classDivision->id,
+    'classification_id' => $this->classification->id
+  ]);
+});
+
+it('can remove classifications from a class division', function () {
+  $classDivision = ClassDivision::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  $classDivision->classifications()->attach($this->classification->id);
+
+  actingAs($this->admin)
+    ->delete(
+      route('institutions.class-divisions.classifications.destroy', [
+        $this->institution,
+        $classDivision,
+        $this->classification
+      ])
+    )
+    ->assertOk();
+
+  assertDatabaseMissing('class_division_mappings', [
+    'class_division_id' => $classDivision->id,
+    'classification_id' => $this->classification->id
   ]);
 });

@@ -58,7 +58,12 @@ Route::resource('/classification-groups', Web\Classifications\ClassificationGrou
 Route::get('/class-divisions/search', [Web\Classifications\ClassDivisionController::class, 'search'])
   ->name('class-divisions.search');
 Route::resource('/class-divisions', Web\Classifications\ClassDivisionController::class)
-  ->except(['show']);
+  ->except(['show', 'create', 'edit']);
+
+Route::post('/class-divisions/{classDivision}/classifications', [Web\Classifications\ClassDivisionController::class, 'storeClassification'])
+  ->name('class-divisions.classifications.store');
+Route::delete('/class-divisions/{classDivision}/classifications/{classification}', [Web\Classifications\ClassDivisionController::class, 'destroyClassification'])
+  ->name('class-divisions.classifications.destroy');
 
 Route::get('/classification-groups/{classificationGroup}/promote-students/{destinationClassificatiinGroup?}', [Web\Classifications\PromoteStudentsController::class, 'create'])
   ->name('classification-groups.promote-students.create');
