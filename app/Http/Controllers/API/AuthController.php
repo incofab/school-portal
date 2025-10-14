@@ -67,11 +67,13 @@ class AuthController extends Controller
     return response()->json(
       [
         'message' => 'Login successful',
-        'token' => $token,
-        'user' => $user,
-        'institution_group' => $institution->institutionGroup,
-        'institution' => $institution,
-        'institution_user' => $checkInstitutionUser
+        'user' => [
+          ...$user->toArray(),
+          'token' => $token,
+          'institution_group' => $institution->institutionGroup,
+          'institution' => $institution,
+          'institution_user' => $checkInstitutionUser
+        ]
       ],
       200
     );

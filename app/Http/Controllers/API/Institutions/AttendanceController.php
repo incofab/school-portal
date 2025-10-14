@@ -12,6 +12,7 @@ class AttendanceController extends Controller
 {
   public function store(Institution $institution, Request $request)
   {
+    $request->merge(['institution_user_id' => $request->code]);
     $data = $request->validate(Attendance::createRule());
     $staffInstitutionUser = currentInstitutionUser();
     abort_unless(

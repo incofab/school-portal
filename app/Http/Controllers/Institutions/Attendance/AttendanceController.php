@@ -7,8 +7,6 @@ use Inertia\Inertia;
 use App\Models\Attendance;
 use App\Models\Institution;
 use Illuminate\Http\Request;
-use App\Enums\AttendanceType;
-use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Support\UITableFilters\AttendanceUITableFilters;
 
