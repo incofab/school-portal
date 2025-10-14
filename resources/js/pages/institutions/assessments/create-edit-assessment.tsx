@@ -13,7 +13,8 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { Assessment } from '@/types/models';
+import { Assessment, ClassDivision } from '@/types/models';
+import ClassDivisionSelect from '@/components/selectors/class-division-select';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { BrandButton, FormButton } from '@/components/buttons';
@@ -37,11 +38,13 @@ import DestructivePopover from '@/components/destructive-popover';
 interface Props {
   assessments: Assessment[];
   assessment?: Assessment;
+  classDivisions: ClassDivision[];
 }
 
 export default function CreateUpdateAssessment({
   assessment,
   assessments,
+  classDivisions,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -52,6 +55,11 @@ export default function CreateUpdateAssessment({
     for_mid_term: assessment?.for_mid_term ?? '',
     title: assessment?.title ?? '',
     max: assessment?.max ?? '',
+    class_division_ids:
+      assessment?.class_divisions?.map((cd) => ({
+        label: cd.title,
+        value: cd.id,
+      })) ?? [],
   });
 
   const submit = async () => {
@@ -108,6 +116,25 @@ export default function CreateUpdateAssessment({
                   formKey="max"
                   title="Max score obtainable"
                 />
+
+                <FormControlBox
+                  form={webForm as any}
+                  formKey="class_division_ids"
+                  title="Class Divisions"
+                >
+                  <ClassDivisionSelect
+                    isMulti={true}
+                    value={webForm.data.class_division_ids}
+                    isClearable={true}
+                    onChange={(e: any) =>
+                      webForm.setValue(
+                        'class_division_ids',
+                        e.map((item: any) => item.value)
+                      )
+                    }
+                    classDivisions={classDivisions}
+                  />
+                </FormControlBox>
                 {usesMidTermResult && (
                   <FormControlBox
                     form={webForm as any}

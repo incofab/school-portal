@@ -64,4 +64,9 @@ class Assessment extends Model
   {
     return $this->belongsTo(Institution::class);
   }
+
+  function classDivisions()
+  {
+    return $this->morphToMany(ClassDivision::class, 'mappable', 'class_division_mappings');
+  }
 }

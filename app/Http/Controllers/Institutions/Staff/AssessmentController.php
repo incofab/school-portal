@@ -49,7 +49,8 @@ class AssessmentController extends Controller
 
     return Inertia::render('institutions/assessments/create-edit-assessment', [
       'assessments' => $query->get(),
-      'assessment' => $assessment
+      'assessment' => $assessment,
+      'classDivisions' => \App\Models\ClassDivision::all()
     ]);
   }
 
@@ -60,15 +61,20 @@ class AssessmentController extends Controller
       'for_mid_term' => ['nullable', 'boolean'],
       'title' => ['required'],
       'max' => ['required', 'numeric', 'min:0', 'max:100'],
-      'description' => ['nullable', 'string']
+      'description' => ['nullable', 'string'],
+      'class_division_ids' => ['nullable', 'array']
     ]);
 
-    $institution->assessments()->updateOrCreate(
+    $assessment = $institution->assessments()->updateOrCreate(
       collect($data)
         ->only(['term', 'for_mid_term', 'title'])
         ->toArray(),
-      $data
+      collect($data)
+        ->except('class_division_ids')
+        ->toArray()
     );
+
+    $assessment->classDivisions()->sync($data['class_division_ids'] ?? []);
 
     return $this->ok();
   }
@@ -83,7 +89,8 @@ class AssessmentController extends Controller
       'for_mid_term' => ['nullable', 'boolean'],
       'title' => ['required'],
       'max' => ['required', 'numeric', 'min:0', 'max:100'],
-      'description' => ['nullable', 'string']
+      'description' => ['nullable', 'string'],
+      'class_division_ids' => ['nullable', 'array']
     ]);
 
     if (
@@ -99,7 +106,14 @@ class AssessmentController extends Controller
       ]);
     }
 
-    $assessment->fill($data)->save();
+    $assessment
+      ->fill(
+        collect($data)
+          ->except('class_division_ids')
+          ->toArray()
+      )
+      ->save();
+    $assessment->classDivisions()->sync($data['class_division_ids'] ?? []);
 
     return $this->ok();
   }
@@ -118,6 +132,7 @@ class AssessmentController extends Controller
 
   function destroy(Institution $institution, Assessment $assessment)
   {
+    // $assessment->classDivisions()->delete();
     $assessment->delete();
     return $this->ok();
   }
