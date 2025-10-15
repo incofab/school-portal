@@ -122,11 +122,12 @@ class ViewResultSheetController extends Controller
 
   private function display(array $viewData)
   {
+    $classification = $viewData['classification'];
     $setting = SettingsHandler::makeFromRoute();
-    return inertia(
-      "institutions/result-sheets/{$setting->getResultTemplate()}",
-      $viewData
-    );
+    $template =
+      $classification->classDivisions()->first()?->result_template ??
+      $setting->getResultTemplate();
+    return inertia("institutions/result-sheets/{$template}", $viewData);
   }
 
   function pdfBridge(Request $request)

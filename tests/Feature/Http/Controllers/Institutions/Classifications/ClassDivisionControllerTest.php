@@ -87,7 +87,7 @@ it('can delete a class division', function () {
     )
     ->assertOk();
 
-  assertSoftDeleted('class_divisions', [
+  assertDatabaseMissing('class_divisions', [
     'id' => $classDivision->id
   ]);
 });
