@@ -59,7 +59,11 @@ class RecordClassResultController extends Controller
       ->get();
     return Inertia::render('institutions/courses/record-class-course-result', [
       'courseTeacher' => $courseTeacher,
-      'assessments' => Assessment::query()->get(),
+      'assessments' => Assessment::getAssessments(
+        null,
+        null,
+        $courseTeacher->classification_id
+      ),
       'students' => $students
     ]);
   }

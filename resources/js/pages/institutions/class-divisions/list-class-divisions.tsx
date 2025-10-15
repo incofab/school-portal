@@ -8,6 +8,7 @@ import {
   TagLabel,
   TagCloseButton,
   Wrap,
+  Tooltip,
 } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
@@ -107,14 +108,15 @@ export default function ListClassDivision({ classdivisions }: Props) {
                   variant={'ghost'}
                   colorScheme={'brand'}
                 />
-
-                <IconButton
-                  aria-label={'Add Classifications'}
-                  icon={<Icon as={PlusIcon} />}
-                  onClick={() => addClassificationsModal.open(row)}
-                  variant={'ghost'}
-                  colorScheme={'green'}
-                />
+                <Tooltip label="Link Classes to this Division">
+                  <IconButton
+                    aria-label={'Add Classifications'}
+                    icon={<Icon as={PlusIcon} />}
+                    onClick={() => addClassificationsModal.open(row)}
+                    variant={'ghost'}
+                    colorScheme={'green'}
+                  />
+                </Tooltip>
 
                 <DestructivePopover
                   label={'Delete this division'}
@@ -164,6 +166,7 @@ export default function ListClassDivision({ classdivisions }: Props) {
           isOpen={createEditModal.isOpen}
           onClose={createEditModal.close}
           onSuccess={() => Inertia.reload()}
+          classDivision={createEditModal.state}
         />
       )}
       {addClassificationsModal.state && (

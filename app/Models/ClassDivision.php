@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Enums\ResultTemplateType;
+use App\Rules\ValidateExistsRule;
 use App\Rules\ValidateUniqueRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\Rules\Enum;
 
 class ClassDivision extends Model
 {
@@ -29,6 +32,12 @@ class ClassDivision extends Model
           $classDivision,
           fn($q) => $q->ignore($classDivision->id, 'id')
         )
+      ],
+      'result_template' => ['nullable', new Enum(ResultTemplateType::class)],
+      'classification_ids' => ['sometimes', 'array'],
+      'classification_ids.*' => [
+        'integer',
+        new ValidateExistsRule(Classification::class)
       ]
     ];
   }

@@ -63,10 +63,11 @@ class StudentTermResultDetailController extends Controller
       ->with('course', 'teacher')
       ->get();
 
-    $assessments = Assessment::query()
-      ->forMidTerm($termResult->for_mid_term)
-      ->forTerm($term->value)
-      ->get();
+    $assessments = Assessment::getAssessments(
+      $term,
+      $termResult->for_mid_term,
+      $classification
+    );
 
     return inertia('institutions/students/student-term-result-detail', [
       'courseResults' => $courseResults,

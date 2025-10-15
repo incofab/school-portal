@@ -29,10 +29,11 @@ class DownloadResultRecordingSheet
     $this->spreadsheet = new Spreadsheet();
     $this->workSheet = $this->spreadsheet->getActiveSheet();
 
-    $this->assessments = Assessment::query()
-      ->forMidTerm($this->forMidTerm)
-      ->forTerm($this->term)
-      ->get();
+    $this->assessments = Assessment::getAssessments(
+      $this->term,
+      $this->forMidTerm,
+      $this->classification
+    );
 
     $this->setColumnIndexes();
   }

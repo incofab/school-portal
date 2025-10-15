@@ -26,6 +26,7 @@ class DownloadCourseResultSheetController extends Controller
 
     $excelWriter = DownloadCourseResult::run(
       $courseResults,
+      $request->classificationObj,
       $request->term,
       $request->forMidTerm
     );

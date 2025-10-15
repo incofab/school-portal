@@ -92,10 +92,11 @@ class RecordCourseResult
     $term = $this->data['term'];
     $forMidTerm = $this->data['for_mid_term'] ?? false;
 
-    $assessments = Assessment::query()
-      ->forMidTerm($forMidTerm)
-      ->forTerm($term)
-      ->get();
+    $assessments = Assessment::getAssessments(
+      $term,
+      $forMidTerm,
+      $this->courseTeacher->classification_id
+    );
 
     $result = $this->data['exam'] ?? 0;
 

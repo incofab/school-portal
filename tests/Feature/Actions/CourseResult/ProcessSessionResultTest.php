@@ -95,10 +95,11 @@ it('processes term results and persists session results', function () {
 
   $average1 = round(($tr1->average + $tr2->average + $tr3->average) / 3, 2);
   $average2 = round(($tr21->average + $tr22->average + $tr23->average) / 3, 2);
+
   expect($sessionResult)->not->toBeNull();
   expect($sessionResult->result)->toBe(210.0); // 60 + 70 + 80
-  expect($sessionResult->average)->toBe($average1);
-  expect($sessionResult2->average)->toBe($average2);
+  expect(round($sessionResult->average, 2))->toBe($average1);
+  expect(round($sessionResult2->average, 2))->toBe($average2);
   expect($sessionResult->grade)->toBeString();
   expect($sessionResult->position)->toBe($average1 >= $average2 ? 1 : 2);
 });

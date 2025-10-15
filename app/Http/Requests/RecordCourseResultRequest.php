@@ -24,12 +24,13 @@ class RecordCourseResultRequest extends FormRequest
 
   protected function prepareForValidation()
   {
-    $this->assessments = Assessment::query()
-      ->forMidTerm($this->for_mid_term ?? false)
-      ->forTerm($this->term)
-      ->get();
     $this->institution = currentInstitution();
     $courseTeacher = $this->courseTeacher;
+    $this->assessments = Assessment::getAssessments(
+      $this->term,
+      $this->for_mid_term ?? false,
+      $this->courseTeacher->classification_id
+    );
     $currentUser = currentUser();
     $validTeacher =
       $currentUser->id === $courseTeacher->user_id ||

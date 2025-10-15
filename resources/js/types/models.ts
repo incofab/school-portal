@@ -7,6 +7,7 @@ import {
   InstitutionUserStatus,
   InstitutionUserType,
   ManagerRole,
+  ResultTemplate,
   TermType,
   TransactionType,
   WalletType,
@@ -287,6 +288,7 @@ export interface ClassificationGroup extends InstitutionRow {
 
 export interface ClassDivision extends InstitutionRow {
   title: string;
+  result_template?: ResultTemplate;
   classifications?: Classification[];
 }
 

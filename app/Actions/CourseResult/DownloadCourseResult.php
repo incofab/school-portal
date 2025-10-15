@@ -4,6 +4,7 @@ namespace App\Actions\CourseResult;
 use App\DTO\SheetColumnIndex;
 use App\Enums\Sheet\ResultRecordingColumn;
 use App\Models\Assessment;
+use App\Models\Classification;
 use App\Models\CourseResult;
 use Illuminate\Database\Eloquent\Collection;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -21,16 +22,18 @@ class DownloadCourseResult
 
   function __construct(
     private Collection $courseResults,
+    private Classification $classification,
     private string $term,
     private bool|null $forMidTerm = false
   ) {
     $this->spreadsheet = new Spreadsheet();
     $this->workSheet = $this->spreadsheet->getActiveSheet();
 
-    $this->assessments = Assessment::query()
-      ->forMidTerm($this->forMidTerm)
-      ->forTerm($this->term)
-      ->get();
+    $this->assessments = Assessment::getAssessments(
+      $this->term,
+      $this->forMidTerm,
+      $this->classification
+    );
 
     $this->setColumnIndexes();
   }
@@ -69,10 +72,11 @@ class DownloadCourseResult
 
   public static function run(
     Collection $courseResults,
+    Classification $classification,
     string $term,
     bool|null $forMidTerm = false
   ): Xlsx {
-    $obj = new self($courseResults, $term, $forMidTerm);
+    $obj = new self($courseResults, $classification, $term, $forMidTerm);
     return $obj->execute();
   }
 

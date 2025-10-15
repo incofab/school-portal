@@ -247,6 +247,11 @@ export default function SideBarLayout() {
           roles: teachers,
         },
         {
+          label: 'Class Divisions',
+          route: instRoute('class-divisions.index'),
+          roles: teachers,
+        },
+        {
           label: 'Class Result',
           route: instRoute('class-result-info.index'),
           roles: teachers,

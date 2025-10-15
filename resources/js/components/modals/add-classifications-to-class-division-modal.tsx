@@ -8,6 +8,7 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import { MultiValue } from 'react-select';
 import { Nullable, SelectOptionType } from '@/types/types';
 import ClassificationSelect from '../selectors/classification-select';
+import { Div } from '../semantic';
 
 interface AddClassificationsToClassDivisionModalProps {
   isOpen: boolean;
@@ -56,19 +57,23 @@ export default function AddClassificationsToClassDivisionModal({
   return (
     <GenericModal
       props={{ isOpen, onClose }}
-      headerContent={`Add Classifications to ${classDivision.title} Division`}
+      headerContent={`Add Classes to ${classDivision.title}`}
       bodyContent={
-        <FormControl>
-          <FormLabel>Select Classes</FormLabel>
-          <ClassificationSelect
-            isMulti={true}
-            value={webForm.data.classification_ids}
-            isClearable={true}
-            onChange={(e: any) =>
-              webForm.setValue('classification_ids', e?.value)
-            }
-          />
-        </FormControl>
+        <Div>
+          <FormControl>
+            <FormLabel>Select Classes</FormLabel>
+            <ClassificationSelect
+              isMulti={true}
+              value={webForm.data.classification_ids}
+              isClearable={true}
+              onChange={(e: any) => {
+                console.log('e', e);
+
+                webForm.setValue('classification_ids', e);
+              }}
+            />
+          </FormControl>
+        </Div>
       }
       footerContent={
         <HStack spacing={2}>

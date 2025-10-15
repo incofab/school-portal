@@ -31,10 +31,11 @@ class InsertResultFromRecordingSheet
     $this->spreadsheet = IOFactory::load($this->file->getRealPath());
     $this->sheetData = $this->spreadsheet->getActiveSheet();
 
-    $this->assessments = Assessment::query()
-      ->forMidTerm($this->post['for_mid_term'] ?? false)
-      ->forTerm($this->post['term'])
-      ->get();
+    $this->assessments = Assessment::getAssessments(
+      $this->post['term'],
+      $this->post['for_mid_term'] ?? false,
+      $this->courseTeacher->classification_id
+    );
     $this->setColumnIndexes();
   }
 

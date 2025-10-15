@@ -21,11 +21,21 @@ class ClassDivisionController extends Controller
     ]);
   }
 
-  function store(Institution $institution)
+  function store(Institution $institution, Request $request)
   {
-    $data = request()->validate(ClassDivision::createRule());
+    $data = $request->validate(ClassDivision::createRule());
 
-    $institution->classDivisions()->create($data);
+    /** @var ClassDivision $classDivision */
+    $classDivision = $institution->classDivisions()->create(
+      collect($data)
+        ->except('classification_ids')
+        ->toArray()
+    );
+
+    if ($request->classification_ids) {
+      $classDivision->classifications()->sync($request->classification_ids);
+    }
+
     return $this->ok();
   }
 
@@ -33,7 +43,13 @@ class ClassDivisionController extends Controller
   {
     $data = request()->validate(ClassDivision::createRule($classDivision));
 
-    $classDivision->fill($data)->save();
+    $classDivision
+      ->fill(
+        collect($data)
+          ->except('classification_ids')
+          ->toArray()
+      )
+      ->save();
     return $this->ok();
   }
 
@@ -55,10 +71,12 @@ class ClassDivisionController extends Controller
     Institution $institution,
     ClassDivision $classDivision
   ) {
+    info($request->all());
     $request->validate([
-      'classification_ids' => [
-        'required',
-        'array',
+      'classification_ids' => ['required', 'array', 'min:1'],
+      'classification_ids.*' => [
+        'integer',
+        'distinct',
         new ValidateExistsRule(Classification::class)
       ]
     ]);
@@ -84,12 +102,13 @@ class ClassDivisionController extends Controller
     Institution $institution,
     ClassDivision $classDivision
   ) {
-    abort_if(
-      $classDivision->classifications()->count() > 0,
-      403,
-      'This class division contains some classes'
-    );
-    $classDivision->delete();
+    // abort_if(
+    //   $classDivision->classifications()->count() > 0,
+    //   403,
+    //   'This class division contains some classes'
+    // );
+    $classDivision->classifications()->detach();
+    $classDivision->forceDelete();
     return $this->ok();
   }
 }

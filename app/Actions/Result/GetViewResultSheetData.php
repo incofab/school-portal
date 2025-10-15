@@ -83,10 +83,11 @@ class GetViewResultSheetData
       ->getQuery()
       ->first();
 
-    $assessments = Assessment::query()
-      ->forMidTerm($termResult->for_mid_term)
-      ->forTerm($term)
-      ->get();
+    $assessments = Assessment::getAssessments(
+      $term,
+      $termResult->for_mid_term,
+      $classification
+    );
     $resultCommentTemplate = ResultCommentTemplate::getTemplate($forMidTerm);
     // query()
     //   ->where(

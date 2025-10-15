@@ -82,7 +82,11 @@ class CourseResultsController extends Controller
     return Inertia::render('institutions/courses/record-course-result', [
       'courseTeacher' => $courseTeacher,
       'courseResults' => paginateFromRequest($courseResultQuery),
-      'assessments' => Assessment::query()->get()
+      'assessments' => Assessment::getAssessments(
+        null,
+        null,
+        $courseTeacher->classification_id
+      )
     ]);
   }
 
@@ -99,7 +103,11 @@ class CourseResultsController extends Controller
     return Inertia::render('institutions/courses/record-course-result', [
       'courseTeacher' => $courseTeacher,
       'courseResult' => $courseResult,
-      'assessments' => Assessment::query()->get()
+      'assessments' => Assessment::getAssessments(
+        $courseResult->term,
+        $courseResult->for_mid_term,
+        $courseResult->classification_id
+      )
     ]);
   }
 

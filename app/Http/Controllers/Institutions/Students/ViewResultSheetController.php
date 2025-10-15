@@ -268,10 +268,11 @@ class ViewResultSheetController extends Controller
       ->getQuery()
       ->first();
 
-    $assessments = Assessment::query()
-      ->forMidTerm($termResult->for_mid_term)
-      ->forTerm($term)
-      ->get();
+    $assessments = Assessment::getAssessments(
+      $term,
+      $termResult->for_mid_term,
+      $classification
+    );
     $resultCommentTemplate = ResultCommentTemplate::query()
       ->where(
         fn($q) => $q

@@ -45,10 +45,11 @@ class CourseResult extends Model
   /** @return Collection<integer, Assessment> */
   function getAssessments()
   {
-    return Assessment::query()
-      ->forMidTerm($this->for_mid_term)
-      ->forTerm($this->term)
-      ->get();
+    return Assessment::getAssessments(
+      $this->term,
+      $this->for_mid_term,
+      $this->classification_id
+    );
   }
 
   public function courseTeacher()

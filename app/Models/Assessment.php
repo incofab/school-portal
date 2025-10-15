@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\FullTermType;
+use App\Enums\TermType;
 use App\Support\Queries\AssessmentQueryBuilder;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -12,7 +13,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Assessment extends Model
 {
-  // 08030583452 - decency garden estate
   use HasFactory, InstitutionScope, SoftDeletes;
 
   public $guarded = [];
@@ -34,6 +34,37 @@ class Assessment extends Model
   public function newEloquentBuilder($query)
   {
     return new AssessmentQueryBuilder($query);
+  }
+
+  /**
+   * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Assessment>
+   */
+  static function getAssessments(
+    string|TermType|null $term = null,
+    ?bool $forMidTerm = false,
+    Classification|int|null $classification = null
+  ) {
+    $assements = Assessment::query()
+      ->forTerm($term)
+      ->forMidTerm($forMidTerm)
+      ->with('classDivisions')
+      ->get();
+    if (!$classification) {
+      return $assements;
+    }
+    return $assements->filter(function (Assessment $item) use (
+      $classification
+    ) {
+      /** @var \App\Models\ClassDivision $classDivision */
+      $classDivision = $item->classDivisions->first();
+      if (empty($classDivision)) {
+        return true;
+      }
+      return $classDivision->classifications->contains(
+        'id',
+        is_int($classification) ? $classification : $classification->id
+      );
+    });
   }
 
   protected function title(): Attribute
@@ -67,6 +98,10 @@ class Assessment extends Model
 
   function classDivisions()
   {
-    return $this->morphToMany(ClassDivision::class, 'mappable', 'class_division_mappings');
+    return $this->morphToMany(
+      ClassDivision::class,
+      'mappable',
+      'class_division_mappings'
+    );
   }
 }
