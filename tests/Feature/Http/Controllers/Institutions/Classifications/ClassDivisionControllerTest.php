@@ -6,12 +6,7 @@ use App\Models\ClassDivision;
 use App\Models\Institution;
 use App\Models\Classification;
 
-use function Pest\Laravel\{
-  actingAs,
-  assertDatabaseHas,
-  assertDatabaseMissing,
-  assertSoftDeleted
-};
+use function Pest\Laravel\{actingAs, assertDatabaseHas, assertDatabaseMissing};
 
 beforeEach(function () {
   $this->institution = Institution::factory()->create();

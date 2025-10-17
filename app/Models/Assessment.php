@@ -4,12 +4,15 @@ namespace App\Models;
 
 use App\Enums\FullTermType;
 use App\Enums\TermType;
+use App\Rules\ValidateExistsRule;
 use App\Support\Queries\AssessmentQueryBuilder;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\Rules\Enum;
 
 class Assessment extends Model
 {
@@ -25,6 +28,22 @@ class Assessment extends Model
   ];
 
   protected $appends = ['raw_title'];
+
+  static function createRule(?Assessment $assement = null)
+  {
+    return [
+      'term' => ['nullable', new Enum(TermType::class)],
+      'for_mid_term' => ['nullable', 'boolean'],
+      'title' => ['required', 'max:255'],
+      'max' => ['required', 'numeric', 'min:0', 'max:100'],
+      'description' => ['nullable', 'string'],
+      'classification_ids' => ['nullable', 'array'],
+      'classification_ids.*' => [
+        'integer',
+        new ValidateExistsRule(Classification::class)
+      ]
+    ];
+  }
 
   public static function query(): AssessmentQueryBuilder
   {
@@ -47,24 +66,20 @@ class Assessment extends Model
     $assements = Assessment::query()
       ->forTerm($term)
       ->forMidTerm($forMidTerm)
-      ->with('classDivisions')
+      ->with('classifications')
       ->get();
     if (!$classification) {
       return $assements;
     }
-    return $assements->filter(function (Assessment $item) use (
-      $classification
-    ) {
-      /** @var \App\Models\ClassDivision $classDivision */
-      $classDivision = $item->classDivisions->first();
-      if (empty($classDivision)) {
-        return true;
-      }
-      return $classDivision->classifications->contains(
-        'id',
-        is_int($classification) ? $classification : $classification->id
-      );
-    });
+    return $assements
+      ->filter(function (Assessment $item) use ($classification) {
+        if ($item->classifications->isEmpty()) {
+          return true;
+        }
+        $id = is_int($classification) ? $classification : $classification->id;
+        return $item->classifications->contains('id', $id);
+      })
+      ->values();
   }
 
   protected function title(): Attribute
@@ -96,12 +111,22 @@ class Assessment extends Model
     return $this->belongsTo(Institution::class);
   }
 
+  /** @deprecated */
   function classDivisions()
   {
     return $this->morphToMany(
       ClassDivision::class,
       'mappable',
       'class_division_mappings'
+    );
+  }
+
+  public function classifications(): MorphToMany
+  {
+    return $this->morphToMany(
+      Classification::class,
+      'classifiable',
+      'classifiables'
     );
   }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Classification extends Model
 {
@@ -64,5 +65,10 @@ class Classification extends Model
   function timetables()
   {
     return $this->hasMany(Timetable::class);
+  }
+
+  public function assessments(): MorphToMany
+  {
+    return $this->morphedByMany(Assessment::class, 'classifiable');
   }
 }

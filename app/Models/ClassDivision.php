@@ -55,4 +55,12 @@ class ClassDivision extends Model
       'class_division_mappings'
     );
   }
+  function assessments()
+  {
+    return $this->morphedByMany(
+      Assessment::class,
+      'mappable',
+      'class_division_mappings'
+    );
+  }
 }

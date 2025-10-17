@@ -615,7 +615,7 @@ export interface Assessment extends InstitutionRow {
   term: string;
   for_mid_term: boolean;
   depends_on: string;
-  class_divisions?: ClassDivision[];
+  classifications?: Classification[];
 }
 
 export interface LearningEvaluationDomain extends InstitutionRow {

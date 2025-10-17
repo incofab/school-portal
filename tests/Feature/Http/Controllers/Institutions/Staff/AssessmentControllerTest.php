@@ -5,7 +5,7 @@ namespace Tests\Feature\Http\Controllers\Institutions\Staff;
 use App\Enums\FullTermType;
 use App\Enums\TermType;
 use App\Models\Assessment;
-use App\Models\ClassDivision;
+use App\Models\Classification;
 use App\Models\Institution;
 use App\Support\MorphMap;
 
@@ -14,7 +14,7 @@ use function Pest\Laravel\{actingAs, assertDatabaseHas, assertSoftDeleted};
 beforeEach(function () {
   $this->institution = Institution::factory()->create();
   $this->admin = $this->institution->createdBy;
-  $this->classDivision = ClassDivision::factory()
+  $this->classification = Classification::factory()
     ->withInstitution($this->institution)
     ->create();
 });
@@ -45,7 +45,7 @@ it('can create an assessment', function () {
       'title' => $title,
       'max' => 50,
       'description' => 'Some description',
-      'class_division_ids' => [$this->classDivision->id]
+      'classification_ids' => [$this->classification->id]
     ])
     ->assertOk();
 
@@ -58,10 +58,10 @@ it('can create an assessment', function () {
     'description' => 'Some description'
   ]);
   $assessment = Assessment::where('title', 'new_assessment')->first();
-  assertDatabaseHas('class_division_mappings', [
-    'mappable_id' => $assessment->id,
-    'mappable_type' => $assessment->getMorphClass(),
-    'class_division_id' => $this->classDivision->id
+  assertDatabaseHas('classifiables', [
+    'classifiable_id' => $assessment->id,
+    'classifiable_type' => $assessment->getMorphClass(),
+    'classification_id' => $this->classification->id
   ]);
 });
 
@@ -82,7 +82,7 @@ it('can update an assessment', function () {
         'title' => 'Updated Assessment',
         'max' => 70,
         'description' => 'Updated description',
-        'class_division_ids' => [$this->classDivision->id]
+        'classification_ids' => [$this->classification->id]
       ]
     )
     ->assertOk();
@@ -96,10 +96,10 @@ it('can update an assessment', function () {
     'description' => 'Updated description'
   ]);
 
-  assertDatabaseHas('class_division_mappings', [
-    'mappable_id' => $assessment->id,
-    'mappable_type' => MorphMap::key(Assessment::class),
-    'class_division_id' => $this->classDivision->id
+  assertDatabaseHas('classifiables', [
+    'classifiable_id' => $assessment->id,
+    'classifiable_type' => MorphMap::key(Assessment::class),
+    'classification_id' => $this->classification->id
   ]);
 });
 

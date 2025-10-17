@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Button,
+  Checkbox,
   FormControl,
   HStack,
   Icon,
@@ -13,15 +14,14 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { Assessment, ClassDivision } from '@/types/models';
-import ClassDivisionSelect from '@/components/selectors/class-division-select';
+import { Assessment, Classification } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { BrandButton, FormButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
-import { TermType } from '@/types/types';
+import { Nullable, SelectOptionType, TermType } from '@/types/types';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
@@ -34,17 +34,19 @@ import useSharedProps from '@/hooks/use-shared-props';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import SetAssessmentDependencyModal from '@/components/modals/set-assessment-dependency-modal';
 import DestructivePopover from '@/components/destructive-popover';
+import ClassificationSelect from '@/components/selectors/classification-select';
+import { MultiValue } from 'react-select';
 
 interface Props {
   assessments: Assessment[];
   assessment?: Assessment;
-  classDivisions: ClassDivision[];
+  classifications: Classification[];
 }
 
 export default function CreateUpdateAssessment({
   assessment,
   assessments,
-  classDivisions,
+  classifications,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -55,19 +57,24 @@ export default function CreateUpdateAssessment({
     for_mid_term: assessment?.for_mid_term ?? '',
     title: assessment?.title ?? '',
     max: assessment?.max ?? '',
-    class_division_ids:
-      assessment?.class_divisions?.map((cd) => ({
-        label: cd.title,
-        value: cd.id,
-      })) ?? [],
+    classification_ids: assessment?.classifications?.map((cd) => ({
+      label: cd.title,
+      value: cd.id,
+    })) as Nullable<MultiValue<SelectOptionType<number>>>,
+    for_all_classes: assessment?.classifications?.length ? false : true,
   });
+  console.log(webForm.data.classification_ids);
 
   const submit = async () => {
-    const res = await webForm.submit((data, web) =>
-      assessment
-        ? web.put(instRoute('assessments.update', [assessment]), data)
-        : web.post(instRoute('assessments.store'), data)
-    );
+    const res = await webForm.submit((data, web) => {
+      const requestData = {
+        ...data,
+        classification_ids: data.classification_ids?.map((c) => c.value),
+      };
+      return assessment
+        ? web.put(instRoute('assessments.update', [assessment]), requestData)
+        : web.post(instRoute('assessments.store'), requestData);
+    });
 
     if (!handleResponseToast(res)) return;
 
@@ -117,24 +124,43 @@ export default function CreateUpdateAssessment({
                   title="Max score obtainable"
                 />
 
-                <FormControlBox
-                  form={webForm as any}
-                  formKey="class_division_ids"
-                  title="Class Divisions"
-                >
-                  <ClassDivisionSelect
-                    isMulti={true}
-                    value={webForm.data.class_division_ids}
-                    isClearable={true}
-                    onChange={(e: any) =>
-                      webForm.setValue(
-                        'class_division_ids',
-                        e.map((item: any) => item.value)
-                      )
-                    }
-                    classDivisions={classDivisions}
-                  />
-                </FormControlBox>
+                <FormControl>
+                  <Checkbox
+                    isChecked={webForm.data.for_all_classes}
+                    onChange={(e) => {
+                      webForm.setData({
+                        ...webForm.data,
+                        for_all_classes: e.currentTarget.checked,
+                        ...(e.currentTarget.checked == true
+                          ? { classification_ids: null }
+                          : {}),
+                      });
+                    }}
+                    size={'md'}
+                    colorScheme="brand"
+                  >
+                    Applicable to All Classes
+                  </Checkbox>
+                </FormControl>
+
+                {!webForm.data.for_all_classes && (
+                  <FormControlBox
+                    form={webForm as any}
+                    formKey="classification_ids"
+                    title="Classes [Optional]"
+                  >
+                    <ClassificationSelect
+                      isMulti={true}
+                      selectValue={webForm.data.classification_ids}
+                      isClearable={true}
+                      onChange={(e: any) =>
+                        webForm.setValue('classification_ids', e)
+                      }
+                      classifications={classifications}
+                    />
+                  </FormControlBox>
+                )}
+
                 {usesMidTermResult && (
                   <FormControlBox
                     form={webForm as any}
@@ -190,6 +216,13 @@ function ListAssessments({ assessments }: { assessments: Assessment[] }) {
     {
       label: 'Max Obtainable',
       value: 'max',
+    },
+    {
+      label: 'Classes',
+      render: (row) =>
+        row.classifications!.length
+          ? row.classifications!.map((c) => c.title).join(', ')
+          : 'All',
     },
     {
       label: 'Term',

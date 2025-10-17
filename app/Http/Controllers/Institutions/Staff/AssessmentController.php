@@ -7,7 +7,9 @@ use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
+use App\Models\Classification;
 use App\Models\Institution;
+use App\Rules\ValidateExistsRule;
 use App\Support\UITableFilters\AssessmentUITableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
@@ -48,33 +50,26 @@ class AssessmentController extends Controller
       ->getQuery();
 
     return Inertia::render('institutions/assessments/create-edit-assessment', [
-      'assessments' => $query->get(),
-      'assessment' => $assessment,
-      'classDivisions' => \App\Models\ClassDivision::all()
+      'assessments' => $query->with('classifications')->get(),
+      'assessment' => $assessment?->load('classifications'),
+      'classifications' => \App\Models\Classification::all()
     ]);
   }
 
   function store(Request $request, Institution $institution)
   {
-    $data = $request->validate([
-      'term' => ['nullable', new Enum(TermType::class)],
-      'for_mid_term' => ['nullable', 'boolean'],
-      'title' => ['required'],
-      'max' => ['required', 'numeric', 'min:0', 'max:100'],
-      'description' => ['nullable', 'string'],
-      'class_division_ids' => ['nullable', 'array']
-    ]);
+    $data = $request->validate(Assessment::createRule());
 
     $assessment = $institution->assessments()->updateOrCreate(
       collect($data)
         ->only(['term', 'for_mid_term', 'title'])
         ->toArray(),
       collect($data)
-        ->except('class_division_ids')
+        ->except('classification_ids')
         ->toArray()
     );
 
-    $assessment->classDivisions()->sync($data['class_division_ids'] ?? []);
+    $assessment->classifications()->sync($data['classification_ids'] ?? []);
 
     return $this->ok();
   }
@@ -84,14 +79,7 @@ class AssessmentController extends Controller
     Institution $institution,
     Assessment $assessment
   ) {
-    $data = $request->validate([
-      'term' => ['nullable', new Enum(TermType::class)],
-      'for_mid_term' => ['nullable', 'boolean'],
-      'title' => ['required'],
-      'max' => ['required', 'numeric', 'min:0', 'max:100'],
-      'description' => ['nullable', 'string'],
-      'class_division_ids' => ['nullable', 'array']
-    ]);
+    $data = $request->validate(Assessment::createRule($assessment));
 
     if (
       Assessment::query()
@@ -109,11 +97,11 @@ class AssessmentController extends Controller
     $assessment
       ->fill(
         collect($data)
-          ->except('class_division_ids')
+          ->except('classification_ids')
           ->toArray()
       )
       ->save();
-    $assessment->classDivisions()->sync($data['class_division_ids'] ?? []);
+    $assessment->classifications()->sync($data['classification_ids'] ?? []);
 
     return $this->ok();
   }
@@ -132,7 +120,7 @@ class AssessmentController extends Controller
 
   function destroy(Institution $institution, Assessment $assessment)
   {
-    // $assessment->classDivisions()->delete();
+    // $assessment->classifications()->delete();
     $assessment->delete();
     return $this->ok();
   }

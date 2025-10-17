@@ -7,6 +7,7 @@ import {
   menuClasses,
   SubMenu,
   MenuItemStyles,
+  useProSidebar,
 } from 'react-pro-sidebar';
 import { SidebarHeader } from '../components/sidebar-header';
 import { InertiaLink } from '@inertiajs/inertia-react';
@@ -28,6 +29,7 @@ interface MenuListType extends MenuType {
 
 export default function SideBarLayout() {
   const { currentUser, currentInstitutionUser } = useSharedProps();
+  const { toggleSidebar, collapseSidebar, broken, collapsed } = useProSidebar();
   const { instRoute } = useInstitutionRoute();
   const student = currentInstitutionUser.student;
   const staff = [
@@ -512,6 +514,7 @@ export default function SideBarLayout() {
               <MenuItem
                 key={i}
                 component={<InertiaLink href={menu.route ?? ''} />}
+                onClick={() => toggleSidebar(false)}
               >
                 {menu.label}
               </MenuItem>
@@ -530,6 +533,7 @@ export default function SideBarLayout() {
                   <MenuItem
                     key={'j' + i}
                     component={<InertiaLink href={subItem.route ?? ''} />}
+                    onClick={() => toggleSidebar(false)}
                   >
                     {subItem.label}
                   </MenuItem>
