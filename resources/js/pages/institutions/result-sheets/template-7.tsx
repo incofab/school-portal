@@ -1,11 +1,9 @@
 // File: template-7.tsx
 import {
   Avatar,
-  BoxProps,
   Divider,
   Flex,
   HStack,
-  Icon,
   Img,
   Spacer,
   Text,
@@ -14,7 +12,7 @@ import {
   WrapItem,
   useColorModeValue,
 } from '@chakra-ui/react';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
 import useSharedProps from '@/hooks/use-shared-props';
@@ -28,22 +26,22 @@ import { Assessment, CourseResult } from '@/types/models';
 import ResultSheetLayout from './result-sheet-layout';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateFormat } from '@/util/util';
-import ResultDownloadButton from './result-download-button';
 import { LabelText } from '@/components/result-helper-components';
 
-export default function Template7({
-  termResult,
-  courseResults,
-  classResultInfo,
-  academicSession,
-  student,
-  courseResultInfoData,
-  assessments,
-  learningEvaluations,
-  resultCommentTemplate,
-  termDetail,
-  signed_url,
-}: ResultProps) {
+export default function Template7(props: ResultProps) {
+  const {
+    termResult,
+    courseResults,
+    classResultInfo,
+    academicSession,
+    classification,
+    student,
+    assessments,
+    resultCommentTemplate,
+    courseResultInfoData,
+    signed_url,
+    learningEvaluations,
+  } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
 
@@ -180,80 +178,67 @@ export default function Template7({
   }
 
   return (
-    <ResultSheetLayout>
-      <Div style={backgroundStyle} minHeight="1170px">
-        <ResultDownloadButton
-          signed_url={signed_url}
-          student={student}
-          termResult={termResult}
-        />
-        <Div
-          mx="auto"
-          width="900px"
-          px={3}
-          position="relative"
-          id="result-sheet"
-        >
-          <Header />
-          <Wrap spacing={3} mb={4}>
-            {resultSummary.map((item) => (
-              <WrapItem key={item.label} flex={1}>
-                <LabelText label={item.label} text={item.value} />
-              </WrapItem>
-            ))}
-          </Wrap>
-          <Div className="table-container">
-            <DataTable
-              scroll
-              headers={resultTableHeaders}
-              data={courseResults}
-              keyExtractor={(row) => row.id}
-              hideSearchField
-              tableProps={{ className: 'result-table' }}
-            />
-          </Div>
-          <Spacer height={5} />
-          <DisplayTermResultEvaluation
-            termResult={termResult}
-            learningEvaluations={learningEvaluations}
+    <ResultSheetLayout resultProps={props}>
+      <Div mx="auto" width="900px" px={3} position="relative" id="result-sheet">
+        <Header />
+        <Wrap spacing={3} mb={4}>
+          {resultSummary.map((item) => (
+            <WrapItem key={item.label} flex={1}>
+              <LabelText label={item.label} text={item.value} />
+            </WrapItem>
+          ))}
+        </Wrap>
+        <Div className="table-container">
+          <DataTable
+            scroll
+            headers={resultTableHeaders}
+            data={courseResults}
+            keyExtractor={(row) => row.id}
+            hideSearchField
+            tableProps={{ className: 'result-table' }}
           />
-          <Divider my={4} />
-          <HStack align="stretch" spacing={5}>
-            <VStack align="start" spacing={2}>
-              {teacherComment && (
-                <Text>
-                  <strong>Teacher’s Comment:</strong> {teacherComment}
-                </Text>
-              )}
-              {principalComment && (
-                <Text>
-                  <strong>Head Teacher’s Comment:</strong> {principalComment}
-                </Text>
-              )}
-              {stamp && <Img src={stamp} alt="Stamp" boxSize="100px" />}
-            </VStack>
-            {resultCommentTemplate && (
-              <table className="keys-table" style={{ textAlign: 'center' }}>
-                <thead>
-                  <tr>
-                    <th>Range (%)</th>
-                    <th>Remark</th>
-                    <th>Grade</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {resultCommentTemplate.map((item) => (
-                    <tr key={item.grade}>
-                      <td>{`${item.min} - ${item.max}`}</td>
-                      <td>{item.grade_label}</td>
-                      <td>{item.grade}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </HStack>
         </Div>
+        <Spacer height={5} />
+        <DisplayTermResultEvaluation
+          termResult={termResult}
+          learningEvaluations={learningEvaluations}
+        />
+        <Divider my={4} />
+        <HStack align="stretch" spacing={5}>
+          <VStack align="start" spacing={2}>
+            {teacherComment && (
+              <Text>
+                <strong>Teacher’s Comment:</strong> {teacherComment}
+              </Text>
+            )}
+            {principalComment && (
+              <Text>
+                <strong>Pricipal’s Comment:</strong> {principalComment}
+              </Text>
+            )}
+            {stamp && <Img src={stamp} alt="Stamp" boxSize="100px" />}
+          </VStack>
+          {resultCommentTemplate && (
+            <table className="keys-table" style={{ textAlign: 'center' }}>
+              <thead>
+                <tr>
+                  <th>Range (%)</th>
+                  <th>Remark</th>
+                  <th>Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                {resultCommentTemplate.map((item) => (
+                  <tr key={item.grade}>
+                    <td>{`${item.min} - ${item.max}`}</td>
+                    <td>{item.grade_label}</td>
+                    <td>{item.grade}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </HStack>
       </Div>
     </ResultSheetLayout>
   );

@@ -110,7 +110,7 @@ class SettingsHandler
       $default;
   }
 
-  function getCurrentAcademicSession($default = 'fetch')
+  function getCurrentAcademicSession($default = 'fetch'): int|string|null
   {
     return $this->getValue(
       InstitutionSettingType::CurrentAcademicSession->value

@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Actions\CourseResult\ClassResultInfoAction;
+use App\Actions\CourseResult\EvaluateCourseResultForClass;
+use App\Actions\SeedSetupData;
 use App\Enums\TermType;
 use App\Models\Institution;
 use Illuminate\Support\Arr;
@@ -13,9 +16,15 @@ use App\Enums\PriceLists\PaymentStructure;
 use App\Enums\PriceLists\PriceType;
 use App\Models\Classification;
 use App\Models\ClassificationGroup;
+use App\Models\Course;
+use App\Models\CourseResult;
+use App\Models\CourseTeacher;
 use App\Models\InstitutionSetting;
+use App\Models\InstitutionUser;
 use App\Models\PriceList;
 use App\Models\Student;
+use App\Models\TermResult;
+use App\Support\SettingsHandler;
 
 class MyRefillDatabaseSeeder extends Seeder
 {
@@ -46,15 +55,13 @@ class MyRefillDatabaseSeeder extends Seeder
     $institutionAdmin = $institution->createdBy;
     $institutionAdmin->fill(['email' => 'success@email.com'])->save();
 
-    foreach (['JSS 1', 'JSS 2', 'JSS 3'] as $key => $value) {
-      $classificationGroup = ClassificationGroup::factory()
-        ->withInstitution($institution)
-        ->create(['title' => $value]);
-      Classification::factory()
-        ->classificationGroup($classificationGroup)
-        ->create(['title' => $value]);
-    }
+    SeedSetupData::run($institution);
+
     $this->createInstitutionSetting($institution);
+
+    $this->createClasses($institution);
+    $this->recordSubjects($institution);
+    $this->createExamResult($institution);
     $this->createStudents($institution, 10);
 
     $this->createPriceList($institutionGroup);
@@ -84,6 +91,18 @@ class MyRefillDatabaseSeeder extends Seeder
     ];
 
     InstitutionSetting::insert($settingData);
+  }
+
+  function createClasses(Institution $institution)
+  {
+    foreach (['JSS 1', 'JSS 2', 'JSS 3'] as $key => $value) {
+      $classificationGroup = ClassificationGroup::factory()
+        ->withInstitution($institution)
+        ->create(['title' => $value]);
+      Classification::factory()
+        ->classificationGroup($classificationGroup)
+        ->create(['title' => $value]);
+    }
   }
 
   function createStudents(Institution $institution, $numPerClass)
@@ -116,5 +135,104 @@ class MyRefillDatabaseSeeder extends Seeder
         ->toArray(),
       $priceData
     );
+  }
+
+  function recordSubjects(Institution $institution)
+  {
+    $courseTitles = [
+      'Mathematics',
+      'Economics',
+      'English',
+      'Biology',
+      'Chemistry',
+      'Physics',
+      'Agriculture',
+      'History',
+      'Geography',
+      'Commerce',
+      'Government'
+    ];
+
+    foreach ($courseTitles as $key => $title) {
+      Course::query()->firstOrCreate(
+        ['title' => $title, 'institution_id' => $institution->id],
+        ['code' => $title]
+      );
+    }
+
+    $teacher = InstitutionUser::factory()
+      ->teacher($institution)
+      ->create()->user;
+    $teacher
+      ->fill([
+        'email' => 'teacher@email.com',
+        'first_name' => 'Teacher1',
+        'last_name' => 'Teacher1'
+      ])
+      ->save();
+    $classes = $institution->classifications()->get();
+    $courses = $institution->courses()->get();
+    foreach ($classes as $key => $class) {
+      foreach ($courses as $key => $course) {
+        CourseTeacher::query()->firstOrCreate([
+          'institution_id' => $institution->id,
+          'classification_id' => $class->id,
+          'course_id' => $course->id,
+          'user_id' => $teacher->id
+        ]);
+      }
+    }
+  }
+
+  private function createExamResult(Institution $institution)
+  {
+    $courses = $institution->courses()->get();
+    $settingsHandler = SettingsHandler::makeFromInstitution($institution);
+    $classifications = $institution->classifications()->get();
+
+    foreach ($classifications as $key => $classification) {
+      $students = $classification->students()->get();
+      foreach ($courses as $key => $course) {
+        foreach ($students as $key => $student) {
+          $courseTeacher =
+            CourseTeacher::where([
+              'institution_id' => $institution->id,
+              'course_id' => $course->id,
+              'classification_id' => $classification->id
+            ])->first() ?? CourseTeacher::first();
+          abort_unless($courseTeacher, 'No course teacher found');
+          CourseResult::factory()
+            ->withInstitution($institution)
+            ->create([
+              'academic_session_id' => $settingsHandler->getCurrentAcademicSession(),
+              'term' => $settingsHandler->getCurrentTerm(),
+              'for_mid_term' => false,
+              'classification_id' => $classification->id,
+              'course_id' => $course->id,
+              'student_id' => $student->id,
+              'teacher_user_id' => $courseTeacher->id
+            ]);
+        }
+        EvaluateCourseResultForClass::run(
+          classification: $classification,
+          courseId: $course->id,
+          academicSessionId: $settingsHandler->getCurrentAcademicSession(),
+          term: $settingsHandler->getCurrentTerm(),
+          forMidTerm: false
+        );
+      }
+    }
+
+    ClassResultInfoAction::make()->calculate(
+      classification: $classification,
+      academicSessionId: $settingsHandler->getCurrentAcademicSession(),
+      term: $settingsHandler->getCurrentTerm(),
+      forMidTerm: false,
+      forceCalculateTermResult: true
+    );
+
+    // TermResult::where([
+    //   'institution_id' => $institution->id,
+    // ])->update(['']);
   }
 }

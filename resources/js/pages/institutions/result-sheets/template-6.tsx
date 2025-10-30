@@ -27,30 +27,27 @@ import { CourseResult } from '@/types/models';
 import ResultSheetLayout from './result-sheet-layout';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateFormat } from '@/util/util';
-import useWebForm from '@/hooks/use-web-form';
-import useMyToast from '@/hooks/use-my-toast';
-import ResultDownloadButton from './result-download-button';
 import { EnvelopeIcon, MapIcon, PhoneIcon } from '@heroicons/react/24/solid';
 import { LabelText } from '@/components/result-helper-components';
 
 const PDF_URL = import.meta.env.VITE_PDF_URL;
-export default function Template6({
-  termResult,
-  courseResults,
-  classResultInfo,
-  academicSession,
-  student,
-  courseResultInfoData,
-  assessments,
-  learningEvaluations,
-  resultCommentTemplate,
-  termDetail,
-  signed_url,
-}: ResultProps) {
+export default function Template6(props: ResultProps) {
+  const {
+    termResult,
+    courseResults,
+    classResultInfo,
+    academicSession,
+    classification,
+    student,
+    assessments,
+    resultCommentTemplate,
+    courseResultInfoData,
+    signed_url,
+    learningEvaluations,
+    termDetail,
+  } = props;
   const { currentInstitution, currentUser, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
-  const downloadPdfForm = useWebForm({});
-  const { handleResponseToast } = useMyToast();
 
   const resultSummary1 = [
     { label: 'Student Name', value: student.user?.full_name },
@@ -309,159 +306,150 @@ export default function Template6({
   }
 
   return (
-    <ResultSheetLayout>
-      <Div style={backgroundStyle} minHeight={'1170px'}>
-        <ResultDownloadButton
-          signed_url={signed_url}
-          student={student}
-          termResult={termResult}
-        />
-        <Div
-          mx={'auto'}
-          width={'900px'}
-          px={3}
-          position={'relative'}
-          id={'result-sheet'}
-        >
-          <Div>
-            <Header />
-            <Div className="table-container">
-              <DataTable
-                scroll={true}
-                headers={resultTableHeaders}
-                data={courseResults}
-                keyExtractor={(row) => row.id}
-                hideSearchField={true}
-                tableProps={{ className: 'result-table' }}
-              />
-            </Div>
-            <Div className="cell" my={2}>
-              <HStack>
-                <LabelText
-                  label={'Total'}
-                  text={`${termResult.total_score} out of ${classResultInfo.max_obtainable_score}`}
-                />
-                <Spacer />
-                <LabelText
-                  label={'Percentage Average'}
-                  text={`${termResult.average}%`}
-                />
-              </HStack>
-              <HStack mt={0}>
-                <LabelText
-                  label={'Overall Grade'}
-                  text={String(
-                    ResultUtil.getGrade(
-                      termResult.average,
-                      resultCommentTemplate
-                    ).grade
-                  )}
-                />
-                <Spacer />
-                <LabelText
-                  label={'Overall Grade'}
-                  text={`${classResultInfo.average}%`}
-                />
-              </HStack>
-            </Div>
-            <DisplayTermResultEvaluation
-              termResult={termResult}
-              learningEvaluations={learningEvaluations}
+    <ResultSheetLayout resultProps={props}>
+      <Div
+        mx={'auto'}
+        width={'900px'}
+        px={3}
+        position={'relative'}
+        id={'result-sheet'}
+      >
+        <Div>
+          <Header />
+          <Div className="table-container">
+            <DataTable
+              scroll={true}
+              headers={resultTableHeaders}
+              data={courseResults}
+              keyExtractor={(row) => row.id}
+              hideSearchField={true}
+              tableProps={{ className: 'result-table' }}
             />
-            <br />
-            <div
-              style={{
-                minWidth: '240px',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}
-            >
-              {resultCommentTemplate && (
-                <table
-                  className="keys-table"
-                  style={{ textAlign: 'center', minWidth: '300px' }}
-                >
-                  <thead>
-                    <tr>
-                      <th>
-                        <div>Range (%)</div>
-                      </th>
-                      <th>
-                        <div>Remark</div>
-                      </th>
-                      <th>
-                        <div>Letter Grade</div>
-                      </th>
-                      {/* <th>Point Grade</th> */}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* {[90, 89, 69, 59, 49, 39].map((item) => { */}
-                    {resultCommentTemplate.map((item) => {
-                      const { grade, grade_label } = item;
-                      // ResultUtil.getGrade(item, resultCommentTemplate);
-                      return (
-                        <tr key={grade}>
-                          <td>
-                            <div>{`${item.min} - ${item.max}`}</div>
-                          </td>
-                          <td>
-                            <div>{grade_label}</div>
-                          </td>
-                          <td>
-                            <div>{grade}</div>
-                          </td>
-                          {/* <td>{pointsGrade}</td> */}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
-              <Div ml={3} width={'full'}>
-                {teacherComment && (
-                  <>
-                    <HStack align={'stretch'} width={'full'}>
-                      <Text
-                        fontWeight={'semibold'}
-                        size={'xs'}
-                        whiteSpace={'nowrap'}
-                      >
-                        Teacher's comment:{' '}
-                      </Text>
-                      <Text>{teacherComment}</Text>
-                    </HStack>
-                    <Divider />
-                  </>
-                )}
-                {principalComment && (
-                  <>
-                    <HStack align={'stretch'} width={'full'}>
-                      <Text
-                        fontWeight={'semibold'}
-                        size={'xs'}
-                        whiteSpace={'nowrap'}
-                      >
-                        Head Teacher's comment:{' '}
-                      </Text>
-                      <Text>{principalComment}</Text>
-                    </HStack>
-                    <Divider />
-                  </>
-                )}
-                {stamp && (
-                  <Div textAlign={'end'}>
-                    <Img
-                      src={stamp}
-                      alt="School stamp"
-                      display={'inline-block'}
-                    />
-                  </Div>
-                )}
-              </Div>
-            </div>
           </Div>
+          <Div className="cell" my={2}>
+            <HStack>
+              <LabelText
+                label={'Total'}
+                text={`${termResult.total_score} out of ${classResultInfo.max_obtainable_score}`}
+              />
+              <Spacer />
+              <LabelText
+                label={'Percentage Average'}
+                text={`${termResult.average}%`}
+              />
+            </HStack>
+            <HStack mt={0}>
+              <LabelText
+                label={'Overall Grade'}
+                text={String(
+                  ResultUtil.getGrade(termResult.average, resultCommentTemplate)
+                    .grade
+                )}
+              />
+              <Spacer />
+              <LabelText
+                label={'Overall Grade'}
+                text={`${classResultInfo.average}%`}
+              />
+            </HStack>
+          </Div>
+          <DisplayTermResultEvaluation
+            termResult={termResult}
+            learningEvaluations={learningEvaluations}
+          />
+          <br />
+          <div
+            style={{
+              minWidth: '240px',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            {resultCommentTemplate && (
+              <table
+                className="keys-table"
+                style={{ textAlign: 'center', minWidth: '300px' }}
+              >
+                <thead>
+                  <tr>
+                    <th>
+                      <div>Range (%)</div>
+                    </th>
+                    <th>
+                      <div>Remark</div>
+                    </th>
+                    <th>
+                      <div>Letter Grade</div>
+                    </th>
+                    {/* <th>Point Grade</th> */}
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* {[90, 89, 69, 59, 49, 39].map((item) => { */}
+                  {resultCommentTemplate.map((item) => {
+                    const { grade, grade_label } = item;
+                    // ResultUtil.getGrade(item, resultCommentTemplate);
+                    return (
+                      <tr key={grade}>
+                        <td>
+                          <div>{`${item.min} - ${item.max}`}</div>
+                        </td>
+                        <td>
+                          <div>{grade_label}</div>
+                        </td>
+                        <td>
+                          <div>{grade}</div>
+                        </td>
+                        {/* <td>{pointsGrade}</td> */}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+            <Div ml={3} width={'full'}>
+              {teacherComment && (
+                <>
+                  <HStack align={'stretch'} width={'full'}>
+                    <Text
+                      fontWeight={'semibold'}
+                      size={'xs'}
+                      whiteSpace={'nowrap'}
+                    >
+                      Teacher's comment:{' '}
+                    </Text>
+                    <Text>{teacherComment}</Text>
+                  </HStack>
+                  <Divider />
+                </>
+              )}
+              {principalComment && (
+                <>
+                  <HStack align={'stretch'} width={'full'}>
+                    <Text
+                      fontWeight={'semibold'}
+                      size={'xs'}
+                      whiteSpace={'nowrap'}
+                    >
+                      Pricipal's comment:{' '}
+                    </Text>
+                    <Text>{principalComment}</Text>
+                  </HStack>
+                  <Divider />
+                </>
+              )}
+              {stamp && (
+                <Div textAlign={'end'}>
+                  <Img
+                    src={stamp}
+                    alt="School stamp"
+                    display={'inline-block'}
+                  />
+                </Div>
+              )}
+            </Div>
+          </div>
         </Div>
       </Div>
     </ResultSheetLayout>

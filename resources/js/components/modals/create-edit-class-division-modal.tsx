@@ -93,6 +93,7 @@ export default function CreateEditClassDivisionModal({
               onChange={(e: any) =>
                 webForm.setValue('result_template', e.value)
               }
+              isClearable={true}
             />
             <small>
               <i>

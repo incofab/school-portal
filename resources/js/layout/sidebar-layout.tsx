@@ -15,6 +15,7 @@ import route from '@/util/route';
 import { Nullable, InstitutionUserType } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import useIsTeacher from '@/hooks/use-is-teacher';
 
 interface MenuType {
   label: string;
@@ -31,6 +32,7 @@ export default function SideBarLayout() {
   const { currentUser, currentInstitutionUser } = useSharedProps();
   const { toggleSidebar, collapseSidebar, broken, collapsed } = useProSidebar();
   const { instRoute } = useInstitutionRoute();
+  const isTeacher = useIsTeacher();
   const student = currentInstitutionUser.student;
   const staff = [
     InstitutionUserType.Admin,
@@ -110,17 +112,17 @@ export default function SideBarLayout() {
     },
     {
       label: 'Attendance',
-      roles: [InstitutionUserType.Admin],
+      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
       sub_items: [
         {
           label: 'Mark Attendance',
           route: instRoute('attendances.create'),
-          roles: [InstitutionUserType.Admin],
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'All Attendances',
           route: instRoute('attendances.index'),
-          roles: [InstitutionUserType.Admin],
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
       ],
     },
@@ -169,7 +171,10 @@ export default function SideBarLayout() {
         },
         {
           label: 'Subject Teachers',
-          route: instRoute('course-teachers.index'),
+          route: instRoute(
+            'course-teachers.index',
+            isTeacher ? [currentUser.id] : undefined
+          ),
           roles: teachers,
         },
         {

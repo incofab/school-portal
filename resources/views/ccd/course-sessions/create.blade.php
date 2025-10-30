@@ -24,14 +24,14 @@
 				</div>
 				
 				<div class="form-group">
-					<label for="" >Category</label><br />
+					<label for="" >Category [optional]</label><br />
 					<input type="text" name="category" value="{{old('category', $edit?->category)}}" class="form-control"/>
 				</div>
 				
 				<div class="form-group">
-					<label for="" >General Instructions</label>
+					<label for="" >General Instructions [optional]</label>
 					<textarea name="general_instructions" id="" rows="4" class="form-control" 
-						>{{old('general_instructions', $edit?->general_instructions)}}</textarea>
+						placeholder="Eg. Answer all questions">{{old('general_instructions', $edit?->general_instructions)}}</textarea>
 				</div>
 				
 				<div class="form-group">

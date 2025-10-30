@@ -2,11 +2,16 @@ import React, { PropsWithChildren } from 'react';
 import { useColorMode } from '@chakra-ui/react';
 import { Div } from '@/components/semantic';
 import useSharedProps from '@/hooks/use-shared-props';
+import ResultDownloadButton from './result-download-button';
+import { ResultProps } from '@/util/result-util';
 interface Props {
   useBgStyle?: boolean;
+  resultProps: ResultProps;
 }
+
 export default function ResultSheetLayout({
   children,
+  resultProps,
   useBgStyle,
 }: Props & PropsWithChildren) {
   const { currentInstitution } = useSharedProps();
@@ -23,5 +28,19 @@ export default function ResultSheetLayout({
     backgroundRepeat: 'repeat',
     backgroundColor: 'white',
   };
-  return <Div style={useBgStyle ? backgroundStyle : undefined}>{children}</Div>;
+  return (
+    <Div>
+      <Div
+        style={useBgStyle ? backgroundStyle : undefined}
+        minHeight={'1170px'}
+      >
+        <ResultDownloadButton
+          signed_url={resultProps.signed_url}
+          student={resultProps.student}
+          termResult={resultProps.termResult}
+        />
+        {children}
+      </Div>
+    </Div>
+  );
 }

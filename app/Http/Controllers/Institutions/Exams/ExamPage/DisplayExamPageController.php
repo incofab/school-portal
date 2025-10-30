@@ -26,7 +26,9 @@ class DisplayExamPageController extends Controller
       ])
       ->with(
         'examCourseables.courseable',
-        fn($q) => $q->with('course', 'questions', 'passages', 'instructions')
+        fn($q) => $q
+          ->with('course', 'passages', 'instructions')
+          ->with(['questions' => fn($q2) => $q2->inRandomOrder()])
       )
       ->first();
 

@@ -132,7 +132,7 @@ export default function CreateOrUpdateEvent({
                 title="Duration [mins]"
                 isRequired
               />
-              <InputForm
+              {/* <InputForm
                 form={webForm as any}
                 formKey="num_of_subjects"
                 title="Num of Subjects"
@@ -140,7 +140,7 @@ export default function CreateOrUpdateEvent({
                 min={1}
                 max={4}
                 isRequired
-              />
+              /> */}
               <FormControlBox
                 title="Start time"
                 form={webForm as any}
