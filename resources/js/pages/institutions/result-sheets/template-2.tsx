@@ -148,30 +148,35 @@ export default function Template2(props: ResultProps) {
                   borderRadius={'10px'}
                   fontWeight={'semibold'}
                 >
-                  {ResultUtil.getClassSection(classification.title)}
+                  {/* {ResultUtil.getClassSection(classification.title)} */}
+                  {academicSession?.title} -{' '}
+                  {termResult.for_mid_term ? 'Mid ' : ''}
+                  {startCase(termResult.term)} Term Result
                 </Text>
               </Div>
             </VStack>
             <Avatar size="xl" name="Student" src={student.user?.photo ?? ''} />
           </HStack>
-          <Flex flexDirection={'row'} justifyContent={'space-between'}>
-            <LabelText label="Pupil's Name" text={student?.user?.full_name} />
-            <LabelText label="Class" text={classification.title} />
-            <LabelText label="Gender" text={student.user?.gender} />
-          </Flex>
-          <Flex mt={1} flexDirection={'row'} justifyContent={'space-between'}>
-            <LabelText
-              label="No of Class"
-              text={classResultInfo.num_of_students}
-            />
-            <LabelText
+          <Div>
+            <Flex flexDirection={'row'} justifyContent={'space-between'}>
+              <LabelText label="Pupil's Name" text={student?.user?.full_name} />
+              <LabelText label="Class" text={classification.title} />
+            </Flex>
+            <Flex mt={1} flexDirection={'row'} justifyContent={'space-between'}>
+              <LabelText
+                label="No of Class"
+                text={classResultInfo.num_of_students}
+              />
+              <LabelText label="Gender" text={student.user?.gender} />
+              {/* <LabelText
               label="Term"
               text={`${startCase(termResult.term)} ${
                 termResult.for_mid_term ? 'Mid Term' : ''
               }`}
             />
-            <LabelText label="Session" text={academicSession.title} />
-          </Flex>
+            <LabelText label="Session" text={academicSession.title} /> */}
+            </Flex>
+          </Div>
           <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
             <div className="table-container" style={{ flexGrow: 2 }}>
               <table className="result-table" width={'100%'}>

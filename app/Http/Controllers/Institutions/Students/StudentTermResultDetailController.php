@@ -9,6 +9,7 @@ use App\Models\Classification;
 use App\Models\Assessment;
 use App\Models\Institution;
 use App\Models\Student;
+use App\Models\TermResult;
 
 class StudentTermResultDetailController extends Controller
 {
@@ -38,6 +39,7 @@ class StudentTermResultDetailController extends Controller
       403
     );
 
+    /** @var TermResult|null $termResult*/
     $termResult = $student
       ->termResults()
       ->where('classification_id', $classification->id)
@@ -48,7 +50,7 @@ class StudentTermResultDetailController extends Controller
 
     if (currentUser()->id == $student->user_id) {
       abort_unless(
-        $termResult->is_activated,
+        $termResult->isActivated(),
         403,
         'This result is not activated'
       );

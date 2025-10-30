@@ -68,7 +68,16 @@ class TermResult extends Model
 
   function scopeActivated($query, $isActivated = true)
   {
-    return $query->where('is_activated', $isActivated);
+    return $query->where(
+      fn($q) => $q
+        ->where('is_activated', $isActivated)
+        ->orWhere('for_mid_term', true)
+    );
+  }
+
+  function isActivated()
+  {
+    return $this->is_activated || $this->for_mid_term;
   }
 
   // protected function learningEvaluation(): Attribute

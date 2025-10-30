@@ -72,7 +72,7 @@ class ViewResultSheetController extends Controller
 
     if (!currentInstitutionUser()->isAdmin()) {
       abort_unless(
-        $termResult->is_activated,
+        $termResult->isActivated(),
         403,
         'This result is not activated'
       );
@@ -115,8 +115,9 @@ class ViewResultSheetController extends Controller
       $forMidTerm
     );
     $viewData['signed_url'] = url()->current();
+    /** @var TermResult|null $termResult */
     $termResult = $viewData['termResult'];
-    abort_unless($termResult->is_activated, 403, 'Result not activated');
+    abort_unless($termResult->isActivated(), 403, 'Result not activated');
     return $this->display($viewData);
   }
 
@@ -221,6 +222,7 @@ class ViewResultSheetController extends Controller
       'forMidTerm' => $forMidTerm
     ];
 
+    /** @var TermResult|null $termResult */
     $termResult = TermResultUITableFilters::make(
       $params,
       $student->termResults()->getQuery()
@@ -234,7 +236,7 @@ class ViewResultSheetController extends Controller
 
     if (currentUser()->id == $student->user_id) {
       abort_unless(
-        $termResult->is_activated,
+        $termResult->isActivated(),
         403,
         'This result is not activated'
       );
