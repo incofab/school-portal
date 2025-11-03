@@ -15,9 +15,9 @@ import { dateTimeFormat, formatAsCurrency } from '@/util/util';
 import { LabelText } from '@/components/result-helper-components';
 import ImagePaths from '@/util/images';
 import { format } from 'date-fns';
-import ResultSheetLayout from '../../result-sheets/result-sheet-layout';
 import startCase from 'lodash/startCase';
 import DateTimeDisplay from '@/components/date-time-display';
+import ReceiptLayout from './receipt-layout';
 
 interface Props {
   receipt: Receipt;
@@ -81,7 +81,7 @@ export default function PrintReceiptPage({ receipt, student }: Props) {
   ];
 
   return (
-    <ResultSheetLayout>
+    <ReceiptLayout user={student.user!}>
       <br />
       <br />
       <br />
@@ -141,6 +141,6 @@ export default function PrintReceiptPage({ receipt, student }: Props) {
         <Divider my={4} />
         <Text textAlign="center">Thank you for your payment!</Text>
       </Div>
-    </ResultSheetLayout>
+    </ReceiptLayout>
   );
 }

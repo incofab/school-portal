@@ -237,7 +237,7 @@ class LessonNoteController extends Controller
 
     $res = GoogleAiHelper::ask($question);
 
-    $res_parts = $res['candidates'][0]['content']['parts'];
+    $res_parts = $res['candidates'][0]['content']['parts'] ?? [];
     $full_note = '';
 
     foreach ($res_parts as $res_part) {

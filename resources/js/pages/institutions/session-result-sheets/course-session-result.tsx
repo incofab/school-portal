@@ -13,7 +13,7 @@ import { Avatar, HStack, Text, VStack } from '@chakra-ui/react';
 import useSharedProps from '@/hooks/use-shared-props';
 import ImagePaths from '@/util/images';
 import '@/../../public/style/result-sheet.css';
-import ResultSheetLayout from '../result-sheets/result-sheet-layout';
+import PagePrintLayout from '@/domain/institutions/page-print-layout';
 
 interface CourseSessionResultData {
   [course_id: number]: {
@@ -79,7 +79,10 @@ export default function CourseSessionResult({
   ];
 
   return (
-    <ResultSheetLayout useBgStyle={true}>
+    <PagePrintLayout
+      useBgStyle={true}
+      filename={`${classification.title}-result-sheet.pdf`}
+    >
       <Div
         mx={'auto'}
         maxWidth={'1200px'}
@@ -157,6 +160,6 @@ export default function CourseSessionResult({
       </Div>
       <br />
       <br />
-    </ResultSheetLayout>
+    </PagePrintLayout>
   );
 }

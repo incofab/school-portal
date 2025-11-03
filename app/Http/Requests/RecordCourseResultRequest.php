@@ -126,7 +126,7 @@ class RecordCourseResultRequest extends FormRequest
     return [
       ...$this->assessmentValidationRule($prefix . Assessment::PREFIX),
       $prefix . 'exam' => [
-        'sometimes',
+        'nullable',
         'numeric',
         'min:0',
         function ($attr, $value, $fail) use ($data) {
@@ -158,7 +158,7 @@ class RecordCourseResultRequest extends FormRequest
     foreach ($this->assessments as $key => $assessment) {
       $title = $assessment->raw_title;
       $rules["{$prefix}{$title}"] = [
-        'sometimes',
+        'nullable',
         'numeric',
         'min:0',
         function ($attr, $value, $fail) use ($assessment) {

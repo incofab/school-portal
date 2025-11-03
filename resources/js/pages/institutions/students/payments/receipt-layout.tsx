@@ -2,19 +2,20 @@ import React, { PropsWithChildren } from 'react';
 // import { useColorMode } from '@chakra-ui/react';
 // import { Div } from '@/components/semantic';
 // import useSharedProps from '@/hooks/use-shared-props';
-// import ResultDownloadButton from './result-download-button';
-import { ResultProps } from '@/util/result-util';
 import { validFilename } from '@/util/util';
+import { User } from '@/types/models';
+// import ResultDownloadButton from '../../result-sheets/result-download-button';
 import PagePrintLayout from '@/domain/institutions/page-print-layout';
+
 interface Props {
   useBgStyle?: boolean;
-  resultProps: ResultProps;
+  user: User;
 }
 
-export default function ResultSheetLayout({
+export default function ReceiptLayout({
   children,
-  resultProps,
   useBgStyle,
+  user,
 }: Props & PropsWithChildren) {
   // const { currentInstitution } = useSharedProps();
   // const { colorMode, setColorMode } = useColorMode();
@@ -30,9 +31,7 @@ export default function ResultSheetLayout({
   //   backgroundRepeat: 'repeat',
   //   backgroundColor: 'white',
   // };
-  const filename = `${validFilename(
-    resultProps.student.user?.full_name
-  )}-result-${resultProps.termResult.term}-${resultProps.termResult.id}.pdf`;
+  const filename = `${validFilename(user?.full_name)}-receipt.pdf`;
   return (
     <PagePrintLayout useBgStyle={useBgStyle} filename={filename}>
       {children}
@@ -43,7 +42,7 @@ export default function ResultSheetLayout({
     //     minHeight={'1170px'}
     //   >
     //     <ResultDownloadButton
-    //       signed_url={resultProps.signed_url}
+    //       // signed_url={''}
     //       // termResult={resultProps.termResult}
     //       filename={filename}
     //     />

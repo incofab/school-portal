@@ -1,17 +1,26 @@
 import React from 'react';
 import { Div } from '@/components/semantic';
-import { BoxProps, Divider, useColorModeValue } from '@chakra-ui/react';
+import {
+  BoxProps,
+  Divider,
+  HStack,
+  Spacer,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { PageTitle } from './page-header';
 
 interface Props {
-  bgImage?: string|undefined;
+  bgImage?: string | undefined;
   title?: string;
+  rightHeader?: React.ReactNode;
   boxProps?: BoxProps;
 }
 export default function CenteredLayout({
   children,
   bgImage,
   title,
+  rightHeader,
   boxProps,
   ...props
 }: Props & BoxProps) {
@@ -44,7 +53,13 @@ export default function CenteredLayout({
       >
         {title && (
           <>
-            <PageTitle>{title}</PageTitle>
+            <PageTitle>
+              <HStack>
+                <Text as="span">{title}</Text>
+                <Spacer />
+                {rightHeader ?? ''}
+              </HStack>
+            </PageTitle>
             <Divider mt={3} mb={5} />
           </>
         )}

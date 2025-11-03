@@ -11,7 +11,6 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import feeableUtil from '@/util/feeable-util';
 import UniversalReceiptModal from '@/components/modals/universal-receipt-modal';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
-import { Inertia } from '@inertiajs/inertia';
 
 interface Props {
   receipts: PaginationResponse<Receipt>;
@@ -81,19 +80,19 @@ export default function ListStudentReceipts({ receipts, student }: Props) {
             title="My Receipts"
             rightElement={
               <>
-              <BrandButton 
-                variant={'ghost'}
-                onClick={() => universalReceiptModalToggle.open(student.user)}
-                title='Print Universal Receipt'
-              />
+                <BrandButton
+                  variant={'ghost'}
+                  onClick={() => universalReceiptModalToggle.open(student.user)}
+                  title="Print Universal Receipt"
+                />
 
-              <LinkButton
-                href={instRoute('students.fee-payments.create', [student.id])}
-                title={'Pay Fees'}
-              />
+                <LinkButton
+                  href={instRoute('students.fee-payments.create', [student.id])}
+                  title={'Pay Fees'}
+                />
               </>
             }
-          /> 
+          />
           <SlabBody>
             <ServerPaginatedTable
               scroll={true}

@@ -159,7 +159,7 @@ export default function Template2(props: ResultProps) {
           </HStack>
           <Div>
             <Flex flexDirection={'row'} justifyContent={'space-between'}>
-              <LabelText label="Pupil's Name" text={student?.user?.full_name} />
+              <LabelText label="Student Name" text={student?.user?.full_name} />
               <LabelText label="Class" text={classification.title} />
             </Flex>
             <Flex mt={1} flexDirection={'row'} justifyContent={'space-between'}>

@@ -19,10 +19,10 @@ import DataTable, { TableHeader } from '@/components/data-table';
 import useSharedProps from '@/hooks/use-shared-props';
 import { LabelText } from '@/components/result-helper-components';
 import ImagePaths from '@/util/images';
-import ResultSheetLayout from '../../result-sheets/result-sheet-layout';
 import startCase from 'lodash/startCase';
 import DateTimeDisplay from '@/components/date-time-display';
 import { FeeItem, TermType } from '@/types/types';
+import ReceiptLayout from './receipt-layout';
 
 interface Props {
   receipts: Receipt[];
@@ -89,7 +89,7 @@ export default function PrintReceiptPage({
   ];
 
   return (
-    <ResultSheetLayout>
+    <ReceiptLayout user={student.user!}>
       <br />
       <br />
       <br />
@@ -210,6 +210,6 @@ export default function PrintReceiptPage({
           </Div>
         )}
       </Div>
-    </ResultSheetLayout>
+    </ReceiptLayout>
   );
 }

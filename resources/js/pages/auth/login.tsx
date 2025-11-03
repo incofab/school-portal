@@ -7,11 +7,14 @@ import {
   FormErrorMessage,
   FormLabel,
   HStack,
+  Icon,
   Input,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  Spacer,
+  Text,
   VStack,
 } from '@chakra-ui/react';
 import { InertiaLink } from '@inertiajs/inertia-react';
@@ -23,6 +26,11 @@ import CenteredLayout from '@/components/centered-layout';
 import { Institution } from '@/types/models';
 import useMyToast from '@/hooks/use-my-toast';
 import useWebForm from '@/hooks/use-web-form';
+import { LinkButton } from '@/components/buttons';
+import {
+  ArrowRightIcon,
+  ArrowsPointingInIcon,
+} from '@heroicons/react/24/outline';
 
 export default function Login({
   institution,
@@ -83,7 +91,16 @@ export default function Login({
 
   return (
     <CenteredLayout
-      title="Login"
+      title={'Login'}
+      rightHeader={
+        <LinkButton
+          title="Check Result"
+          href={route('activate-term-result.create')}
+          colorScheme="brand"
+          variant="outline"
+          rightIcon={<Icon as={ArrowRightIcon} />}
+        />
+      }
       bgImage={imageUrl}
       boxProps={{ opacity: 0.92 }}
     >

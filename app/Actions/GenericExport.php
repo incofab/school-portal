@@ -83,7 +83,7 @@ class GenericExport
     if (empty($this->data)) {
       return;
     }
-    if (count($this->data[0] ?? 0) !== count($this->headers)) {
+    if (count($this->data[0] ?? []) !== count($this->headers)) {
       throw new Exception('Invalid headers');
     }
   }

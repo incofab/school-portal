@@ -30,15 +30,18 @@ class HandleAdmission
     $data
   ) {
     $guardians = $admissionApplication->applicationGuardians()->get();
-    $sourcePath = $admissionApplication->photo;
+    $destinationUrl = '';
+    if ($admissionApplication->photo) {
+      $sourcePath = $admissionApplication->photo;
 
-    $parts = explode('/', $sourcePath);
-    $fileName = end($parts);
+      $parts = explode('/', $sourcePath);
+      $fileName = end($parts);
 
-    $destinationPath = 'avatars/users/' . $fileName;
+      $destinationPath = 'avatars/users/' . $fileName;
 
-    Storage::disk('s3_public')->move($sourcePath, $destinationPath);
-    $destinationUrl = Storage::disk('s3_public')->url($destinationPath);
+      Storage::disk('s3_public')->move($sourcePath, $destinationPath);
+      $destinationUrl = Storage::disk('s3_public')->url($destinationPath);
+    }
 
     DB::beginTransaction();
     $student = RecordStudent::make($this->institution, [

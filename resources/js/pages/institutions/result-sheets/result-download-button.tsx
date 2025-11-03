@@ -1,21 +1,18 @@
 import React from 'react';
 import { Button, ButtonProps } from '@chakra-ui/react';
-import { Student, TermResult } from '@/types/models';
-import { validFilename } from '@/util/util';
+import { User } from '@/types/models';
 import useWebForm from '@/hooks/use-web-form';
 import route from '@/util/route';
 import ResultUtil from '@/util/result-util';
 
 interface Props {
-  termResult: TermResult;
-  student: Student;
-  signed_url: string;
+  signed_url?: string;
+  filename: string;
 }
 
 export default function ResultDownloadButton({
-  termResult,
-  student,
   signed_url,
+  filename,
   ...props
 }: Props & ButtonProps) {
   const downloadPdfForm = useWebForm({});
@@ -24,9 +21,13 @@ export default function ResultDownloadButton({
     if (!confirm('Do you want to download this result?')) {
       return;
     }
-    const filename = `${validFilename(student.user?.full_name)}-result-${
-      termResult.term
-    }-${termResult.id}.pdf`;
+    // const filename = `${validFilename(student.user?.full_name)}-result-${
+    //   termResult.term
+    // }-${termResult.id}.pdf`;
+    if (!signed_url) {
+      alert('No signed url found');
+      return;
+    }
     window.location.href = route('pdf-bridge', {
       filename,
       url: signed_url,
@@ -34,10 +35,8 @@ export default function ResultDownloadButton({
   }
 
   function exportPdf() {
-    ResultUtil.exportAsPdf(
-      'result-sheet',
-      student.user?.full_name + 'result-sheet'
-    );
+    const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
+    ResultUtil.exportAsPdf('result-sheet', nameWithoutExt); //user?.full_name + 'result-sheet');
   }
 
   return (

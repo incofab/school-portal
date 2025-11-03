@@ -38,7 +38,7 @@ export default function Template4(props: ResultProps) {
   const { hidePosition, showGrade } = useResultSetting();
 
   const resultSummary1 = [
-    { label: 'Name of Pupil', value: student.user?.full_name },
+    { label: 'Name of Student', value: student.user?.full_name },
     { label: 'Student Id', value: student.code },
     ...(hidePosition
       ? []

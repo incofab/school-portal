@@ -25,7 +25,6 @@ import '@/../../public/style/result-sheet.css';
 import ImagePaths from '@/util/images';
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import ResultSheetLayout from './result-sheet-layout';
-import ResultDownloadButton from './result-download-button';
 
 interface Props {
   termResult: TermResult;
