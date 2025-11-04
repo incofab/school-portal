@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Managers\InstitutionGroups;
 
 use App\Actions\RegisterInstitutionGroup;
+use App\Enums\InstitutionStatus;
 use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
 use App\Models\InstitutionGroup;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 use Storage;
 use Inertia\Inertia;
 
@@ -146,6 +148,23 @@ class InstitutionGroupsController extends Controller
       'This group contains some institution'
     );
     $institutionGroup->delete();
+    return $this->ok();
+  }
+
+  function updateStatus(Request $request, InstitutionGroup $institutionGroup)
+  {
+    $this->authorize('delete', $institutionGroup);
+    $request->validate([
+      'status' => ['required', new Enum(InstitutionStatus::class)]
+    ]);
+    $status = $request->status;
+
+    if ($status === $institutionGroup->status->value) {
+      return $this->ok();
+    }
+
+    $institutionGroup->fill(['status' => $status])->save();
+    $institutionGroup->institutions()->update(['status' => $status]);
     return $this->ok();
   }
 }

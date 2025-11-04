@@ -10,7 +10,7 @@ use Inertia\Inertia;
 
 class ListInstitutionsController extends Controller
 {
-  public function __invoke(InstitutionGroup $institutionGroup = null)
+  public function __invoke(?InstitutionGroup $institutionGroup = null)
   {
     $query = $this->getQuery(currentUser())->when(
       $institutionGroup,

@@ -23,7 +23,7 @@ interface Props {
 
 export default function RegisterCourseTeacher({ user }: Props) {
   const { handleResponseToast } = useMyToast();
-  const { instRoute } = useInstitutionRoute(); 
+  const { instRoute } = useInstitutionRoute();
 
   const webForm = useWebForm({
     user_id: user ? { label: user.full_name, value: user.id } : null,
@@ -79,7 +79,10 @@ export default function RegisterCourseTeacher({ user }: Props) {
                   <StaffSelect
                     value={webForm.data.user_id}
                     isClearable={true}
-                    rolesIn={[InstitutionUserType.Teacher]}
+                    rolesIn={[
+                      InstitutionUserType.Teacher,
+                      InstitutionUserType.Admin,
+                    ]}
                     onChange={(e) => webForm.setValue('user_id', e)}
                     isMulti={false}
                     required

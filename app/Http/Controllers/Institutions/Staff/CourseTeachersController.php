@@ -80,7 +80,11 @@ class CourseTeachersController extends Controller
 
   function store(Request $request, Institution $institution, User $user)
   {
-    abort_unless($user->isInstitutionTeacher(), 403, 'User must be a teacher');
+    abort_unless(
+      $user->isInstitutionTeacher() || $user->isInstitutionAdmin(),
+      403,
+      'User must be a teacher'
+    );
 
     $data = $request->validate([
       'classification_ids' => ['required', 'min:1'],

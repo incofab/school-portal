@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InstitutionStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,7 +16,8 @@ class InstitutionGroup extends Model
     'user_id' => 'integer',
     'credit_wallet' => 'float',
     'debt_wallet' => 'float',
-    'loan_limit' => 'float'
+    'loan_limit' => 'float',
+    'status' => InstitutionStatus::class
   ];
 
   static function getQueryForManager(User $user)

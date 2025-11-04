@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InstitutionStatus;
 use App\Enums\InstitutionUserType;
 use App\Enums\S3Folder;
 use App\Support\Queries\InstitutionQueryBuilder;
@@ -14,7 +15,11 @@ class Institution extends Model
   use HasFactory, SoftDeletes;
 
   protected $guarded = [];
-  public $casts = ['institution_group_id' => 'integer', 'user_id' => 'integer'];
+  public $casts = [
+    'institution_group_id' => 'integer',
+    'user_id' => 'integer',
+    'status' => InstitutionStatus::class
+  ];
 
   public static function generalRule($prefix = '')
   {

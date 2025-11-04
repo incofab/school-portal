@@ -52,6 +52,9 @@ export default function ClassStudentTiles({ students }: Props) {
               {student.code}
             </Text>
           </Div>
+          <Div fontSize={'sm'} mt={1}>
+            {window.location.origin}/student/login
+          </Div>
           {/* <Text fontSize={'sm'} lineHeight={'14px'} mt={1}>
             Use this ID in conjunction with the 
           </Text> */}

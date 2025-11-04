@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\InstitutionStatus;
 use App\Enums\InstitutionUserStatus;
 use Closure;
 use Illuminate\Http\Request;
@@ -25,6 +26,11 @@ class VerifyInstitutionUser
     /** @var \App\Models\Institution $institution */
     $institution = $request->route()->institution;
     $institutionUser = $institution->institutionUsers->first();
+
+    if ($institution->status !== InstitutionStatus::Active) {
+      $message = 'This institution is not active. Please contact support.';
+      return $this->eject($request, $message);
+    }
 
     if ($user->id !== $institutionUser?->user_id) {
       $message = 'You are not authorized to access this page.';

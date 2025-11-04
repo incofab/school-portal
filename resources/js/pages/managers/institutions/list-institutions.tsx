@@ -2,7 +2,7 @@ import React from 'react';
 import { Institution, InstitutionGroup } from '@/types/models';
 import { HStack, Icon, IconButton } from '@chakra-ui/react';
 import ServerPaginatedTable from '@/components/server-paginated-table';
-import { PaginationResponse } from '@/types/types';
+import { InstitutionStatus, PaginationResponse } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
@@ -12,6 +12,7 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
 import { TrashIcon } from '@heroicons/react/24/solid';
+import ButtonSwitch from '@/components/button-switch';
 
 interface InstitutionWithMeta extends Institution {
   classifications_count: number;
@@ -24,6 +25,7 @@ interface Props {
 export default function ListInstitutions({ institutions }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
+  const suspensionForm = useWebForm({});
 
   async function deleteInstitution(institution: Institution) {
     if (!window.confirm('Do you want to delete this institution?')) {
@@ -36,6 +38,25 @@ export default function ListInstitutions({ institutions }: Props) {
       return;
     }
     Inertia.reload();
+  }
+
+  async function updateStatus(
+    institution: Institution,
+    status: InstitutionStatus
+  ) {
+    if (!window.confirm('Do you want to change status on this institution?')) {
+      return;
+    }
+    const res = await suspensionForm.submit((data, web) =>
+      web.post(
+        route('managers.institutions.update.status', [institution.uuid]),
+        { status }
+      )
+    );
+
+    if (!handleResponseToast(res)) return;
+
+    Inertia.reload({ only: ['institutions'] });
   }
 
   const headers: ServerPaginatedTableHeader<InstitutionWithMeta>[] = [
@@ -62,6 +83,26 @@ export default function ListInstitutions({ institutions }: Props) {
     {
       label: 'Address',
       value: 'address',
+    },
+    {
+      label: 'Status',
+      render: (row) => (
+        <ButtonSwitch
+          items={[
+            {
+              value: true,
+              label: InstitutionStatus.Active,
+              onClick: () => updateStatus(row, InstitutionStatus.Active),
+            },
+            {
+              value: false,
+              label: InstitutionStatus.Suspended,
+              onClick: () => updateStatus(row, InstitutionStatus.Suspended),
+            },
+          ]}
+          value={row.status}
+        />
+      ),
     },
     {
       label: 'Action',

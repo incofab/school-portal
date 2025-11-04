@@ -333,6 +333,11 @@ export enum InstitutionUserStatus {
   Suspended = 'suspended',
 }
 
+export enum InstitutionStatus {
+  Active = 'active',
+  Suspended = 'suspended',
+}
+
 export enum PaymentMerchantType {
   Monnify = 'monnify',
   PaymentPoint = 'payment-point',

@@ -105,18 +105,20 @@ function ListLecturerCourses({ courseTeachers }: Props) {
                         </MenuItem>
                       </MenuList>
                     </Menu>
-                    <DestructivePopover
-                      label={`Delete ${row.course?.title} assignment from ${row.user?.full_name}?`}
-                      onConfirm={() => deleteItem(row)}
-                      isLoading={deleteForm.processing}
-                    >
-                      <IconButton
-                        aria-label={'Delete'}
-                        icon={<Icon as={TrashIcon} />}
-                        variant={'ghost'}
-                        colorScheme={'red'}
-                      />
-                    </DestructivePopover>
+                    {isAdmin && (
+                      <DestructivePopover
+                        label={`Delete ${row.course?.title} assignment from ${row.user?.full_name}?`}
+                        onConfirm={() => deleteItem(row)}
+                        isLoading={deleteForm.processing}
+                      >
+                        <IconButton
+                          aria-label={'Delete'}
+                          icon={<Icon as={TrashIcon} />}
+                          variant={'ghost'}
+                          colorScheme={'red'}
+                        />
+                      </DestructivePopover>
+                    )}
                   </>
                 )}
               </HStack>

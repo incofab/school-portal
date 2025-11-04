@@ -15,6 +15,7 @@ class Classification extends Model
   protected $casts = [
     'institution_id' => 'integer',
     'classification_group_id' => 'integer',
+    'form_teacher_id' => 'integer',
     'has_equal_subjects' => 'boolean'
   ];
 

@@ -12,6 +12,9 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import TermResultsTableFilters from '@/components/table-filters/term-result-table-filters';
 import { LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import useIsStaff from '@/hooks/use-is-staff';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   termResults: PaginationResponse<TermResult>;
@@ -20,6 +23,10 @@ interface Props {
 export default function ListTermResults({ termResults }: Props) {
   const termResultFilterToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
+  const { currentUser } = useSharedProps();
+  const isStaff = useIsStaff();
+  const isAdmin = useIsAdmin();
+  const canViewDetails = !isStaff || isAdmin;
 
   const headers: ServerPaginatedTableHeader<TermResult>[] = [
     {
@@ -62,16 +69,21 @@ export default function ListTermResults({ termResults }: Props) {
     {
       label: 'Action',
       render: (row) => (
-        <LinkButton
-          href={instRoute('students.term-result-detail', [
-            row.student_id,
-            row.classification_id,
-            row.academic_session_id,
-            row.term,
-            row.for_mid_term ? 1 : 0,
-          ])}
-          title="Result Detail"
-        />
+        <>
+          {(canViewDetails ||
+            row.classification!.form_teacher_id === currentUser.id) && (
+            <LinkButton
+              href={instRoute('students.term-result-detail', [
+                row.student_id,
+                row.classification_id,
+                row.academic_session_id,
+                row.term,
+                row.for_mid_term ? 1 : 0,
+              ])}
+              title="Result Detail"
+            />
+          )}
+        </>
       ),
     },
   ];

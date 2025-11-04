@@ -35,8 +35,9 @@ class StudentTermResultDetailController extends Controller
     abort_if(
       $institutionUser->user_id !== $student->user_id &&
         !$institutionUser->isAdmin() &&
-        !$institutionUser->isTeacher(),
-      403
+        $institutionUser->user_id !== $classification->form_teacher_id,
+      403,
+      'You are not authorized to view this student term result detail.'
     );
 
     /** @var TermResult|null $termResult*/

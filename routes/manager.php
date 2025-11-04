@@ -16,8 +16,12 @@ Route::post('institutions/store', [Web\Institutions\InstitutionRegistrationContr
     ->name('institutions.store');
 Route::get('/institutions', Web\Institutions\ListInstitutionsController::class)
     ->name('institutions.index');
-Route::delete('/institutions/{institution}/destroy', Web\Institutions\DeleteInstitutionController::class)
+Route::delete('/institutions/{institution}/destroy', [Web\Institutions\InstitutionManagementController::class, 'destroy'])
     ->name('institutions.destroy');
+Route::get('/institutions/{institution}/show', [Web\Institutions\InstitutionManagementController::class, 'show'])
+    ->name('institutions.show');
+Route::get('/institutions/{institution}/update-status', [Web\Institutions\InstitutionManagementController::class, 'updateStatus'])
+    ->name('institutions.status.update');
 
 Route::get('/institution-groups/search', [Web\InstitutionGroups\InstitutionGroupsController::class, 'search'])
     ->name('institution-groups.search');
@@ -25,6 +29,8 @@ Route::resource('institution-groups', Web\InstitutionGroups\InstitutionGroupsCon
     ->except('show');
 Route::post('/institution-groups/{institution_group}/upload-photo', [Web\InstitutionGroups\InstitutionGroupsController::class, 'uploadBanner'])
   ->name('institution-groups.upload-banner');
+Route::post('/institution-groups/{institution_group}/update-status', [Web\InstitutionGroups\InstitutionGroupsController::class, 'updateStatus'])
+  ->name('institution-groups.update.status');
 
 Route::get('/registration-requests/search', [Web\RegistrationRequests\RegistrationRequestsController::class, 'search'])
     ->name('registration-requests.search');

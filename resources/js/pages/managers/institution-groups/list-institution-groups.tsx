@@ -2,7 +2,7 @@ import React from 'react';
 import { InstitutionGroup } from '@/types/models';
 import { Button, HStack, Icon, IconButton, Tooltip } from '@chakra-ui/react';
 import ServerPaginatedTable from '@/components/server-paginated-table';
-import { PaginationResponse } from '@/types/types';
+import { InstitutionStatus, PaginationResponse } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import route from '@/util/route';
@@ -12,6 +12,7 @@ import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
+import ButtonSwitch from '@/components/button-switch';
 
 interface InstitutionGroupWithMeta extends InstitutionGroup {
   institutions_count: number;
@@ -27,6 +28,7 @@ function NumberFormatter(number: number) {
 export default function ListInstitutionGropus({ institutionGroups }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
+  const suspensionForm = useWebForm({});
 
   async function deleteInstitution(institutionGroup: InstitutionGroup) {
     if (!window.confirm('Do you want to delete this group?')) {
@@ -41,6 +43,25 @@ export default function ListInstitutionGropus({ institutionGroups }: Props) {
       return;
     }
     Inertia.reload();
+  }
+
+  async function updateStatus(
+    institutionGroup: InstitutionGroup,
+    status: InstitutionStatus
+  ) {
+    if (!window.confirm('Do you want to change status on this Group?')) {
+      return;
+    }
+    const res = await suspensionForm.submit((data, web) =>
+      web.post(
+        route('managers.institution-groups.update.status', [institutionGroup]),
+        { status }
+      )
+    );
+
+    if (!handleResponseToast(res)) return;
+
+    Inertia.reload({ only: ['institutionGroups'] });
   }
 
   const headers: ServerPaginatedTableHeader<InstitutionGroupWithMeta>[] = [
@@ -70,6 +91,26 @@ export default function ListInstitutionGropus({ institutionGroups }: Props) {
       label: 'Loan Limit',
       value: 'loan_limit',
       render: (row) => '₦' + NumberFormatter(row.loan_limit),
+    },
+    {
+      label: 'Status',
+      render: (row) => (
+        <ButtonSwitch
+          items={[
+            {
+              value: true,
+              label: InstitutionStatus.Active,
+              onClick: () => updateStatus(row, InstitutionStatus.Active),
+            },
+            {
+              value: false,
+              label: InstitutionStatus.Suspended,
+              onClick: () => updateStatus(row, InstitutionStatus.Suspended),
+            },
+          ]}
+          value={row.status}
+        />
+      ),
     },
     {
       label: 'Action',

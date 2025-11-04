@@ -37,7 +37,7 @@ export default function UserIdCards({ persons }: Props) {
           key={person.id}
           borderRadius={'md'}
         >
-          <HStack align={'stretch'} mb={6}>
+          <HStack align={'stretch'} mb={3}>
             <Avatar
               size="md"
               src={currentInstitution.photo ?? ImagePaths.default_school_logo}
@@ -74,26 +74,30 @@ export default function UserIdCards({ persons }: Props) {
                   <Text>
                     ID No.:{' '}
                     <Text as={'span'} fontWeight={'bold'}>
-                      {person.code}
+                      {(person as Student).code}
                     </Text>
                   </Text>
                 ) : (
                   <Text>
                     Role:{' '}
                     <Text as={'span'} fontWeight={'bold'}>
-                      {person.role}
+                      {(person as InstitutionUser).role}
                     </Text>
                   </Text>
                 )}
               </Div>
 
               <Div>
-                <Text>
+                <Text noOfLines={1}>
                   Name:{' '}
                   <Text as={'span'} fontWeight={'bold'}>
                     {person.user?.full_name}
                   </Text>
                 </Text>
+              </Div>
+
+              <Div fontSize={'xs'} mt={1} noOfLines={1}>
+                www.{window.location.hostname}/login
               </Div>
             </Div>
 
@@ -107,7 +111,7 @@ export default function UserIdCards({ persons }: Props) {
               <QRCodeSVG
                 value={
                   isStudent(person)
-                    ? String(person.institution_user_id)
+                    ? String((person as Student).institution_user_id)
                     : String(person.id)
                 }
               />

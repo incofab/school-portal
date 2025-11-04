@@ -105,7 +105,7 @@ class UpdateInstitutionUserController extends Controller
     $institutionUser = $user->institutionUser()->first();
     abort_unless(
       $currentInstitutionUser->institution_id ===
-        $institutionUser->institution_id,
+        $institutionUser?->institution_id,
       403,
       'This user is not part of your institution'
     );

@@ -4,6 +4,7 @@ import {
   ExamAttempt,
   Feeable,
   FeeItem,
+  InstitutionStatus,
   InstitutionUserStatus,
   InstitutionUserType,
   ManagerRole,
@@ -62,6 +63,7 @@ export interface InstitutionGroup extends Row {
   loan_limit: number;
   website: string;
   banner: string;
+  status: InstitutionStatus;
   partner?: User;
   // wallet_balance: number;
 }
@@ -78,7 +80,7 @@ export interface Institution extends Row {
   address: string;
   email: string;
   phone: string;
-  status: string;
+  status: InstitutionStatus;
   initials: string;
   institution_settings?: InstitutionSetting[];
   institution_group: InstitutionGroup;

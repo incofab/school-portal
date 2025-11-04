@@ -61,8 +61,8 @@ class MyRefillDatabaseSeeder extends Seeder
 
     $this->createClasses($institution);
     $this->recordSubjects($institution);
-    $this->createExamResult($institution);
     $this->createStudents($institution, 10);
+    $this->createExamResult($institution);
 
     $this->createPriceList($institutionGroup);
   }
@@ -189,7 +189,9 @@ class MyRefillDatabaseSeeder extends Seeder
     $courses = $institution->courses()->get();
     $settingsHandler = SettingsHandler::makeFromInstitution($institution);
     $classifications = $institution->classifications()->get();
-
+    $academicSessionId = $settingsHandler->getCurrentAcademicSession();
+    $currentTerm = $settingsHandler->getCurrentTerm();
+    $forMidTerm = false;
     foreach ($classifications as $key => $classification) {
       $students = $classification->students()->get();
       foreach ($courses as $key => $course) {
@@ -204,35 +206,31 @@ class MyRefillDatabaseSeeder extends Seeder
           CourseResult::factory()
             ->withInstitution($institution)
             ->create([
-              'academic_session_id' => $settingsHandler->getCurrentAcademicSession(),
-              'term' => $settingsHandler->getCurrentTerm(),
-              'for_mid_term' => false,
+              'academic_session_id' => $academicSessionId,
+              'term' => $currentTerm,
+              'for_mid_term' => $forMidTerm,
               'classification_id' => $classification->id,
               'course_id' => $course->id,
               'student_id' => $student->id,
-              'teacher_user_id' => $courseTeacher->id
+              'teacher_user_id' => $courseTeacher->user_id
             ]);
         }
         EvaluateCourseResultForClass::run(
           classification: $classification,
           courseId: $course->id,
-          academicSessionId: $settingsHandler->getCurrentAcademicSession(),
-          term: $settingsHandler->getCurrentTerm(),
-          forMidTerm: false
+          academicSessionId: $academicSessionId,
+          term: $currentTerm,
+          forMidTerm: $forMidTerm
         );
       }
+
+      ClassResultInfoAction::make()->calculate(
+        classification: $classification,
+        academicSessionId: $academicSessionId,
+        term: $currentTerm,
+        forMidTerm: $forMidTerm,
+        forceCalculateTermResult: true
+      );
     }
-
-    ClassResultInfoAction::make()->calculate(
-      classification: $classification,
-      academicSessionId: $settingsHandler->getCurrentAcademicSession(),
-      term: $settingsHandler->getCurrentTerm(),
-      forMidTerm: false,
-      forceCalculateTermResult: true
-    );
-
-    // TermResult::where([
-    //   'institution_id' => $institution->id,
-    // ])->update(['']);
   }
 }
