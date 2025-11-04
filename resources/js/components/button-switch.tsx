@@ -29,6 +29,7 @@ export default function ButtonSwitch({
       border={'1px solid'}
       borderColor={'gray.300'}
       spacing={0}
+      padding={0}
       {...props}
     >
       {items.map((item) => {
@@ -44,6 +45,9 @@ export default function ButtonSwitch({
             justifyContent={'center'}
             _hover={{ backgroundColor: isActive ? '' : 'brand.50' }}
             onClick={isActive ? undefined : item.onClick}
+            flex={1}
+            textAlign={'center'}
+            noOfLines={1}
             {...itemProps}
           >
             {item.label}

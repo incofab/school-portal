@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions;
 
+use App\Actions\Users\InstitutionDashboardStat;
 use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
@@ -26,7 +27,8 @@ class InstitutionController extends Controller
       'isSetupComplete' => $isSetupComplete,
       'reservedAccounts' => currentInstitutionUser()->isGuardian()
         ? ReservedAccount::getReservedAccounts(currentUser(), true)
-        : []
+        : [],
+      'dashboardData' => InstitutionDashboardStat::getStat($institution)
     ]);
   }
 

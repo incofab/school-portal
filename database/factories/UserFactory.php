@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Gender;
 use App\Enums\InstitutionUserType;
 use App\Enums\ManagerRole;
 use App\Models\Institution;
@@ -28,6 +29,7 @@ class UserFactory extends Factory
       'password' =>
         '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
       'remember_token' => Str::random(10),
+      'gender' => fake()->randomElement(Gender::cases())->value,
       'bvn' => null,
       'nin' => null
     ];

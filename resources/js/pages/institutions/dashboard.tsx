@@ -28,7 +28,7 @@ import {
 import { BvnNinReminderMessage, InstitutionUserType } from '@/types/types';
 import useInstitutionRole from '@/hooks/use-institution-role';
 import { InstitutionGroup, ReservedAccount, User } from '@/types/models';
-import { copyToClipboard, formatAsCurrency } from '@/util/util';
+import { copyToClipboard, formatAsCurrency, numberFormat } from '@/util/util';
 import {
   Alert,
   AlertIcon,
@@ -48,6 +48,9 @@ import UpdateBvnNinForm from '@/components/users/update-bvn-nin-form';
 import { LabelText } from '@/components/result-helper-components';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import ListReservedAccountsModal from '@/components/modals/users/list-reserved-accounts-modal';
+import DashboardCharts from '@/components/dashboard-charts';
+import { DashboardData } from '@/types/dashboard';
+import useIsStaff from '@/hooks/use-is-staff';
 
 interface ItemCardProps {
   route: string;
@@ -60,12 +63,14 @@ interface ItemCardProps {
   title: string;
   desc: string;
   roles?: InstitutionUserType[];
+  count?: string;
 }
 
 interface Props {
   institutionGroup: InstitutionGroup;
   isSetupComplete: string;
   reservedAccounts: ReservedAccount[];
+  dashboardData: DashboardData;
 }
 
 function DashboardItemCard(prop: ItemCardProps) {
@@ -82,8 +87,26 @@ function DashboardItemCard(prop: ItemCardProps) {
       display={'inline-block'}
       position={'relative'}
     >
-      <PageTitle px={3} py={5} color={'brand.500'}>
-        {prop.title}
+      <PageTitle color={'brand.500'} px={3} py={2}>
+        <HStack align={'center'} justifyContent={'space-between'} w={'full'}>
+          <Div py={5}>{prop.title}</Div>
+          {prop.count && (
+            <Div
+              backgroundColor={'brand.700'}
+              color={'brand.50'}
+              fontWeight={'bold'}
+              height={'40px'}
+              lineHeight={'40px'}
+              minWidth={'40px'}
+              borderRadius={'20px'}
+              textAlign={'center'}
+              px={3}
+              fontSize={'md'}
+            >
+              {prop.count}
+            </Div>
+          )}
+        </HStack>
       </PageTitle>
       <Text
         size={'sm'}
@@ -115,11 +138,13 @@ export default function InstitutionDashboard({
   institutionGroup,
   isSetupComplete,
   reservedAccounts,
+  dashboardData,
 }: Props) {
   const { currentInstitutionUser, currentUser } = useSharedProps();
   const student = currentInstitutionUser.student;
   const { forTeacher } = useInstitutionRole();
   const { instRoute } = useInstitutionRoute();
+  const isStaff = useIsStaff();
   const isAdmin = currentInstitutionUser.role === InstitutionUserType.Admin;
   const isGuardian =
     currentInstitutionUser.role === InstitutionUserType.Guardian;
@@ -135,12 +160,14 @@ export default function InstitutionDashboard({
       route: instRoute('users.index'),
       icon: UsersIcon,
       roles: [InstitutionUserType.Admin],
+      count: numberFormat(dashboardData.num_staff + dashboardData.num_students),
     },
     {
       title: 'Subjects',
       desc: 'Show subjects',
       route: instRoute('courses.index'),
       icon: AcademicCapIcon,
+      count: numberFormat(dashboardData.num_subjects),
     },
     {
       title: 'Results',
@@ -163,6 +190,7 @@ export default function InstitutionDashboard({
       desc: 'List classes',
       route: instRoute('classifications.index'),
       icon: BuildingStorefrontIcon,
+      count: numberFormat(dashboardData.num_classes),
     },
     {
       title: 'Pin',
@@ -179,18 +207,20 @@ export default function InstitutionDashboard({
       roles: accountant,
     },
     {
-      title: formatAsCurrency(institutionGroup.credit_wallet),
+      title: 'Wallet Balance',
       desc: 'Credit Balance',
       route: instRoute('fundings.create'),
       icon: CurrencyDollarIcon,
       roles: accountant,
+      count: formatAsCurrency(institutionGroup.credit_wallet),
     },
     {
-      title: formatAsCurrency(institutionGroup.debt_wallet),
+      title: 'Debt Balance',
       desc: 'Debt Balance',
       route: instRoute('fundings.index'),
       icon: CurrencyDollarIcon,
       roles: accountant,
+      count: formatAsCurrency(institutionGroup.debt_wallet),
     },
     ...(student
       ? [
@@ -251,7 +281,7 @@ export default function InstitutionDashboard({
           />
         </Div>
       )}
-      <SimpleGrid spacing={6} columns={{ base: 1, sm: 2, md: 3 }}>
+      <SimpleGrid spacing={6} columns={{ base: 1, sm: 2, md: 3 }} mt={6}>
         {items.map(function (item) {
           if (item.roles && !item.roles.includes(currentInstitutionUser.role)) {
             return null;
@@ -259,6 +289,16 @@ export default function InstitutionDashboard({
           return <DashboardItemCard {...item} key={item.title} />;
         })}
       </SimpleGrid>
+      {isStaff && (
+        <>
+          <br />
+          <Div>
+            {/* <PageTitle mb={0}>Dashboard Overview</PageTitle> */}
+            {/* <DashboardStats data={dashboardData} /> */}
+            <DashboardCharts data={dashboardData} />
+          </Div>
+        </>
+      )}
     </DashboardLayout>
   );
 }

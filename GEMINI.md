@@ -30,30 +30,30 @@ EduManager is a monolithic web application designed as an all-in-one platform fo
 
 - **Install Dependencies:**
   ```bash
-  composer install
+  ./vendor/bin/sail composer install
   ```
 - **Run Database Migrations:**
   ```bash
-  sail artisan migrate
+  ./vendor/bin/sail artisan migrate
   ```
 - **Start the Development Server:**
   ```bash
-  sail artisan serve
+  ./vendor/bin/sail artisan serve
   ```
 
 ### Frontend (React & Vite)
 
 - **Install Dependencies:**
   ```bash
-  sail npm install
+  ./vendor/bin/sail npm install
   ```
 - **Run the Development Server (with Hot Module Replacement):**
   ```bash
-  sail npm run dev
+  ./vendor/bin/sail npm run dev
   ```
 - **Build for Production:**
   ```bash
-  sail npm run build
+  ./vendor/bin/sail npm run build
   ```
 
 ## 3. Development Conventions
@@ -64,7 +64,7 @@ The project uses both **PHPUnit** and **Pest** for backend testing. Test files a
 
 - **Run all tests:**
   ```bash
-  sail pest
+  ./vendor/bin/sail pest
   ```
 
 ### Code Style & Linting
@@ -76,7 +76,7 @@ The project enforces code style to maintain consistency.
   - **Formatter:** Prettier (`.prettierrc.json`)
   - **Run Linter & Type Checker:**
     ```bash
-    sail npm run lint
+    ./vendor/bin/sail npm run lint
     ```
 - **Backend (PHP):**
   - **Style:** Laravel Pint is configured. While no explicit script is in `composer.json`, it can be run manually:

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class StudentQueryBuilder extends Builder
 {
-  public function forInstitution(int $institutionId): self
+  public function joinInstitution(int $institutionId): self
   {
     $this->join(
       'institution_users',

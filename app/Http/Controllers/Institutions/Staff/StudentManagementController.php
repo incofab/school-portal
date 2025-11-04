@@ -27,7 +27,7 @@ class StudentManagementController extends Controller
       ->filterQuery()
       ->getQuery()
       ->latest('users.last_name');
-    $countQuery = Student::query()->forInstitution($institution->id);
+    $countQuery = Student::query()->joinInstitution($institution->id);
 
     $studentCount = (clone $countQuery)
       ->where('institution_users.role', InstitutionUserType::Student)

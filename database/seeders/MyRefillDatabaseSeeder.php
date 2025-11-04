@@ -23,7 +23,6 @@ use App\Models\InstitutionSetting;
 use App\Models\InstitutionUser;
 use App\Models\PriceList;
 use App\Models\Student;
-use App\Models\TermResult;
 use App\Support\SettingsHandler;
 
 class MyRefillDatabaseSeeder extends Seeder
