@@ -98,12 +98,12 @@ export default function ListInstitutionGropus({ institutionGroups }: Props) {
         <ButtonSwitch
           items={[
             {
-              value: true,
+              value: InstitutionStatus.Active,
               label: InstitutionStatus.Active,
               onClick: () => updateStatus(row, InstitutionStatus.Active),
             },
             {
-              value: false,
+              value: InstitutionStatus.Suspended,
               label: InstitutionStatus.Suspended,
               onClick: () => updateStatus(row, InstitutionStatus.Suspended),
             },

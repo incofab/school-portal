@@ -6,19 +6,6 @@ use App\Http\Controllers as Web;
 use App\Http\Controllers\Institutions\Exams\External as External;
 use App\Http\Controllers\Institutions\Admissions as Admissions;
 
-Route::get(
-    '{institution}/students/signed-result-sheet/{student}/{classification}/{academicSession}/{term}/{forMidTerm}',
-    [Web\Institutions\Students\ViewResultSheetController::class, 'viewResultSigned']
-)->name('institutions.students.result-sheet.signed');
-Route::any(
-    'pdf-bridge',
-    [Web\Institutions\Students\ViewResultSheetController::class, 'pdfBridge']
-)->name('pdf-bridge');
-Route::any(
-    'pdf-bridge-download',
-    [Web\Institutions\Students\ViewResultSheetController::class, 'pdfBridgeDownload']
-)->name('pdf-bridge-download');
-
 Route::get('dummy1', function () {
     $user = \App\Models\User::where('email', 'guard2@email.com')->first();
     $res = \App\Core\MonnifyHelper::make()->getReservedAccounts($user);
@@ -71,6 +58,19 @@ Route::get('/activate-result/{instUuid}', function ($instUuid) {
     return "Result $termResults";
 });
 
+Route::get(
+    '{institution}/students/signed-result-sheet/{student}/{classification}/{academicSession}/{term}/{forMidTerm}',
+    [Web\Institutions\Students\ViewResultSheetController::class, 'viewResultSigned']
+)->name('institutions.students.result-sheet.signed');
+Route::any(
+    'pdf-bridge',
+    [Web\Institutions\Students\ViewResultSheetController::class, 'pdfBridge']
+)->name('pdf-bridge');
+Route::any(
+    'pdf-bridge-download',
+    [Web\Institutions\Students\ViewResultSheetController::class, 'pdfBridgeDownload']
+)->name('pdf-bridge-download');
+
 Route::get('banks/search', [Web\BankController::class, 'search'])->name('banks.search');
 Route::any('bank-accounts/validate', [Web\BankController::class, 'validateBankAccount'])->name('bank-accounts.validate');
 Route::get('institutions/search', Web\SearchInstitutionController::class)
@@ -85,6 +85,8 @@ Route::get('/payroll-adjustment-types/search', [Web\Institutions\Payrolls\Payrol
     ->name('payroll-adjustment-types.search');
 Route::post('activate-result', [Web\TermResultActivationController::class, 'store'])
     ->name('activate-term-result.store');
+    
+Route::get('error', [Home\HomeController::class, 'error'])->name('home.error');
 
 Route::get('/institutions/{institution}/admission-forms/search', [Admissions\AdmissionFormController::class, 'search'])->name('institutions.admission-forms.search');
 

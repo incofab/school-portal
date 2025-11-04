@@ -53,6 +53,7 @@ class VerifyInstitutionUser
   {
     return $request->expectsJson()
       ? abort(403, $message)
-      : Redirect::guest(URL::route('login'));
+      : redirect(route('home.error'))->with('message', $message);
+    // : Redirect::guest(URL::route('login'));
   }
 }

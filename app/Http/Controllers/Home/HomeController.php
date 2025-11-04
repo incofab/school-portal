@@ -57,4 +57,11 @@ class HomeController extends Controller
     return redirect()->route('home');
     return view('home.privacy-policy', []);
   }
+
+  function error()
+  {
+    return view('home.error', [
+      'message' => session('message', 'An error occurred.')
+    ]);
+  }
 }

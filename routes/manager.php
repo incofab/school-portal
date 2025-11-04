@@ -20,8 +20,8 @@ Route::delete('/institutions/{institution}/destroy', [Web\Institutions\Instituti
     ->name('institutions.destroy');
 Route::get('/institutions/{institution}/show', [Web\Institutions\InstitutionManagementController::class, 'show'])
     ->name('institutions.show');
-Route::get('/institutions/{institution}/update-status', [Web\Institutions\InstitutionManagementController::class, 'updateStatus'])
-    ->name('institutions.status.update');
+Route::post('/institutions/{institution}/update-status', [Web\Institutions\InstitutionManagementController::class, 'updateStatus'])
+    ->name('institutions.update.status');
 
 Route::get('/institution-groups/search', [Web\InstitutionGroups\InstitutionGroupsController::class, 'search'])
     ->name('institution-groups.search');
