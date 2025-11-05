@@ -28,7 +28,10 @@ class InstitutionController extends Controller
       'reservedAccounts' => currentInstitutionUser()->isGuardian()
         ? ReservedAccount::getReservedAccounts(currentUser(), true)
         : [],
-      'dashboardData' => InstitutionDashboardStat::getStat($institution)
+      'dashboardData' => InstitutionDashboardStat::make(
+        $institution,
+        currentInstitutionUser()
+      )->getStat()
     ]);
   }
 
