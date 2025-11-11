@@ -47,6 +47,10 @@ Route::get('/classifications/download', [Web\Classifications\ClassificationContr
   ->name('classifications.download');
 Route::post('/classifications/upload', [Web\Classifications\ClassificationController::class, 'upload'])
   ->name('classifications.upload');
+Route::get('/classifications/multi-create', [Web\Classifications\ClassificationController::class, 'multiCreate'])
+  ->name('classifications.multi-create');
+Route::post('/classifications/multi-store', [Web\Classifications\ClassificationController::class, 'multiStore'])
+  ->name('classifications.multi-store');
 Route::resource('/classifications', Web\Classifications\ClassificationController::class)
   ->except(['show']);
 

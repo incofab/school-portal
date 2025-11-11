@@ -137,7 +137,7 @@ export default function ListClassification({ classifications }: Props) {
                   title="Student Tiles"
                   href={instRoute('classifications.students', [row])}
                   variant={'link'}
-                /> */} 
+                /> */}
                 <Menu>
                   <MenuButton
                     as={IconButton}
@@ -221,9 +221,9 @@ export default function ListClassification({ classifications }: Props) {
                     href={instRoute('classifications.create')}
                     title={'New'}
                   />
-                  <BrandButton
-                    title="Upload Classes"
-                    onClick={uploadClassModalToggle.open}
+                  <LinkButton
+                    title="Multi Create"
+                    href={instRoute('classifications.multi-create')}
                   />
                 </>
               )}

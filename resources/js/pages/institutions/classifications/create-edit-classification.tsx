@@ -14,7 +14,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { Classification, ClassificationGroup } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
-import { FormButton } from '@/components/buttons';
+import { FormButton, LinkButton } from '@/components/buttons';
 import InputForm from '@/components/forms/input-form';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
@@ -78,6 +78,12 @@ export default function CreateOrUpdateClassification({
         <Slab>
           <SlabHeading
             title={`${classification ? 'Update' : 'Create'} Class`}
+            rightElement={
+              <LinkButton
+                title="Multi Create"
+                href={instRoute('classifications.multi-create')}
+              />
+            }
           />
           <SlabBody>
             <VStack
@@ -167,4 +173,4 @@ export default function CreateOrUpdateClassification({
       />
     </DashboardLayout>
   );
-} 
+}

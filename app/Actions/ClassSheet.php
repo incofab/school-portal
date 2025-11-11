@@ -80,6 +80,7 @@ class ClassSheet
       );
   }
 
+  /** @deprecated No longer in use */
   public function upload(UploadedFile $file)
   {
     $sheetData = IOFactory::load($file->getRealPath())->getActiveSheet();

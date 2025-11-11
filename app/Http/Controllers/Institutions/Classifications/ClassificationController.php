@@ -8,9 +8,7 @@ use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\Institution;
 use App\Rules\ExcelRule;
-use App\Rules\ValidateExistsRule;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Storage;
 
 class ClassificationController extends Controller
@@ -55,6 +53,28 @@ class ClassificationController extends Controller
     return inertia('institutions/classifications/create-edit-classification', [
       'classificationGroups' => ClassificationGroup::all()
     ]);
+  }
+
+  function multiCreate(Institution $institution)
+  {
+    return inertia(
+      'institutions/classifications/create-multi-classifications',
+      [
+        'classificationGroups' => ClassificationGroup::all()
+      ]
+    );
+  }
+
+  function multiStore(Institution $institution, Request $request)
+  {
+    $data = $request->validate(
+      Classification::createRule(null, 'classifications.*.')
+    );
+    info($data);
+    foreach ($data['classifications'] as $key => $value) {
+      $institution->classifications()->create($value);
+    }
+    return $this->ok();
   }
 
   function store(Institution $institution)
@@ -107,6 +127,7 @@ class ClassificationController extends Controller
     return Storage::download($filename);
   }
 
+  /** @deprecated */
   public function upload(Request $request, Institution $institution)
   {
     $request->validate([
