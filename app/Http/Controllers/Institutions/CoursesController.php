@@ -7,7 +7,6 @@ use App\Enums\NoteStatusType;
 use App\Helpers\GoogleAiHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
-use App\Http\Requests\CreateCourseRequest;
 use App\Models\Course;
 use App\Models\CourseSession;
 use App\Models\Institution;
@@ -58,6 +57,11 @@ class CoursesController extends Controller
     return Inertia::render('institutions/courses/create-edit-course', []);
   }
 
+  function multiCreate(Institution $institution)
+  {
+    return Inertia::render('institutions/courses/create-multi-courses', []);
+  }
+
   function edit(Institution $institution, Course $course)
   {
     return Inertia::render('institutions/courses/create-edit-course', [
@@ -72,21 +76,25 @@ class CoursesController extends Controller
     return $this->ok();
   }
 
-  function store(Institution $institution, CreateCourseRequest $request)
+  function store(Institution $institution, Request $request)
   {
-    $data = $request->validated();
-    currentInstitution()
-      ->courses()
-      ->create($data);
+    $data = $request->validate(Course::createRule());
+    $institution->courses()->create($data);
     return $this->ok();
   }
 
-  function update(
-    CreateCourseRequest $request,
-    Institution $institution,
-    Course $course
-  ) {
-    $data = $request->validated();
+  function multiStore(Institution $institution, Request $request)
+  {
+    $data = $request->validate(Course::createRule(null, 'courses.*.'));
+    foreach ($data['courses'] as $key => $value) {
+      $institution->courses()->create($value);
+    }
+    return $this->ok();
+  }
+
+  function update(Request $request, Institution $institution, Course $course)
+  {
+    $data = $request->validate(Course::createRule($course));
     $course->fill($data)->update();
     return $this->ok();
   }

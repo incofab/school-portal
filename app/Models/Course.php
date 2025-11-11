@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Rules\ValidateUniqueRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,29 @@ class Course extends Model
     'is_file_content_uploaded',
     'institution_id'
   ];
+
+  static function createRule(?Course $course = null, $prefix = '')
+  {
+    return [
+      $prefix . 'title' => [
+        'required',
+        (new ValidateUniqueRule(Course::class, 'title'))->when(
+          $course,
+          fn($q) => $q->ignore($course->id, 'id')
+        )
+      ],
+      $prefix . 'code' => [
+        'required',
+        (new ValidateUniqueRule(Course::class, 'code'))->when(
+          $course,
+          fn($q) => $q->ignore($course->id, 'id')
+        )
+      ],
+      $prefix . 'institution_id' => ['nullable'],
+      $prefix . 'category' => ['nullable', 'string'],
+      $prefix . 'description' => ['nullable', 'string']
+    ];
+  }
 
   public function canDelete()
   {

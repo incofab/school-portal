@@ -149,6 +149,10 @@ Route::post('/courses/practice-questions', [Web\CoursesController::class, 'gener
   ->name('courses.practice-questions');
 Route::post('/courses/insert-questions/{courseSession}', [Web\CoursesController::class, 'insertQuestionsToQuestionbank'])
   ->name('courses.insert-questions');
+Route::get('/courses/multi-create', [Web\CoursesController::class, 'multiCreate'])
+  ->name('courses.multi-create');
+Route::post('/courses/multi-store', [Web\CoursesController::class, 'multiStore'])
+  ->name('courses.multi-store');
 Route::resource('/courses', Web\CoursesController::class);
 
 Route::get('/users/{user}/profile', [Web\Users\UpdateInstitutionUserController::class, 'profile'])

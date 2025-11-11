@@ -7,7 +7,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { Course } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
-import { FormButton } from '@/components/buttons';
+import { FormButton, LinkButton } from '@/components/buttons';
 import InputForm from '@/components/forms/input-form';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
@@ -39,7 +39,15 @@ export default function CreateOrUpdateCourse({ course }: Props) {
     <DashboardLayout>
       <CenteredBox>
         <Slab>
-          <SlabHeading title={`${course ? 'Update' : 'Create'} Subject`} />
+          <SlabHeading
+            title={`${course ? 'Update' : 'Create'} Subject`}
+            rightElement={
+              <LinkButton
+                href={instRoute('courses.multi-create')}
+                title={'Multi Create'}
+              />
+            }
+          />
           <SlabBody>
             <VStack
               spacing={4}

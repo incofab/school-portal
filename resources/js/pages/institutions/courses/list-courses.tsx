@@ -1,16 +1,6 @@
-import React, { useState } from 'react';
-import { Course, PracticeQuestion } from '@/types/models';
-import {
-  HStack,
-  IconButton,
-  Icon,
-  Button,
-  Text,
-  RadioGroup,
-  VStack,
-  Radio,
-  Box,
-} from '@chakra-ui/react';
+import React from 'react';
+import { Course } from '@/types/models';
+import { HStack, IconButton, Icon, Button } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -131,9 +121,15 @@ export default function ListCourse({ courses }: Props) {
           title="List Subjects"
           rightElement={
             isAdmin ? (
-              <LinkButton href={instRoute('courses.create')} title={'New'} />
+              <HStack spacing={2}>
+                <LinkButton href={instRoute('courses.create')} title={'New'} />
+                <LinkButton
+                  href={instRoute('courses.multi-create')}
+                  title={'Multi Create'}
+                />
+              </HStack>
             ) : (
-              ''
+              <></>
             )
           }
         />
