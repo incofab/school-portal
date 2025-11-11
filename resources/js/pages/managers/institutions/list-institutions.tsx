@@ -13,6 +13,8 @@ import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import ButtonSwitch from '@/components/button-switch';
+import { Div } from '@/components/semantic';
+import useIsAdminManager from '@/hooks/use-is-admin-manager';
 
 interface InstitutionWithMeta extends Institution {
   classifications_count: number;
@@ -20,12 +22,18 @@ interface InstitutionWithMeta extends Institution {
 }
 interface Props {
   institutions: PaginationResponse<InstitutionWithMeta>;
+  stats: {
+    active_count: number;
+    suspended_count: number;
+    total: number;
+  };
 }
 
-export default function ListInstitutions({ institutions }: Props) {
+export default function ListInstitutions({ institutions, stats }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const suspensionForm = useWebForm({});
+  const isAdminManager = useIsAdminManager();
 
   async function deleteInstitution(institution: Institution) {
     if (!window.confirm('Do you want to delete this institution?')) {
@@ -132,12 +140,24 @@ export default function ListInstitutions({ institutions }: Props) {
       <Slab>
         <SlabHeading title="Institutions" />
         <SlabBody>
+          {isAdminManager && (
+            <Div>
+              Total: {stats.total} | Active: {stats.active_count} | Suspended:{' '}
+              {stats.suspended_count}
+            </Div>
+          )}
           <ServerPaginatedTable
             scroll={true}
             headers={headers}
             data={institutions.data}
             keyExtractor={(row) => row.id}
             paginator={institutions}
+            tableRowProps={(row) => ({
+              backgroundColor:
+                row.status == InstitutionStatus.Suspended
+                  ? 'red.100'
+                  : undefined,
+            })}
           />
         </SlabBody>
       </Slab>

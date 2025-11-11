@@ -1,6 +1,7 @@
 <?php
 namespace App\Actions\Users;
 
+use App\Enums\InstitutionUserType;
 use App\Models\Classification;
 use App\Models\FeePayment;
 use App\Models\Institution;
@@ -109,6 +110,27 @@ class InstitutionDashboardStat
           'female_students_count'
         ]);
 
+      collect(InstitutionUserType::toArray())
+        ->map(
+          fn(
+            $role
+          ) => "SUM(CASE WHEN role = '$role' THEN 1 ELSE 0 END) as $role"
+        )
+        ->join(',');
+
+      $usersByRole = DB::table('institution_users')
+        ->selectRaw(
+          collect(InstitutionUserType::toArray())
+            ->map(
+              fn(
+                $role
+              ) => "SUM(CASE WHEN role = '$role' THEN 1 ELSE 0 END) as $role"
+            )
+            ->join(',')
+        )
+        ->where('institution_id', $this->institution->id)
+        ->first();
+
       return [
         'num_subjects' => $num_subjects,
         'num_students' => $num_students,
@@ -118,7 +140,8 @@ class InstitutionDashboardStat
         'student_population_month_growth' => $student_population_month_growth,
         'gender_distribution' => $gender_distribution,
         'fee_payments' => $fee_payments,
-        'students_per_class' => $students_per_class
+        'students_per_class' => $students_per_class,
+        'users_by_role' => $usersByRole
       ];
     });
   }

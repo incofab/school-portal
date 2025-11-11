@@ -13,22 +13,33 @@ import { Inertia } from '@inertiajs/inertia';
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import ButtonSwitch from '@/components/button-switch';
+import { Div } from '@/components/semantic';
+import useIsAdminManager from '@/hooks/use-is-admin-manager';
 
 interface InstitutionGroupWithMeta extends InstitutionGroup {
   institutions_count: number;
 }
 interface Props {
   institutionGroups: PaginationResponse<InstitutionGroupWithMeta>;
+  stats: {
+    active_count: number;
+    suspended_count: number;
+    total: number;
+  };
 }
 
 function NumberFormatter(number: number) {
   return new Intl.NumberFormat().format(number);
 }
 
-export default function ListInstitutionGropus({ institutionGroups }: Props) {
+export default function ListInstitutionGropus({
+  institutionGroups,
+  stats,
+}: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const suspensionForm = useWebForm({});
+  const isAdminManager = useIsAdminManager();
 
   async function deleteInstitution(institutionGroup: InstitutionGroup) {
     if (!window.confirm('Do you want to delete this group?')) {
@@ -165,12 +176,24 @@ export default function ListInstitutionGropus({ institutionGroups }: Props) {
           }
         />
         <SlabBody>
+          {isAdminManager && (
+            <Div>
+              Total: {stats.total} | Active: {stats.active_count} | Suspended:{' '}
+              {stats.suspended_count}
+            </Div>
+          )}
           <ServerPaginatedTable
             scroll={true}
             headers={headers}
             data={institutionGroups.data}
             keyExtractor={(row) => row.id}
             paginator={institutionGroups}
+            tableRowProps={(row) => ({
+              backgroundColor:
+                row.status == InstitutionStatus.Suspended
+                  ? 'red.100'
+                  : undefined,
+            })}
           />
         </SlabBody>
       </Slab>

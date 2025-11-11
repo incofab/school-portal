@@ -2,6 +2,7 @@
 
 namespace App\Support\ResultPublications;
 
+use App\Enums\InstitutionUserType;
 use Exception;
 use App\Models\User;
 use App\Support\Res;
@@ -21,9 +22,19 @@ use DB;
 abstract class PublishResult
 {
   protected $resultsToPublish;
+  protected $numOfStudents;
   protected $academicSessionId;
   protected $term;
   protected InstitutionGroup $institutionGroup;
+
+  /**
+   * @var array{
+   *  'institution_group_id': int,
+   *  'academic_session_id': int,
+   *  'payment_structure': string
+   * } $resultPublicationBindingData
+   */
+  protected array $resultPublicationBindingData;
 
   function __construct(
     protected User $staffUser,
@@ -45,6 +56,17 @@ abstract class PublishResult
       ->where('for_mid_term', false)
       ->whereNull('result_publication_id')
       ->get();
+
+    $this->numOfStudents = $institution
+      ->institutionUsers()
+      ->where('role', InstitutionUserType::Student)
+      ->count();
+
+    $this->resultPublicationBindingData = [
+      'institution_group_id' => $this->institutionGroup->id,
+      'academic_session_id' => $this->academicSessionId,
+      'payment_structure' => $this->priceList->payment_structure
+    ];
   }
 
   abstract function getAmountToPay();
@@ -67,15 +89,7 @@ abstract class PublishResult
       }
     }
 
-    $publication = ResultPublication::create([
-      'institution_id' => $this->institution->id,
-      'institution_group_id' => $this->institutionGroup->id,
-      'term' => $this->term,
-      'academic_session_id' => $this->academicSessionId,
-      'num_of_results' => $resultsToPublishCount,
-      'staff_user_id' => $this->staffUser->id,
-      'payment_structure' => $this->priceList->payment_structure
-    ]);
+    $publication = $this->createResultPublication($resultsToPublishCount);
 
     TermResult::whereIn('id', $this->resultsToPublish->pluck('id'))->update([
       'result_publication_id' => $publication->id,
@@ -101,6 +115,40 @@ abstract class PublishResult
     DB::commit();
 
     return successRes('Result published successfully');
+  }
+
+  protected function getResultPublication(): ?ResultPublication
+  {
+    return ResultPublication::query()
+      ->where([...$this->resultPublicationBindingData, 'term' => $this->term])
+      ->first();
+  }
+
+  private function createResultPublication(
+    int $resultsToPublishCount
+  ): ResultPublication {
+    $publication = $this->getResultPublication();
+
+    if (!$publication) {
+      $publication = ResultPublication::create([
+        ...$this->resultPublicationBindingData,
+        'institution_id' => $this->institution->id,
+        'term' => $this->term,
+        'num_of_results' => $resultsToPublishCount,
+        'staff_user_id' => $this->staffUser->id,
+        'num_of_students' => $this->numOfStudents
+      ]);
+    } else {
+      $publication
+        ->fill([
+          'num_of_results' =>
+            $publication->num_of_results + $resultsToPublishCount,
+          'staff_user_id' => $this->staffUser->id,
+          'num_of_students' => $this->numOfStudents
+        ])
+        ->save();
+    }
+    return $publication;
   }
 
   private function processLoan($amountToPay): Res

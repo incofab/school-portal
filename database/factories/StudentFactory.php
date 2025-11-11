@@ -30,7 +30,7 @@ class StudentFactory extends Factory
         date('Y') .
         fake()
           ->unique()
-          ->numerify('####'),
+          ->numerify('#######'),
       'classification_id' => Classification::factory(),
       'guardian_phone' => fake()->phoneNumber()
     ];

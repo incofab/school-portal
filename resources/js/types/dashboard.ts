@@ -13,4 +13,5 @@ export interface DashboardData {
     male_students_count: number;
     female_students_count: number;
   }[];
+  users_by_role?: { [key: string]: number };
 }

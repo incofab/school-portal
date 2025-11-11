@@ -8,6 +8,7 @@ import {
   IconButton,
   Spacer,
   Table,
+  TableRowProps,
   Tbody,
   Td,
   Text,
@@ -43,6 +44,7 @@ interface Props<T> {
   data: T[];
   headers: ServerPaginatedTableHeader<T>[];
   keyExtractor(row: T): string | number;
+  tableRowProps?: (row: T) => TableRowProps;
   paginator: PaginationResponse<any>;
   scroll?: boolean;
   hideSearchField?: boolean;
@@ -54,6 +56,7 @@ export default function ServerPaginatedTable<T>({
   data,
   headers,
   keyExtractor,
+  tableRowProps,
   paginator,
   scroll,
   hideSearchField,
@@ -159,7 +162,10 @@ export default function ServerPaginatedTable<T>({
           </Thead>
           <Tbody>
             {content.map((row) => (
-              <Tr key={keyExtractor(row)}>
+              <Tr
+                key={keyExtractor(row)}
+                {...(tableRowProps ? tableRowProps(row) : null)}
+              >
                 {headers.map((header, i) => (
                   <Td key={i}>
                     {header.render

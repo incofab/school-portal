@@ -140,6 +140,7 @@ export default function InstitutionDashboard({
   reservedAccounts,
   dashboardData,
 }: Props) {
+  // console.log('Dashboard data', dashboardData);
   const { currentInstitutionUser, currentUser } = useSharedProps();
   const student = currentInstitutionUser.student;
   const { forTeacher } = useInstitutionRole();

@@ -237,8 +237,9 @@ it('tests for payment Structure: PerStudentPerTerm', function () {
     $payload
   )->assertOk();
 
+  $numOfStudents = $this->institution->students()->count();
   expect($this->institutionGroup->fresh())->credit_wallet->toBe(
-    $amount - 3 * $this->priceList->amount
+    $amount - $numOfStudents * $this->priceList->amount
   );
 
   $termResults = TermResult::factory(2)
@@ -250,8 +251,9 @@ it('tests for payment Structure: PerStudentPerTerm', function () {
     $payload
   )->assertOk();
 
+  $numOfStudents = $numOfStudents + $termResults->count();
   expect($this->institutionGroup->fresh())->credit_wallet->toBe(
-    $amount - 5 * $this->priceList->amount
+    $amount - $numOfStudents * $this->priceList->amount
   );
 
   // Calling a different term
@@ -267,12 +269,15 @@ it('tests for payment Structure: PerStudentPerTerm', function () {
     ->withInstitution($this->institution)
     ->create([...$termResultProp, 'term' => $newTerm->value]);
 
+  $newBalance = $this->institutionGroup->fresh()->credit_wallet;
   postJson(
     route('institutions.result-publications.store', $this->institution),
     $payload
   )->assertOk();
+
+  $numOfStudents = $this->institution->students()->count();
   expect($this->institutionGroup->fresh())->credit_wallet->toBe(
-    $amount - 9 * $this->priceList->amount
+    $newBalance - $numOfStudents * $this->priceList->amount
   );
 });
 
@@ -356,7 +361,7 @@ it('tests for payment Structure: PerStudentPerSession', function () {
     'term' => $this->term->value
   ];
   $paymentStructure = PaymentStructure::PerStudentPerSession;
-  $amount = 100000;
+  $amount = 1000000;
   $this->institutionGroup->fill(['credit_wallet' => $amount])->save();
   $this->priceList
     ->fill(['payment_structure' => $paymentStructure->value, 'amount' => 5000])
@@ -372,8 +377,9 @@ it('tests for payment Structure: PerStudentPerSession', function () {
     $payload
   )->assertOk();
 
+  $numOfStudents = $this->institution->students()->count();
   expect($this->institutionGroup->fresh())->credit_wallet->toBe(
-    $amount - 3 * $this->priceList->amount
+    $amount - $numOfStudents * $this->priceList->amount
   );
 
   SettingsHandler::clear();
@@ -403,8 +409,9 @@ it('tests for payment Structure: PerStudentPerSession', function () {
     $payload
   )->assertOk();
 
+  $numOfStudents = $numOfStudents + $termResults->count();
   expect($this->institutionGroup->fresh())->credit_wallet->toBe(
-    $amount - 5 * $this->priceList->amount
+    $amount - $numOfStudents * $this->priceList->amount
   );
 
   // Calling a different session
@@ -427,12 +434,16 @@ it('tests for payment Structure: PerStudentPerSession', function () {
       ]);
   }
 
+  $newBalance = $this->institutionGroup->fresh()->credit_wallet;
   postJson(
     route('institutions.result-publications.store', $this->institution),
     $payload
-  )->assertOk();
+  )
+    // ->dump();
+    ->assertOk();
+  $numOfStudents = $this->institution->students()->count();
   expect($this->institutionGroup->fresh())->credit_wallet->toBe(
-    $amount - 8 * $this->priceList->amount
+    $newBalance - $numOfStudents * $this->priceList->amount
   );
 });
 

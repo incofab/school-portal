@@ -2,13 +2,23 @@
 
 namespace App\Support\ResultPublications;
 
-use App\Models\TermResult;
+use App\Models\ResultPublication;
 
 class PublishResultPerStudentPerSession extends PublishResult
 {
   function getAmountToPay()
   {
-    /** Charge for students who does not have an existing result published this session. */
+    $remainingStudents =
+      $this->numOfStudents -
+      intval($this->getResultPublication()?->num_of_students);
+
+    if ($remainingStudents < 0) {
+      $remainingStudents = 0;
+    }
+
+    return $remainingStudents * $this->priceList->amount;
+
+    /* Charge for students who does not have an existing result published this session. 
     $studentIds = $this->resultsToPublish->pluck('student_id')->toArray();
 
     // Fetch students that has at least 1 published result in this session.
@@ -26,5 +36,13 @@ class PublishResultPerStudentPerSession extends PublishResult
       $this->priceList->amount;
 
     return $amtToPay < 0 ? 0 : $amtToPay;
+    */
+  }
+
+  function getResultPublication(): ?ResultPublication
+  {
+    return ResultPublication::query()
+      ->where($this->resultPublicationBindingData)
+      ->first();
   }
 }

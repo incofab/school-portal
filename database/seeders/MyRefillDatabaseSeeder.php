@@ -42,24 +42,27 @@ class MyRefillDatabaseSeeder extends Seeder
 
   function seed()
   {
-    if (InstitutionGroup::count() > 0) {
+    if (InstitutionGroup::count() > 4) {
       return;
     }
-    $institutionGroup = InstitutionGroup::factory()->create([
-      'name' => 'Success Academy Group'
-    ]);
+    $forDefaultRecord = InstitutionGroup::count() == 0;
+    $institutionGroup = InstitutionGroup::factory()->create(
+      $forDefaultRecord ? ['name' => 'Success Academy Group'] : []
+    );
     $institution = Institution::factory()
       ->for($institutionGroup)
-      ->create(['name' => 'Success Academy']);
+      ->create($forDefaultRecord ? ['name' => 'Success Academy'] : []);
     $institutionAdmin = $institution->createdBy;
-    $institutionAdmin->fill(['email' => 'success@email.com'])->save();
+    if ($forDefaultRecord) {
+      $institutionAdmin->fill(['email' => 'success@email.com'])->save();
+    }
 
     SeedSetupData::run($institution);
 
     $this->createInstitutionSetting($institution);
 
     $this->createClasses($institution);
-    $this->recordSubjects($institution);
+    $this->recordSubjects($institution, $forDefaultRecord);
     $this->createStudents($institution, 10);
     $this->createExamResult($institution);
 
@@ -136,7 +139,7 @@ class MyRefillDatabaseSeeder extends Seeder
     );
   }
 
-  function recordSubjects(Institution $institution)
+  function recordSubjects(Institution $institution, bool $forDefaultRecord)
   {
     $courseTitles = [
       'Mathematics',
@@ -162,13 +165,15 @@ class MyRefillDatabaseSeeder extends Seeder
     $teacher = InstitutionUser::factory()
       ->teacher($institution)
       ->create()->user;
-    $teacher
-      ->fill([
-        'email' => 'teacher@email.com',
-        'first_name' => 'Teacher1',
-        'last_name' => 'Teacher1'
-      ])
-      ->save();
+    if ($forDefaultRecord) {
+      $teacher
+        ->fill([
+          'email' => 'teacher@email.com',
+          'first_name' => 'Teacher1',
+          'last_name' => 'Teacher1'
+        ])
+        ->save();
+    }
     $classes = $institution->classifications()->get();
     $courses = $institution->courses()->get();
     foreach ($classes as $key => $class) {

@@ -16,7 +16,8 @@ class ValidateExistsRule implements ValidationRule
   private $model;
   function __construct(
     private string $modelClass,
-    private string $column = 'id'
+    private string $column = 'id',
+    private array $query = []
   ) {
   }
 
@@ -30,6 +31,7 @@ class ValidateExistsRule implements ValidationRule
     $model = (new $this->modelClass())
       ->query()
       ->where($this->column, $value)
+      ->when($this->query, fn($q) => $q->where($this->query))
       ->first();
 
     if (!$model) {

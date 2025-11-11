@@ -59,31 +59,7 @@ class ClassificationController extends Controller
 
   function store(Institution $institution)
   {
-    $data = request()->validate([
-      'title' => [
-        'required',
-        'string',
-        'max:100',
-        Rule::unique('classifications', 'title')->where(
-          'institution_id',
-          $institution->id
-        )
-      ],
-      'description' => ['nullable', 'string'],
-      'has_equal_subjects' => ['nullable', 'boolean'],
-      'form_teacher_id' => [
-        'nullable',
-        'integer',
-        Rule::exists('institution_users', 'user_id')
-          ->where('institution_id', $institution->id)
-          ->where('role', InstitutionUserType::Teacher->value)
-      ],
-      'classification_group_id' => [
-        'required',
-        new ValidateExistsRule(ClassificationGroup::class)
-      ]
-    ]);
-
+    $data = request()->validate(Classification::createRule());
     $institution->classifications()->create($data);
     return $this->ok();
   }
@@ -102,29 +78,7 @@ class ClassificationController extends Controller
 
   function update(Institution $institution, Classification $classification)
   {
-    $data = request()->validate([
-      'title' => [
-        'required',
-        'string',
-        'max:100',
-        Rule::unique('classifications', 'title')
-          ->where('institution_id', $institution->id)
-          ->ignore($classification->id, 'id')
-      ],
-      'description' => ['nullable', 'string'],
-      'has_equal_subjects' => ['nullable', 'boolean'],
-      'form_teacher_id' => [
-        'nullable',
-        'integer',
-        Rule::exists('institution_users', 'user_id')
-          ->where('institution_id', $institution->id)
-          ->where('role', InstitutionUserType::Teacher->value)
-      ],
-      'classification_group_id' => [
-        'required',
-        new ValidateExistsRule(ClassificationGroup::class)
-      ]
-    ]);
+    $data = request()->validate(Classification::createRule($classification));
 
     $classification->fill($data)->save();
     return $this->ok();

@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\InstitutionUserType;
+use App\Rules\ValidateExistsRule;
+use App\Rules\ValidateUniqueRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Validation\Rule;
 
 class Classification extends Model
 {
@@ -18,6 +22,36 @@ class Classification extends Model
     'form_teacher_id' => 'integer',
     'has_equal_subjects' => 'boolean'
   ];
+
+  static function createRule(
+    ?Classification $classification = null,
+    $prefix = ''
+  ) {
+    return [
+      $prefix . 'title' => [
+        'required',
+        'string',
+        'max:100',
+        (new ValidateUniqueRule(Classification::class, 'title'))->when(
+          $classification,
+          fn($q) => $q->ignore($classification->id, 'id')
+        )
+      ],
+      $prefix . 'description' => ['nullable', 'string'],
+      $prefix . 'has_equal_subjects' => ['nullable', 'boolean'],
+      $prefix . 'form_teacher_id' => [
+        'nullable',
+        'integer',
+        new ValidateExistsRule(InstitutionUser::class, 'user_id', [
+          'role' => InstitutionUserType::Teacher->value
+        ])
+      ],
+      $prefix . 'classification_group_id' => [
+        'required',
+        new ValidateExistsRule(ClassificationGroup::class)
+      ]
+    ];
+  }
 
   function institution()
   {

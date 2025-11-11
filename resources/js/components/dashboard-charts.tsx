@@ -14,6 +14,7 @@ import {
 } from 'chart.js';
 import {
   Box,
+  HStack,
   SimpleGrid,
   Text,
   useColorModeValue,
@@ -33,12 +34,12 @@ ChartJS.register(
 );
 
 import { DashboardData } from '@/types/dashboard';
-import { Div } from './semantic';
+import { ucFirst } from '@/util/util';
 
-const ChartBox: React.FC<{ title: string; children: React.ReactNode }> = ({
-  title,
-  children,
-}) => (
+const ChartBox: React.FC<{
+  title: string | React.ReactNode;
+  children: React.ReactNode;
+}> = ({ title, children }) => (
   <Box
     border={'solid'}
     borderWidth={1}
@@ -48,7 +49,7 @@ const ChartBox: React.FC<{ title: string; children: React.ReactNode }> = ({
     background={useColorModeValue('white', 'gray.700')}
     p={4}
   >
-    <Text fontSize="lg" fontWeight="bold" mb={4}>
+    <Text fontSize="lg" fontWeight="bold" mb={4} as={'div'}>
       {title}
     </Text>
     {children}
@@ -88,7 +89,7 @@ export default function DashboardCharts({ data }: { data: DashboardData }) {
       {
         label: 'Gender Distribution',
         data: data.gender_distribution.map((d) => d.count),
-        backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+        backgroundColor: ['rgba(54, 162, 235, 0.8)', 'rgba(255, 99, 132, 0.8)'],
       },
     ],
   };
@@ -99,10 +100,23 @@ export default function DashboardCharts({ data }: { data: DashboardData }) {
       {
         label: 'Fee Payments (in thousands)',
         data: data.fee_payments.map((d) => d.total),
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        backgroundColor: 'rgba(75, 192, 192, 0.8)',
       },
     ],
   };
+
+  const usersByRole = data.users_by_role
+    ? {
+        labels: Object.entries(data.users_by_role).map(([key]) => ucFirst(key)),
+        datasets: [
+          {
+            label: 'School Size by Roles',
+            data: Object.entries(data.users_by_role).map(([, value]) => value),
+            backgroundColor: 'rgba(224, 5, 78, 0.8)',
+          },
+        ],
+      }
+    : null;
 
   const classStudentData = {
     labels: data.students_per_class.map((d) => d.title),
@@ -110,17 +124,17 @@ export default function DashboardCharts({ data }: { data: DashboardData }) {
       {
         label: 'Male',
         data: data.students_per_class.map((d) => d.male_students_count),
-        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+        backgroundColor: 'rgba(54, 162, 235, 0.8)',
       },
       {
         label: 'Female',
         data: data.students_per_class.map((d) => d.female_students_count),
-        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+        backgroundColor: 'rgba(255, 99, 132, 0.8)',
       },
       {
         label: 'Total',
         data: data.students_per_class.map((d) => d.students_count),
-        backgroundColor: 'rgba(153, 102, 255, 0.7)',
+        backgroundColor: 'rgba(153, 102, 255, 0.8)',
       },
     ],
   };
@@ -135,15 +149,27 @@ export default function DashboardCharts({ data }: { data: DashboardData }) {
           <Line data={studentPopulationYearGrowthData} />
         </ChartBox>
       </VStack>
-      <ChartBox title="Student Gender Distribution">
+      <ChartBox
+        title={
+          <HStack justify={'space-between'}>
+            <Text>Students by Gender</Text>{' '}
+            <Text>Total: {data.num_students}</Text>
+          </HStack>
+        }
+      >
         <Pie data={genderDistributionData} />
       </ChartBox>
       <ChartBox title="Recent Fee Payments">
         <Bar data={feePaymentData} />
       </ChartBox>
-      <ChartBox title="Students per Class (by Gender)">
+      <ChartBox title="Students per Class">
         <Bar data={classStudentData} />
       </ChartBox>
+      {usersByRole && (
+        <ChartBox title="School Size by Roles">
+          <Bar data={usersByRole} />
+        </ChartBox>
+      )}
     </SimpleGrid>
   );
 }

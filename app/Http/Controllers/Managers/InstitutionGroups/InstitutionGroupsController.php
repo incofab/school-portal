@@ -18,6 +18,13 @@ class InstitutionGroupsController extends Controller
   public function index(Request $request)
   {
     $user = currentUser();
+    $stats = InstitutionGroup::selectRaw(
+      "
+      SUM(CASE WHEN status = 'suspended' THEN 1 ELSE 0 END) as suspended_count,
+      SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active_count,
+      COUNT(id) as total
+    "
+    )->first();
     return Inertia::render(
       'managers/institution-groups/list-institution-groups',
       [
@@ -25,8 +32,12 @@ class InstitutionGroupsController extends Controller
           InstitutionGroup::getQueryForManager($user)
             ->withCount('institutions')
             ->with('partner')
+            ->orderByRaw(
+              "institution_groups.status IS NOT NULL, FIELD(institution_groups.status, 'active', 'suspended')"
+            )
             ->latest('id')
-        )
+        ),
+        'stats' => $stats
       ]
     );
   }
@@ -38,7 +49,13 @@ class InstitutionGroupsController extends Controller
       fn($q, $value) => $q->where('name', 'LIKE', "%$value%")
     );
     return response()->json([
-      'result' => paginateFromRequest($query->latest('id'))
+      'result' => paginateFromRequest(
+        $query
+          ->orderByRaw(
+            "institution_groups.status IS NOT NULL, FIELD(institution_groups.status, 'active', 'suspended')"
+          )
+          ->latest('id')
+      )
     ]);
   }
 
