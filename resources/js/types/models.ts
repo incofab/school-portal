@@ -369,7 +369,7 @@ export interface CourseResult extends InstitutionRow {
   grade: string;
   remark: string;
   for_mid_term: boolean;
-  assessment_values: { [key: string]: number };
+  assessment_values: { [key: string]: number | string };
   teacher?: User;
   student?: Student;
   course?: Course;

@@ -33,7 +33,7 @@ export default function PagePrintLayout({
   return (
     <Div>
       <Div
-        style={useBgStyle ? backgroundStyle : undefined}
+        style={useBgStyle === false ? undefined : backgroundStyle}
         minHeight={'1170px'}
       >
         <ResultDownloadButton

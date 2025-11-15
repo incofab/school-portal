@@ -67,7 +67,7 @@ function prepareSettings(institutionSettings?: InstitutionSetting[]) {
       Boolean(
         parseInt(settings[InstitutionSettingType.CurrentlyOnMidTerm]?.value)
       ),
-    resultSetting: settings[InstitutionSettingType.Result]?.value as {
+    resultSetting: (settings[InstitutionSettingType.Result]?.value ?? {}) as {
       [key: string]: string;
     },
     stamp: settings[InstitutionSettingType.Stamp]?.value,

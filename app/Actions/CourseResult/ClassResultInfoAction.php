@@ -95,6 +95,9 @@ class ClassResultInfoAction
     return $classResultInfo;
   }
 
+  /**
+   * @param Collection<int, CourseResult> $courseResults
+   */
   private function getTotalScore(Collection $courseResults)
   {
     $overallTotal = 0;

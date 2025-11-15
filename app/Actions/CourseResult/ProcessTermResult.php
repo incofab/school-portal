@@ -56,7 +56,10 @@ class ProcessTermResult
     );
   }
 
-  /** @return array<string, ResultDetail> */
+  /**
+   * @param Collection<int, CourseResult> $courseResults
+   * @return array<string, ResultDetail>
+   * */
   private function prepareStudentResult(Collection $courseResults)
   {
     $studentsResultDetails = [];

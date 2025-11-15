@@ -24,7 +24,8 @@ class Assessment extends Model
   public $casts = [
     'institution_id' => 'integer',
     'for_mid_term' => 'boolean',
-    'depends_on' => FullTermType::class
+    'depends_on' => FullTermType::class,
+    'max' => 'integer'
   ];
 
   protected $appends = ['raw_title'];

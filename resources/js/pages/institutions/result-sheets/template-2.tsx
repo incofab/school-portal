@@ -75,19 +75,10 @@ export default function Template2(props: ResultProps) {
   function getAssessmentScore(courseResult: CourseResult) {
     let total = 0;
     Object.entries(courseResult.assessment_values).map(
-      ([key, val]) => (total += val)
+      ([, val]) => (total += Number(val))
     );
     return total;
   }
-
-  const svgCode = `<svg xmlns='http://www.w3.org/2000/svg' width='140' height='100' opacity='0.08' viewBox='0 0 100 100' transform='rotate(45)'><text x='0' y='50' font-size='18' fill='%23000'>${currentInstitution.name}</text></svg>`;
-  const backgroundStyle = {
-    backgroundImage: `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-      svgCode
-    )}")`,
-    backgroundRepeat: 'repeat',
-    backgroundColor: 'white',
-  };
 
   return (
     <ResultSheetLayout resultProps={props}>
