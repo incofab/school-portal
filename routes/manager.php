@@ -23,6 +23,9 @@ Route::get('/institutions/{institution}/show', [Web\Institutions\InstitutionMana
 Route::post('/institutions/{institution}/update-status', [Web\Institutions\InstitutionManagementController::class, 'updateStatus'])
     ->name('institutions.update.status');
 
+Route::get('/institution-groupss/{institutionGroup}/invoice/{academicSession}/{term}', [Web\Institutions\InstitutionManagementController::class, 'generateInvoice'])
+    ->name('institutions.invoice.generate');
+
 Route::get('/institution-groups/search', [Web\InstitutionGroups\InstitutionGroupsController::class, 'search'])
     ->name('institution-groups.search');
 Route::resource('institution-groups', Web\InstitutionGroups\InstitutionGroupsController::class)
