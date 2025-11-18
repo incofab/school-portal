@@ -69,18 +69,18 @@
                         <td>{{ $inst->name }}</td>
                         <td>{{ $item['description'] }}</td>
                         <td>{{ $item['quantity'] }}</td>
-                        <td>{!! config('app.currency-sign') . number_format($item['unit_price'], 2) !!}</td>
-                        <td>{!! config('app.currency-sign') . number_format($item['amount'], 2) !!}</td>
+                        <td>{{ number_format($item['unit_price'], 2) }}</td>
+                        <td>{{ number_format($item['amount'], 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
         <br>
         <p>
-            <h4>Outstanding balance: {!! config('app.currency-sign') . number_format($institution_group->debt_wallet, 2) !!}</h4>
+            <h4>Outstanding balance: {{ number_format($institution_group->debt_wallet, 2) }}</h4>
         </p>
         <div class="total">
-            <h3>Total: {!! config('app.currency-sign') . number_format($total_amount, 2) !!}</h3>
+            <h3>Total: {{ number_format($total_amount, 2) }}</h3>
         </div>
 
         <div class="footer">
