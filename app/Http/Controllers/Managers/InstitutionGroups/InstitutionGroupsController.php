@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Managers\InstitutionGroups;
 
 use App\Actions\RegisterInstitutionGroup;
+use App\Actions\Subscriptions\GenerateInvoice;
 use App\Enums\InstitutionStatus;
 use App\Enums\S3Folder;
+use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\InstitutionGroup;
 use App\Models\User;
@@ -12,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
 use Storage;
 use Inertia\Inertia;
+use App\Models\AcademicSession;
 
 class InstitutionGroupsController extends Controller
 {
@@ -31,13 +34,14 @@ class InstitutionGroupsController extends Controller
         'institutionGroups' => paginateFromRequest(
           InstitutionGroup::getQueryForManager($user)
             ->withCount('institutions')
-            ->with('partner')
+            ->with('partner', 'institutions:id,institution_group_id,uuid')
             ->orderByRaw(
               "institution_groups.status IS NOT NULL, FIELD(institution_groups.status, 'active', 'suspended')"
             )
             ->latest('id')
         ),
-        'stats' => $stats
+        'stats' => $stats,
+        'academicSessions' => AcademicSession::all()
       ]
     );
   }
@@ -183,5 +187,22 @@ class InstitutionGroupsController extends Controller
     $institutionGroup->fill(['status' => $status])->save();
     $institutionGroup->institutions()->update(['status' => $status]);
     return $this->ok();
+  }
+
+  public function generateInvoice(
+    InstitutionGroup $institutionGroup,
+    AcademicSession $academicSession,
+    $term
+  ) {
+    $termType = TermType::tryFrom($term);
+
+    abort_unless($termType, 'Please, supply a valid term type');
+
+    return (new GenerateInvoice(
+      $institutionGroup,
+      $academicSession,
+      $termType
+    ))->downloadAsPdf();
+    // ))->viewAsHtml();
   }
 }

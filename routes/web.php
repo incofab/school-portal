@@ -7,17 +7,11 @@ use App\Http\Controllers\Institutions\Exams\External as External;
 use App\Http\Controllers\Institutions\Admissions as Admissions;
 
 Route::get('dummy1', function () {
-    $user = \App\Models\User::where('email', 'guard2@email.com')->first();
-    $res = \App\Core\MonnifyHelper::make()->getReservedAccounts($user);
-
-    // $res = \App\Core\MonnifyHelper::make()->listBanks();
-    dd($res->toArray());
-    // dd('skdksdk');
-    return Mail::to('incofabikenna@gmail.com')->send(new \App\Mail\InstitutionMessageMail(
-        \App\Models\Institution::first(),
-        'Subject of this email',
-        'This is a test message for my testing',
-    ));
+    $institutionGroup = \App\Models\InstitutionGroup::first();
+    $term = \App\Enums\TermType::First;
+    $academicSession = \App\Models\AcademicSession::first();
+// dd('skkas');
+    return (new \App\Actions\Subscriptions\GenerateInvoice($institutionGroup, $academicSession, $term))->viewAsHtml();
     die('Dummy page');
 });
 

@@ -3,8 +3,8 @@
 <head>
     <title>Invoice</title>
     <style>
-        body { font-family: sans-serif; }
-        .container { width: 100%; margin: 0 auto; }
+        body { font-family: sans-serif; padding: 10px 10px;}
+        .container { width: 100%; margin: 0 auto;}
         .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
         .header .company-details { text-align: left; }
         .header .invoice-details { text-align: right; }
@@ -36,18 +36,20 @@
         </div>
 
         <div class="billing-details">
-            <h2>Hi:</h2>
-            <p>
+            <div>Hi,</div>
+            <div style="margin-top: 3px;">
                 <strong style="font-size: 18">{{ $institution_group->name }}</strong><br>
                 {{ $institution_group->address }}<br>
                 {{ $institution_group->email }}
-            </p>
-            <p>
-                We hope this message finds you well.
-            </p>
-            <p>
-                This is a friendly reminder that your Edumanager subscription fee is due. Timely payment ensures uninterrupted access to all Edumanager features.
-            </p>
+            </div>
+            <div style="font-size: 13px">
+                <p>
+                    We hope this message finds you well.
+                </p>
+                <p>
+                    This is a friendly reminder that your Edumanager subscription fee is due. Timely payment ensures uninterrupted access to all Edumanager features.
+                </p>
+            </div>
         </div>
 
         <table>
@@ -67,15 +69,18 @@
                         <td>{{ $inst->name }}</td>
                         <td>{{ $item['description'] }}</td>
                         <td>{{ $item['quantity'] }}</td>
-                        <td>{{ number_format($item['unit_price'], 2) }}</td>
-                        <td>{{ number_format($item['amount'], 2) }}</td>
+                        <td>{!! config('app.currency-sign') . number_format($item['unit_price'], 2) !!}</td>
+                        <td>{!! config('app.currency-sign') . number_format($item['amount'], 2) !!}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-
+        <br>
+        <p>
+            <h4>Outstanding balance: {!! config('app.currency-sign') . number_format($institution_group->debt_wallet, 2) !!}</h4>
+        </p>
         <div class="total">
-            <h3>Total: {{ number_format($total_amount, 2) }}</h3>
+            <h3>Total: {!! config('app.currency-sign') . number_format($total_amount, 2) !!}</h3>
         </div>
 
         <div class="footer">

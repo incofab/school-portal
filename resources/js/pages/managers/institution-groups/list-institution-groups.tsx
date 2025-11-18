@@ -1,5 +1,5 @@
 import React from 'react';
-import { InstitutionGroup } from '@/types/models';
+import { AcademicSession, Institution, InstitutionGroup } from '@/types/models';
 import { Button, HStack, Icon, IconButton, Tooltip } from '@chakra-ui/react';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { InstitutionStatus, PaginationResponse } from '@/types/types';
@@ -10,15 +10,24 @@ import ManagerDashboardLayout from '@/layout/managers/manager-dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
-import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
+import {
+  PencilIcon,
+  PlusIcon,
+  TrashIcon,
+  DocumentChartBarIcon,
+} from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import ButtonSwitch from '@/components/button-switch';
 import { Div } from '@/components/semantic';
 import useIsAdminManager from '@/hooks/use-is-admin-manager';
+import { useModalValueToggle } from '@/hooks/use-modal-toggle';
+import GenerateInvoiceModal from './generate-invoice-modal';
 
 interface InstitutionGroupWithMeta extends InstitutionGroup {
   institutions_count: number;
+  institutions: Institution[];
 }
+
 interface Props {
   institutionGroups: PaginationResponse<InstitutionGroupWithMeta>;
   stats: {
@@ -26,6 +35,7 @@ interface Props {
     suspended_count: number;
     total: number;
   };
+  academicSessions: AcademicSession[];
 }
 
 function NumberFormatter(number: number) {
@@ -35,11 +45,13 @@ function NumberFormatter(number: number) {
 export default function ListInstitutionGropus({
   institutionGroups,
   stats,
+  academicSessions,
 }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const suspensionForm = useWebForm({});
   const isAdminManager = useIsAdminManager();
+  const invoiceModalToggle = useModalValueToggle<InstitutionGroupWithMeta>();
 
   async function deleteInstitution(institutionGroup: InstitutionGroup) {
     if (!window.confirm('Do you want to delete this group?')) {
@@ -127,6 +139,16 @@ export default function ListInstitutionGropus({
       label: 'Action',
       render: (row) => (
         <HStack spacing={2}>
+          <Tooltip label="Generate Invoice">
+            <IconButton
+              aria-label="Generate Invoice"
+              colorScheme={'blue'}
+              size={'sm'}
+              icon={<Icon as={DocumentChartBarIcon} />}
+              onClick={() => invoiceModalToggle.open(row)}
+              isDisabled={row.institutions_count === 0}
+            />
+          </Tooltip>
           <IconButton
             aria-label="Edit Group"
             colorScheme={'brand'}
@@ -197,6 +219,13 @@ export default function ListInstitutionGropus({
           />
         </SlabBody>
       </Slab>
+      {invoiceModalToggle.state && (
+        <GenerateInvoiceModal
+          {...invoiceModalToggle.props}
+          institutionGroup={invoiceModalToggle.state}
+          academicSessions={academicSessions}
+        />
+      )}
     </ManagerDashboardLayout>
   );
 }

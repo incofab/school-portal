@@ -2,16 +2,12 @@
 
 namespace App\Http\Controllers\Managers\Institutions;
 
-use App\Actions\Subscriptions\GenerateInvoice;
 use App\Enums\InstitutionStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
 use Inertia\Inertia;
-use App\Models\AcademicSession;
-use App\Enums\TermType;
-use App\Models\InstitutionGroup;
 
 class InstitutionManagementController extends Controller
 {
@@ -59,21 +55,5 @@ class InstitutionManagementController extends Controller
 
     $institution->fill(['status' => $status])->save();
     return $this->ok();
-  }
-
-  public function generateInvoice(
-    InstitutionGroup $institutionGroup,
-    AcademicSession $academicSession,
-    $term
-  ) {
-    $termType = TermType::tryFrom($term);
-
-    abort_unless($termType, 'Please, supply a valid term type');
-
-    return (new GenerateInvoice(
-      $institutionGroup,
-      $academicSession,
-      $termType
-    ))->downloadAsPdf();
   }
 }

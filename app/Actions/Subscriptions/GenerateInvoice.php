@@ -56,7 +56,8 @@ class GenerateInvoice
           'institution_group_id' => $this->institutionGroup->id,
           'academic_session_id' => $this->academicSession->id,
           'institution_id' => $inst->id,
-          'payment_structure' => $priceList->payment_structure
+          'payment_structure' => $priceList->payment_structure,
+          ...$isTermly ? ['term' => $this->term] : []
         ])
         ->first();
 
@@ -66,9 +67,9 @@ class GenerateInvoice
         $quantity = $studentCount;
       }
 
-      // if ($publication || $this->institutionGroup->credit_wallet >= $amount) {
-      //   continue; // This institution must have paid since they've published results or they have enough balance
-      // }
+      if ($publication || $this->institutionGroup->credit_wallet >= $amount) {
+        continue; // This institution must have paid since they've published results or they have enough balance
+      }
 
       $invoiceItems[] = [
         'institution' => $inst,
@@ -88,6 +89,8 @@ class GenerateInvoice
       404,
       'There are no pending invoice for this institution'
     );
+
+    $totalAmount += $this->institutionGroup->debt_wallet;
 
     $this->data = [
       'invoice_number' => uniqid('INV-'),
