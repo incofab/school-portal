@@ -20,16 +20,16 @@ import useSharedProps from '@/hooks/use-shared-props';
 import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Gender } from '@/types/types';
-import { User } from '@/types/models';
+import { InstitutionGroup, User } from '@/types/models';
 import Slab, { SlabBody } from '@/components/slab';
 import CenteredLayout from '@/components/centered-layout';
 
 export default function Register({
   user,
-  imageUrl,
+  institutionGroup,
 }: {
   user?: User;
-  imageUrl?: string;
+  institutionGroup?: InstitutionGroup;
 }) {
   const { message } = useSharedProps();
   const toast = useToast();
@@ -71,6 +71,7 @@ export default function Register({
 
   // const bgImage = user ? '/partners/' + user.username + '.webp' : undefined;
 
+  const imageUrl = institutionGroup?.banner;
   return (
     <CenteredLayout
       title="Join Us"

@@ -10,7 +10,7 @@ if (!function_exists('currentUser')) {
   function currentUser(): User|null
   {
     /** @var User */
-    $user = auth()->user();
+    $user = \Auth::user();
     return $user;
   }
 }
@@ -149,17 +149,17 @@ if (!function_exists('deleteMigrationEntry')) {
     \DB::table('migrations')
       ->whereIn('migration', $filenames)
       ->delete();
+  }
+}
 
-    // foreach ($filenames as $key => $filename) {
-    //   $filePath = database_path("migrations/$filename.php");
-    //   if (!\File::exists($filePath)) {
-    //     continue;
-    //   }
-    //   try {
-    //     File::delete($filePath);
-    //   } catch (\Exception $e) {
-    //     info("Error deleting file: {$filePath} | {$e->getMessage()}");
-    //   }
-    // }
+if (!function_exists('getInstitutionGroupFromDomain')) {
+  function getInstitutionGroupFromDomain(): \App\Models\InstitutionGroup|null
+  {
+    $currentDomain = request()->getHost();
+    return \App\Models\InstitutionGroup::where(
+      'website',
+      'LIKE',
+      "%{$currentDomain}%"
+    )->first();
   }
 }

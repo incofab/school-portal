@@ -9,8 +9,13 @@ import useWebForm from '@/hooks/use-web-form';
 import FormControlBox from '@/components/forms/form-control-box';
 import { BrandButton } from '@/components/buttons';
 import CenteredLayout from '@/components/centered-layout';
+import { InstitutionGroup } from '@/types/models';
 
-export default function StudentLogin({ imageUrl }: { imageUrl?: string }) {
+export default function StudentLogin({
+  institutionGroup,
+}: {
+  institutionGroup?: InstitutionGroup;
+}) {
   const { toastError, toastSuccess } = useMyToast();
   const [shouldEnterPassword, setShouldEnterPassword] = useState(false);
   const form = useWebForm({
@@ -43,7 +48,7 @@ export default function StudentLogin({ imageUrl }: { imageUrl?: string }) {
   }
 
   return (
-    <CenteredLayout title="Student Login" bgImage={imageUrl}>
+    <CenteredLayout title="Student Login" bgImage={institutionGroup?.banner}>
       <VStack
         spacing={4}
         align={'stretch'}

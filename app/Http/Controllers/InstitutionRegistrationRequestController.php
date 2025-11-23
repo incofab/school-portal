@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ManagerRole;
-use App\Helpers\InstitutionBackgroundImage;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\RegistrationRequest;
@@ -21,14 +20,14 @@ class InstitutionRegistrationRequestController extends Controller
         ->orWhere('id', $partner)
         ->first();
       $fileExists = file_exists(public_path("partners/$partner.webp"));
-      $imageUrl = $fileExists ? asset("partners/$partner.webp") : null;
+      // $imageUrl = $fileExists ? asset("partners/$partner.webp") : null;
     } else {
-      $imageUrl = InstitutionBackgroundImage::getBackgroundImage();
     }
 
     return inertia('auth/register', [
       'user' => $partner,
-      'imageUrl' => $imageUrl ? $imageUrl : null
+      // 'imageUrl' => $imageUrl ? $imageUrl : null
+      'institutionGroup' => getInstitutionGroupFromDomain()
     ]);
   }
 

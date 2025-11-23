@@ -32,10 +32,15 @@ export default function CenteredLayout({
       style={
         bgImage
           ? {
-              backgroundImage: `url(${bgImage})`, // Dynamically set the background image
+              // backgroundImage: `url(${bgImage})`, // Dynamically set the background image
               backgroundPosition: 'center',
               backgroundSize: 'cover',
               backgroundAttachment: 'fixed',
+
+              backgroundImage: `linear-gradient(
+                  rgba(0, 0, 0, 0.6), 
+                  rgba(0, 0, 0, 0.6)
+                ), url(${bgImage})`,
             }
           : {}
       }

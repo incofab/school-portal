@@ -214,7 +214,11 @@ export default function Template2(props: ResultProps) {
             </div>
           </div>
           <Spacer height={'10px'} />
-          <LabelText label="Position" text={termResult.position} />
+          {hidePosition ? (
+            <></>
+          ) : (
+            <LabelText label="Position" text={termResult.position} />
+          )}
           <HStack>
             <LabelText label="Overal Result" text={termResult.total_score} />
             <Spacer />

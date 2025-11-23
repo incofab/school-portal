@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Institutions\Exams\External;
 
 use App\Actions\CreateExam;
-use App\Helpers\InstitutionBackgroundImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExamRequest;
 use App\Models\AdmissionApplication;
@@ -47,7 +46,7 @@ class ExamExternalController extends Controller
   function studentExamLoginCreate()
   {
     return Inertia::render('auth/student-exam-login', [
-      'imageUrl' => InstitutionBackgroundImage::getBackgroundImage()
+      'institutionGroup' => getInstitutionGroupFromDomain()
     ]);
   }
 

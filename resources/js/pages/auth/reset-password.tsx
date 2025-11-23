@@ -14,14 +14,19 @@ import '../../../css/app.css';
 import { preventNativeSubmit } from '@/util/util';
 import route from '@/util/route';
 import CenteredLayout from '@/components/centered-layout';
+import { InstitutionGroup } from '@/types/models';
 
 interface Props {
   email: string;
   token: string;
-  imageUrl?: string;
+  institutionGroup?: InstitutionGroup;
 }
 
-export default function ResetPassword({ email, token, imageUrl }: Props) {
+export default function ResetPassword({
+  email,
+  token,
+  institutionGroup,
+}: Props) {
   const form = useForm({
     password: '',
     password_confirmation: '',
@@ -42,7 +47,7 @@ export default function ResetPassword({ email, token, imageUrl }: Props) {
   }
 
   return (
-    <CenteredLayout title="Reset Password" bgImage={imageUrl}>
+    <CenteredLayout title="Reset Password" bgImage={institutionGroup?.banner}>
       <form onSubmit={preventNativeSubmit(handleSubmit)}>
         <FormControl isRequired mb={6} isInvalid={!!form.errors.email}>
           <FormLabel>Email:</FormLabel>

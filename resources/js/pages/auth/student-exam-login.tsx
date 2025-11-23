@@ -12,8 +12,13 @@ import CenteredLayout from '@/components/centered-layout';
 import { useForm } from '@inertiajs/react';
 import { preventNativeSubmit } from '@/util/util';
 import route from '@/util/route';
+import { InstitutionGroup } from '@/types/models';
 
-export default function StudentExamLogin({ imageUrl }: { imageUrl?: string }) {
+export default function StudentExamLogin({
+  institutionGroup,
+}: {
+  institutionGroup?: InstitutionGroup;
+}) {
   const { data, setData, post, processing, errors } = useForm({
     student_code: '',
     event_code: '',
@@ -24,7 +29,7 @@ export default function StudentExamLogin({ imageUrl }: { imageUrl?: string }) {
   };
 
   return (
-    <CenteredLayout title="Student Login" bgImage={imageUrl}>
+    <CenteredLayout title="Student Login" bgImage={institutionGroup?.banner}>
       <VStack
         spacing={4}
         align={'stretch'}

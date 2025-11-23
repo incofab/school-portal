@@ -7,7 +7,6 @@ import {
   FormControl,
   FormLabel,
   Button,
-  Show,
   useToast,
   FormErrorMessage,
 } from '@chakra-ui/react';
@@ -15,8 +14,13 @@ import '../../../css/app.css';
 import { preventNativeSubmit } from '@/util/util';
 import route from '@/util/route';
 import CenteredLayout from '@/components/centered-layout';
+import { InstitutionGroup } from '@/types/models';
 
-export default function ForgotPassword({ imageUrl }: { imageUrl?: string }) {
+export default function ForgotPassword({
+  institutionGroup,
+}: {
+  institutionGroup?: InstitutionGroup;
+}) {
   const toast = useToast();
   const form = useForm({
     email: '',
@@ -34,7 +38,7 @@ export default function ForgotPassword({ imageUrl }: { imageUrl?: string }) {
   }
 
   return (
-    <CenteredLayout title="Forgot Password" bgImage={imageUrl}>
+    <CenteredLayout title="Forgot Password" bgImage={institutionGroup?.banner}>
       <form onSubmit={preventNativeSubmit(handleSubmit)}>
         <FormControl mb={6} isRequired isInvalid={!!form.errors.email}>
           <FormLabel>Email</FormLabel>

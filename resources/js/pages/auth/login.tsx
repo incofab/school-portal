@@ -13,8 +13,6 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  Spacer,
-  Text,
   VStack,
 } from '@chakra-ui/react';
 import { InertiaLink } from '@inertiajs/inertia-react';
@@ -23,21 +21,16 @@ import useSharedProps from '@/hooks/use-shared-props';
 import { Inertia } from '@inertiajs/inertia';
 import PasswordInput from '@/components/password-input';
 import CenteredLayout from '@/components/centered-layout';
-import { Institution } from '@/types/models';
+import { InstitutionGroup } from '@/types/models';
 import useMyToast from '@/hooks/use-my-toast';
 import useWebForm from '@/hooks/use-web-form';
 import { LinkButton } from '@/components/buttons';
-import {
-  ArrowRightIcon,
-  ArrowsPointingInIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 export default function Login({
-  institution,
-  imageUrl,
+  institutionGroup,
 }: {
-  institution?: Institution;
-  imageUrl?: string;
+  institutionGroup?: InstitutionGroup;
 }) {
   const { message, csrfToken } = useSharedProps();
   const { toastError, toastSuccess, handleResponseToast } = useMyToast();
@@ -101,7 +94,7 @@ export default function Login({
           rightIcon={<Icon as={ArrowRightIcon} />}
         />
       }
-      bgImage={imageUrl}
+      bgImage={institutionGroup?.banner}
       boxProps={{ opacity: 0.92 }}
     >
       <VStack
@@ -203,7 +196,7 @@ export default function Login({
           >
             Exam Login
           </Button> */}
-          {!institution && (
+          {!institutionGroup && (
             <Div textAlign={'center'}>
               <InertiaLink href={route('registration-requests.create')}>
                 <Button colorScheme={'brand'} variant={'link'}>
