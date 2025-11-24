@@ -84,7 +84,10 @@ class SessionResultController extends Controller
           'classification'
         ),
         'termResultDetails' => $this->getTermResultDetails($sessionResult),
-        'resultCommentTemplate' => ResultCommentTemplate::getTemplate(false)
+        'resultCommentTemplate' => ResultCommentTemplate::getTemplate(
+          $sessionResult->classification_id,
+          false
+        )
       ]
     );
   }
@@ -150,7 +153,10 @@ class SessionResultController extends Controller
           'termResultDetails' => $this->getTermResultDetails($sessionResult)
         ];
       }),
-      'resultCommentTemplate' => ResultCommentTemplate::getTemplate(false),
+      'resultCommentTemplate' => ResultCommentTemplate::getTemplate(
+        $classification,
+        false
+      ),
       'classification' => $classification
     ]);
   }

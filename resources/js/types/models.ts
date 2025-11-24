@@ -640,6 +640,7 @@ export interface ResultCommentTemplate extends InstitutionRow {
   type: string;
   min: number;
   max: number;
+  classifications?: Classification[];
 }
 
 export interface ResultPublication extends InstitutionRow {

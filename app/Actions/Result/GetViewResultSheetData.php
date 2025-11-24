@@ -1,7 +1,6 @@
 <?php
 namespace App\Actions\Result;
 
-use App\Enums\ResultCommentTemplateType;
 use App\Models\AcademicSession;
 use App\Models\Assessment;
 use App\Models\Classification;
@@ -88,19 +87,10 @@ class GetViewResultSheetData
       $termResult->for_mid_term,
       $classification
     );
-    $resultCommentTemplate = ResultCommentTemplate::getTemplate($forMidTerm);
-    // query()
-    //   ->where(
-    //     fn($q) => $q
-    //       ->whereNull('type')
-    //       ->orWhere(
-    //         'type',
-    //         $forMidTerm
-    //           ? ResultCommentTemplateType::MidTermResult
-    //           : ResultCommentTemplateType::FullTermResult
-    //       )
-    //   )
-    //   ->get();
+    $resultCommentTemplate = ResultCommentTemplate::getTemplate(
+      $classification,
+      $forMidTerm
+    );
 
     $viewData = [
       'institution' => currentInstitution(),

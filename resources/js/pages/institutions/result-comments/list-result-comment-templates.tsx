@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Checkbox,
   FormControl,
   HStack,
   Icon,
@@ -13,7 +14,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { ResultCommentTemplate } from '@/types/models';
+import { Classification, ResultCommentTemplate } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -26,18 +27,27 @@ import DataTable, { TableHeader } from '@/components/data-table';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import DestructivePopover from '@/components/destructive-popover';
 import EnumSelect from '@/components/dropdown-select/enum-select';
-import { Grade, ResultCommentTemplateType } from '@/types/types';
+import {
+  Grade,
+  Nullable,
+  ResultCommentTemplateType,
+  SelectOptionType,
+} from '@/types/types';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import startCase from 'lodash/startCase';
+import ClassificationSelect from '@/components/selectors/classification-select';
+import { MultiValue } from 'react-select';
 
 interface Props {
   resultCommentTemplates: ResultCommentTemplate[];
   resultCommentTemplate?: ResultCommentTemplate;
+  classifications: Classification[];
 }
 
 export default function ListResultCommentTemplates({
   resultCommentTemplates,
   resultCommentTemplate,
+  classifications,
 }: Props) {
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
@@ -55,6 +65,13 @@ export default function ListResultCommentTemplates({
     {
       label: 'Type',
       render: (row) => startCase(row.type ?? 'All'),
+    },
+    {
+      label: 'Classes',
+      render: (row) =>
+        row.classifications && row.classifications.length
+          ? row.classifications.map((c) => c.title).join(', ')
+          : 'All Classes',
     },
     {
       label: 'Comment (Principal)',
@@ -111,6 +128,7 @@ export default function ListResultCommentTemplates({
       <Div>
         <CreateUpdateResultCommentTemplates
           resultCommentTemplate={resultCommentTemplate}
+          classifications={classifications}
         />
       </Div>
       <Spacer height={4} />
@@ -134,8 +152,10 @@ export default function ListResultCommentTemplates({
 
 function CreateUpdateResultCommentTemplates({
   resultCommentTemplate,
+  classifications,
 }: {
   resultCommentTemplate?: ResultCommentTemplate;
+  classifications: Classification[];
 }) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -148,6 +168,13 @@ function CreateUpdateResultCommentTemplates({
     type: resultCommentTemplate?.type ?? '',
     min: resultCommentTemplate?.min ?? '',
     max: resultCommentTemplate?.max ?? '',
+    classification_ids: resultCommentTemplate?.classifications?.map((cd) => ({
+      label: cd.title,
+      value: cd.id,
+    })) as Nullable<MultiValue<SelectOptionType<number>>>,
+    for_all_classes: resultCommentTemplate?.classifications?.length
+      ? false
+      : true,
   });
 
   const submit = async () => {
@@ -157,7 +184,10 @@ function CreateUpdateResultCommentTemplates({
           'result-comment-templates.store',
           resultCommentTemplate ? [resultCommentTemplate] : []
         ),
-        data
+        {
+          ...data,
+          classification_ids: data.classification_ids?.map((c) => c.value),
+        }
       )
     );
 
@@ -269,6 +299,43 @@ function CreateUpdateResultCommentTemplates({
                 }
               />
             </FormControlBox>
+
+            <FormControl>
+              <Checkbox
+                isChecked={webForm.data.for_all_classes}
+                onChange={(e) => {
+                  webForm.setData({
+                    ...webForm.data,
+                    for_all_classes: e.currentTarget.checked,
+                    ...(e.currentTarget.checked == true
+                      ? { classification_ids: null }
+                      : {}),
+                  });
+                }}
+                size={'md'}
+                colorScheme="brand"
+              >
+                Applicable to All Classes
+              </Checkbox>
+            </FormControl>
+
+            {!webForm.data.for_all_classes && (
+              <FormControlBox
+                form={webForm as any}
+                formKey="classification_ids"
+                title="Classes [Optional]"
+              >
+                <ClassificationSelect
+                  isMulti={true}
+                  selectValue={webForm.data.classification_ids}
+                  isClearable={true}
+                  onChange={(e: any) =>
+                    webForm.setValue('classification_ids', e)
+                  }
+                  classifications={classifications}
+                />
+              </FormControlBox>
+            )}
             <FormControl>
               <FormButton isLoading={webForm.processing} />
             </FormControl>

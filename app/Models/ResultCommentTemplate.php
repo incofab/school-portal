@@ -6,6 +6,7 @@ use App\Enums\ResultCommentTemplateType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class ResultCommentTemplate extends Model
 {
@@ -19,9 +20,15 @@ class ResultCommentTemplate extends Model
     'type' => ResultCommentTemplateType::class
   ];
 
-  static function getTemplate(?bool $forMidTerm = false)
-  {
-    return ResultCommentTemplate::query()
+  /**
+   * Get result comment templates filtered by classification and type
+   * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\ResultCommentTemplate>
+   */
+  static function getTemplate(
+    Classification|int|null $classification = null,
+    ?bool $forMidTerm = false
+  ) {
+    $resultComments = ResultCommentTemplate::query()
       ->where(
         fn($q) => $q
           ->whereNull('type')
@@ -33,6 +40,25 @@ class ResultCommentTemplate extends Model
           )
       )
       ->get();
+
+    return $resultComments
+      ->filter(function (ResultCommentTemplate $item) use ($classification) {
+        if ($item->classifications->isEmpty()) {
+          return true;
+        }
+        $id = is_int($classification) ? $classification : $classification->id;
+        return $item->classifications->contains('id', $id);
+      })
+      ->values();
+  }
+
+  public function classifications(): MorphToMany
+  {
+    return $this->morphToMany(
+      Classification::class,
+      'classifiable',
+      'classifiables'
+    );
   }
 
   function institution()

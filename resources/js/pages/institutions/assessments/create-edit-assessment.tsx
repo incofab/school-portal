@@ -63,7 +63,7 @@ export default function CreateUpdateAssessment({
     })) as Nullable<MultiValue<SelectOptionType<number>>>,
     for_all_classes: assessment?.classifications?.length ? false : true,
   });
-  console.log(webForm.data.classification_ids);
+  // console.log(webForm.data.classification_ids);
 
   const submit = async () => {
     const res = await webForm.submit((data, web) => {

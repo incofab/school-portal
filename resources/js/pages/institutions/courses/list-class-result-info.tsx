@@ -23,6 +23,7 @@ import route from '@/util/route';
 import useSharedProps from '@/hooks/use-shared-props';
 import SetResumptionDateModal from '@/components/modals/set-resumption-date-modal';
 import { Div } from '@/components/semantic';
+import useIsAdmin from '@/hooks/use-is-admin';
 
 interface Props {
   classResultInfo: PaginationResponse<ClassResultInfo>;
@@ -36,11 +37,12 @@ export default function ListClassResultInfo({
   const webForm = useWebForm({});
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
-  const { currentInstitution } = useSharedProps();
+  const { currentInstitution, currentUser } = useSharedProps();
   const calculateClassResultInfoToggle = useModalToggle();
   const classResultInfoFilterToggle = useModalToggle();
   const setResumptionDateModalToggle = useModalToggle();
   const isStaff = useIsStaff();
+  const isAdmin = useIsAdmin();
 
   const recalculateClassResultInfo = async (
     onClose: () => void,
@@ -122,42 +124,49 @@ export default function ListClassResultInfo({
       label: 'Action',
       render: (row) => (
         <HStack>
-          <LinkButton
-            href={route('institutions.term-results.index', {
-              institution: currentInstitution.uuid,
-              classification: row.classification_id,
-              academicSession: row.academic_session_id,
-              term: row.term,
-              forMidTerm: row.for_mid_term,
-            })}
-            title="Student Results"
-          />
-          <IconButton
-            aria-label="Download"
-            icon={<Icon as={CloudArrowDownIcon} />}
-            colorScheme="brand"
-            size="sm"
-            variant={'ghost'}
-            onClick={() => downloadResults(row)}
-          />
-          <LinkButton
-            href={instRoute('class-result-info.result-sheets', [row.id])}
-            title="Result Sheets"
-            variant={'link'}
-          />
-          <DestructivePopover
-            label={`Do you want to recalculate the results for this ${row.classification?.title}?`}
-            onConfirm={(onClose) => recalculateClassResultInfo(onClose, row)}
-            isLoading={webForm.processing}
-            positiveButtonLabel="Recalculate"
-          >
-            <IconButton
-              aria-label="Recalculate"
-              icon={<Icon as={ArrowPathIcon} />}
-              colorScheme="brand"
-              size="sm"
-            />
-          </DestructivePopover>
+          {(isAdmin ||
+            row.classification!.form_teacher_id === currentUser.id) && (
+            <>
+              <LinkButton
+                href={route('institutions.term-results.index', {
+                  institution: currentInstitution.uuid,
+                  classification: row.classification_id,
+                  academicSession: row.academic_session_id,
+                  term: row.term,
+                  forMidTerm: row.for_mid_term,
+                })}
+                title="Student Results"
+              />
+              <IconButton
+                aria-label="Download"
+                icon={<Icon as={CloudArrowDownIcon} />}
+                colorScheme="brand"
+                size="sm"
+                variant={'ghost'}
+                onClick={() => downloadResults(row)}
+              />
+              <LinkButton
+                href={instRoute('class-result-info.result-sheets', [row.id])}
+                title="Result Sheets"
+                variant={'link'}
+              />
+              <DestructivePopover
+                label={`Do you want to recalculate the results for this ${row.classification?.title}?`}
+                onConfirm={(onClose) =>
+                  recalculateClassResultInfo(onClose, row)
+                }
+                isLoading={webForm.processing}
+                positiveButtonLabel="Recalculate"
+              >
+                <IconButton
+                  aria-label="Recalculate"
+                  icon={<Icon as={ArrowPathIcon} />}
+                  colorScheme="brand"
+                  size="sm"
+                />
+              </DestructivePopover>
+            </>
+          )}
         </HStack>
       ),
     },

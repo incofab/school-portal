@@ -187,6 +187,13 @@ class ClassResultInfoController extends Controller
     Institution $institution,
     ClassResultInfo $classResultInfo
   ) {
+    $user = currentUser();
+    abort_unless(
+      $user->isAdmin() ||
+        $classResultInfo->classification->form_teacher_id === $user->id,
+      403,
+      'You are not allowed to view this page'
+    );
     $classResultInfo->load('classification', 'academicSession');
 
     $termResults = $classResultInfo

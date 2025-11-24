@@ -199,6 +199,14 @@ export default function ListClassification({ classifications }: Props) {
                     >
                       Record Guardians
                     </MenuItem>
+                    <MenuItem
+                      as={InertiaLink}
+                      href={instRoute('students.index', {
+                        classification: row.id,
+                      })}
+                    >
+                      View Students
+                    </MenuItem>
                   </MenuList>
                 </Menu>
               </HStack>

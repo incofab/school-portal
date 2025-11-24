@@ -111,43 +111,6 @@ export default function SideBarLayout() {
       ],
     },
     {
-      label: 'Attendance',
-      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
-      sub_items: [
-        {
-          label: 'Mark Attendance',
-          route: instRoute('attendances.create'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
-        },
-        {
-          label: 'All Attendances',
-          route: instRoute('attendances.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
-        },
-      ],
-    },
-    {
-      label: 'Admissions',
-      roles: [InstitutionUserType.Admin],
-      sub_items: [
-        {
-          label: 'Admission Forms',
-          route: instRoute('admission-forms.index'),
-          roles: [InstitutionUserType.Admin],
-        },
-        {
-          label: 'Admission Applications',
-          route: instRoute('admission-applications.index'),
-          roles: [InstitutionUserType.Admin],
-        },
-      ],
-    },
-    {
-      label: 'Timetable',
-      route: instRoute('timetables.index'),
-      roles: [...teachers, InstitutionUserType.Student],
-    },
-    {
       label: 'Subject',
       roles: [
         InstitutionUserType.Student,
@@ -184,47 +147,6 @@ export default function SideBarLayout() {
         },
       ],
     },
-
-    {
-      label: 'Topics',
-      route: instRoute('inst-topics.index'),
-      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
-    },
-    {
-      label: 'Lesson Notes',
-      route: instRoute('lesson-notes.index'),
-      roles: [InstitutionUserType.Student],
-    },
-    {
-      label: 'Assignments',
-      roles: [
-        InstitutionUserType.Student,
-        InstitutionUserType.Admin,
-        InstitutionUserType.Teacher,
-      ],
-      sub_items: [
-        {
-          label: 'All Assignments',
-          route: instRoute('assignments.index'),
-          roles: [
-            InstitutionUserType.Student,
-            InstitutionUserType.Admin,
-            InstitutionUserType.Teacher,
-          ],
-        },
-        {
-          label: 'Add Assignment',
-          route: instRoute('assignments.create'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
-        },
-        {
-          label: 'Submitted Assignments',
-          route: instRoute('assignment-submissions.index'),
-          roles: [InstitutionUserType.Student],
-        },
-      ],
-    },
-
     {
       label: 'Classes',
       roles: [
@@ -271,6 +193,82 @@ export default function SideBarLayout() {
             InstitutionUserType.Student,
             InstitutionUserType.Alumni,
           ],
+        },
+      ],
+    },
+    {
+      label: 'Timetable',
+      route: instRoute('timetables.index'),
+      roles: [...teachers, InstitutionUserType.Student],
+    },
+    {
+      label: 'Attendance',
+      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+      sub_items: [
+        {
+          label: 'Mark Attendance',
+          route: instRoute('attendances.create'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'All Attendances',
+          route: instRoute('attendances.index'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+      ],
+    },
+    {
+      label: 'Admissions',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'Admission Forms',
+          route: instRoute('admission-forms.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
+          label: 'Admission Applications',
+          route: instRoute('admission-applications.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+    {
+      label: 'Topics',
+      route: instRoute('inst-topics.index'),
+      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+    },
+    {
+      label: 'Lesson Notes',
+      route: instRoute('lesson-notes.index'),
+      roles: [InstitutionUserType.Student],
+    },
+    {
+      label: 'Assignments',
+      roles: [
+        InstitutionUserType.Student,
+        InstitutionUserType.Admin,
+        InstitutionUserType.Teacher,
+      ],
+      sub_items: [
+        {
+          label: 'All Assignments',
+          route: instRoute('assignments.index'),
+          roles: [
+            InstitutionUserType.Student,
+            InstitutionUserType.Admin,
+            InstitutionUserType.Teacher,
+          ],
+        },
+        {
+          label: 'Add Assignment',
+          route: instRoute('assignments.create'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Submitted Assignments',
+          route: instRoute('assignment-submissions.index'),
+          roles: [InstitutionUserType.Student],
         },
       ],
     },
