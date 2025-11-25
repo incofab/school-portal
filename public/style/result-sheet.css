@@ -79,3 +79,16 @@ body {
 /* .a4-page:last-child {
   page-break-before: auto;
 } */
+
+.keys-table,
+.keys-table td {
+  font-size: 14px !important;
+  padding: 2px !important;
+}
+
+.keys-table,
+.keys-table th,
+.keys-table td {
+  border: 1px solid #7a7a7a;
+  padding: 4px 8px;
+}

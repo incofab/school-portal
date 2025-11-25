@@ -145,7 +145,7 @@ const ResultUtil = {
   getAssessmentScore: function (courseResult: CourseResult) {
     let total = 0;
     Object.entries(courseResult.assessment_values).map(
-      ([key, val]) => (total += val)
+      ([key, val]) => (total += Number(val))
     );
     return total;
   },

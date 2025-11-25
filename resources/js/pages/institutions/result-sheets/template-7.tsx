@@ -91,7 +91,7 @@ export default function Template7(props: ResultProps) {
           {
             label: 'Position',
             render: (cr: CourseResult) =>
-              String(ResultUtil.formatPosition(cr.position)),
+              ResultUtil.formatPosition(cr.position),
           },
         ]),
     {
@@ -115,15 +115,6 @@ export default function Template7(props: ResultProps) {
         ResultUtil.getGrade(cr.result, resultCommentTemplate).remark ?? '',
     },
   ];
-
-  const svgCode = `<svg xmlns='http://www.w3.org/2000/svg' width='140' height='100' opacity='0.04' viewBox='0 0 100 100'><text x='0' y='50' font-size='18' fill='%23000'>${currentInstitution.name}</text></svg>`;
-  const backgroundStyle = {
-    backgroundImage: `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-      svgCode
-    )}")`,
-    backgroundRepeat: 'repeat',
-    backgroundColor: useColorModeValue('white', 'gray.800'),
-  };
 
   const principalComment =
     termResult.principal_comment ??
