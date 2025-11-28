@@ -33,6 +33,8 @@ import {
   MAX_FILE_SIZE_BYTES,
   FileDropperType,
 } from '@/components/file-dropper/common';
+import EnumSelect from '@/components/dropdown-select/enum-select';
+import { BrandColor } from '@/util/color-util';
 
 interface Props {
   institutionGroup?: InstitutionGroup;
@@ -48,6 +50,7 @@ export default function UpdateInstitutionGroup({ institutionGroup }: Props) {
     name: institutionGroup?.name ?? '',
     loan_limit: institutionGroup?.loan_limit ?? '',
     website: institutionGroup?.website ?? '',
+    brand_color: institutionGroup?.brand_color ?? '',
   });
 
   const form = useWebForm({
@@ -128,6 +131,16 @@ export default function UpdateInstitutionGroup({ institutionGroup }: Props) {
                     formKey="website"
                     title="Website"
                   />
+
+                  <FormControl>
+                    <EnumSelect
+                      enumData={BrandColor}
+                      selectValue={webForm.data['brand_color']}
+                      onChange={(e: any) =>
+                        webForm.setValue('brand_color', e.value)
+                      }
+                    />
+                  </FormControl>
 
                   <FormControl>
                     <FormButton isLoading={webForm.processing} />

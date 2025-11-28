@@ -10,7 +10,8 @@ export default function TinyMceEditor({ ...props }: IAllProps) {
     <Editor
       {...props}
       tinymceScriptSrc={
-        'https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.9.1/tinymce.min.js'
+        `${window.location.origin}/lib/tinymce6/tinymce.min.js`
+        // 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.9.1/tinymce.min.js'
       }
       init={{
         height: 300,
@@ -31,8 +32,8 @@ export default function TinyMceEditor({ ...props }: IAllProps) {
           [0x2601, 'cloud'],
         ],
         external_plugins: {
-          tiny_mce_wiris:
-            'https://cdn.jsdelivr.net/npm/@wiris/mathtype-tinymce7@8.13.2/plugin.min.js',
+          tiny_mce_wiris: `${window.location.origin}/lib/@wiris/mathtype-tinymce6/plugin.min.js`,
+          // 'https://cdn.jsdelivr.net/npm/@wiris/mathtype-tinymce7@8.13.2/plugin.min.js',
           // 'node_modules/@wiris/mathtype-tinymce7/plugin.min.js',
         },
       }}

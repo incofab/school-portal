@@ -12,6 +12,13 @@ import {
 } from '@chakra-ui/react';
 import { ProSidebarProvider } from 'react-pro-sidebar';
 import './style/app.css';
+import { BrandColor, ThemeColors } from './util/color-util';
+import { InstitutionGroup } from './types/models';
+
+// Read properties from the global window object
+const appProps: {
+  institutionGroup: InstitutionGroup | null;
+} = (window as any).AppProps;
 
 const config: ThemeConfig = {
   initialColorMode: 'light',
@@ -20,19 +27,9 @@ const config: ThemeConfig = {
 
 const theme = extendTheme({
   colors: {
-    brand: {
-      main: '#2a8864',
-      50: '#ecf9f4',
-      100: '#c5eddd',
-      200: '#9ee1c7',
-      300: '#77d5b1',
-      400: '#50c99a',
-      500: '#36af81',
-      600: '#2a8864',
-      700: '#1e6148',
-      800: '#123a2b',
-      900: '#06130e',
-    },
+    brand:
+      ThemeColors[appProps.institutionGroup?.brand_color as BrandColor] ??
+      ThemeColors.edumanager,
   },
   config,
   components: {

@@ -13,6 +13,7 @@ import {
   IconButton,
   Tooltip,
   Icon,
+  Spinner,
 } from '@chakra-ui/react';
 import React, { ChangeEvent } from 'react';
 import {
@@ -233,7 +234,14 @@ export default function Profile({ user, institutionUser }: Props) {
                     borderWidth={1}
                     borderColor={'gray.200'}
                   >
-                    <Avatar size={'2xl'} src={form.data.photo || user.photo} />
+                    {form.processing ? (
+                      <Spinner size="xl" color="brand.500" />
+                    ) : (
+                      <Avatar
+                        size={'2xl'}
+                        src={form.data.photo || user.photo}
+                      />
+                    )}
                   </Div>
                   <Div mt={4} textAlign={'center'}>
                     <FormLabel

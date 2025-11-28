@@ -396,7 +396,7 @@ export default function Template5(props: ResultProps) {
                       size={'xs'}
                       whiteSpace={'nowrap'}
                     >
-                      Pricipal's comment:{' '}
+                      Administrator's comment:{' '}
                     </Text>
                     <Text>{principalComment}</Text>
                   </HStack>

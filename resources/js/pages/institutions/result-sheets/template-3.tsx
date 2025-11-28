@@ -328,7 +328,7 @@ export default function Template3(props: ResultProps) {
             <>
               <HStack align={'stretch'}>
                 <Text fontWeight={'semibold'} size={'xs'}>
-                  Pricipal's comment:{' '}
+                  Administrator's comment:{' '}
                 </Text>
                 <Text>{principalComment}</Text>
               </HStack>

@@ -21,7 +21,7 @@ class InstitutionSetting extends Model
       $prefix . 'photo' => [
         'nullable',
         'image',
-        'mimes:jpg,png,jpeg',
+        'mimes:jpg,png,jpeg,webp',
         'max:1024'
       ],
       $prefix . 'display_name' => ['nullable', 'string'],

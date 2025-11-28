@@ -42,7 +42,7 @@ export default function TermResultPrincipalCommentModal({
   return (
     <GenericModal
       props={{ isOpen, onClose }}
-      headerContent={"Principal's Comemnt"}
+      headerContent={"Administrator's Comemnt"}
       bodyContent={
         <VStack spacing={2}>
           <FormControlBox

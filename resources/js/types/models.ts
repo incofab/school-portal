@@ -63,6 +63,7 @@ export interface InstitutionGroup extends Row {
   loan_limit: number;
   website: string;
   banner: string;
+  brand_color?: string;
   status: InstitutionStatus;
   partner?: User;
   // wallet_balance: number;

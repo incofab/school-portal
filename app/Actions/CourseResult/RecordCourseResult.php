@@ -112,6 +112,9 @@ class RecordCourseResult
       $assessmentScore = $allAssessmentValues[$title] ?? 0;
       if ($assessment->depends_on) {
         $assessmentScore = $this->getDependentScore($assessment);
+        if ($assessmentScore == null) {
+          $assessmentScore = $allAssessmentValues[$title] ?? 0;
+        }
       }
       $result += $assessmentScore;
       $assessmentValues[$title] = $assessmentScore;
@@ -134,6 +137,9 @@ class RecordCourseResult
       ->latest('id')
       ->first();
 
+    if (!$dependentCourseResult) {
+      return null;
+    }
     $result = $dependentCourseResult?->result ?? 0;
     $score = round(($result / 100) * $assessment->max, 2);
     return $score;

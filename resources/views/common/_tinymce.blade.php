@@ -1,5 +1,5 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.9.1/tinymce.min.js" integrity="sha512-09JpfVm/UE1F4k8kcVUooRJAxVMSfw/NIslGlWE/FGXb2uRO1Nt4BXAJ3LxPqNbO3Hccdu46qaBPp9wVpWAVhA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-{{-- <script src="{{asset('js/lib/tinymce6/tinymce.min.js')}}" referrerpolicy="origin"></script> --}}
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.9.1/tinymce.min.js" integrity="sha512-09JpfVm/UE1F4k8kcVUooRJAxVMSfw/NIslGlWE/FGXb2uRO1Nt4BXAJ3LxPqNbO3Hccdu46qaBPp9wVpWAVhA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> --}}
+<script src="{{asset('lib/tinymce6/tinymce.min.js')}}" referrerpolicy="origin"></script>
 
 <script type="text/javascript">
 
@@ -18,9 +18,9 @@ function initTinymce() {
     ],
 
     external_plugins: {
-      tiny_mce_wiris: 'https://cdn.jsdelivr.net/npm/@wiris/mathtype-tinymce7@8.13.2/plugin.min.js',
-      // tiny_mce_wiris: '/js/lib/@wiris/mathtype-tinymce7/plugin.min.js',
-    },  
+      // tiny_mce_wiris: 'https://cdn.jsdelivr.net/npm/@wiris/mathtype-tinymce7@8.13.2/plugin.min.js',
+      tiny_mce_wiris: '/lib/@wiris/mathtype-tinymce6/plugin.min.js',
+    },
     draggable_modal: true,
 
     toolbar: 'bullist | numlist | tiny_mce_wiris_formulaEditor | tiny_mce_wiris_formulaEditorChemistry | undo redo | link image | code | bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,',

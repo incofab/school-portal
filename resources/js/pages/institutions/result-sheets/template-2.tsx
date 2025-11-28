@@ -82,7 +82,7 @@ export default function Template2(props: ResultProps) {
 
   return (
     <ResultSheetLayout resultProps={props}>
-      <Div mx={'auto'} width={'900px'} px={3}>
+      <Div mx={'auto'} width={'900px'} px={3} id="result-sheet">
         <VStack align={'stretch'}>
           <HStack background={'#FAFAFA'} p={2}>
             <Avatar
@@ -259,7 +259,7 @@ export default function Template2(props: ResultProps) {
             <>
               <HStack align={'stretch'}>
                 <Text fontWeight={'semibold'} size={'xs'}>
-                  Principal's comment:{' '}
+                  Administrator's comment:{' '}
                 </Text>
                 <Text>{principalComment}</Text>
               </HStack>

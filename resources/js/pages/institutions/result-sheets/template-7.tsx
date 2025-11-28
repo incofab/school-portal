@@ -10,7 +10,6 @@ import {
   VStack,
   Wrap,
   WrapItem,
-  useColorModeValue,
 } from '@chakra-ui/react';
 import React from 'react';
 import { Div } from '@/components/semantic';
@@ -199,12 +198,12 @@ export default function Template7(props: ResultProps) {
           <VStack align="start" spacing={2}>
             {teacherComment && (
               <Text>
-                <strong>Teacher’s Comment:</strong> {teacherComment}
+                <strong>Teacher's Comment:</strong> {teacherComment}
               </Text>
             )}
             {principalComment && (
               <Text>
-                <strong>Pricipal’s Comment:</strong> {principalComment}
+                <strong>Administrator's Comment:</strong> {principalComment}
               </Text>
             )}
             {stamp && <Img src={stamp} alt="Stamp" boxSize="100px" />}

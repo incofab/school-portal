@@ -74,7 +74,7 @@ class UpdateInstitutionUserController extends Controller
   ) {
     $this->validateUser($user);
     $request->validate([
-      'photo' => ['required', 'image', 'mimes:jpg,png,jpeg', 'max:2048']
+      'photo' => ['required', 'image', 'mimes:jpg,png,jpeg,webp', 'max:2048']
     ]);
     $imagePath = $request->photo->store(
       S3Folder::UserAvartars->value,

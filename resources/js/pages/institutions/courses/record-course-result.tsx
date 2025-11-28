@@ -195,11 +195,11 @@ export default function RecordCourseResult({
                   ) {
                     return null;
                   }
-
                   return (
                     <FormControl key={assessment.raw_title + webForm.data.term}>
                       <FormLabel>{startCase(assessment.raw_title)}</FormLabel>
                       <Input
+                        disabled={assessment.depends_on == null ? false : true}
                         value={assessmentValue[assessment.raw_title] ?? ''}
                         onChange={(e) =>
                           setAssessmentValue({

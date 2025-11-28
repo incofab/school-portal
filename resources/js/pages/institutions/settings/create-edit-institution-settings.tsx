@@ -7,6 +7,7 @@ import {
   HStack,
   Input,
   Spacer,
+  Spinner,
   Switch,
   Text,
   VStack,
@@ -389,7 +390,14 @@ function UpdateStamp({ settings }: Props) {
         borderWidth={1}
         borderColor={'gray.200'}
       >
-        <Avatar size={'2xl'} src={webForm.data[InstitutionSettingType.Stamp]} />
+        {webForm.processing ? (
+          <Spinner size="xl" color="brand.500" />
+        ) : (
+          <Avatar
+            size={'2xl'}
+            src={webForm.data[InstitutionSettingType.Stamp]}
+          />
+        )}
       </Div>
       <Div mt={4} textAlign={'center'}>
         <FormLabel

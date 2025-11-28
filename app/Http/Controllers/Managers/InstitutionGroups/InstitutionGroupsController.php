@@ -116,7 +116,7 @@ class InstitutionGroupsController extends Controller
       'banner' => [
         'required',
         'image',
-        'mimes:jpg,png,jpeg',
+        'mimes:jpg,png,jpeg,webp',
         'max:1024',
 
         function ($attribute, $value, $fail) {
@@ -154,7 +154,8 @@ class InstitutionGroupsController extends Controller
     $data = $request->validate([
       'name' => ['required', 'string', 'max:255'],
       'loan_limit' => ['required', 'integer', 'min:0'],
-      'website' => ['nullable', 'string', 'max:50']
+      'website' => ['nullable', 'string', 'max:50'],
+      'brand_color' => ['nullable', 'string', 'max:50']
     ]);
     $institutionGroup->update($data);
     return $this->ok();

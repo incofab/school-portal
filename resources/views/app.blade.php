@@ -1,3 +1,9 @@
+<?php
+
+$institutionGroup =
+  currentInstitution()?->institutionGroup ?? getInstitutionGroupFromDomain();
+// dd($institutionGroup->toArray());
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -13,5 +19,10 @@
   </head>
   <body>
     @inertia
+    <script>
+        window.AppProps = {
+            institutionGroup: @json($institutionGroup),
+        };
+    </script>
   </body>
 </html>

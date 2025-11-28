@@ -189,7 +189,7 @@ class ClassResultInfoController extends Controller
   ) {
     $user = currentUser();
     abort_unless(
-      $user->isAdmin() ||
+      currentInstitutionUser()->isAdmin() ||
         $classResultInfo->classification->form_teacher_id === $user->id,
       403,
       'You are not allowed to view this page'

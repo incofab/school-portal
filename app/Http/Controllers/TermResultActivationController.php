@@ -16,7 +16,27 @@ class TermResultActivationController extends Controller
 {
   public function create()
   {
+    if (!$this->isActivationPinNeeded()) {
+      return redirect()->route('student-login');
+    }
     return inertia('auth/activate-student-term-result');
+  }
+
+  private function isActivationPinNeeded(): bool
+  {
+    $institutionGroup = getInstitutionGroupFromDomain();
+    if (!$institutionGroup || $institutionGroup->institutions->isEmpty()) {
+      return true;
+    }
+
+    $institutionGroup->load('institutions.institutionSettings');
+    foreach ($institutionGroup->institutions as $institution) {
+      $settingHandler = SettingsHandler::makeFromInstitution($institution);
+      if ($settingHandler->resultActivationRequired()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public function store(Request $request)

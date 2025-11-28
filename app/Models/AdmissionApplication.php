@@ -49,7 +49,7 @@ class AdmissionApplication extends Model
       $prefix . 'photo' => [
         'nullable',
         'image',
-        'mimes:jpg,png,jpeg',
+        'mimes:jpg,png,jpeg,webp',
         'max:1024'
       ],
       $prefix . 'guardians' => ['nullable', 'array', 'min:1'],

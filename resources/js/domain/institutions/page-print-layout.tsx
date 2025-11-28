@@ -8,12 +8,14 @@ import ResultDownloadButton from '@/pages/institutions/result-sheets/result-down
 interface Props {
   useBgStyle?: boolean;
   filename: string;
+  signed_url?: string;
 }
 
 export default function PagePrintLayout({
   children,
   useBgStyle,
   filename,
+  signed_url,
 }: Props & PropsWithChildren) {
   const { currentInstitution } = useSharedProps();
   const { colorMode, setColorMode } = useColorMode();
@@ -29,7 +31,6 @@ export default function PagePrintLayout({
     backgroundRepeat: 'repeat',
     backgroundColor: 'white',
   };
-  //   const filename = `${validFilename(user?.full_name)}-receipt.pdf`;
   return (
     <Div>
       <Div
@@ -37,7 +38,7 @@ export default function PagePrintLayout({
         minHeight={'1170px'}
       >
         <ResultDownloadButton
-          // signed_url={''}
+          signed_url={signed_url}
           // termResult={resultProps.termResult}
           filename={validFilename(filename)}
         />

@@ -156,6 +156,9 @@ if (!function_exists('getInstitutionGroupFromDomain')) {
   function getInstitutionGroupFromDomain(): \App\Models\InstitutionGroup|null
   {
     $currentDomain = request()->getHost();
+    if (str_starts_with($currentDomain, 'portal.')) {
+      $currentDomain = substr($currentDomain, 7);
+    }
     return \App\Models\InstitutionGroup::where(
       'website',
       'LIKE',

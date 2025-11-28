@@ -14,7 +14,7 @@ export interface FileAcceptObject {
 
 export const FileDropperType = {
   Image: {
-    extensionLabels: ['.jpg', '.jpeg', '.png'],
+    extensionLabels: ['.jpg', '.jpeg', '.png', '.webp'],
     mimes: {
       'image/jpeg': [],
       'image/png': [],

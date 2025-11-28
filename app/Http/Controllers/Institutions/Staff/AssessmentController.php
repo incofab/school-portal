@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Institutions\Staff;
 
 use App\Enums\FullTermType;
 use App\Enums\InstitutionUserType;
-use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
-use App\Models\Classification;
 use App\Models\Institution;
-use App\Rules\ValidateExistsRule;
 use App\Support\UITableFilters\AssessmentUITableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
@@ -112,7 +109,7 @@ class AssessmentController extends Controller
     Request $request
   ) {
     $data = $request->validate([
-      'depends_on' => ['required', 'nullable', new Enum(FullTermType::class)]
+      'depends_on' => ['nullable', new Enum(FullTermType::class)]
     ]);
     $assessment->fill($data)->save();
     return $this->ok();

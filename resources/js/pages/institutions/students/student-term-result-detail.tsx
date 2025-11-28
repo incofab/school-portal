@@ -159,13 +159,13 @@ export default function StudentTermResultDetail({
             </>
             <>
               <Text fontWeight={'semibold'} size={'sm'}>
-                Principal's Comment
+                Administrator's Comment
               </Text>
               <HStack align={'stretch'}>
                 <Text>{termResult.principal_comment}</Text>
                 <Spacer />
                 <IconButton
-                  aria-label="edit principal's comment"
+                  aria-label="edit Administrator's comment"
                   icon={<Icon as={PencilIcon} />}
                   variant={'outline'}
                   onClick={principalCommentModalToggle.open}

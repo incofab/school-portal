@@ -16,7 +16,11 @@ export default function ResultSheetLayout({
     resultProps.student.user?.full_name
   )}-result-${resultProps.termResult.term}-${resultProps.termResult.id}.pdf`;
   return (
-    <PagePrintLayout useBgStyle={useBgStyle} filename={filename}>
+    <PagePrintLayout
+      useBgStyle={useBgStyle}
+      filename={filename}
+      signed_url={resultProps.signed_url}
+    >
       {children}
     </PagePrintLayout>
   );

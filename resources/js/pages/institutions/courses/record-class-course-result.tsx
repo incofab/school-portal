@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Card,
   CardBody,
+  Checkbox,
   FormControl,
   FormLabel,
   HStack,
@@ -30,6 +31,7 @@ import Dt from '@/components/dt';
 import useSharedProps from '@/hooks/use-shared-props';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
+import FormControlBox from '@/components/forms/form-control-box';
 
 interface ResultEntry {
   [studentId: string]: {
@@ -58,7 +60,7 @@ export default function RecordClassCourseResult({
   const webForm = useWebForm({
     academic_session_id: currentAcademicSession.id,
     term: currentTerm,
-    for_mid_term: usesMidTermResult, //currentlyOnMidTerm,
+    for_mid_term: false,
     result: {} as ResultEntry,
   });
 
@@ -129,7 +131,25 @@ export default function RecordClassCourseResult({
               <Dt contentData={details} />
             </SlabBody>
           </Slab>
-          <Spacer height={4} />
+          <Spacer height={3} />
+
+          {usesMidTermResult && (
+            <FormControlBox
+              form={webForm as any}
+              formKey="for_mid_term"
+              title=""
+            >
+              <Checkbox
+                isChecked={webForm.data.for_mid_term}
+                onChange={(e) =>
+                  webForm.setValue('for_mid_term', e.currentTarget.checked)
+                }
+              >
+                For Mid-Term Result
+              </Checkbox>
+            </FormControlBox>
+          )}
+          <Spacer height={3} />
           {students.map((student) => {
             const existingResult =
               student['course_results']?.[0] ?? ({} as CourseResult);

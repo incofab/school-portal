@@ -15,6 +15,7 @@ import {
   VStack,
   useColorModeValue,
   Icon,
+  Spinner,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import FormControlBox from '@/components/forms/form-control-box';
@@ -352,7 +353,14 @@ export default function CreateAdmissionApplication({
                   borderWidth={1}
                   borderColor={'gray.200'}
                 >
-                  <Avatar size={'2xl'} src={uploadedPhoto ?? form.data.photo} />
+                  {form.processing ? (
+                    <Spinner size="xl" color="brand.500" />
+                  ) : (
+                    <Avatar
+                      size={'2xl'}
+                      src={uploadedPhoto ?? form.data.photo}
+                    />
+                  )}
                 </Div>
                 <Div mt={4} textAlign={'center'}>
                   <FormLabel
