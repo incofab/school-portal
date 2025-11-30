@@ -14,8 +14,11 @@ use Storage;
 
 class InstitutionController extends Controller
 {
-  function index(Institution $institution)
+  function index(Institution $institution, Request $request)
   {
+    $request->validate([
+      'refresh' => ['sometimes', 'boolean']
+    ]);
     $isSetupComplete = SetupChecklistHandler::make(
       $institution
     )->isSetupComplete();
@@ -31,7 +34,7 @@ class InstitutionController extends Controller
       'dashboardData' => InstitutionDashboardStat::make(
         $institution,
         currentInstitutionUser()
-      )->getStat()
+      )->getStat($request->refresh)
     ]);
   }
 

@@ -14,11 +14,15 @@ import {
 } from 'chart.js';
 import {
   Box,
+  Flex,
   HStack,
+  Icon,
+  IconButton,
   SimpleGrid,
   Text,
   useColorModeValue,
   VStack,
+  Tooltip as ChakraTooltip,
 } from '@chakra-ui/react';
 
 ChartJS.register(
@@ -35,6 +39,9 @@ ChartJS.register(
 
 import { DashboardData } from '@/types/dashboard';
 import { ucFirst } from '@/util/util';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import { Inertia } from '@inertiajs/inertia';
+import { InertiaLink } from '@inertiajs/inertia-react';
 
 const ChartBox: React.FC<{
   title: string | React.ReactNode;
@@ -140,36 +147,57 @@ export default function DashboardCharts({ data }: { data: DashboardData }) {
   };
 
   return (
-    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6} my={6}>
-      <VStack spacing={2} w={'full'} align={'stretch'}>
-        <ChartBox title="Student Population Growth (Monthly)">
-          <Line data={studentPopulationMonthGrowthData} />
+    <>
+      <Flex justifyContent="flex-end" alignItems="center">
+        <ChakraTooltip label="Force Refresh Dashboard Statistics">
+          <IconButton
+            colorScheme="brand"
+            aria-label="Force Refresh Dashboard Statistics"
+            icon={<Icon as={ArrowPathIcon} />}
+            variant={'ghost'}
+            onClick={() => {
+              const msg =
+                'Are you sure you want to refresh the dashboard statistics?';
+              if (window.confirm(msg)) {
+                Inertia.visit(window.location.href + '?refresh=1', {
+                  preserveScroll: true,
+                });
+              }
+            }}
+          />
+        </ChakraTooltip>
+      </Flex>
+      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6} mt={0} mb={6}>
+        <VStack spacing={2} w={'full'} align={'stretch'}>
+          <ChartBox title="Student Population Growth (Monthly)">
+            <Line data={studentPopulationMonthGrowthData} />
+          </ChartBox>
+          <ChartBox title="Student Population Growth (Yearly)">
+            <Line data={studentPopulationYearGrowthData} />
+          </ChartBox>
+        </VStack>
+        <ChartBox
+          title={
+            <HStack justify={'space-between'}>
+              <Text>Students by Gender</Text>{' '}
+              <Text>Total: {data.num_students}</Text>
+            </HStack>
+          }
+        >
+          <Pie data={genderDistributionData} />
         </ChartBox>
-        <ChartBox title="Student Population Growth (Yearly)">
-          <Line data={studentPopulationYearGrowthData} />
+        <ChartBox title="Recent Fee Payments">
+          <Bar data={feePaymentData} />
         </ChartBox>
-      </VStack>
-      <ChartBox
-        title={
-          <HStack justify={'space-between'}>
-            <Text>Students by Gender</Text>{' '}
-            <Text>Total: {data.num_students}</Text>
-          </HStack>
-        }
-      >
-        <Pie data={genderDistributionData} />
-      </ChartBox>
-      <ChartBox title="Recent Fee Payments">
-        <Bar data={feePaymentData} />
-      </ChartBox>
-      <ChartBox title="Students per Class">
-        <Bar data={classStudentData} />
-      </ChartBox>
-      {usersByRole && (
-        <ChartBox title="School Size by Roles">
-          <Bar data={usersByRole} />
+        <ChartBox title="Students per Class">
+          <Bar data={classStudentData} />
         </ChartBox>
-      )}
-    </SimpleGrid>
+        {usersByRole && (
+          <ChartBox title="School Size by Roles">
+            <Bar data={usersByRole} />
+          </ChartBox>
+        )}
+      </SimpleGrid>
+    </>
   );
 }
