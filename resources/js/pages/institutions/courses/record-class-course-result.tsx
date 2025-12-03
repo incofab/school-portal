@@ -177,43 +177,6 @@ export default function RecordClassCourseResult({
                     </Text>
                   </HStack>
                   <Wrap spacing={3}>
-                    <WrapItem mt={2} width={'120px'}>
-                      <FormControl>
-                        <FormLabel
-                          fontWeight={'normal'}
-                          m={0}
-                          whiteSpace={'nowrap'}
-                          textOverflow={'ellipsis'}
-                          overflow={'hidden'}
-                          fontSize={'sm'}
-                        >
-                          Exam
-                        </FormLabel>
-                        <Input
-                          value={result.exam}
-                          type="number"
-                          onChange={(e) => {
-                            if (
-                              !isValidScore(
-                                e.currentTarget.value,
-                                100 -
-                                  (Number(studentTotalScore) -
-                                    Number(result.exam))
-                              )
-                            ) {
-                              return;
-                            }
-                            webForm.setValue('result', {
-                              ...webForm.data.result,
-                              [student.id]: {
-                                ...result,
-                                exam: e.currentTarget.value,
-                              },
-                            });
-                          }}
-                        />
-                      </FormControl>
-                    </WrapItem>
                     {assessments.map((assessment) => {
                       if (
                         assessment.term &&
@@ -271,6 +234,43 @@ export default function RecordClassCourseResult({
                         </WrapItem>
                       );
                     })}
+                    <WrapItem mt={2} width={'120px'}>
+                      <FormControl>
+                        <FormLabel
+                          fontWeight={'normal'}
+                          m={0}
+                          whiteSpace={'nowrap'}
+                          textOverflow={'ellipsis'}
+                          overflow={'hidden'}
+                          fontSize={'sm'}
+                        >
+                          Exam
+                        </FormLabel>
+                        <Input
+                          value={result.exam}
+                          type="number"
+                          onChange={(e) => {
+                            if (
+                              !isValidScore(
+                                e.currentTarget.value,
+                                100 -
+                                  (Number(studentTotalScore) -
+                                    Number(result.exam))
+                              )
+                            ) {
+                              return;
+                            }
+                            webForm.setValue('result', {
+                              ...webForm.data.result,
+                              [student.id]: {
+                                ...result,
+                                exam: e.currentTarget.value,
+                              },
+                            });
+                          }}
+                        />
+                      </FormControl>
+                    </WrapItem>
                   </Wrap>
                 </CardBody>
               </Card>

@@ -55,7 +55,7 @@ class RecordClassResultController extends Controller
         ])
       )
       ->with('user')
-      ->latest('users.last_name')
+      ->latest('users.first_name')
       ->get();
     return Inertia::render('institutions/courses/record-class-course-result', [
       'courseTeacher' => $courseTeacher,

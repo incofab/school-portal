@@ -69,5 +69,8 @@ return [
     'api-key' => env('PAYMENT_POINT_API_KEY'),
     'secret' => env('PAYMENT_POINT_SECRET_KEY'),
     'business-id' => env('PAYMENT_POINT_BUSINESS_ID')
+  ],
+  'facebook' => [
+    'whatsapp-access-token' => env('WHATSAPP_ACCESS_TOKEN')
   ]
 ];

@@ -7,13 +7,11 @@ use App\Http\Controllers\Institutions\Exams\External as External;
 use App\Http\Controllers\Institutions\Admissions as Admissions;
 
 Route::get('dummy1', function () {
-    $institutionGroup = \App\Models\InstitutionGroup::first();
-    $term = \App\Enums\TermType::First;
-    $academicSession = \App\Models\AcademicSession::first();
-// dd('skkas');
-    return (new \App\Actions\Subscriptions\GenerateInvoice($institutionGroup, $academicSession, $term))->viewAsHtml();
+    
     die('Dummy page');
 });
+
+Route::get('/dummy', [Web\DummyController::class, 'sendWhatsappMessage']);
 
 Route::get('/no-mid-term/{instUuid}', function ($instUuid) {
     $inst = \App\Models\Institution::where('uuid', $instUuid)->firstOrFail();
