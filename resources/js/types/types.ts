@@ -58,6 +58,7 @@ export enum ManagerRole {
 export enum NotificationChannelsType {
   Email = 'email',
   Sms = 'sms',
+  Whatsapp = 'whatsapp',
 }
 
 export enum NotificationReceiversType {

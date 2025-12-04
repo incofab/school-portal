@@ -54,8 +54,10 @@ class MessageController extends Controller
   {
     $validateMorph = new ValidateMorphRule('messageable');
     $forEmail = $request->channel === NotificationChannelsType::Email->value;
+    $forSms = $request->channel === NotificationChannelsType::Sms->value;
+    $maxLength = $forEmail ? 1000 : ($forSms ? 145 : 500);
     $data = $request->validate([
-      'message' => ['required', 'string', 'max:' . ($forEmail ? 1000 : 145)],
+      'message' => ['required', 'string', 'max:' . $maxLength],
       'subject' => [Rule::requiredIf($forEmail), 'string'],
       'reference' => [
         'required',

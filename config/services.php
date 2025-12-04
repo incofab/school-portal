@@ -15,6 +15,7 @@ return [
 
   'sms-charge' => env('SMS_CHARGE', 7),
   'email-charge' => env('EMAIL_CHARGE', 3),
+  'whatsapp-charge' => env('WHATSAPP_CHARGE', env('SMS_CHARGE', 7)),
 
   'mailgun' => [
     'domain' => env('MAILGUN_DOMAIN'),
@@ -71,6 +72,8 @@ return [
     'business-id' => env('PAYMENT_POINT_BUSINESS_ID')
   ],
   'facebook' => [
-    'whatsapp-access-token' => env('WHATSAPP_ACCESS_TOKEN')
+    'whatsapp-access-token' => env('WHATSAPP_ACCESS_TOKEN'),
+    'whatsapp-phone-number-id' => env('WHATSAPP_PHONE_NUMBER_ID')
+    // 'whatsapp-business-account-id' => env('WHATSAPP_BUSINESS_ACCOUNT_ID')
   ]
 ];

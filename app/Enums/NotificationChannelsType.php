@@ -6,4 +6,5 @@ enum NotificationChannelsType: string
 {
   case Email = 'email';
   case Sms = 'sms';
+  case Whatsapp = 'whatsapp';
 }

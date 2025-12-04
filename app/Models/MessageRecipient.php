@@ -21,7 +21,7 @@ class MessageRecipient extends Model
     return $this->belongsTo(Institution::class);
   }
 
-  function email()
+  function message()
   {
     return $this->belongsTo(Message::class);
   }

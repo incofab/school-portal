@@ -23,10 +23,13 @@ class ApplyMessageCharges
   function run(Collection $receivers, $channel, Message $messageModel): Res
   {
     $institutionGroup = $this->institution->institutionGroup;
-    $charge =
-      $channel === NotificationChannelsType::Sms->value
-        ? config('services.sms-charge')
-        : config('services.email-charge');
+    $charge = match ($channel) {
+      NotificationChannelsType::Sms->value => config('services.sms-charge'),
+      NotificationChannelsType::Whatsapp->value => config(
+        'services.whatsapp-charge'
+      ),
+      default => config('services.email-charge')
+    };
     $amountToPay = $receivers->count() * $charge;
 
     if ($amountToPay > $institutionGroup->credit_wallet) {

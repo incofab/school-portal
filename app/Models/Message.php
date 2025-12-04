@@ -18,7 +18,8 @@ class Message extends Model
     'sender_user_id' => 'integer',
     'recipient_category' => MessageRecipientCategory::class,
     'status' => MessageStatus::class,
-    'channel' => NotificationChannelsType::class
+    'channel' => NotificationChannelsType::class,
+    'meta' => 'array'
   ];
   protected $guarded = [];
 
