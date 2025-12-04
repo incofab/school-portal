@@ -97,7 +97,7 @@ class ProcessSessionResult
         'result' => $studentMappedTermResult->getTotal(),
         'average' => $average,
         'total_average' => $studentMappedTermResult->getTotalAverage(),
-        'grade' => GetGrade::run($average),
+        'grade' => GetGrade::run($average, $this->classification, false),
         'student_id' => $studentId
       ];
       $arr[] = $data;

@@ -12,7 +12,11 @@ import {
   TermDetail,
   TermResult,
 } from '@/types/models';
-import { PositionDisplayType, ResultSettingType } from '@/types/types';
+import {
+  PositionDisplayType,
+  ResultCommentTemplateType,
+  ResultSettingType,
+} from '@/types/types';
 import { Text } from '@chakra-ui/react';
 import jsPDF from 'jspdf';
 
@@ -204,6 +208,45 @@ const ResultUtil = {
       (item) => Number(item.min) <= score && Number(item.max) >= score
     );
     return comment;
+  },
+
+  /** This should be removed next term. Grades should not be shown in the list-course-results */
+  filterTemplates: function (
+    allResultComments: ResultCommentTemplate[],
+    classificationId: number,
+    forMidTerm: boolean
+  ) {
+    const filteredResultComments = [];
+    for (let i = 0; i < allResultComments.length; i++) {
+      const comment = allResultComments[i];
+      if (comment.type) {
+        if (
+          forMidTerm &&
+          comment.type === ResultCommentTemplateType.MidTermResult
+        ) {
+          filteredResultComments.push(comment);
+        } else if (
+          !forMidTerm &&
+          comment.type === ResultCommentTemplateType.FullTermResult
+        ) {
+          filteredResultComments.push(comment);
+        } else {
+          continue;
+        }
+      }
+      if ((comment.classifications?.length ?? 0) === 0) {
+        filteredResultComments.push(comment);
+        continue;
+      }
+      for (let j = 0; j < comment.classifications!.length; j++) {
+        const classification = comment.classifications![j];
+        if (classification.id === classificationId) {
+          filteredResultComments.push(comment);
+          break;
+        }
+      }
+    }
+    return filteredResultComments;
   },
 };
 

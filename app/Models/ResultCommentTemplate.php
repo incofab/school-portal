@@ -29,18 +29,36 @@ class ResultCommentTemplate extends Model
     ?bool $forMidTerm = false
   ) {
     $resultComments = ResultCommentTemplate::query()
-      ->where(
-        fn($q) => $q
-          ->whereNull('type')
-          ->orWhere(
-            'type',
-            $forMidTerm
-              ? ResultCommentTemplateType::MidTermResult
-              : ResultCommentTemplateType::FullTermResult
-          )
+      ->when(
+        is_null($forMidTerm),
+        fn($qq) => $qq->where(
+          fn($q) => $q
+            ->whereNull('type')
+            ->orWhere(
+              'type',
+              $forMidTerm
+                ? ResultCommentTemplateType::MidTermResult
+                : ResultCommentTemplateType::FullTermResult
+            )
+        )
       )
+      ->with('classifications')
       ->get();
-
+    // $resultComments = $query
+    //   ->where(
+    //     fn($q) => $q
+    //       ->whereNull('type')
+    //       ->orWhere(
+    //         'type',
+    //         $forMidTerm
+    //           ? ResultCommentTemplateType::MidTermResult
+    //           : ResultCommentTemplateType::FullTermResult
+    //       )
+    //   )
+    //   ->get();
+    if (!$classification) {
+      return $resultComments;
+    }
     return $resultComments
       ->filter(function (ResultCommentTemplate $item) use ($classification) {
         if ($item->classifications->isEmpty()) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Institution;
 use Illuminate\Support\Facades\Http;
 
 class DummyController extends Controller
@@ -39,5 +40,19 @@ class DummyController extends Controller
     info('Sending WhatsApp message... 3');
 
     return $response->json();
+  }
+
+  function updateGrades(Institution $institution)
+  {
+    $courseResults = $institution->courseResults()->get();
+    foreach ($courseResults as $courseResult) {
+      $grade = \App\Actions\CourseResult\GetGrade::run(
+        $courseResult->result,
+        $courseResult->classification_id,
+        $courseResult->for_mid_term
+      );
+      $courseResult->grade = $grade;
+      $courseResult->save();
+    }
   }
 }

@@ -140,7 +140,7 @@ it('handles students with missing term results gracefully', function () {
     round(($tr1->average + $tr2->average) / 2, 2)
   );
   expect($sessionResult->position)->toBe(1);
-  expect($sessionResult->grade)->toBeString(); // depends on GetGrade::run()
+  expect($sessionResult->grade)->toBeString();
 });
 
 it(

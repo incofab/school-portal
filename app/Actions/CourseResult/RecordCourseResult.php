@@ -62,13 +62,18 @@ class RecordCourseResult
     [$result, $assessmentValues] = $this->getResultScore(
       (array) ($courseResult?->assessment_values ?? [])
     );
+    $forMidTerm = $this->data['for_mid_term'] ?? false;
     CourseResult::query()->updateOrCreate($this->bindingData, [
       ...collect($this->data)
         ->except('ass')
         ->toArray(),
       'result' => $result,
       'assessment_values' => $assessmentValues,
-      'grade' => GetGrade::run($result)
+      'grade' => GetGrade::run(
+        $result,
+        $this->courseTeacher->classification_id,
+        $forMidTerm
+      )
     ]);
     if ($this->processCourseResultForClass) {
       $this->evaluateResult();
