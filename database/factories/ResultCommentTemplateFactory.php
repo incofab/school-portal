@@ -2,8 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Classification;
 use App\Models\Institution;
+use App\Models\ResultCommentTemplate;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Collection;
 use Str;
 
 /**
@@ -33,5 +36,14 @@ class ResultCommentTemplateFactory extends Factory
         'institution_id' => $institution
       ]
     );
+  }
+
+  function classification(Classification|Collection $classification)
+  {
+    return $this->afterCreating(function (ResultCommentTemplate $template) use (
+      $classification
+    ) {
+      $template->classifications()->attach($classification);
+    });
   }
 }
