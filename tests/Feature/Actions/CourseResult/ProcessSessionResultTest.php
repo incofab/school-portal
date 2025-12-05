@@ -144,7 +144,7 @@ it('handles students with missing term results gracefully', function () {
 });
 
 it(
-  'does not create session result if third term results are missing',
+  'creates session result even if the third term results are missing',
   function () {
     /** @var TermResult $tr1 */
     TermResult::factory()
@@ -175,6 +175,8 @@ it(
       $this->student->id
     )->first();
 
-    expect($sessionResult)->toBeNull();
+    expect($sessionResult)
+      ->not()
+      ->toBeNull();
   }
 );

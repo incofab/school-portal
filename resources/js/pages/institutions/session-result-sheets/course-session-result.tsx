@@ -82,6 +82,7 @@ export default function CourseSessionResult({
     <PagePrintLayout
       useBgStyle={true}
       filename={`${classification.title}-result-sheet.pdf`}
+      contentId={'result-sheet'}
     >
       <Div
         mx={'auto'}

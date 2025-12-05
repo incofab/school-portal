@@ -81,7 +81,7 @@ export default function PrintReceiptPage({ receipt, student }: Props) {
   ];
 
   return (
-    <ReceiptLayout user={student.user!}>
+    <ReceiptLayout user={student.user!} contentId={'receipt-container'}>
       <br />
       <br />
       <br />
@@ -92,6 +92,7 @@ export default function PrintReceiptPage({ receipt, student }: Props) {
         boxShadow="md"
         borderRadius="md"
         borderWidth="1px"
+        id="receipt-container"
       >
         <HStack>
           <Avatar

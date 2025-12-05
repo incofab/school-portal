@@ -3,11 +3,12 @@ import { useColorMode } from '@chakra-ui/react';
 import { Div } from '@/components/semantic';
 import useSharedProps from '@/hooks/use-shared-props';
 import { validFilename } from '@/util/util';
-import ResultDownloadButton from '@/pages/institutions/result-sheets/result-download-button';
+import PageDownloadButton from '@/pages/institutions/result-sheets/page-download-button';
 
 interface Props {
   useBgStyle?: boolean;
   filename: string;
+  contentId: string;
   signed_url?: string;
 }
 
@@ -15,6 +16,7 @@ export default function PagePrintLayout({
   children,
   useBgStyle,
   filename,
+  contentId,
   signed_url,
 }: Props & PropsWithChildren) {
   const { currentInstitution } = useSharedProps();
@@ -37,10 +39,11 @@ export default function PagePrintLayout({
         style={useBgStyle === false ? undefined : backgroundStyle}
         minHeight={'1170px'}
       >
-        <ResultDownloadButton
+        <PageDownloadButton
           signed_url={signed_url}
           // termResult={resultProps.termResult}
           filename={validFilename(filename)}
+          contentId={contentId}
         />
         {children}
       </Div>

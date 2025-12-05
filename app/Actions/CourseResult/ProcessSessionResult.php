@@ -77,9 +77,10 @@ class ProcessSessionResult
     array $mappedTermResult,
     $availableTerms
   ) {
-    if (!in_array(TermType::Third, $availableTerms)) {
-      return;
-    }
+    // We want the session result to be calculated every time
+    // if (!in_array(TermType::Third, $availableTerms)) {
+    //   return;
+    // }
 
     $bindingData = [
       'academic_session_id' => $this->academicSession->id,

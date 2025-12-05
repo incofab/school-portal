@@ -290,7 +290,7 @@ export default function InstitutionDashboard({
           return <DashboardItemCard {...item} key={item.title} />;
         })}
       </SimpleGrid>
-      {isStaff && (
+      {isAdmin && (
         <>
           <br />
           <Div>
