@@ -142,7 +142,7 @@ export default function ListInstitutionGropus({
           <Tooltip label="Generate Invoice">
             <IconButton
               aria-label="Generate Invoice"
-              colorScheme={'blue'}
+              colorScheme={'brand'}
               size={'sm'}
               icon={<Icon as={DocumentChartBarIcon} />}
               onClick={() => invoiceModalToggle.open(row)}

@@ -191,6 +191,7 @@ class InstitutionGroupsController extends Controller
   }
 
   public function generateInvoice(
+    Request $request,
     InstitutionGroup $institutionGroup,
     AcademicSession $academicSession,
     $term
@@ -199,10 +200,36 @@ class InstitutionGroupsController extends Controller
 
     abort_unless($termType, 'Please, supply a valid term type');
 
+    $validated = $request->validate([
+      'extra_items' => ['nullable', 'array'],
+      'extra_items.*.title' => [
+        'required_with:extra_items.*.amount',
+        'string',
+        'max:255'
+      ],
+      'extra_items.*.amount' => [
+        'required_with:extra_items.*.title',
+        'numeric',
+        'min:0'
+      ]
+    ]);
+
+    $extraItems = collect($validated['extra_items'] ?? [])
+      ->filter(fn($item) => filled($item['title'] ?? null))
+      ->map(
+        fn($item) => [
+          'title' => $item['title'],
+          'amount' => (float) $item['amount']
+        ]
+      )
+      ->values()
+      ->all();
+
     return (new GenerateInvoice(
       $institutionGroup,
       $academicSession,
-      $termType
+      $termType,
+      $extraItems
     ))->downloadAsPdf();
     // ))->viewAsHtml();
   }

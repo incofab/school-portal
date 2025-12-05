@@ -66,7 +66,7 @@
                 @foreach ($items as $item)
                     <?php $inst = $item['institution']; ?>
                     <tr>
-                        <td>{{ $inst->name }}</td>
+                        <td>{{ $inst->name ?? 'Additional item' }}</td>
                         <td>{{ $item['description'] }}</td>
                         <td>{{ $item['quantity'] }}</td>
                         <td>{{ number_format($item['unit_price'], 2) }}</td>

@@ -14,10 +14,14 @@ class GenerateInvoice
 {
   private array $data;
 
+  /**
+   * @param array {title: string, amount: float|int }[] $extraItems
+   */
   function __construct(
     private InstitutionGroup $institutionGroup,
     private AcademicSession $academicSession,
-    private TermType $term
+    private TermType $term,
+    private array $extraItems = []
   ) {
     $this->run();
   }
@@ -82,6 +86,18 @@ class GenerateInvoice
       ];
 
       $totalAmount += $amount;
+    }
+
+    foreach ($this->extraItems as $extraItem) {
+      $invoiceItems[] = [
+        'institution' => null,
+        'description' => $extraItem['title'],
+        'quantity' => 1,
+        'unit_price' => $extraItem['amount'],
+        'amount' => $extraItem['amount']
+      ];
+
+      $totalAmount += $extraItem['amount'];
     }
 
     abort_if(
