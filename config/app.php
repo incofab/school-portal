@@ -13,6 +13,7 @@ return [
     */
 
   'name' => env('APP_NAME', 'Laravel'),
+  'email' => env('APP_EMAIL', 'support@edumanager.ng'),
   'user_default_password' => env('USER_DEFAULT_PASSWORD', 'password'),
 
   /*

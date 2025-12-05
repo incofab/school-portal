@@ -95,6 +95,7 @@ export interface Funding extends Row {
   new_balance: number;
   remark: string;
   institution_group: InstitutionGroup;
+  transaction?: Transaction;
 }
 
 export interface Transaction extends InstitutionRow {

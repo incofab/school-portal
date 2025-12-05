@@ -1,7 +1,7 @@
 import React from 'react';
 import { Funding, InstitutionGroup } from '@/types/models';
 import ServerPaginatedTable from '@/components/server-paginated-table';
-import { PaginationResponse } from '@/types/types';
+import { PaginationResponse, WalletType } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import ManagerDashboardLayout from '@/layout/managers/manager-dashboard-layout';
@@ -9,11 +9,13 @@ import FundInstitutionGroupModal from '@/components/modals/fund-institution-grou
 import useModalToggle from '@/hooks/use-modal-toggle';
 import { BrandButton } from '@/components/buttons';
 import { Inertia } from '@inertiajs/inertia';
-import { HStack, Icon, IconButton } from '@chakra-ui/react';
+import { Button, HStack, Icon, IconButton } from '@chakra-ui/react';
 import InfoPopover from '@/components/info-popover';
-import { EyeIcon } from '@heroicons/react/24/outline';
+import { ArrowDownTrayIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { formatAsCurrency } from '@/util/util';
 import RecordDebtModal from '@/components/modals/record-debt-modal';
+import route from '@/util/route';
+import DestructivePopover from '@/components/destructive-popover';
 
 interface Props {
   fundings: PaginationResponse<Funding>;
@@ -68,6 +70,29 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
         </HStack>
       ),
     },
+    {
+      label: 'Action',
+      render: (row) =>
+        row.wallet == WalletType.Credit ? (
+          <DestructivePopover
+            label={'Generate Receipt for this payment?'}
+            positiveButtonLabel={'Generate Receipt'}
+            onConfirm={() =>
+              window.open(route('managers.funding.receipt', [row.id]))
+            }
+          >
+            <Button
+              size="sm"
+              colorScheme="brand"
+              leftIcon={<Icon as={ArrowDownTrayIcon} />}
+            >
+              Receipt
+            </Button>
+          </DestructivePopover>
+        ) : (
+          <></>
+        ),
+    },
   ];
 
   return (
@@ -112,4 +137,4 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
       />
     </ManagerDashboardLayout>
   );
-} 
+}

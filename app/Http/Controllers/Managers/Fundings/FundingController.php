@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Managers\Fundings;
 
-use App\Enums\TransactionType;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Inertia\Inertia;
 use App\Models\Funding;
 use App\Enums\WalletType;
@@ -23,7 +23,7 @@ class FundingController extends Controller
       abort(400, 'Ünauthorized');
     }
 
-    $fundings = Funding::with('institutionGroup')->latest('id');
+    $fundings = Funding::with('institutionGroup', 'transaction')->latest('id');
 
     return Inertia::render('managers/fundings/list-fundings', [
       'fundings' => paginateFromRequest($fundings),
@@ -72,6 +72,29 @@ class FundingController extends Controller
       $validated['remark'] ?? null
     );
 
-    return $this->ok(); 
+    return $this->ok();
+  }
+
+  public function receipt(Funding $funding)
+  {
+    $user = currentUser();
+
+    if (!$user->isAdmin()) {
+      abort(400, 'Ünauthorized');
+    }
+
+    $funding->load('institutionGroup');
+
+    $data = [
+      'receipt_number' => sprintf('RCPT-%06d', $funding->id),
+      'receipt_date' => $funding->created_at?->toDayDateTimeString(),
+      'funding' => $funding,
+      'institution_group' => $funding->institutionGroup,
+      'processed_by' => $user
+    ];
+
+    $pdf = Pdf::loadView('receipts.funding-receipt', $data);
+
+    return $pdf->download('funding-receipt.pdf');
   }
 }
