@@ -260,6 +260,11 @@ class Institution extends Model
     return $this->hasMany(Association::class);
   }
 
+  public function courseResults()
+  {
+    return $this->hasMany(CourseResult::class);
+  }
+
   public function students()
   {
     return $this->hasManyThrough(

@@ -85,4 +85,9 @@ class CourseResult extends Model
   {
     return $this->belongsTo(AcademicSession::class);
   }
+
+  public function institution()
+  {
+    return $this->belongsTo(Institution::class);
+  }
 }

@@ -3,7 +3,6 @@ namespace App\Actions\Messages;
 
 use App\Enums\MessageStatus;
 use App\Enums\NotificationChannelsType;
-use App\Models\GuardianStudent;
 use App\Models\Institution;
 use App\Models\TermResult;
 use App\Models\User;
@@ -171,7 +170,7 @@ class SendTermResultToGuardians
       'to' => formatWhatsappNumber($phone),
       'type' => 'template',
       'template' => [
-        'name' => 'result_available', // your template name
+        'name' => 'result_published', // your template name
         'language' => [
           'code' => 'en_US'
         ],
@@ -197,7 +196,7 @@ class SendTermResultToGuardians
               [
                 'type' => 'text',
                 'parameter_name' => 'result_title',
-                'text' => "{$session} {$term} Term"
+                'text' => "{$session} {$term} Term Result"
               ],
               [
                 'type' => 'text',
@@ -213,7 +212,7 @@ class SendTermResultToGuardians
             'parameters' => [
               [
                 'type' => 'text',
-                'parameter_name' => 'result_link',
+                'parameter_name' => '1',
                 'text' => $url
               ]
             ]

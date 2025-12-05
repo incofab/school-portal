@@ -49,10 +49,16 @@ class DummyController extends Controller
       $grade = \App\Actions\CourseResult\GetGrade::run(
         $courseResult->result,
         $courseResult->classification_id,
-        $courseResult->for_mid_term
+        $courseResult->for_mid_term ?? false
       );
+      // echo "courseResultId = {$courseResult->id}, Result = {$courseResult->result}, Grade = $grade";
       $courseResult->grade = $grade;
       $courseResult->save();
     }
+    return response()->json([
+      'status' => 'success',
+      'message' => $courseResult->count() . ' Grades updated successfully',
+      'data' => null
+    ]);
   }
 }
