@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Institutions;
+namespace App\Http\Controllers\Institutions\Results;
 
 use App\Http\Controllers\Controller;
 use App\Models\GuardianStudent;
@@ -27,7 +27,7 @@ class ListTermResultController extends Controller
       ->oldest('users.last_name')
       ->latest('term_results.academic_session_id');
 
-    return Inertia::render('institutions/list-term-results', [
+    return Inertia::render('institutions/results/list-term-results', [
       'termResults' => paginateFromRequest(
         $query
           ->with('academicSession', 'classification', 'student.user')

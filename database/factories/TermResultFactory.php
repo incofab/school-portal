@@ -5,13 +5,28 @@ namespace Database\Factories;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Classification;
+use App\Models\CourseResult;
 use App\Models\Institution;
-use App\Models\ResultPublication;
 use App\Models\Student;
+use App\Models\TermResult;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TermResultFactory extends Factory
 {
+  public function configure()
+  {
+    return $this->afterCreating(function (TermResult $model) {
+      CourseResult::factory()->create([
+        'academic_session_id' => $model->academic_session_id,
+        'student_id' => $model->student_id,
+        'term' => $model->term,
+        'for_mid_term' => $model->for_mid_term ?? false,
+        'classification_id' => $model->classification_id,
+        'institution_id' => $model->institution_id
+      ]);
+    });
+  }
+
   /**
    * Define the model's default state.
    *

@@ -28,7 +28,7 @@ class ListStudentTermResultController extends Controller
       ->dontUseCurrentTerm()
       ->filterQuery();
 
-    return Inertia::render('institutions/list-term-results', [
+    return Inertia::render('institutions/results/list-term-results', [
       'student' => $student,
       'termResults' => paginateFromRequest(
         $query

@@ -239,8 +239,10 @@ Route::post('/class-result-info/set-resumption-date/{classificationGroup?}', [We
 Route::get('/class-result-info/{classResultInfo}/result-sheets', [Web\Staff\ClassResultInfoController::class, 'viewClassResultSheets'])
   ->name('class-result-info.result-sheets');
 
-Route::get('/term-results/index/{user?}', Web\ListTermResultController::class)
+Route::get('/term-results/index/{user?}', Web\Results\ListTermResultController::class)
   ->name('term-results.index');
+Route::delete('/term-results/delete/{termResult?}', Web\Results\DeleteTermResultController::class)
+  ->name('term-results.destroy');
 Route::get('/cummulative-result/index', Web\Staff\CummulativeResultController::class)
   ->name('cummulative-result.index');
 

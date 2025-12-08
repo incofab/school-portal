@@ -19,7 +19,7 @@ class ImpersonateInstitutionController extends Controller
     if (!$loginUser) {
       $loginUser = $institution
         ->institutionUsers()
-        ->where('type', InstitutionUserType::Admin)
+        ->where('role', InstitutionUserType::Admin)
         ->with('user')
         ->first()?->user;
     }
