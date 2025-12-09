@@ -1,14 +1,4 @@
 import {
-  AcademicSession,
-  Assessment,
-  ClassResultInfo,
-  Classification,
-  CourseResult,
-  CourseResultInfo,
-  Student,
-  TermResult,
-} from '@/types/models';
-import {
   Avatar,
   Divider,
   HStack,
@@ -24,18 +14,10 @@ import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
 import ImagePaths from '@/util/images';
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
-import ResultSheetLayout from './result-sheet-layout';
-
-interface Props {
-  termResult: TermResult;
-  courseResults: CourseResult[];
-  classResultInfo: ClassResultInfo;
-  courseResultInfoData: { [key: string | number]: CourseResultInfo };
-  academicSession: AcademicSession;
-  classification: Classification;
-  student: Student;
-  assessments: Assessment[];
-}
+import ResultSheetLayout, {
+  ClosingDate,
+  NextTermDate,
+} from './result-sheet-layout';
 
 export default function Template1(props: ResultProps) {
   const {
@@ -65,12 +47,12 @@ export default function Template1(props: ResultProps) {
     return <Text className="vertical-header">{text}</Text>;
   }
   const resultDetail = [
-    { label: "Student's Total Score", value: termResult.total_score },
+    { label: 'Total Score', value: termResult.total_score },
     {
       label: 'Maximum Total Score',
       value: classResultInfo.max_obtainable_score,
     },
-    { label: "Student's Average Score", value: termResult.average },
+    { label: 'Average Score', value: termResult.average },
     { label: 'Class Average Score', value: classResultInfo.average },
   ];
 
@@ -139,10 +121,7 @@ export default function Template1(props: ResultProps) {
             />
           </HStack>
           <HStack>
-            <LabelText
-              label="Name of Student"
-              text={student?.user?.full_name}
-            />
+            <LabelText label="Name" text={student?.user?.full_name} />
             <Spacer />
             <LabelText label="Gender" text={student.user?.gender} />
           </HStack>
@@ -162,6 +141,11 @@ export default function Template1(props: ResultProps) {
             )}
             <Spacer />
             <LabelText label="Out of" text={classResultInfo.num_of_students} />
+          </HStack>
+          <HStack>
+            <ClosingDate resultProps={props} />
+            <Spacer />
+            <NextTermDate resultProps={props} />
           </HStack>
           <div className="table-container">
             <table className="result-table" width={'100%'}>

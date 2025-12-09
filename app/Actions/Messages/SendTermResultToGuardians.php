@@ -66,6 +66,7 @@ class SendTermResultToGuardians
       return $res;
     }
 
+    // (new \App\Services\Messaging\Whatsapp\WhatsappClient($contentData))->send();
     $dispatcher = new MessageDispatcher($this->institution);
     $dispatcher->dispatch(
       receivers: collect($contacts),
@@ -77,80 +78,6 @@ class SendTermResultToGuardians
     );
   }
 
-  /* @deprecated 
-  public function viaWhatsapp(TermResult $termResult): Res
-  {
-    $termResult->loadMissing(
-      'student.user',
-      'student.guardian',
-      'academicSession'
-    );
-
-    if (!$termResult->isActivated() || !$termResult->isPublished()) {
-      return failRes('Result is not ready to be shared');
-    }
-
-    $guardians = GuardianStudent::query()
-      ->where('student_id', $termResult->student_id)
-      ->with('guardian')
-      ->get()
-      ->map(fn(GuardianStudent $item) => $item->guardian)
-      ->filter(fn($guardian) => $guardian?->phone);
-
-    if ($guardians->isEmpty()) {
-      return failRes('No guardian phone numbers found for this student');
-    }
-
-    $contacts = $guardians
-      ->map(fn($guardian) => formatWhatsappNumber($guardian->phone))
-      ->filter();
-
-    if ($contacts->isEmpty()) {
-      return failRes('No valid WhatsApp numbers found for guardians');
-    }
-
-    $body = $this->buildMessage($termResult);
-
-    $record = new RecordMessage($this->institution, $this->senderUser, [
-      'subject' => 'Term Result',
-      'body' => $body,
-      'channel' => NotificationChannelsType::Whatsapp->value,
-      'status' => MessageStatus::Pending->value
-    ]);
-
-    $messageModel =
-      $contacts->count() > 1
-        ? $record->forMultiple($contacts->toArray())->save($termResult)
-        : $record->forSingle($contacts->first())->save($termResult);
-
-    $res = ApplyMessageCharges::make($this->institution)->run(
-      $contacts,
-      NotificationChannelsType::Whatsapp->value,
-      $messageModel
-    );
-    if ($res->isNotSuccessful()) {
-      return $res;
-    }
-
-    $dispatcher = new MessageDispatcher($this->institution);
-    $dispatcher->dispatch(
-      receivers: $contacts,
-      channel: NotificationChannelsType::Whatsapp,
-      message: $body,
-      subject: 'Term Result',
-      messageModel: $messageModel,
-      context: [
-        'template' => config('services.facebook.whatsapp-template-result'),
-        'components' => $this->buildTemplateComponents($termResult)
-      ]
-    );
-
-    return successRes('WhatsApp delivery queued', [
-      'message_id' => $messageModel->id
-    ]);
-  }
-  */
-
   private function buildTemplateComponents(TermResult $termResult): array|null
   {
     $student = $termResult->student;
@@ -161,6 +88,7 @@ class SendTermResultToGuardians
       : '' . ucfirst($termResult->term->value ?? '');
     $url = $termResult->signedUrl();
     $phone = $student->guardian_phone ?? $student->guardian?->phone;
+    // $phone = '07036098561';
     if (!$phone) {
       return null;
     }
@@ -172,7 +100,7 @@ class SendTermResultToGuardians
       'template' => [
         'name' => 'result_published', // your template name
         'language' => [
-          'code' => 'en_US'
+          'code' => 'en'
         ],
         'components' => [
           [
@@ -222,5 +150,21 @@ class SendTermResultToGuardians
     ];
 
     return $body;
+  }
+
+  static function test()
+  {
+    $termResult = TermResult::query()
+      ->with(
+        'institution.createdBy',
+        'student.user',
+        'student.guardian',
+        'academicSession'
+      )
+      ->first();
+    return (new SendTermResultToGuardians(
+      $termResult->institution,
+      $termResult->createdBy ?? User::first()
+    ))->multiSend(collect([$termResult]));
   }
 }

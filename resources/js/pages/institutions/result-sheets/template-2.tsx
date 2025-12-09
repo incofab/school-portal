@@ -16,7 +16,10 @@ import '@/../../public/style/result-sheet.css';
 import ImagePaths from '@/util/images';
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import { GradingTable } from '@/components/result-helper-components';
-import ResultSheetLayout from './result-sheet-layout';
+import ResultSheetLayout, {
+  ClosingDate,
+  NextTermDate,
+} from './result-sheet-layout';
 
 export default function Template2(props: ResultProps) {
   const {
@@ -35,12 +38,12 @@ export default function Template2(props: ResultProps) {
     return <Text className="vertical-header">{text}</Text>;
   }
   const resultDetail = [
-    { label: "Student's Total Score", value: termResult.total_score },
+    { label: 'Total Score', value: termResult.total_score },
     {
       label: 'Maximum Total Score',
       value: classResultInfo.max_obtainable_score,
     },
-    { label: "Student's Average Score", value: termResult.average },
+    { label: 'Average Score', value: termResult.average },
     { label: 'Class Average Score', value: classResultInfo.average },
   ];
 
@@ -146,11 +149,11 @@ export default function Template2(props: ResultProps) {
                 </Text>
               </Div>
             </VStack>
-            <Avatar size="xl" name="Student" src={student.user?.photo ?? ''} />
+            <Avatar size="xl" name="Learner" src={student.user?.photo ?? ''} />
           </HStack>
           <Div>
             <Flex flexDirection={'row'} justifyContent={'space-between'}>
-              <LabelText label="Student Name" text={student?.user?.full_name} />
+              <LabelText label="Name" text={student?.user?.full_name} />
               <LabelText label="Class" text={classification.title} />
             </Flex>
             <Flex mt={1} flexDirection={'row'} justifyContent={'space-between'}>
@@ -159,13 +162,10 @@ export default function Template2(props: ResultProps) {
                 text={classResultInfo.num_of_students}
               />
               <LabelText label="Gender" text={student.user?.gender} />
-              {/* <LabelText
-              label="Term"
-              text={`${startCase(termResult.term)} ${
-                termResult.for_mid_term ? 'Mid Term' : ''
-              }`}
-            />
-            <LabelText label="Session" text={academicSession.title} /> */}
+            </Flex>
+            <Flex mt={1} flexDirection={'row'} justifyContent={'space-between'}>
+              <ClosingDate resultProps={props} />
+              <NextTermDate resultProps={props} />
             </Flex>
           </Div>
           <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>

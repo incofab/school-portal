@@ -44,7 +44,7 @@ class ViewResultSheetController extends Controller
     Classification $classification,
     AcademicSession $academicSession,
     string $term,
-    bool $forMidTerm
+    ?bool $forMidTerm = false
   ) {
     $this->validateStudent($student);
     $viewData = GetViewResultSheetData::run(
@@ -93,7 +93,7 @@ class ViewResultSheetController extends Controller
     Classification $classification,
     AcademicSession $academicSession,
     string $term,
-    bool $forMidTerm
+    ?bool $forMidTerm = false
   ) {
     abort_unless($request->hasValidSignature(), 403, 'Access denied');
 

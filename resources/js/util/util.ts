@@ -2,6 +2,7 @@ import { Nullable, SelectOptionType } from '@/types/types';
 import { Resizer } from './image-file-resizer';
 import objectGet from 'lodash/get';
 import startCase from 'lodash/startCase';
+import { format } from 'date-fns';
 
 export const dateFormat = 'yyyy-MM-dd';
 export const dateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
@@ -31,6 +32,13 @@ export function formatAsCurrency(num?: number) {
   //   currency: 'NGN',
   // });
   return `₦${new Intl.NumberFormat().format(num ?? 0)}`;
+}
+
+export function formatAsDate(dateStr?: string, dateTimeformat = dateFormat) {
+  if (!dateStr) {
+    return '';
+  }
+  return format(new Date(dateStr), dateTimeformat);
 }
 
 export function numberFormat(num: number) {

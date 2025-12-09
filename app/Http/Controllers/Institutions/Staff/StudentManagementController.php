@@ -38,6 +38,7 @@ class StudentManagementController extends Controller
     return inertia('institutions/students/list-students', [
       'students' => paginateFromRequest(
         $query
+          ->where('institution_users.role', InstitutionUserType::Student)
           ->with('user', 'classification', 'institutionUser')
           ->latest('students.id')
       ),

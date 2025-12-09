@@ -18,7 +18,7 @@ Route::get('/receipts/{receipt}/print', [Web\Students\StudentFeePaymentControlle
 Route::prefix('students/{student}')->name('students.')->middleware(['student.access'])->group(function () {
     Route::get('term-result-detail/{classification}/{academicSession}/{term}/{forMidTerm}', Web\Students\StudentTermResultDetailController::class)
         ->name('term-result-detail');
-    Route::get('/result-sheet/{classification}/{academicSession}/{term}/{forMidTerm}', [Web\Students\ViewResultSheetController::class, 'viewResult'])
+    Route::get('/result-sheet/{classification}/{academicSession}/{term}/{forMidTerm?}', [Web\Students\ViewResultSheetController::class, 'viewResult'])
         ->name('result-sheet');
 
     Route::get('transcript', Web\Students\ShowTranscriptController::class)->name('transcript');

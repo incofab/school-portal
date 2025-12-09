@@ -126,6 +126,34 @@ const ResultUtil = {
     return { grade, remark, range, pointsGrade };
   },
 
+  getGradeColor: function (grade: string) {
+    switch (grade) {
+      case 'A':
+      case 'A1':
+        return 'green';
+      case 'B':
+      case 'B2':
+      case 'B3':
+        return 'teal';
+      case 'C':
+      case 'C4':
+      case 'C5':
+      case 'C6':
+        return 'blue';
+      case 'D':
+      case 'D7':
+        return 'yellow';
+      case 'E':
+      case 'E8':
+        return 'orange';
+      case 'F':
+      case 'F9':
+        return 'red';
+      default:
+        return 'gray';
+    }
+  },
+
   getClassSection: function (classTitle: string) {
     classTitle = classTitle.toLowerCase().replaceAll(' ', '');
     if (classTitle.indexOf('ss') >= 0 || classTitle.indexOf('ss') >= 0) {
@@ -278,6 +306,6 @@ export interface ResultProps {
   assessments: Assessment[];
   learningEvaluations: LearningEvaluation[];
   resultCommentTemplate: ResultCommentTemplate[];
-  termDetail: TermDetail;
+  termDetail?: TermDetail;
   signed_url: string;
 }

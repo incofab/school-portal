@@ -437,9 +437,10 @@ export interface TermResult extends InstitutionRow {
 export interface TermDetail extends InstitutionRow {
   academic_session_id: number;
   term: TermType;
-  start_date: string;
-  end_date: string;
-  expected_attendance_count: number;
+  start_date?: string;
+  end_date?: string;
+  next_term_resumption_date?: string;
+  expected_attendance_count?: number;
   for_mid_term: boolean;
   academic_session?: AcademicSession;
 }

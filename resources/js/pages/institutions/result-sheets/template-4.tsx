@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Button,
   Divider,
   Flex,
   HStack,
@@ -19,8 +18,7 @@ import ImagePaths from '@/util/images';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import ResultSheetLayout from './result-sheet-layout';
-import DateTimeDisplay from '@/components/date-time-display';
-import { dateFormat } from '@/util/util';
+import { formatAsDate } from '@/util/util';
 
 export default function Template4(props: ResultProps) {
   const {
@@ -33,13 +31,17 @@ export default function Template4(props: ResultProps) {
     assessments,
     resultCommentTemplate,
     learningEvaluations,
+    termDetail,
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const nextTermResumptionDate =
+    classResultInfo.next_term_resumption_date ??
+    termDetail?.next_term_resumption_date;
 
   const resultSummary1 = [
-    { label: 'Name of Student', value: student.user?.full_name },
-    { label: 'Student Id', value: student.code },
+    { label: 'Name', value: student.user?.full_name },
+    { label: 'Portal Id', value: student.code },
     ...(hidePosition
       ? []
       : [
@@ -51,6 +53,9 @@ export default function Template4(props: ResultProps) {
               : ResultUtil.formatPosition(termResult.position),
           },
         ]),
+    ...(termDetail?.end_date
+      ? [{ label: 'Closing Date', value: formatAsDate(termDetail.end_date) }]
+      : []),
   ];
   const resultSummary2 = [
     { label: 'Class', value: classification.title },
@@ -58,21 +63,15 @@ export default function Template4(props: ResultProps) {
       label: 'Term',
       value: `${startCase(termResult.term)} Term, ${academicSession.title}`,
     },
-    ...(classResultInfo.next_term_resumption_date
+    { label: 'No of Class', value: classResultInfo.num_of_students },
+    ...(nextTermResumptionDate
       ? [
           {
             label: 'Next Term Begins',
-            value: (
-              <DateTimeDisplay
-                as={'span'}
-                dateTime={classResultInfo.next_term_resumption_date}
-                dateTimeformat={dateFormat}
-              />
-            ),
+            value: formatAsDate(nextTermResumptionDate),
           },
         ]
       : []),
-    { label: 'No of Class', value: classResultInfo.num_of_students },
   ];
 
   const principalComment =

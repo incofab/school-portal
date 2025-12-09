@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Button,
   Divider,
   Flex,
   HStack,
@@ -19,6 +18,7 @@ import ImagePaths from '@/util/images';
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
 import ResultSheetLayout from './result-sheet-layout';
+import { formatAsDate } from '@/util/util';
 
 export default function Template3(props: ResultProps) {
   const {
@@ -32,11 +32,13 @@ export default function Template3(props: ResultProps) {
     resultCommentTemplate,
     courseResultInfoData,
     learningEvaluations,
+    termDetail,
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
-  // const teachersComment =
-  //   termResult.teacher_comment ?? getGrade(termResult.average)[3];
+  const nextTermResumptionDate =
+    classResultInfo.next_term_resumption_date ??
+    termDetail?.next_term_resumption_date;
 
   const principalComment =
     termResult.principal_comment ??
@@ -46,17 +48,20 @@ export default function Template3(props: ResultProps) {
     termResult.teacher_comment ??
     ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
       ?.comment_2 ??
-    getGrade(termResult.average)[3];
+    ResultUtil.getGrade(termResult.average, resultCommentTemplate)?.remark;
 
   const resultSummary1 = [
-    { label: 'Student Name', value: student.user?.full_name },
+    { label: 'Name', value: student.user?.full_name },
     { label: 'No In Class', value: classResultInfo.num_of_students },
     {
       label: 'Total Marks Obtainable',
       value: classResultInfo.max_obtainable_score,
     },
     { label: 'Class Average', value: classResultInfo.average },
-    { label: 'Student Id', value: student.code },
+    { label: 'Portal Id', value: student.code },
+    ...(termDetail?.end_date
+      ? [{ label: 'Closing Date', value: formatAsDate(termDetail.end_date) }]
+      : []),
   ];
   const resultSummary2 = [
     { label: 'Total Marks Obtained', value: termResult.total_score },
@@ -72,8 +77,17 @@ export default function Template3(props: ResultProps) {
         ? ResultUtil.getGrade(termResult.average, resultCommentTemplate).remark
         : ResultUtil.formatPosition(termResult.position),
     },
+    ...(nextTermResumptionDate
+      ? [
+          {
+            label: 'Next Term Begins',
+            value: formatAsDate(nextTermResumptionDate),
+          },
+        ]
+      : []),
   ];
 
+  /** @deprecated */
   function getGrade(score: number) {
     let grade = '';
     let remark = '';

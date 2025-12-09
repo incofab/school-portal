@@ -23,8 +23,7 @@ import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import DataTable, { TableHeader } from '@/components/data-table';
 import { Assessment, CourseResult } from '@/types/models';
 import ResultSheetLayout from './result-sheet-layout';
-import DateTimeDisplay from '@/components/date-time-display';
-import { dateFormat } from '@/util/util';
+import { formatAsDate } from '@/util/util';
 import { LabelText } from '@/components/result-helper-components';
 
 export default function Template7(props: ResultProps) {
@@ -40,31 +39,37 @@ export default function Template7(props: ResultProps) {
     courseResultInfoData,
     signed_url,
     learningEvaluations,
+    termDetail,
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const nextTermResumptionDate =
+    classResultInfo.next_term_resumption_date ??
+    termDetail?.next_term_resumption_date;
 
   const resultSummary = [
-    { label: 'Student Name', value: student.user?.full_name },
+    { label: 'Name', value: student.user?.full_name },
     { label: 'Class', value: termResult.classification?.title },
-    { label: 'Student ID', value: student.code },
+    { label: 'Portal ID', value: student.code },
     { label: 'No in Class', value: classResultInfo.num_of_students },
     {
       label: 'Term',
       value: startCase(termResult.term),
     },
     { label: 'Session', value: academicSession.title },
-    ...(classResultInfo.next_term_resumption_date
+    ...(termDetail?.start_date
+      ? [
+          {
+            label: 'Opening Date',
+            value: formatAsDate(termDetail?.start_date),
+          },
+        ]
+      : []),
+    ...(nextTermResumptionDate
       ? [
           {
             label: 'Next Term Begins',
-            value: (
-              <DateTimeDisplay
-                as={'span'}
-                dateTime={classResultInfo.next_term_resumption_date}
-                dateTimeformat={dateFormat}
-              />
-            ),
+            value: formatAsDate(nextTermResumptionDate),
           },
         ]
       : []),

@@ -1,9 +1,7 @@
 import {
   Avatar,
   BoxProps,
-  Button,
   Divider,
-  Flex,
   HStack,
   Icon,
   Img,
@@ -25,12 +23,10 @@ import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import DataTable, { TableHeader } from '@/components/data-table';
 import { CourseResult } from '@/types/models';
 import ResultSheetLayout from './result-sheet-layout';
-import DateTimeDisplay from '@/components/date-time-display';
-import { dateFormat } from '@/util/util';
+import { formatAsDate, ucFirst } from '@/util/util';
 import { EnvelopeIcon, MapIcon, PhoneIcon } from '@heroicons/react/24/solid';
 import { LabelText } from '@/components/result-helper-components';
 
-const PDF_URL = import.meta.env.VITE_PDF_URL;
 export default function Template6(props: ResultProps) {
   const {
     termResult,
@@ -46,11 +42,14 @@ export default function Template6(props: ResultProps) {
     learningEvaluations,
     termDetail,
   } = props;
-  const { currentInstitution, currentUser, stamp } = useSharedProps();
+  const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const nextTermResumptionDate =
+    classResultInfo.next_term_resumption_date ??
+    termDetail?.next_term_resumption_date;
 
   const resultSummary1 = [
-    { label: 'Student Name', value: student.user?.full_name },
+    { label: 'Name', value: student.user?.full_name },
     { label: 'Class', value: termResult.classification?.title },
     { label: 'No in Class', value: classResultInfo.num_of_students },
     // { label: 'Average Score', value: termResult.average },
@@ -69,19 +68,11 @@ export default function Template6(props: ResultProps) {
       label: 'Term',
       value: startCase(termResult.term),
     },
-    // { label: 'Session', value: academicSession.title },
-    // { label: 'Student Id', value: student.code },
-    ...(classResultInfo.next_term_resumption_date
+    ...(nextTermResumptionDate
       ? [
           {
             label: 'Next Term Begins',
-            value: (
-              <DateTimeDisplay
-                as={'span'}
-                dateTime={classResultInfo.next_term_resumption_date}
-                dateTimeformat={dateFormat}
-              />
-            ),
+            value: formatAsDate(nextTermResumptionDate),
           },
         ]
       : []),
@@ -92,26 +83,12 @@ export default function Template6(props: ResultProps) {
       label: 'No of Times School Held',
       value: termDetail?.expected_attendance_count,
     },
-    {
-      label: 'Opening Date',
-      value: (
-        <DateTimeDisplay
-          as={'span'}
-          dateTime={termDetail?.start_date}
-          dateTimeformat={dateFormat}
-        />
-      ),
-    },
-    {
-      label: 'Closing Date',
-      value: (
-        <DateTimeDisplay
-          as={'span'}
-          dateTime={termDetail?.end_date}
-          dateTimeformat={dateFormat}
-        />
-      ),
-    },
+    ...(termDetail?.start_date
+      ? [{ label: 'Opening Date', value: formatAsDate(termDetail?.start_date) }]
+      : []),
+    ...(termDetail?.end_date
+      ? [{ label: 'Closing Date', value: formatAsDate(termDetail?.end_date) }]
+      : []),
   ];
 
   function LocalLabelText({
@@ -205,22 +182,6 @@ export default function Template6(props: ResultProps) {
         </Div>
       ),
     },
-    // {
-    //   label: 'Highest',
-    //   render: (courseResult) => (
-    //     <Div className="cell">
-    //       {String(courseResultInfoData[courseResult.course_id]?.max_score)}
-    //     </Div>
-    //   ),
-    // },
-    // {
-    //   label: 'Lowest',
-    //   render: (courseResult) => (
-    //     <Div className="cell">
-    //       {String(courseResultInfoData[courseResult.course_id]?.min_score)}
-    //     </Div>
-    //   ),
-    // },
     {
       label: 'Remark',
       render: (courseResult) => (
@@ -276,7 +237,7 @@ export default function Template6(props: ResultProps) {
               fontWeight={'bold'}
               as={'p'}
             >
-              Student {termResult.term} Term Report Sheet |{' '}
+              {ucFirst(termResult.term)} Term Report Sheet |{' '}
               {academicSession.title} Session
             </Text>
           </VStack>

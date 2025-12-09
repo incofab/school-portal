@@ -53,23 +53,39 @@ export default function ListTermDetails({ termDetail, termDetails }: Props) {
     {
       label: 'Start Date',
       value: 'start_date',
-      render: (row) => (
-        <DateTimeDisplay
-          dateTime={row.start_date}
-          dateTimeformat={dateFormat}
-        />
-      ),
+      render: (row) =>
+        row.start_date ? (
+          <DateTimeDisplay
+            dateTime={row.start_date}
+            dateTimeformat={dateFormat}
+          />
+        ) : null,
     },
     {
       label: 'End Date',
       value: 'end_date',
-      render: (row) => (
-        <DateTimeDisplay dateTime={row.end_date} dateTimeformat={dateFormat} />
-      ),
+      render: (row) =>
+        row.end_date ? (
+          <DateTimeDisplay
+            dateTime={row.end_date}
+            dateTimeformat={dateFormat}
+          />
+        ) : null,
     },
     {
       label: 'School Held',
       value: 'expected_attendance_count',
+    },
+    {
+      label: 'Next Term Resumption',
+      value: 'next_term_resumption_date',
+      render: (row) =>
+        row.next_term_resumption_date ? (
+          <DateTimeDisplay
+            dateTime={row.next_term_resumption_date}
+            dateTimeformat={dateFormat}
+          />
+        ) : null,
     },
     {
       label: 'Action',
@@ -126,6 +142,9 @@ function UpdateTermDetail({ termDetail }: { termDetail: TermDetail }) {
     expected_attendance_count: String(
       termDetail.expected_attendance_count ?? ''
     ),
+    next_term_resumption_date: termDetail.next_term_resumption_date
+      ? format(new Date(termDetail.next_term_resumption_date), dateFormat)
+      : '',
   });
 
   const onSubmit = async () => {
@@ -166,6 +185,19 @@ function UpdateTermDetail({ termDetail }: { termDetail: TermDetail }) {
           type={'date'}
           value={webForm.data.end_date}
           onChange={(e) => webForm.setValue('end_date', e.currentTarget.value)}
+        />
+      </FormControlBox>
+      <FormControlBox
+        form={webForm as any}
+        title="Next Term Resumption Date [Optional]"
+        formKey="next_term_resumption_date"
+      >
+        <Input
+          type={'date'}
+          value={webForm.data.next_term_resumption_date}
+          onChange={(e) =>
+            webForm.setValue('next_term_resumption_date', e.currentTarget.value)
+          }
         />
       </FormControlBox>
       <InputForm

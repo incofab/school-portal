@@ -20,6 +20,7 @@ class TermDetail extends Model
     'expected_attendance_count' => 'integer',
     'start_date' => 'date',
     'end_date' => 'date',
+    'next_term_resumption_date' => 'date',
     'is_activated' => 'boolean'
   ];
 

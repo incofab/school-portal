@@ -11,6 +11,7 @@ import Template4 from './template-4';
 import Template5 from './template-5';
 import Template6 from './template-6';
 import Template7 from './template-7';
+import Template8 from './template-8';
 
 interface Props {
   results: ResultProps[];
@@ -53,6 +54,7 @@ const components = {
   template5: Template5,
   template6: Template6,
   template7: Template7,
+  template8: Template8,
 };
 
 type ComponentName = keyof typeof components;

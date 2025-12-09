@@ -51,7 +51,7 @@ Route::get('/activate-result/{instUuid}', function ($instUuid) {
 });
 
 Route::get(
-    '{institution}/students/signed-result-sheet/{student}/{classification}/{academicSession}/{term}/{forMidTerm}',
+    '{institution}/students/signed-result-sheet/{student}/{classification}/{academicSession}/{term}/{forMidTerm?}',
     [Web\Institutions\Students\ViewResultSheetController::class, 'viewResultSigned']
 )->name('institutions.students.result-sheet.signed');
 Route::any(

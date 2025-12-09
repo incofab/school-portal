@@ -20,9 +20,11 @@ import DisplayTermResultEvaluation from '@/components/display-term-result-evalua
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import DataTable, { TableHeader } from '@/components/data-table';
 import { CourseResult } from '@/types/models';
-import ResultSheetLayout from './result-sheet-layout';
-import DateTimeDisplay from '@/components/date-time-display';
-import { dateFormat } from '@/util/util';
+import ResultSheetLayout, {
+  ClosingDate,
+  NextTermDate,
+} from './result-sheet-layout';
+import { formatAsDate } from '@/util/util';
 
 const PDF_URL = import.meta.env.VITE_PDF_URL;
 export default function Template5(props: ResultProps) {
@@ -38,12 +40,16 @@ export default function Template5(props: ResultProps) {
     courseResultInfoData,
     signed_url,
     learningEvaluations,
+    termDetail,
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const nextTermResumptionDate =
+    classResultInfo.next_term_resumption_date ??
+    termDetail?.next_term_resumption_date;
 
   const resultSummary1 = [
-    { label: 'Student Name', value: student.user?.full_name },
+    { label: 'Name', value: student.user?.full_name },
     { label: 'Class', value: termResult.classification?.title },
     { label: 'No in Class', value: classResultInfo.num_of_students },
     { label: 'Average Score', value: termResult.average },
@@ -58,6 +64,9 @@ export default function Template5(props: ResultProps) {
               : ResultUtil.formatPosition(termResult.position),
           },
         ]),
+    ...(termDetail?.end_date
+      ? [{ label: 'Closing Date', value: formatAsDate(termDetail.end_date) }]
+      : []),
   ];
   const resultSummary2 = [
     {
@@ -65,54 +74,16 @@ export default function Template5(props: ResultProps) {
       value: startCase(termResult.term),
     },
     { label: 'Session', value: academicSession.title },
-    { label: 'Student Id', value: student.code },
-    ...(classResultInfo.next_term_resumption_date
+    { label: 'Portal Id', value: student.code },
+    ...(nextTermResumptionDate
       ? [
           {
             label: 'Next Term Begins',
-            value: (
-              <DateTimeDisplay
-                as={'span'}
-                dateTime={classResultInfo.next_term_resumption_date}
-                dateTimeformat={dateFormat}
-              />
-            ),
+            value: formatAsDate(nextTermResumptionDate),
           },
         ]
       : []),
   ];
-
-  // async function downloadAsPdf() {
-  //   if (!confirm('Do you want to download this result?')) {
-  //     return;
-  //   }
-  //   const filename = `${validFilename(student.user?.full_name)}-result-${
-  //     termResult.term
-  //   }-${termResult.id}.pdf`;
-  //   const res = await downloadPdfForm.submit((data, web) =>
-  //     web.post(route('pdf-bridge'), {
-  //       url: signed_url,
-  //       filename: filename,
-  //     })
-  //   );
-
-  //   if (!handleResponseToast(res)) {
-  //     exportPdf();
-  //     return;
-  //   }
-  //   window.location.href = route('pdf-bridge-download', { filename });
-  //   // const url = new URL(`${PDF_URL}/download`);
-  //   // url.searchParams.set('filename', filename);
-  //   // // window.location.href = url.toString();
-  //   // window.open(url.toString(), '_blank');
-  // }
-
-  // function exportPdf() {
-  //   ResultUtil.exportAsPdf(
-  //     'result-sheet',
-  //     student.user?.full_name + 'result-sheet'
-  //   );
-  // }
 
   function LabelText({
     label,
@@ -289,7 +260,7 @@ export default function Template5(props: ResultProps) {
           textAlign={'center'}
           fontSize={'18px'}
         >
-          Student Report Sheet
+          Performance Report Sheet
         </Text>
       </Div>
     );
