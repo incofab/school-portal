@@ -434,6 +434,11 @@ export interface TermResult extends InstitutionRow {
   academic_session?: AcademicSession;
 }
 
+export interface TermDayReason {
+  date: string;
+  reason: string;
+}
+
 export interface TermDetail extends InstitutionRow {
   academic_session_id: number;
   term: TermType;
@@ -441,6 +446,9 @@ export interface TermDetail extends InstitutionRow {
   end_date?: string;
   next_term_resumption_date?: string;
   expected_attendance_count?: number;
+  inactive_weekdays?: number[];
+  special_active_days?: TermDayReason[];
+  inactive_days?: TermDayReason[];
   for_mid_term: boolean;
   academic_session?: AcademicSession;
 }

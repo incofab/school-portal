@@ -5,7 +5,9 @@ use App\Enums\AttendanceType;
 use App\Models\Attendance;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
+use App\Support\SettingsHandler;
 use App\Support\Res;
+use Illuminate\Support\Carbon;
 
 class RecordAttendance
 {
@@ -26,6 +28,11 @@ class RecordAttendance
 
   public function run(): Res
   {
+    $activeDayCheck = $this->ensureActiveDay();
+    if ($activeDayCheck->isNotSuccessful()) {
+      return $activeDayCheck;
+    }
+
     if ($this->post['type'] === AttendanceType::In->value) {
       return $this->checkIn();
     } else {
@@ -73,6 +80,18 @@ class RecordAttendance
         'signed_out_at' => now()
       ])
       ->save();
+    return successRes();
+  }
+
+  private function ensureActiveDay(): Res
+  {
+    $termDetail = SettingsHandler::makeFromRoute()->fetchCurrentTermDetail();
+    $today = Carbon::now();
+
+    if (!$termDetail->isActiveOnDate($today)) {
+      return failRes('Attendance can only be recorded on active school days.');
+    }
+
     return successRes();
   }
 }

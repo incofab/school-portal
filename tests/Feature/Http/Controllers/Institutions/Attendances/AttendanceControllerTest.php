@@ -1,9 +1,16 @@
 <?php
 
 use App\Enums\AttendanceType;
+use App\Enums\InstitutionSettingType;
+use App\Enums\TermType;
+use App\Models\AcademicSession;
 use App\Models\Attendance;
 use App\Models\Institution;
+use App\Models\InstitutionSetting;
 use App\Models\InstitutionUser;
+use App\Models\TermDetail;
+use App\Support\SettingsHandler;
+use Carbon\Carbon;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertSoftDeleted;
@@ -19,6 +26,28 @@ beforeEach(function () {
     ->withInstitution($this->institution)
     ->teacher()
     ->create();
+  $this->academicSession = AcademicSession::factory()->create();
+
+  InstitutionSetting::factory()
+    ->term($this->institution, TermType::First->value)
+    ->create();
+  InstitutionSetting::factory()
+    ->academicSession($this->institution, $this->academicSession)
+    ->create();
+  SettingsHandler::clear();
+
+  $this->termDetail = TermDetail::factory()->create([
+    'institution_id' => $this->institution->id,
+    'academic_session_id' => $this->academicSession->id,
+    'term' => TermType::First->value,
+    'inactive_weekdays' => [],
+    'special_active_days' => [],
+    'inactive_days' => []
+  ]);
+});
+
+afterEach(function () {
+  Carbon::setTestNow();
 });
 
 // Test the create attendance view renders properly
@@ -34,6 +63,7 @@ it('renders the create attendance view for authorized users', function () {
 
 // Test attendance store with 'sign-in' type
 it('allows authorized user to store a sign-in attendance record', function () {
+  Carbon::setTestNow(Carbon::parse('2024-06-04 08:00:00'));
   $institutionStaffUser = $this->admin
     ->institutionUsers()
     ->where('institution_id', $this->institution->id)
@@ -58,9 +88,7 @@ it('allows authorized user to store a sign-in attendance record', function () {
     'institution_id' => $this->institution->id,
     'institution_user_id' => $this->institutionUser->id,
     'institution_staff_user_id' => $institutionStaffUser->id,
-    'remark' => 'Arrived on time',
-    'signed_in_at' => now(),
-    'signed_out_at' => null
+    'remark' => 'Arrived on time'
   ]);
 });
 
@@ -68,6 +96,7 @@ it('allows authorized user to store a sign-in attendance record', function () {
 it(
   'allows authorized user to store a sign-out attendance record if signed in',
   function () {
+    Carbon::setTestNow(Carbon::parse('2024-06-04 15:00:00'));
     $remark = 'Existing remark';
     $signInAttendance = Attendance::factory()
       ->signedInOnly()
@@ -94,9 +123,89 @@ it(
     $signInAttendance->refresh();
     assertDatabaseHas('attendances', [
       'id' => $signInAttendance->id,
-      'remark' => "$remark End of shift",
-      'signed_out_at' => now()
+      'remark' => "$remark End of shift"
     ]);
+    expect($signInAttendance->signed_out_at)->not->toBeNull();
+  }
+);
+
+it('rejects attendance on inactive weekday', function () {
+  Carbon::setTestNow(Carbon::parse('2024-06-03 09:00:00')); // Monday -> project weekday 0
+  $this->termDetail->update(['inactive_weekdays' => [0]]);
+
+  $payload = [
+    'institution_user_id' => $this->institutionUser->id,
+    'reference' => Str::orderedUuid(),
+    'type' => AttendanceType::In->value,
+    'remark' => 'Attempt on inactive day'
+  ];
+
+  $route = route('institutions.attendances.store', [
+    'institution' => $this->institution
+  ]);
+
+  actingAs($this->admin)
+    ->postJson($route, $payload)
+    ->assertStatus(401)
+    ->assertJson([
+      'message' => 'Attendance can only be recorded on active school days.'
+    ]);
+});
+
+it(
+  'allows attendance on special active day within inactive weekdays',
+  function () {
+    Carbon::setTestNow(Carbon::parse('2024-06-09 09:00:00')); // Sunday -> project weekday 6
+    $this->termDetail->update([
+      'inactive_weekdays' => [6],
+      'special_active_days' => [
+        ['date' => '2024-06-09', 'reason' => 'Make-up class']
+      ]
+    ]);
+
+    $payload = [
+      'institution_user_id' => $this->institutionUser->id,
+      'reference' => Str::orderedUuid(),
+      'type' => AttendanceType::In->value,
+      'remark' => 'Allowed special day'
+    ];
+
+    $route = route('institutions.attendances.store', [
+      'institution' => $this->institution
+    ]);
+
+    actingAs($this->admin)
+      ->postJson($route, $payload)
+      ->assertOk();
+  }
+);
+
+it(
+  'rejects attendance on inactive specific day even if weekday is active',
+  function () {
+    Carbon::setTestNow(Carbon::parse('2024-06-04 09:00:00')); // Tuesday -> project weekday 1 (active)
+    $this->termDetail->update([
+      'inactive_weekdays' => [],
+      'inactive_days' => [['date' => '2024-06-04', 'reason' => 'Holiday']]
+    ]);
+
+    $payload = [
+      'institution_user_id' => $this->institutionUser->id,
+      'reference' => Str::orderedUuid(),
+      'type' => AttendanceType::In->value,
+      'remark' => 'Attempt on inactive date'
+    ];
+
+    $route = route('institutions.attendances.store', [
+      'institution' => $this->institution
+    ]);
+
+    actingAs($this->admin)
+      ->postJson($route, $payload)
+      ->assertStatus(401)
+      ->assertJson([
+        'message' => 'Attendance can only be recorded on active school days.'
+      ]);
   }
 );
 

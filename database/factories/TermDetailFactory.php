@@ -27,6 +27,26 @@ class TermDetailFactory extends Factory
         ->toDateString(),
       'end_date' => now()
         ->addDay(20)
+        ->toDateString(),
+      'inactive_weekdays' => [5, 6],
+      'special_active_days' => [
+        [
+          'date' => now()
+            ->addDays(5)
+            ->toDateString(),
+          'reason' => 'Weekend workshop'
+        ]
+      ],
+      'inactive_days' => [
+        [
+          'date' => now()
+            ->addDays(10)
+            ->toDateString(),
+          'reason' => 'Public holiday'
+        ]
+      ],
+      'next_term_resumption_date' => now()
+        ->addDays(40)
         ->toDateString()
     ];
   }

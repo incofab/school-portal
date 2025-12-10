@@ -64,7 +64,33 @@ it('updates a term detail with valid data', function () {
     'start_date' => now()
       ->subDays(5)
       ->toDateString(),
-    'end_date' => now()->toDateString()
+    'end_date' => now()->toDateString(),
+    'next_term_resumption_date' => now()
+      ->addWeek()
+      ->toDateString(),
+    'inactive_weekdays' => [5, 6],
+    'special_active_days' => [
+      [
+        'date' => now()
+          ->addDays(2)
+          ->toDateString(),
+        'reason' => 'Weekend class'
+      ]
+    ],
+    'inactive_days' => [
+      [
+        'date' => now()
+          ->addDays(3)
+          ->toDateString(),
+        'reason' => 'Public holiday'
+      ],
+      [
+        'date' => now()
+          ->addDays(4)
+          ->toDateString(),
+        'reason' => 'Staff training'
+      ]
+    ]
   ];
 
   actingAs($this->instAdmin)
@@ -76,7 +102,12 @@ it('updates a term detail with valid data', function () {
     ->start_date->toDateString()
     ->toBe($payload['start_date'])
     ->end_date->toDateString()
-    ->toBe($payload['end_date']);
+    ->toBe($payload['end_date'])
+    ->next_term_resumption_date->toDateString()
+    ->toBe($payload['next_term_resumption_date'])
+    ->inactive_weekdays->toMatchArray($payload['inactive_weekdays'])
+    ->special_active_days->toBe($payload['special_active_days'])
+    ->inactive_days->toBe($payload['inactive_days']);
 });
 
 it('validates update term detail payload', function () {
@@ -84,13 +115,31 @@ it('validates update term detail payload', function () {
   $payload = [
     'expected_attendance_count' => 'not-an-integer',
     'start_date' => 'invalid-date',
-    'end_date' => 'invalid-date'
+    'end_date' => 'invalid-date',
+    'next_term_resumption_date' => 'not-a-date',
+    'inactive_weekdays' => ['sun'],
+    'special_active_days' => [
+      [
+        'date' => 'not-a-date'
+      ]
+    ],
+    'inactive_days' => [
+      [
+        'reason' => ''
+      ]
+    ]
   ];
   actingAs($this->instAdmin)
     ->putJson($this->updateRoute, $payload)
     ->assertJsonValidationErrors([
       'expected_attendance_count',
       'start_date',
-      'end_date'
+      'end_date',
+      'next_term_resumption_date',
+      'inactive_weekdays.0',
+      'special_active_days.0.date',
+      'special_active_days.0.reason',
+      'inactive_days.0.date',
+      'inactive_days.0.reason'
     ]);
 });
