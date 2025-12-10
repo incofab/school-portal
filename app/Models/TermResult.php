@@ -29,7 +29,7 @@ class TermResult extends Model
   ];
 
   //https://edumanager.ng/9f3f2dd1-400d-4e7f-8d2d-ba1a30a5f6d9/students/signed-result-sheet/10950/864/5/first/false?expires=1765312485&signature=e458484818440bf0129fa353c54df9b9f640128a67fe956525e58fb42ce1fdaa
-  function signedUrl()
+  function signedUrl($absolute = true)
   {
     return URL::temporarySignedRoute(
       'institutions.students.result-sheet.signed',
@@ -41,7 +41,8 @@ class TermResult extends Model
         $this->academic_session_id,
         $this->term->value,
         $this->for_mid_term ?? false
-      ]
+      ],
+      $absolute
     );
   }
 

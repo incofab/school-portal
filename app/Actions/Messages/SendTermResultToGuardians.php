@@ -86,7 +86,7 @@ class SendTermResultToGuardians
     $term = $termResult->for_mid_term
       ? 'Mid-'
       : '' . ucfirst($termResult->term->value ?? '');
-    $url = $termResult->signedUrl();
+    // $url = $termResult->signedUrl();
     $phone = $student->guardian_phone ?? $student->guardian?->phone;
     // $phone = '07036098561';
     if (!$phone) {
@@ -129,7 +129,7 @@ class SendTermResultToGuardians
               [
                 'type' => 'text',
                 'parameter_name' => 'result_link',
-                'text' => $url
+                'text' => $termResult->signedUrl()
               ]
             ]
           ],
@@ -141,7 +141,7 @@ class SendTermResultToGuardians
               [
                 'type' => 'text',
                 'parameter_name' => '1',
-                'text' => $url
+                'text' => trim($termResult->signedUrl(false), '/')
               ]
             ]
           ]
