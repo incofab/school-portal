@@ -9,6 +9,7 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 interface Props {
   rolesIn?: string[];
   rolesExclude?: string[];
+  valueKey?: string;
 }
 
 export default function InstitutionUserSelect<
@@ -18,6 +19,7 @@ export default function InstitutionUserSelect<
 >({
   rolesIn,
   rolesExclude,
+  valueKey,
   ...props
 }: Props & AsyncProps<Option, IsMulti, Group>) {
   if (!rolesIn && !rolesExclude) {
@@ -34,7 +36,7 @@ export default function InstitutionUserSelect<
       label={(item: InstitutionUser) =>
         item.user!.full_name + ' - ' + item.role
       }
-      valueKey="id"
+      valueKey={valueKey ?? 'id'}
       {...props}
     />
   );

@@ -215,6 +215,11 @@ export default function SideBarLayout() {
           route: instRoute('attendances.index'),
           roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
+        {
+          label: 'Attendance Report',
+          route: instRoute('attendance-reports.index'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
       ],
     },
     {

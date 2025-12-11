@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Institutions\Staff;
 
-use App\Actions\CourseResult\ClassResultInfoAction;
 use App\Actions\CourseResult\EvaluateCourseResultForClass;
 use App\Actions\CourseResult\RecordClassSheet;
 use App\Actions\CourseResult\RecordCourseResult;

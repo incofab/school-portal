@@ -22,7 +22,10 @@ import DataTable, { TableHeader } from '@/components/data-table';
 import { CourseResult } from '@/types/models';
 import ResultSheetLayout, {
   ClosingDate,
+  getWebsite,
   NextTermDate,
+  SchoolLogo,
+  StudentPassport,
 } from './result-sheet-layout';
 import { formatAsDate } from '@/util/util';
 
@@ -199,17 +202,13 @@ export default function Template5(props: ResultProps) {
           width={'100%'}
           justifyContent={'space-between'}
         >
+          <SchoolLogo />
           <Div mt={5} width={'full'}>
             <Text as={'span'} whiteSpace={'nowrap'}>
               Postal Address:
             </Text>
             <Text as={'span'}>{currentInstitution.address}</Text>
           </Div>
-          <Avatar
-            size={'2xl'}
-            name="Institution logo"
-            src={currentInstitution.photo ?? ImagePaths.default_school_logo}
-          />
           <Div width={'full'}>
             <Spacer height={5} />
             <VStack
@@ -222,13 +221,14 @@ export default function Template5(props: ResultProps) {
                 Email: {currentInstitution.email}
               </Text>
               <Text whiteSpace={'nowrap'}>
-                Website: {currentInstitution.website}
+                Website: {getWebsite(currentInstitution)}
               </Text>
               <Text whiteSpace={'nowrap'}>
                 Phone: {currentInstitution.phone}
               </Text>
             </VStack>
           </Div>
+          <StudentPassport student={student} />
         </HStack>
         <Divider height={2} backgroundColor={'#550d98'} opacity={1} />
         <Flex

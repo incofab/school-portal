@@ -4,7 +4,7 @@ import ServerPaginatedTable, {
 import useModalToggle from '@/hooks/use-modal-toggle';
 import { TermResult } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
-import { IconButton, Text } from '@chakra-ui/react';
+import { Icon, IconButton, Text } from '@chakra-ui/react';
 import startCase from 'lodash/startCase';
 import React from 'react';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -105,7 +105,7 @@ export default function ListTermResults({ termResults }: Props) {
             >
               <IconButton
                 aria-label="Delete Result"
-                icon={<TrashIcon />}
+                icon={<Icon as={TrashIcon} />}
                 variant="ghost"
                 colorScheme="red"
               />

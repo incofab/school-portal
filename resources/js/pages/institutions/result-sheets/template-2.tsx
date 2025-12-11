@@ -13,13 +13,17 @@ import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
 import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
-import ImagePaths from '@/util/images';
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
-import { GradingTable } from '@/components/result-helper-components';
+import { GradingTable, LabelText } from '@/components/result-helper-components';
 import ResultSheetLayout, {
   ClosingDate,
+  getWebsite,
   NextTermDate,
+  SchoolLogo,
+  SchoolStamp,
+  StudentPassport,
 } from './result-sheet-layout';
+import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
 
 export default function Template2(props: ResultProps) {
   const {
@@ -30,10 +34,10 @@ export default function Template2(props: ResultProps) {
     classification,
     student,
     resultCommentTemplate,
+    learningEvaluations,
   } = props;
   const { currentInstitution } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
-
   function VerticalText({ text }: { text: string }) {
     return <Text className="vertical-header">{text}</Text>;
   }
@@ -56,24 +60,24 @@ export default function Template2(props: ResultProps) {
     ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
       ?.comment_2;
 
-  function LabelText({
-    label,
-    text,
-  }: {
-    label: string;
-    text: string | number | undefined;
-  }) {
-    return (
-      <Div>
-        <Text as={'span'} fontWeight={'semibold'}>
-          {label}:
-        </Text>
-        <Text as={'span'} ml={3}>
-          {text}
-        </Text>
-      </Div>
-    );
-  }
+  // function LabelText({
+  //   label,
+  //   text,
+  // }: {
+  //   label: string;
+  //   text: string | number | undefined;
+  // }) {
+  //   return (
+  //     <Div>
+  //       <Text as={'span'} fontWeight={'semibold'}>
+  //         {label}:
+  //       </Text>
+  //       <Text as={'span'} ml={3}>
+  //         {text}
+  //       </Text>
+  //     </Div>
+  //   );
+  // }
 
   function getAssessmentScore(courseResult: CourseResult) {
     let total = 0;
@@ -88,11 +92,7 @@ export default function Template2(props: ResultProps) {
       <Div mx={'auto'} width={'900px'} px={3} id="result-sheet">
         <VStack align={'stretch'}>
           <HStack background={'#FAFAFA'} p={2}>
-            <Avatar
-              size={'2xl'}
-              name="Institution logo"
-              src={currentInstitution.photo ?? ImagePaths.default_school_logo}
-            />
+            <SchoolLogo />
             <VStack
               spacing={0}
               align={'stretch'}
@@ -127,6 +127,7 @@ export default function Template2(props: ResultProps) {
               <Div>
                 <Text>
                   {currentInstitution.phone} | {currentInstitution.email}
+                  {getWebsite(currentInstitution)}
                 </Text>
               </Div>
               <Div>
@@ -149,19 +150,32 @@ export default function Template2(props: ResultProps) {
                 </Text>
               </Div>
             </VStack>
-            <Avatar size="xl" name="Learner" src={student.user?.photo ?? ''} />
+            <StudentPassport student={student} />
           </HStack>
           <Div>
             <Flex flexDirection={'row'} justifyContent={'space-between'}>
-              <LabelText label="Name" text={student?.user?.full_name} />
-              <LabelText label="Class" text={classification.title} />
+              <LabelText
+                labelProps={{ fontWeight: 'semibold' }}
+                label="Name"
+                text={student?.user?.full_name}
+              />
+              <LabelText
+                labelProps={{ fontWeight: 'semibold' }}
+                label="Class"
+                text={classification.title}
+              />
             </Flex>
             <Flex mt={1} flexDirection={'row'} justifyContent={'space-between'}>
               <LabelText
+                labelProps={{ fontWeight: 'semibold' }}
                 label="No of Class"
                 text={classResultInfo.num_of_students}
               />
-              <LabelText label="Gender" text={student.user?.gender} />
+              <LabelText
+                labelProps={{ fontWeight: 'semibold' }}
+                label="Gender"
+                text={student.user?.gender}
+              />
             </Flex>
             <Flex mt={1} flexDirection={'row'} justifyContent={'space-between'}>
               <ClosingDate resultProps={props} />
@@ -214,36 +228,85 @@ export default function Template2(props: ResultProps) {
             </div>
           </div>
           <Spacer height={'10px'} />
-          {hidePosition ? (
-            <></>
-          ) : (
-            <LabelText label="Position" text={termResult.position} />
-          )}
+          <HStack justifyContent={'space-between'}>
+            {hidePosition ? (
+              <></>
+            ) : (
+              <>
+                <LabelText
+                  labelProps={{ fontWeight: 'semibold' }}
+                  label="Position"
+                  text={
+                    showGrade
+                      ? ResultUtil.getGrade(
+                          termResult.average,
+                          resultCommentTemplate
+                        ).grade
+                      : termResult.position
+                  }
+                />
+                <LabelText
+                  labelProps={{ fontWeight: 'semibold' }}
+                  textProps={{ fontWeight: 'bold', textTransform: 'uppercase' }}
+                  label="Overal Result"
+                  text={
+                    ResultUtil.getGrade(
+                      termResult.average,
+                      resultCommentTemplate
+                    ).remark
+                  }
+                />
+              </>
+            )}
+          </HStack>
           <HStack>
-            <LabelText label="Overal Result" text={termResult.total_score} />
+            <LabelText
+              labelProps={{ fontWeight: 'semibold' }}
+              label="Overal Score"
+              text={termResult.total_score}
+            />
             <Spacer />
             <LabelText
+              labelProps={{ fontWeight: 'semibold' }}
               label="Obtainable"
               text={classResultInfo.max_obtainable_score}
             />
             <Spacer />
-            <LabelText label="Obtained" text={classResultInfo.max_score} />
+            <LabelText
+              labelProps={{ fontWeight: 'semibold' }}
+              label="Obtained"
+              text={classResultInfo.max_score}
+            />
             <Spacer />
-            <LabelText label="Average" text={termResult.average} />
+            <LabelText
+              labelProps={{ fontWeight: 'semibold' }}
+              label="Average"
+              text={termResult.average?.toFixed(2)}
+            />
           </HStack>
           <Spacer height={'5px'} />
-          <div>
-            <table className="result-analysis-table">
-              <tbody>
-                {resultDetail.map(({ label, value }) => (
-                  <tr key={'result analysis' + label}>
-                    <td style={{ width: '250px' }}>{label}</td>
-                    <td>{value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <HStack>
+            {learningEvaluations.length > 0 && (
+              <Div flex={3}>
+                <DisplayTermResultEvaluation
+                  termResult={termResult}
+                  learningEvaluations={learningEvaluations}
+                />
+              </Div>
+            )}
+            <Div flex={1}>
+              <table className="result-analysis-table">
+                <tbody>
+                  {resultDetail.map(({ label, value }) => (
+                    <tr key={'result analysis' + label}>
+                      <td style={{ width: '250px' }}>{label}</td>
+                      <td>{value?.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Div>
+          </HStack>
           {teacherComment && (
             <>
               <HStack align={'stretch'}>
@@ -259,7 +322,7 @@ export default function Template2(props: ResultProps) {
             <>
               <HStack align={'stretch'}>
                 <Text fontWeight={'semibold'} size={'xs'}>
-                  Administrator's comment:{' '}
+                  Principal/Head Teacher:{' '}
                 </Text>
                 <Text>{principalComment}</Text>
               </HStack>
@@ -267,6 +330,9 @@ export default function Template2(props: ResultProps) {
             </>
           )}
         </VStack>
+        <Div position={'absolute'} bottom={250} opacity={'0.5'} right={300}>
+          <SchoolStamp />
+        </Div>
       </Div>
     </ResultSheetLayout>
   );

@@ -3,6 +3,11 @@ import { ResultProps } from '@/util/result-util';
 import { formatAsDate, validFilename } from '@/util/util';
 import PagePrintLayout from '@/domain/institutions/page-print-layout';
 import { LabelText } from '@/components/result-helper-components';
+import useSharedProps from '@/hooks/use-shared-props';
+import { Div } from '@/components/semantic';
+import { Avatar, Img } from '@chakra-ui/react';
+import ImagePaths from '@/util/images';
+import { Institution, Student } from '@/types/models';
 interface Props {
   useBgStyle?: boolean;
   resultProps: ResultProps;
@@ -56,4 +61,33 @@ export function NextTermDate({ resultProps }: { resultProps: ResultProps }) {
       text={formatAsDate(nextTermResumptionDate)}
     />
   ) : null;
+}
+
+export function SchoolStamp() {
+  const { stamp } = useSharedProps();
+  return (
+    <Div>
+      <Img src={stamp} alt="School stamp" display={'inline-block'} />
+    </Div>
+  );
+}
+
+export function SchoolLogo() {
+  const { currentInstitution } = useSharedProps();
+  return (
+    <Avatar
+      size={'2xl'}
+      name="Institution logo"
+      src={currentInstitution.photo ?? ImagePaths.default_school_logo}
+    />
+  );
+}
+
+export function StudentPassport({ student }: { student: Student }) {
+  return <Avatar size="xl" name="Learner" src={student.user?.photo ?? ''} />;
+}
+
+export function getWebsite(institution: Institution) {
+  const website = institution.website ?? institution.institution_group?.website;
+  return website ? `https://${website}` : '';
 }

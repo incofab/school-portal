@@ -20,9 +20,16 @@ export default function PageDownloadButton({
     if (!confirm('Do you want to download this result?')) {
       return;
     }
-    window.location.href = `${pdfUrl}?url=${encodeURIComponent(
+    const url = `${pdfUrl}?url=${encodeURIComponent(
       signed_url!
     )}&name=${encodeURIComponent(filename)}`;
+
+    const a = document.createElement('a');
+    a.href = url;
+    // a.download = filename; // may be ignored cross-origin
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   }
 
   function exportPdf() {

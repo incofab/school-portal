@@ -74,7 +74,7 @@ class Institution extends Model
               ->with('student')
           )
       )
-      ->with('institutionSettings')
+      ->with('institutionSettings', 'institutionGroup')
       ->first();
 
     abort_unless($institutionModel, 403, 'Institution not found for this user');

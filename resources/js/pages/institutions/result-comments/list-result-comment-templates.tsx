@@ -74,7 +74,7 @@ export default function ListResultCommentTemplates({
           : 'All Classes',
     },
     {
-      label: 'Comment (Principal)',
+      label: 'Comment (Principal/Head Teacher)',
       value: 'comment',
     },
     {
@@ -278,7 +278,7 @@ function CreateUpdateResultCommentTemplates({
             <FormControlBox
               form={webForm as any}
               formKey="comment"
-              title="Comment (Principal)"
+              title="Comment (Principal/Head Teacher)"
             >
               <Textarea
                 value={webForm.data.comment}

@@ -37,6 +37,7 @@ export default function CalculateClassResultInfoModal({
     term: currentTerm,
     classification: '',
     for_mid_term: false,
+    force_calculate_term_result: false,
   });
 
   const onSubmit = async () => {
@@ -59,7 +60,7 @@ export default function CalculateClassResultInfoModal({
       props={{ isOpen, onClose }}
       headerContent={'Evaluate Student Result'}
       bodyContent={
-        <VStack>
+        <VStack spacing={3}>
           {isAdmin && (
             <FormControlBox
               form={webForm as any}
@@ -119,6 +120,24 @@ export default function CalculateClassResultInfoModal({
               </Checkbox>
             </FormControlBox>
           )}
+          <FormControlBox
+            form={webForm as any}
+            formKey="force_calculate_term_result"
+            title=""
+          >
+            <Checkbox
+              isChecked={webForm.data.force_calculate_term_result}
+              onChange={(e) =>
+                webForm.setValue(
+                  'force_calculate_term_result',
+                  e.currentTarget.checked
+                )
+              }
+            >
+              Allow Term Result to be calculated even if some results have not
+              been recorded
+            </Checkbox>
+          </FormControlBox>
         </VStack>
       }
       footerContent={

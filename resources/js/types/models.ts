@@ -270,6 +270,7 @@ export interface Attendance extends InstitutionRow {
   institution_staff_user_id: number;
   institution_user_id: number;
   institution_user: InstitutionUser;
+  staff_user?: InstitutionUser;
   remark: string;
   signed_in_at: string;
   signed_out_at: string;

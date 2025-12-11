@@ -24,9 +24,11 @@ export const GradingTable = ({
         const { grade, grade_label } = item;
         return (
           <tr key={grade}>
-            <td>{`${item.min} - ${item.max}`}</td>
-            <td>{grade_label}</td>
-            <td>{grade}</td>
+            <td
+              style={{ fontWeight: 'normal', maxLines: 1 }}
+            >{`${item.min} - ${item.max}`}</td>
+            <td style={{ fontWeight: 'normal', maxLines: 1 }}>{grade_label}</td>
+            <td style={{ fontWeight: 'normal', maxLines: 1 }}>{grade}</td>
           </tr>
         );
       })}
@@ -50,7 +52,7 @@ export const LabelText = function ({
     <Div {...props}>
       <Text
         as={'span'}
-        fontWeight={'semibold'}
+        fontWeight={'normal'}
         display={'inline-block'}
         {...labelProps}
       >
