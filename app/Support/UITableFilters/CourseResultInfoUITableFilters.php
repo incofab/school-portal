@@ -3,6 +3,7 @@
 namespace App\Support\UITableFilters;
 
 use App\Enums\TermType;
+use App\Models\InstitutionUser;
 use Illuminate\Validation\Rules\Enum;
 
 class CourseResultInfoUITableFilters extends BaseUITableFilter
@@ -35,6 +36,32 @@ class CourseResultInfoUITableFilters extends BaseUITableFilter
         'courses.id',
         'course_result_info.course_id'
       )
+    );
+    return $this;
+  }
+
+  private function joinClassification(): static
+  {
+    $this->callOnce(
+      'joinClassification',
+      fn() => $this->baseQuery->join(
+        'classifications',
+        'classifications.id',
+        'course_result_info.classification_id'
+      )
+    );
+    return $this;
+  }
+
+  function forFormTeacher(?InstitutionUser $institutionUser = null): static
+  {
+    if (!$institutionUser || !$institutionUser->isTeacher()) {
+      return $this;
+    }
+
+    $this->baseQuery->where(
+      'classifications.form_teacher_id',
+      $institutionUser->user_id
     );
     return $this;
   }
