@@ -3,6 +3,7 @@ import { Resizer } from './image-file-resizer';
 import objectGet from 'lodash/get';
 import startCase from 'lodash/startCase';
 import { format } from 'date-fns';
+import round from 'lodash/round';
 
 export const dateFormat = 'yyyy-MM-dd';
 export const dateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
@@ -44,6 +45,14 @@ export function formatAsDate(dateStr?: string, dateTimeformat = dateFormat) {
 export function numberFormat(num: number) {
   const formatter1 = new Intl.NumberFormat();
   return formatter1.format(num);
+}
+
+export function roundNumber(num: any, precision?: number) {
+  const numValue = Number(num);
+  if (isNaN(numValue)) {
+    return 0;
+  }
+  return round(numValue, precision ?? 2);
 }
 
 export function resizeImage(file: Blob, maxWidth: number, maxHeight: number) {

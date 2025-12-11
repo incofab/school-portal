@@ -1,5 +1,4 @@
 import {
-  Avatar,
   BoxProps,
   Divider,
   Flex,
@@ -15,15 +14,12 @@ import startCase from 'lodash/startCase';
 import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
 import '@/style/template-5.css';
-import ImagePaths from '@/util/images';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import DataTable, { TableHeader } from '@/components/data-table';
 import { CourseResult } from '@/types/models';
 import ResultSheetLayout, {
-  ClosingDate,
   getWebsite,
-  NextTermDate,
   SchoolLogo,
   StudentPassport,
 } from './result-sheet-layout';

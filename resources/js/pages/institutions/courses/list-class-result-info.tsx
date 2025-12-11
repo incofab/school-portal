@@ -4,7 +4,17 @@ import ServerPaginatedTable, {
 import useModalToggle from '@/hooks/use-modal-toggle';
 import { ClassResultInfo, ClassificationGroup } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
-import { HStack, Icon, IconButton, Text } from '@chakra-ui/react';
+import {
+  Button,
+  HStack,
+  Icon,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
+} from '@chakra-ui/react';
 import { Inertia } from '@inertiajs/inertia';
 import startCase from 'lodash/startCase';
 import React from 'react';
@@ -18,12 +28,17 @@ import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
-import { ArrowPathIcon, CloudArrowDownIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowPathIcon,
+  CloudArrowDownIcon,
+  EllipsisVerticalIcon,
+} from '@heroicons/react/24/outline';
 import route from '@/util/route';
 import useSharedProps from '@/hooks/use-shared-props';
 import SetResumptionDateModal from '@/components/modals/set-resumption-date-modal';
 import { Div } from '@/components/semantic';
 import useIsAdmin from '@/hooks/use-is-admin';
+import { InertiaLink } from '@inertiajs/inertia-react';
 
 interface Props {
   classResultInfo: PaginationResponse<ClassResultInfo>;
@@ -123,12 +138,12 @@ export default function ListClassResultInfo({
     {
       label: 'Action',
       render: (row) => (
-        <HStack>
+        <HStack spacing={2}>
           {(isAdmin ||
             row.classification!.form_teacher_id === currentUser.id) && (
             <>
-              <LinkButton
-                href={route('institutions.term-results.index', {
+              {/* <LinkButton
+                href={route('term-results.class-result-info.index', {
                   institution: currentInstitution.uuid,
                   classification: row.classification_id,
                   academicSession: row.academic_session_id,
@@ -136,20 +151,51 @@ export default function ListClassResultInfo({
                   forMidTerm: row.for_mid_term,
                 })}
                 title="Student Results"
-              />
-              <IconButton
-                aria-label="Download"
-                icon={<Icon as={CloudArrowDownIcon} />}
-                colorScheme="brand"
-                size="sm"
-                variant={'ghost'}
-                onClick={() => downloadResults(row)}
-              />
+              /> */}
+
               <LinkButton
-                href={instRoute('class-result-info.result-sheets', [row.id])}
-                title="Result Sheets"
-                variant={'link'}
+                href={instRoute('term-results.class-result-info.index', [
+                  row.id,
+                ])}
+                title="Student Results"
               />
+
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  aria-label={'open file menu'}
+                  icon={<Icon as={EllipsisVerticalIcon} />}
+                  size={'sm'}
+                  variant={'ghost'}
+                />
+                <MenuList>
+                  <MenuItem
+                    as={InertiaLink}
+                    href={instRoute('class-result-info.record-evaluations', [
+                      row.id,
+                    ])}
+                    py={2}
+                  >
+                    Record Evaluations
+                  </MenuItem>
+                  <MenuItem
+                    aria-label="Download"
+                    onClick={() => downloadResults(row)}
+                    py={2}
+                  >
+                    Download Results
+                  </MenuItem>
+                  <MenuItem
+                    as={InertiaLink}
+                    href={instRoute('class-result-info.result-sheets', [
+                      row.id,
+                    ])}
+                    py={2}
+                  >
+                    All Result Sheets
+                  </MenuItem>
+                </MenuList>
+              </Menu>
               <DestructivePopover
                 label={`Do you want to recalculate the results for this ${row.classification?.title}?`}
                 onConfirm={(onClose) =>

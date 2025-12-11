@@ -24,6 +24,7 @@ import ResultSheetLayout, {
   StudentPassport,
 } from './result-sheet-layout';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
+import { numberFormat, roundNumber } from '@/util/util';
 
 export default function Template2(props: ResultProps) {
   const {
@@ -281,7 +282,7 @@ export default function Template2(props: ResultProps) {
             <LabelText
               labelProps={{ fontWeight: 'semibold' }}
               label="Average"
-              text={termResult.average?.toFixed(2)}
+              text={roundNumber(termResult.average)}
             />
           </HStack>
           <Spacer height={'5px'} />
@@ -300,7 +301,7 @@ export default function Template2(props: ResultProps) {
                   {resultDetail.map(({ label, value }) => (
                     <tr key={'result analysis' + label}>
                       <td style={{ width: '250px' }}>{label}</td>
-                      <td>{value?.toFixed(2)}</td>
+                      <td>{roundNumber(value)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -330,7 +331,7 @@ export default function Template2(props: ResultProps) {
             </>
           )}
         </VStack>
-        <Div position={'absolute'} bottom={250} opacity={'0.5'} right={300}>
+        <Div position={'absolute'} bottom={150} opacity={'0.5'} right={300}>
           <SchoolStamp />
         </Div>
       </Div>

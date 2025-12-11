@@ -23,6 +23,7 @@ import '@/../../public/style/result-sheet.css';
 import '@/../../public/style/result/session-result.css';
 import TranscriptUtil, { TranscriptTerm } from '@/util/TranscriptUtil';
 import startCase from 'lodash/startCase';
+import { roundNumber } from '@/util/util';
 
 interface Props {
   student: Student;
@@ -208,7 +209,7 @@ function DisplayTermResult({
                           {startCase(title.split('_')[0])}:
                         </Text>
                         <Text as={'span'} ml={2}>
-                          {value?.toFixed(1)}
+                          {roundNumber(value, 1)}
                         </Text>
                       </Text>
                     )

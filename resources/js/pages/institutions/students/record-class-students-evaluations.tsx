@@ -1,0 +1,156 @@
+import {
+  AcademicSession,
+  Classification,
+  TermResult,
+  LearningEvaluation,
+} from '@/types/models';
+import React, { useState } from 'react';
+import Slab, { SlabBody, SlabHeading } from '@/components/slab';
+import DashboardLayout from '@/layout/dashboard-layout';
+import { Div } from '@/components/semantic';
+import {
+  HStack,
+  Icon,
+  Spacer,
+  Stack,
+  Text,
+  useColorModeValue,
+  VStack,
+} from '@chakra-ui/react';
+import { BrandButton } from '@/components/buttons';
+import useModalToggle from '@/hooks/use-modal-toggle';
+import TermResultTeacherCommentModal from '@/components/modals/term-result-teacher-comment-modal';
+import { Inertia } from '@inertiajs/inertia';
+import TermResultPrincipalCommentModal from '@/components/modals/term-result-principal-comment-modal';
+import SetTermResultEvaluation from '../learning-evaluations/set-term-result-evaluations-component';
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { LabelText } from '@/components/result-helper-components';
+import { TermType } from '@/types/types';
+import { roundNumber, ucFirst } from '@/util/util';
+import { TermResultExtraData } from '../learning-evaluations/term-result-extra-data';
+
+interface Props {
+  classification: Classification;
+  termResults: TermResult[];
+  learningEvaluations?: LearningEvaluation[];
+  academicSession: AcademicSession;
+  term: TermType;
+  forMidTerm?: boolean;
+}
+
+export default function RecordClassStudentsEvaluations({
+  classification,
+  termResults,
+  learningEvaluations,
+  academicSession,
+  term,
+  forMidTerm,
+}: Props) {
+  const [index, setIndex] = useState(0);
+  const teacherCommentModalToggle = useModalToggle();
+  const principalCommentModalToggle = useModalToggle();
+  const termResult = termResults[index];
+
+  return (
+    <DashboardLayout>
+      <Slab>
+        <SlabHeading title="Update Class Students Evaluations" />
+        <SlabBody>
+          <HStack justifyContent={'space-between'}>
+            <BrandButton
+              title="Previous"
+              leftIcon={<Icon as={ArrowLeftIcon} />}
+              variant={'outline'}
+              onClick={() => {
+                if (index > 0) {
+                  setIndex(index - 1);
+                }
+              }}
+              disabled={index === 0}
+            />
+            <Spacer />
+            <Div>
+              {index + 1} of {termResults.length}
+            </Div>
+            <Spacer />
+            <BrandButton
+              title="Next"
+              variant={'outline'}
+              rightIcon={<Icon as={ArrowRightIcon} />}
+              onClick={() => {
+                if (index < termResults.length - 1) {
+                  setIndex(index + 1);
+                }
+              }}
+              disabled={index === termResults.length - 1}
+            />
+          </HStack>
+        </SlabBody>
+        {termResult ? (
+          <>
+            <VStack mb={3} spacing={2} align={'stretch'}>
+              {[
+                { label: 'Name', value: termResult.student!.user?.full_name },
+                {
+                  label: 'Portal Id',
+                  value: termResult.student!.code,
+                },
+                { label: 'Class', value: classification.title },
+                {
+                  label: 'Term',
+                  value: `${ucFirst(term)} ${forMidTerm ? 'Mid-' : ''}Term`,
+                },
+                { label: 'Session', value: academicSession.title },
+                { label: 'Position', value: termResult.position },
+                { label: 'Average', value: roundNumber(termResult.average) },
+              ].map((item) => (
+                <LabelText
+                  label={item.label}
+                  text={item.value}
+                  key={item.label}
+                  labelProps={{ fontWeight: 'semibold', minWidth: '80px' }}
+                />
+              ))}
+            </VStack>
+            <Stack direction={{ base: 'column', md: 'row' }} spacing={3}>
+              <Div
+                maxWidth={'500px'}
+                background={useColorModeValue('#FAFAFA', 'gray.700')}
+                py={4}
+                px={5}
+                flex={1}
+              >
+                <SetTermResultEvaluation
+                  termResult={termResult}
+                  learningEvaluations={learningEvaluations}
+                />
+              </Div>
+              <Div
+                flex={1}
+                background={useColorModeValue('#FAFAFA', 'gray.700')}
+                p={4}
+              >
+                <TermResultExtraData termResult={termResult} />
+              </Div>
+            </Stack>
+            <TermResultTeacherCommentModal
+              termResult={termResult}
+              {...teacherCommentModalToggle.props}
+              onSuccess={() => Inertia.reload({ only: ['termResult'] })}
+            />
+            <TermResultPrincipalCommentModal
+              termResult={termResult}
+              {...principalCommentModalToggle.props}
+              onSuccess={() => Inertia.reload({ only: ['termResult'] })}
+            />
+          </>
+        ) : (
+          <Text>
+            No term result found <br />
+            You need to evaluate the term results for this class first
+          </Text>
+        )}
+      </Slab>
+    </DashboardLayout>
+  );
+}

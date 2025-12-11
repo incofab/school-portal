@@ -233,4 +233,25 @@ class ClassResultInfoController extends Controller
       'resultTemplete' => $setting->getResultTemplate()
     ]);
   }
+
+  function recordEvaluations(
+    Institution $institution,
+    ClassResultInfo $classResultInfo
+  ) {
+    return inertia('institutions/students/record-class-students-evaluations', [
+      'termResults' => $classResultInfo
+        ->termResultsQuery()
+        ->with('student.user')
+        ->get(),
+      'classification' => $classResultInfo->classification,
+      'academicSession' => $classResultInfo->academicSession,
+      'term' => $classResultInfo->term,
+      'forMidTerm' => $classResultInfo->for_mid_term,
+      'learningEvaluations' => $institution
+        ->learningEvaluations()
+        ->with('learningEvaluationDomain')
+        ->orderBy('learning_evaluation_domain_id')
+        ->get()
+    ]);
+  }
 }

@@ -5,7 +5,6 @@ import GenericModal from '@/components/generic-modal';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '../forms/form-control-box';
-import InputForm from '../forms/input-form';
 import { TermResult } from '@/types/models';
 
 interface Props {

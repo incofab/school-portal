@@ -2,7 +2,7 @@ import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
 import useModalToggle from '@/hooks/use-modal-toggle';
-import { TermResult } from '@/types/models';
+import { ClassResultInfo, TermResult } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
 import { Icon, IconButton, Text } from '@chakra-ui/react';
 import startCase from 'lodash/startCase';
@@ -23,9 +23,13 @@ import { Inertia } from '@inertiajs/inertia';
 
 interface Props {
   termResults: PaginationResponse<TermResult>;
+  classResultInfo?: ClassResultInfo;
 }
 
-export default function ListTermResults({ termResults }: Props) {
+export default function ListTermResults({
+  termResults,
+  classResultInfo,
+}: Props) {
   const termResultFilterToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
   const { currentUser } = useSharedProps();
@@ -119,7 +123,21 @@ export default function ListTermResults({ termResults }: Props) {
   return (
     <DashboardLayout>
       <Slab>
-        <SlabHeading title="Term Results" />
+        <SlabHeading
+          title="Term Results"
+          rightElement={
+            <>
+              {classResultInfo && (
+                <LinkButton
+                  title="Record Evaluations"
+                  href={instRoute('class-result-info.record-evaluations', [
+                    classResultInfo.id,
+                  ])}
+                />
+              )}
+            </>
+          }
+        />
         <SlabBody>
           <ServerPaginatedTable
             scroll={true}
@@ -127,12 +145,11 @@ export default function ListTermResults({ termResults }: Props) {
             data={termResults.data}
             keyExtractor={(row) => row.id}
             paginator={termResults}
-            validFilters={[
-              'classification',
-              'academicSession',
-              'student',
-              'term',
-            ]}
+            validFilters={
+              classResultInfo
+                ? undefined
+                : ['classification', 'academicSession', 'student', 'term']
+            }
             onFilterButtonClick={termResultFilterToggle.open}
           />
         </SlabBody>

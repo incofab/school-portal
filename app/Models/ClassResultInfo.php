@@ -40,9 +40,10 @@ class ClassResultInfo extends Model
   }
 
   /**
+   * @param callable(\App\Support\UITableFilters\TermResultUITableFilters): void $extraQueryCallback
    * @return \Illuminate\Database\Eloquent\Builder<\App\Models\TermResult>
    */
-  function termResultsQuery()
+  function termResultsQuery(?callable $extraQueryCallback = null)
   {
     $params = [
       'classification' => $this->classification_id,
@@ -50,9 +51,14 @@ class ClassResultInfo extends Model
       'academicSession' => $this->academic_session_id,
       'forMidTerm' => $this->for_mid_term
     ];
-    return TermResultUITableFilters::make($params, TermResult::query())
-      ->filterQuery()
-      ->getQuery();
+    $termResultQuery = TermResultUITableFilters::make(
+      $params,
+      TermResult::query()
+    );
+    if ($extraQueryCallback) {
+      $extraQueryCallback($termResultQuery);
+    }
+    return $termResultQuery->filterQuery()->getQuery();
   }
 
   public function classification()

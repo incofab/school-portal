@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions\Results;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClassResultInfo;
 use App\Models\GuardianStudent;
 use App\Models\Institution;
 use App\Models\TermResult;
@@ -13,17 +14,36 @@ use Inertia\Inertia;
 
 class ListTermResultController extends Controller
 {
-  public function __invoke(
+  public function index(
     Request $request,
     Institution $institution,
     ?User $user = null
   ) {
     $query = $this->getQuery($user)->select('term_results.*');
-    TermResultUITableFilters::make($request->all(), $query)
+    $finalQuery = TermResultUITableFilters::make($request->all(), $query)
       ->joinStudent()
       ->dontUseCurrentTerm()
       ->filterQuery()
-      ->getQuery()
+      ->getQuery();
+    return $this->displayIndex($finalQuery);
+  }
+
+  public function indexByClassResultInfo(
+    Request $request,
+    Institution $institution,
+    ClassResultInfo $classResultInfo
+  ) {
+    $query = $classResultInfo->termResultsQuery(
+      fn($filter) => $filter->joinStudent()
+    );
+    return $this->displayIndex($query, $classResultInfo);
+  }
+
+  private function displayIndex(
+    \Illuminate\Database\Eloquent\Builder $query,
+    ?ClassResultInfo $classResultInfo = null
+  ) {
+    $query
       ->oldest('users.last_name')
       ->latest('term_results.academic_session_id');
 
@@ -32,11 +52,12 @@ class ListTermResultController extends Controller
         $query
           ->with('academicSession', 'classification', 'student.user')
           ->oldest('term_results.position')
-      )
+      ),
+      'classResultInfo' => $classResultInfo
     ]);
   }
 
-  public function validateUser(?User $user = null)
+  private function validateUser(?User $user = null)
   {
     $institutionUser = currentInstitutionUser();
     if (!$user) {
@@ -91,7 +112,7 @@ class ListTermResultController extends Controller
     return $this->getStudentResultQuery($user);
   }
 
-  function getStudentResultQuery(User $user)
+  private function getStudentResultQuery(User $user)
   {
     return $user
       ->institutionStudent()

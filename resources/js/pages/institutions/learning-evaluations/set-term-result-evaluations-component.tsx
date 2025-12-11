@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Checkbox,
   Divider,
@@ -10,7 +10,7 @@ import {
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit, range } from '@/util/util';
 import { LearningEvaluation, TermResult } from '@/types/models';
-import { FormButton } from '@/components/buttons';
+import { FormButton, LinkButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
@@ -46,9 +46,13 @@ export default function SetTermResultEvaluation({
     );
 
     if (!handleResponseToast(res)) return;
-
+    termResult.learning_evaluation = evaluation;
     // Inertia.visit(instRoute('learning-evaluations.index'));
   };
+
+  useMemo(() => {
+    setEvaluation(termResult.learning_evaluation ?? []);
+  }, [termResult.id]);
 
   if (!learningEvaluations) {
     return null;
@@ -60,91 +64,105 @@ export default function SetTermResultEvaluation({
         Learning Evaluation
       </Text>
       <Divider mb={5} mt={1} />
-      <VStack
-        align={'stretch'}
-        spacing={4}
-        as={'form'}
-        onSubmit={preventNativeSubmit(submit)}
-      >
-        {learningEvaluations.map((item) => {
-          if (
-            item.learning_evaluation_domain?.type ===
-            LearningEvaluationDomainType.YesOrNo
-          ) {
-            return (
-              <Checkbox
-                key={'display-evalauation' + item.id}
-                isChecked={Boolean(evaluation[item.id])}
-                onChange={(e) =>
-                  setEvaluation({
-                    ...evaluation,
-                    [item.id]: e.currentTarget.checked,
-                  })
-                }
-              >
-                {item.title}
-              </Checkbox>
-            );
-          }
-          if (
-            item.learning_evaluation_domain?.type ===
-            LearningEvaluationDomainType.Number
-          ) {
-            return (
-              <FormControlBox
-                form={webForm as any}
-                formKey=""
-                title={item.title}
-                key={'display-evalauation' + item.id}
-              >
-                <MySelect
-                  isMulti={false}
-                  selectValue={evaluation[item.id]}
-                  getOptions={() =>
-                    range(1, item.learning_evaluation_domain?.max).map(
-                      (num) => {
-                        return {
-                          label: String(num),
-                          value: String(num),
-                        };
+      {learningEvaluations ? (
+        <>
+          <VStack
+            align={'stretch'}
+            spacing={4}
+            as={'form'}
+            onSubmit={preventNativeSubmit(submit)}
+          >
+            {learningEvaluations.map((item) => {
+              if (
+                item.learning_evaluation_domain?.type ===
+                LearningEvaluationDomainType.YesOrNo
+              ) {
+                return (
+                  <Checkbox
+                    key={'display-evalauation' + item.id}
+                    isChecked={Boolean(evaluation[item.id])}
+                    onChange={(e) =>
+                      setEvaluation({
+                        ...evaluation,
+                        [item.id]: e.currentTarget.checked,
+                      })
+                    }
+                  >
+                    {item.title}
+                  </Checkbox>
+                );
+              }
+              if (
+                item.learning_evaluation_domain?.type ===
+                LearningEvaluationDomainType.Number
+              ) {
+                return (
+                  <FormControlBox
+                    form={webForm as any}
+                    formKey=""
+                    title={item.title}
+                    key={'display-evalauation' + item.id}
+                  >
+                    <MySelect
+                      isMulti={false}
+                      selectValue={evaluation[item.id]}
+                      getOptions={() =>
+                        range(1, item.learning_evaluation_domain?.max).map(
+                          (num) => {
+                            return {
+                              label: String(num),
+                              value: String(num),
+                            };
+                          }
+                        )
                       }
-                    )
-                  }
-                  onChange={(e: any) =>
-                    setEvaluation({
-                      ...evaluation,
-                      [item.id]: e.value,
-                    })
-                  }
-                />
-              </FormControlBox>
-            );
-          }
-          return (
-            <FormControlBox
-              form={webForm as any}
-              formKey=""
-              title={item.title}
-              key={'display-evalauation' + item.id}
-            >
-              <Input
-                key={'display-evalauation' + item.id}
-                value={evaluation[item.id]}
-                placeholder={'Enter ' + item.title}
-                onChange={(e) =>
-                  setEvaluation({
-                    ...evaluation,
-                    [item.id]: e.currentTarget.value,
-                  })
-                }
-              />
-            </FormControlBox>
-          );
-        })}
-        <FormControl>
-          <FormButton isLoading={webForm.processing} />
-        </FormControl>
-      </VStack>
+                      onChange={(e: any) =>
+                        setEvaluation({
+                          ...evaluation,
+                          [item.id]: e.value,
+                        })
+                      }
+                    />
+                  </FormControlBox>
+                );
+              }
+              return (
+                <FormControlBox
+                  form={webForm as any}
+                  formKey=""
+                  title={item.title}
+                  key={'display-evalauation' + item.id}
+                >
+                  <Input
+                    key={'display-evalauation' + item.id}
+                    value={evaluation[item.id]}
+                    placeholder={'Enter ' + item.title}
+                    onChange={(e) =>
+                      setEvaluation({
+                        ...evaluation,
+                        [item.id]: e.currentTarget.value,
+                      })
+                    }
+                  />
+                </FormControlBox>
+              );
+            })}
+            <FormControl>
+              <FormButton isLoading={webForm.processing} />
+            </FormControl>
+          </VStack>
+        </>
+      ) : (
+        <Text>
+          Evaluations has not been set.
+          <LinkButton
+            href={instRoute('learning-evaluation-domains.index')}
+            variant={'link'}
+            title="Click here"
+          />{' '}
+          to set up your evaluations
+        </Text>
+      )}
     </Div>
   );
 }
