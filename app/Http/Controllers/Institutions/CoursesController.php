@@ -160,7 +160,7 @@ class CoursesController extends Controller
     $practiceData = Session::get('practiceData', []);
 
     $course = $practiceData['course'];
-    $practiceQuestions = $practiceData['practiceQuestions'];
+    $practiceQuestions = $practiceData['practiceQuestions'] ?? [];
 
     if (count($practiceQuestions) < 1) {
       abort('404', 'No Receipt Found');

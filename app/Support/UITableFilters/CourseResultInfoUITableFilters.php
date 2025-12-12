@@ -59,7 +59,7 @@ class CourseResultInfoUITableFilters extends BaseUITableFilter
       return $this;
     }
 
-    $this->baseQuery->where(
+    $this->joinClassification()->baseQuery->where(
       'classifications.form_teacher_id',
       $institutionUser->user_id
     );

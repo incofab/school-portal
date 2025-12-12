@@ -121,6 +121,10 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
             data={fundings.data}
             keyExtractor={(row) => row.id}
             paginator={fundings}
+            tableRowProps={(row) => ({
+              backgroundColor:
+                row.wallet == WalletType.Debt ? 'red.50' : undefined,
+            })}
           />
         </SlabBody>
       </Slab>
