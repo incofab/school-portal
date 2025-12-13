@@ -82,6 +82,11 @@ export default function SideBarLayout() {
           route: instRoute('users.idcards'),
           roles: [InstitutionUserType.Admin],
         },
+        {
+          label: 'My Bank Accounts',
+          route: instRoute('inst-user-bank-accounts.index'),
+          roles: staff,
+        },
       ],
     },
     {
@@ -322,6 +327,11 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin],
         },
         {
+          label: 'School Bank Accounts',
+          route: instRoute('inst-bank-accounts.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
           label: 'SMS/Email Messages',
           route: instRoute('messages.index'),
           roles: [InstitutionUserType.Admin],
@@ -355,11 +365,6 @@ export default function SideBarLayout() {
         {
           label: 'Expense Categorires',
           route: instRoute('expense-categories.index'),
-          roles: [InstitutionUserType.Admin],
-        },
-        {
-          label: 'Bank Accounts',
-          route: instRoute('inst-bank-accounts.index'),
           roles: [InstitutionUserType.Admin],
         },
         {

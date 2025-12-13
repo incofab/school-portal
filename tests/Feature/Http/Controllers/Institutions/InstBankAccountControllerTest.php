@@ -2,9 +2,10 @@
 
 use App\Models\BankAccount;
 use App\Models\Institution;
+use Illuminate\Support\Facades\Http;
+
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
-use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\assertSoftDeleted;
 use function Pest\Laravel\put;
 use function Pest\Laravel\delete;
@@ -18,6 +19,30 @@ beforeEach(function () {
   $this->institutionGroup = $this->institution->institutionGroup;
 
   actingAs($this->user);
+
+  // Fake Monnify auth API call
+  Http::fake([
+    'https://sandbox.monnify.com/api/v1/auth/login' => Http::response([
+      'requestSuccessful' => true,
+      'responseBody' => [
+        'accessToken' => 'mock_token'
+      ]
+    ])
+  ]);
+
+  Http::fake([
+    'sandbox.monnify.com/api/v1/disbursements/account/validate*' => Http::response(
+      [
+        'requestSuccessful' => true,
+        'responseBody' => [
+          'accountNumber' => '1234567890',
+          'accountName' => 'Test Account',
+          'bankCode' => '8477'
+        ]
+      ],
+      200
+    )
+  ]);
 });
 
 it('shows bank accounts for an institution', function () {

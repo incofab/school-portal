@@ -8,11 +8,14 @@ import route from '@/util/route';
 interface MyProps {
   selectValue?: SelectValue;
   banks?: Bank[];
+
+  valueKey?: string;
 }
 
 export default function BankSelect({
   selectValue,
   banks,
+  valueKey,
   ...props
 }: MyProps & Props) {
   return (
@@ -22,6 +25,7 @@ export default function BankSelect({
       dataList={banks}
       searchUrl={route('banks.search')}
       label={'bank_name'}
+      valueKey={valueKey ?? 'id'}
     />
   );
 }

@@ -72,11 +72,11 @@ class Controller extends BaseController
 
   protected function onlyAdmins()
   {
-    $this->middleware(function ($request, $next) {
+    return $this->middleware(function ($request, $next) {
       abort_unless(
-        currentInstitutionUser()->role === InstitutionUserType::Admin,
+        currentInstitutionUser()->isAdmin(),
         403,
-        'You are not allowed to access this'
+        'You are not allowed to access this page'
       );
       return $next($request);
     });

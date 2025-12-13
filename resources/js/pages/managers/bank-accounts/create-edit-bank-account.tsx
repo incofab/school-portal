@@ -27,6 +27,7 @@ export default function CreateOrEditBankAccount({ bankAccount }: Props) {
               }
               createUrl={route('managers.bank-accounts.store')}
               bankAccount={bankAccount}
+              indexUrl={route('managers.bank-accounts.index')}
             />
           </SlabBody>
         </Slab>

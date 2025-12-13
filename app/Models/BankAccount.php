@@ -13,7 +13,7 @@ class BankAccount extends Model
   protected $guarded = [];
   protected $casts = [
     'is_primary' => 'boolean',
-    'institution_id' => 'integer',
+    // 'institution_id' => 'integer',
     'accountable_id' => 'integer'
   ];
 

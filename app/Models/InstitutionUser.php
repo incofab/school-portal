@@ -88,4 +88,8 @@ class InstitutionUser extends Model
   {
     return $this->hasMany(PayrollAdjustment::class);
   }
+  function bankAccounts()
+  {
+    return $this->morphMany(BankAccount::class, 'accountable');
+  }
 }

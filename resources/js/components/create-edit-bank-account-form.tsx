@@ -6,7 +6,6 @@ import { BankAccount } from '@/types/models';
 import { BrandButton, FormButton } from '@/components/buttons';
 import InputForm from '@/components/forms/input-form';
 import useMyToast from '@/hooks/use-my-toast';
-import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
 import BankSelect from '@/components/selectors/bank-select';
 import route from '@/util/route';
@@ -15,15 +14,16 @@ interface Props {
   bankAccount?: BankAccount;
   createUrl: string;
   updateUrl: string;
+  indexUrl: string;
 }
 
 export default function CreateEditBankAccountForm({
   bankAccount,
   createUrl,
   updateUrl,
+  indexUrl,
 }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
-  const { instRoute } = useInstitutionRoute();
   const validateWebForm = useWebForm({});
   const webForm = useWebForm({
     bank_account_id: bankAccount?.id ?? '',
@@ -58,7 +58,7 @@ export default function CreateEditBankAccountForm({
       return bankAccount ? web.put(updateUrl, data) : web.post(createUrl, data);
     });
     if (!handleResponseToast(res)) return;
-    Inertia.visit(instRoute('inst-bank-accounts.index'));
+    Inertia.visit(indexUrl);
   };
 
   return (
@@ -72,6 +72,7 @@ export default function CreateEditBankAccountForm({
           selectValue={webForm.data.bank_code}
           isMulti={false}
           isClearable={true}
+          valueKey="bank_code"
           onChange={(e: any) =>
             webForm.setData({
               ...webForm.data,

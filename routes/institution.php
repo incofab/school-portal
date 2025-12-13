@@ -397,10 +397,9 @@ Route::resource('/payment-notifications', Web\PaymentNotifications\PaymentNotifi
 //Route::post('/payment-notifications', [Web\PaymentNotifications\PaymentNotificationController::class, 'store'])->name('payment-notifications.store');
 
 //== BANK ACCOUNT DETAILS 
-Route::get('/inst-bank-accounts/{bankAccount}/edit', [Web\BankAccounts\BankAccountController::class, 'edit'])->name('inst-bank-accounts.edit');
-Route::put('/inst-bank-accounts/{bankAccount}', [Web\BankAccounts\BankAccountController::class, 'update'])->name('inst-bank-accounts.update');
-Route::delete('/inst-bank-accounts/{bankAccount}', [Web\BankAccounts\BankAccountController::class, 'destroy'])->name('inst-bank-accounts.destroy');
-Route::resource('/inst-bank-accounts', Web\BankAccounts\BankAccountController::class)->except('edit', 'update', 'delete');
+Route::resource('/inst-bank-accounts', Web\BankAccounts\BankAccountController::class)->except('show');
+
+Route::resource('/inst-user-bank-accounts', Web\BankAccounts\InstitutionUserBankAccountController::class)->except('show');
 
 //== WITHDRAWALS
 Route::resource('/inst-withdrawals', Web\Withdrawals\WithdrawalController::class);

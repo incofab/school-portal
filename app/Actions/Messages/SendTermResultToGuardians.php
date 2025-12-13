@@ -66,7 +66,9 @@ class SendTermResultToGuardians
       return $res;
     }
 
-    // (new \App\Services\Messaging\Whatsapp\WhatsappClient($contentData))->send();
+    // return (new \App\Services\Messaging\Whatsapp\WhatsappClient(
+    //   $contentData
+    // ))->send();
     $dispatcher = new MessageDispatcher($this->institution);
     $dispatcher->dispatch(
       receivers: collect($contacts),

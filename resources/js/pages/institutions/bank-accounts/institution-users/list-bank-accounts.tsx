@@ -1,0 +1,137 @@
+import React from 'react';
+import { BankAccount } from '@/types/models';
+import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
+import DashboardLayout from '@/layout/dashboard-layout';
+import {
+  CheckIcon,
+  ClipboardIcon,
+  PencilIcon,
+} from '@heroicons/react/24/outline';
+import Slab, { SlabBody, SlabHeading } from '@/components/slab';
+import { LinkButton } from '@/components/buttons';
+import { InertiaLink } from '@inertiajs/inertia-react';
+import useInstitutionRoute from '@/hooks/use-institution-route';
+import { TrashIcon } from '@heroicons/react/24/solid';
+import { Inertia } from '@inertiajs/inertia';
+import DestructivePopover from '@/components/destructive-popover';
+import useWebForm from '@/hooks/use-web-form';
+import useMyToast from '@/hooks/use-my-toast';
+import DataTable, { TableHeader } from '@/components/data-table';
+import { Div } from '@/components/semantic';
+import { copyToClipboard } from '@/util/util';
+
+interface Props {
+  bankAccounts: BankAccount[];
+}
+
+export default function ListBankAccounts({ bankAccounts }: Props) {
+  const { instRoute } = useInstitutionRoute();
+  const deleteForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
+
+  async function deleteItem(obj: BankAccount) {
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(instRoute('inst-user-bank-accounts.destroy', [obj.id]))
+    );
+    handleResponseToast(res);
+    Inertia.reload({ only: ['bankAccounts'] });
+  }
+
+  const headers: TableHeader<BankAccount>[] = [
+    {
+      label: 'Bank Name',
+      value: 'bank_name',
+    },
+    {
+      label: 'Account Name',
+      value: 'account_name',
+      render: (row) => (
+        <Div>
+          <Icon as={CheckIcon} />{' '}
+          <Text ml={2} as={'span'}>
+            {row.account_name}
+          </Text>
+        </Div>
+      ),
+    },
+    {
+      label: 'Account Number',
+      value: 'account_number',
+      render: (row) => (
+        <HStack align={'stretch'} justify={'space-between'}>
+          <Text>{row.account_number}</Text>
+          <IconButton
+            aria-label={'Copy'}
+            icon={<Icon as={ClipboardIcon} />}
+            size={'sm'}
+            onClick={() =>
+              copyToClipboard(
+                row.account_number,
+                `Account number ${row.account_number} copied`
+              )
+            }
+            variant={'unstyled'}
+          />
+        </HStack>
+      ),
+    },
+    {
+      label: 'Action',
+      render: (row) =>
+        row.withdrawals_count < 1 ? (
+          <HStack>
+            <IconButton
+              as={InertiaLink}
+              aria-label={'Edit Bank Details'}
+              icon={<Icon as={PencilIcon} />}
+              href={instRoute('inst-user-bank-accounts.edit', [row.id])}
+              variant={'ghost'}
+              colorScheme={'brand'}
+            />
+            <DestructivePopover
+              label={
+                'Do you really want to delete this Bank Details? Be careful!!!'
+              }
+              onConfirm={() => deleteItem(row)}
+              isLoading={deleteForm.processing}
+            >
+              <IconButton
+                aria-label={'Delete bank account'}
+                icon={<Icon as={TrashIcon} />}
+                variant={'ghost'}
+                colorScheme={'red'}
+              />
+            </DestructivePopover>
+          </HStack>
+        ) : (
+          ''
+        ),
+    },
+  ];
+
+  return (
+    <DashboardLayout>
+      <Slab>
+        <SlabHeading
+          title="My Bank Accounts"
+          rightElement={
+            <HStack>
+              <LinkButton
+                href={instRoute('inst-user-bank-accounts.create')}
+                title={'New'}
+              />
+            </HStack>
+          }
+        />
+        <SlabBody>
+          <DataTable
+            scroll={true}
+            headers={headers}
+            data={bankAccounts}
+            keyExtractor={(row) => row.id}
+          />
+        </SlabBody>
+      </Slab>
+    </DashboardLayout>
+  );
+}

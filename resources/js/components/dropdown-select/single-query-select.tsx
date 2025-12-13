@@ -11,6 +11,7 @@ interface MyProps<T> {
   label: string | ((data: T) => string);
   dataFilter?: (data: T[]) => T[];
   refreshKey?: string;
+  valueKey?: string;
 }
 
 export default function SingleQuerySelect<T extends { [key: string]: any }>({
@@ -20,6 +21,7 @@ export default function SingleQuerySelect<T extends { [key: string]: any }>({
   label,
   dataFilter,
   refreshKey,
+  valueKey,
   ...props
 }: MyProps<T> & Props) {
   const [data, setData] = useState<T[]>(dataList ?? []);
@@ -58,7 +60,7 @@ export default function SingleQuerySelect<T extends { [key: string]: any }>({
       data={{
         main: dataFilter ? dataFilter(data) : data,
         label: label,
-        value: 'id',
+        value: valueKey ?? 'id',
       }}
       isLoading={webForm.processing}
       refreshKey={_refreshKey}

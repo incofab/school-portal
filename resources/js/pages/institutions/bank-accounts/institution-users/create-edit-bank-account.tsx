@@ -24,12 +24,12 @@ export default function CreateOrEditBankAccount({ bankAccount }: Props) {
             <CreateEditBankAccountForm
               updateUrl={
                 bankAccount
-                  ? instRoute('inst-bank-accounts.update', [bankAccount])
+                  ? instRoute('inst-user-bank-accounts.update', [bankAccount])
                   : ''
               }
-              createUrl={instRoute('inst-bank-accounts.store')}
+              createUrl={instRoute('inst-user-bank-accounts.store')}
               bankAccount={bankAccount}
-              indexUrl={instRoute('inst-bank-accounts.index')}
+              indexUrl={instRoute('inst-user-bank-accounts.index')}
             />
           </SlabBody>
         </Slab>

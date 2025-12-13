@@ -6,11 +6,16 @@ use App\Http\Requests\StoreBankAccountRequest;
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
 use App\Models\Institution;
+use App\Support\BankAccountHandler;
 use Inertia\Inertia;
 
 class BankAccountController extends Controller
 {
-  //
+  public function __construct()
+  {
+    $this->onlyAdmins()->except('index');
+  }
+
   public function index(Institution $institution)
   {
     $bankAccounts = $institution->institutionGroup
@@ -30,31 +35,28 @@ class BankAccountController extends Controller
     );
   }
 
-  public function edit(Institution $institution, BankAccount $bankAccount)
+  public function edit(Institution $institution, BankAccount $instBankAccount)
   {
     return Inertia::render(
       'institutions/bank-accounts/create-edit-bank-account',
       [
-        'bankAccount' => $bankAccount
+        'bankAccount' => $instBankAccount
       ]
     );
   }
 
   public function update(
     Institution $institution,
-    BankAccount $bankAccount,
+    BankAccount $instBankAccount,
     StoreBankAccountRequest $request
   ) {
     $validated = $request->validated();
-
-    if ($request->is_primary) {
-      $institution->institutionGroup
-        ->bankAccounts()
-        ->where('is_primary', true)
-        ->where('id', '!=', $bankAccount->id)
-        ->update(['is_primary' => false]);
-    }
-    $bankAccount->update([...collect($validated)->except('institution_id')]);
+    BankAccountHandler::make($institution->institutionGroup)->update(
+      $instBankAccount,
+      collect($validated)
+        ->except('institution_id')
+        ->toArray()
+    );
     return $this->ok();
   }
 
@@ -63,26 +65,22 @@ class BankAccountController extends Controller
     StoreBankAccountRequest $request
   ) {
     $validated = $request->validated();
-    $institutionGroup = $institution->institutionGroup;
-
-    if ($request->is_primary) {
-      $institutionGroup
-        ->bankAccounts()
-        ->where('is_primary', true)
-        ->update(['is_primary' => false]);
-    }
-    BankAccount::create([
-      ...collect($validated)->except('institution_id'),
-      'accountable_type' => $institutionGroup->getMorphClass(),
-      'accountable_id' => $institutionGroup->id
-    ]);
+    BankAccountHandler::make($institution->institutionGroup)->store(
+      collect($validated)
+        ->except('institution_id')
+        ->toArray()
+    );
 
     return $this->ok();
   }
 
-  public function destroy(Institution $institution, BankAccount $bankAccount)
-  {
-    $bankAccount->delete();
+  public function destroy(
+    Institution $institution,
+    BankAccount $instBankAccount
+  ) {
+    BankAccountHandler::make($institution->institutionGroup)->destroy(
+      $instBankAccount
+    );
     return $this->ok();
   }
 }
