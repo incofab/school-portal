@@ -23,7 +23,8 @@ class ClassResultInfo extends Model
     'num_of_students' => 'integer',
     'num_of_courses' => 'integer',
     'for_mid_term' => 'boolean',
-    'next_term_resumption_date' => 'date'
+    'next_term_resumption_date' => 'date',
+    'whatsapp_message_count' => 'integer'
   ];
 
   /**

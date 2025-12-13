@@ -44,7 +44,8 @@ class ResultPublicationsController extends Controller
       'classifications.*' => [
         'required',
         new ValidateExistsRule(Classification::class)
-      ]
+      ],
+      'send_to_guardians_whatsapp' => 'boolean'
     ]);
 
     $submittedClassIds = $request->classifications;
@@ -64,7 +65,8 @@ class ResultPublicationsController extends Controller
       $institution,
       $settingHandler,
       $instGroupPriceList,
-      $submittedClassIds
+      $submittedClassIds,
+      $request->send_to_guardians_whatsapp
     );
     $res = $obj->execute();
 

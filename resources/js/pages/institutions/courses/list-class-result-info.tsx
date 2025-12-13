@@ -58,6 +58,9 @@ export default function ListClassResultInfo({
   const setResumptionDateModalToggle = useModalToggle();
   const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
+  const sendViaWhatsappForm = useWebForm({
+    class_result_info: '',
+  });
 
   const recalculateClassResultInfo = async (
     onClose: () => void,
@@ -87,6 +90,18 @@ export default function ListClassResultInfo({
     window.location.href = instRoute('class-result-info.download', [
       classResultInfo.id,
     ]);
+  }
+
+  async function sendViaWhatsapp(resultInfo: ClassResultInfo) {
+    sendViaWhatsappForm.setValue('class_result_info', String(resultInfo.id));
+    const res = await webForm.submit((data, web) => {
+      return web.post(
+        instRoute('class-result-info.send-results', [resultInfo.id])
+      );
+    });
+    if (!handleResponseToast(res)) return;
+    resultInfo.whatsapp_message_count =
+      (resultInfo.whatsapp_message_count ?? 0) + 1;
   }
 
   const headers: ServerPaginatedTableHeader<ClassResultInfo>[] = [
@@ -193,6 +208,13 @@ export default function ListClassResultInfo({
                     py={2}
                   >
                     All Result Sheets
+                  </MenuItem>
+                  <MenuItem
+                    as={Button}
+                    onClick={() => sendViaWhatsapp(row)}
+                    py={2}
+                  >
+                    Send Results via Whatsapp
                   </MenuItem>
                 </MenuList>
               </Menu>

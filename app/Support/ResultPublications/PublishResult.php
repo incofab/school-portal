@@ -2,6 +2,7 @@
 
 namespace App\Support\ResultPublications;
 
+use App\Actions\Messages\SendTermResultToGuardians;
 use App\Enums\InstitutionUserType;
 use Exception;
 use App\Models\User;
@@ -41,7 +42,8 @@ abstract class PublishResult
     protected Institution $institution,
     protected SettingsHandler $settingHandler,
     protected PriceList $priceList,
-    array $submittedClassIds
+    array $submittedClassIds,
+    protected ?bool $sendToGuardiansWhatsapp = false
   ) {
     $this->institutionGroup = $priceList->institutionGroup;
     $this->academicSessionId = $this->settingHandler->getCurrentAcademicSession();
@@ -55,6 +57,7 @@ abstract class PublishResult
       ->where('term', $this->term)
       ->where('for_mid_term', false)
       ->whereNull('result_publication_id')
+      ->with('student.user', 'student.guardian', 'academicSession')
       ->get();
 
     $this->numOfStudents = $institution
@@ -114,7 +117,19 @@ abstract class PublishResult
     }
     DB::commit();
 
+    if ($this->sendToGuardiansWhatsapp) {
+      $this->sendResultsToGuardians();
+    }
+
     return successRes('Result published successfully');
+  }
+
+  function sendResultsToGuardians()
+  {
+    (new SendTermResultToGuardians(
+      $this->institution,
+      $this->staffUser
+    ))->multiSend($this->resultsToPublish);
   }
 
   protected function getResultPublication(): ?ResultPublication
@@ -179,7 +194,8 @@ abstract class PublishResult
     Institution $institution,
     SettingsHandler $settingHandler,
     PriceList $priceList,
-    array $submittedClassIds
+    array $submittedClassIds,
+    ?bool $sendToGuardiansWhatsapp = false
   ): static {
     $className = '';
     switch ($priceList->payment_structure) {
@@ -204,7 +220,8 @@ abstract class PublishResult
       $institution,
       $settingHandler,
       $priceList,
-      $submittedClassIds
+      $submittedClassIds,
+      $sendToGuardiansWhatsapp
     );
   }
 }

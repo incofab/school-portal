@@ -18,7 +18,7 @@ import useIsStaff from '@/hooks/use-is-staff';
 import UploadCourseResultsModal from '@/components/modals/upload-course-results-modal';
 import { CloudArrowDownIcon } from '@heroicons/react/24/solid';
 import { Inertia } from '@inertiajs/inertia';
-import DownloadCourseResultModal from '@/components/modals/download-course-result-modal'; 
+import DownloadCourseResultModal from '@/components/modals/download-course-result-modal';
 
 interface Props {
   courseResultInfo: PaginationResponse<CourseResultInfo>;

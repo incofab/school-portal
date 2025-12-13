@@ -78,6 +78,7 @@ class SendTermResultToGuardians
       messageModel: $messageModel,
       context: $contentData
     );
+    return successRes('Results sent successfully');
   }
 
   private function buildTemplateComponents(TermResult $termResult): array|null

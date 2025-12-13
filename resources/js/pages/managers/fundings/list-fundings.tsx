@@ -16,6 +16,7 @@ import { formatAsCurrency } from '@/util/util';
 import RecordDebtModal from '@/components/modals/record-debt-modal';
 import route from '@/util/route';
 import DestructivePopover from '@/components/destructive-popover';
+import DateTimeDisplay from '@/components/date-time-display';
 
 interface Props {
   fundings: PaginationResponse<Funding>;
@@ -48,27 +49,33 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
       render: (row) => formatAsCurrency(row.new_balance),
     },
     {
+      label: 'Date',
+      value: 'created_at',
+      render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
+    },
+    {
       label: 'Reference',
       value: 'reference',
     },
     {
       label: 'Remark',
-      render: (row) => (
-        <HStack>
-          {!row.remark || row.remark.trim() === '' ? (
-            ''
-          ) : (
-            <InfoPopover label={row.remark}>
-              <IconButton
-                aria-label={'Remark'}
-                icon={<Icon as={EyeIcon} />}
-                variant={'ghost'}
-                colorScheme={'brand'}
-              />
-            </InfoPopover>
-          )}
-        </HStack>
-      ),
+      value: 'remark',
+      // render: (row) => (
+      //   <HStack>
+      //     {!row.remark || row.remark.trim() === '' ? (
+      //       ''
+      //     ) : (
+      //       <InfoPopover label={row.remark}>
+      //         <IconButton
+      //           aria-label={'Remark'}
+      //           icon={<Icon as={EyeIcon} />}
+      //           variant={'ghost'}
+      //           colorScheme={'brand'}
+      //         />
+      //       </InfoPopover>
+      //     )}
+      //   </HStack>
+      // ),
     },
     {
       label: 'Action',

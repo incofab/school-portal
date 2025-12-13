@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Institutions\Staff;
 
 use App\Actions\CourseResult\ClassResultInfoAction;
 use App\Actions\GenericExport;
+use App\Actions\Messages\SendTermResultToGuardians;
 use App\Actions\Result\GetViewResultSheetData;
 use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
@@ -253,5 +254,31 @@ class ClassResultInfoController extends Controller
         ->orderBy('learning_evaluation_domain_id')
         ->get()
     ]);
+  }
+
+  function sendResults(
+    Institution $institution,
+    ClassResultInfo $classResultInfo
+  ) {
+    $classResultInfo->load('classification', 'academicSession');
+    $termResults = $classResultInfo
+      ->termResultsQuery()
+      ->with('student.user', 'student.guardian', 'academicSession')
+      ->get();
+    $user = currentUser();
+    $institutionUser = currentInstitutionUser();
+    abort_unless($termResults->count(), 404, 'Result not found');
+    abort_unless(
+      $institutionUser->isAdmin(),
+      403,
+      'You are not allowed to send results'
+    );
+    $res = (new SendTermResultToGuardians($institution, $user))->multiSend(
+      $termResults
+    );
+    if ($res->isSuccessful()) {
+      $classResultInfo->increment('whatsapp_message_count');
+    }
+    return $this->apiRes($res);
   }
 }

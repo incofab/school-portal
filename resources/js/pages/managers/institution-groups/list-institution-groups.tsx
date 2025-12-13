@@ -1,6 +1,13 @@
 import React from 'react';
 import { AcademicSession, Institution, InstitutionGroup } from '@/types/models';
-import { Button, HStack, Icon, IconButton, Tooltip } from '@chakra-ui/react';
+import {
+  Button,
+  HStack,
+  Icon,
+  IconButton,
+  Text,
+  Tooltip,
+} from '@chakra-ui/react';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { InstitutionStatus, PaginationResponse } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -101,19 +108,23 @@ export default function ListInstitutionGropus({
       value: 'institutions_count',
     },
     {
-      label: 'Credit',
+      label: 'Credit (₦)',
       value: 'credit_wallet',
-      render: (row) => '₦' + NumberFormatter(row.credit_wallet),
+      render: (row) => (
+        <Text color={'green.500'}>{NumberFormatter(row.credit_wallet)}</Text>
+      ),
     },
     {
-      label: 'Debt',
+      label: 'Debt (₦)',
       value: 'debt_wallet',
-      render: (row) => '₦' + NumberFormatter(row.debt_wallet),
+      render: (row) => (
+        <Text color={'red.500'}>{NumberFormatter(row.debt_wallet)}</Text>
+      ),
     },
     {
-      label: 'Loan Limit',
+      label: 'Loan Limit (₦)',
       value: 'loan_limit',
-      render: (row) => '₦' + NumberFormatter(row.loan_limit),
+      render: (row) => NumberFormatter(row.loan_limit),
     },
     {
       label: 'Status',

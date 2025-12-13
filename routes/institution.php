@@ -240,6 +240,8 @@ Route::get('/class-result-info/{classResultInfo}/result-sheets', [Web\Staff\Clas
   ->name('class-result-info.result-sheets');
 Route::get('/class-result-info/{classResultInfo}/record-evaluations', [Web\Staff\ClassResultInfoController::class, 'recordEvaluations'])
   ->name('class-result-info.record-evaluations');
+Route::post('/class-result-info/{classResultInfo}/send-results', [Web\Staff\ClassResultInfoController::class, 'sendResults'])
+  ->name('class-result-info.send-results');
 
 Route::get('/term-results/index/{user?}', [Web\Results\ListTermResultController::class, 'index'])
   ->name('term-results.index');
