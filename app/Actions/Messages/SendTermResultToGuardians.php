@@ -57,14 +57,15 @@ class SendTermResultToGuardians
         ? $record->forMultiple($contacts)->save()
         : $record->forSingle($contacts[0])->save();
 
-    $res = ApplyMessageCharges::make($this->institution)->run(
-      collect($contacts),
-      NotificationChannelsType::Whatsapp->value,
-      $messageModel
-    );
-    if ($res->isNotSuccessful()) {
-      return $res;
-    }
+    /* We won't be applying charges for now */
+    // $res = ApplyMessageCharges::make($this->institution)->run(
+    //   collect($contacts),
+    //   NotificationChannelsType::Whatsapp->value,
+    //   $messageModel
+    // );
+    // if ($res->isNotSuccessful()) {
+    //   return $res;
+    // }
 
     // return (new \App\Services\Messaging\Whatsapp\WhatsappClient(
     //   $contentData

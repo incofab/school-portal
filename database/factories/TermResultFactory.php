@@ -7,6 +7,7 @@ use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\CourseResult;
 use App\Models\Institution;
+use App\Models\ResultPublication;
 use App\Models\Student;
 use App\Models\TermResult;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -66,6 +67,23 @@ class TermResultFactory extends Factory
         'institution_id' => $student->institutionUser->institution->id,
         'classification_id' => $student->classification_id
       ];
+    });
+  }
+
+  function published(?ResultPublication $resultPublication = null)
+  {
+    return $this->afterCreating(function (TermResult $model) use (
+      $resultPublication
+    ) {
+      $resultPublication =
+        $resultPublication ??
+        ResultPublication::factory()->create([
+          'institution_id' => $model->institution_id,
+          'institution_group_id' => $model->institution->institution_group_id,
+          'academic_session_id' => $model->academic_session_id,
+          'term' => $model->term
+        ]);
+      $model->fill(['result_publication_id' => $resultPublication->id])->save();
     });
   }
 }

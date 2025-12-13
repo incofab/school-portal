@@ -14,7 +14,6 @@
     th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     th { background: #f4f4f4; }
     .summary { display: flex; justify-content: space-between; margin-top: 12px; }
-    .summary div { font-weight: bold; }
     .note { font-size: 13px; color: #444; }
   </style>
 </head>
@@ -58,15 +57,15 @@
             <td>{{ $funding->remark ?: 'Wallet top-up' }}</td>
             <td>{{ $funding->reference }}</td>
             <td style="text-transform: capitalize;">{{ $funding->wallet }}</td>
-            <td>NGN{{ number_format($funding->amount, 2) }}</td>
+            <td>{{ number_format($funding->amount, 2) }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="section summary">
-      <div>Previous Balance: NGN{{ number_format($funding->previous_balance, 2) }}</div>
-      <div>New Balance: NGN{{ number_format($funding->new_balance, 2) }}</div>
+      <div>Previous Balance: <b>{{ number_format($funding->previous_balance, 2) }}</b></div>
+      <div style="margin-top: 5px;">New Balance: <b>{{ number_format($funding->new_balance, 2) }}</b></div>
     </div>
 
     <div class="section note">

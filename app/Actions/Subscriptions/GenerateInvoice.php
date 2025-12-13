@@ -33,19 +33,18 @@ class GenerateInvoice
       ->where('type', PriceType::ResultChecking)
       ->first();
 
-    if (!$priceList) {
-      abort(
-        404,
-        'Price list for result checking not found for this institution group.'
-      );
-    }
+    abort_unless(
+      $priceList,
+      404,
+      'Price list for result checking not found for this institution group.'
+    );
 
     $invoiceItems = [];
     $totalAmount = 0;
 
     $institutions = $this->institutionGroup->institutions;
 
-    foreach ($institutions as $inst) {
+    foreach ($institutions as $index => $inst) {
       $amount = $priceList->amount;
       $quantity = 1;
       $unitPrice = $amount;
@@ -65,14 +64,17 @@ class GenerateInvoice
         ])
         ->first();
 
+      if ($publication) {
+        continue; // This institution must have paid since they've published results
+      }
+      if (!$isTermly && $index > 0) {
+        continue;
+      }
+
       if ($isTermly) {
         $studentCount = $inst->students()->count();
         $amount *= $studentCount;
         $quantity = $studentCount;
-      }
-
-      if ($publication || $this->institutionGroup->credit_wallet >= $amount) {
-        continue; // This institution must have paid since they've published results or they have enough balance
       }
 
       $invoiceItems[] = [
@@ -87,6 +89,8 @@ class GenerateInvoice
 
       $totalAmount += $amount;
     }
+
+    // abort_if($this->institutionGroup->credit_wallet >= $totalAmount, 403, "This account have enought balance");
 
     foreach ($this->extraItems as $extraItem) {
       $invoiceItems[] = [
