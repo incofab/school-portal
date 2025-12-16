@@ -24,7 +24,7 @@ import ResultSheetLayout, {
   StudentPassport,
 } from './result-sheet-layout';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
-import { numberFormat, roundNumber } from '@/util/util';
+import { roundNumber } from '@/util/util';
 
 export default function Template2(props: ResultProps) {
   const {
@@ -127,7 +127,7 @@ export default function Template2(props: ResultProps) {
               </Text>
               <Div>
                 <Text>
-                  {currentInstitution.phone} | {currentInstitution.email}
+                  {currentInstitution.phone} | {currentInstitution.email} |{' '}
                   {getWebsite(currentInstitution)}
                 </Text>
               </Div>

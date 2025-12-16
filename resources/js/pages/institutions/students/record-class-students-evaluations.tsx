@@ -9,8 +9,10 @@ import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Div } from '@/components/semantic';
 import {
+  Divider,
   HStack,
   Icon,
+  IconButton,
   Spacer,
   Stack,
   Text,
@@ -23,7 +25,11 @@ import TermResultTeacherCommentModal from '@/components/modals/term-result-teach
 import { Inertia } from '@inertiajs/inertia';
 import TermResultPrincipalCommentModal from '@/components/modals/term-result-principal-comment-modal';
 import SetTermResultEvaluation from '../learning-evaluations/set-term-result-evaluations-component';
-import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  PencilIcon,
+} from '@heroicons/react/24/outline';
 import { LabelText } from '@/components/result-helper-components';
 import { TermType } from '@/types/types';
 import { roundNumber, ucFirst } from '@/util/util';
@@ -131,6 +137,38 @@ export default function RecordClassStudentsEvaluations({
                 p={4}
               >
                 <TermResultExtraData termResult={termResult} />
+                <VStack divider={<Divider />} spacing={2} align={'stretch'}>
+                  <>
+                    <Text fontWeight={'semibold'} size={'sm'}>
+                      Teacher's Comment
+                    </Text>
+                    <HStack align={'stretch'}>
+                      <Text>{termResult.teacher_comment}</Text>
+                      <Spacer />
+                      <IconButton
+                        aria-label="edit teacher's comment"
+                        icon={<Icon as={PencilIcon} />}
+                        variant={'outline'}
+                        onClick={teacherCommentModalToggle.open}
+                      />
+                    </HStack>
+                  </>
+                  <>
+                    <Text fontWeight={'semibold'} size={'sm'}>
+                      Principal/Head Teacher's Comment
+                    </Text>
+                    <HStack align={'stretch'}>
+                      <Text>{termResult.principal_comment}</Text>
+                      <Spacer />
+                      <IconButton
+                        aria-label="edit Administrator's comment"
+                        icon={<Icon as={PencilIcon} />}
+                        variant={'outline'}
+                        onClick={principalCommentModalToggle.open}
+                      />
+                    </HStack>
+                  </>
+                </VStack>
               </Div>
             </Stack>
             <TermResultTeacherCommentModal

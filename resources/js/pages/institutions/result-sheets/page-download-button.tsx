@@ -24,6 +24,8 @@ export default function PageDownloadButton({
       signed_url!
     )}&name=${encodeURIComponent(filename)}`;
 
+    console.log('url', url);
+
     const a = document.createElement('a');
     a.href = url;
     // a.download = filename; // may be ignored cross-origin

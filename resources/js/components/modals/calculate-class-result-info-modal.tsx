@@ -3,7 +3,6 @@ import { Button, Checkbox, HStack, VStack } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
 import { TermType } from '@/types/types';
-import useIsAdmin from '@/hooks/use-is-admin';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '../forms/form-control-box';
@@ -23,7 +22,6 @@ export default function CalculateClassResultInfoModal({
   onSuccess,
   onClose,
 }: Props) {
-  const isAdmin = useIsAdmin();
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const {
@@ -61,23 +59,21 @@ export default function CalculateClassResultInfoModal({
       headerContent={'Evaluate Student Result'}
       bodyContent={
         <VStack spacing={3}>
-          {isAdmin && (
-            <FormControlBox
-              form={webForm as any}
-              formKey="classification"
-              title="Class"
-            >
-              <ClassificationSelect
-                value={webForm.data.classification}
-                isMulti={false}
-                isClearable={true}
-                onChange={(e: any) =>
-                  webForm.setValue('classification', e?.value)
-                }
-                required
-              />
-            </FormControlBox>
-          )}
+          <FormControlBox
+            form={webForm as any}
+            formKey="classification"
+            title="Class"
+          >
+            <ClassificationSelect
+              value={webForm.data.classification}
+              isMulti={false}
+              isClearable={true}
+              onChange={(e: any) =>
+                webForm.setValue('classification', e?.value)
+              }
+              required
+            />
+          </FormControlBox>
           <FormControlBox
             form={webForm as any}
             title="Academic Session"
