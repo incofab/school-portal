@@ -95,9 +95,9 @@ abstract class BaseUITableFilter
       ->sortQuery();
   }
 
-  protected function requestGet($key)
+  protected function requestGet($key, $default = null)
   {
-    return $this->requestData[$key] ?? null;
+    return $this->requestData[$key] ?? $default;
   }
 
   protected function when(

@@ -3,6 +3,7 @@ import {
   Classification,
   TermResult,
   LearningEvaluation,
+  ResultCommentTemplate,
 } from '@/types/models';
 import React, { useState } from 'react';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -34,6 +35,7 @@ import { LabelText } from '@/components/result-helper-components';
 import { TermType } from '@/types/types';
 import { roundNumber, ucFirst } from '@/util/util';
 import { TermResultExtraData } from '../learning-evaluations/term-result-extra-data';
+import ResultUtil from '@/util/result-util';
 
 interface Props {
   classification: Classification;
@@ -42,6 +44,7 @@ interface Props {
   academicSession: AcademicSession;
   term: TermType;
   forMidTerm?: boolean;
+  resultCommentTemplate: ResultCommentTemplate[];
 }
 
 export default function RecordClassStudentsEvaluations({
@@ -51,11 +54,21 @@ export default function RecordClassStudentsEvaluations({
   academicSession,
   term,
   forMidTerm,
+  resultCommentTemplate,
 }: Props) {
   const [index, setIndex] = useState(0);
   const teacherCommentModalToggle = useModalToggle();
   const principalCommentModalToggle = useModalToggle();
   const termResult = termResults[index];
+
+  const principalComment =
+    termResult.principal_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment;
+  const teacherComment =
+    termResult.teacher_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment_2;
 
   return (
     <DashboardLayout>
@@ -137,13 +150,14 @@ export default function RecordClassStudentsEvaluations({
                 p={4}
               >
                 <TermResultExtraData termResult={termResult} />
-                <VStack divider={<Divider />} spacing={2} align={'stretch'}>
+                <Divider height={20} />
+                <VStack divider={<Divider />} spacing={4} align={'stretch'}>
                   <>
                     <Text fontWeight={'semibold'} size={'sm'}>
                       Teacher's Comment
                     </Text>
                     <HStack align={'stretch'}>
-                      <Text>{termResult.teacher_comment}</Text>
+                      <Text>{teacherComment}</Text>
                       <Spacer />
                       <IconButton
                         aria-label="edit teacher's comment"
@@ -158,7 +172,7 @@ export default function RecordClassStudentsEvaluations({
                       Principal/Head Teacher's Comment
                     </Text>
                     <HStack align={'stretch'}>
-                      <Text>{termResult.principal_comment}</Text>
+                      <Text>{principalComment}</Text>
                       <Spacer />
                       <IconButton
                         aria-label="edit Administrator's comment"
@@ -173,11 +187,13 @@ export default function RecordClassStudentsEvaluations({
             </Stack>
             <TermResultTeacherCommentModal
               termResult={termResult}
+              templateComment={teacherComment}
               {...teacherCommentModalToggle.props}
               onSuccess={() => Inertia.reload({ only: ['termResult'] })}
             />
             <TermResultPrincipalCommentModal
               termResult={termResult}
+              templateComment={principalComment}
               {...principalCommentModalToggle.props}
               onSuccess={() => Inertia.reload({ only: ['termResult'] })}
             />

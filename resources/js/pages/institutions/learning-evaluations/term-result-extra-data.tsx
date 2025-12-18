@@ -51,18 +51,21 @@ export function TermResultExtraData({ termResult }: Props) {
         onChange={(e) =>
           webForm.setValue('attendance_count', e.currentTarget.value)
         }
+        key={`attendance-count-${termResult.id}`}
       />
       <InputForm
         form={webForm as any}
         formKey="height"
         title="Height (CM)"
         onChange={(e) => webForm.setValue('height', e.currentTarget.value)}
+        key={`height-${termResult.id}`}
       />
       <InputForm
         form={webForm as any}
         formKey="weight"
         title="Weight (Kg)"
         onChange={(e) => webForm.setValue('weight', e.currentTarget.value)}
+        key={`weight-${termResult.id}`}
       />
       <BrandButton
         colorScheme={'brand'}

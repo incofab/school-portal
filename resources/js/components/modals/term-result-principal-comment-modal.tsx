@@ -9,6 +9,7 @@ import { TermResult } from '@/types/models';
 
 interface Props {
   termResult: TermResult;
+  templateComment?: string;
   isOpen: boolean;
   onClose(): void;
   onSuccess(): void;
@@ -19,11 +20,12 @@ export default function TermResultPrincipalCommentModal({
   onSuccess,
   onClose,
   termResult,
+  templateComment,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
-    comment: termResult.principal_comment,
+    comment: termResult.principal_comment ?? templateComment,
   });
 
   const onSubmit = async () => {

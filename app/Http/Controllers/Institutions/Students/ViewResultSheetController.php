@@ -16,10 +16,15 @@ use URL;
 
 class ViewResultSheetController extends Controller
 {
-  private function validateStudent(Student $student)
-  {
+  private function validateStudent(
+    Student $student,
+    Classification $classification
+  ) {
     $institutionUser = currentInstitutionUser();
     if ($institutionUser->isAdmin()) {
+      return;
+    }
+    if ($classification->form_teacher_id === $institutionUser->user_id) {
       return;
     }
     if ($institutionUser->user_id == $student->user_id) {
@@ -46,7 +51,7 @@ class ViewResultSheetController extends Controller
     string $term,
     ?bool $forMidTerm = false
   ) {
-    $this->validateStudent($student);
+    $this->validateStudent($student, $classification);
     $viewData = GetViewResultSheetData::run(
       $institution,
       $student,

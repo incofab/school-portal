@@ -64,7 +64,19 @@ class RecordClassResultController extends Controller
         null,
         $courseTeacher->classification_id
       ),
-      'students' => $students
+      'students' => $students,
+      'teachersCourses' => CourseTeacher::query()
+        ->select('course_teachers.*')
+        ->join(
+          'classifications',
+          'course_teachers.classification_id',
+          'classifications.id'
+        )
+        ->where('user_id', $courseTeacher->user_id)
+        ->with('course', 'classification')
+        ->oldest('classifications.title')
+        ->get()
+        ->keyBy('course_teachers.id')
     ]);
   }
 

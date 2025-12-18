@@ -35,6 +35,7 @@ export default function MySelect<T>({
 
   return (
     <Select
+      key={refreshKey}
       {...props}
       value={getValue(selectValue)}
       options={optionsData}

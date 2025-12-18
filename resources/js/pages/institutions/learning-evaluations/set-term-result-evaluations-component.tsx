@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Checkbox,
   Divider,
@@ -49,10 +49,16 @@ export default function SetTermResultEvaluation({
     termResult.learning_evaluation = evaluation;
     // Inertia.visit(instRoute('learning-evaluations.index'));
   };
+  // console.log('TermResult', termResult);
 
-  useMemo(() => {
+  useEffect(() => {
+    console.log(`Effect called on ${termResult?.student?.user?.full_name}`);
     setEvaluation(termResult.learning_evaluation ?? []);
   }, [termResult.id]);
+  // useMemo(() => {
+  //   console.log(`Memo called on ${termResult?.student?.user?.full_name}`);
+  //   setEvaluation(termResult.learning_evaluation ?? []);
+  // }, [termResult.id]);
 
   if (!learningEvaluations) {
     return null;
@@ -105,7 +111,7 @@ export default function SetTermResultEvaluation({
                   >
                     <MySelect
                       isMulti={false}
-                      selectValue={evaluation[item.id]}
+                      selectValue={evaluation[item.id] ?? ''}
                       getOptions={() =>
                         range(1, item.learning_evaluation_domain?.max).map(
                           (num) => {
@@ -116,6 +122,7 @@ export default function SetTermResultEvaluation({
                           }
                         )
                       }
+                      key={String(termResult.id)}
                       onChange={(e: any) =>
                         setEvaluation({
                           ...evaluation,
@@ -131,11 +138,11 @@ export default function SetTermResultEvaluation({
                   form={webForm as any}
                   formKey=""
                   title={item.title}
-                  key={'display-evalauation' + item.id}
+                  key={`display-evalauation-box-${item.id}-${termResult.id}`}
                 >
                   <Input
-                    key={'display-evalauation' + item.id}
-                    value={evaluation[item.id]}
+                    key={`display-evalauation-input-${item.id}-${termResult.id}`}
+                    value={evaluation[item.id] ?? ''}
                     placeholder={'Enter ' + item.title}
                     onChange={(e) =>
                       setEvaluation({

@@ -90,7 +90,7 @@ class LearningEvaluationController extends Controller
       $formatted[$item['learning_evaluation_id']] = $item['value'];
     }
     $termResult->fill(['learning_evaluation' => $formatted])->save();
-    return $this->ok();
+    return $this->ok(['termResult' => $termResult]);
   }
 
   function destroy(

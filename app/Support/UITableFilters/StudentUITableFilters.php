@@ -2,6 +2,9 @@
 
 namespace App\Support\UITableFilters;
 
+use App\Enums\InstitutionUserType;
+use Illuminate\Validation\Rule;
+
 class StudentUITableFilters extends UserUITableFilters
 {
   protected function extraValidationRules(): array
@@ -9,7 +12,15 @@ class StudentUITableFilters extends UserUITableFilters
     return [
       ...parent::extraValidationRules(),
       'code' => ['sometimes', 'string'],
-      'classification' => ['sometimes', 'integer']
+      'classification' => ['sometimes', 'integer'],
+      'studentRole' => [
+        'sometimes',
+        Rule::in([
+          'all',
+          InstitutionUserType::Student->value,
+          InstitutionUserType::Alumni->value
+        ])
+      ]
     ];
   }
 
@@ -38,15 +49,18 @@ class StudentUITableFilters extends UserUITableFilters
   protected function directQuery()
   {
     $this->joinUser();
-    // $this->joinUser()->when(
-    //   $this->requestGet('institution_id'),
-    //   fn(self $that) => $that->joinClassification()
-    // );
 
-    parent::directQuery()->baseQuery->when(
-      $this->requestGet('classification'),
-      fn($q, $value) => $q->where('students.classification_id', $value)
-    );
+    parent::directQuery()
+      ->baseQuery->when(
+        $this->requestGet('classification'),
+        fn($q, $value) => $q->where('students.classification_id', $value)
+      )
+      ->when(
+        $this->requestGet('studentRole', InstitutionUserType::Student->value),
+        fn($q, $value) => $value == 'all'
+          ? $q
+          : $q->where('institution_users.role', $value)
+      );
 
     return $this;
   }

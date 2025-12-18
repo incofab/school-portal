@@ -13,6 +13,8 @@ use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\ClassResultInfo;
 use App\Models\Institution;
+use App\Models\ResultCommentTemplate;
+use App\Models\TermResult;
 use App\Support\SettingsHandler;
 use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use Illuminate\Http\Request;
@@ -239,11 +241,13 @@ class ClassResultInfoController extends Controller
     Institution $institution,
     ClassResultInfo $classResultInfo
   ) {
+    $termResults = $classResultInfo
+      ->termResultsQuery(fn($q) => $q->joinStudent())
+      ->with('student.user')
+      ->oldest('users.last_name')
+      ->get();
     return inertia('institutions/students/record-class-students-evaluations', [
-      'termResults' => $classResultInfo
-        ->termResultsQuery()
-        ->with('student.user')
-        ->get(),
+      'termResults' => $termResults,
       'classification' => $classResultInfo->classification,
       'academicSession' => $classResultInfo->academicSession,
       'term' => $classResultInfo->term,
@@ -252,7 +256,11 @@ class ClassResultInfoController extends Controller
         ->learningEvaluations()
         ->with('learningEvaluationDomain')
         ->orderBy('learning_evaluation_domain_id')
-        ->get()
+        ->get(),
+      'resultCommentTemplate' => ResultCommentTemplate::getTemplate(
+        $classResultInfo->classification_id,
+        $classResultInfo->for_mid_term
+      )
     ]);
   }
 

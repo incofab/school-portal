@@ -54,7 +54,7 @@ class ClassResultInfo extends Model
     ];
     $termResultQuery = TermResultUITableFilters::make(
       $params,
-      TermResult::query()
+      TermResult::query()->select('term_results.*')
     );
     if ($extraQueryCallback) {
       $extraQueryCallback($termResultQuery);

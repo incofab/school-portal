@@ -6,6 +6,7 @@ import {
   Student,
   TermResult,
   LearningEvaluation,
+  ResultCommentTemplate,
 } from '@/types/models';
 import React from 'react';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -34,6 +35,7 @@ import { Inertia } from '@inertiajs/inertia';
 import TermResultPrincipalCommentModal from '@/components/modals/term-result-principal-comment-modal';
 import SetTermResultEvaluation from '../learning-evaluations/set-term-result-evaluations-component';
 import { TermResultExtraData } from '../learning-evaluations/term-result-extra-data';
+import ResultUtil from '@/util/result-util';
 
 interface Props {
   term: string;
@@ -44,6 +46,7 @@ interface Props {
   termResult: TermResult;
   assessments?: Assessment[];
   learningEvaluations?: LearningEvaluation[];
+  resultCommentTemplate: ResultCommentTemplate[];
 }
 
 export default function StudentTermResultDetail({
@@ -55,10 +58,21 @@ export default function StudentTermResultDetail({
   termResult,
   assessments,
   learningEvaluations,
+  resultCommentTemplate,
 }: Props) {
   const { instRoute } = useInstitutionRoute();
   const teacherCommentModalToggle = useModalToggle();
   const principalCommentModalToggle = useModalToggle();
+
+  const principalComment =
+    termResult.principal_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment;
+  const teacherComment =
+    termResult.teacher_comment ??
+    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
+      ?.comment_2;
+
   const headers: TableHeader<CourseResult>[] = [
     {
       label: 'Subject',
@@ -144,7 +158,7 @@ export default function StudentTermResultDetail({
                 Teacher's Comment
               </Text>
               <HStack align={'stretch'}>
-                <Text>{termResult.teacher_comment}</Text>
+                <Text>{teacherComment}</Text>
                 <Spacer />
                 <IconButton
                   aria-label="edit teacher's comment"
@@ -159,7 +173,7 @@ export default function StudentTermResultDetail({
                 Principal/Head Teacher's Comment
               </Text>
               <HStack align={'stretch'}>
-                <Text>{termResult.principal_comment}</Text>
+                <Text>{principalComment}</Text>
                 <Spacer />
                 <IconButton
                   aria-label="edit Administrator's comment"
@@ -196,11 +210,13 @@ export default function StudentTermResultDetail({
         </Stack>
         <TermResultTeacherCommentModal
           termResult={termResult}
+          templateComment={teacherComment}
           {...teacherCommentModalToggle.props}
           onSuccess={() => Inertia.reload({ only: ['termResult'] })}
         />
         <TermResultPrincipalCommentModal
           termResult={termResult}
+          templateComment={principalComment}
           {...principalCommentModalToggle.props}
           onSuccess={() => Inertia.reload({ only: ['termResult'] })}
         />

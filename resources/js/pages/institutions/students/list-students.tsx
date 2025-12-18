@@ -137,24 +137,24 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
           />
           {isAdmin && (
             <>
-            <BrandButton 
-              variant={'ghost'}
-              onClick={() => openUniversalReceiptModal(row.user)}
-              title='Receipts'
-            />
-
-            <DestructivePopover
-              label={`Delete ${row.user?.full_name} from the student record. This is irreversible, be careful!!!`}
-              onConfirm={() => deleteItem(row)}
-              isLoading={deleteForm.processing}
-            >
-              <IconButton
-                aria-label={'Delete'}
-                icon={<Icon as={TrashIcon} />}
+              <BrandButton
                 variant={'ghost'}
-                colorScheme={'red'}
+                onClick={() => openUniversalReceiptModal(row.user)}
+                title="Receipts"
               />
-            </DestructivePopover>
+
+              <DestructivePopover
+                label={`Delete ${row.user?.full_name} from the student record. This is irreversible, be careful!!!`}
+                onConfirm={() => deleteItem(row)}
+                isLoading={deleteForm.processing}
+              >
+                <IconButton
+                  aria-label={'Delete'}
+                  icon={<Icon as={TrashIcon} />}
+                  variant={'ghost'}
+                  colorScheme={'red'}
+                />
+              </DestructivePopover>
             </>
           )}
         </HStack>
@@ -162,9 +162,9 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
     },
   ];
 
-  function openUniversalReceiptModal(user: User|undefined){
+  function openUniversalReceiptModal(user: User | undefined) {
     setSelectedUser(user);
-    universalReceiptModalToggle.open(user)
+    universalReceiptModalToggle.open(user);
   }
 
   return (
@@ -217,7 +217,7 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
             data={students.data}
             keyExtractor={(row) => row.id}
             paginator={students}
-            validFilters={['classification']}
+            validFilters={['classification', 'studentRole']}
             onFilterButtonClick={studentFiltersModalToggle.open}
           />
         </SlabBody>

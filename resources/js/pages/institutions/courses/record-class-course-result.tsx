@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardBody,
@@ -23,7 +23,7 @@ import {
 } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
-import { FormButton } from '@/components/buttons';
+import { BrandButton, FormButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { SelectOptionType } from '@/types/types';
@@ -32,6 +32,7 @@ import useSharedProps from '@/hooks/use-shared-props';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
 import FormControlBox from '@/components/forms/form-control-box';
+import MySelect from '@/components/dropdown-select/my-select';
 
 interface ResultEntry {
   [studentId: string]: {
@@ -45,12 +46,14 @@ interface Props {
   courseTeacher: CourseTeacher;
   students: Student[];
   assessments: Assessment[];
+  teachersCourses: { [id: number]: CourseTeacher };
 }
 
 export default function RecordClassCourseResult({
   courseTeacher,
   students,
   assessments,
+  teachersCourses,
 }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
   const { currentAcademicSession, currentTerm, usesMidTermResult } =
@@ -128,6 +131,10 @@ export default function RecordClassCourseResult({
           <Slab>
             <SlabHeading title={`Record Class Result`} />
             <SlabBody>
+              <SwitchCourseTeacher
+                courseTeacher={courseTeacher}
+                teachersCourses={teachersCourses}
+              />
               <Dt contentData={details} />
             </SlabBody>
           </Slab>
@@ -282,5 +289,52 @@ export default function RecordClassCourseResult({
         </CenteredBox>
       </Div>
     </DashboardLayout>
+  );
+}
+
+function SwitchCourseTeacher({
+  courseTeacher,
+  teachersCourses,
+}: {
+  teachersCourses: { [id: number]: CourseTeacher };
+  courseTeacher: CourseTeacher;
+}) {
+  const { instRoute } = useInstitutionRoute();
+  const [selectedCourseTeacher, setSelectedCourseTeacher] =
+    useState<CourseTeacher>(courseTeacher);
+  function getValue(ct: CourseTeacher) {
+    return {
+      label: `${ct.classification?.title} - ${ct.course?.title}`,
+      value: ct.id,
+    };
+  }
+  return (
+    <Div py={2}>
+      <Text>Change Subject</Text>
+      <HStack w={'full'} spacing={2}>
+        <MySelect
+          isMulti={false}
+          selectValue={getValue(selectedCourseTeacher)}
+          getOptions={() =>
+            Object.values(teachersCourses).map((ct) => getValue(ct))
+          }
+          onChange={(e: any) => {
+            if (!e || e.value == selectedCourseTeacher.id) return;
+            setSelectedCourseTeacher(teachersCourses[e.value]);
+          }}
+        />
+        <BrandButton
+          title="Submit"
+          onClick={() =>
+            Inertia.visit(
+              instRoute('record-class-results.create', [
+                selectedCourseTeacher.id,
+              ])
+            )
+          }
+          isLoading={selectedCourseTeacher.id != courseTeacher.id}
+        />
+      </HStack>
+    </Div>
   );
 }

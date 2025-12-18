@@ -42,8 +42,8 @@ Route::get('/activate-result/{instUuid}', function ($instUuid) {
     $termResults = \App\Models\TermResult::query()
       ->where('institution_id', $inst->id)
       ->where('for_mid_term', false)
-      ->where('term', \App\Enums\TermType::Second)
-      ->where('academic_session_id', 4)
+      ->where('term', \App\Enums\TermType::First)
+      ->where('academic_session_id', 5)
       ->activated(false)
     //   ->update(['is_activated' => true]);
       ->count();

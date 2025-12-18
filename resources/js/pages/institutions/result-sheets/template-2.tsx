@@ -266,7 +266,7 @@ export default function Template2(props: ResultProps) {
               label="Overal Score"
               text={termResult.total_score}
             />
-            <Spacer />
+            {/* <Spacer />
             <LabelText
               labelProps={{ fontWeight: 'semibold' }}
               label="Obtainable"
@@ -277,7 +277,7 @@ export default function Template2(props: ResultProps) {
               labelProps={{ fontWeight: 'semibold' }}
               label="Obtained"
               text={classResultInfo.max_score}
-            />
+            /> */}
             <Spacer />
             <LabelText
               labelProps={{ fontWeight: 'semibold' }}

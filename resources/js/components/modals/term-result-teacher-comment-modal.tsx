@@ -8,6 +8,7 @@ import FormControlBox from '../forms/form-control-box';
 import { TermResult } from '@/types/models';
 
 interface Props {
+  templateComment?: string;
   termResult: TermResult;
   isOpen: boolean;
   onClose(): void;
@@ -19,11 +20,12 @@ export default function TermResultTeacherCommentModal({
   onSuccess,
   onClose,
   termResult,
+  templateComment,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
-    comment: termResult.teacher_comment,
+    comment: termResult.teacher_comment ?? templateComment,
   });
 
   const onSubmit = async () => {
