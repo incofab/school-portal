@@ -76,7 +76,7 @@ class RecordClassResultController extends Controller
         ->with('course', 'classification')
         ->oldest('classifications.title')
         ->get()
-        ->keyBy('course_teachers.id')
+        ->keyBy('id')
     ]);
   }
 

@@ -116,6 +116,12 @@ class ProcessTermResult
       ];
       TermResult::query()->updateOrCreate($bindingData, $data);
     }
+    $classAverage =
+      array_sum($studentsTotalAverageScores) /
+      count($studentsTotalAverageScores);
+    $this->classResultInfo
+      ->fill(['average' => round($classAverage, 2)])
+      ->save();
   }
 
   /** @param array<string, ResultDetail> $studentsResultDetails */

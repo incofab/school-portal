@@ -50,7 +50,7 @@ export default function Template2(props: ResultProps) {
       value: getMaxObtainableScore(props),
     },
     { label: 'Average Score', value: termResult.average },
-    { label: 'Class Average Score', value: classResultInfo.average },
+    // { label: 'Class Average Score', value: classResultInfo.average },
   ];
 
   const principalComment =
@@ -250,7 +250,7 @@ export default function Template2(props: ResultProps) {
                 <LabelText
                   labelProps={{ fontWeight: 'semibold' }}
                   textProps={{ fontWeight: 'bold', textTransform: 'uppercase' }}
-                  label="Overal Result"
+                  label="Overall Result"
                   text={
                     ResultUtil.getGrade(
                       termResult.average,
@@ -264,10 +264,10 @@ export default function Template2(props: ResultProps) {
           <HStack>
             <LabelText
               labelProps={{ fontWeight: 'semibold' }}
-              label="Overal Score"
+              label="Overall Score"
               text={termResult.total_score}
             />
-            <Spacer />
+            {/* <Spacer />
             <LabelText
               labelProps={{ fontWeight: 'semibold' }}
               label="Obtainable"
@@ -278,7 +278,7 @@ export default function Template2(props: ResultProps) {
               labelProps={{ fontWeight: 'semibold' }}
               label="Obtained"
               text={classResultInfo.max_score}
-            />
+            /> */}
             <Spacer />
             <LabelText
               labelProps={{ fontWeight: 'semibold' }}

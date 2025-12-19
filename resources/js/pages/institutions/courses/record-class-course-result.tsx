@@ -309,20 +309,22 @@ function SwitchCourseTeacher({
     };
   }
   return (
-    <Div py={2}>
+    <Div pt={2} pb={4}>
       <Text>Change Subject</Text>
       <HStack w={'full'} spacing={2}>
-        <MySelect
-          isMulti={false}
-          selectValue={getValue(selectedCourseTeacher)}
-          getOptions={() =>
-            Object.values(teachersCourses).map((ct) => getValue(ct))
-          }
-          onChange={(e: any) => {
-            if (!e || e.value == selectedCourseTeacher.id) return;
-            setSelectedCourseTeacher(teachersCourses[e.value]);
-          }}
-        />
+        <Div flex={1}>
+          <MySelect
+            isMulti={false}
+            selectValue={getValue(selectedCourseTeacher)}
+            getOptions={() =>
+              Object.values(teachersCourses).map((ct) => getValue(ct))
+            }
+            onChange={(e: any) => {
+              if (!e || e.value == selectedCourseTeacher.id) return;
+              setSelectedCourseTeacher(teachersCourses[e.value]);
+            }}
+          />
+        </Div>
         <BrandButton
           title="Submit"
           onClick={() =>
