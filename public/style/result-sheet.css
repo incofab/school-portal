@@ -47,7 +47,7 @@ body {
 }
 
 .vertical-header {
-  writing-mode: vertical-lr;
+  writing-mode: vertical-rl;
   /* text-orientation: upright; */
   height: 120px; /* Set the desired width for the header cells */
   position: relative;
@@ -60,6 +60,9 @@ body {
   border: 1px solid #000;
   border-collapse: collapse;
   padding: 8px;
+}
+
+.result-analysis-table th {
   font-weight: bold;
   font-size: 16px;
 }

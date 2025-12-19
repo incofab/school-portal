@@ -115,4 +115,14 @@ class ClassResultInfoAction
     }
     return [$overallTotal, $minScore, $maxScore];
   }
+  function delete(
+    ClassResultInfo $classResultInfo,
+    bool $recalculateAble = false
+  ) {
+    $classResultInfo->termResultsQuery()->delete();
+    if (!$recalculateAble) {
+      $classResultInfo->courseResultsQuery()->delete();
+    }
+    $classResultInfo->delete();
+  }
 }

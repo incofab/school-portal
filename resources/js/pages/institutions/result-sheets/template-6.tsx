@@ -22,7 +22,9 @@ import DisplayTermResultEvaluation from '@/components/display-term-result-evalua
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import DataTable, { TableHeader } from '@/components/data-table';
 import { CourseResult } from '@/types/models';
-import ResultSheetLayout from './result-sheet-layout';
+import ResultSheetLayout, {
+  getMaxObtainableScore,
+} from './result-sheet-layout';
 import { formatAsDate, ucFirst } from '@/util/util';
 import { EnvelopeIcon, MapIcon, PhoneIcon } from '@heroicons/react/24/solid';
 import { LabelText } from '@/components/result-helper-components';
@@ -291,7 +293,9 @@ export default function Template6(props: ResultProps) {
             <HStack>
               <LabelText
                 label={'Total'}
-                text={`${termResult.total_score} out of ${classResultInfo.max_obtainable_score}`}
+                text={`${termResult.total_score} out of ${getMaxObtainableScore(
+                  props
+                )}`}
               />
               <Spacer />
               <LabelText

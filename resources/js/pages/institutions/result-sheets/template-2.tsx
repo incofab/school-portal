@@ -17,6 +17,7 @@ import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import { GradingTable, LabelText } from '@/components/result-helper-components';
 import ResultSheetLayout, {
   ClosingDate,
+  getMaxObtainableScore,
   getWebsite,
   NextTermDate,
   SchoolLogo,
@@ -46,7 +47,7 @@ export default function Template2(props: ResultProps) {
     { label: 'Total Score', value: termResult.total_score },
     {
       label: 'Maximum Total Score',
-      value: classResultInfo.max_obtainable_score,
+      value: getMaxObtainableScore(props),
     },
     { label: 'Average Score', value: termResult.average },
     { label: 'Class Average Score', value: classResultInfo.average },
@@ -266,18 +267,18 @@ export default function Template2(props: ResultProps) {
               label="Overal Score"
               text={termResult.total_score}
             />
-            {/* <Spacer />
+            <Spacer />
             <LabelText
               labelProps={{ fontWeight: 'semibold' }}
               label="Obtainable"
-              text={classResultInfo.max_obtainable_score}
+              text={getMaxObtainableScore(props)}
             />
             <Spacer />
             <LabelText
               labelProps={{ fontWeight: 'semibold' }}
               label="Obtained"
               text={classResultInfo.max_score}
-            /> */}
+            />
             <Spacer />
             <LabelText
               labelProps={{ fontWeight: 'semibold' }}

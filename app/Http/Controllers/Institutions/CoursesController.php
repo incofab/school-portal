@@ -162,7 +162,7 @@ class CoursesController extends Controller
     $course = $practiceData['course'];
     $practiceQuestions = $practiceData['practiceQuestions'] ?? [];
 
-    if (count($practiceQuestions) < 1) {
+    if (!is_array($practiceQuestions) || count($practiceQuestions) < 1) {
       abort('404', 'No Receipt Found');
     }
 

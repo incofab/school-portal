@@ -16,8 +16,12 @@ import ImagePaths from '@/util/images';
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import ResultSheetLayout, {
   ClosingDate,
+  getMaxObtainableScore,
   NextTermDate,
+  SchoolStamp,
 } from './result-sheet-layout';
+import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
+import { roundNumber } from '@/util/util';
 
 export default function Template1(props: ResultProps) {
   const {
@@ -30,8 +34,9 @@ export default function Template1(props: ResultProps) {
     assessments,
     resultCommentTemplate,
     courseResultInfoData,
+    learningEvaluations,
   } = props;
-  const { currentInstitution, stamp } = useSharedProps();
+  const { currentInstitution } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
 
   const principalComment =
@@ -50,7 +55,7 @@ export default function Template1(props: ResultProps) {
     { label: 'Total Score', value: termResult.total_score },
     {
       label: 'Maximum Total Score',
-      value: classResultInfo.max_obtainable_score,
+      value: getMaxObtainableScore(props),
     },
     { label: 'Average Score', value: termResult.average },
     { label: 'Class Average Score', value: classResultInfo.average },
@@ -85,7 +90,13 @@ export default function Template1(props: ResultProps) {
   // };
   return (
     <ResultSheetLayout resultProps={props}>
-      <Div mx={'auto'} width={'900px'} px={3} id="result-sheet">
+      <Div
+        mx={'auto'}
+        width={'900px'}
+        px={3}
+        id="result-sheet"
+        position={'relative'}
+      >
         <VStack align={'stretch'}>
           <HStack background={'#FAFAFA'} p={2}>
             <Avatar
@@ -103,7 +114,7 @@ export default function Template1(props: ResultProps) {
                 whiteSpace={'nowrap'}
               >
                 {currentInstitution.address}
-                <br /> {currentInstitution.email}
+                <br /> {currentInstitution.email} | {currentInstitution.phone}
               </Text>
               <Text
                 fontWeight={'semibold'}
@@ -129,13 +140,19 @@ export default function Template1(props: ResultProps) {
             <LabelText label="Class" text={classification.title} />
             <Spacer />
             {hidePosition ? (
-              <div></div>
+              <></>
             ) : (
               <LabelText
                 label="Position"
                 text={
-                  termResult.position +
-                  ResultUtil.getPositionSuffix(termResult.position)
+                  showGrade
+                    ? ResultUtil.getGrade(
+                        termResult.average,
+                        resultCommentTemplate
+                      ).grade
+                    : `${termResult.position} ${ResultUtil.getPositionSuffix(
+                        termResult.position
+                      )}`
                 }
               />
             )}
@@ -236,50 +253,85 @@ export default function Template1(props: ResultProps) {
           </Div>
           <Spacer height={'10px'} />
           <HStack align={'stretch'} justify={'space-between'}>
-            <table className="result-analysis-table">
-              <tbody>
-                {resultDetail.map(({ label, value }) => (
-                  <tr key={label}>
-                    <td style={{ width: '250px' }}>{label}</td>
-                    <td>{value}</td>
+            <Div>
+              <table className="result-analysis-table">
+                <tbody>
+                  {resultDetail.map(({ label, value }) => (
+                    <tr key={label}>
+                      <td style={{ width: '250px' }}>{label}</td>
+                      <td>{roundNumber(value, 2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <table
+                className="result-analysis-table"
+                width={'100%'}
+                style={{ marginTop: '5px' }}
+              >
+                <thead>
+                  <tr>
+                    <th colSpan={3}>Keys</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <Div textAlign={'center'}>
-              <Img
-                src={stamp}
-                alt="School stamp"
-                display={'inline-block'}
-                mt={3}
+                  <tr>
+                    <td>Score</td>
+                    <td>Grade</td>
+                    <td>Remark</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {resultCommentTemplate.map((item) => {
+                    const { grade, grade_label } = item;
+                    return (
+                      <tr key={grade}>
+                        <td>{`${item.min}-${item.max}`}</td>
+                        <td>{grade_label}</td>
+                        <td>{grade}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </Div>
+            <Div>
+              {learningEvaluations.length > 0 && (
+                <>
+                  <Div flex={3}>
+                    <DisplayTermResultEvaluation
+                      termResult={termResult}
+                      learningEvaluations={learningEvaluations}
+                    />
+                  </Div>
+                  <Div>
+                    <b>Number Rating:</b> 5 = Excellent, 4 = Good, 3 = Average,
+                    2 = Below Average, 1 = Unsatisfactory
+                  </Div>
+                  <Div>
+                    <b>Letter Rating:</b> A = Excellent, B = Good, C = Average,
+                    D = Below Average, E = Unsatisfactory
+                  </Div>
+                </>
+              )}
+              <SchoolStamp
+                mt={2}
+                textAlign={'center'}
+                opacity={0.5}
+                position={'absolute'}
+                bottom={-20}
+                right={50}
               />
             </Div>
-            <table className="result-analysis-table">
-              <thead>
-                <tr>
-                  <th colSpan={3}>Keys</th>
-                </tr>
-                <tr>
-                  <td>Score</td>
-                  <td>Grade</td>
-                  <td>Remark</td>
-                </tr>
-              </thead>
-              <tbody>
-                {resultCommentTemplate.map((item) => {
-                  const { grade, grade_label } = item;
-                  return (
-                    <tr key={grade}>
-                      <td>{`${item.min} - ${item.max}`}</td>
-                      <td>{grade_label}</td>
-                      <td>{grade}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
           </HStack>
         </VStack>
+        {/* <Div
+          textAlign={'center'}
+          position={'absolute'}
+          bottom={150}
+          right={0}
+          opacity={0.5}
+        >
+          <SchoolStamp />
+        </Div> */}
       </Div>
     </ResultSheetLayout>
   );

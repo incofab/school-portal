@@ -13,27 +13,22 @@ Route::get('dummy1', function () {
 
 Route::get('/dummy', [Web\DummyController::class, 'sendWhatsappMessage']);
 
-Route::get('/no-mid-term/{instUuid}', function ($instUuid) {
+Route::get('/school/{instUuid}', function ($instUuid) {
     $inst = \App\Models\Institution::where('uuid', $instUuid)->firstOrFail();
     $b = [
-        'academic_session_id' => 4,
-        'term' => \App\Enums\TermType::Third,
+        // 'academic_session_id' => 4,
+        // 'term' => \App\Enums\TermType::Third,
         'institution_id' => $inst->id,
         'for_mid_term' => true,
     ];
-    dd($inst->termResults()->where($b)->count());
-    $inst->termResults()
-      ->where($b)
-      ->update(['for_mid_term' => false]);
-    \App\Models\CourseResult::query()
-      ->where($b)
-      ->update(['for_mid_term' => false]);
-    \App\Models\CourseResultInfo::query()
-      ->where($b)
-      ->update(['for_mid_term' => false]);
-    \App\Models\ClassResultInfo::query()
-      ->where($b)
-      ->update(['for_mid_term' => false]);
+    $classResultInfo = \App\Models\ClassResultInfo::query()
+      ->where($b)->get();
+    dd($classResultInfo->count());
+    foreach ($classResultInfo as $key => $info) {
+        // $info->courseResultsQuery()->delete();
+        $info->termResultsQuery()->delete();
+        $info->delete();
+    }
       dd('Done');
 });
 

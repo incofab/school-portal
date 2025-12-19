@@ -17,7 +17,9 @@ import '@/../../public/style/result/template-3.css';
 import ImagePaths from '@/util/images';
 import ResultUtil, { ResultProps, useResultSetting } from '@/util/result-util';
 import DisplayTermResultEvaluation from '@/components/display-term-result-evaluation-component';
-import ResultSheetLayout from './result-sheet-layout';
+import ResultSheetLayout, {
+  getMaxObtainableScore,
+} from './result-sheet-layout';
 import { formatAsDate } from '@/util/util';
 
 export default function Template3(props: ResultProps) {
@@ -55,7 +57,7 @@ export default function Template3(props: ResultProps) {
     { label: 'No In Class', value: classResultInfo.num_of_students },
     {
       label: 'Total Marks Obtainable',
-      value: classResultInfo.max_obtainable_score,
+      value: getMaxObtainableScore(props),
     },
     { label: 'Class Average', value: classResultInfo.average },
     { label: 'Portal Id', value: student.code },

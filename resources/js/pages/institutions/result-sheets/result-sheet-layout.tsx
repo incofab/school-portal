@@ -5,7 +5,7 @@ import PagePrintLayout from '@/domain/institutions/page-print-layout';
 import { LabelText } from '@/components/result-helper-components';
 import useSharedProps from '@/hooks/use-shared-props';
 import { Div } from '@/components/semantic';
-import { Avatar, Img } from '@chakra-ui/react';
+import { Avatar, BoxProps, Img } from '@chakra-ui/react';
 import ImagePaths from '@/util/images';
 import { Institution, Student } from '@/types/models';
 interface Props {
@@ -63,10 +63,10 @@ export function NextTermDate({ resultProps }: { resultProps: ResultProps }) {
   ) : null;
 }
 
-export function SchoolStamp() {
+export function SchoolStamp({ ...props }: BoxProps) {
   const { stamp } = useSharedProps();
   return (
-    <Div>
+    <Div {...props}>
       <Img src={stamp} alt="School stamp" display={'inline-block'} />
     </Div>
   );
@@ -90,4 +90,11 @@ export function StudentPassport({ student }: { student: Student }) {
 export function getWebsite(institution: Institution) {
   const website = institution.website ?? institution.institution_group?.website;
   return website ? `https://${website}` : '';
+}
+
+export function getMaxObtainableScore(resultProps: ResultProps) {
+  const { classification, courseResults, classResultInfo } = resultProps;
+  return classification.has_equal_subjects
+    ? classResultInfo.max_obtainable_score
+    : courseResults.length * 100;
 }
