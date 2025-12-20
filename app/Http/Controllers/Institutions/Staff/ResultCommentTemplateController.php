@@ -28,6 +28,7 @@ class ResultCommentTemplateController extends Controller
     Institution $institution,
     ?ResultCommentTemplate $resultCommentTemplate = null
   ) {
+    $resultCommentTemplate?->load('classifications');
     return Inertia::render(
       'institutions/result-comments/list-result-comment-templates',
       [

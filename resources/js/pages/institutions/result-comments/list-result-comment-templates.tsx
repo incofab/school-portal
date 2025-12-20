@@ -172,9 +172,8 @@ function CreateUpdateResultCommentTemplates({
       label: cd.title,
       value: cd.id,
     })) as Nullable<MultiValue<SelectOptionType<number>>>,
-    for_all_classes: resultCommentTemplate?.classifications?.length
-      ? false
-      : true,
+    for_all_classes:
+      resultCommentTemplate?.classifications?.length ?? 0 > 0 ? false : true,
   });
 
   const submit = async () => {

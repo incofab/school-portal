@@ -8,6 +8,7 @@ import {
   HStack,
   Input,
   Spacer,
+  Spinner,
   Text,
   Wrap,
   WrapItem,
@@ -58,6 +59,7 @@ export default function RecordClassCourseResult({
   const { handleResponseToast, toastError } = useMyToast();
   const { currentAcademicSession, currentTerm, usesMidTermResult } =
     useSharedProps();
+  const selectedCourseTeacherState = useState<CourseTeacher>(courseTeacher);
   const { instRoute } = useInstitutionRoute();
 
   const webForm = useWebForm({
@@ -134,6 +136,7 @@ export default function RecordClassCourseResult({
               <SwitchCourseTeacher
                 courseTeacher={courseTeacher}
                 teachersCourses={teachersCourses}
+                selectedCourseTeacherState={selectedCourseTeacherState}
               />
               <Dt contentData={details} />
             </SlabBody>
@@ -157,134 +160,144 @@ export default function RecordClassCourseResult({
             </FormControlBox>
           )}
           <Spacer height={3} />
-          {students.map((student) => {
-            const existingResult =
-              student['course_results']?.[0] ?? ({} as CourseResult);
-            const result = webForm.data.result[student.id] ?? {
-              ...existingResult,
-              ass: existingResult?.assessment_values ?? {},
-            };
-            result.student_id = student.id;
-            const studentTotalScore = getStudentTotal(result);
-            return (
-              <Card key={student.id + 'exam' + webForm.data.term} mt={2}>
-                <CardBody>
-                  <HStack align={'stretch'}>
-                    <Text display={'block'} fontWeight={'semibold'} mb={3}>
-                      {student.user!.full_name}
-                    </Text>
-                    <Spacer />
-                    <Text
-                      color={'brand.700'}
-                      fontSize={'sm'}
-                      // fontWeight={'semibold'}
-                      display={studentTotalScore ? undefined : 'none'}
-                    >
-                      Total {studentTotalScore}
-                    </Text>
-                  </HStack>
-                  <Wrap spacing={3}>
-                    {assessments.map((assessment) => {
-                      if (
-                        assessment.term &&
-                        assessment.term !== webForm.data.term
-                      ) {
-                        return null;
-                      }
-                      return (
-                        <WrapItem
-                          mt={2}
-                          width={'120px'}
-                          key={
-                            student.id +
-                            assessment.raw_title +
-                            webForm.data.term
-                          }
-                        >
-                          <FormControl>
-                            <FormLabel
-                              fontWeight={'normal'}
-                              m={0}
-                              whiteSpace={'nowrap'}
-                              textOverflow={'ellipsis'}
-                              overflow={'hidden'}
-                              fontSize={'sm'}
-                            >
-                              {startCase(assessment.raw_title)}
-                            </FormLabel>
-                            <Input
-                              value={result['ass'][assessment.raw_title] ?? ''}
-                              type="number"
-                              onChange={(e) => {
-                                if (
-                                  !isValidScore(
-                                    e.currentTarget.value,
-                                    assessment.max
-                                  )
-                                ) {
-                                  return;
-                                }
-                                webForm.setValue('result', {
-                                  ...webForm.data.result,
-                                  [student.id]: {
-                                    ...result,
-                                    ass: {
-                                      ...result.ass,
-                                      [assessment.raw_title]:
-                                        e.currentTarget.value,
-                                    },
-                                  },
-                                });
-                              }}
-                            />
-                          </FormControl>
-                        </WrapItem>
-                      );
-                    })}
-                    <WrapItem mt={2} width={'120px'}>
-                      <FormControl>
-                        <FormLabel
-                          fontWeight={'normal'}
-                          m={0}
-                          whiteSpace={'nowrap'}
-                          textOverflow={'ellipsis'}
-                          overflow={'hidden'}
-                          fontSize={'sm'}
-                        >
-                          Exam
-                        </FormLabel>
-                        <Input
-                          value={result.exam}
-                          type="number"
-                          onChange={(e) => {
-                            if (
-                              !isValidScore(
-                                e.currentTarget.value,
-                                100 -
-                                  (Number(studentTotalScore) -
-                                    Number(result.exam))
-                              )
-                            ) {
-                              return;
+
+          {selectedCourseTeacherState[0].id === courseTeacher.id &&
+            students.map((student) => {
+              const existingResult =
+                student['course_results']?.[0] ?? ({} as CourseResult);
+              const result = webForm.data.result[student.id] ?? {
+                ...existingResult,
+                ass: existingResult?.assessment_values ?? {},
+              };
+              result.student_id = student.id;
+              const studentTotalScore = getStudentTotal(result);
+              return (
+                <Card key={student.id + 'exam' + webForm.data.term} mt={2}>
+                  <CardBody>
+                    <HStack align={'stretch'}>
+                      <Text display={'block'} fontWeight={'semibold'} mb={3}>
+                        {student.user!.full_name}
+                      </Text>
+                      <Spacer />
+                      <Text
+                        color={'brand.700'}
+                        fontSize={'sm'}
+                        // fontWeight={'semibold'}
+                        display={studentTotalScore ? undefined : 'none'}
+                      >
+                        Total {studentTotalScore}
+                      </Text>
+                    </HStack>
+                    <Wrap spacing={3}>
+                      {assessments.map((assessment) => {
+                        if (
+                          assessment.term &&
+                          assessment.term !== webForm.data.term
+                        ) {
+                          return null;
+                        }
+                        return (
+                          <WrapItem
+                            mt={2}
+                            width={'120px'}
+                            key={
+                              student.id +
+                              assessment.raw_title +
+                              webForm.data.term
                             }
-                            webForm.setValue('result', {
-                              ...webForm.data.result,
-                              [student.id]: {
-                                ...result,
-                                exam: e.currentTarget.value,
-                              },
-                            });
-                          }}
-                        />
-                      </FormControl>
-                    </WrapItem>
-                  </Wrap>
-                </CardBody>
-              </Card>
-            );
-          })}
+                          >
+                            <FormControl>
+                              <FormLabel
+                                fontWeight={'normal'}
+                                m={0}
+                                whiteSpace={'nowrap'}
+                                textOverflow={'ellipsis'}
+                                overflow={'hidden'}
+                                fontSize={'sm'}
+                              >
+                                {startCase(assessment.raw_title)}
+                              </FormLabel>
+                              <Input
+                                value={
+                                  result['ass'][assessment.raw_title] ?? ''
+                                }
+                                type="number"
+                                onChange={(e) => {
+                                  if (
+                                    !isValidScore(
+                                      e.currentTarget.value,
+                                      assessment.max
+                                    )
+                                  ) {
+                                    return;
+                                  }
+                                  webForm.setValue('result', {
+                                    ...webForm.data.result,
+                                    [student.id]: {
+                                      ...result,
+                                      ass: {
+                                        ...result.ass,
+                                        [assessment.raw_title]:
+                                          e.currentTarget.value,
+                                      },
+                                    },
+                                  });
+                                }}
+                              />
+                            </FormControl>
+                          </WrapItem>
+                        );
+                      })}
+                      <WrapItem mt={2} width={'120px'}>
+                        <FormControl>
+                          <FormLabel
+                            fontWeight={'normal'}
+                            m={0}
+                            whiteSpace={'nowrap'}
+                            textOverflow={'ellipsis'}
+                            overflow={'hidden'}
+                            fontSize={'sm'}
+                          >
+                            Exam
+                          </FormLabel>
+                          <Input
+                            value={result.exam}
+                            type="number"
+                            onChange={(e) => {
+                              if (
+                                !isValidScore(
+                                  e.currentTarget.value,
+                                  100 -
+                                    (Number(studentTotalScore) -
+                                      Number(result.exam))
+                                )
+                              ) {
+                                return;
+                              }
+                              webForm.setValue('result', {
+                                ...webForm.data.result,
+                                [student.id]: {
+                                  ...result,
+                                  exam: e.currentTarget.value,
+                                },
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </WrapItem>
+                    </Wrap>
+                  </CardBody>
+                </Card>
+              );
+            })}
           <FormControl mt={3}>
-            <FormButton isLoading={webForm.processing} onClick={submit} />
+            <FormButton
+              isLoading={
+                selectedCourseTeacherState[0].id != courseTeacher.id ||
+                webForm.processing
+              }
+              onClick={submit}
+            />
           </FormControl>
         </CenteredBox>
       </Div>
@@ -295,13 +308,18 @@ export default function RecordClassCourseResult({
 function SwitchCourseTeacher({
   courseTeacher,
   teachersCourses,
+  selectedCourseTeacherState,
 }: {
   teachersCourses: { [id: number]: CourseTeacher };
   courseTeacher: CourseTeacher;
+  selectedCourseTeacherState: [
+    CourseTeacher,
+    React.Dispatch<React.SetStateAction<CourseTeacher>>
+  ];
 }) {
   const { instRoute } = useInstitutionRoute();
   const [selectedCourseTeacher, setSelectedCourseTeacher] =
-    useState<CourseTeacher>(courseTeacher);
+    selectedCourseTeacherState;
   function getValue(ct: CourseTeacher) {
     return {
       label: `${ct.classification?.title} - ${ct.course?.title}`,
@@ -322,20 +340,15 @@ function SwitchCourseTeacher({
             onChange={(e: any) => {
               if (!e || e.value == selectedCourseTeacher.id) return;
               setSelectedCourseTeacher(teachersCourses[e.value]);
+              Inertia.visit(
+                instRoute('record-class-results.create', [e.value])
+              );
             }}
           />
         </Div>
-        <BrandButton
-          title="Submit"
-          onClick={() =>
-            Inertia.visit(
-              instRoute('record-class-results.create', [
-                selectedCourseTeacher.id,
-              ])
-            )
-          }
-          isLoading={selectedCourseTeacher.id != courseTeacher.id}
-        />
+        {selectedCourseTeacher.id != courseTeacher.id && (
+          <Spinner size="md" color="brand.500" />
+        )}
       </HStack>
     </Div>
   );

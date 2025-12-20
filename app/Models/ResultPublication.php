@@ -3,13 +3,12 @@
 namespace App\Models;
 
 use App\Enums\TermType;
-use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ResultPublication extends Model
 {
-  use HasFactory, InstitutionScope;
+  use HasFactory; // DO NOT USE `InstitutionScope` HERE;
 
   protected $guarded = [];
 
