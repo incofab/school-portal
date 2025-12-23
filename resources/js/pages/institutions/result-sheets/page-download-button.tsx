@@ -1,6 +1,8 @@
 import React from 'react';
 import { Button, ButtonProps } from '@chakra-ui/react';
 import ResultUtil from '@/util/result-util';
+import { anchorDownload, sanitizeFilename } from '@/util/util';
+import useDownloadHtml from '@/util/download-html';
 
 interface Props {
   signed_url?: string;
@@ -16,6 +18,8 @@ export default function PageDownloadButton({
   contentId,
   ...props
 }: Props & ButtonProps) {
+  const { downloadPage, downloadForm } = useDownloadHtml();
+  filename = sanitizeFilename(filename);
   async function downloadAsPdf() {
     if (!confirm('Do you want to download this result?')) {
       return;
@@ -24,19 +28,22 @@ export default function PageDownloadButton({
       signed_url!
     )}&name=${encodeURIComponent(filename)}`;
 
-    console.log('url', url);
+    anchorDownload(url, filename);
+    // console.log('url', url);
 
-    const a = document.createElement('a');
-    a.href = url;
-    // a.download = filename; // may be ignored cross-origin
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    // const a = document.createElement('a');
+    // a.href = url;
+    // // a.download = filename; // may be ignored cross-origin
+    // document.body.appendChild(a);
+    // a.click();
+    // a.remove();
   }
 
   function exportPdf() {
-    const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
-    ResultUtil.exportAsPdf(contentId, nameWithoutExt);
+    // const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
+    // ResultUtil.exportAsPdf(contentId, nameWithoutExt);
+
+    downloadPage(filename);
   }
 
   return (
@@ -53,6 +60,7 @@ export default function PageDownloadButton({
       size={'sm'}
       variant={'outline'}
       colorScheme="brand"
+      isLoading={downloadForm.processing}
     >
       Download
     </Button>

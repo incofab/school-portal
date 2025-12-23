@@ -1,3 +1,16 @@
 .tox-tinymce {
   z-index: 0 !important;
 }
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .hidden-on-print {
+    display: none !important;
+  }
+  .show-on-print {
+    display: block !important;
+  }
+}

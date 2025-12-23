@@ -19,10 +19,12 @@ import FormControlBox from '@/components/forms/form-control-box';
 import useWebForm from '@/hooks/use-web-form';
 import ClassificationSelect from '@/components/selectors/classification-select';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
-import { preventNativeSubmit } from '@/util/util';
+import { preventNativeSubmit, roundNumber } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { FormButton } from '@/components/buttons';
+import { BrandButton, FormButton } from '@/components/buttons';
 import EnumSelect from '@/components/dropdown-select/enum-select';
+import useDownloadHtml from '@/util/download-html';
+import PageDownloadButton from '../result-sheets/page-download-button';
 
 interface HasTermDataProp {
   hasFirstTermRecords: boolean;
@@ -60,6 +62,7 @@ export default function CummulativeResultSheet({
   term,
 }: Props) {
   const { currentInstitution } = useSharedProps();
+  const { DownloadButton } = useDownloadHtml();
 
   function VerticalText({ text }: { text: string }) {
     return <Text className="vertical-header">{text}</Text>;
@@ -108,7 +111,7 @@ export default function CummulativeResultSheet({
         value: courseResult[course.id]?.result,
       })),
       { label: 'Total', value: termResult.total_score },
-      { label: 'Average', value: termResult.average },
+      { label: 'Average', value: roundNumber(termResult.average, 2) },
       {
         label: 'Position',
         value:
@@ -170,6 +173,11 @@ export default function CummulativeResultSheet({
           />
           {hasResultData() && (
             <div className="table-container">
+              <DownloadButton
+                filename={`cummulative-result-sheet-c${classification?.id}-a${academicSession?.id}-t${term}`}
+                title="Download"
+                mb={3}
+              />
               <table className="result-table" width={'100%'}>
                 <thead>
                   <tr>
@@ -302,6 +310,7 @@ function ClassAndSessionSelector({
           isLoading={webForm.processing}
           marginTop={'35px'}
           variant={'outline'}
+          className="hidden-on-print"
         />
       </FormControl>
     </HStack>

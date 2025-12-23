@@ -19,6 +19,30 @@ class CourseTeacher extends Model
     'course_id' => 'integer'
   ];
 
+  function courseResultQuery()
+  {
+    return CourseResult::query()
+      ->where('course_id', $this->course_id)
+      ->where('teacher_user_id', $this->user_id)
+      ->where('classification_id', $this->classification_id);
+  }
+
+  function otherTeacherCourses()
+  {
+    return CourseTeacher::query()
+      ->select('course_teachers.*')
+      ->join(
+        'classifications',
+        'course_teachers.classification_id',
+        'classifications.id'
+      )
+      ->where('user_id', $this->user_id)
+      ->with('course', 'classification')
+      ->oldest('classifications.title')
+      ->get()
+      ->keyBy('id');
+  }
+
   public function user()
   {
     return $this->belongsTo(User::class);

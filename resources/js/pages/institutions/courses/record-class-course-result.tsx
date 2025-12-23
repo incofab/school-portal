@@ -8,7 +8,6 @@ import {
   HStack,
   Input,
   Spacer,
-  Spinner,
   Text,
   Wrap,
   WrapItem,
@@ -24,7 +23,7 @@ import {
 } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
-import { BrandButton, FormButton } from '@/components/buttons';
+import { FormButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { SelectOptionType } from '@/types/types';
@@ -33,7 +32,7 @@ import useSharedProps from '@/hooks/use-shared-props';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
 import FormControlBox from '@/components/forms/form-control-box';
-import MySelect from '@/components/dropdown-select/my-select';
+import SwitchCourseTeacher from './switch-course-teacher-component';
 
 interface ResultEntry {
   [studentId: string]: {
@@ -137,6 +136,9 @@ export default function RecordClassCourseResult({
                 courseTeacher={courseTeacher}
                 teachersCourses={teachersCourses}
                 selectedCourseTeacherState={selectedCourseTeacherState}
+                getUrl={(courseTeacherId) =>
+                  instRoute('record-class-results.create', [courseTeacherId])
+                }
               />
               <Dt contentData={details} />
             </SlabBody>
@@ -305,51 +307,51 @@ export default function RecordClassCourseResult({
   );
 }
 
-function SwitchCourseTeacher({
-  courseTeacher,
-  teachersCourses,
-  selectedCourseTeacherState,
-}: {
-  teachersCourses: { [id: number]: CourseTeacher };
-  courseTeacher: CourseTeacher;
-  selectedCourseTeacherState: [
-    CourseTeacher,
-    React.Dispatch<React.SetStateAction<CourseTeacher>>
-  ];
-}) {
-  const { instRoute } = useInstitutionRoute();
-  const [selectedCourseTeacher, setSelectedCourseTeacher] =
-    selectedCourseTeacherState;
-  function getValue(ct: CourseTeacher) {
-    return {
-      label: `${ct.classification?.title} - ${ct.course?.title}`,
-      value: ct.id,
-    };
-  }
-  return (
-    <Div pt={2} pb={4}>
-      <Text>Change Subject</Text>
-      <HStack w={'full'} spacing={2}>
-        <Div flex={1}>
-          <MySelect
-            isMulti={false}
-            selectValue={getValue(selectedCourseTeacher)}
-            getOptions={() =>
-              Object.values(teachersCourses).map((ct) => getValue(ct))
-            }
-            onChange={(e: any) => {
-              if (!e || e.value == selectedCourseTeacher.id) return;
-              setSelectedCourseTeacher(teachersCourses[e.value]);
-              Inertia.visit(
-                instRoute('record-class-results.create', [e.value])
-              );
-            }}
-          />
-        </Div>
-        {selectedCourseTeacher.id != courseTeacher.id && (
-          <Spinner size="md" color="brand.500" />
-        )}
-      </HStack>
-    </Div>
-  );
-}
+// function SwitchCourseTeacher({
+//   courseTeacher,
+//   teachersCourses,
+//   selectedCourseTeacherState,
+// }: {
+//   teachersCourses: { [id: number]: CourseTeacher };
+//   courseTeacher: CourseTeacher;
+//   selectedCourseTeacherState: [
+//     CourseTeacher,
+//     React.Dispatch<React.SetStateAction<CourseTeacher>>
+//   ];
+// }) {
+//   const { instRoute } = useInstitutionRoute();
+//   const [selectedCourseTeacher, setSelectedCourseTeacher] =
+//     selectedCourseTeacherState;
+//   function getValue(ct: CourseTeacher) {
+//     return {
+//       label: `${ct.classification?.title} - ${ct.course?.title}`,
+//       value: ct.id,
+//     };
+//   }
+//   return (
+//     <Div pt={2} pb={4}>
+//       <Text>Change Subject</Text>
+//       <HStack w={'full'} spacing={2}>
+//         <Div flex={1}>
+//           <MySelect
+//             isMulti={false}
+//             selectValue={getValue(selectedCourseTeacher)}
+//             getOptions={() =>
+//               Object.values(teachersCourses).map((ct) => getValue(ct))
+//             }
+//             onChange={(e: any) => {
+//               if (!e || e.value == selectedCourseTeacher.id) return;
+//               setSelectedCourseTeacher(teachersCourses[e.value]);
+//               Inertia.visit(
+//                 instRoute('record-class-results.create', [e.value])
+//               );
+//             }}
+//           />
+//         </Div>
+//         {selectedCourseTeacher.id != courseTeacher.id && (
+//           <Spinner size="md" color="brand.500" />
+//         )}
+//       </HStack>
+//     </Div>
+//   );
+// }

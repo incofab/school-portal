@@ -1,5 +1,4 @@
 import React, { PropsWithChildren } from 'react';
-import { validFilename } from '@/util/util';
 import { User } from '@/types/models';
 import PagePrintLayout from '@/domain/institutions/page-print-layout';
 
@@ -15,7 +14,7 @@ export default function ReceiptLayout({
   user,
   contentId,
 }: Props & PropsWithChildren) {
-  const filename = `${validFilename(user?.full_name)}-receipt.pdf`;
+  const filename = `${user?.full_name}-receipt.pdf`;
   return (
     <PagePrintLayout
       useBgStyle={useBgStyle}

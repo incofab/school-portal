@@ -71,10 +71,8 @@ class CourseResultsController extends Controller
   {
     $courseTeacher->load(['course', 'user', 'classification']);
     $this->validateUser($courseTeacher);
-    $courseResultQuery = CourseResult::query()
-      ->where('course_id', $courseTeacher->course_id)
-      ->where('teacher_user_id', $courseTeacher->user_id)
-      ->where('classification_id', $courseTeacher->classification_id)
+    $courseResultQuery = $courseTeacher
+      ->courseResultQuery()
       ->with('academicSession', 'course', 'student.user')
       ->latest('updated_at');
 
@@ -85,7 +83,8 @@ class CourseResultsController extends Controller
         null,
         null,
         $courseTeacher->classification_id
-      )
+      ),
+      'teachersCourses' => $courseTeacher->otherTeacherCourses()
     ]);
   }
 
@@ -98,15 +97,21 @@ class CourseResultsController extends Controller
       ->first();
 
     $this->validateUser($courseTeacher);
+    $courseResultQuery = $courseTeacher
+      ->courseResultQuery()
+      ->with('academicSession', 'course', 'student.user')
+      ->latest('updated_at');
 
     return Inertia::render('institutions/courses/record-course-result', [
       'courseTeacher' => $courseTeacher,
       'courseResult' => $courseResult,
+      'courseResults' => paginateFromRequest($courseResultQuery),
       'assessments' => Assessment::getAssessments(
         $courseResult->term,
         $courseResult->for_mid_term,
         $courseResult->classification_id
-      )
+      ),
+      'teachersCourses' => $courseTeacher->otherTeacherCourses()
     ]);
   }
 

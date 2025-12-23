@@ -5,6 +5,7 @@ import { AcademicSession, Classification } from '@/types/models';
 import MultipleResultSheets from './multiple-result-sheets';
 import { Divider } from '@chakra-ui/react';
 import { ucFirst } from '@/util/util';
+import useDownloadHtml from '@/util/download-html';
 
 interface Props {
   classification: Classification;
@@ -22,11 +23,11 @@ export default function ClassResultSheets({
   results,
   resultTemplete,
 }: Props) {
-  console.log('resultTemplete', resultTemplete);
+  const { DownloadButton } = useDownloadHtml();
 
   return (
-    <Div>
-      <Div px={3} textAlign={'center'}>
+    <Div px={3}>
+      <Div textAlign={'center'}>
         <Div fontWeight={'bold'} fontSize={'2xl'}>
           {classification.title}
         </Div>
@@ -35,6 +36,13 @@ export default function ClassResultSheets({
           Result Sheets
         </Div>
       </Div>
+      <DownloadButton
+        filename={`${classification.title} ${academicSession.title} ${term} ${
+          forMidTerm ? 'Mid ' : ''
+        } Result Sheets`}
+        title="Download All"
+        mb={3}
+      />
       <Divider my={2} />
       <Div>
         <MultipleResultSheets

@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 import { ResultProps } from '@/util/result-util';
-import { formatAsDate, validFilename } from '@/util/util';
+import { formatAsDate } from '@/util/util';
 import PagePrintLayout from '@/domain/institutions/page-print-layout';
 import { LabelText } from '@/components/result-helper-components';
 import useSharedProps from '@/hooks/use-shared-props';
@@ -18,9 +18,7 @@ export default function ResultSheetLayout({
   resultProps,
   useBgStyle,
 }: Props & PropsWithChildren) {
-  const filename = `${validFilename(
-    resultProps.student.user?.full_name
-  )}-result-${resultProps.termResult.term}-${resultProps.termResult.id}.pdf`;
+  const filename = `${resultProps.student.user?.full_name}-result-${resultProps.termResult.term}-${resultProps.termResult.id}.pdf`;
   return (
     <PagePrintLayout
       useBgStyle={useBgStyle}

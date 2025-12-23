@@ -191,7 +191,7 @@ export function stripInitials(studentCode: string) {
   return studentCode.substring(pos < 0 ? 0 : pos);
 }
 
-export function validFilename(input?: string): string {
+export function sanitizeFilename(input?: string): string {
   // Remove invalid characters and replace them with underscores
   const sanitizedString = input?.replace(/[^a-zA-Z0-9.-]/g, '_');
   // Ensure the string is not empty after sanitization
@@ -223,4 +223,15 @@ export function ucFirst(str?: string) {
 export function copyToClipboard(text: string, message?: string) {
   navigator.clipboard.writeText(text);
   alert(message ?? 'Copied to clipboard');
+}
+
+export function anchorDownload(url: string, name?: string) {
+  const a = document.createElement('a');
+  a.href = url;
+  if (name) {
+    a.download = name; // may be ignored cross-origin
+  }
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }

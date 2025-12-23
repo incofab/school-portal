@@ -2,7 +2,6 @@ import React, { PropsWithChildren } from 'react';
 import { useColorMode } from '@chakra-ui/react';
 import { Div } from '@/components/semantic';
 import useSharedProps from '@/hooks/use-shared-props';
-import { validFilename } from '@/util/util';
 import PageDownloadButton from '@/pages/institutions/result-sheets/page-download-button';
 
 interface Props {
@@ -42,7 +41,7 @@ export default function PagePrintLayout({
         <PageDownloadButton
           signed_url={signed_url}
           // termResult={resultProps.termResult}
-          filename={validFilename(filename)}
+          filename={filename}
           contentId={contentId}
         />
         {children}

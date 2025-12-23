@@ -4,6 +4,9 @@ import {
   Divider,
   FormControl,
   FormLabel,
+  HStack,
+  Icon,
+  IconButton,
   Input,
   Spacer,
   VStack,
@@ -40,6 +43,10 @@ import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
 import startCase from 'lodash/startCase';
+import SwitchCourseTeacher from './switch-course-teacher-component';
+import { InertiaLink } from '@inertiajs/inertia-react';
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import DestructivePopover from '@/components/destructive-popover';
 
 interface Props {
   courseTeacher: CourseTeacher;
@@ -49,6 +56,7 @@ interface Props {
   for_mid_term?: boolean;
   courseResults?: PaginationResponse<CourseResult>;
   assessments: Assessment[];
+  teachersCourses: { [id: number]: CourseTeacher };
 }
 
 export default function RecordCourseResult({
@@ -59,8 +67,10 @@ export default function RecordCourseResult({
   for_mid_term,
   courseResults,
   assessments,
+  teachersCourses,
 }: Props) {
   const { handleResponseToast } = useMyToast();
+  const selectedCourseTeacherState = useState<CourseTeacher>(courseTeacher);
   const {
     currentAcademicSessionId,
     currentTerm,
@@ -131,124 +141,138 @@ export default function RecordCourseResult({
               title={`${courseResult ? 'Update' : 'Record'} Result`}
             />
             <SlabBody>
+              <SwitchCourseTeacher
+                courseTeacher={courseTeacher}
+                teachersCourses={teachersCourses}
+                selectedCourseTeacherState={selectedCourseTeacherState}
+                getUrl={(courseTeacherId) =>
+                  instRoute('course-results.create', [courseTeacherId])
+                }
+              />
               <Dt contentData={details} />
               <Divider height={1} my={2} />
-              <VStack
-                spacing={4}
-                as={'form'}
-                onSubmit={preventNativeSubmit(submit)}
-              >
-                <FormControlBox
-                  form={webForm as any}
-                  title="Academic Session"
-                  formKey="academic_session_id"
+              {selectedCourseTeacherState[0].id === courseTeacher.id && (
+                <VStack
+                  spacing={4}
+                  as={'form'}
+                  onSubmit={preventNativeSubmit(submit)}
                 >
-                  <AcademicSessionSelect
-                    selectValue={webForm.data.academic_session_id}
-                    isMulti={false}
-                    isClearable={true}
-                    onChange={(e: any) =>
-                      webForm.setValue('academic_session_id', e?.value)
-                    }
-                    required
-                    isDisabled={lockTermSession}
-                  />
-                </FormControlBox>
-                <FormControlBox
-                  form={webForm as any}
-                  title="Term"
-                  formKey="term"
-                >
-                  <EnumSelect
-                    enumData={TermType}
-                    selectValue={webForm.data.term}
-                    isMulti={false}
-                    isClearable={true}
-                    onChange={(e: any) => webForm.setValue('term', e?.value)}
-                    required
-                    isDisabled={lockTermSession}
-                  />
-                </FormControlBox>
-                <FormControlBox
-                  form={webForm as any}
-                  title="Student"
-                  formKey="result.student_id"
-                >
-                  <StudentSelect
-                    value={webForm.data.result.student_id}
-                    isMulti={false}
-                    isClearable={true}
-                    classification={courseTeacher.classification_id}
-                    onChange={(e: any) =>
-                      webForm.setValue('result', {
-                        ...webForm.data.result,
-                        student_id: e,
-                      })
-                    }
-                    required
-                  />
-                </FormControlBox>
-                {assessments.map((assessment) => {
-                  if (
-                    assessment.term &&
-                    assessment.term !== webForm.data.term
-                  ) {
-                    return null;
-                  }
-                  return (
-                    <FormControl key={assessment.raw_title + webForm.data.term}>
-                      <FormLabel>{startCase(assessment.raw_title)}</FormLabel>
-                      <Input
-                        disabled={assessment.depends_on == null ? false : true}
-                        value={assessmentValue[assessment.raw_title] ?? ''}
-                        onChange={(e) =>
-                          setAssessmentValue({
-                            ...assessmentValue,
-                            [assessment.raw_title]: e.currentTarget.value,
-                          })
-                        }
-                      />
-                    </FormControl>
-                  );
-                })}
-                <FormControlBox
-                  form={webForm as any}
-                  formKey="result.exam"
-                  title="Exam"
-                >
-                  <Input
-                    value={webForm.data.result.exam}
-                    onChange={(e) =>
-                      webForm.setValue('result', {
-                        ...webForm.data.result,
-                        exam: e.currentTarget.value,
-                      })
-                    }
-                  />
-                </FormControlBox>
-                {usesMidTermResult && (
                   <FormControlBox
                     form={webForm as any}
-                    formKey="for_mid_term"
-                    title=""
+                    title="Academic Session"
+                    formKey="academic_session_id"
                   >
-                    <Checkbox
-                      isChecked={webForm.data.for_mid_term}
-                      onChange={(e) =>
-                        webForm.setValue(
-                          'for_mid_term',
-                          e.currentTarget.checked
-                        )
+                    <AcademicSessionSelect
+                      selectValue={webForm.data.academic_session_id}
+                      isMulti={false}
+                      isClearable={true}
+                      onChange={(e: any) =>
+                        webForm.setValue('academic_session_id', e?.value)
                       }
-                    >
-                      For Mid-Term Result
-                    </Checkbox>
+                      required
+                      isDisabled={lockTermSession}
+                    />
                   </FormControlBox>
-                )}
-                <FormControl>
-                  <FormButton isLoading={webForm.processing} />
-                </FormControl>
-              </VStack>
+                  <FormControlBox
+                    form={webForm as any}
+                    title="Term"
+                    formKey="term"
+                  >
+                    <EnumSelect
+                      enumData={TermType}
+                      selectValue={webForm.data.term}
+                      isMulti={false}
+                      isClearable={true}
+                      onChange={(e: any) => webForm.setValue('term', e?.value)}
+                      required
+                      isDisabled={lockTermSession}
+                    />
+                  </FormControlBox>
+                  <FormControlBox
+                    form={webForm as any}
+                    title="Student"
+                    formKey="result.student_id"
+                  >
+                    <StudentSelect
+                      value={webForm.data.result.student_id}
+                      isMulti={false}
+                      isClearable={true}
+                      classification={courseTeacher.classification_id}
+                      onChange={(e: any) =>
+                        webForm.setValue('result', {
+                          ...webForm.data.result,
+                          student_id: e,
+                        })
+                      }
+                      required
+                    />
+                  </FormControlBox>
+                  {assessments.map((assessment) => {
+                    if (
+                      assessment.term &&
+                      assessment.term !== webForm.data.term
+                    ) {
+                      return null;
+                    }
+                    return (
+                      <FormControl
+                        key={assessment.raw_title + webForm.data.term}
+                      >
+                        <FormLabel>{startCase(assessment.raw_title)}</FormLabel>
+                        <Input
+                          disabled={
+                            assessment.depends_on == null ? false : true
+                          }
+                          value={assessmentValue[assessment.raw_title] ?? ''}
+                          onChange={(e) =>
+                            setAssessmentValue({
+                              ...assessmentValue,
+                              [assessment.raw_title]: e.currentTarget.value,
+                            })
+                          }
+                        />
+                      </FormControl>
+                    );
+                  })}
+                  <FormControlBox
+                    form={webForm as any}
+                    formKey="result.exam"
+                    title="Exam"
+                  >
+                    <Input
+                      value={webForm.data.result.exam}
+                      onChange={(e) =>
+                        webForm.setValue('result', {
+                          ...webForm.data.result,
+                          exam: e.currentTarget.value,
+                        })
+                      }
+                    />
+                  </FormControlBox>
+                  {usesMidTermResult && (
+                    <FormControlBox
+                      form={webForm as any}
+                      formKey="for_mid_term"
+                      title=""
+                    >
+                      <Checkbox
+                        isChecked={webForm.data.for_mid_term}
+                        onChange={(e) =>
+                          webForm.setValue(
+                            'for_mid_term',
+                            e.currentTarget.checked
+                          )
+                        }
+                      >
+                        For Mid-Term Result
+                      </Checkbox>
+                    </FormControlBox>
+                  )}
+                  <FormControl>
+                    <FormButton isLoading={webForm.processing} />
+                  </FormControl>
+                </VStack>
+              )}
             </SlabBody>
           </Slab>
         </CenteredBox>
@@ -268,6 +292,18 @@ function ListTeachersCourseResults({
 }: {
   courseResults: PaginationResponse<CourseResult>;
 }) {
+  const deleteForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
+  const { instRoute } = useInstitutionRoute();
+
+  async function deleteItem(obj: CourseResult) {
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(instRoute('course-results.destroy', [obj.id]))
+    );
+    handleResponseToast(res);
+    Inertia.reload({ only: ['courseResults'] });
+  }
+
   const headers: ServerPaginatedTableHeader<CourseResult>[] = [
     {
       label: 'Student',
@@ -303,6 +339,35 @@ function ListTeachersCourseResults({
     {
       label: 'Grade',
       value: 'grade',
+    },
+    {
+      label: 'Action',
+      render: (row: CourseResult) => (
+        <HStack>
+          <IconButton
+            as={InertiaLink}
+            aria-label={'Edit'}
+            icon={<Icon as={PencilIcon} />}
+            variant={'ghost'}
+            colorScheme={'brand'}
+            href={instRoute('course-results.edit', [row.id])}
+          />
+          <DestructivePopover
+            label={`Delete ${row.course?.title} result for ${
+              row.student?.user!.full_name
+            }?`}
+            onConfirm={() => deleteItem(row)}
+            isLoading={deleteForm.processing}
+          >
+            <IconButton
+              aria-label={'Delete'}
+              icon={<Icon as={TrashIcon} />}
+              variant={'ghost'}
+              colorScheme={'red'}
+            />
+          </DestructivePopover>
+        </HStack>
+      ),
     },
   ];
 

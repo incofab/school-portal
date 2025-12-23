@@ -138,26 +138,31 @@ export default function Template1(props: ResultProps) {
           </HStack>
           <HStack mt={1}>
             <LabelText label="Class" text={classification.title} />
-            <Spacer />
             {hidePosition ? (
               <></>
             ) : (
-              <LabelText
-                label="Position"
-                text={
-                  showGrade
-                    ? ResultUtil.getGrade(
-                        termResult.average,
-                        resultCommentTemplate
-                      ).grade
-                    : `${termResult.position} ${ResultUtil.getPositionSuffix(
-                        termResult.position
-                      )}`
-                }
-              />
+              <>
+                <Spacer />
+                <LabelText
+                  label="Position"
+                  text={
+                    showGrade
+                      ? ResultUtil.getGrade(
+                          termResult.average,
+                          resultCommentTemplate
+                        ).grade
+                      : `${termResult.position} ${ResultUtil.getPositionSuffix(
+                          termResult.position
+                        )}`
+                  }
+                />
+              </>
             )}
             <Spacer />
-            <LabelText label="Out of" text={classResultInfo.num_of_students} />
+            <LabelText
+              label="No in Class"
+              text={classResultInfo.num_of_students}
+            />
           </HStack>
           <HStack>
             <ClosingDate resultProps={props} />
@@ -183,11 +188,9 @@ export default function Template1(props: ResultProps) {
                   <th>
                     <VerticalText text="Grade" />
                   </th>
-                  {!hidePosition && (
-                    <th>
-                      <VerticalText text="Position" />
-                    </th>
-                  )}
+                  <th>
+                    <VerticalText text="Position" />
+                  </th>
                   <th>
                     <VerticalText text="Class Average" />
                   </th>
@@ -214,7 +217,7 @@ export default function Template1(props: ResultProps) {
                       <td>{courseResult.result}</td>
                       {/* <td>{courseResult.grade}</td> */}
                       <td>{grade}</td>
-                      {!hidePosition && <td>{courseResult.position}</td>}
+                      <td>{courseResult.position}</td>
                       <td>
                         {courseResultInfoData[courseResult.course_id]?.average}
                       </td>
@@ -243,7 +246,7 @@ export default function Template1(props: ResultProps) {
               <>
                 <HStack align={'stretch'}>
                   <Text fontWeight={'semibold'} size={'xs'}>
-                    Administrator's comment:{' '}
+                    Principal/Head Teacher's comment:{' '}
                   </Text>
                   <Text>{principalComment}</Text>
                 </HStack>
