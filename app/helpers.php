@@ -5,6 +5,8 @@ use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\User;
 use App\Support\Res;
+use Prism\Prism\Enums\Provider;
+use Prism\Prism\Facades\Prism;
 
 if (!function_exists('currentUser')) {
   function currentUser(): User|null
@@ -182,5 +184,24 @@ if (!function_exists('formatWhatsappNumber')) {
     }
 
     return $phone;
+  }
+}
+
+if (!function_exists('initPrism')) {
+  function initPrism($systemPrompt = null)
+  {
+    return Prism::text()
+      ->withClientOptions(['timeout' => 120])
+      ->using(Provider::OpenAI, 'gpt-4o-mini')
+      ->withSystemPrompt(
+        $systemPrompt ?? 'You are a well qualified school teacher'
+      );
+  }
+}
+
+if (!function_exists('trimAiResponse')) {
+  function trimAiResponse($content)
+  {
+    return str_replace(['```json', '```html', '```'], '', $content);
   }
 }

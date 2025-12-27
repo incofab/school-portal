@@ -235,17 +235,23 @@ class LessonNoteController extends Controller
 
     $question = "Using the Nigerian Basic Education Syllabus, write a long detailed class note for $className on the topic: $topicTitle. Try to touch every aspect of this topic in detail. Give me only the class note, no comment or side comment. You can include some practice questions. Return the response in pure html. Do not include stylings, meta tags, etc.";
 
-    $res = GoogleAiHelper::ask($question);
+    $aiRes = initPrism()
+      ->withPrompt($question)
+      ->asText();
+    $fullNote = trimAiResponse($aiRes->text);
+    return $this->ok(['result' => $fullNote]);
 
-    $res_parts = $res['candidates'][0]['content']['parts'] ?? [];
-    $full_note = '';
+    // $res = GoogleAiHelper::ask($question);
 
-    foreach ($res_parts as $res_part) {
-      $full_note .= $res_part['text'];
-    }
+    // $res_parts = $res['candidates'][0]['content']['parts'] ?? [];
+    // $full_note = '';
 
-    $fullNote = str_replace('```html', '', $full_note);
+    // foreach ($res_parts as $res_part) {
+    //   $full_note .= $res_part['text'];
+    // }
 
-    return $this->ok([$fullNote]);
+    // $fullNote = str_replace('```html', '', $full_note);
+
+    // return $this->ok([$fullNote]);
   }
 }

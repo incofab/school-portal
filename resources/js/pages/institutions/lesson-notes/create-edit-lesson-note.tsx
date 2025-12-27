@@ -7,11 +7,10 @@ import { Inertia } from '@inertiajs/inertia';
 import { LessonNote, LessonPlan } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
-import { BrandButton, FormButton, LinkButton } from '@/components/buttons';
+import { BrandButton, FormButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
-import { Editor } from '@tinymce/tinymce-react';
 import { Input } from '@chakra-ui/react';
 import { NoteStatusType } from '@/types/types';
 import TinyMceEditor from '@/components/tinymce-editor';
@@ -80,8 +79,9 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
       data.title = webForm.data.title;
       return web.post(instRoute('lesson-notes.gen-ai-note'), data);
     });
+    console.log('response', response);
 
-    webForm.setValue('content', response.data[0]);
+    webForm.setValue('content', response.data?.result);
 
     if (!handleResponseToast(response)) {
       return;

@@ -129,6 +129,11 @@ class CoursesController extends Controller
 
     $question = "You are a class teacher $className in a Nigerian Basic Education School. Analyze the following Lesson Notes and generate 20 objective questions aimed at helping the student prepare for upcoming class assessment test. Each question should have 4 options (option_a, option_b, option_c, option_d) where only one option is the correct answer. Return the response as an JSON Object, where each object's-item contains the following keys: 'question', 'option_a', 'option_b', 'option_c', 'option_d', 'answer'. The value of the 'answer' should indicate the correct option (a,b,c,d - NOT 'option_a', 'option_b', 'option_c', 'option_d'). Do not include comments, side comments, stylings, meta tags, etc. Here are the lesson Notes :: $lessonNotes";
 
+    $aiRes = initPrism()
+      ->withPrompt($question)
+      ->asText();
+    $practiceQuestions = trimAiResponse($aiRes->text);
+    /*
     $res = GoogleAiHelper::ask($question);
 
     $res_parts = $res['candidates'][0]['content']['parts'] ?? [];
@@ -140,8 +145,8 @@ class CoursesController extends Controller
 
     $practiceQuestions = str_replace('```json', '', $resQuestions);
     $practiceQuestions = str_replace('```', '', $practiceQuestions);
-
-    $practiceQuestions = json_decode($practiceQuestions, true);
+    */
+    $practiceQuestions = json_decode($practiceQuestions, true) ?? [];
 
     $practiceData = [
       'course' => $request->course,

@@ -60,7 +60,7 @@ export default function ShowTopic({ topic, assignedCourseIds }: Props) {
       )}
 
       {schemeOfWorks.map((schemeOfWork, index) => (
-        <>
+        <React.Fragment key={schemeOfWork.id}>
           <CollapsibleSlab
             collapsed={true}
             key={index}
@@ -129,7 +129,7 @@ export default function ShowTopic({ topic, assignedCourseIds }: Props) {
                   <SlabBody />
                 </CollapsibleSlab>
               )}
-        </>
+        </React.Fragment>
       ))}
     </DashboardLayout>
   );

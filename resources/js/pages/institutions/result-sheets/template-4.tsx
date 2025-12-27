@@ -63,7 +63,7 @@ export default function Template4(props: ResultProps) {
       label: 'Term',
       value: `${startCase(termResult.term)} Term, ${academicSession.title}`,
     },
-    { label: 'No of Class', value: classResultInfo.num_of_students },
+    { label: 'No in Class', value: classResultInfo.num_of_students },
     ...(nextTermResumptionDate
       ? [
           {

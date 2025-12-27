@@ -11,11 +11,7 @@ import ManagerDashboardLayout from '@/layout/managers/manager-dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
-import {
-  TrashIcon,
-  PencilIcon,
-  PencilSquareIcon,
-} from '@heroicons/react/24/solid';
+import { TrashIcon, PencilIcon } from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import EditManagerModal from '@/components/modals/edit-manager-modal';
@@ -87,7 +83,8 @@ export default function ListManagers({ managers }: Props) {
             aria-label="Edit Manager"
             colorScheme={'brand'}
             icon={<Icon as={PencilIcon} />}
-            onClick={() => editManagerModalToggle.open(row)}
+            onClick={() => Inertia.visit(route('managers.edit', [row]))}
+            // onClick={() => editManagerModalToggle.open(row)}
           />
         </HStack>
       ),

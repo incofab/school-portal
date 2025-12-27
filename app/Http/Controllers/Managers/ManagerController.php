@@ -35,6 +35,14 @@ class ManagerController extends Controller
     return inertia('managers/home/create-manager');
   }
 
+  function edit(User $user)
+  {
+    $user->load('roles', 'partner');
+    return inertia('managers/home/create-manager', [
+      'manager' => $user
+    ]);
+  }
+
   function store(Request $request)
   {
     $data = $request->validate(Partner::createRule());
@@ -47,7 +55,7 @@ class ManagerController extends Controller
     //     ->toArray(),
     //   'password' => bcrypt('password')
     // ]);
-    // $user->assignRole($data['role']); 
+    // $user->assignRole($data['role']);
 
     // //= Create Partner's Record
     // if ($data['role'] === ManagerRole::Partner->value) {
@@ -65,8 +73,10 @@ class ManagerController extends Controller
 
   function update(User $user, Request $request)
   {
-    $data = $request->validate(User::generalRule($user->id));
-    $user->update($data);
+    $user->load('partner');
+    $data = $request->validate(Partner::createRule($user));
+    RecordPartner::make()->update($user, $data);
+    // $user->update($data);
     return $this->ok();
   }
 

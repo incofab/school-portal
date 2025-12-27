@@ -37,6 +37,7 @@ export default function Template2(props: ResultProps) {
     student,
     resultCommentTemplate,
     learningEvaluations,
+    courseResultInfoData,
   } = props;
   const { currentInstitution } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
@@ -50,7 +51,7 @@ export default function Template2(props: ResultProps) {
       value: getMaxObtainableScore(props),
     },
     { label: 'Average Score', value: termResult.average },
-    // { label: 'Class Average Score', value: classResultInfo.average },
+    { label: 'Class Average Score', value: classResultInfo.average },
   ];
 
   const principalComment =
@@ -170,7 +171,7 @@ export default function Template2(props: ResultProps) {
             <Flex mt={1} flexDirection={'row'} justifyContent={'space-between'}>
               <LabelText
                 labelProps={{ fontWeight: 'semibold' }}
-                label="No of Class"
+                label="No in Class"
                 text={classResultInfo.num_of_students}
               />
               <LabelText
@@ -194,22 +195,39 @@ export default function Template2(props: ResultProps) {
                     <th>Exam</th>
                     <th>Total</th>
                     <th>Grade</th>
+                    <th>Highest/Lowest</th>
                     <th>{hidePosition ? 'Remark' : 'Subject Position'}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {courseResults.map((courseResult) => {
+                    const highest =
+                      courseResultInfoData[courseResult.course_id]?.max_score;
+                    const lowest =
+                      courseResultInfoData[courseResult.course_id]?.min_score;
                     const { grade, remark } = ResultUtil.getGrade(
                       courseResult.result,
                       resultCommentTemplate
                     );
                     return (
                       <tr key={'results-' + courseResult.id}>
-                        <td>{courseResult.course?.title}</td>
+                        <td
+                          style={{
+                            maxWidth: '190px',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {courseResult.course?.title}
+                        </td>
                         <td>{getAssessmentScore(courseResult)}</td>
                         <td>{courseResult.exam}</td>
                         <td>{courseResult.result}</td>
                         <td>{grade}</td>
+                        <td>
+                          {roundNumber(highest, 0)} / {roundNumber(lowest, 0)}
+                        </td>
                         <td>{hidePosition ? remark : courseResult.position}</td>
                       </tr>
                     );
@@ -332,7 +350,7 @@ export default function Template2(props: ResultProps) {
             </>
           )}
         </VStack>
-        <Div position={'absolute'} bottom={150} opacity={'0.5'} right={300}>
+        <Div position={'absolute'} bottom={150} opacity={'0.7'} right={300}>
           <SchoolStamp />
         </Div>
       </Div>

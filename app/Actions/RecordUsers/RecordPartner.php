@@ -54,8 +54,38 @@ class RecordPartner
         'user_id' => $user->id,
         'commission' => $userData['commission'],
         'referral_id' => $refUser?->partner?->id,
-        'referral_commission' => $userData['referral_commission'] ?? null
+        'referral_commission' => $userData['referral_commission'] ?? 0
       ]);
+    }
+
+    DB::commit();
+  }
+
+  function update(User $user, array $userData)
+  {
+    DB::beginTransaction();
+    $user->update(
+      collect($userData)
+        ->except('role', 'commission', 'referral_email', 'referral_commission')
+        ->toArray()
+    );
+    $user->syncRoles($userData['role']);
+
+    if ($userData['role'] === ManagerRole::Partner->value) {
+      $refUser = $userData['referral_email']
+        ? User::where('email', $userData['referral_email'])->first()
+        : null;
+
+      Partner::query()->updateOrCreate(
+        [
+          'user_id' => $user->id
+        ],
+        [
+          'commission' => $userData['commission'],
+          ...$user->partner ? [] : ['referral_id' => $refUser?->partner?->id],
+          'referral_commission' => $userData['referral_commission'] ?? 0
+        ]
+      );
     }
 
     DB::commit();

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormControl, Input, VStack } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
@@ -13,33 +13,42 @@ import { Div } from '@/components/semantic';
 import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Gender, ManagerRole } from '@/types/types';
+import { Partner, User } from '@/types/models';
 
-interface Props {} 
+interface UserWithPartner extends User {
+  partner?: Partner;
+}
 
-export default function CreateManager({}: Props) {
+interface Props {
+  manager?: UserWithPartner;
+}
+
+export default function CreateManager({ manager }: Props) {
   const { handleResponseToast } = useMyToast();
   const form = useWebForm({
-    first_name: '',
-    last_name: '',
-    other_names: '',
-    username: '',
-    phone: '',
-    email: '',
-    gender: '',
+    first_name: manager?.first_name ?? '',
+    last_name: manager?.last_name ?? '',
+    other_names: manager?.other_names ?? '',
+    username: manager?.username ?? '',
+    phone: manager?.phone ?? '',
+    email: manager?.email ?? '',
+    gender: manager?.gender ?? '',
     password: '',
     password_confirmation: '',
-    role: '',
-    commission: '', // New field for commission
-    referral_email: '', // New field for referral user email
-    referral_commission: '', // New field for referral commission 
+    role: manager?.roles?.[0]?.name,
+    commission: manager?.partner?.commission ?? '',
+    referral_email: '',
+    referral_commission: manager?.partner?.referral_commission ?? '',
   });
 
   // Watch role change to show/hide extra fields
-  const isPartner = form.data.role === ManagerRole.Partner; 
+  const isPartner = form.data.role === ManagerRole.Partner;
 
   const submit = async () => {
     const res = await form.submit((data, web) => {
-      return web.post(route('managers.store'), data);
+      return manager
+        ? web.post(route('managers.update', manager.id), data)
+        : web.post(route('managers.store'), data);
     });
     if (!handleResponseToast(res)) {
       return;
@@ -133,37 +142,46 @@ export default function CreateManager({}: Props) {
                     required
                   />
                 </FormControlBox>
-                <FormControlBox form={form} title="Password" formKey="password">
-                  <Input
-                    type="password"
-                    onChange={(e) =>
-                      form.setValue('password', e.currentTarget.value)
-                    }
-                    value={form.data.password}
-                    required
-                  />
-                </FormControlBox>
-                <FormControlBox
-                  form={form}
-                  title="Confirm Password"
-                  formKey="password_confirmation"
-                >
-                  <Input
-                    type="password"
-                    onChange={(e) =>
-                      form.setValue(
-                        'password_confirmation',
-                        e.currentTarget.value
-                      )
-                    }
-                    value={form.data.password_confirmation}
-                    required
-                  />
-                </FormControlBox>
+                {!manager && (
+                  <>
+                    <FormControlBox
+                      form={form}
+                      title="Password"
+                      formKey="password"
+                    >
+                      <Input
+                        type="password"
+                        onChange={(e) =>
+                          form.setValue('password', e.currentTarget.value)
+                        }
+                        value={form.data.password}
+                        required
+                      />
+                    </FormControlBox>
+                    <FormControlBox
+                      form={form}
+                      title="Confirm Password"
+                      formKey="password_confirmation"
+                    >
+                      <Input
+                        type="password"
+                        onChange={(e) =>
+                          form.setValue(
+                            'password_confirmation',
+                            e.currentTarget.value
+                          )
+                        }
+                        value={form.data.password_confirmation}
+                        required
+                      />
+                    </FormControlBox>
+                  </>
+                )}
                 <FormControlBox form={form} title="Manager Role" formKey="role">
                   <EnumSelect
                     enumData={ManagerRole}
                     onChange={(e: any) => form.setValue('role', e.value)}
+                    selectValue={form.data.role}
                     required
                   />
                 </FormControlBox>
@@ -184,19 +202,24 @@ export default function CreateManager({}: Props) {
                         value={form.data.commission}
                       />
                     </FormControlBox>
-                    <FormControlBox
-                      form={form}
-                      title="Referral User Email"
-                      formKey="referral_email"
-                    >
-                      <Input
-                        type="email"
-                        onChange={(e) =>
-                          form.setValue('referral_email', e.currentTarget.value)
-                        }
-                        value={form.data.referral_email}
-                      />
-                    </FormControlBox>
+                    {!manager?.partner && (
+                      <FormControlBox
+                        form={form}
+                        title="Referral User Email"
+                        formKey="referral_email"
+                      >
+                        <Input
+                          type="email"
+                          onChange={(e) =>
+                            form.setValue(
+                              'referral_email',
+                              e.currentTarget.value
+                            )
+                          }
+                          value={form.data.referral_email}
+                        />
+                      </FormControlBox>
+                    )}
                     <FormControlBox
                       form={form}
                       title="Referral Commission"

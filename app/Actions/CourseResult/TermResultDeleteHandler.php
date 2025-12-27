@@ -17,7 +17,7 @@ class TermResultDeleteHandler
       ->where([
         'academic_session_id' => $this->termResult->academic_session_id,
         'student_id' => $this->termResult->student_id,
-        'course_id' => $this->termResult->course_id,
+        // 'course_id' => $this->termResult->course_id,
         'term' => $this->termResult->term,
         'for_mid_term' => $this->termResult->for_mid_term,
         'classification_id' => $this->termResult->classification_id
@@ -35,7 +35,7 @@ class TermResultDeleteHandler
       ->where([
         'academic_session_id' => $this->termResult->academic_session_id,
         'student_id' => $this->termResult->student_id,
-        'course_id' => $this->termResult->course_id,
+        // 'course_id' => $this->termResult->course_id,
         'term' => $this->termResult->term,
         'for_mid_term' => $this->termResult->for_mid_term,
         'classification_id' => $this->termResult->classification_id

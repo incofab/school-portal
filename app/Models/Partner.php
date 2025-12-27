@@ -10,7 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Partner extends Model
 {
-  use HasFactory, HasRoles; 
+  use HasFactory, HasRoles;
 
   protected $guarded = [];
   protected $casts = [
@@ -21,9 +21,10 @@ class Partner extends Model
     'wallet' => 'float'
   ];
 
-  static function createRule() {
+  static function createRule(?User $user = null)
+  {
     return [
-      ...User::generalRule(),
+      ...User::generalRule($user?->id),
       'username' => [
         'required',
         'unique:users,username',
@@ -42,14 +43,17 @@ class Partner extends Model
           }
         }
       ],
-      ...self::partnerOnlyRule(),
+      ...self::partnerOnlyRule($user)
     ];
   }
 
-  static function partnerOnlyRule() {
+  static function partnerOnlyRule(?User $user = null)
+  {
     return [
       'commission' => ['nullable', 'numeric', 'min:0'],
-      'referral_email' => ['nullable', 'exists:users,email'],
+      ...$user?->partner
+        ? []
+        : ['referral_email' => ['nullable', 'exists:users,email']],
       'referral_commission' => ['nullable', 'numeric', 'min:0']
     ];
   }

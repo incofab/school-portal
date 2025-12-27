@@ -320,7 +320,7 @@ export default function Template1(props: ResultProps) {
                 textAlign={'center'}
                 opacity={0.5}
                 position={'absolute'}
-                bottom={-20}
+                bottom={0}
                 right={50}
               />
             </Div>
