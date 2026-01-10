@@ -228,6 +228,17 @@ export default function SideBarLayout() {
       ],
     },
     {
+      label: 'Reports',
+      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+      sub_items: [
+        {
+          label: 'Subject Report',
+          route: instRoute('reports.subject-report'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+      ],
+    },
+    {
       label: 'Admissions',
       roles: [InstitutionUserType.Admin],
       sub_items: [

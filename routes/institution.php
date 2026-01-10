@@ -226,6 +226,9 @@ Route::post('/record-class-results/{courseTeacher}', [Web\Staff\RecordClassResul
 Route::get('/course-result-info/index', Web\Staff\ListCourseResultInfoController::class)
   ->name('course-result-info.index');
 
+Route::get('/reports/subject-report', Web\Reports\SubjectReportController::class)
+  ->name('reports.subject-report');
+
 Route::get('/class-result-info/index', [Web\Staff\ClassResultInfoController::class, 'index'])
   ->name('class-result-info.index');
 Route::get('/class-result-info/{classResultInfo}/download', [Web\Staff\ClassResultInfoController::class, 'downloadClassResult'])
