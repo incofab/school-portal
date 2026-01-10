@@ -16,12 +16,16 @@ import { Nullable, InstitutionUserType } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useIsTeacher from '@/hooks/use-is-teacher';
+import useModalToggle from '@/hooks/use-modal-toggle';
+import GenericSelectorModal from '@/components/modals/generic-selector-modal';
+import { Inertia } from '@inertiajs/inertia';
 
 interface MenuType {
   label: string;
   icon?: string;
   roles?: Nullable<InstitutionUserType[]>;
   route?: string;
+  onClick?: () => void;
 }
 
 interface MenuListType extends MenuType {
@@ -33,6 +37,7 @@ export default function SideBarLayout() {
   const { toggleSidebar, collapseSidebar, broken, collapsed } = useProSidebar();
   const { instRoute } = useInstitutionRoute();
   const isTeacher = useIsTeacher();
+  const studentResultModalToggle = useModalToggle();
   const student = currentInstitutionUser.student;
   const staff = [
     InstitutionUserType.Admin,
@@ -234,6 +239,11 @@ export default function SideBarLayout() {
         {
           label: 'Subject Report',
           route: instRoute('reports.subject-report'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Student Result',
+          onClick: studentResultModalToggle.open,
           roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
       ],
@@ -537,8 +547,15 @@ export default function SideBarLayout() {
             return (
               <MenuItem
                 key={i}
-                component={<InertiaLink href={menu.route ?? ''} />}
-                onClick={() => toggleSidebar(false)}
+                component={
+                  menu.route ? (
+                    <InertiaLink href={menu.route ?? ''} />
+                  ) : undefined
+                }
+                onClick={() => {
+                  menu.onClick?.();
+                  toggleSidebar(false);
+                }}
               >
                 {menu.label}
               </MenuItem>
@@ -556,8 +573,15 @@ export default function SideBarLayout() {
                 return (
                   <MenuItem
                     key={'j' + i}
-                    component={<InertiaLink href={subItem.route ?? ''} />}
-                    onClick={() => toggleSidebar(false)}
+                    component={
+                      subItem.route ? (
+                        <InertiaLink href={subItem.route ?? ''} />
+                      ) : undefined
+                    }
+                    onClick={() => {
+                      subItem.onClick?.();
+                      toggleSidebar(false);
+                    }}
                   >
                     {subItem.label}
                   </MenuItem>
@@ -567,6 +591,33 @@ export default function SideBarLayout() {
           );
         })}
       </Menu>
+      <GenericSelectorModal
+        {...studentResultModalToggle.props}
+        title="Student Result"
+        submitLabel="View Result"
+        fields={[
+          { key: 'classification', label: 'Class', isRequired: true },
+          { key: 'student', label: 'Student', isRequired: true },
+          {
+            key: 'academicSession',
+            label: 'Academic Session',
+            isRequired: true,
+          },
+          { key: 'term', label: 'Term', isRequired: true },
+          { key: 'forMidTerm', label: 'For Mid-Term Result' },
+        ]}
+        onSubmit={(values) => {
+          Inertia.visit(
+            instRoute('students.result-sheet', [
+              values.student,
+              values.classification,
+              values.academicSession,
+              values.term,
+              values.forMidTerm ? 1 : 0,
+            ])
+          );
+        }}
+      />
     </Sidebar>
   );
 }
