@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Enums\Payments\PaymentPurpose;
 use App\Models\Funding;
 use App\Support\Payments\Merchants\PaymentMerchant;
+use Illuminate\Validation\Rules\Enum;
 
 class FundingsController extends Controller
 {
@@ -47,11 +48,12 @@ class FundingsController extends Controller
         'string',
         'unique:payment_references,reference',
         'unique:fundings,reference'
-      ]
+      ],
+      'merchant' => ['nullable', new Enum(PaymentMerchantType::class)]
     ]);
     $user = currentUser();
 
-    $merchant = $request->merchant ?? PaymentMerchantType::Paystack->value;
+    $merchant = $request->merchant ?? PaymentMerchantType::Monnify->value;
     $paymentReferenceDto = new PaymentReferenceDto(
       institution_id: $institution->id,
       merchant: $merchant,

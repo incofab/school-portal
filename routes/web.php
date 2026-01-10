@@ -159,6 +159,7 @@ Route::any('/paystack/callback', [Home\PaystackController::class, 'callback'])->
 Route::any('/paystack/verify-reference', [Home\PaystackController::class, 'verifyReference'])->name('paystack.verify-reference');
 Route::any('/paystack/webhook', [Home\PaystackController::class, 'webhook'])->name('paystack.webhook');
 
+Route::any('/monnify/checkout', [Home\MonnifyController::class, 'checkout'])->name('monnify.checkout');
 Route::any('/monnify/callback', [Home\MonnifyController::class, 'callback'])->name('monnify.callback');
 Route::any('/monnify/verify-reference', [Home\MonnifyController::class, 'verifyReference'])->name('monnify.verify-reference');
 Route::any('/monnify/webhook', [Home\MonnifyController::class, 'webhook'])->name('monnify.webhook');

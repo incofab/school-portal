@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+// User: The user making the payment or inst admin user
+// Payable: The entity making the payment
+// Paymentable: The entity this payment is meant for, it is nullable
 class PaymentReference extends Model
 {
   use HasFactory, InstitutionScope;

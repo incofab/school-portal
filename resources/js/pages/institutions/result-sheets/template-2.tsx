@@ -87,7 +87,7 @@ export default function Template2(props: ResultProps) {
     Object.entries(courseResult.assessment_values).map(
       ([, val]) => (total += Number(val))
     );
-    return total;
+    return roundNumber(total, 1);
   }
 
   return (
@@ -195,7 +195,7 @@ export default function Template2(props: ResultProps) {
                     <th>Exam</th>
                     <th>Total</th>
                     <th>Grade</th>
-                    <th>Highest/Lowest</th>
+                    {/* <th>Highest/Lowest</th> */}
                     <th>{hidePosition ? 'Remark' : 'Subject Position'}</th>
                   </tr>
                 </thead>
@@ -225,9 +225,9 @@ export default function Template2(props: ResultProps) {
                         <td>{courseResult.exam}</td>
                         <td>{courseResult.result}</td>
                         <td>{grade}</td>
-                        <td>
+                        {/* <td>
                           {roundNumber(highest, 0)} / {roundNumber(lowest, 0)}
-                        </td>
+                        </td> */}
                         <td>{hidePosition ? remark : courseResult.position}</td>
                       </tr>
                     );

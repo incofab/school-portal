@@ -117,7 +117,8 @@ class UpdateInstitutionUserController extends Controller
     InstitutionUser $institutionUser
   ) {
     $request->validate([
-      'status' => ['required', new Enum(InstitutionUserStatus::class)]
+      'status' => ['required', new Enum(InstitutionUserStatus::class)],
+      'status_message' => ['nullable', 'string', 'max:255']
     ]);
     $status = $request->status;
 
@@ -128,7 +129,12 @@ class UpdateInstitutionUserController extends Controller
       'You cannot suspend yourself'
     );
 
-    $institutionUser->fill(['status' => $request->status])->save();
+    $institutionUser
+      ->fill([
+        'status' => $status,
+        'status_message' => $request->status_message
+      ])
+      ->save();
     return $this->ok();
   }
 }

@@ -110,7 +110,8 @@ class StudentFeePaymentController extends Controller
       'academic_session_id' => ['nullable', 'exists:academic_sessions,id'],
       'term' => ['nullable', new Enum(TermType::class)],
       'fee_id' => ['required', $feeRule],
-      'amount' => ['nullable', 'numeric']
+      'amount' => ['nullable', 'numeric'],
+      'merchant' => ['nullable', new Enum(PaymentMerchantType::class)]
     ]);
 
     $fee = $feeRule->getModel();
@@ -122,7 +123,7 @@ class StudentFeePaymentController extends Controller
     $user = currentUser();
     $settingshandler = SettingsHandler::makeFromRoute();
 
-    $merchant = $request->merchant ?? PaymentMerchantType::Paystack->value;
+    $merchant = $request->merchant ?? PaymentMerchantType::Monnify->value;
     $paymentReferenceDto = new PaymentReferenceDto(
       institution_id: $institution->id,
       merchant: $merchant,

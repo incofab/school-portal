@@ -135,7 +135,7 @@ export default function RecordStudentFeePayment({ student, fees }: Props) {
                       title="Pay Now"
                       float={'right'}
                       leftIcon={<Icon as={CreditCardIcon} />}
-                      onClick={() => submit(PaymentMerchantType.Paystack)}
+                      onClick={() => submit(PaymentMerchantType.Monnify)}
                     />
                   </Div>
                 </HStack>

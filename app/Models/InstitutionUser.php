@@ -32,6 +32,10 @@ class InstitutionUser extends Model
   {
     return $this->status === InstitutionUserStatus::Suspended;
   }
+  function isActive(): bool
+  {
+    return $this->status === InstitutionUserStatus::Active;
+  }
 
   function isAdmin()
   {

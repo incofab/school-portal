@@ -37,8 +37,15 @@ class VerifyInstitutionUser
       return $this->eject($request, $message);
     }
 
-    if ($institutionUser->status !== InstitutionUserStatus::Active) {
-      $message = 'This account is suspended. Please contact your admin';
+    if ($institutionUser->isSuspended()) {
+      $message =
+        'This account is suspended. ' .
+        ($institutionUser->status_message ?? 'Please contact your admin');
+      return $this->eject($request, $message);
+    } elseif (!$institutionUser->isActive()) {
+      $message =
+        'This account is not active. ' .
+        ($institutionUser->status_message ?? 'Please contact your admin');
       return $this->eject($request, $message);
     }
 

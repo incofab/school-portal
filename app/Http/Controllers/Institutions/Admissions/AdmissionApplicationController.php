@@ -206,7 +206,7 @@ class AdmissionApplicationController extends Controller
       ],
       'merchant' => ['nullable', new Enum(PaymentMerchantType::class)]
     ]);
-    $merchant = $request->merchant ?? PaymentMerchantType::Paystack->value;
+    $merchant = $request->merchant ?? PaymentMerchantType::Monnify->value;
     $paymentReferenceDto = new PaymentReferenceDto(
       institution_id: $admissionForm->institution_id,
       merchant: $merchant,

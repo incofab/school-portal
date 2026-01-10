@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Home;
 
 use App\Core\MonnifyHelper;
+use App\Enums\Payments\PaymentMerchantType;
 use Illuminate\Http\Request;
 use App\Models\PaymentReference;
 use App\Http\Controllers\Controller;
@@ -21,6 +22,21 @@ class MonnifyController extends Controller
   public function callback(Request $request)
   {
     return $this->handleReference($request->reference);
+  }
+
+  public function checkout(Request $request)
+  {
+    $request->validate([
+      'reference' => ['required', 'string']
+    ]);
+    $paymentReference = PaymentReference::query()
+      ->where('reference', $request->reference)
+      ->where('merchant', PaymentMerchantType::Monnify)
+      ->with('user', 'institution', 'payable', 'paymentable')
+      ->firstOrFail();
+    return view('home.monnify-checkout', [
+      'paymentReference' => $paymentReference
+    ]);
   }
 
   function verifyReference(Request $request)

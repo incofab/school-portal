@@ -15,7 +15,10 @@ class PaymentMonnify extends PaymentMerchant
     $paymentReference = $this->createPaymentReference($paymentReferenceDto);
     $ret = successRes('', [
       'reference' => $paymentReference->reference,
-      'amount' => $paymentReferenceDto->amount
+      'amount' => $paymentReferenceDto->amount,
+      'authorization_url' => route('monnify.checkout', [
+        'reference' => $paymentReference->reference
+      ])
     ]);
     return [$ret, $paymentReference];
   }

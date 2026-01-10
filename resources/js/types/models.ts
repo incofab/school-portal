@@ -182,6 +182,7 @@ export interface InstitutionUser extends InstitutionRow {
   user_id: number;
   role: InstitutionUserType;
   status: InstitutionUserStatus;
+  status_message: string;
   user?: User;
   student?: Student;
 }
