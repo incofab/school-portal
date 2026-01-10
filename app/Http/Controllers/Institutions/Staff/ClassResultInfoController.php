@@ -187,8 +187,27 @@ class ClassResultInfoController extends Controller
     ))->download();
   }
 
+  function fetchClassResultSheets(Request $request, Institution $institution)
+  {
+    $data = $request->validate([
+      'classification' => ['required', 'integer'],
+      'academicSession' => ['required', 'integer'],
+      'term' => ['required', new Enum(TermType::class)],
+      'forMidTerm' => ['nullable', 'boolean']
+    ]);
+
+    $classResultInfo = ClassResultInfo::query()
+      ->where('classification_id', $data['classification'])
+      ->where('academic_session_id', $data['academicSession'])
+      ->where('term', $data['term'])
+      ->where('for_mid_term', (bool) ($data['forMidTerm'] ?? false))
+      ->first();
+
+    abort_unless($classResultInfo, 404, 'Result not found');
+    return $this->viewClassResultSheets($institution, $classResultInfo);
+  }
+
   public function viewClassResultSheets(
-    Request $request,
     Institution $institution,
     ClassResultInfo $classResultInfo
   ) {

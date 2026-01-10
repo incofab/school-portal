@@ -241,6 +241,8 @@ Route::post('/class-result-info/set-resumption-date/{classificationGroup?}', [We
   ->name('class-result-info.set-resumption-date');
 Route::get('/class-result-info/{classResultInfo}/result-sheets', [Web\Staff\ClassResultInfoController::class, 'viewClassResultSheets'])
   ->name('class-result-info.result-sheets');
+Route::get('/class-result-info/result-sheets', [Web\Staff\ClassResultInfoController::class, 'fetchClassResultSheets'])
+  ->name('class-result-info.fetch-result-sheets');
 Route::get('/class-result-info/{classResultInfo}/record-evaluations', [Web\Staff\ClassResultInfoController::class, 'recordEvaluations'])
   ->name('class-result-info.record-evaluations');
 Route::post('/class-result-info/{classResultInfo}/send-results', [Web\Staff\ClassResultInfoController::class, 'sendResults'])

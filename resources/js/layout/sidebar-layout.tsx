@@ -16,8 +16,10 @@ import { Nullable, InstitutionUserType } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useIsTeacher from '@/hooks/use-is-teacher';
-import useModalToggle from '@/hooks/use-modal-toggle';
-import GenericSelectorModal from '@/components/modals/generic-selector-modal';
+import { useModalValueToggle } from '@/hooks/use-modal-toggle';
+import GenericSelectorModal, {
+  GenericSelectorModalConfig,
+} from '@/components/modals/generic-selector-modal';
 import { Inertia } from '@inertiajs/inertia';
 
 interface MenuType {
@@ -37,7 +39,7 @@ export default function SideBarLayout() {
   const { toggleSidebar, collapseSidebar, broken, collapsed } = useProSidebar();
   const { instRoute } = useInstitutionRoute();
   const isTeacher = useIsTeacher();
-  const studentResultModalToggle = useModalToggle();
+  const reportModalToggle = useModalValueToggle<GenericSelectorModalConfig>();
   const student = currentInstitutionUser.student;
   const staff = [
     InstitutionUserType.Admin,
@@ -243,7 +245,126 @@ export default function SideBarLayout() {
         },
         {
           label: 'Student Result',
-          onClick: studentResultModalToggle.open,
+          onClick: () =>
+            reportModalToggle.open({
+              title: 'Student Result',
+              submitLabel: 'View Result',
+              fields: [
+                { key: 'classification', label: 'Class', isRequired: true },
+                { key: 'student', label: 'Student', isRequired: true },
+                {
+                  key: 'academicSession',
+                  label: 'Academic Session',
+                  isRequired: true,
+                },
+                { key: 'term', label: 'Term', isRequired: true },
+                { key: 'forMidTerm', label: 'For Mid-Term Result' },
+              ],
+              onSubmit: (values) => {
+                Inertia.visit(
+                  instRoute('students.result-sheet', [
+                    values.student,
+                    values.classification,
+                    values.academicSession,
+                    values.term,
+                    values.forMidTerm ? 1 : 0,
+                  ])
+                );
+              },
+            }),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Student Class Sheet',
+          onClick: () =>
+            reportModalToggle.open({
+              title: 'Student Class Sheet',
+              submitLabel: 'View Sheet',
+              fields: [
+                { key: 'classification', label: 'Class', isRequired: true },
+                {
+                  key: 'academicSession',
+                  label: 'Academic Session',
+                  isRequired: true,
+                },
+                { key: 'term', label: 'Term', isRequired: true },
+                { key: 'forMidTerm', label: 'For Mid-Term Result' },
+              ],
+              onSubmit: (values) => {
+                Inertia.visit(
+                  instRoute('class-result-info.fetch-result-sheets', {
+                    classification: values.classification,
+                    academicSession: values.academicSession,
+                    term: values.term,
+                    forMidTerm: values.forMidTerm ? 1 : 0,
+                  })
+                );
+              },
+            }),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Transcript',
+          onClick: () =>
+            reportModalToggle.open({
+              title: 'Student Transcript',
+              submitLabel: 'View Transcript',
+              fields: [{ key: 'student', label: 'Student', isRequired: true }],
+              onSubmit: (values) => {
+                Inertia.visit(
+                  instRoute('students.transcript', [values.student])
+                );
+              },
+            }),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Cummulative Results',
+          onClick: () =>
+            reportModalToggle.open({
+              title: 'Cummulative Results',
+              submitLabel: 'View Results',
+              fields: [
+                { key: 'classification', label: 'Class', isRequired: true },
+                {
+                  key: 'academicSession',
+                  label: 'Academic Session',
+                  isRequired: true,
+                },
+                { key: 'term', label: 'Term' },
+              ],
+              onSubmit: (values) => {
+                const params: { [key: string]: any } = {
+                  classification: values.classification,
+                  academicSession: values.academicSession,
+                };
+                if (values.term) {
+                  params.term = values.term;
+                }
+                Inertia.visit(instRoute('cummulative-result.index', params));
+              },
+            }),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Session Results',
+          onClick: () =>
+            reportModalToggle.open({
+              title: 'Session Results',
+              submitLabel: 'View Results',
+              fields: [
+                { key: 'classification', label: 'Class', isRequired: true },
+                { key: 'academicSession', label: 'Academic Session' },
+              ],
+              onSubmit: (values) => {
+                const params = values.academicSession
+                  ? [values.classification, values.academicSession]
+                  : [values.classification];
+                Inertia.visit(
+                  instRoute('classifications.session-results.index', params)
+                );
+              },
+            }),
           roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
       ],
@@ -591,33 +712,16 @@ export default function SideBarLayout() {
           );
         })}
       </Menu>
-      <GenericSelectorModal
-        {...studentResultModalToggle.props}
-        title="Student Result"
-        submitLabel="View Result"
-        fields={[
-          { key: 'classification', label: 'Class', isRequired: true },
-          { key: 'student', label: 'Student', isRequired: true },
-          {
-            key: 'academicSession',
-            label: 'Academic Session',
-            isRequired: true,
-          },
-          { key: 'term', label: 'Term', isRequired: true },
-          { key: 'forMidTerm', label: 'For Mid-Term Result' },
-        ]}
-        onSubmit={(values) => {
-          Inertia.visit(
-            instRoute('students.result-sheet', [
-              values.student,
-              values.classification,
-              values.academicSession,
-              values.term,
-              values.forMidTerm ? 1 : 0,
-            ])
-          );
-        }}
-      />
+      {reportModalToggle.state && (
+        <GenericSelectorModal
+          {...reportModalToggle.props}
+          title={reportModalToggle.state.title}
+          submitLabel={reportModalToggle.state.submitLabel}
+          fields={reportModalToggle.state.fields}
+          initialValues={reportModalToggle.state.initialValues}
+          onSubmit={reportModalToggle.state.onSubmit}
+        />
+      )}
     </Sidebar>
   );
 }

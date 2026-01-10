@@ -31,6 +31,14 @@ export interface ReportFilterValues {
   [key: string]: any;
 }
 
+export interface GenericSelectorModalConfig {
+  title: string;
+  fields: ReportFilterFieldConfig[];
+  submitLabel?: string;
+  initialValues?: Partial<ReportFilterValues>;
+  onSubmit(values: ReportFilterValues): void;
+}
+
 interface Props {
   isOpen: boolean;
   onClose(): void;
