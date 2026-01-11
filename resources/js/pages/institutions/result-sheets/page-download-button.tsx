@@ -61,6 +61,7 @@ export default function PageDownloadButton({
       variant={'outline'}
       colorScheme="brand"
       isLoading={downloadForm.processing}
+      className="hidden-on-print"
     >
       Download
     </Button>

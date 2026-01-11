@@ -52,6 +52,11 @@ class InstitutionUser extends Model
     return $this->hasRole(InstitutionUserType::Student);
   }
 
+  function isAlumni()
+  {
+    return $this->hasRole(InstitutionUserType::Alumni);
+  }
+
   function isGuardian()
   {
     return $this->hasRole(InstitutionUserType::Guardian);

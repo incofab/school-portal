@@ -82,9 +82,11 @@ export default function PrintReceiptPage({ receipt, student }: Props) {
 
   return (
     <ReceiptLayout user={student.user!} contentId={'receipt-container'}>
-      <br />
-      <br />
-      <br />
+      <Div className="hidden-on-print">
+        <br />
+        <br />
+        <br />
+      </Div>
       <Div
         width={'800px'}
         margin="auto"
@@ -127,7 +129,7 @@ export default function PrintReceiptPage({ receipt, student }: Props) {
 
         <div className="table-container">
           <DataTable
-            scroll={true}
+            // scroll={true}
             headers={feePaymentTableHeaders}
             data={receipt.fee_payments!}
             keyExtractor={(row) => row.id}

@@ -12,7 +12,7 @@ interface MyProps {
     | SelectOptionType<number>
     | MultiValue<SelectOptionType<number>>
     | null;
-  classDivisions: ClassDivision[];
+  classDivisions?: ClassDivision[];
 }
 
 export default function ClassDivisionSelect({

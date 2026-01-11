@@ -243,12 +243,20 @@ export default function Template3(props: ResultProps) {
           >
             <VStack spacing={0} align={'left'}>
               {resultSummary1.map((item) => (
-                <LabelText label={item.label} text={item.value} />
+                <LabelText
+                  label={item.label}
+                  text={item.value}
+                  key={item.label}
+                />
               ))}
             </VStack>
             <VStack spacing={0} align={'left'}>
               {resultSummary2.map((item) => (
-                <LabelText label={item.label} text={item.value} />
+                <LabelText
+                  label={item.label}
+                  text={item.value}
+                  key={item.label}
+                />
               ))}
             </VStack>
           </Flex>
@@ -277,7 +285,7 @@ export default function Template3(props: ResultProps) {
                     Subject
                   </th>
                   {assessments.map((assessment) => (
-                    <th>{startCase(assessment.title)}</th>
+                    <th key={assessment.id}>{startCase(assessment.title)}</th>
                   ))}
                   <th>Exam</th>
                   <th>Total</th>
@@ -303,7 +311,7 @@ export default function Template3(props: ResultProps) {
                         {courseResult.course?.title}
                       </td>
                       {assessments.map((assessment) => (
-                        <td>
+                        <td key={assessment.id}>
                           {courseResult.assessment_values[
                             assessment.raw_title
                           ] ?? '-'}
@@ -368,7 +376,7 @@ export default function Template3(props: ResultProps) {
                     const { grade, grade_label } = item;
                     // const [grade, remark, label] = getGrade(item);
                     return (
-                      <tr>
+                      <tr key={item.id}>
                         <td>{`${item.min} - ${item.max}`}</td>
                         <td>{grade_label}</td>
                         <td>{grade}</td>

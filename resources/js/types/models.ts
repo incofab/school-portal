@@ -298,6 +298,19 @@ export interface ClassDivision extends InstitutionRow {
   classifications?: Classification[];
 }
 
+export interface LiveClass extends InstitutionRow {
+  title: string;
+  meet_url: string;
+  teacher_user_id: number;
+  liveable_id: number;
+  liveable_type: string;
+  starts_at?: string;
+  ends_at?: string;
+  is_active: boolean;
+  teacher?: User;
+  liveable?: Classification | ClassificationGroup | ClassDivision;
+}
+
 export interface StudentClassMovement extends InstitutionRow {
   user_id: number;
   source_classification_id: number;

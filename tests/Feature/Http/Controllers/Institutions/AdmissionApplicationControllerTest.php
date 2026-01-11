@@ -191,7 +191,10 @@ it(
         200
       )
     ]);
-    $data = ['reference' => $reference];
+    $data = [
+      'reference' => $reference,
+      'merchant' => PaymentMerchantType::Paystack->value
+    ];
     postJson(
       route('institutions.admission-forms.buy', [
         $this->institution->uuid,

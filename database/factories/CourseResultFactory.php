@@ -10,6 +10,7 @@ use App\Models\Course;
 use App\Models\CourseResult;
 use App\Models\Institution;
 use App\Models\Student;
+use App\Models\TermResult;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -79,6 +80,19 @@ class CourseResultFactory extends Factory
           $institution
         ),
         'academic_session_id' => AcademicSession::factory()
+      ]
+    );
+  }
+  function fromTermResult(TermResult $termResult): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'institution_id' => $termResult->institution_id,
+        'student_id' => $termResult->student_id,
+        'classification_id' => $termResult->classification_id,
+        'academic_session_id' => $termResult->academic_session_id,
+        'term' => $termResult->term,
+        'for_mid_term' => $termResult->for_mid_term ?? false
       ]
     );
   }

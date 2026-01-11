@@ -13,6 +13,12 @@ beforeEach(function () {
     ->withInstitution($this->institution)
     ->for($this->academicSession)
     ->create();
+  CourseResult::factory()
+    ->fromTermResult($this->termResult)
+    ->create();
+  CourseResult::factory()
+    ->fromTermResult($this->termResult2)
+    ->create();
 });
 
 it('should delete a term result', function () {

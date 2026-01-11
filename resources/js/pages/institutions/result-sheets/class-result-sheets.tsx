@@ -27,23 +27,25 @@ export default function ClassResultSheets({
 
   return (
     <Div px={3}>
-      <Div textAlign={'center'}>
-        <Div fontWeight={'bold'} fontSize={'2xl'}>
-          {classification.title}
+      <Div className="hidden-on-print">
+        <Div textAlign={'center'}>
+          <Div fontWeight={'bold'} fontSize={'2xl'}>
+            {classification.title}
+          </Div>
+          <Div fontWeight={'bold'} fontSize={'md'}>
+            {academicSession.title} - {ucFirst(term)} {forMidTerm ? 'Mid ' : ''}
+            Result Sheets
+          </Div>
         </Div>
-        <Div fontWeight={'bold'} fontSize={'md'}>
-          {academicSession.title} - {ucFirst(term)} {forMidTerm ? 'Mid ' : ''}
-          Result Sheets
-        </Div>
+        <DownloadButton
+          filename={`${classification.title} ${academicSession.title} ${term} ${
+            forMidTerm ? 'Mid ' : ''
+          } Result Sheets`}
+          title="Download All"
+          mb={3}
+        />
+        <Divider my={2} />
       </Div>
-      <DownloadButton
-        filename={`${classification.title} ${academicSession.title} ${term} ${
-          forMidTerm ? 'Mid ' : ''
-        } Result Sheets`}
-        title="Download All"
-        mb={3}
-      />
-      <Divider my={2} />
       <Div>
         <MultipleResultSheets
           results={results}

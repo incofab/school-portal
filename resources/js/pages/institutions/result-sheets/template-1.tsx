@@ -175,7 +175,7 @@ export default function Template1(props: ResultProps) {
                 <tr>
                   <th>Subjects</th>
                   {assessments.map((assessment) => (
-                    <th>
+                    <th key={assessment.id}>
                       <VerticalText text={startCase(assessment.title)} />
                     </th>
                   ))}
@@ -207,7 +207,7 @@ export default function Template1(props: ResultProps) {
                     <tr key={courseResult.id}>
                       <td>{courseResult.course?.title}</td>
                       {assessments.map((assessment) => (
-                        <td>
+                        <td key={assessment.id}>
                           {courseResult.assessment_values[
                             assessment.raw_title
                           ] ?? '-'}

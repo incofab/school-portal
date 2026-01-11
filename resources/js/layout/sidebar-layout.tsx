@@ -206,6 +206,11 @@ export default function SideBarLayout() {
             InstitutionUserType.Alumni,
           ],
         },
+        {
+          label: 'Live Classes',
+          route: instRoute('live-classes.index'),
+          roles: [...teachers, InstitutionUserType.Student],
+        },
       ],
     },
     {

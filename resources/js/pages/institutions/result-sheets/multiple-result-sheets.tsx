@@ -1,17 +1,7 @@
 import { BoxProps } from '@chakra-ui/react';
 import React, { PropsWithChildren } from 'react';
 import { Div } from '@/components/semantic';
-import '@/../../public/style/result-sheet.css';
-import '@/style/template-5.css';
 import { ResultProps } from '@/util/result-util';
-import Template1 from './template-1';
-import Template2 from './template-2';
-import Template3 from './template-3';
-import Template4 from './template-4';
-import Template5 from './template-5';
-import Template6 from './template-6';
-import Template7 from './template-7';
-import Template8 from './template-8';
 
 interface Props {
   results: ResultProps[];
@@ -34,7 +24,7 @@ export default function MultipleResultSheets({
   return (
     <Div>
       {results.map((result, index) => (
-        <A4Page key={index}>
+        <A4Page key={result.termResult.id}>
           <DynamicComponent
             name={template as keyof typeof components}
             props={result}
@@ -47,14 +37,14 @@ export default function MultipleResultSheets({
 
 // Mapping of components
 const components = {
-  template1: Template1,
-  template2: Template2,
-  template3: Template3,
-  template4: Template4,
-  template5: Template5,
-  template6: Template6,
-  template7: Template7,
-  template8: Template8,
+  template1: React.lazy(() => import('./template-1')),
+  template2: React.lazy(() => import('./template-2')),
+  template3: React.lazy(() => import('./template-3')),
+  template4: React.lazy(() => import('./template-4')),
+  template5: React.lazy(() => import('./template-5')),
+  template6: React.lazy(() => import('./template-6')),
+  template7: React.lazy(() => import('./template-7')),
+  template8: React.lazy(() => import('./template-8')),
 };
 
 type ComponentName = keyof typeof components;

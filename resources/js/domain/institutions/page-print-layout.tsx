@@ -36,7 +36,8 @@ export default function PagePrintLayout({
     <Div>
       <Div
         style={useBgStyle === false ? undefined : backgroundStyle}
-        minHeight={'1170px'}
+        // minHeight={'1170px'}
+        minHeight={'900px'}
       >
         <PageDownloadButton
           signed_url={signed_url}

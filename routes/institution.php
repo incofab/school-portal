@@ -226,6 +226,11 @@ Route::post('/record-class-results/{courseTeacher}', [Web\Staff\RecordClassResul
 Route::get('/course-result-info/index', Web\Staff\ListCourseResultInfoController::class)
   ->name('course-result-info.index');
 
+Route::get('/live-classes/{liveClass}/join', Web\LiveClasses\JoinLiveClassController::class)
+  ->name('live-classes.join');
+Route::resource('/live-classes', Web\LiveClasses\LiveClassController::class)
+  ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+
 Route::get('/reports/subject-report', Web\Reports\SubjectReportController::class)
   ->name('reports.subject-report');
 

@@ -258,11 +258,7 @@ export default function Template4(props: ResultProps) {
                       </td>
                       {assessments.map((assessment) => (
                         <td
-                          key={
-                            'assessment-val' +
-                            courseResult.id +
-                            assessment.title
-                          }
+                          key={`assessment-val-${courseResult.id}-${assessment.id}`}
                         >
                           {courseResult.assessment_values[
                             assessment.raw_title

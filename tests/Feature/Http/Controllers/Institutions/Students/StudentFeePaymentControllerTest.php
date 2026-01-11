@@ -97,7 +97,8 @@ test(
         [
           'fee_id' => $fee->id,
           'academic_session_id' => $this->receipt->academic_session_id,
-          'term' => $this->receipt->term?->value
+          'term' => $this->receipt->term?->value,
+          'merchant' => PaymentMerchantType::Paystack->value
         ]
       )
       ->assertOk()

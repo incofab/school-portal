@@ -12,7 +12,7 @@ interface MyProps {
     | SelectOptionType<number>
     | MultiValue<SelectOptionType<number>>
     | null;
-  classificationGroups: ClassificationGroup[];
+  classificationGroups?: ClassificationGroup[];
 }
 
 export default function ClassificationGroupSelect({

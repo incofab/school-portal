@@ -27,6 +27,7 @@ beforeEach(function () {
 it(
   'creates a funding with Paystack and returns the correct response',
   function () {
+    $reference = 'unique-reference-1234';
     // Simulate the response from Paystack
     Http::fake([
       'https://api.paystack.co/transaction/initialize' => Http::response(
@@ -35,7 +36,7 @@ it(
           'data' => [
             'authorization_url' =>
               'https://paystack.com/checkout/authorization_url',
-            'reference' => 'paystack-reference-1234',
+            'reference' => $reference,
             'access_code' => 'access_code_1234'
           ]
         ],
@@ -46,7 +47,8 @@ it(
     // Define the request data
     $data = [
       'amount' => 1000,
-      'reference' => 'unique-reference-1234'
+      'reference' => $reference,
+      'merchant' => PaymentMerchantType::Paystack->value
     ];
 
     // Perform the post request to store the funding
@@ -56,12 +58,12 @@ it(
         $data
       )
       ->assertStatus(200)
-      ->assertJson(function (AssertableJson $json) {
-        return $json
+      ->assertJson(
+        fn(AssertableJson $json) => $json
           ->has('authorization_url')
-          ->where('reference', 'paystack-reference-1234')
-          ->etc();
-      });
+          ->where('reference', $reference)
+          ->etc()
+      );
 
     // Check if the PaymentReference was created in the database
     $this->assertDatabaseHas('payment_references', [

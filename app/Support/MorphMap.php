@@ -69,6 +69,7 @@ class MorphMap
     'instruction' => Models\Instruction::class,
     'learning-evaluation' => Models\LearningEvaluation::class,
     'learning-evaluation-domain' => Models\LearningEvaluationDomain::class,
+    'live-class' => Models\LiveClass::class,
     'message' => Models\Message::class,
     'message-recipient' => Models\MessageRecipient::class,
     'partner' => Models\Partner::class,
