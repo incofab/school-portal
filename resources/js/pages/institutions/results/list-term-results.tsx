@@ -20,6 +20,8 @@ import { TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
+import { useResultSetting } from '@/util/result-util';
+import { roundNumber } from '@/util/util';
 
 interface Props {
   termResults: PaginationResponse<TermResult>;
@@ -38,6 +40,7 @@ export default function ListTermResults({
   const isAdmin = useIsAdmin();
   const canViewDetails = !isStaff || isAdmin;
   const deleteForm = useWebForm({});
+  const { hidePosition, showGrade } = useResultSetting();
 
   async function deleteItem(obj: TermResult) {
     const res = await deleteForm.submit((data, web) =>
@@ -46,7 +49,8 @@ export default function ListTermResults({
     handleResponseToast(res);
     Inertia.reload({ only: ['termResults'] });
   }
-
+  const shouldHidePosition = hidePosition && !isStaff;
+  const shouldShowGrade = showGrade && !isStaff;
   const headers: ServerPaginatedTableHeader<TermResult>[] = [
     {
       label: 'User',
@@ -69,10 +73,14 @@ export default function ListTermResults({
         </Text>
       ),
     },
-    {
-      label: 'Position',
-      value: 'position',
-    },
+    ...(shouldHidePosition
+      ? []
+      : [
+          {
+            label: 'Position',
+            value: shouldShowGrade ? 'grade' : 'position',
+          },
+        ]),
     {
       label: 'Total Score',
       value: 'total_score',
@@ -80,6 +88,7 @@ export default function ListTermResults({
     {
       label: 'Average',
       value: 'average',
+      render: (row) => String(roundNumber(row.average, 2)),
     },
     {
       label: 'Remark',

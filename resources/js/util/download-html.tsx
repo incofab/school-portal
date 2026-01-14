@@ -25,6 +25,8 @@ export default function useDownloadHtml() {
       formData.append('name', name);
       return web.post(`${pdfUrl}/file-to-pdf`, formData);
     });
+    console.log('res', res.data);
+
     if (!handleResponseToast(res)) return;
 
     anchorDownload(res.data.url, name);

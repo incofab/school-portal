@@ -6,7 +6,14 @@ import {
   Student,
   TermResult,
 } from '@/types/models';
-import { FormControl, HStack, Text, VStack } from '@chakra-ui/react';
+import {
+  FormControl,
+  HStack,
+  Text,
+  VStack,
+  Wrap,
+  WrapItem,
+} from '@chakra-ui/react';
 import React, { useMemo } from 'react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Div } from '@/components/semantic';
@@ -21,10 +28,9 @@ import ClassificationSelect from '@/components/selectors/classification-select';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import { preventNativeSubmit, roundNumber } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { BrandButton, FormButton } from '@/components/buttons';
+import { FormButton } from '@/components/buttons';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import useDownloadHtml from '@/util/download-html';
-import PageDownloadButton from '../result-sheets/page-download-button';
 
 interface HasTermDataProp {
   hasFirstTermRecords: boolean;
@@ -266,53 +272,61 @@ function ClassAndSessionSelector({
   Object.entries(TermType).map(([key, val]) => {
     termTypes[key] = val;
   });
-
+  const minWidth = '150px';
   return (
-    <HStack
-      align={'stretch'}
+    <Wrap
+      align={'end'}
       as={'form'}
       spacing={2}
       onSubmit={preventNativeSubmit(submit)}
     >
-      <FormControlBox
-        form={webForm as any}
-        formKey={'classification'}
-        title="Class"
-        isRequired
-      >
-        <ClassificationSelect
-          selectValue={webForm.data.classification}
-          onChange={(e: any) => webForm.setValue('classification', e.value)}
-          required
-        />
-      </FormControlBox>
-      <FormControlBox
-        form={webForm as any}
-        formKey={'academicSession'}
-        title="Academic Session"
-        isRequired
-      >
-        <AcademicSessionSelect
-          selectValue={webForm.data.academicSession}
-          onChange={(e: any) => webForm.setValue('academicSession', e.value)}
-          required
-        />
-      </FormControlBox>
-      <FormControlBox form={webForm as any} formKey={'term'} title="Term">
-        <EnumSelect
-          enumData={termTypes}
-          selectValue={webForm.data.term}
-          onChange={(e: any) => webForm.setValue('term', e.value)}
-        />
-      </FormControlBox>
-      <FormControl>
-        <FormButton
-          isLoading={webForm.processing}
-          marginTop={'35px'}
-          variant={'outline'}
-          className="hidden-on-print"
-        />
-      </FormControl>
-    </HStack>
+      <WrapItem minW={minWidth}>
+        <FormControlBox
+          form={webForm as any}
+          formKey={'classification'}
+          title="Class"
+          isRequired
+        >
+          <ClassificationSelect
+            selectValue={webForm.data.classification}
+            onChange={(e: any) => webForm.setValue('classification', e.value)}
+            required
+          />
+        </FormControlBox>
+      </WrapItem>
+      <WrapItem minW={minWidth}>
+        <FormControlBox
+          form={webForm as any}
+          formKey={'academicSession'}
+          title="Academic Session"
+          isRequired
+        >
+          <AcademicSessionSelect
+            selectValue={webForm.data.academicSession}
+            onChange={(e: any) => webForm.setValue('academicSession', e.value)}
+            required
+          />
+        </FormControlBox>
+      </WrapItem>
+      <WrapItem minW={minWidth}>
+        <FormControlBox form={webForm as any} formKey={'term'} title="Term">
+          <EnumSelect
+            enumData={termTypes}
+            selectValue={webForm.data.term}
+            onChange={(e: any) => webForm.setValue('term', e.value)}
+          />
+        </FormControlBox>
+      </WrapItem>
+      <WrapItem>
+        <FormControl>
+          <FormButton
+            isLoading={webForm.processing}
+            marginTop={'35px'}
+            variant={'outline'}
+            className="hidden-on-print"
+          />
+        </FormControl>
+      </WrapItem>
+    </Wrap>
   );
 }
