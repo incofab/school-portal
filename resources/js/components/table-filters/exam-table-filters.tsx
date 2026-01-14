@@ -7,7 +7,6 @@ import ClassificationSelect from '../selectors/classification-select';
 interface Props {
   isOpen: boolean;
   onClose(): void;
-  // classificationGroups: ClassificationGroup[];
 }
 
 export default function ExamTableFilters({ isOpen, onClose }: Props) {
@@ -19,14 +18,6 @@ export default function ExamTableFilters({ isOpen, onClose }: Props) {
 
   return (
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
-      {/* <FilterFormControlBox title="Class Group">
-        <ClassificationGroupSelect
-          classificationGroups={classificationGroups}
-          onChange={(e: any) =>
-            setFilters({ ...filters, classificationGroup: e.value })
-          }
-        />
-      </FilterFormControlBox> */}
       <FilterFormControlBox title="Class">
         <ClassificationSelect
           onChange={(e: any) =>

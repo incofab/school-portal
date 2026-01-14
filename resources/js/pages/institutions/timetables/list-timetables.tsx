@@ -26,8 +26,6 @@ import { Inertia } from '@inertiajs/inertia';
 interface Props {
   timetables: Timetable[];
   classification: Classification;
-  classifications: Classification[];
-  courses: Course[];
   schoolActivities: SchoolActivity[];
 }
 
@@ -38,8 +36,6 @@ interface FormattedTimetable {
 export default function ListTimetables({
   timetables,
   classification,
-  classifications,
-  courses,
   schoolActivities,
 }: Props) {
   const createEditTimetableModalToggle = useModalValueToggle<TimetableCell>();
@@ -151,7 +147,6 @@ export default function ListTimetables({
             isStaff && (
               <Div minW={'150px'}>
                 <ClassificationSelect
-                  classifications={classifications}
                   selectValue={{
                     label: classification.title,
                     value: classification.id,
@@ -243,7 +238,6 @@ export default function ListTimetables({
           classificationId={
             createEditTimetableModalToggle.state.classification_id
           }
-          courses={courses}
           schoolActivities={schoolActivities}
           {...createEditTimetableModalToggle.props}
           onSuccess={() => window.location.reload()} // Reloads the page

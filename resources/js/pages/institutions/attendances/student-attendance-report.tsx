@@ -52,11 +52,9 @@ interface ReportData {
   academicSession: AcademicSession;
 }
 
-interface Props {
-  academicSessions: AcademicSession[];
-}
+interface Props {}
 
-export default function StudentAttendanceReport({ academicSessions }: Props) {
+export default function StudentAttendanceReport({}: Props) {
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
   const { currentAcademicSession, currentTerm } = useSharedProps();
@@ -114,7 +112,6 @@ export default function StudentAttendanceReport({ academicSessions }: Props) {
               >
                 <AcademicSessionSelect
                   selectValue={webForm.data.academic_session_id}
-                  academicSessions={academicSessions}
                   onChange={(e: any) =>
                     webForm.setValue('academic_session_id', e)
                   }

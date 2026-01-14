@@ -6,7 +6,6 @@ use App\Actions\CourseResult\GenerateSubjectReport;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SubjectReportRequest;
-use App\Models\AcademicSession;
 use App\Models\Institution;
 
 class SubjectReportController extends Controller
@@ -41,9 +40,7 @@ class SubjectReportController extends Controller
       'classification' => $classification,
       'academicSession' => $academicSession,
       'term' => $term,
-      'subjectReport' => $reportRows,
-      'academicSessions' => AcademicSession::all(),
-      'classifications' => $institution->classifications()->get()
+      'subjectReport' => $reportRows
     ]);
   }
 }

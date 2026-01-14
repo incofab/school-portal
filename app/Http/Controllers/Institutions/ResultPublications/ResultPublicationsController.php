@@ -28,12 +28,8 @@ class ResultPublicationsController extends Controller
 
   function create(Institution $institution)
   {
-    $classifications = $institution->classifications()->get();
     return inertia(
-      'institutions/result-publications/create-result-publication',
-      [
-        'classifications' => $classifications
-      ]
+      'institutions/result-publications/create-result-publication'
     );
   }
 

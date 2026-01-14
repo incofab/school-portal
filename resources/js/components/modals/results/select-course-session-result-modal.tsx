@@ -10,20 +10,15 @@ import { Inertia } from '@inertiajs/inertia';
 import FormControlBox from '@/components/forms/form-control-box';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import ClassificationSelect from '@/components/selectors/classification-select';
-import { AcademicSession, Classification } from '@/types/models';
 
 interface Props {
   isOpen: boolean;
   onClose(): void;
-  classifications: Classification[];
-  academicSessions: AcademicSession[];
 }
 
 export default function SelectCourseSessionResultModal({
   isOpen,
   onClose,
-  classifications,
-  academicSessions,
 }: Props) {
   const { toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -67,7 +62,6 @@ export default function SelectCourseSessionResultModal({
               onChange={(e: any) =>
                 webForm.setValue('academicSession', e?.value)
               }
-              academicSessions={academicSessions}
               required
             />
           </FormControlBox>
@@ -83,7 +77,6 @@ export default function SelectCourseSessionResultModal({
               onChange={(e: any) =>
                 webForm.setValue('classification', e?.value)
               }
-              classifications={classifications}
               required
             />
           </FormControlBox>

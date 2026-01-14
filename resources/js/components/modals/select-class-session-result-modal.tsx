@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button, FormControl, FormLabel, HStack } from '@chakra-ui/react';
 import GenericModal from '@/components/generic-modal';
-import { AcademicSession, Classification } from '@/types/models';
 import ClassificationSelect from '../selectors/classification-select';
 import { Div } from '../semantic';
 import AcademicSessionSelect from '../selectors/academic-session-select';
@@ -13,15 +12,11 @@ import useSharedProps from '@/hooks/use-shared-props';
 interface Props {
   isOpen: boolean;
   onClose(): void;
-  classifications: Classification[];
-  academicSessions: AcademicSession[];
 }
 
 export default function SelectClassSessionResultModal({
   isOpen,
   onClose,
-  classifications,
-  academicSessions,
 }: Props) {
   const { currentAcademicSessionId } = useSharedProps();
   const { toastError } = useMyToast();
@@ -54,7 +49,6 @@ export default function SelectClassSessionResultModal({
           <FormControl>
             <FormLabel>{`Select Class`}</FormLabel>
             <ClassificationSelect
-              classifications={classifications}
               selectValue={data?.classificationId}
               isMulti={false}
               isClearable={true}
@@ -66,7 +60,6 @@ export default function SelectClassSessionResultModal({
           <FormControl>
             <FormLabel>{`Academic Session`}</FormLabel>
             <AcademicSessionSelect
-              academicSessions={academicSessions}
               selectValue={data?.academicSessionId}
               isMulti={false}
               isClearable={true}

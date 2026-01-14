@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClassificationGroup, Topic } from '@/types/models';
+import { Topic } from '@/types/models';
 import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
@@ -22,15 +22,10 @@ import TopicTableFilters from '@/components/table-filters/topic-table-filters';
 
 interface Props {
   topics: PaginationResponse<Topic>;
-  classificationGroups: ClassificationGroup[];
   parentTopic?: Topic;
 }
 
-export default function ListTopics({
-  topics,
-  classificationGroups,
-  parentTopic,
-}: Props) {
+export default function ListTopics({ topics, parentTopic }: Props) {
   const topicFilterToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
@@ -135,10 +130,7 @@ export default function ListTopics({
             onFilterButtonClick={topicFilterToggle.open}
           />
         </SlabBody>
-        <TopicTableFilters
-          {...topicFilterToggle.props}
-          classificationGroups={classificationGroups}
-        />
+        <TopicTableFilters {...topicFilterToggle.props} />
       </Slab>
     </DashboardLayout>
   );

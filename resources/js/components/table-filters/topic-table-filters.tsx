@@ -9,20 +9,14 @@ import EnumSelect from '../dropdown-select/enum-select';
 import useSharedProps from '@/hooks/use-shared-props';
 import ClassificationGroupSelect from '../selectors/classification-group-select';
 import CourseTeacherSelect from '../selectors/course-teacher-select';
-import { ClassificationGroup } from '@/types/models';
 import useIsStaff from '@/hooks/use-is-staff';
 
 interface Props {
-  classificationGroups: ClassificationGroup[];
   isOpen: boolean;
   onClose(): void;
 }
 
-export default function TopicTableFilters({
-  isOpen,
-  onClose,
-  classificationGroups,
-}: Props) {
+export default function TopicTableFilters({ isOpen, onClose }: Props) {
   const { params } = useQueryString();
   const { currentTerm } = useSharedProps();
   const isStaff = useIsStaff();
@@ -42,7 +36,6 @@ export default function TopicTableFilters({
         <>
           <FilterFormControlBox title="Class Group">
             <ClassificationGroupSelect
-              classificationGroups={classificationGroups}
               selectValue={filters.classificationGroup}
               onChange={(e: any) =>
                 setFilters({ ...filters, classificationGroup: e.value })

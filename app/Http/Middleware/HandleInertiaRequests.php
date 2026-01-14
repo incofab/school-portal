@@ -40,17 +40,26 @@ class HandleInertiaRequests extends Middleware
   {
     $settingHandler = SettingsHandler::makeFromRoute();
     $academicSessionId = $settingHandler->getCurrentAcademicSession();
+    $institution = currentInstitution();
+    $institution?->load(
+      'classifications',
+      'courses',
+      'classificationGroups',
+      'classDivisions'
+    );
+    $academicSessions = AcademicSession::all();
 
     return array_merge(parent::share($request), [
       'shared__isImpersonating' => session()->has('impersonator_id'),
       'shared__currentUser' => currentUser()?->load('roles'),
-      'shared__currentInstitution' => fn() => currentInstitution(),
+      'shared__currentInstitution' => fn() => $institution,
       'shared__currentInstitutionUser' => fn() => currentInstitutionUser(),
       'shared__currentTerm' => $settingHandler->getCurrentTerm(),
       'shared__currentAcademicSessionId' => $academicSessionId,
-      'shared__currentAcademicSession' => AcademicSession::query()->find(
+      'shared__currentAcademicSession' => $academicSessions->find(
         $academicSessionId
-      )
+      ),
+      'shared_academicSessions' => $academicSessions
     ]);
   }
 }

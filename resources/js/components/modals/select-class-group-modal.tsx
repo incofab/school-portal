@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { Button, FormControl, FormLabel, HStack } from '@chakra-ui/react';
 import GenericModal from '@/components/generic-modal';
-import { ClassificationGroup } from '@/types/models';
 import ClassificationGroupSelect from '../selectors/classification-group-select';
 
 interface Props {
   isOpen: boolean;
   onClose(): void;
   onSuccess(classificationGroupId: number | string): void;
-  classificationGroups: ClassificationGroup[];
   headerTitle?: string;
   label?: string;
 }
@@ -17,7 +15,6 @@ export default function SelectClassGroupModal({
   isOpen,
   onSuccess,
   onClose,
-  classificationGroups,
   headerTitle,
   label,
 }: Props) {
@@ -41,7 +38,6 @@ export default function SelectClassGroupModal({
         <FormControl>
           <FormLabel>{label ?? `Select Class Group`}</FormLabel>
           <ClassificationGroupSelect
-            classificationGroups={classificationGroups}
             selectValue={classificationGroupId}
             value={classificationGroupId}
             isMulti={false}

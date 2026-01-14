@@ -40,8 +40,6 @@ interface Props {
   academicSession?: AcademicSession;
   term?: TermType;
   subjectReport: SubjectReportRow[];
-  academicSessions: AcademicSession[];
-  classifications: Classification[];
 }
 
 export default function SubjectReportSheet({
@@ -49,8 +47,6 @@ export default function SubjectReportSheet({
   academicSession,
   term,
   subjectReport,
-  academicSessions,
-  classifications,
 }: Props) {
   const { currentInstitution } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
@@ -168,8 +164,6 @@ export default function SubjectReportSheet({
             classification={classification}
             academicSession={academicSession}
             term={term}
-            classifications={classifications}
-            academicSessions={academicSessions}
             onSubmit={(data) =>
               Inertia.visit(instRoute('reports.subject-report', data))
             }
@@ -197,8 +191,6 @@ function ClassAndSessionSelector({
   academicSession,
   term,
   onSubmit,
-  classifications,
-  academicSessions,
 }: {
   classification?: Classification;
   academicSession?: AcademicSession;
@@ -208,8 +200,6 @@ function ClassAndSessionSelector({
     academicSession: string | number;
     term: string;
   }) => void;
-  classifications: Classification[];
-  academicSessions: AcademicSession[];
 }) {
   const { currentAcademicSession, currentTerm } = useSharedProps();
   const webForm = useWebForm({
@@ -244,7 +234,6 @@ function ClassAndSessionSelector({
         <ClassificationSelect
           selectValue={webForm.data.classification}
           onChange={(e: any) => webForm.setValue('classification', e.value)}
-          classifications={classifications}
           required
         />
       </FormControlBox>
@@ -257,7 +246,6 @@ function ClassAndSessionSelector({
         <AcademicSessionSelect
           selectValue={webForm.data.academicSession}
           onChange={(e: any) => webForm.setValue('academicSession', e.value)}
-          academicSessions={academicSessions}
           required
         />
       </FormControlBox>

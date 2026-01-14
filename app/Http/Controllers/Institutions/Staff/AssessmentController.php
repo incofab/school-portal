@@ -48,8 +48,7 @@ class AssessmentController extends Controller
 
     return Inertia::render('institutions/assessments/create-edit-assessment', [
       'assessments' => $query->with('classifications')->get(),
-      'assessment' => $assessment?->load('classifications'),
-      'classifications' => \App\Models\Classification::all()
+      'assessment' => $assessment?->load('classifications')
     ]);
   }
 

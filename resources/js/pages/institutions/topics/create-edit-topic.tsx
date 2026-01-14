@@ -4,7 +4,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { User, ClassificationGroup, Topic } from '@/types/models';
+import { User, Topic } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -26,7 +26,6 @@ interface Props {
   user?: User;
   topic?: Topic;
   parentTopics: Topic[];
-  classificationGroups: ClassificationGroup[];
 }
 
 const tinymceApiKey = import.meta.env.VITE_TINYMCE_API_KEY;
@@ -35,7 +34,6 @@ export default function CreateOrUpdateTopic({
   user,
   topic,
   parentTopics,
-  classificationGroups,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -152,7 +150,6 @@ export default function CreateOrUpdateTopic({
                 isRequired
               >
                 <ClassificationGroupSelect
-                  classificationGroups={classificationGroups}
                   selectValue={webForm.data.classification_group_id}
                   isMulti={false}
                   isClearable={true}

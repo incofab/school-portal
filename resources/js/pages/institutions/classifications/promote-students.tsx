@@ -44,14 +44,14 @@ const emptyPromotion: Promotion = {
   to: '',
 };
 interface Props {
-  classifications: Classification[];
   classificationGroup: ClassificationGroup;
   sessionResults: SessionResult[];
+  classifications?: Classification[];
 }
 
 export default function PromoteStudents({
-  classifications,
   classificationGroup,
+  classifications,
   sessionResults,
 }: Props) {
   const { handleResponseToast } = useMyToast();
@@ -135,9 +135,9 @@ export default function PromoteStudents({
                       key={`${promotion.destination_classification_id}${index}`}
                     >
                       <PromotionEntry
-                        classifications={classifications}
                         index={index}
                         promotion={promotion}
+                        classifications={classifications}
                         onPromotionUpdated={(p, i) => {
                           const promotions = webForm.data.promotions;
                           promotions[i] = p;
@@ -175,15 +175,15 @@ export default function PromoteStudents({
 }
 
 function PromotionEntry({
-  classifications,
   index,
   promotion,
   onPromotionUpdated,
   onRemove,
+  classifications,
 }: {
   index: number;
-  classifications: Classification[];
   promotion: Promotion;
+  classifications?: Classification[];
   onPromotionUpdated: (promotion: Promotion, index: number) => void;
   onRemove: (index: number) => void;
 }) {

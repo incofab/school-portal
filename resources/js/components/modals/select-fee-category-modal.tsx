@@ -9,11 +9,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import GenericModal from '@/components/generic-modal';
-import {
-  Association,
-  Classification,
-  ClassificationGroup,
-} from '@/types/models';
+import { Association } from '@/types/models';
 import ClassificationGroupSelect from '../selectors/classification-group-select';
 import ClassificationSelect from '../selectors/classification-select';
 import AssociationSelect from '../selectors/association-select';
@@ -49,8 +45,6 @@ interface FeeCategoryMorph {
 interface Props {
   feeCategories: FeeCategoryMorph[];
   associations: Association[];
-  classificationGroups: ClassificationGroup[];
-  classifications: Classification[];
   isOpen: boolean;
   onClose(): void;
   onSuccess(feeCategoriesFormatted: FeeCategoryMorph[]): void;
@@ -62,8 +56,6 @@ export default function SelectFeeCategoryModal({
   onClose,
   feeCategories,
   associations,
-  classificationGroups,
-  classifications,
 }: Props) {
   const { currentInstitution } = useSharedProps();
   const initialFeeableTypeIds = {
@@ -104,7 +96,7 @@ export default function SelectFeeCategoryModal({
   const onSubmit = async () => {
     const feeCategoriesFormatted = [] as FeeCategoryMorph[];
     Object.entries(feeableTypeIds).forEach(([key, value]) => {
-      if (!Boolean(feeableTypeCheck[key])) {
+      if (!Boolean(feeableTypeCheck[key as keyof FeeableTypeSelect])) {
         return;
       }
       value.forEach((item: FeeableTypeIdItem) => {
@@ -209,7 +201,6 @@ export default function SelectFeeCategoryModal({
                   selectValue={feeableTypeIds.class}
                   isMulti={true}
                   isClearable={true}
-                  classifications={classifications}
                   onChange={(e: any) => {
                     setFeeableTypeIds({
                       ...feeableTypeIds,
@@ -229,7 +220,6 @@ export default function SelectFeeCategoryModal({
                   selectValue={feeableTypeIds.classGroup}
                   isMulti={true}
                   isClearable={true}
-                  classificationGroups={classificationGroups}
                   onChange={(e: any) => {
                     setFeeableTypeIds({
                       ...feeableTypeIds,

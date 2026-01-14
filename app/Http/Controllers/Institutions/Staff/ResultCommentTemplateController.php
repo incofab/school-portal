@@ -38,8 +38,7 @@ class ResultCommentTemplateController extends Controller
           ->latest('min')
           ->with('classifications')
           ->get(),
-        'resultCommentTemplate' => $resultCommentTemplate,
-        'classifications' => $institution->classifications()->get()
+        'resultCommentTemplate' => $resultCommentTemplate
       ]
     );
   }

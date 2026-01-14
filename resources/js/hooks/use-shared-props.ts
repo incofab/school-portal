@@ -20,6 +20,7 @@ export interface SharedProps {
   shared__currentInstitutionUser: InstitutionUser;
   shared__currentAcademicSessionId: number;
   shared__currentAcademicSession: AcademicSession;
+  shared__academicSessions: AcademicSession[];
   shared__currentTerm: string;
   shared__isImpersonating: boolean;
   shared__csrfToken: string;
@@ -42,6 +43,7 @@ export default function useSharedProps() {
     currentTerm: props.shared__currentTerm,
     currentAcademicSessionId: props.shared__currentAcademicSessionId,
     currentAcademicSession: props.shared__currentAcademicSession,
+    academicSessions: props.shared__academicSessions,
     ...prepareSettings(currentInstitution?.institution_settings),
   };
 }

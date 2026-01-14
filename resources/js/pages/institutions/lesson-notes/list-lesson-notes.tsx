@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClassificationGroup, LessonNote } from '@/types/models';
+import { LessonNote } from '@/types/models';
 import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
@@ -26,13 +26,9 @@ import ButtonSwitch from '@/components/button-switch';
 
 interface Props {
   lessonNotes: PaginationResponse<LessonNote>;
-  classificationGroups: ClassificationGroup[];
 }
 
-export default function ListLessonNotes({
-  lessonNotes,
-  classificationGroups,
-}: Props) {
+export default function ListLessonNotes({ lessonNotes }: Props) {
   const lessonNoteFilterToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
@@ -175,10 +171,7 @@ export default function ListLessonNotes({
             onFilterButtonClick={lessonNoteFilterToggle.open}
           />
         </SlabBody>
-        <LessonNoteTableFilters
-          {...lessonNoteFilterToggle.props}
-          classificationGroups={classificationGroups}
-        />
+        <LessonNoteTableFilters {...lessonNoteFilterToggle.props} />
       </Slab>
     </DashboardLayout>
   );

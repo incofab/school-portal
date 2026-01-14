@@ -14,7 +14,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { Assessment, Classification } from '@/types/models';
+import { Assessment } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { BrandButton, FormButton } from '@/components/buttons';
@@ -40,13 +40,11 @@ import { MultiValue } from 'react-select';
 interface Props {
   assessments: Assessment[];
   assessment?: Assessment;
-  classifications: Classification[];
 }
 
 export default function CreateUpdateAssessment({
   assessment,
   assessments,
-  classifications,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -156,7 +154,6 @@ export default function CreateUpdateAssessment({
                       onChange={(e: any) =>
                         webForm.setValue('classification_ids', e)
                       }
-                      classifications={classifications}
                     />
                   </FormControlBox>
                 )}

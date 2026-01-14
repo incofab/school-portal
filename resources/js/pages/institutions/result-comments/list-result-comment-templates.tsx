@@ -14,7 +14,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { Classification, ResultCommentTemplate } from '@/types/models';
+import { ResultCommentTemplate } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -41,13 +41,11 @@ import { MultiValue } from 'react-select';
 interface Props {
   resultCommentTemplates: ResultCommentTemplate[];
   resultCommentTemplate?: ResultCommentTemplate;
-  classifications: Classification[];
 }
 
 export default function ListResultCommentTemplates({
   resultCommentTemplates,
   resultCommentTemplate,
-  classifications,
 }: Props) {
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
@@ -128,7 +126,6 @@ export default function ListResultCommentTemplates({
       <Div>
         <CreateUpdateResultCommentTemplates
           resultCommentTemplate={resultCommentTemplate}
-          classifications={classifications}
         />
       </Div>
       <Spacer height={4} />
@@ -152,10 +149,8 @@ export default function ListResultCommentTemplates({
 
 function CreateUpdateResultCommentTemplates({
   resultCommentTemplate,
-  classifications,
 }: {
   resultCommentTemplate?: ResultCommentTemplate;
-  classifications: Classification[];
 }) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -331,7 +326,6 @@ function CreateUpdateResultCommentTemplates({
                   onChange={(e: any) =>
                     webForm.setValue('classification_ids', e)
                   }
-                  classifications={classifications}
                 />
               </FormControlBox>
             )}

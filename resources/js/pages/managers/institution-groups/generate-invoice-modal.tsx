@@ -1,4 +1,4 @@
-import { AcademicSession, Institution, InstitutionGroup } from '@/types/models';
+import { Institution, InstitutionGroup } from '@/types/models';
 import {
   Button,
   FormControl,
@@ -26,7 +26,6 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   institutionGroup: InstitutionGroup & { institutions: Institution[] };
-  academicSessions: AcademicSession[];
 }
 
 type ExtraItem = { title: string; amount: string };
@@ -35,7 +34,6 @@ export default function GenerateInvoiceModal({
   isOpen,
   onClose,
   institutionGroup,
-  academicSessions,
 }: Props) {
   const [selectedSession, setSelectedSession] = useState('');
   const [selectedTerm, setSelectedTerm] = useState('');
@@ -105,7 +103,6 @@ export default function GenerateInvoiceModal({
           <FormControl isRequired>
             <FormLabel>Academic Session</FormLabel>
             <AcademicSessionSelect
-              academicSessions={academicSessions}
               selectValue={selectedSession}
               onChange={(e: any) => setSelectedSession(e.value)}
             />

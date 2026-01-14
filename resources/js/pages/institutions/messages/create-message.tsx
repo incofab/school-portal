@@ -1,5 +1,5 @@
 import React from 'react';
-import { Classification, ClassificationGroup } from '@/types/models';
+import { Classification } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { MessageRecipientType, NotificationChannelsType } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -26,16 +26,10 @@ import { Inertia } from '@inertiajs/inertia';
 import { Div } from '@/components/semantic';
 
 interface Props {
-  classifications: Classification[];
-  classificationGroups: ClassificationGroup[];
   associations: Classification[];
 }
 
-export default function CreateMessage({
-  classifications,
-  classificationGroups,
-  associations,
-}: Props) {
+export default function CreateMessage({ associations }: Props) {
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
   const webForm = useWebForm({
@@ -145,7 +139,6 @@ export default function CreateMessage({
                   isRequired
                 >
                   <ClassificationSelect
-                    classifications={classifications}
                     onChange={(e: any) =>
                       webForm.setValue('messageable_id', e.value)
                     }
@@ -177,7 +170,6 @@ export default function CreateMessage({
                   isRequired
                 >
                   <ClassificationGroupSelect
-                    classificationGroups={classificationGroups}
                     onChange={(e: any) =>
                       webForm.setValue('messageable_id', e.value)
                     }

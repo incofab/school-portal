@@ -7,8 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateFeeRequest;
 use App\Models\AcademicSession;
 use App\Models\Association;
-use App\Models\Classification;
-use App\Models\ClassificationGroup;
 use App\Models\Fee;
 use App\Models\Institution;
 use App\Support\UITableFilters\FeeUITableFilters;
@@ -56,9 +54,7 @@ class FeeController extends Controller
   function create(Institution $institution)
   {
     return inertia('institutions/payments/create-edit-fee', [
-      'associations' => Association::all(),
-      'classificationGroups' => ClassificationGroup::all(),
-      'classifications' => Classification::all()
+      'associations' => Association::all()
     ]);
   }
 
@@ -74,9 +70,7 @@ class FeeController extends Controller
     $fee->load('feeCategories.feeable');
     return inertia('institutions/payments/create-edit-fee', [
       'associations' => Association::all(),
-      'fee' => $fee,
-      'classificationGroups' => ClassificationGroup::all(),
-      'classifications' => Classification::all()
+      'fee' => $fee
     ]);
   }
 

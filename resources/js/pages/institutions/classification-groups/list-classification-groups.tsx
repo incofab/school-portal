@@ -145,7 +145,6 @@ export default function ListClassificationGroup({
         {classGroupModal.state && (
           <SelectClassGroupModal
             {...classGroupModal.props}
-            classificationGroups={classificationgroups.data}
             onSuccess={(classificationgroupId) =>
               Inertia.visit(
                 instRoute('classification-groups.promote-students.create', [
@@ -160,7 +159,6 @@ export default function ListClassificationGroup({
         )}
         <SetResumptionDateModal
           {...setResumptionDateModalToggle.props}
-          classificationGroups={classificationgroups.data}
           onSuccess={() => {}}
         />
       </div>

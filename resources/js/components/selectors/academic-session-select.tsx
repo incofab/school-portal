@@ -1,20 +1,19 @@
 import React from 'react';
 import route from '@/util/route';
-import { AcademicSession } from '@/types/models';
 import { Props } from 'react-select';
 import SingleQuerySelect from '../dropdown-select/single-query-select';
 import { SelectValue } from '@/types/types';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface MyProps {
   selectValue?: SelectValue;
-  academicSessions?: AcademicSession[];
 }
 
 export default function AcademicSessionSelect({
   selectValue,
-  academicSessions,
   ...props
 }: MyProps & Props) {
+  const { academicSessions } = useSharedProps();
   return (
     <SingleQuerySelect
       {...props}
@@ -24,4 +23,4 @@ export default function AcademicSessionSelect({
       label={'title'}
     />
   );
-} 
+}

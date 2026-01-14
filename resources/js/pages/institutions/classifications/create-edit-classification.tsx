@@ -29,12 +29,10 @@ import { Div } from '@/components/semantic';
 
 interface Props {
   classification?: Classification;
-  classificationGroups: ClassificationGroup[];
 }
 
 export default function CreateOrUpdateClassification({
   classification,
-  classificationGroups,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const createClassGroupModal = useModalToggle();
@@ -99,7 +97,6 @@ export default function CreateOrUpdateClassification({
                 <HStack align={'stretch'}>
                   <Div width={'full'}>
                     <ClassificationGroupSelect
-                      classificationGroups={classificationGroups}
                       selectValue={webForm.data.classification_group_id}
                       isMulti={false}
                       isClearable={true}

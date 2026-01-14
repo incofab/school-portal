@@ -2,12 +2,7 @@ import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
 import useModalToggle from '@/hooks/use-modal-toggle';
-import {
-  AcademicSession,
-  Classification,
-  SessionResult,
-  Student,
-} from '@/types/models';
+import { SessionResult, Student } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
 import React from 'react';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -24,16 +19,9 @@ import { HStack } from '@chakra-ui/react';
 interface Props {
   sessionResults: PaginationResponse<SessionResult>;
   student?: Student;
-  classifications: Classification[];
-  academicSessions: AcademicSession[];
 }
 
-export default function ListSessionResults({
-  sessionResults,
-  student,
-  classifications,
-  academicSessions,
-}: Props) {
+export default function ListSessionResults({ sessionResults, student }: Props) {
   const sessionResultFilterToggle = useModalToggle();
   const selectClassSessionResultModal = useModalToggle();
   const selectCourseSessionResultModal = useModalToggle();
@@ -116,13 +104,9 @@ export default function ListSessionResults({
         <SessionResultsTableFilters {...sessionResultFilterToggle.props} />
         <SelectClassSessionResultModal
           {...selectClassSessionResultModal.props}
-          classifications={classifications}
-          academicSessions={academicSessions}
         />
         <SelectCourseSessionResultModal
           {...selectCourseSessionResultModal.props}
-          classifications={classifications}
-          academicSessions={academicSessions}
         />
       </Slab>
     </DashboardLayout>

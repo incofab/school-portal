@@ -2,7 +2,7 @@ import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
 import useModalToggle from '@/hooks/use-modal-toggle';
-import { ClassResultInfo, ClassificationGroup } from '@/types/models';
+import { ClassResultInfo } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
 import {
   Button,
@@ -30,10 +30,8 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
 import {
   ArrowPathIcon,
-  CloudArrowDownIcon,
   EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
-import route from '@/util/route';
 import useSharedProps from '@/hooks/use-shared-props';
 import SetResumptionDateModal from '@/components/modals/set-resumption-date-modal';
 import { Div } from '@/components/semantic';
@@ -42,13 +40,9 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 
 interface Props {
   classResultInfo: PaginationResponse<ClassResultInfo>;
-  classificationgroups: ClassificationGroup[];
 }
 
-export default function ListClassResultInfo({
-  classResultInfo,
-  classificationgroups,
-}: Props) {
+export default function ListClassResultInfo({ classResultInfo }: Props) {
   const webForm = useWebForm({});
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
@@ -283,7 +277,6 @@ export default function ListClassResultInfo({
           <ClassResultInfoTableFilters {...classResultInfoFilterToggle.props} />
           <SetResumptionDateModal
             {...setResumptionDateModalToggle.props}
-            classificationGroups={classificationgroups}
             onSuccess={() => {}}
           />
         </Slab>

@@ -44,8 +44,6 @@ class MessageController extends Controller
   public function create(Institution $institution)
   {
     return inertia('institutions/messages/create-message', [
-      'classifications' => Classification::all(),
-      'classificationGroups' => ClassificationGroup::all(),
       'associations' => Association::all()
     ]);
   }

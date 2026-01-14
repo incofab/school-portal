@@ -24,14 +24,12 @@ import { ClassificationGroup } from '@/types/models';
 
 interface Props {
   isOpen: boolean;
-  classificationGroups: ClassificationGroup[];
   onClose(): void;
   onSuccess(): void;
 }
 
 export default function SetResumptionDateModal({
   isOpen,
-  classificationGroups,
   onSuccess,
   onClose,
 }: Props) {
@@ -126,7 +124,6 @@ export default function SetResumptionDateModal({
                 onChange={(e: any) =>
                   webForm.setValue('classificationGroup', e?.value)
                 }
-                classificationGroups={classificationGroups}
                 required
               />
             </FormControlBox>

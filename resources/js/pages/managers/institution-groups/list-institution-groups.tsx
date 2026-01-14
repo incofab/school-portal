@@ -1,5 +1,5 @@
 import React from 'react';
-import { AcademicSession, Institution, InstitutionGroup } from '@/types/models';
+import { Institution, InstitutionGroup } from '@/types/models';
 import {
   Button,
   HStack,
@@ -42,7 +42,6 @@ interface Props {
     suspended_count: number;
     total: number;
   };
-  academicSessions: AcademicSession[];
 }
 
 function NumberFormatter(number: number) {
@@ -52,7 +51,6 @@ function NumberFormatter(number: number) {
 export default function ListInstitutionGropus({
   institutionGroups,
   stats,
-  academicSessions,
 }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
@@ -234,7 +232,6 @@ export default function ListInstitutionGropus({
         <GenerateInvoiceModal
           {...invoiceModalToggle.props}
           institutionGroup={invoiceModalToggle.state}
-          academicSessions={academicSessions}
         />
       )}
     </ManagerDashboardLayout>

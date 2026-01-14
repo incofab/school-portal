@@ -23,14 +23,11 @@ import FileDropper from '@/components/file-dropper';
 import { FileDropperType } from '@/components/file-dropper/common';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import ClassificationSelect from '@/components/selectors/classification-select';
-import { Classification } from '@/types/models';
 import useSharedProps from '@/hooks/use-shared-props';
 
-interface Props {
-  classifications: Classification[];
-}
+interface Props {}
 
-export default function UploadClassSheet({ classifications }: Props) {
+export default function UploadClassSheet({}: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const { currentAcademicSession } = useSharedProps();
@@ -122,7 +119,6 @@ export default function UploadClassSheet({ classifications }: Props) {
                     selectValue={webForm.data.classification_id}
                     isMulti={false}
                     isClearable={true}
-                    classifications={classifications}
                     onChange={(e: any) =>
                       webForm.setValue('classification_id', e)
                     }

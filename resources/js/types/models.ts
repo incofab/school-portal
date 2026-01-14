@@ -85,6 +85,10 @@ export interface Institution extends Row {
   initials: string;
   institution_settings?: InstitutionSetting[];
   institution_group: InstitutionGroup;
+  classifications?: Classification[];
+  courses?: Course[];
+  classification_groups?: ClassificationGroup[];
+  class_divisions?: ClassDivision[];
 }
 
 export interface Funding extends Row {

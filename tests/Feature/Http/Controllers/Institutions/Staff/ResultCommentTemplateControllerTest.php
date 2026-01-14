@@ -34,7 +34,6 @@ it('lists result comment templates', function () {
           'institutions/result-comments/list-result-comment-templates'
         )
         ->has('resultCommentTemplates', $existing + 3)
-        ->has('classifications')
     );
 });
 

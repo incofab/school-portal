@@ -4,6 +4,7 @@ import { Props } from 'react-select';
 import SingleQuerySelect from '../dropdown-select/single-query-select';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { SelectValue } from '@/types/types';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface MyProps {
   selectValue?: SelectValue;
@@ -13,11 +14,12 @@ interface MyProps {
 
 export default function ClassificationSelect({
   selectValue,
-  classifications,
   classGroupId,
+  classifications,
   ...props
 }: MyProps & Props) {
   const { instRoute } = useInstitutionRoute();
+  const { currentInstitution } = useSharedProps();
   function dataFilter(data: Classification[]) {
     // return data; // Todo: Need to find a way to re-render when class group changes
     return classGroupId
@@ -27,11 +29,12 @@ export default function ClassificationSelect({
         )
       : data;
   }
+  const classes = classifications ?? currentInstitution.classifications!;
   return (
     <SingleQuerySelect
       {...props}
       selectValue={selectValue}
-      dataList={classifications ? dataFilter(classifications) : undefined}
+      dataList={dataFilter(classes)}
       dataFilter={dataFilter}
       searchUrl={instRoute('classifications.search')}
       label={'title'}

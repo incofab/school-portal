@@ -12,12 +12,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import {
-  Association,
-  Classification,
-  ClassificationGroup,
-  Fee,
-} from '@/types/models';
+import { Association, Fee } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { BrandButton, FormButton } from '@/components/buttons';
@@ -47,16 +42,9 @@ interface FeeCategoryMorph {
 interface Props {
   fee?: Fee;
   associations: Association[];
-  classificationGroups: ClassificationGroup[];
-  classifications: Classification[];
 }
 
-export default function CreateOrUpdateFee({
-  fee,
-  associations,
-  classificationGroups,
-  classifications,
-}: Props) {
+export default function CreateOrUpdateFee({ fee, associations }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const selectFeeCategoryModalToggle = useModalToggle();
@@ -201,8 +189,6 @@ export default function CreateOrUpdateFee({
       </CenteredBox>
       <SelectFeeCategoryModal
         associations={associations}
-        classificationGroups={classificationGroups}
-        classifications={classifications}
         feeCategories={webForm.data.fee_categories as FeeCategoryMorph[]}
         {...selectFeeCategoryModalToggle.props}
         onSuccess={(result) => {

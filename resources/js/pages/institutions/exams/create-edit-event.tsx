@@ -16,7 +16,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { dateTimeFormat, preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { ClassificationGroup, Course, Event } from '@/types/models';
+import { Course, Event } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { BrandButton, FormButton } from '@/components/buttons';
@@ -35,14 +35,9 @@ import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 interface Props {
   event?: Event;
   courses: Course[];
-  classificationGroups: ClassificationGroup[];
 }
 
-export default function CreateOrUpdateEvent({
-  event,
-  courses,
-  classificationGroups,
-}: Props) {
+export default function CreateOrUpdateEvent({ event, courses }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const [eventCourseableData, setEventCourseableData] = useState<
@@ -185,7 +180,6 @@ export default function CreateOrUpdateEvent({
                     selectValue={webForm.data.classification_group_id}
                     isMulti={false}
                     isClearable={true}
-                    classificationGroups={classificationGroups}
                     onChange={(e: any) =>
                       webForm.setData({
                         ...webForm.data,

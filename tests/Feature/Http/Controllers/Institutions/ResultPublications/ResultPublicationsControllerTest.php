@@ -66,11 +66,9 @@ it(
     );
 
     $response->assertInertia(
-      fn($page) => $page
-        ->component(
-          'institutions/result-publications/create-result-publication'
-        )
-        ->has('classifications', 3)
+      fn($page) => $page->component(
+        'institutions/result-publications/create-result-publication'
+      )
     );
   }
 );

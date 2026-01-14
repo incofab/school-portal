@@ -155,9 +155,7 @@ class CourseResultsController extends Controller
 
   public function uploadClassSheetView(Institution $institution)
   {
-    return Inertia::render('institutions/courses/upload-class-sheet', [
-      'classifications' => $institution->classifications()->get()
-    ]);
+    return Inertia::render('institutions/courses/upload-class-sheet');
   }
 
   public function uploadClassSheetStore(

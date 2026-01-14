@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Models\Classification;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
-use App\Models\Course;
 use App\Models\InstitutionUser;
 use App\Models\SchoolActivity;
 use App\Models\TimetableCoordinator;
@@ -70,8 +69,6 @@ class TimetableController extends Controller
     return inertia('institutions/timetables/list-timetables')->with([
       'timetables' => $getTimetables,
       'classification' => $classification,
-      'classifications' => Classification::all(),
-      'courses' => Course::all(),
       'schoolActivities' => SchoolActivity::all()
     ]);
   }

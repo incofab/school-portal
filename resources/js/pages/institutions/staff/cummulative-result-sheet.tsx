@@ -7,6 +7,7 @@ import {
   TermResult,
 } from '@/types/models';
 import {
+  Avatar,
   FormControl,
   HStack,
   Text,
@@ -21,16 +22,16 @@ import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
 import { SelectOptionType, TermType } from '@/types/types';
 import ResultUtil from '@/util/result-util';
-import { PageTitle } from '@/components/page-header';
 import FormControlBox from '@/components/forms/form-control-box';
 import useWebForm from '@/hooks/use-web-form';
 import ClassificationSelect from '@/components/selectors/classification-select';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
-import { preventNativeSubmit, roundNumber } from '@/util/util';
+import { preventNativeSubmit, roundNumber, ucFirst } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
 import { FormButton } from '@/components/buttons';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import useDownloadHtml from '@/util/download-html';
+import ImagePaths from '@/util/images';
 
 interface HasTermDataProp {
   hasFirstTermRecords: boolean;
@@ -165,13 +166,50 @@ export default function CummulativeResultSheet({
       resultData.hasTermData.hasThirdTermRecords
     );
   }
+  const canShow = Boolean(classification) && Boolean(academicSession);
 
   return (
     <Div style={backgroundStyle} minHeight={'1170px'}>
       <Div mx={'auto'} px={3} py={2}>
         <VStack align={'stretch'}>
-          <PageTitle textAlign={'center'}>{currentInstitution.name}</PageTitle>
-          <Text textAlign={'center'}>Cummulative result sheet</Text>
+          <Div className="result-sheet-header">
+            <HStack background={'#FAFAFA'} p={2}>
+              <Avatar
+                size={'2xl'}
+                name="Institution logo"
+                src={currentInstitution.photo ?? ImagePaths.default_school_logo}
+              />
+              <VStack spacing={1} align={'stretch'} width={'full'}>
+                <Text fontSize={'2xl'} fontWeight={'bold'} textAlign={'center'}>
+                  {currentInstitution.name}
+                </Text>
+                <Text
+                  textAlign={'center'}
+                  fontSize={'18px'}
+                  whiteSpace={'nowrap'}
+                >
+                  {currentInstitution.address}
+                  <br /> {currentInstitution.email}
+                </Text>
+                <Text
+                  fontWeight={'semibold'}
+                  textAlign={'center'}
+                  fontSize={'18px'}
+                >
+                  {canShow ? (
+                    <>
+                      {`${classification!.title} - ${academicSession!.title} `}
+                      {term ? `- ${ucFirst(term)} Term ` : ''}
+                    </>
+                  ) : (
+                    ''
+                  )}
+                  Cummulative Result
+                </Text>
+              </VStack>
+            </HStack>
+          </Div>
+
           <ClassAndSessionSelector
             academicSession={academicSession}
             classification={classification}
@@ -279,6 +317,8 @@ function ClassAndSessionSelector({
       as={'form'}
       spacing={2}
       onSubmit={preventNativeSubmit(submit)}
+      justify={'center'}
+      className="hidden-on-print"
     >
       <WrapItem minW={minWidth}>
         <FormControlBox

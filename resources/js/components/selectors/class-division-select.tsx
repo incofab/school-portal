@@ -4,6 +4,7 @@ import { MultiValue, Props } from 'react-select';
 import SingleQuerySelect from '../dropdown-select/single-query-select';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { SelectOptionType } from '@/types/types';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface MyProps {
   selectValue?:
@@ -21,11 +22,12 @@ export default function ClassDivisionSelect({
   ...props
 }: MyProps & Props) {
   const { instRoute } = useInstitutionRoute();
+  const { currentInstitution } = useSharedProps();
   return (
     <SingleQuerySelect
       {...props}
       selectValue={selectValue}
-      dataList={classDivisions}
+      dataList={classDivisions ?? currentInstitution.class_divisions}
       searchUrl={instRoute('class-divisions.search')}
       label={'title'}
     />

@@ -18,7 +18,6 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { ClassificationGroup } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { FormButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
@@ -27,13 +26,10 @@ import FormControlBox from '@/components/forms/form-control-box';
 import StaffSelect from '@/components/selectors/staff-select';
 import { InstitutionUserType } from '@/types/types';
 import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
-import useModalToggle from '@/hooks/use-modal-toggle';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { Div } from '@/components/semantic';
 
-interface Props {
-  classificationGroups: ClassificationGroup[];
-}
+interface Props {}
 
 const newClassification = () => ({
   title: '',
@@ -42,9 +38,7 @@ const newClassification = () => ({
   classification_group_id: '',
 });
 
-export default function CreateMultiClassifications({
-  classificationGroups,
-}: Props) {
+export default function CreateMultiClassifications({}: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
 
@@ -130,7 +124,6 @@ export default function CreateMultiClassifications({
                         formKey={`classifications.${index}.classification_group_id`}
                       >
                         <ClassificationGroupSelect
-                          classificationGroups={classificationGroups}
                           selectValue={classification.classification_group_id}
                           isMulti={false}
                           isClearable={true}

@@ -47,9 +47,7 @@ class SessionResultController extends Controller
 
     return inertia('institutions/list-session-results', [
       'sessionResults' => paginateFromRequest($query),
-      'student' => $student,
-      'classifications' => Classification::all(),
-      'academicSessions' => AcademicSession::all()
+      'student' => $student
     ]);
   }
 
@@ -66,9 +64,7 @@ class SessionResultController extends Controller
 
     return inertia('institutions/list-session-results', [
       'sessionResults' => paginateFromRequest($query),
-      'student' => $student->load('user'),
-      'classifications' => Classification::all(),
-      'academicSessions' => AcademicSession::all()
+      'student' => $student->load('user')
     ]);
   }
 
