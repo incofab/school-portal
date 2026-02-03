@@ -32,6 +32,18 @@ Route::get('/school/{instUuid}', function ($instUuid) {
       dd('Done');
 });
 
+Route::get('deduct-credit', function () {
+    $institution = \App\Models\Institution::where('uuid', '')->firstOrFail();
+    $user = \App\Models\User::first();
+    \App\Support\Fundings\RecordFunding::make($institution->institutionGroup, $user)->recordCreditDeduction(
+        20000,
+        'wallet-deduction123',
+        null,
+        'Over credit was recorded on the account during funding. This is to rectify the issue.'
+    );
+    die('Dummy page');
+});
+
 Route::get('/activate-result/{instUuid}', function ($instUuid) {
     $inst = \App\Models\Institution::where('uuid', $instUuid)->firstOrFail();
     $termResults = \App\Models\TermResult::query()

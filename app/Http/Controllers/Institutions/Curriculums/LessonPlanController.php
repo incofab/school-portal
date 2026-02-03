@@ -118,14 +118,18 @@ class LessonPlanController extends Controller
     return $this->ok();
   }
 
-  /* .. NO MORE IN USE ..
-    function show(Institution $institution, LessonPlan $lessonPlan)
-    {
-        return Inertia::render('institutions/lesson-plans/show-lesson-plan', [
-            'lessonPlan' => $lessonPlan->load('schemeOfWork.topic.course'),
-        ]);
-    }
-    */
+  function show(Institution $institution, LessonPlan $lessonPlan)
+  {
+    $lessonPlan->loadCount(
+      'schemeOfWork.topic.course',
+      'schemeOfWork.topic.classification',
+      'schemeOfWork.topic.parentTopic',
+      'courseTeacher'
+    );
+    return Inertia::render('institutions/lesson-plans/show-lesson-plan', [
+      'lessonPlan' => $lessonPlan
+    ]);
+  }
 
   function destroy(Institution $institution, LessonPlan $lessonPlan)
   {

@@ -289,6 +289,7 @@ export interface Classification extends InstitutionRow {
   form_teacher?: User;
   classification_group_id: number;
   classification_group?: ClassificationGroup;
+  students_count: number;
 }
 
 export interface ClassificationGroup extends InstitutionRow {
@@ -824,8 +825,10 @@ export interface Topic extends InstitutionRow {
   classification_group_id: number;
   parent_topic_id?: number;
 
+  classification?: Classification;
   course?: Course;
   classification_group?: ClassificationGroup;
+  parent_topic?: Topic;
 
   scheme_of_works?: SchemeOfWork[];
 }

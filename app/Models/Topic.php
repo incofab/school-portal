@@ -19,7 +19,8 @@ class Topic extends Model
     'institution_group_id' => 'integer',
     'institution_id' => 'integer',
     'classification_group_id' => 'integer',
-    'course_id' => 'integer'
+    'course_id' => 'integer',
+    'parent_topic_id' => 'integer'
   ];
 
   static function ruleCreate(?Topic $topic = null)
@@ -91,5 +92,10 @@ class Topic extends Model
   public function schemeOfWorks()
   {
     return $this->hasMany(SchemeOfWork::class);
+  }
+
+  public function parentTopic()
+  {
+    return $this->belongsTo(Topic::class, 'parent_topic_id');
   }
 }

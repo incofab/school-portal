@@ -4,7 +4,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import { CollapsibleSlab, SlabBody } from '@/components/slab';
 import DOMPurify from 'dompurify';
 import { Div } from '@/components/semantic';
-import { Button, Heading, Stack } from '@chakra-ui/react';
+import { Button, Heading, IconButton, Stack } from '@chakra-ui/react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { LinkButton } from '@/components/buttons';
 import useIsAdmin from '@/hooks/use-is-admin';
@@ -15,6 +15,7 @@ import { NoteStatusType } from '@/types/types';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
+import { EyeIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   topic: Topic;
@@ -175,15 +176,24 @@ function LessonPlanDisplay({
         collapsed={true}
         title={'Lesson Plan ' + (index + 1)}
         rightElement={
-          (isAdmin || isTeacher) &&
-          // (isTeacher && assignedCourseIds?.includes(lessonPlan.course_teacher_id))) &&
-          !lessonPlan.lesson_note && (
-            <LinkButton
-              href={instRoute('lesson-notes.create', [lessonPlan.id])}
-              title={'Create Lesson Note'}
-              variant={'outline'}
+          <>
+            {(isAdmin || isTeacher) &&
+              assignedCourseIds?.includes(lessonPlan.course_teacher_id) &&
+              !lessonPlan.lesson_note && (
+                <LinkButton
+                  href={instRoute('lesson-notes.create', [lessonPlan.id])}
+                  title={'Create Lesson Note'}
+                  variant={'outline'}
+                />
+              )}
+            <IconButton
+              icon={<EyeIcon />}
+              aria-label="View Lesson Note"
+              onClick={() =>
+                Inertia.visit(instRoute('lesson-notes.show', [lessonPlan.id]))
+              }
             />
-          )
+          </>
         }
         addNewRoute={instRoute('lesson-plans.create', [schemeOfWork?.id])}
         {...((isAdmin || isTeacher) && {
@@ -196,7 +206,7 @@ function LessonPlanDisplay({
           {lessonPlan && (
             <>
               <Heading size={'sm'} fontWeight={'bold'} paddingBottom="10px">
-                OBJECTIVE ::
+                LEARNING OBJECTIVES ::
               </Heading>
               <Div
                 style={{ marginBottom: '30px' }}

@@ -29,7 +29,8 @@ class ResultPublicationsController extends Controller
   function create(Institution $institution)
   {
     return inertia(
-      'institutions/result-publications/create-result-publication'
+      'institutions/result-publications/create-result-publication',
+      ['classifications' => Classification::all()]
     );
   }
 

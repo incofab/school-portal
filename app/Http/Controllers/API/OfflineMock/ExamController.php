@@ -28,12 +28,13 @@ class ExamController extends Controller
       'exams.*.event_id' => ['required', 'integer'],
       'exams.*.exam_no' => ['required', 'string'],
       'exams.*.attempts' => ['nullable', 'array'],
-      'exams.*.time_remaining' => ['nullable', 'string'],
+      'exams.*.time_remaining' => ['nullable', 'numeric'],
       'exams.*.start_time' => ['nullable', 'string'],
       'exams.*.pause_time' => ['nullable', 'string'],
       'exams.*.end_time' => ['nullable', 'string'],
       'exams.*.status' => ['nullable', 'string'],
       'exams.*.num_of_questions' => ['nullable', 'integer'],
+      'exams.*.student_id' => ['nullable'],
 
       'exams.*.exam_courses' => ['required', 'array', 'min:1'],
       'exams.*.exam_courses.*.course_session_id' => ['required', 'integer'],
@@ -52,9 +53,10 @@ class ExamController extends Controller
         $fail[] = $this->uploadStatus($exam['exam_no'], 'No attempts found');
         continue;
       }
-      $code = explode('-', $exam['exam_no'])[1] ?? null;
+      $code =
+        explode('-', $exam['exam_no'])[1] ?? ($exam['student_id'] ?? null);
       $student = Student::query()
-        ->where('code', $code)
+        ->where('code', (string) $code)
         ->first();
       if (!$student) {
         $fail[] = $this->uploadStatus($exam['exam_no'], 'Student not found');
@@ -66,7 +68,7 @@ class ExamController extends Controller
           'event_id' => $exam['event_id'],
           'exam_no' => $exam['exam_no'],
           'examable_id' => $student->id,
-          'examable_type' => $student?->getMorphClass()
+          'examable_type' => $student->getMorphClass()
         ],
         collect($exam)
           ->only(
