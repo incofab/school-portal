@@ -2,6 +2,8 @@ import React from 'react';
 import useSharedProps from '@/hooks/use-shared-props';
 import SideBarToggleButton from './sidebar-toggle-button';
 import {
+  Badge,
+  Box,
   HStack,
   Icon,
   Spacer,
@@ -25,10 +27,16 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 import route from '@/util/route';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
+import useInstitutionRoute from '@/hooks/use-institution-route';
 
 export default function DashboardHeader() {
-  const { currentUser } = useSharedProps();
+  const { currentUser, currentInstitution, unreadNotificationCount } =
+    useSharedProps();
   const { colorMode, toggleColorMode } = useColorMode();
+  const { instRoute } = useInstitutionRoute();
+  const notificationsRoute = currentInstitution
+    ? instRoute('notifications.index')
+    : route('managers.notifications.index');
   return (
     <HStack
       background={useColorModeValue('white', 'gray.700')}
@@ -56,11 +64,27 @@ export default function DashboardHeader() {
         variant={'ghost'}
         onClick={toggleColorMode}
       />
-      <IconButton
-        aria-label={'notifications'}
-        icon={<Icon as={BellIcon} />}
-        variant={'ghost'}
-      />
+      <Box position="relative">
+        <IconButton
+          aria-label={'notifications'}
+          icon={<Icon as={BellIcon} />}
+          variant={'ghost'}
+          as={InertiaLink}
+          href={notificationsRoute}
+        />
+        {unreadNotificationCount > 0 && (
+          <Badge
+            position="absolute"
+            top="2px"
+            right="2px"
+            fontSize="0.6rem"
+            borderRadius="full"
+            colorScheme="red"
+          >
+            {unreadNotificationCount}
+          </Badge>
+        )}
+      </Box>
       <Menu>
         <MenuButton
           as={Button}

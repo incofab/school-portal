@@ -49,6 +49,35 @@ export interface User extends Row {
   student?: Student;
 }
 
+export interface InternalNotification extends Row {
+  title: string;
+  body?: string;
+  action_url?: string;
+  type?: string;
+  data?: { [key: string]: any };
+  sender?: User | InstitutionUser | Partner;
+  sender_name?: string;
+  reads_count?: number;
+  targets_count?: number;
+}
+export interface InternalNotificationRead extends Row {
+  internal_notification_id: number;
+  reader_id: number;
+  reader_type: string;
+  reader: User | InstitutionUser | Partner;
+  reader_name?: string;
+  read_at: string;
+}
+
+export interface NotificationRecipient {
+  reader_type: string;
+  reader_id: number;
+  name: string;
+  recipient_type: string;
+  is_read: boolean;
+  read_at?: string;
+}
+
 export interface TokenUser extends Row {
   name: string;
   reference: string;

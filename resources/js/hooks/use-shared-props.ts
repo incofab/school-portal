@@ -18,6 +18,7 @@ export interface SharedProps {
   shared__currentUser: User;
   shared__currentInstitution: Institution;
   shared__currentInstitutionUser: InstitutionUser;
+  shared__unreadNotificationCount: number;
   shared__currentAcademicSessionId: number;
   shared__currentAcademicSession: AcademicSession;
   shared__academicSessions: AcademicSession[];
@@ -40,6 +41,7 @@ export default function useSharedProps() {
     message: props.shared__message as Message,
     currentInstitution: currentInstitution,
     currentInstitutionUser: props.shared__currentInstitutionUser,
+    unreadNotificationCount: props.shared__unreadNotificationCount,
     currentTerm: props.shared__currentTerm,
     currentAcademicSessionId: props.shared__currentAcademicSessionId,
     currentAcademicSession: props.shared__currentAcademicSession,

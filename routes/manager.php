@@ -9,6 +9,18 @@ Route::get('/dummy', function () {
 
 Route::get('/', [Web\ManagerController::class, 'dashboard'])
     ->name('dashboard');
+Route::get('/notifications', [Web\Notifications\NotificationController::class, 'index'])
+    ->name('notifications.index');
+Route::get('/notifications/create', [Web\Notifications\NotificationController::class, 'create'])
+    ->name('notifications.create');
+Route::get('/notifications/sent', [Web\Notifications\NotificationController::class, 'sentIndex'])
+    ->name('notifications.sent.index');
+Route::get('/notifications/sent/{internalNotification}', [Web\Notifications\NotificationController::class, 'sentShow'])
+    ->name('notifications.sent.show');
+Route::post('/notifications', [Web\Notifications\NotificationController::class, 'store'])
+    ->name('notifications.store');
+Route::delete('/notifications/sent/{internalNotification}', [Web\Notifications\NotificationController::class, 'sentDestroy'])
+    ->name('notifications.sent.destroy');
 
 Route::get('institutions/create/{institutionGroup?}', [Web\Institutions\InstitutionRegistrationController::class, 'create'])
     ->name('institutions.create');

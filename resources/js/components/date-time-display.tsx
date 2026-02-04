@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, TextProps } from '@chakra-ui/react';
 import { format } from 'date-fns';
-import { dateFormat } from '@/util/util';
+import { dateTimeFormat } from '@/util/util';
 
 export default function DateTimeDisplay({
   dateTime,
@@ -10,7 +10,7 @@ export default function DateTimeDisplay({
 }: { dateTime: string; dateTimeformat?: string } & TextProps) {
   return dateTime ? (
     <Text {...props}>
-      {format(new Date(dateTime), dateTimeformat ?? dateFormat)}
+      {format(new Date(dateTime), dateTimeformat ?? dateTimeFormat)}
     </Text>
   ) : (
     <></>

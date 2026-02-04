@@ -79,6 +79,11 @@ export default function ManagerSideBarLayout() {
       route: route('managers.institutions.index'),
     },
     {
+      label: 'Sent Notifications',
+      roles: [ManagerRole.Partner, ManagerRole.Admin],
+      route: route('managers.notifications.sent.index'),
+    },
+    {
       label: 'Registration Requests',
       roles: [ManagerRole.Partner, ManagerRole.Admin],
       route: route('managers.registration-requests.index'),

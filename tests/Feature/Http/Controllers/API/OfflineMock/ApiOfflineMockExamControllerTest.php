@@ -32,7 +32,7 @@ it('successfully uploads new exam results for existing students', function () {
     'event_id' => $this->event->id,
     'exam_no' => "{$this->event->id}-{$this->student->code}",
     'attempts' => [['question_id' => 1, 'answer' => 'A']],
-    'time_remaining' => '00:10:00',
+    'time_remaining' => '600',
     'start_time' => now()->toDateTimeString(),
     'end_time' => now()
       ->addHour()

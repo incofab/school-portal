@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use App\Models\AcademicSession;
+use App\Models\InternalNotification;
+use App\Support\Notifications\NotificationViewer;
 use App\Support\SettingsHandler;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -54,6 +56,10 @@ class HandleInertiaRequests extends Middleware
       'shared__currentUser' => currentUser()?->load('roles'),
       'shared__currentInstitution' => fn() => $institution,
       'shared__currentInstitutionUser' => fn() => currentInstitutionUser(),
+      'shared__unreadNotificationCount' => function () {
+        $viewer = NotificationViewer::fromRequest();
+        return $viewer ? InternalNotification::unreadCountForViewer($viewer) : 0;
+      },
       'shared__currentTerm' => $settingHandler->getCurrentTerm(),
       'shared__currentAcademicSessionId' => $academicSessionId,
       'shared__currentAcademicSession' => $academicSessions->find(

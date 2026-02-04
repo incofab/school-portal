@@ -479,6 +479,11 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin],
         },
         {
+          label: 'Sent Notifications',
+          route: instRoute('notifications.sent.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
           label: 'SMS/Email Messages',
           route: instRoute('messages.index'),
           roles: [InstitutionUserType.Admin],
