@@ -11,7 +11,10 @@ class ImpersonateUserController extends Controller
   {
     abort_unless(currentUser()->isAdmin(), 403);
 
-    session(['impersonator_id' => currentUser()->id]);
+    session([
+      'impersonator_id' => currentUser()->id,
+      'impersonator_type' => 'manager'
+    ]);
 
     auth()->login($user);
 

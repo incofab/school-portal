@@ -12,9 +12,21 @@ class StopImpersonatingUserController extends Controller
   {
     abort_unless(session()->has('impersonator_id'), 403);
 
-    auth()->login(User::find(session('impersonator_id')));
+    $impersonatorId = session('impersonator_id');
+    $impersonatorType = session('impersonator_type');
+    $impersonatorInstitutionId = session('impersonator_institution_id');
 
-    session(['impersonator_id' => null]);
+    auth()->login(User::find($impersonatorId));
+
+    session([
+      'impersonator_id' => null,
+      'impersonator_type' => null,
+      'impersonator_institution_id' => null
+    ]);
+
+    if ($impersonatorType === 'guardian' && $impersonatorInstitutionId) {
+      return redirect(route('institutions.dashboard', $impersonatorInstitutionId));
+    }
 
     return redirect(route('managers.institutions.index'));
   }

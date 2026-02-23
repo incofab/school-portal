@@ -150,6 +150,8 @@ Route::post('/guardians/{guardianUser}/assign-student', [Web\Staff\GuardianManag
     ->name('guardians.assign-student');
 Route::get('/guardians/list-dependents', Web\Guardians\ListDependentsController::class)
   ->name('guardians.list-dependents');
+Route::get('/guardians/impersonate/{student}', Web\Guardians\ImpersonateStudentController::class)
+  ->name('guardians.impersonate');
 Route::delete('/guardians/remove-dependent/{student}', Web\Guardians\RemoveDependentController::class)
   ->name('guardians.remove-dependent');
 

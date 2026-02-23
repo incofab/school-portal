@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\AcademicSession;
 use App\Models\InternalNotification;
+use App\Models\User;
 use App\Support\Notifications\NotificationViewer;
 use App\Support\SettingsHandler;
 use Illuminate\Http\Request;
@@ -53,6 +54,29 @@ class HandleInertiaRequests extends Middleware
 
     return array_merge(parent::share($request), [
       'shared__isImpersonating' => session()->has('impersonator_id'),
+      'shared__impersonation' => function () {
+        if (!session()->has('impersonator_id')) {
+          return null;
+        }
+
+        $impersonator = User::find(session('impersonator_id'));
+        $type = session('impersonator_type');
+
+        if (!$type && $impersonator) {
+          if ($impersonator->isInstitutionGuardian()) {
+            $type = 'guardian';
+          } elseif ($impersonator->isManager()) {
+            $type = 'manager';
+          } else {
+            $type = 'user';
+          }
+        }
+
+        return [
+          'type' => $type,
+          'impersonator' => $impersonator
+        ];
+      },
       'shared__currentUser' => currentUser()?->load('roles'),
       'shared__currentInstitution' => fn() => $institution,
       'shared__currentInstitutionUser' => fn() => currentInstitutionUser(),

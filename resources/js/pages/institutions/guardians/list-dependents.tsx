@@ -191,6 +191,11 @@ function StudentCard({
           href={instRoute('term-results.index', [dependant.user_id])}
         />
         <LinkButton
+          title="Goto Dashboard"
+          href={instRoute('guardians.impersonate', [dependant.student_id])}
+          colorScheme={'orange'}
+        />
+        <LinkButton
           title="Fees & Receipts"
           href={instRoute('students.receipts.index', [dependant.student_id])}
         />

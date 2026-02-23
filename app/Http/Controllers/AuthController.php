@@ -105,7 +105,7 @@ class AuthController extends Controller
     $institutionUsers = $currentUser->institutionUsers()->get();
 
     \Auth::logout();
-    session()->remove('impersonator_id');
+    session()->remove(['impersonator_id', 'impersonator_type', 'impersonator_institution_id']);
 
     if (!$isImpersonating && $institutionUsers->first()?->isStudent()) {
       return redirect()->route('student-login');

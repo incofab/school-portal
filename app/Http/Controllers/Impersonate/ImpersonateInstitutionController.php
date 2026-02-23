@@ -26,7 +26,10 @@ class ImpersonateInstitutionController extends Controller
 
     abort_unless($loginUser, 403, 'Admin user not found');
 
-    session(['impersonator_id' => $user->id]);
+    session([
+      'impersonator_id' => $user->id,
+      'impersonator_type' => 'manager'
+    ]);
     auth()->login($loginUser);
 
     return redirect(route('user.dashboard'));

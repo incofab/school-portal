@@ -127,7 +127,34 @@ class CoursesController extends Controller
       );
     }
 
-    $question = "You are a class teacher $className in a Nigerian Basic Education School. Analyze the following Lesson Notes and generate 20 objective questions aimed at helping the student prepare for upcoming class assessment test. Each question should have 4 options (option_a, option_b, option_c, option_d) where only one option is the correct answer. Return the response as an JSON Object, where each object's-item contains the following keys: 'question', 'option_a', 'option_b', 'option_c', 'option_d', 'answer'. The value of the 'answer' should indicate the correct option (a,b,c,d - NOT 'option_a', 'option_b', 'option_c', 'option_d'). Do not include comments, side comments, stylings, meta tags, etc. Here are the lesson Notes :: $lessonNotes";
+    $question = "You are a class teacher $className in a Nigerian Basic Education School. 
+    Analyze the following Lesson Notes and generate 20 objective questions aimed at helping the student prepare for 
+    upcoming class assessment test. Each question should have 4 options (option_a, option_b, option_c, option_d) 
+    where only one option is the correct answer. 
+    Return the response as valid JSON array of objects, where each object contains the following keys: 'question', 'option_a', 'option_b', 'option_c', 'option_d', 'answer'. 
+    The value of the 'answer' should indicate the correct option (a,b,c,d - NOT 'option_a', 'option_b', 'option_c', 'option_d'). 
+    Do not include comments, side comments, stylings, meta tags, etc. 
+    The response should look like this: 
+    [
+      {
+        'question' => 'What is the capital of France?',
+        'option_b' => 'Paris',
+        'option_a' => 'London',
+        'option_c' => 'Berlin',
+        'option_d' => 'Madrid',
+        'answer' => 'B'
+      },
+      {
+        'question' => 'What is the currency of Japan?',
+        'option_a' => 'Yen',
+        'option_b' => 'Dollar',
+        'option_c' => 'Euro',
+        'option_d' => 'Pound',
+        'answer' => 'A'
+      }
+      ...
+    ]
+    Here are the lesson Notes :: $lessonNotes";
 
     $aiRes = initPrism()
       ->withPrompt($question)

@@ -24,6 +24,10 @@ export interface SharedProps {
   shared__academicSessions: AcademicSession[];
   shared__currentTerm: string;
   shared__isImpersonating: boolean;
+  shared__impersonation?: {
+    type?: 'guardian' | 'manager' | 'user' | string;
+    impersonator?: User;
+  } | null;
   shared__csrfToken: string;
   shared__message: Message;
 }
@@ -37,6 +41,7 @@ export default function useSharedProps() {
   return {
     currentUser: props.shared__currentUser as User,
     isImpersonating: props.shared__isImpersonating as boolean,
+    impersonation: props.shared__impersonation ?? null,
     csrfToken: props.shared__csrfToken as string,
     message: props.shared__message as Message,
     currentInstitution: currentInstitution,

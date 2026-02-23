@@ -68,6 +68,7 @@ export default function CreateUpdateAssessment({
       const requestData = {
         ...data,
         classification_ids: data.classification_ids?.map((c) => c.value),
+        term: data.term === 'all' ? '' : data.term,
       };
       return assessment
         ? web.put(instRoute('assessments.update', [assessment]), requestData)
@@ -103,12 +104,7 @@ export default function CreateUpdateAssessment({
                     selectValue={webForm.data.term ?? 'all'}
                     isMulti={false}
                     isClearable={true}
-                    onChange={(e: any) =>
-                      webForm.setValue(
-                        'term',
-                        e.value === 'all' ? '' : e?.value
-                      )
-                    }
+                    onChange={(e: any) => webForm.setValue('term', e.value)}
                   />
                 </FormControlBox>
                 <InputForm

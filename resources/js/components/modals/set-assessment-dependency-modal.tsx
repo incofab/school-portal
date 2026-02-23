@@ -30,7 +30,10 @@ export default function SetAssessmentDependencyModal({
 
   const onSubmit = async () => {
     const res = await webForm.submit((data, web) =>
-      web.post(instRoute('assessments.set-dependency', [assessment]), data)
+      web.post(instRoute('assessments.set-dependency', [assessment]), {
+        ...data,
+        depends_on: data.depends_on === 'none' ? null : data.depends_on,
+      })
     );
 
     if (!handleResponseToast(res)) return;
@@ -60,6 +63,7 @@ export default function SetAssessmentDependencyModal({
             <EnumSelect
               enumData={FullTermType}
               selectValue={webForm.data.depends_on}
+              additionalEnumData={{ none: 'none' }}
               isMulti={false}
               isClearable={true}
               onChange={(e: any) => webForm.setValue('depends_on', e?.value)}
