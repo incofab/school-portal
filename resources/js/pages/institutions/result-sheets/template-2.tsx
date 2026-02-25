@@ -265,6 +265,13 @@ export default function Template2(props: ResultProps) {
                       : termResult.position
                   }
                 />
+                {!showGrade && (
+                  <LabelText
+                    labelProps={{ fontWeight: 'semibold' }}
+                    label="Stream Position"
+                    text={termResult.class_group_position}
+                  />
+                )}
                 <LabelText
                   labelProps={{ fontWeight: 'semibold' }}
                   textProps={{ fontWeight: 'bold', textTransform: 'uppercase' }}

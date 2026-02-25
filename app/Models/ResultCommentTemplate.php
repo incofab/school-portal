@@ -30,7 +30,7 @@ class ResultCommentTemplate extends Model
   ) {
     $resultComments = ResultCommentTemplate::query()
       ->when(
-        is_null($forMidTerm),
+        !is_null($forMidTerm),
         fn($qq) => $qq->where(
           fn($q) => $q
             ->whereNull('type')

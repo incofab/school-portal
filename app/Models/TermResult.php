@@ -4,7 +4,6 @@ namespace App\Models;
 use App\Enums\TermType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use URL;
@@ -26,6 +25,8 @@ class TermResult extends Model
     'is_activated' => 'boolean',
     'next_term_resumption_date' => 'date',
     'average' => 'float',
+    'class_group_position' => 'integer',
+    'position' => 'integer',
     'learning_evaluation' => AsArrayObject::class
   ];
 

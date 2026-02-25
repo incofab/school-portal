@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Feature Inventory</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #111827;
+  --panel-2: #0b1220;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --accent: #38bdf8;
+  --accent-2: #34d399;
+  --border: #1f2937;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'; background: var(--bg); color: var(--text); }
+header { padding: 24px; border-bottom: 1px solid var(--border); background: linear-gradient(120deg, #0b1220, #111827 60%, #0f172a); }
+header h1 { margin: 0 0 6px; font-size: 26px; }
+header p { margin: 0; color: var(--muted); }
+main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+nav { margin-top: 10px; }
+nav a { color: var(--accent); margin-right: 12px; text-decoration: none; }
+section { margin-bottom: 24px; padding: 18px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+section h2 { margin-top: 0; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; }
+.detail-list { list-style: none; padding: 0; margin: 0; }
+.detail-list li { padding: 10px 0; border-bottom: 1px dashed var(--border); }
+.detail-list li:last-child { border-bottom: 0; }
+.desc { color: var(--muted); margin-top: 4px; }
+.path { color: var(--muted); margin-left: 8px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Feature Inventory</h1>
+  <p>Generated 2026-02-23 23:12:06</p>
+  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a></nav>
+</header>
+<main>
+<section><h2>Functional Feature Inventory</h2><ul class="detail-list"><li><div><strong>Authentication &amp; Access</strong></div><div class="desc">Feature area covering authentication &amp; access workflows and operations.Login, password reset, student login, impersonation, role gates, and auth middleware.
+<li><div><strong>Institution Registration</strong></div><div class="desc">Onboarding for institutions/partners, approval workflow, and registration status tracking.Institution/partner registration requests, onboarding, and status management.
+<li><div><strong>Institution Groups</strong></div><div class="desc">Group-level management for multi-school setups, branding, billing, and lifecycle status.Group CRUD, branding, invoices, and status updates.
+<li><div><strong>Institution Profile</strong></div><div class="desc">Institution profile settings, media uploads, and readiness checklist management.Profile settings, uploads, and setup checklist.
+<li><div><strong>Users &amp; Staff</strong></div><div class="desc">Feature area covering users &amp; staff workflows and operations.Staff CRUD, role changes, bulk upload/download, and ID cards.
+<li><div><strong>Students</strong></div><div class="desc">Student records, bulk imports, class changes, promotions, and student ID card outputs.Student CRUD, bulk upload, class changes, promotions, and ID cards.
+<li><div><strong>Guardians</strong></div><div class="desc">Guardian-to-student relationships, dependent management, and guardian impersonation.Guardian assignment, dependent management, and impersonation.
+<li><div><strong>Classifications</strong></div><div class="desc">Class structures, groups/divisions, student movement, and promotion workflows.Class groups/divisions, class lists, and promotions.
+<li><div><strong>Courses &amp; Teaching</strong></div><div class="desc">Feature area covering courses &amp; teaching workflows and operations.Course CRUD, teachers, sessions, and question bank workflows.
+<li><div><strong>Assessments</strong></div><div class="desc">Assessment definitions, mappings, and score ingestion into results.Assessment CRUD, dependencies, and score injection.
+<li><div><strong>Results &amp; Reporting</strong></div><div class="desc">Feature area covering results &amp; reporting workflows and operations.Term results, result sheets, transcripts, and publications.
+<li><div><strong>Exams &amp; Events</strong></div><div class="desc">Feature area covering exams &amp; events workflows and operations.Events, exams, courseables, and external exam flows.
+<li><div><strong>Attendance</strong></div><div class="desc">Attendance capture, rollups, and reporting views.Attendance capture and reports.
+<li><div><strong>Admissions</strong></div><div class="desc">Admission forms, applications, screening, uploads, and admission letters.Admission forms, applications, uploads, and letters.
+<li><div><strong>Curriculum</strong></div><div class="desc">Topics, schemes of work, lesson plans, and lesson notes.Topics, schemes of work, lesson plans/notes.
+<li><div><strong>Learning Evaluation</strong></div><div class="desc">Evaluation domains, behavioral scores, and comment templates.Domains, evaluations, and result comment templates.
+<li><div><strong>Pins</strong></div><div class="desc">PIN generation and distribution for result access and verification.Pin generators and student pins.
+<li><div><strong>Fees &amp; Payments</strong></div><div class="desc">Feature area covering fees &amp; payments workflows and operations.Fees, fee payments, receipts, and payment notifications.
+<li><div><strong>Fundings &amp; Wallets</strong></div><div class="desc">Feature area covering fundings &amp; wallets workflows and operations.Wallet funding, transactions, withdrawals, bank accounts.
+<li><div><strong>Payroll</strong></div><div class="desc">Salary setup, adjustments, summaries, and payroll generation.Salaries, types, adjustments, summaries, and generation.
+<li><div><strong>Expenses</strong></div><div class="desc">Expense categories, capture, and tracking for school operations.Expense categories and expense records.
+<li><div><strong>Messaging &amp; Notifications</strong></div><div class="desc">Feature area covering messaging &amp; notifications workflows and operations.Internal notifications, messaging, and delivery jobs.
+<li><div><strong>Timetables &amp; Activities</strong></div><div class="desc">Feature area covering timetables &amp; activities workflows and operations.Timetable CRUD and school activities.
+<li><div><strong>Associations</strong></div><div class="desc">User associations and affiliation management across entities.User associations and association management.
+<li><div><strong>Integrations</strong></div><div class="desc">Payment provider webhooks, monitoring, and external service hooks.Paystack/Monnify/PaymentPoint webhooks and Sentry.
+<li><div><strong>Offline Mock API</strong></div><div class="desc">Offline-capable endpoints for events/exams and client testing.Offline endpoints for events/exams.</ul></section>
+</main>
+</body>
+</html>

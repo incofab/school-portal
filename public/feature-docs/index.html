@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EduManager Technical Documentation</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #111827;
+  --panel-2: #0b1220;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --accent: #38bdf8;
+  --accent-2: #34d399;
+  --border: #1f2937;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'; background: var(--bg); color: var(--text); }
+header { padding: 24px; border-bottom: 1px solid var(--border); background: linear-gradient(120deg, #0b1220, #111827 60%, #0f172a); }
+header h1 { margin: 0 0 6px; font-size: 26px; }
+header p { margin: 0; color: var(--muted); }
+main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+nav { margin-top: 10px; }
+nav a { color: var(--accent); margin-right: 12px; text-decoration: none; }
+section { margin-bottom: 24px; padding: 18px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+section h2 { margin-top: 0; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; }
+.detail-list { list-style: none; padding: 0; margin: 0; }
+.detail-list li { padding: 10px 0; border-bottom: 1px dashed var(--border); }
+.detail-list li:last-child { border-bottom: 0; }
+.desc { color: var(--muted); margin-top: 4px; }
+.path { color: var(--muted); margin-left: 8px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>EduManager Technical Documentation</h1>
+  <p>Generated 2026-02-23 23:12:06</p>
+  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a></nav>
+</header>
+<main>
+
+<section>
+<h2>Introduction</h2>
+<p>EduManager is a full-stack school management platform that connects academic operations, finance, and communication in one coherent workflow. It is designed for institutions that need to manage admissions, classes, teaching, assessments, and results without losing visibility into payments, payroll, or compliance-driven reporting.</p>
+<p>The backend is a Laravel domain layer that models school entities (sessions, classes, courses, students, staff) and orchestrates workflows like result processing, attendance, and messaging. The frontend is an Inertia + React interface built around task-focused screens for staff, students, guardians, and administrators, with printable outputs for results, receipts, and transcripts.</p>
+<p>This documentation is a technical map of the system. Start with the backend to understand the business operations and HTTP surface, move to the frontend for UI flows and screens, then review the primary modules and entry points to locate how the application boots and where to extend it safely.</p>
+</section>
+<section>
+<h2>Project Summary</h2>
+<div class="grid">
+  <div class="card"><strong>Backend</strong><br>Laravel 12 and PHP 8.2 with Sanctum auth, Spatie permissions, Sentry monitoring, and DOMPDF exports. Orchestrates results, billing, admissions, and staff workflows.</div>
+  <div class="card"><strong>Frontend</strong><br>React 18 + TypeScript on Inertia, styled with Chakra UI and bundled via Vite. Includes reporting, publishing, and staff/student-facing flows.</div>
+  <div class="card"><strong>Primary Modules</strong><br>Institutions, class structure, admissions, curriculum, assessments, results, payments, payroll, notifications, messaging, and governance utilities.</div>
+  <div class="card"><strong>Entry Points</strong><br>HTTP entry at <code>public/index.php</code> and the SPA bootstrap at <code>resources/js/app.tsx</code>.</div>
+</div>
+</section>
+<section>
+<h2>Navigation</h2>
+<ul>
+  <li>Backend: controllers, actions, requests, services, middleware, and route map.</li>
+  <li>Frontend: pages, layouts, components, hooks, utilities.</li>
+  <li>Data: models, migrations, seeders, factories.</li>
+  <li>Features: functional capability list with references.</li>
+</ul>
+</section>
+
+</main>
+</body>
+</html>

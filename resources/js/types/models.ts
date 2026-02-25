@@ -324,6 +324,7 @@ export interface Classification extends InstitutionRow {
 export interface ClassificationGroup extends InstitutionRow {
   title: string;
   classifications_count?: number;
+  show_class_group_position: boolean;
 }
 
 export interface ClassDivision extends InstitutionRow {
@@ -478,6 +479,7 @@ export interface TermResult extends InstitutionRow {
   height: number;
   weight: number;
   attendance_count: number;
+  class_group_position: number;
   learning_evaluation: { [key: string]: string };
   student?: Student;
   classification?: Classification;

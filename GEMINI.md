@@ -6,6 +6,8 @@ This document provides a comprehensive overview of the EduManager project, its a
 
 EduManager is a monolithic web application designed as an all-in-one platform for educational institutions. It provides a rich set of features for managing students, admissions, academic results, exams, attendance, and more.
 
+This project has a detailed documentation of all its features and structure in `public/feature-docs/`.
+
 - **Backend:** Built with **Laravel (PHP 8.2)**, following standard framework conventions. It handles business logic, database interactions, and authentication.
 - **Frontend:** A modern **React** single-page application (SPA) written in **TypeScript**.
 - **Architecture:** The project uses **Inertia.js** to tightly couple the Laravel backend with the React frontend. This allows for building a modern SPA experience without creating a separate API.
@@ -83,3 +85,11 @@ The project enforces code style to maintain consistency.
     ```bash
     ./vendor/bin/pint
     ```
+
+## 4. Important Note
+
+- Before you perform any task, Study the style, theme, structure and convention followed in this project.
+- Your implementation should follow this structure and coding style,
+- Try to reuse what has already been defined, but when you need to create one, Make your code resuable and
+- If you have any questions or need clarifications, ask the questions at once before you start. Responses will be provided to all your questions.
+- Where possible, Make reasonable assumptions where necessary

@@ -14,13 +14,11 @@ use Illuminate\Validation\ValidationException;
 
 class ProcessTermResult
 {
-  // private Institution $institution;
   public function __construct(
     private Institution $institution,
     private ClassResultInfo $classResultInfo,
     private bool $forceCalculateTermResult = false
   ) {
-    // $this->institution = currentInstitution();
   }
 
   public static function run(
@@ -54,6 +52,11 @@ class ProcessTermResult
       $this->classResultInfo->academicSession,
       $this->classResultInfo->classification
     );
+
+    ProcessClassGroupInfo::makeFromClassResultInfo(
+      $this->classResultInfo,
+      $this->institution
+    )->run();
   }
 
   /**

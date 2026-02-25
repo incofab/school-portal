@@ -15,11 +15,12 @@ Route::get('/dummy', [Web\DummyController::class, 'sendWhatsappMessage']);
 
 Route::get('/school/{instUuid}', function ($instUuid) {
     $inst = \App\Models\Institution::where('uuid', $instUuid)->firstOrFail();
+    dd(['school' => $inst->name]);
     $b = [
-        // 'academic_session_id' => 4,
-        // 'term' => \App\Enums\TermType::Third,
+        'academic_session_id' => 5,
+        'term' => \App\Enums\TermType::Second,
         'institution_id' => $inst->id,
-        'for_mid_term' => true,
+        'for_mid_term' => false,
     ];
     $classResultInfo = \App\Models\ClassResultInfo::query()
       ->where($b)->get();
@@ -29,7 +30,10 @@ Route::get('/school/{instUuid}', function ($instUuid) {
         $info->termResultsQuery()->delete();
         $info->delete();
     }
-      dd('Done');
+    \App\Models\CourseResultInfo::query()->where($b)->update(['for_mid_term' => true]);
+    $count = \App\Models\CourseResult::query()
+      ->where($b)->update(['for_mid_term' => true]);
+      dd('Done = '.$count);
 });
 
 Route::get('deduct-credit', function () {

@@ -12,7 +12,8 @@ class ClassificationGroup extends Model
 
   public $guarded = [];
   protected $casts = [
-    'institution_id' => 'integer'
+    'institution_id' => 'integer',
+    'show_class_group_position' => 'boolean'
   ];
 
   function institution()
