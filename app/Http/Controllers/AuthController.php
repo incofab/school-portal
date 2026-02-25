@@ -6,6 +6,7 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
@@ -105,7 +106,12 @@ class AuthController extends Controller
     $institutionUsers = $currentUser->institutionUsers()->get();
 
     \Auth::logout();
-    session()->remove(['impersonator_id', 'impersonator_type', 'impersonator_institution_id']);
+    Session::forget([
+      'impersonator_id',
+      'impersonator_type',
+      'impersonator_institution_id'
+    ]);
+    // session()->remove(['impersonator_id', 'impersonator_type', 'impersonator_institution_id']);
 
     if (!$isImpersonating && $institutionUsers->first()?->isStudent()) {
       return redirect()->route('student-login');

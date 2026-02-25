@@ -44,7 +44,8 @@ export default function StudentLogin({
       return;
     }
     toastSuccess('Login successful');
-    Inertia.visit(route('user.dashboard'));
+    // Inertia.visit(route('user.dashboard'));
+    window.location.href = route('user.dashboard');
   }
 
   return (

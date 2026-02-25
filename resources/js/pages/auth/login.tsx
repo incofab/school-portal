@@ -47,8 +47,8 @@ export default function Login({
 
     if (!handleResponseToast(res)) return;
 
-    Inertia.visit(route('user.dashboard'));
-    // window.location.href = route('user.dashboard');
+    // Inertia.visit(route('user.dashboard'));
+    window.location.href = route('user.dashboard');
   }
 
   useEffect(() => {

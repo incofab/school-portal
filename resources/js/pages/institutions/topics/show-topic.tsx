@@ -4,7 +4,7 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import { CollapsibleSlab, SlabBody } from '@/components/slab';
 import DOMPurify from 'dompurify';
 import { Div } from '@/components/semantic';
-import { Button, Heading, IconButton, Stack } from '@chakra-ui/react';
+import { Button, Heading, Icon, IconButton, Stack } from '@chakra-ui/react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { LinkButton } from '@/components/buttons';
 import useIsAdmin from '@/hooks/use-is-admin';
@@ -177,8 +177,9 @@ function LessonPlanDisplay({
         title={'Lesson Plan ' + (index + 1)}
         rightElement={
           <>
-            {(isAdmin || isTeacher) &&
-              assignedCourseIds?.includes(lessonPlan.course_teacher_id) &&
+            {(isAdmin ||
+              (isTeacher &&
+                assignedCourseIds?.includes(lessonPlan.course_teacher_id))) &&
               !lessonPlan.lesson_note && (
                 <LinkButton
                   href={instRoute('lesson-notes.create', [lessonPlan.id])}
@@ -186,13 +187,6 @@ function LessonPlanDisplay({
                   variant={'outline'}
                 />
               )}
-            <IconButton
-              icon={<EyeIcon />}
-              aria-label="View Lesson Note"
-              onClick={() =>
-                Inertia.visit(instRoute('lesson-notes.show', [lessonPlan.id]))
-              }
-            />
           </>
         }
         addNewRoute={instRoute('lesson-plans.create', [schemeOfWork?.id])}
@@ -253,6 +247,16 @@ function LessonPlanDisplay({
               lessonPlan.lesson_note.id,
             ]),
           })}
+          rightElement={
+            <IconButton
+              icon={<Icon as={EyeIcon} />}
+              variant={'ghost'}
+              aria-label="View Lesson Note"
+              onClick={() =>
+                Inertia.visit(instRoute('lesson-notes.show', [lessonPlan.id]))
+              }
+            />
+          }
         >
           <SlabBody>
             <Stack
