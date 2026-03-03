@@ -24,3 +24,12 @@ Route::resource('/{exam}/exam-courseables', Web\Exams\ExamCourseableController::
     
 Route::post('events/{event}/transfer-results', Web\Exams\TransferEventResultController::class)
 ->name('events.transfer-results');
+
+Route::get(
+  'events/{event}/transfer-results-multiple',
+  [Web\Exams\TransferEventResultMultipleController::class, 'create']
+)->name('events.transfer-results-multiple');
+Route::post(
+  'events/{event}/transfer-results-multiple',
+  [Web\Exams\TransferEventResultMultipleController::class, 'store']
+)->name('events.transfer-results-multiple.store');

@@ -27,15 +27,14 @@ beforeEach(function () {
     ->institution($this->institution)
     ->eventCourseables()
     ->create();
+  $this->eventCourseable = $this->event->eventCourseables->first();
   $this->academicSession = AcademicSession::factory()->create();
   $this->term = TermType::First->value;
   $this->assessment = Assessment::first();
   $this->student = Student::factory()
     ->withInstitution($this->institution)
     ->create();
-  $this->course = Course::factory()
-    ->withInstitution($this->institution)
-    ->create();
+  $this->course = $this->eventCourseable->courseable->course;
   $this->courseTeacher = CourseTeacher::factory()
     ->withInstitution($this->institution)
     ->create(['course_id' => $this->course->id]);
@@ -47,11 +46,7 @@ beforeEach(function () {
 
   $this->examCourseable = ExamCourseable::factory()
     ->exam($this->exam)
-    ->courseable(
-      CourseSession::factory()
-        ->course($this->course)
-        ->create()
-    )
+    ->courseable($this->eventCourseable->courseable)
     ->create();
 
   $this->route = route('institutions.events.transfer-results', [

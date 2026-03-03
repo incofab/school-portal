@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\TrimDecimal;
 use App\Models\Support\QuestionCourseable;
 use App\Rules\ValidateMorphRule;
 use App\Support\MorphMap;
@@ -15,7 +16,9 @@ class EventCourseable extends QuestionCourseable
   protected $guarded = [];
   protected $casts = [
     'event_id' => 'integer',
-    'courseable_id' => 'integer'
+    'courseable_id' => 'integer',
+    'score' => TrimDecimal::class,
+    'total_score' => TrimDecimal::class
   ];
 
   static function createRule($prefix = '')

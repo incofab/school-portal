@@ -815,6 +815,7 @@ export interface Event extends InstitutionRow {
   classification_id?: number;
   classification_group_id?: number;
   event_courseables?: EventCourseable[];
+  event_courseables_count?: number;
   exams?: Exam[];
   classification?: Classification;
   classification_group?: ClassificationGroup;

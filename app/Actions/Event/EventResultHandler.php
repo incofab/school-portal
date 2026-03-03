@@ -6,9 +6,11 @@ use App\Actions\CourseResult\RecordCourseResult;
 use App\Models\Assessment;
 use App\Models\CourseTeacher;
 use App\Models\Event;
+use App\Models\EventCourseable;
 use App\Models\Exam;
 use App\Models\ExamCourseable;
 use App\Models\Student;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class EventResultHandler
@@ -23,15 +25,28 @@ class EventResultHandler
   function __construct(
     private CourseTeacher $courseTeacher,
     private array $data,
+    private EventCourseable $eventCourseable,
     private ?Assessment $assessment = null
-  ) {}
+  ) {
+  }
 
   function transferEventResult(Event $event)
   {
-    foreach ($event->exams as $key => $exam) {
-      $this->transferExamResult($exam);
+    if (
+      $this->eventCourseable->courseable->course_id !==
+      $this->courseTeacher->course_id
+    ) {
+      throw ValidationException::withMessages([
+        'course_teacher_id' => 'Invalid course teacher'
+      ]);
     }
-    $event->fill(['transferred_at' => now()])->save();
+
+    DB::transaction(function () use ($event) {
+      foreach ($event->exams as $key => $exam) {
+        $this->transferExamResult($exam);
+      }
+      $event->fill(['transferred_at' => now()])->save();
+    });
   }
 
   function transferExamResult(Exam $studentExam)
@@ -42,10 +57,16 @@ class EventResultHandler
       if (!($examable instanceof Student)) {
         continue;
       }
-      $recordResultObj = $this->recordResult(
-        $studentExam->examable,
-        $examCourseable
-      );
+      if (
+        $examCourseable->courseable_type ===
+          $this->eventCourseable->courseable_type &&
+        $examCourseable->courseable_id === $this->eventCourseable->courseable_id
+      ) {
+        $recordResultObj = $this->recordResult(
+          $studentExam->examable,
+          $examCourseable
+        );
+      }
     }
     $recordResultObj?->evaluateResult();
   }
@@ -54,13 +75,6 @@ class EventResultHandler
     Student $student,
     ExamCourseable $examCourseable
   ): RecordCourseResult {
-    if (
-      $examCourseable->courseable->course_id !== $this->courseTeacher->course_id
-    ) {
-      throw ValidationException::withMessages([
-        'course_teacher_id' => 'Invalid course teacher'
-      ]);
-    }
     return RecordCourseResult::run(
       [
         'student_id' => $student->id,

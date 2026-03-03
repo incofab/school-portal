@@ -44,6 +44,17 @@ export default function ListEvents({
   const isStaff = useIsStaff();
   const transferEventResultModalToggle = useModalValueToggle<Event>();
 
+  function handleTransferEventResult(row: Event) {
+    const eventCourseablesCount = row.event_courseables_count ?? 0;
+
+    if (eventCourseablesCount > 1) {
+      Inertia.visit(instRoute('events.transfer-results-multiple', [row.id]));
+      return;
+    }
+
+    transferEventResultModalToggle.open(row);
+  }
+
   async function deleteItem(obj: Event) {
     const res = await deleteForm.submit((data, web) =>
       web.delete(instRoute('events.destroy', [obj.id]))
@@ -102,7 +113,7 @@ export default function ListEvents({
                     icon={<Icon as={PaperAirplaneIcon} />}
                     variant={'ghost'}
                     colorScheme={'brand'}
-                    onClick={() => transferEventResultModalToggle.open(row)}
+                    onClick={() => handleTransferEventResult(row)}
                     ml={2}
                   />
                 </>

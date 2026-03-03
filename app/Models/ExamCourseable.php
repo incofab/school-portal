@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\TrimDecimal;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,6 +10,14 @@ class ExamCourseable extends Model
 {
   use HasFactory;
   public $guarded = [];
+
+  protected $casts = [
+    'courseable_id' => 'integer',
+    'course_id' => 'integer',
+    'exam_id' => 'integer',
+    'num_of_questions' => 'integer',
+    'score' => TrimDecimal::class
+  ];
 
   static function ruleCreate()
   {

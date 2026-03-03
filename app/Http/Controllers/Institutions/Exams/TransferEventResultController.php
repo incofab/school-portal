@@ -13,6 +13,7 @@ use App\Models\Institution;
 use App\Rules\ValidateExistsRule;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\ValidationException;
 
 class TransferEventResultController extends Controller
 {
@@ -29,6 +30,12 @@ class TransferEventResultController extends Controller
     Event $event,
     Request $request
   ) {
+    $event->load('eventCourseables.courseable');
+    abort_if(
+      $event->eventCourseables->count() > 1,
+      400,
+      'Use the multiple transfer event result route instead'
+    );
     $existsRuleAssessment = new ValidateExistsRule(Assessment::class);
     $existsRuleCourseTeacher = new ValidateExistsRule(CourseTeacher::class);
     $data = $request->validate([
@@ -40,11 +47,14 @@ class TransferEventResultController extends Controller
       'course_teacher_id' => ['required', $existsRuleCourseTeacher]
     ]);
 
+    $courseTeacher = $existsRuleCourseTeacher->getModel();
+
     (new EventResultHandler(
-      $existsRuleCourseTeacher->getModel(),
+      $courseTeacher,
       collect($data)
         ->except('assessment_id', 'course_teacher_id')
         ->toArray(),
+      $event->eventCourseables->first(),
       $existsRuleAssessment->getModel()
     ))->transferEventResult($event);
 
