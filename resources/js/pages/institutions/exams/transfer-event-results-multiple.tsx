@@ -87,8 +87,7 @@ export default function TransferEventResultsMultiple({
   };
 
   const getCourseTitle = (eventCourseable: EventCourseable) => {
-    const courseTitle =
-      eventCourseable.courseable?.course?.title ?? 'Course';
+    const courseTitle = eventCourseable.courseable?.course?.title ?? 'Course';
     const sessionTitle = eventCourseable.courseable?.session
       ? ` - ${eventCourseable.courseable.session}`
       : '';
@@ -97,18 +96,19 @@ export default function TransferEventResultsMultiple({
 
   const onSubmit = async () => {
     const res = await webForm.submit((data, web) => {
-      return web.post(instRoute('events.transfer-results-multiple.store', [
-        event,
-      ]), {
-        academic_session_id: data.academic_session_id,
-        term: data.term,
-        event_courseables: data.event_courseables.map((item) => ({
-          event_courseable_id: item.event_courseable_id,
-          course_teacher_id: item.course_teacher_id?.value,
-          assessment_id: item.for_exam ? null : item.assessment_id || null,
-          for_mid_term: item.for_mid_term,
-        })),
-      });
+      return web.post(
+        instRoute('events.transfer-results-multiple.store', [event]),
+        {
+          academic_session_id: data.academic_session_id,
+          term: data.term,
+          event_courseables: data.event_courseables.map((item) => ({
+            event_courseable_id: item.event_courseable_id,
+            course_teacher_id: item.course_teacher_id?.value,
+            assessment_id: item.for_exam ? null : item.assessment_id || null,
+            for_mid_term: item.for_mid_term,
+          })),
+        }
+      );
     });
 
     if (!handleResponseToast(res)) return;
@@ -215,6 +215,7 @@ export default function TransferEventResultsMultiple({
                               for_exam: false,
                             })
                           }
+                          isDisabled={transferData.for_exam}
                         />
                         <FormErrorMessage>
                           {errorFor(index, 'assessment_id')}

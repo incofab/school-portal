@@ -21,6 +21,9 @@
 				And the first entry should be on row 2
 				<br>
 				<small><i>Note: Formulars and formatted content may not appear as expected</i></small>
+				<hr>
+				You can also upload a Word or text document (DOC, DOCX or TXT). The system will send it to AI to extract
+				questions, options, and explanations, and convert them into HTML that can be saved in the questions database.
 			</div>
 			<hr>
 			<form method="POST" action="{{instRoute('questions.upload.store', $courseable->getMorphedId())}}"
@@ -32,7 +35,8 @@
 				<br>
 				<div class="form-group">
 					<label for="" >Question Content</label><br />
-					<input type="file" class="form-control" name="file" value=""/>
+					<input type="file" class="form-control" name="file" value=""
+						accept=".csv,.xls,.xlsx,.doc,.docx,.txt" />
 				</div>
 				<br>
 				<div class="form-group">

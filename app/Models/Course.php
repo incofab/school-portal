@@ -64,7 +64,15 @@ class Course extends Model
     return $this->belongsTo(Institution::class);
   }
 
+  /**
+   * @deprecated use courseSessions()
+   */
   function sessions()
+  {
+    return $this->hasMany(CourseSession::class);
+  }
+
+  function courseSessions()
   {
     return $this->hasMany(CourseSession::class);
   }

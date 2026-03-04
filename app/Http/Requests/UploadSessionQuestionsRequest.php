@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Actions\Questions\ConvertDocumentToQuestions;
 use App\Actions\Sheet\ConvertSheetToArray;
 use App\Models\Question;
-use App\Rules\ExcelRule;
+use App\Rules\QuestionUploadFileRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
@@ -19,9 +20,20 @@ class UploadSessionQuestionsRequest extends FormRequest
   {
     $file = $this->file('file');
     $extension = strtolower($file?->getClientOriginalExtension()) ?? '';
-    if (!$file || !in_array($extension, ['csv', 'xls', 'xlsx'])) {
+    if (!$file) {
       return;
     }
+    if (in_array($extension, ['csv', 'xls', 'xlsx'])) {
+      $this->handleExcelUpload($file);
+      return;
+    }
+    if (in_array($extension, ['txt', 'doc', 'docx'])) {
+      $this->handleDocumentUpload($file);
+    }
+  }
+
+  private function handleExcelUpload($file)
+  {
     try {
       $columnKeyMapping = [
         'A' => 'question_no',
@@ -46,6 +58,19 @@ class UploadSessionQuestionsRequest extends FormRequest
     }
   }
 
+  private function handleDocumentUpload($file)
+  {
+    try {
+      $this->merge([
+        'questions' => (new ConvertDocumentToQuestions($file))->run()
+      ]);
+    } catch (\Throwable $th) {
+      throw ValidationException::withMessages([
+        'file' => 'Invalid document: ' . $th->getMessage()
+      ]);
+    }
+  }
+
   /**
    * Determine if the user is authorized to make this request.
    */
@@ -62,7 +87,7 @@ class UploadSessionQuestionsRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'file' => ['required', 'file', new ExcelRule($this->file('file'))],
+      'file' => ['required', 'file', new QuestionUploadFileRule()],
       'questions' => ['required', 'array', 'min:1'],
       ...Question::createRule(null, 'questions.*.')
       // 'questions.*.question' => ['required', 'string'],

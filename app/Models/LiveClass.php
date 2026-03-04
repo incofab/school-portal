@@ -17,7 +17,8 @@ class LiveClass extends Model
     'teacher_user_id' => 'integer',
     'is_active' => 'boolean',
     'starts_at' => 'datetime',
-    'ends_at' => 'datetime'
+    'ends_at' => 'datetime',
+    'liveable_id' => 'integer'
   ];
 
   static function createRule()

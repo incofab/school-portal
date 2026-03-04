@@ -562,7 +562,7 @@ export default function SideBarLayout() {
       ],
     },
     {
-      label: 'Events',
+      label: 'CBT Events',
       route: instRoute('events.index'),
       roles: [
         InstitutionUserType.Admin,

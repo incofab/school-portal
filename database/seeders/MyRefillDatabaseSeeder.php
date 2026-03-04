@@ -237,4 +237,98 @@ class MyRefillDatabaseSeeder extends Seeder
       );
     }
   }
+
+  function seedEventSingleCourseable(Institution $institution)
+  {
+    $course = $institution
+      ->courses()
+      ->inRandomOrder()
+      ->first();
+    $courseSession =
+      $course
+        ->courseSessions()
+        ->inRandomOrder()
+        ->first() ??
+      \App\Models\CourseSession::factory()
+        ->course($course)
+        ->create();
+    $event = \App\Models\Event::factory()
+      ->institution($institution)
+      ->create();
+    $eventCourseable = \App\Models\EventCourseable::factory()
+      ->event($event, $courseSession)
+      ->create();
+
+    $student =
+      $institution
+        ->institutionUsers()
+        ->where('role', \App\Enums\InstitutionUserType::Student)
+        ->inRandomOrder()
+        ->first()?->student ??
+      \App\Models\Student::factory()
+        ->withInstitution($institution)
+        ->create();
+
+    $exam = \App\Models\Exam::factory()
+      ->event($event)
+      ->examable($student)
+      ->create();
+
+    $examCourseable = \App\Models\ExamCourseable::factory()
+      ->exam($exam)
+      ->courseable($eventCourseable->courseable)
+      ->create();
+  }
+
+  function seedEventMultipleCourseable(Institution $institution)
+  {
+    $course = $institution
+      ->courses()
+      ->inRandomOrder()
+      ->first();
+    $courseSessions = $course
+      ->courseSessions()
+      ->inRandomOrder()
+      ->limit(3)
+      ->get();
+    if ($courseSessions->count() < 3) {
+      $courseSessions = \App\Models\CourseSession::factory()
+        ->course($course)
+        ->count(3)
+        ->create();
+    }
+    $event = \App\Models\Event::factory()
+      ->institution($institution)
+      ->create();
+
+    $eventCourseables = [];
+    foreach ($courseSessions as $key => $courseSession) {
+      $eventCourseables[] = \App\Models\EventCourseable::factory()
+        ->event($event, $courseSession)
+        ->create();
+    }
+
+    $student =
+      $institution
+        ->institutionUsers()
+        ->where('role', \App\Enums\InstitutionUserType::Student)
+        ->inRandomOrder()
+        ->first()?->student ??
+      \App\Models\Student::factory()
+        ->withInstitution($institution)
+        ->create();
+
+    $exam = \App\Models\Exam::factory()
+      ->event($event)
+      ->examable($student)
+      ->create();
+
+    $examCourseables = [];
+    foreach ($eventCourseables as $key => $eventCourseable) {
+      $examCourseables[] = \App\Models\ExamCourseable::factory()
+        ->exam($exam)
+        ->courseable($eventCourseable->courseable)
+        ->create();
+    }
+  }
 }

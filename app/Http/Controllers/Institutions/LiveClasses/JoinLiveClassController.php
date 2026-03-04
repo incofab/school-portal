@@ -20,7 +20,6 @@ class JoinLiveClassController extends Controller
 
   public function __invoke(Institution $institution, LiveClass $liveClass)
   {
-    abort_unless($liveClass->institution_id === $institution->id, 404);
     abort_unless($liveClass->is_active, 403, 'Live class is not active');
 
     $institutionUser = currentInstitutionUser();

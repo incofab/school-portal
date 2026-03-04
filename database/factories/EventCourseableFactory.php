@@ -30,14 +30,17 @@ class EventCourseableFactory extends Factory
     );
   }
 
-  public function event(Event $event): static
-  {
+  public function event(
+    Event $event,
+    ?CourseSession $courseSession = null
+  ): static {
     return $this->state(
       fn(array $attributes) => [
         'event_id' => $event->id,
-        'courseable_id' => CourseSession::factory()->institution(
-          $event->institution
-        )
+        'courseable_type' => (new CourseSession())->getMorphClass(),
+        'courseable_id' =>
+          $courseSession?->id ??
+          CourseSession::factory()->institution($event->institution)
       ]
     );
   }
