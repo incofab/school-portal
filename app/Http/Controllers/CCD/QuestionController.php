@@ -3,6 +3,7 @@ namespace App\Http\Controllers\CCD;
 
 use App\Actions\GenericExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\QuestionPayloadRequest;
 use App\Http\Requests\UploadSessionQuestionsRequest;
 use App\Models\Institution;
 use App\Models\Question;
@@ -36,17 +37,25 @@ class QuestionController extends Controller
     ]);
   }
 
-  function storeApi(Institution $institution, QuestionCourseable $morphable)
+  function storeApi(
+    Institution $institution,
+    QuestionCourseable $morphable,
+    QuestionPayloadRequest $request
+  )
   {
-    $data = request()->validate(Question::createRule());
+    $data = $request->validated();
     $this->storeQuestion($institution, $morphable, $data);
 
     return response()->json(['success' => true]);
   }
 
-  function store(Institution $institution, QuestionCourseable $morphable)
+  function store(
+    Institution $institution,
+    QuestionCourseable $morphable,
+    QuestionPayloadRequest $request
+  )
   {
-    $data = request()->validate(Question::createRule());
+    $data = $request->validated();
     $this->storeQuestion($institution, $morphable, $data);
 
     return $this->res(
@@ -80,9 +89,13 @@ class QuestionController extends Controller
     ]);
   }
 
-  function update(Institution $institution, Question $question)
+  function update(
+    Institution $institution,
+    Question $question,
+    QuestionPayloadRequest $request
+  )
   {
-    $data = request()->validate(Question::createRule($question));
+    $data = $request->validated();
 
     $question->fill($data)->save();
 

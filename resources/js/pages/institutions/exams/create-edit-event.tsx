@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Checkbox,
   Divider,
@@ -90,13 +90,19 @@ export default function CreateOrUpdateEvent({ event, courses }: Props) {
   function deleteEventCourseable(
     selectedEventCourseableData: EventCourseableData
   ) {
-    setEventCourseableData(
-      eventCourseableData.filter(
-        (item) =>
-          item.courseable_id !== selectedEventCourseableData.courseable_id &&
-          item.courseable_type !== selectedEventCourseableData.courseable_type
-      )
-    );
+    const rem = eventCourseableData.filter((item) => {
+      if (item.courseable_id !== selectedEventCourseableData.courseable_id) {
+        return true;
+      }
+      if (
+        item.courseable_type !== selectedEventCourseableData.courseable_type
+      ) {
+        return true;
+      }
+      return false;
+    });
+
+    setEventCourseableData(rem);
   }
 
   return (
@@ -116,11 +122,6 @@ export default function CreateOrUpdateEvent({ event, courses }: Props) {
                 title="Event title"
                 isRequired
               />
-              {/* <InputForm
-                form={webForm as any}
-                formKey="description"
-                title="Description [optional]"
-              /> */}
               <InputForm
                 form={webForm as any}
                 formKey="duration"
@@ -203,7 +204,7 @@ export default function CreateOrUpdateEvent({ event, courses }: Props) {
                     courses={courses}
                     add={addEventCourseable}
                     remove={deleteEventCourseable}
-                    eventCourseableData={eventCourseableData}
+                    eventCourseablesData={eventCourseableData}
                   />
                 </Div>
               )}
@@ -242,24 +243,29 @@ interface EventCourseableData {
 
 function CreateEventCourseable({
   courses,
-  eventCourseableData,
+  eventCourseablesData,
   add,
   remove,
 }: {
   courses: Course[];
   add: (newEventCourseableData: EventCourseableData) => void;
   remove: (newEventCourseableData: EventCourseableData) => void;
-  eventCourseableData: EventCourseableData[];
+  eventCourseablesData: EventCourseableData[];
 }) {
   const [data, setData] = useState<EventCourseableData>();
   const { toastError } = useMyToast();
+
+  useEffect(() => {
+    if (data?.courseable_id && data?.courseable_type) {
+      submit();
+    }
+  }, [`${data?.courseable_type}:${data?.courseable_id}`]);
 
   const submit = async () => {
     if (!data?.course || !data.courseable_id) {
       return toastError('Please select a subject and session');
     }
     add(data);
-    setData(undefined);
   };
 
   return (
@@ -303,14 +309,14 @@ function CreateEventCourseable({
                   };
                 })
               }
-              onChange={(e: any) =>
+              onChange={(e: any) => {
                 setData({
                   ...data,
                   courseable_id: e.value,
                   courseable_type: 'course-session',
                   title: `${data.course.code} - ${e.label}`,
-                })
-              }
+                });
+              }}
             />
           </Div>
         )}
@@ -324,10 +330,10 @@ function CreateEventCourseable({
       </Stack>
       <br />
       <VStack align={'stretch'} spacing={2}>
-        {eventCourseableData.map((eventCourseableData) => (
+        {eventCourseablesData.map((eventCourseableData) => (
           <HStack
             align={'stretch'}
-            key={eventCourseableData.course.id}
+            key={`${eventCourseableData.course.id}:${eventCourseableData.courseable_id}`}
             border={'1px solid'}
             borderRadius={'5px'}
             py={1}

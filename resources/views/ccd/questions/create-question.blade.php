@@ -16,6 +16,7 @@
 			<div class="tile-title">{{$edit ? 'Update' : 'Create'}} Question</div>
 			<form method="POST" action="{{$edit ? instRoute('questions.update', [$edit]) : instRoute('questions.store', [$courseable->getMorphedId()])}}"
 				name="record-question"
+				enctype="multipart/form-data"
 			>
 				@include('common.form_message')
 				@csrf
@@ -97,39 +98,39 @@
 				
 				<div class="form-group mt-2">
 					<div><label>Answer</label></div>
-					<div class="form-check-inline px-3 py-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
-						<label class="form-check-label">
+					<div class="form-check-inline my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
+						<label class="form-check-label px-3 py-2" for="answer_a">
 							<input type="radio" class="form-check-input" name="answer" 
 								@checked(old('answer', $edit?->answer) === 'A')
-								value="A"> A
+								value="A" id="answer_a"> A
 						</label>
 					</div>
-					<div class="form-check-inline mx-2 px-3 py-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
-						<label class="form-check-label">
+					<div class="form-check-inline mx-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
+						<label class="form-check-label px-3 py-2 " for="answer_b">
 							<input type="radio" class="form-check-input" name="answer" 
 							@checked(old('answer', $edit?->answer) === 'B')
-								value="B"> B
+								value="B" id="answer_b"> B
 						</label>
 					</div>
-					<div class="form-check-inline mx-2 px-3 py-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
-						<label class="form-check-label">
+					<div class="form-check-inline mx-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
+						<label class="form-check-label px-3 py-2" for="answer_c">
 							<input type="radio" class="form-check-input" name="answer" 
 							@checked(old('answer', $edit?->answer) === 'C')
-								value="C"> C
+								value="C" id="answer_c"> C
 						</label>
 					</div>
-					<div class="form-check-inline mx-2 px-3 py-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
-						<label class="form-check-label">
+					<div class="form-check-inline mx-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
+						<label class="form-check-label px-3 py-2" for="answer_d">
 							<input type="radio" class="form-check-input" name="answer" 
 							@checked(old('answer', $edit?->answer) === 'D')
-								value="D"> D
+								value="D" id="answer_d"> D
 						</label>
 					</div>
-					<div class="form-check-inline px-3 py-2 my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
-						<label class="form-check-label">
+					<div class="form-check-inline my-1 rounded" style="background: rgba(0, 0, 0, 0.2)">
+						<label class="form-check-label px-3 py-2" for="answer_e">
 							<input type="radio" class="form-check-input" name="answer" 
 							@checked(old('answer', $edit?->answer) === 'E')
-								value="E"> E
+								value="E" id="answer_e"> E
 						</label>
 					</div>
 				</div>
@@ -145,6 +146,7 @@
 							class="btn btn-primary btn-block" value="Submit">
 					<div class="clearfix"></div>
 				</div>
+				<input type="file" name="question_payload" class="d-none" />
 			</form>
 		</div>
 	</div>
@@ -155,6 +157,54 @@
 	}
 </style>
 @include('common._tinymce')
+<script>
+	(function () {
+		var form = document.querySelector('form[name="record-question"]');
+		if (!form || !window.File || !window.Blob || !window.DataTransfer) {
+			return;
+		}
+		var payloadInput = form.querySelector('input[name="question_payload"]');
+		if (!payloadInput) {
+			return;
+		}
+
+		form.addEventListener('submit', function () {
+			if (window.tinymce) {
+				window.tinymce.triggerSave();
+			}
+			var payload = {};
+			var fields = form.querySelectorAll('[name]');
+			fields.forEach(function (field) {
+				if (field.name === 'question_payload' || field.name === '_token' || field.name === '_method') {
+					return;
+				}
+				if (field.type === 'radio') {
+					if (!field.checked) {
+						return;
+					}
+				}
+				if (field.type === 'file') {
+					return;
+				}
+				payload[field.name] = field.value;
+			});
+			var blob = new Blob([JSON.stringify(payload)], {type: 'text/plain'});
+			var fileName = 'question-' + Date.now() + '.txt';
+			var file = new File([blob], fileName, {type: 'text/plain'});
+			var dataTransfer = new DataTransfer();
+			dataTransfer.items.add(file);
+			payloadInput.files = dataTransfer.files;
+
+			fields.forEach(function (field) {
+				if (field.name === 'question_payload' || field.name === '_token' || field.name === '_method') {
+					return;
+				}
+				field.setAttribute('data-original-name', field.name);
+				field.removeAttribute('name');
+			});
+		});
+	})();
+</script>
 {{-- 
 <script src="https://cdn.tiny.cloud/1/x5fywb7rhiv5vwkhx145opfx4rsh70ytqkiq2mizrg73qwc2/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
 <script>

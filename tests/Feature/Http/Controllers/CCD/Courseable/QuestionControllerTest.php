@@ -8,6 +8,7 @@ use App\Models\CourseSession;
 use App\Models\EventCourseable;
 use App\Models\Question;
 use App\Models\Topic;
+use Illuminate\Http\UploadedFile;
 
 use function Pest\Laravel\actingAs;
 
@@ -76,6 +77,30 @@ test('store creates a new question via API', function ($class) {
   expect(Question::count())->toBe(1);
 })->with([[CourseSession::class], [EventCourseable::class]]);
 
+test('store creates a new question via API payload file', function ($class) {
+  $courseable = $this->courseable[$class];
+  $data = Question::factory()
+    ->courseable($courseable, $this->institution)
+    ->raw();
+
+  $file = UploadedFile::fake()->createWithContent(
+    'question.txt',
+    json_encode($data)
+  );
+
+  $response = actingAs($this->instAdmin)->post(
+    route('institutions.api.questions.store', [
+      $this->institution,
+      $courseable->getMorphedId()
+    ]),
+    ['question_payload' => $file]
+  );
+
+  $response->assertOk();
+  $response->assertJson(['success' => true]);
+  expect(Question::count())->toBe(1);
+})->with([[CourseSession::class], [EventCourseable::class]]);
+
 test('store creates a new question', function ($class) {
   $courseable = $this->courseable[$class];
   $data = Question::factory()
@@ -88,6 +113,28 @@ test('store creates a new question', function ($class) {
       $courseable->getMorphedId()
     ]),
     $data
+  );
+  $response->assertRedirect();
+  expect(Question::count())->toBe(1);
+})->with([[CourseSession::class], [EventCourseable::class]]);
+
+test('store creates a new question via payload file', function ($class) {
+  $courseable = $this->courseable[$class];
+  $data = Question::factory()
+    ->courseable($courseable, $this->institution)
+    ->raw();
+
+  $file = UploadedFile::fake()->createWithContent(
+    'question.txt',
+    json_encode($data)
+  );
+
+  $response = actingAs($this->instAdmin)->post(
+    route('institutions.questions.store', [
+      $this->institution,
+      $courseable->getMorphedId()
+    ]),
+    ['question_payload' => $file]
   );
   $response->assertRedirect();
   expect(Question::count())->toBe(1);
@@ -123,6 +170,32 @@ test('updates an existing question', function ($class) {
   $response = actingAs($this->instAdmin)->put(
     route('institutions.questions.update', [$this->institution, $question]),
     $newData
+  );
+
+  $response->assertRedirect();
+  expect(Question::first()->question)->toBe('Updated Question Text');
+})->with([[CourseSession::class], [EventCourseable::class]]);
+
+test('updates an existing question via payload file', function ($class) {
+  $courseable = $this->courseable[$class];
+  $question = Question::factory()
+    ->courseable($courseable, $this->institution)
+    ->create();
+
+  $newData = Question::factory()->raw([
+    'question' => 'Updated Question Text',
+    'institution_id' => $this->institution->id,
+    'question_no' => $question->question_no
+  ]);
+
+  $file = UploadedFile::fake()->createWithContent(
+    'question.txt',
+    json_encode($newData)
+  );
+
+  $response = actingAs($this->instAdmin)->put(
+    route('institutions.questions.update', [$this->institution, $question]),
+    ['question_payload' => $file]
   );
 
   $response->assertRedirect();
