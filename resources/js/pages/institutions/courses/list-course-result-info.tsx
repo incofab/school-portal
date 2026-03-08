@@ -1,5 +1,14 @@
 import React from 'react';
-import { HStack, Icon, Text } from '@chakra-ui/react';
+import {
+  HStack,
+  Icon,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { CourseResultInfo } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -19,6 +28,8 @@ import UploadCourseResultsModal from '@/components/modals/upload-course-results-
 import { CloudArrowDownIcon } from '@heroicons/react/24/solid';
 import { Inertia } from '@inertiajs/inertia';
 import DownloadCourseResultModal from '@/components/modals/download-course-result-modal';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { InertiaLink } from '@inertiajs/inertia-react';
 
 interface Props {
   courseResultInfo: PaginationResponse<CourseResultInfo>;
@@ -81,18 +92,56 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
     {
       label: 'Action',
       render: (row) => (
-        <LinkButton
-          href={route('institutions.course-results.index', {
-            institution: currentInstitution.uuid,
-            classification: row.classification_id,
-            course: row.course_id,
-            term: row.term,
-            academicSession: row.academic_session_id,
-            forMidTerm: row.for_mid_term,
-          })}
-          variant={'link'}
-          title="Student Scores"
-        />
+        <HStack spacing={2}>
+          <LinkButton
+            href={route('institutions.course-results.index', {
+              institution: currentInstitution.uuid,
+              classification: row.classification_id,
+              course: row.course_id,
+              term: row.term,
+              academicSession: row.academic_session_id,
+              forMidTerm: row.for_mid_term,
+            })}
+            variant={'link'}
+            title="Student Scores"
+          />
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              aria-label={'open action menu'}
+              icon={<Icon as={EllipsisVerticalIcon} />}
+              size={'sm'}
+              variant={'ghost'}
+            />
+            <MenuList>
+              {/* <MenuItem
+                as={InertiaLink}
+                href={route('institutions.course-results.index', {
+                  institution: currentInstitution.uuid,
+                  classification: row.classification_id,
+                  course: row.course_id,
+                  term: row.term,
+                  academicSession: row.academic_session_id,
+                  forMidTerm: row.for_mid_term,
+                })}
+                py={2}
+              >
+                Student Scores
+              </MenuItem> */}
+              {isStaff && (
+                <MenuItem
+                  as={InertiaLink}
+                  href={instRoute('course-result-info.transfer.create', [
+                    row.id,
+                  ])}
+                  py={2}
+                >
+                  Transfer
+                </MenuItem>
+              )}
+            </MenuList>
+          </Menu>
+        </HStack>
       ),
     },
   ];

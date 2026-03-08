@@ -239,6 +239,14 @@ Route::post('/record-class-results/{courseTeacher}', [Web\Staff\RecordClassResul
 
 Route::get('/course-result-info/index', Web\Staff\ListCourseResultInfoController::class)
   ->name('course-result-info.index');
+Route::get(
+  '/course-result-info/{courseResultInfo}/transfer',
+  [Web\Staff\TransferCourseResultInfoController::class, 'create']
+)->name('course-result-info.transfer.create');
+Route::post(
+  '/course-result-info/{courseResultInfo}/transfer',
+  [Web\Staff\TransferCourseResultInfoController::class, 'store']
+)->name('course-result-info.transfer.store');
 
 Route::get('/live-classes/{liveClass}/join', Web\LiveClasses\JoinLiveClassController::class)
   ->name('live-classes.join');

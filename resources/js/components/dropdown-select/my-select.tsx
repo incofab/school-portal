@@ -25,6 +25,16 @@ export default function MySelect<T>({
     if (param === undefined) {
       return;
     }
+    if (Array.isArray(param)) {
+      return param
+        .map((item: any) => {
+          if (item?.value !== undefined) {
+            return item;
+          }
+          return optionsData.find((option) => option.value == item);
+        })
+        .filter(Boolean);
+    }
     const result = optionsData.find((item) => item.value == param);
     return result || param;
   }

@@ -15,7 +15,6 @@ class CourseResultInfo extends Model
   protected $guarded = [];
   protected $casts = [
     'term' => TermType::class,
-    'teacher_user_id' => 'integer',
     'course_id' => 'integer',
     'institution_id' => 'integer',
     'classification_id' => 'integer',
