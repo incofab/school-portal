@@ -8,11 +8,11 @@ use Illuminate\Validation\Rules\Enum;
 class TermResultUITableFilters extends BaseUITableFilter
 {
   protected array $sortableColumns = [
-    'createdAt' => 'created_at',
-    'position' => 'position',
-    'grade' => 'grade',
-    'totalScore' => 'total_score',
-    'average' => 'average'
+    'createdAt' => 'term_results.created_at',
+    'position' => 'term_results.position',
+    'grade' => 'term_results.grade',
+    'totalScore' => 'term_results.total_score',
+    'average' => 'term_results.average'
   ];
 
   protected function extraValidationRules(): array

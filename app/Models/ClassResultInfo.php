@@ -53,7 +53,7 @@ class ClassResultInfo extends Model
       'forMidTerm' => $this->for_mid_term
     ];
     $termResultQuery = TermResultUITableFilters::make(
-      $params,
+      [...$params, ...request()->all()],
       TermResult::query()->select('term_results.*')
     );
     if ($extraQueryCallback) {
