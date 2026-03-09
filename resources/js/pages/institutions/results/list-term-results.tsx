@@ -79,16 +79,19 @@ export default function ListTermResults({
           {
             label: 'Position',
             value: shouldShowGrade ? 'grade' : 'position',
+            sortKey: shouldShowGrade ? 'grade' : 'position',
           },
         ]),
     {
       label: 'Total Score',
       value: 'total_score',
+      sortKey: 'totalScore',
     },
     {
       label: 'Average',
       value: 'average',
       render: (row) => String(roundNumber(row.average, 2)),
+      sortKey: 'average',
     },
     {
       label: 'Remark',
