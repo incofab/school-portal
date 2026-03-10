@@ -12,6 +12,7 @@ use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\LessonPlan;
 use App\Models\SchemeOfWork;
+use App\Support\UITableFilters\TopicUITableFilters;
 
 class TopicController extends Controller
 {
@@ -28,16 +29,16 @@ class TopicController extends Controller
   //== Listing
   public function index(Institution $institution, ?Topic $topic = null)
   {
-    $query = Topic::query()
-      ->when(
-        $topic,
-        fn($q) => $q->where('parent_topic_id', $topic->id),
-        fn($q) => $q->whereNull('parent_topic_id')
-      )
+    $query = Topic::query()->when(
+      $topic,
+      fn($q) => $q->where('parent_topic_id', $topic->id),
+      fn($q) => $q->whereNull('parent_topic_id')
+    );
+    TopicUITableFilters::make(request()->all(), $query)
+      ->filterQuery()
+      ->getQuery()
       ->with('classificationGroup', 'course')
       ->latest('id');
-    // dd(Topic::all()->toArray());
-    // dd(json_encode(paginateFromRequest($query), JSON_PRETTY_PRINT) );
     return Inertia::render('institutions/topics/list-topics', [
       'parentTopic' => $topic,
       'topics' => paginateFromRequest($query),

@@ -225,7 +225,11 @@ function ListAssessments({ assessments }: { assessments: Assessment[] }) {
       label: 'Mid or Full Term',
       render: (row) =>
         `${
-          row.for_mid_term === null ? 'Both' : row.for_mid_term ? 'Yes' : 'No'
+          row.for_mid_term === null
+            ? 'Both'
+            : row.for_mid_term
+            ? 'Mid Term'
+            : 'Full Term'
         }`,
     },
     {

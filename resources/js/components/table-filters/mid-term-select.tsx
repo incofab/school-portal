@@ -8,8 +8,8 @@ export default function SelectMidTerm({ ...props }: Props & RadioGroupProps) {
     <RadioGroup {...props}>
       <VStack align={'start'}>
         <Radio value={''}>Both full and mid term records</Radio>
-        <Radio value={'0'}>Only full term</Radio>
-        <Radio value={'1'}>Only mid term</Radio>
+        <Radio value={'false'}>Only full term</Radio>
+        <Radio value={'true'}>Only mid term</Radio>
       </VStack>
     </RadioGroup>
   );

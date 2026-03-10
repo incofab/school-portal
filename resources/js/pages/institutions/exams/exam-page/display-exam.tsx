@@ -38,6 +38,7 @@ import { ExamAttempt } from '@/types/types';
 import QuestionImageHandler from '@/util/exam/question-image-handler';
 import '@/style/exam-display.css';
 import tokenUserUtil from '@/util/token-user-util';
+import { useExamGuard } from '@/hooks/useExamGuard';
 
 interface Props {
   exam: Exam;
@@ -51,6 +52,7 @@ export default function DisplayExam({
   timeRemaining,
   existingAttempts,
 }: Props) {
+  const [isExamActive, setIsExamActive] = useState(true);
   const [key, setKey] = useState<string>('0');
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const webForm = useWebForm({});
@@ -65,6 +67,15 @@ export default function DisplayExam({
     return examUtil;
   }, []);
 
+  useExamGuard({
+    enabled: isExamActive,
+    onWarning: () =>
+      window.alert(
+        'Do not leave your screen when the exam is ongong. Your paper will be automatically submitted on repeated attempts'
+      ),
+    onTerminate: () => submitExamNow(),
+  });
+
   async function onTimeElapsed() {
     await examUtil.getAttemptManager().sendAttempts(webForm);
     Inertia.visit(instRoute('external.exam-result', [exam.exam_no]));
@@ -78,6 +89,11 @@ export default function DisplayExam({
     if (!confirm('Do you want to submit your exam?')) {
       return;
     }
+    submitExamNow();
+  }
+
+  async function submitExamNow() {
+    setIsExamActive(false);
     setSubmitLoading(true);
     await examUtil.getAttemptManager().sendAttempts(webForm);
 

@@ -126,7 +126,7 @@ export default function ListTopics({ topics, parentTopic }: Props) {
             data={topics.data}
             keyExtractor={(row) => row.id}
             paginator={topics}
-            validFilters={['classificationGroup', 'course', 'term']}
+            validFilters={['classificationGroup', 'course']}
             onFilterButtonClick={topicFilterToggle.open}
           />
         </SlabBody>

@@ -8,6 +8,7 @@ import {
   HStack,
   Input,
   Spacer,
+  Spinner,
   Text,
   Wrap,
   WrapItem,
@@ -47,6 +48,7 @@ interface Props {
   students: Student[];
   assessments: Assessment[];
   teachersCourses: { [id: number]: CourseTeacher };
+  forMidTerm: boolean;
 }
 
 export default function RecordClassCourseResult({
@@ -54,6 +56,7 @@ export default function RecordClassCourseResult({
   students,
   assessments,
   teachersCourses,
+  forMidTerm,
 }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
   const { currentAcademicSession, currentTerm, usesMidTermResult } =
@@ -64,7 +67,7 @@ export default function RecordClassCourseResult({
   const webForm = useWebForm({
     academic_session_id: currentAcademicSession.id,
     term: currentTerm,
-    for_mid_term: false,
+    for_mid_term: forMidTerm,
     result: {} as ResultEntry,
   });
 
@@ -93,7 +96,14 @@ export default function RecordClassCourseResult({
     { label: 'Teacher', value: courseTeacher.user?.full_name ?? '' },
     { label: 'Session', value: currentAcademicSession.title },
     { label: 'Term', value: startCase(String(currentTerm)) },
-    ...(usesMidTermResult ? [{ label: 'For Mid Term', value: 'Yes' }] : []),
+    ...(usesMidTermResult
+      ? [
+          {
+            label: 'For Mid Term',
+            value: forMidTerm ? 'Yes' : 'No',
+          },
+        ]
+      : []),
   ];
 
   function getStudentTotal(result: {
@@ -153,10 +163,19 @@ export default function RecordClassCourseResult({
             >
               <Checkbox
                 isChecked={webForm.data.for_mid_term}
-                onChange={(e) =>
-                  webForm.setValue('for_mid_term', e.currentTarget.checked)
-                }
+                px={1}
+                onChange={(e) => {
+                  Inertia.visit(
+                    instRoute('record-class-results.create', [
+                      courseTeacher,
+                      { for_mid_term: e.currentTarget.checked },
+                    ])
+                  );
+                  webForm.setProcessing(true);
+                }}
+                disabled={webForm.processing}
               >
+                {webForm.processing && <Spinner size="xs" color="brand.500" />}{' '}
                 For Mid-Term Result
               </Checkbox>
             </FormControlBox>

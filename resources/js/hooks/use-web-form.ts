@@ -10,6 +10,7 @@ export interface WebForm<
   processing: boolean;
   setValue<Key extends keyof Data>(key: Key, value: Data[Key]): void;
   setData(data: Data): void;
+  setProcessing(processing: boolean): void;
   reset(): void;
   submit(
     cb: (data: Data, web: AxiosInstance) => Promise<AxiosResponse>
@@ -42,6 +43,7 @@ export default function useWebForm<Data = Record<string, any>>(
       setData({ ...initialRef.current });
       setErrors({} as FormErrors);
     },
+    setProcessing,
     async submit(cb) {
       setProcessing(true);
       try {

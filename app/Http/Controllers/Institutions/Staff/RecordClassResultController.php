@@ -40,6 +40,7 @@ class RecordClassResultController extends Controller
   {
     $courseTeacher->load(['course', 'user', 'classification']);
     $this->validateUser($courseTeacher);
+    $forMidTerm = request()->boolean('for_mid_term', false);
 
     $setting = SettingsHandler::makeFromRoute();
     $students = Student::query()
@@ -61,11 +62,12 @@ class RecordClassResultController extends Controller
       'courseTeacher' => $courseTeacher,
       'assessments' => Assessment::getAssessments(
         null,
-        null,
+        $forMidTerm,
         $courseTeacher->classification_id
       ),
       'students' => $students,
-      'teachersCourses' => $courseTeacher->otherTeacherCourses()
+      'teachersCourses' => $courseTeacher->otherTeacherCourses(),
+      'forMidTerm' => $forMidTerm
     ]);
   }
 
