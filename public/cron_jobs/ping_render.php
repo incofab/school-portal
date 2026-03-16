@@ -14,10 +14,10 @@ curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 $response = curl_exec($ch);
 
 // Check for errors
-if (curl_errno($ch)) {
-  echo 'Ping Failed: ' . curl_error($ch);
-} else {
-  echo 'Ping Successful at ' . date('Y-m-d H:i:s');
-}
+// if (curl_errno($ch)) {
+//   echo 'Ping Failed: ' . curl_error($ch);
+// } else {
+//   echo 'Ping Successful at ' . date('Y-m-d H:i:s');
+// }
 
 curl_close($ch);
