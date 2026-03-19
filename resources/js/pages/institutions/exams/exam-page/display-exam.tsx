@@ -262,8 +262,8 @@ function DisplayQuestion({
   const attemptManager = examUtil.getAttemptManager();
   const questions = examCourseable.courseable!.questions!;
 
-  const question =
-    questions[examUtil.getTabManager().getCurrentQuestionIndex()];
+  const questionIndex = examUtil.getTabManager().getCurrentQuestionIndex();
+  const question = questions[questionIndex];
   const courseable = examCourseable.courseable!;
   const questionImageHandler = new QuestionImageHandler(courseable);
   if (!question) {
@@ -281,7 +281,7 @@ function DisplayQuestion({
   return (
     <VStack align={'stretch'} className="question-container">
       <Text fontWeight={'bold'}>
-        Question {question.question_no} of {questions.length}
+        Question {questionIndex + 1} of {questions.length}
       </Text>
       {passage && (
         <Text my={2} dangerouslySetInnerHTML={{ __html: passage.passage }} />

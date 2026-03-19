@@ -50,7 +50,7 @@ export default function ShowExamCourseables({ examCourseable }: Props) {
           ))}
           <Divider my={3} />
           <VStack align={'stretch'} spacing={2}>
-            {examCourseable.courseable!.questions!.map((question) => (
+            {examCourseable.courseable!.questions!.map((question, index) => (
               <Div
                 key={question.id}
                 border={'1px solid'}
@@ -64,6 +64,7 @@ export default function ShowExamCourseables({ examCourseable }: Props) {
                   question={question}
                   attempts={exam!.attempts}
                   questionImageHandler={questionImageHandler}
+                  index={index}
                 />
                 {/* <Divider my={3} height={2} background={'gray.400'} /> */}
               </Div>
@@ -80,18 +81,20 @@ function ShowQuestion({
   attempts,
   questionImageHandler,
   event,
+  index,
 }: {
   event: Event;
   question: Question;
   attempts: ExamAttempt;
   questionImageHandler: QuestionImageHandler;
+  index: number;
 }) {
   const selection = attempts[question.id] ?? null;
   const isCorrect = selection === question.answer;
   return (
     <Div>
       <Text as={'span'} fontWeight={'bold'}>
-        No {question.question_no}
+        No {index + 1} {/* question.question_no */}
       </Text>
       <Text
         as={'span'}
