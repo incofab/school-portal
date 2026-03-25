@@ -41,8 +41,7 @@ class QuestionController extends Controller
     Institution $institution,
     QuestionCourseable $morphable,
     QuestionPayloadRequest $request
-  )
-  {
+  ) {
     $data = $request->validated();
     $this->storeQuestion($institution, $morphable, $data);
 
@@ -53,8 +52,7 @@ class QuestionController extends Controller
     Institution $institution,
     QuestionCourseable $morphable,
     QuestionPayloadRequest $request
-  )
-  {
+  ) {
     $data = $request->validated();
     $this->storeQuestion($institution, $morphable, $data);
 
@@ -93,8 +91,7 @@ class QuestionController extends Controller
     Institution $institution,
     Question $question,
     QuestionPayloadRequest $request
-  )
-  {
+  ) {
     $data = $request->validated();
 
     $question->fill($data)->save();
@@ -109,7 +106,6 @@ class QuestionController extends Controller
 
   function destroy(Institution $institution, Question $question)
   {
-    dd('Not implemented');
     $question->delete();
 
     return $this->res(
