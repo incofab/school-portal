@@ -3,12 +3,15 @@
 namespace App\Support\UITableFilters;
 
 use App\Support\SettingsHandler;
+use App\Support\UITableFilters\Concerns\HasDateRangeFilters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 abstract class BaseUITableFilter
 {
+  use HasDateRangeFilters;
+
   protected array $sortableColumns;
   private $calledFns = [];
   private SettingsHandler $settingHandler;
@@ -38,6 +41,7 @@ abstract class BaseUITableFilter
       'sortKey' => ['required_with:sortDir', 'string'],
       'search' => ['nullable', 'string'],
       'institution_id' => ['sometimes', 'integer'],
+      ...$this->dateRangeValidationRules(),
       ...$this->extraValidationRules()
     ]);
 
@@ -88,6 +92,7 @@ abstract class BaseUITableFilter
   public function filterQuery(): static
   {
     return $this->directQuery()
+      ->applyDateRangeFilters()
       ->when(
         $this->requestGet('search'),
         fn(self $that, $search) => $that->generalSearch($search)

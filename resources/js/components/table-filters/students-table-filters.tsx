@@ -5,6 +5,7 @@ import FilterFormControlBox from './filter-form-control-box';
 import ClassificationSelect from '../selectors/classification-select';
 import EnumSelect from '../dropdown-select/enum-select';
 import { InstitutionUserType } from '@/types/types';
+import DateRangeFilter, { getDateRangeFilterParams } from './date-range-filter';
 
 interface Props {
   isOpen: boolean;
@@ -16,6 +17,7 @@ export default function StudentsTableFilters({ isOpen, onClose }: Props) {
   const [filters, setFilters] = useState(() => ({
     classification: params.classification ?? '',
     studentRole: params.studentRole ?? '',
+    ...getDateRangeFilterParams(params, 'created_at'),
   }));
 
   return (
@@ -44,6 +46,18 @@ export default function StudentsTableFilters({ isOpen, onClose }: Props) {
           }
         />
       </FilterFormControlBox>
+      <DateRangeFilter
+        label="Registration Date"
+        filterKey="created_at"
+        filters={filters}
+        onChange={(dateRange) =>
+          setFilters({
+            ...filters,
+            ...dateRange,
+          })
+        }
+        // onChange={(key, value) => setFilters({ ...filters, [key]: value })}
+      />
     </BaseTableFilter>
   );
 }

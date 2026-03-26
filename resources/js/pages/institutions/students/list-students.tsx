@@ -31,6 +31,7 @@ import EditStudentCodeModal from '@/components/modals/edit-student-code-modal';
 import { Div } from '@/components/semantic';
 import UniversalReceiptModal from '@/components/modals/universal-receipt-modal';
 import SuspensionToggleButton from '@/domain/institutions/user-profile/suspension-toggle-button';
+import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-filter';
 
 interface Props {
   students: PaginationResponse<Student>;
@@ -217,7 +218,11 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
             data={students.data}
             keyExtractor={(row) => row.id}
             paginator={students}
-            validFilters={['classification', 'studentRole']}
+            validFilters={[
+              'classification',
+              'studentRole',
+              ...dateRangeFilterQueryKeys('created_at'),
+            ]}
             onFilterButtonClick={studentFiltersModalToggle.open}
           />
         </SlabBody>
@@ -239,7 +244,7 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
         <UniversalReceiptModal
           {...universalReceiptModalToggle.props}
           user={selectedUser}
-          onSuccess={() => {}}
+          onSuccess={() => undefined}
         />
       )}
     </DashboardLayout>

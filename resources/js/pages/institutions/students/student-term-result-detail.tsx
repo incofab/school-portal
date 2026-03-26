@@ -96,6 +96,9 @@ export default function StudentTermResultDetail({
     {
       label: 'Grade',
       value: 'grade',
+      render: (row: CourseResult) =>
+        ResultUtil.getCommentFromTemplate(row.result, resultCommentTemplate)
+          ?.grade ?? row.grade,
     },
     {
       label: 'Teacher',

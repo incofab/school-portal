@@ -3,6 +3,7 @@ import useQueryString from '@/hooks/use-query-string';
 import BaseTableFilter from './base-table-filter';
 import FilterFormControlBox from './filter-form-control-box';
 import { Input } from '@chakra-ui/react';
+import DateRangeFilter, { getDateRangeFilterParams } from './date-range-filter';
 
 interface Props {
   isOpen: boolean;
@@ -17,8 +18,9 @@ export default function SentNotificationTableFilters({
   const [filters, setFilters] = useState(() => ({
     search: params.search ?? '',
     type: params.type ?? '',
-    fromDate: params.fromDate ?? '',
-    toDate: params.toDate ?? '',
+    // fromDate: params.fromDate ?? '',
+    // toDate: params.toDate ?? '',
+    ...getDateRangeFilterParams(params, 'created_at'),
   }));
 
   return (
@@ -37,7 +39,7 @@ export default function SentNotificationTableFilters({
           placeholder="e.g class-update"
         />
       </FilterFormControlBox>
-      <FilterFormControlBox title="From Date">
+      {/* <FilterFormControlBox title="From Date">
         <Input
           type="date"
           value={filters.fromDate}
@@ -52,7 +54,19 @@ export default function SentNotificationTableFilters({
           value={filters.toDate}
           onChange={(e) => setFilters({ ...filters, toDate: e.currentTarget.value })}
         />
-      </FilterFormControlBox>
+      </FilterFormControlBox> */}
+      <DateRangeFilter
+        label="Created Date"
+        filterKey="created_at"
+        filters={filters}
+        onChange={(dateRange) =>
+          setFilters({
+            ...filters,
+            ...dateRange,
+          })
+        }
+        // onChange={(key, value) => setFilters({ ...filters, [key]: value })}
+      />
     </BaseTableFilter>
   );
 }

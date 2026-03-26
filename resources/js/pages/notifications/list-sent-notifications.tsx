@@ -17,6 +17,7 @@ import { Inertia } from '@inertiajs/inertia';
 import SentNotificationTableFilters from '@/components/table-filters/sent-notification-table-filters';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import { LinkButton } from '@/components/buttons';
+import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-filter';
 
 interface Props {
   notifications: PaginationResponse<InternalNotification>;
@@ -104,7 +105,12 @@ export default function SentNotificationsList({
           data={notifications.data}
           keyExtractor={(row) => row.id}
           paginator={notifications}
-          validFilters={['search', 'type', 'fromDate', 'toDate']}
+          validFilters={[
+            'search',
+            'type',
+            //'fromDate', 'toDate'
+            ...dateRangeFilterQueryKeys('created_at'),
+          ]}
           onFilterButtonClick={filterToggle.open}
           hideSearchField={true}
         />
