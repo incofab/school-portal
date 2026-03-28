@@ -21,7 +21,7 @@ class CourseSessionController extends Controller
       'course' => $course,
       'courses' => Course::all()
     ]);
-  } 
+  }
 
   function create(Institution $institution, Course $course)
   {
@@ -79,7 +79,8 @@ class CourseSessionController extends Controller
 
   function destroy(Institution $institution, CourseSession $courseSession)
   {
-    dd('Not implemented');
+    $institutionUser = currentInstitutionUser();
+    abort_unless($institutionUser->isAdmin(), 403, 'Access denied');
     $courseSession->delete();
 
     return $this->res(

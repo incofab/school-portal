@@ -106,11 +106,15 @@ class QuestionController extends Controller
 
   function destroy(Institution $institution, Question $question)
   {
+    $institutionUser = currentInstitutionUser();
+    abort_unless($institutionUser->isAdmin(), 403, 'Access denied');
+
+    $courseSession = $question->courseable;
     $question->delete();
 
     return $this->res(
       successRes('Question record deleted'),
-      instRoute('questions.index', [$question->courseable_id])
+      instRoute('questions.index', [$courseSession->getMorphedId()])
     );
   }
 

@@ -43,6 +43,7 @@ class ResultCommentTemplate extends Model
         )
       )
       ->with('classifications')
+      ->oldest('min')
       ->get();
     // $resultComments = $query
     //   ->where(
