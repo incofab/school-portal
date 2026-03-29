@@ -170,7 +170,7 @@ class ProcessTermResult
     }
     $affectedStudent = $incompleteStudentResultDetail->getStudent();
     throw ValidationException::withMessages([
-      'error' => "Some students ({$affectedStudent->user?->full_name}) have unrecorded results"
+      'error' => "Some {$classification->title} students ({$affectedStudent->user?->full_name}) have unrecorded results"
     ]);
   }
 }

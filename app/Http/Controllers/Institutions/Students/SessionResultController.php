@@ -96,6 +96,7 @@ class SessionResultController extends Controller
       'student_id' => $sessionResult->student_id,
       'for_mid_term' => false
     ];
+    $isStudent = currentInstitutionUser()?->isStudent();
 
     $termResultDetails = [];
     foreach (TermType::cases() as $key => $term) {
@@ -103,6 +104,7 @@ class SessionResultController extends Controller
       $termResultDetails[$term->value] = [
         'termResult' => TermResult::query()
           ->where($binding)
+          ->when($isStudent, fn($q) => $q->activated())
           ->first(),
         'courseResults' => CourseResult::query()
           ->where($binding)

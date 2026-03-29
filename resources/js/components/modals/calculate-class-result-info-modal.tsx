@@ -10,6 +10,8 @@ import AcademicSessionSelect from '../selectors/academic-session-select';
 import EnumSelect from '../dropdown-select/enum-select';
 import ClassificationSelect from '../selectors/classification-select';
 import useSharedProps from '@/hooks/use-shared-props';
+import { MultiValue } from 'react-select';
+import { Nullable, SelectOptionType } from '@/types/types';
 
 interface Props {
   isOpen: boolean;
@@ -33,17 +35,17 @@ export default function CalculateClassResultInfoModal({
   const webForm = useWebForm({
     academic_session_id: currentAcademicSessionId,
     term: currentTerm,
-    classification: '',
+    classifications: null as Nullable<MultiValue<SelectOptionType<number>>>,
     for_mid_term: false,
     force_calculate_term_result: false,
   });
 
   const onSubmit = async () => {
     const res = await webForm.submit((data, web) => {
-      return web.post(
-        instRoute('class-result-info.calculate', [data.classification]),
-        data
-      );
+      return web.post(instRoute('class-result-info.calculate'), {
+        ...data,
+        classifications: data.classifications?.map((item) => item.value),
+      });
     });
 
     if (!handleResponseToast(res)) return;
@@ -61,16 +63,14 @@ export default function CalculateClassResultInfoModal({
         <VStack spacing={3}>
           <FormControlBox
             form={webForm as any}
-            formKey="classification"
-            title="Class"
+            formKey="classifications"
+            title="Classes"
           >
             <ClassificationSelect
-              value={webForm.data.classification}
-              isMulti={false}
+              selectValue={webForm.data.classifications}
+              isMulti={true}
               isClearable={true}
-              onChange={(e: any) =>
-                webForm.setValue('classification', e?.value)
-              }
+              onChange={(e: any) => webForm.setValue('classifications', e)}
               required
             />
           </FormControlBox>

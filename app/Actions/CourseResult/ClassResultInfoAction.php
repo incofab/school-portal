@@ -52,11 +52,15 @@ class ClassResultInfoAction
     $numOfCourses = $courseResultsGroupedByCourses->count();
     $numOfStudents = $classResultsGroupedByStudents->count();
 
-    abort_if($numOfCourses < 1, 421, 'There are no subjects in this selection');
+    abort_if(
+      $numOfCourses < 1,
+      421,
+      "{$classification->title} has no subjects in this selection"
+    );
     abort_if(
       $numOfStudents < 1,
       421,
-      'There are no students in this selection'
+      "{$classification->title} has no students in this selection"
     );
 
     [$totalScore, $minScore, $maxScore] = $this->getTotalScore($courseResults);

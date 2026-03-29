@@ -260,7 +260,7 @@ Route::get('/class-result-info/index', [Web\Staff\ClassResultInfoController::cla
   ->name('class-result-info.index');
 Route::get('/class-result-info/{classResultInfo}/download', [Web\Staff\ClassResultInfoController::class, 'downloadClassResult'])
   ->name('class-result-info.download');
-Route::post('/class-result-info/calculate/{classification}', [Web\Staff\ClassResultInfoController::class, 'calculate'])
+Route::post('/class-result-info/calculate', [Web\Staff\ClassResultInfoController::class, 'calculate'])
   ->name('class-result-info.calculate');
 Route::post('/class-result-info/recalculate/{classResultInfo}', [Web\Staff\ClassResultInfoController::class, 'reCalculate'])
   ->name('class-result-info.recalculate');

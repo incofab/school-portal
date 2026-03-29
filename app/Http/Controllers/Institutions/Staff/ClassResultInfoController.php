@@ -15,11 +15,13 @@ use App\Models\ClassResultInfo;
 use App\Models\Institution;
 use App\Models\ResultCommentTemplate;
 use App\Models\TermResult;
+use App\Rules\ValidateExistsRule;
 use App\Support\SettingsHandler;
 use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class ClassResultInfoController extends Controller
@@ -47,25 +49,33 @@ class ClassResultInfoController extends Controller
     ]);
   }
 
-  public function calculate(
-    Institution $institution,
-    Classification $classification,
-    Request $request
-  ) {
-    $request->validate([
+  public function calculate(Institution $institution, Request $request)
+  {
+    $data = $request->validate([
       'academic_session_id' => ['required', 'exists:academic_sessions,id'],
       'term' => ['required', new Enum(TermType::class)],
       'for_mid_term' => ['required', 'boolean'],
-      'force_calculate_term_result' => ['required', 'boolean']
+      'force_calculate_term_result' => ['required', 'boolean'],
+      'classifications' => ['required', 'array', 'min:1'],
+      'classifications.*' => [
+        'required',
+        new ValidateExistsRule(Classification::class)
+      ]
     ]);
 
-    ClassResultInfoAction::make()->calculate(
-      classification: $classification,
-      academicSessionId: $request->academic_session_id,
-      term: $request->term,
-      forMidTerm: $request->for_mid_term,
-      forceCalculateTermResult: $request->force_calculate_term_result
-    );
+    Classification::query()
+      ->whereIn('id', $data['classifications'])
+      ->get()
+      ->each(function (Classification $classification) use ($data) {
+        ClassResultInfoAction::make()->calculate(
+          classification: $classification,
+          academicSessionId: $data['academic_session_id'],
+          term: $data['term'],
+          forMidTerm: $data['for_mid_term'],
+          forceCalculateTermResult: $data['force_calculate_term_result']
+        );
+      });
+
     return $this->ok();
   }
 
