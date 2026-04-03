@@ -103,7 +103,7 @@ class FundingController extends Controller
   {
     Validator::validate(
       ['reference' => $funding->revertReference()],
-      ['reference' => ['required', new ValidateFundingReference()]]
+      ['reference' => ['required', 'unique:fundings,reference']]
     );
 
     RecordFunding::make(

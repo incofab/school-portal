@@ -2,6 +2,7 @@
 
 namespace App\Support\Fundings;
 
+use App\Enums\TransactionType;
 use App\Enums\WalletType;
 use App\Models\Funding;
 use App\Models\InstitutionGroup;
@@ -9,6 +10,7 @@ use App\Models\User;
 use App\Support\TransactionHandler;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class RecordFunding
 {
@@ -35,10 +37,22 @@ class RecordFunding
   {
     $remark = 'Reverted: ' . $funding->remark;
     $reference = $funding->revertReference();
+    $transaction = $funding->transaction;
+    $amount = $transaction->amount;
+    abort_unless($transaction, 404, 'Transaction record not found');
+
     if ($funding->wallet == WalletType::Credit) {
-      $this->recordCreditDeduction($funding->amount, $reference, null, $remark);
+      if ($transaction->type === TransactionType::Credit) {
+        $this->recordCreditDeduction($amount, $reference, $funding, $remark);
+      } else {
+        $this->recordCreditTopup($amount, $reference, $funding, $remark);
+      }
     } else {
-      $this->recordDebtTopup($funding->amount, $reference, null, $remark);
+      if ($transaction->type === TransactionType::Credit) {
+        $this->recordDebtReduction($amount, $reference, $funding, $remark);
+      } else {
+        $this->recordDebtTopup($amount, $reference, $funding, $remark);
+      }
     }
   }
 
@@ -55,12 +69,14 @@ class RecordFunding
 
     $this->bbt = $this->institutionGroup->debt_wallet;
     $this->bat = $this->bbt + $this->amount;
+    DB::beginTransaction();
     $funding = $this->recordFunding($reference);
 
     TransactionHandler::make(
       $this->institutionGroup,
       $reference
     )->topupDebtWallet($amount, $funding, $remark);
+    DB::commit();
   }
 
   function recordDebtReduction(
@@ -76,12 +92,15 @@ class RecordFunding
 
     $this->bbt = $this->institutionGroup->debt_wallet;
     $this->bat = $this->bbt - $this->amount;
+
+    DB::beginTransaction();
     $funding = $this->recordFunding($reference);
 
     TransactionHandler::make(
       $this->institutionGroup,
       $reference
     )->deductDebtWallet($amount, $funding, $remark);
+    DB::commit();
   }
 
   function recordCreditTopup(
@@ -97,12 +116,15 @@ class RecordFunding
 
     $this->bbt = $this->institutionGroup->credit_wallet;
     $this->bat = $this->bbt + $this->amount;
+
+    DB::beginTransaction();
     $funding = $this->recordFunding($reference);
 
     TransactionHandler::make(
       $this->institutionGroup,
       $reference
     )->topupCreditWallet($amount, $funding, $remark);
+    DB::commit();
   }
 
   function recordCreditDeduction(
@@ -118,12 +140,15 @@ class RecordFunding
 
     $this->bbt = $this->institutionGroup->credit_wallet;
     $this->bat = $this->bbt - $this->amount;
+
+    DB::beginTransaction();
     $funding = $this->recordFunding($reference);
 
     TransactionHandler::make(
       $this->institutionGroup,
       $reference
     )->deductCreditWallet($amount, $funding, $remark);
+    DB::commit();
   }
 
   private function recordFunding(string $reference): Funding

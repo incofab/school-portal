@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\WalletType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,7 +19,8 @@ class Funding extends Model
     'previous_balance' => 'float',
     'new_balance' => 'float',
     'created_at' => 'datetime',
-    'updated_at' => 'datetime'
+    'updated_at' => 'datetime',
+    'wallet' => WalletType::class
   ];
 
   static function debtReference($reference)

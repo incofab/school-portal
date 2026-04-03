@@ -9,7 +9,7 @@ import FundInstitutionGroupModal from '@/components/modals/fund-institution-grou
 import useModalToggle from '@/hooks/use-modal-toggle';
 import { BrandButton } from '@/components/buttons';
 import { Inertia } from '@inertiajs/inertia';
-import { Button, HStack, Icon } from '@chakra-ui/react';
+import { Button, HStack, Icon, IconButton } from '@chakra-ui/react';
 import {
   ArrowDownTrayIcon,
   ArrowLeftCircleIcon,
@@ -21,7 +21,6 @@ import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
-import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface Props {
   fundings: PaginationResponse<Funding>;
@@ -29,7 +28,6 @@ interface Props {
 }
 
 export default function ListFundings({ fundings, institutionGroups }: Props) {
-  const { instRoute } = useInstitutionRoute();
   const fundInstitutionGroupModalToggle = useModalToggle();
   const recordDebtModalToggle = useModalToggle();
 
@@ -38,9 +36,11 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
 
   async function revertFunding(obj: Funding) {
     const res = await revertForm.submit((data, web) =>
-      web.post(instRoute('fundings.revert', [obj.id]))
+      web.post(route('managers.funding.revert', [obj.id]))
     );
-    handleResponseToast(res);
+    if (!handleResponseToast(res)) {
+      return;
+    }
     Inertia.reload({ only: ['fundings'] });
   }
 
@@ -71,67 +71,59 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
       render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
     },
     {
+      label: 'Wallet/Transaction Type',
+      render: (row) => `${row.wallet} / ${row.transaction?.type}`,
+    },
+    {
       label: 'Reference',
       value: 'reference',
     },
     {
       label: 'Remark',
       value: 'remark',
-      // render: (row) => (
-      //   <HStack>
-      //     {!row.remark || row.remark.trim() === '' ? (
-      //       ''
-      //     ) : (
-      //       <InfoPopover label={row.remark}>
-      //         <IconButton
-      //           aria-label={'Remark'}
-      //           icon={<Icon as={EyeIcon} />}
-      //           variant={'ghost'}
-      //           colorScheme={'brand'}
-      //         />
-      //       </InfoPopover>
-      //     )}
-      //   </HStack>
-      // ),
     },
     {
       label: 'Action',
-      render: (row) =>
-        row.wallet == WalletType.Credit ? (
-          <>
-            <DestructivePopover
-              label={'Generate Receipt for this payment?'}
-              positiveButtonLabel={'Generate Receipt'}
-              onConfirm={() =>
-                window.open(route('managers.funding.receipt', [row.id]))
-              }
-            >
-              <Button
-                size="sm"
-                colorScheme="brand"
-                leftIcon={<Icon as={ArrowDownTrayIcon} />}
+      render: (row) => (
+        <>
+          {row.wallet == WalletType.Credit && (
+            <>
+              <DestructivePopover
+                label={'Generate Receipt for this payment?'}
+                positiveButtonLabel={'Generate Receipt'}
+                onConfirm={() =>
+                  window.open(route('managers.funding.receipt', [row.id]))
+                }
               >
-                Receipt
-              </Button>
-            </DestructivePopover>
-            <DestructivePopover
-              label={'Do you want to revert this funding?'}
-              positiveButtonLabel={'Revert'}
-              onConfirm={() => revertFunding(row)}
-              isLoading={revertForm.processing}
-            >
-              <Button
-                size="sm"
-                colorScheme="red"
-                leftIcon={<Icon as={ArrowLeftCircleIcon} />}
-              >
-                Revert
-              </Button>
-            </DestructivePopover>
-          </>
-        ) : (
-          <></>
-        ),
+                <Button
+                  size="sm"
+                  colorScheme="brand"
+                  leftIcon={<Icon as={ArrowDownTrayIcon} />}
+                >
+                  Receipt
+                </Button>
+              </DestructivePopover>
+            </>
+          )}
+          <DestructivePopover
+            label={'Do you want to revert this funding?'}
+            positiveButtonLabel={'Revert'}
+            onConfirm={(onClose) => {
+              revertFunding(row);
+              onClose();
+            }}
+            isLoading={revertForm.processing}
+          >
+            <IconButton
+              size="sm"
+              colorScheme="red"
+              icon={<Icon as={ArrowLeftCircleIcon} />}
+              aria-label="Revert"
+              m={1}
+            />
+          </DestructivePopover>
+        </>
+      ),
     },
   ];
 
