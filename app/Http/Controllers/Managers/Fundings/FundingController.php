@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Rules\ValidateFundingReference;
 use App\Support\Fundings\FundingHandler;
 use App\Support\Fundings\RecordFunding;
+use Illuminate\Support\Facades\Validator;
 
 class FundingController extends Controller
 {
@@ -96,5 +97,19 @@ class FundingController extends Controller
     $pdf = Pdf::loadView('receipts.funding-receipt', $data);
 
     return $pdf->download('funding-receipt.pdf');
+  }
+
+  function revert(Funding $funding)
+  {
+    Validator::validate(
+      ['reference' => $funding->revertReference()],
+      ['reference' => ['required', new ValidateFundingReference()]]
+    );
+
+    RecordFunding::make(
+      $funding->institutionGroup,
+      currentUser()
+    )->revertFunding($funding);
+    return $this->ok();
   }
 }

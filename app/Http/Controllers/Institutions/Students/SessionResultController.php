@@ -100,12 +100,16 @@ class SessionResultController extends Controller
 
     $termResultDetails = [];
     foreach (TermType::cases() as $key => $term) {
+      $termResult = TermResult::query()
+        ->where($binding)
+        ->when($isStudent, fn($q) => $q->activated())
+        ->first();
+      if (!$termResult) {
+        continue;
+      }
       $binding['term'] = $term;
       $termResultDetails[$term->value] = [
-        'termResult' => TermResult::query()
-          ->where($binding)
-          ->when($isStudent, fn($q) => $q->activated())
-          ->first(),
+        'termResult' => $termResult,
         'courseResults' => CourseResult::query()
           ->where($binding)
           ->with('course')

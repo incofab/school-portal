@@ -9,14 +9,19 @@ import FundInstitutionGroupModal from '@/components/modals/fund-institution-grou
 import useModalToggle from '@/hooks/use-modal-toggle';
 import { BrandButton } from '@/components/buttons';
 import { Inertia } from '@inertiajs/inertia';
-import { Button, HStack, Icon, IconButton } from '@chakra-ui/react';
-import InfoPopover from '@/components/info-popover';
-import { ArrowDownTrayIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { Button, HStack, Icon } from '@chakra-ui/react';
+import {
+  ArrowDownTrayIcon,
+  ArrowLeftCircleIcon,
+} from '@heroicons/react/24/outline';
 import { formatAsCurrency } from '@/util/util';
 import RecordDebtModal from '@/components/modals/record-debt-modal';
 import route from '@/util/route';
 import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
+import useWebForm from '@/hooks/use-web-form';
+import useMyToast from '@/hooks/use-my-toast';
+import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface Props {
   fundings: PaginationResponse<Funding>;
@@ -24,8 +29,20 @@ interface Props {
 }
 
 export default function ListFundings({ fundings, institutionGroups }: Props) {
+  const { instRoute } = useInstitutionRoute();
   const fundInstitutionGroupModalToggle = useModalToggle();
   const recordDebtModalToggle = useModalToggle();
+
+  const revertForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
+
+  async function revertFunding(obj: Funding) {
+    const res = await revertForm.submit((data, web) =>
+      web.post(instRoute('fundings.revert', [obj.id]))
+    );
+    handleResponseToast(res);
+    Inertia.reload({ only: ['fundings'] });
+  }
 
   const headers: ServerPaginatedTableHeader<Funding>[] = [
     {
@@ -81,21 +98,37 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
       label: 'Action',
       render: (row) =>
         row.wallet == WalletType.Credit ? (
-          <DestructivePopover
-            label={'Generate Receipt for this payment?'}
-            positiveButtonLabel={'Generate Receipt'}
-            onConfirm={() =>
-              window.open(route('managers.funding.receipt', [row.id]))
-            }
-          >
-            <Button
-              size="sm"
-              colorScheme="brand"
-              leftIcon={<Icon as={ArrowDownTrayIcon} />}
+          <>
+            <DestructivePopover
+              label={'Generate Receipt for this payment?'}
+              positiveButtonLabel={'Generate Receipt'}
+              onConfirm={() =>
+                window.open(route('managers.funding.receipt', [row.id]))
+              }
             >
-              Receipt
-            </Button>
-          </DestructivePopover>
+              <Button
+                size="sm"
+                colorScheme="brand"
+                leftIcon={<Icon as={ArrowDownTrayIcon} />}
+              >
+                Receipt
+              </Button>
+            </DestructivePopover>
+            <DestructivePopover
+              label={'Do you want to revert this funding?'}
+              positiveButtonLabel={'Revert'}
+              onConfirm={() => revertFunding(row)}
+              isLoading={revertForm.processing}
+            >
+              <Button
+                size="sm"
+                colorScheme="red"
+                leftIcon={<Icon as={ArrowLeftCircleIcon} />}
+              >
+                Revert
+              </Button>
+            </DestructivePopover>
+          </>
         ) : (
           <></>
         ),

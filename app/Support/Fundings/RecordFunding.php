@@ -31,6 +31,17 @@ class RecordFunding
     return new self($institutionGroup, $user);
   }
 
+  function revertFunding(Funding $funding): void
+  {
+    $remark = 'Reverted: ' . $funding->remark;
+    $reference = $funding->revertReference();
+    if ($funding->wallet == WalletType::Credit) {
+      $this->recordCreditDeduction($funding->amount, $reference, null, $remark);
+    } else {
+      $this->recordDebtTopup($funding->amount, $reference, null, $remark);
+    }
+  }
+
   function recordDebtTopup(
     $amount,
     string $reference,

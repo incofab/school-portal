@@ -31,6 +31,11 @@ class Funding extends Model
     return "$reference-credit";
   }
 
+  function revertReference()
+  {
+    return "revert-{$this->reference}";
+  }
+
   public function institutionGroup()
   {
     return $this->belongsTo(InstitutionGroup::class);
