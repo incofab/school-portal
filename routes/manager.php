@@ -93,6 +93,7 @@ Route::group(['middleware' => 'admin'], function () {
 });
 
 Route::post('funding/record-debt', [Web\Fundings\FundingController::class, 'recordDebt'])->name('funding.record-debt');
+Route::post('funding/deduct-wallet', [Web\Fundings\FundingController::class, 'deductWallet'])->name('funding.deduct-wallet');
 Route::get('funding/{funding}/receipt', [Web\Fundings\FundingController::class, 'receipt'])->name('funding.receipt');
 Route::post('funding/{funding}/revert', [Web\Fundings\FundingController::class, 'revert'])->name('funding.revert');
 Route::resource('funding', Web\Fundings\FundingController::class);

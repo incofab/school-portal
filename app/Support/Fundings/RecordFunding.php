@@ -56,6 +56,15 @@ class RecordFunding
     }
   }
 
+  function deductWallet(string $walletType, $amount, string $reference, $remark)
+  {
+    if ($walletType == WalletType::Debt) {
+      $this->recordDebtReduction($amount, $reference, null, $remark);
+    } else {
+      $this->recordCreditDeduction($amount, $reference, null, $remark);
+    }
+  }
+
   function recordDebtTopup(
     $amount,
     string $reference,

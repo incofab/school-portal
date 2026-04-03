@@ -13,6 +13,7 @@ use App\Rules\ValidateFundingReference;
 use App\Support\Fundings\FundingHandler;
 use App\Support\Fundings\RecordFunding;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Enum;
 
 class FundingController extends Controller
 {
@@ -97,6 +98,30 @@ class FundingController extends Controller
     $pdf = Pdf::loadView('receipts.funding-receipt', $data);
 
     return $pdf->download('funding-receipt.pdf');
+  }
+
+  function deductWallet(Request $request)
+  {
+    $validated = $request->validate([
+      'institution_group_id' => 'required|exists:institution_groups,id',
+      'amount' => 'required|numeric',
+      'remark' => 'required|string',
+      'reference' => ['required', new ValidateFundingReference()],
+      'wallet_type' => ['required', new Enum(WalletType::class)]
+    ]);
+
+    $institutionGroup = InstitutionGroup::find(
+      $validated['institution_group_id']
+    );
+
+    RecordFunding::make($institutionGroup, currentUser())->deductWallet(
+      $validated['wallet_type'],
+      $validated['amount'],
+      $validated['reference'],
+      $validated['remark']
+    );
+
+    return $this->ok();
   }
 
   function revert(Funding $funding)

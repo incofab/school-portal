@@ -21,6 +21,7 @@ import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
+import DeductInstitutionGroupWalletModal from '@/components/modals/deduct-institution-group-wallet-modal';
 
 interface Props {
   fundings: PaginationResponse<Funding>;
@@ -30,6 +31,7 @@ interface Props {
 export default function ListFundings({ fundings, institutionGroups }: Props) {
   const fundInstitutionGroupModalToggle = useModalToggle();
   const recordDebtModalToggle = useModalToggle();
+  const deductInstitutionGroupWalletModalToggle = useModalToggle();
 
   const revertForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
@@ -135,6 +137,11 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
           rightElement={
             <HStack>
               <BrandButton
+                title="Deduct Fund"
+                onClick={deductInstitutionGroupWalletModalToggle.open}
+                colorScheme="red"
+              />
+              <BrandButton
                 title="Record Debt"
                 onClick={recordDebtModalToggle.open}
               />
@@ -169,6 +176,11 @@ export default function ListFundings({ fundings, institutionGroups }: Props) {
       <RecordDebtModal
         institutionGroups={institutionGroups}
         {...recordDebtModalToggle.props}
+        onSuccess={() => Inertia.reload()}
+      />
+      <DeductInstitutionGroupWalletModal
+        institutionGroups={institutionGroups}
+        {...deductInstitutionGroupWalletModalToggle.props}
         onSuccess={() => Inertia.reload()}
       />
     </ManagerDashboardLayout>
