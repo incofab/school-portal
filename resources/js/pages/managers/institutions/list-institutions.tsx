@@ -1,5 +1,9 @@
 import React from 'react';
-import { Institution, InstitutionGroup } from '@/types/models';
+import {
+  Institution,
+  InstitutionGroup,
+  ResultPublication,
+} from '@/types/models';
 import { HStack, Icon, IconButton } from '@chakra-ui/react';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { InstitutionStatus, PaginationResponse } from '@/types/types';
@@ -15,10 +19,12 @@ import { TrashIcon } from '@heroicons/react/24/solid';
 import ButtonSwitch from '@/components/button-switch';
 import { Div } from '@/components/semantic';
 import useIsAdminManager from '@/hooks/use-is-admin-manager';
+import { dateTimeFormat, formatAsDate } from '@/util/util';
 
 interface InstitutionWithMeta extends Institution {
   classifications_count: number;
   institution_group: InstitutionGroup;
+  latest_result_publication: ResultPublication | null;
 }
 interface Props {
   institutions: PaginationResponse<InstitutionWithMeta>;
@@ -75,6 +81,20 @@ export default function ListInstitutions({ institutions, stats }: Props) {
     {
       label: 'Group',
       value: 'institution_group.name',
+    },
+    {
+      label: 'Latest Results',
+      render: (row) => {
+        if (!row.latest_result_publication) {
+          return 'N/A';
+        }
+        return `${row.latest_result_publication?.academic_session?.title} ${
+          row.latest_result_publication?.term
+        } on ${formatAsDate(
+          row.latest_result_publication?.created_at,
+          dateTimeFormat
+        )}`;
+      },
     },
     {
       label: 'Classes',

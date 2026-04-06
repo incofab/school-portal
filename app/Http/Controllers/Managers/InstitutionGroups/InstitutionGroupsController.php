@@ -35,6 +35,7 @@ class InstitutionGroupsController extends Controller
           InstitutionGroup::getQueryForManager($user)
             ->withCount('institutions')
             ->with('partner', 'institutions:id,institution_group_id,uuid')
+            ->with('latestResultPublication')
             ->orderByRaw(
               "institution_groups.status IS NOT NULL, FIELD(institution_groups.status, 'active', 'suspended')"
             )

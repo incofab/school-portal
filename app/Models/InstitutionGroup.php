@@ -75,4 +75,11 @@ class InstitutionGroup extends Model
   {
     return $this->morphMany(Withdrawal::class, 'withdrawable');
   }
+
+  function latestResultPublication()
+  {
+    return $this->hasOne(ResultPublication::class)
+      ->with('academicSession')
+      ->latestOfMany();
+  }
 }

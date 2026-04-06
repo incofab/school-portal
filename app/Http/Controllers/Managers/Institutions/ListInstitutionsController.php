@@ -28,7 +28,7 @@ class ListInstitutionsController extends Controller
       'institutions' => paginateFromRequest(
         $query
           ->withCount('classifications')
-          ->with('institutionGroup')
+          ->with('institutionGroup', 'latestResultPublication')
           ->orderByRaw(
             "institutions.status IS NOT NULL, FIELD(institutions.status, 'active', 'suspended')"
           )

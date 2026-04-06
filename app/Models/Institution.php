@@ -346,4 +346,11 @@ class Institution extends Model
   {
     return $this->hasMany(Attendance::class);
   }
+
+  function latestResultPublication()
+  {
+    return $this->hasOne(ResultPublication::class)
+      ->with('academicSession')
+      ->latestOfMany();
+  }
 }

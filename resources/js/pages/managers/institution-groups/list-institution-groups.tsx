@@ -1,5 +1,9 @@
 import React from 'react';
-import { Institution, InstitutionGroup } from '@/types/models';
+import {
+  Institution,
+  InstitutionGroup,
+  ResultPublication,
+} from '@/types/models';
 import {
   Button,
   HStack,
@@ -29,10 +33,12 @@ import { Div } from '@/components/semantic';
 import useIsAdminManager from '@/hooks/use-is-admin-manager';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import GenerateInvoiceModal from './generate-invoice-modal';
+import { dateTimeFormat, formatAsDate } from '@/util/util';
 
 interface InstitutionGroupWithMeta extends InstitutionGroup {
   institutions_count: number;
   institutions: Institution[];
+  latest_result_publication: ResultPublication | null;
 }
 
 interface Props {
@@ -104,6 +110,20 @@ export default function ListInstitutionGropus({
     {
       label: 'Institutions',
       value: 'institutions_count',
+    },
+    {
+      label: 'Latest Results',
+      render: (row) => {
+        if (!row.latest_result_publication) {
+          return 'N/A';
+        }
+        return `${row.latest_result_publication?.academic_session?.title} ${
+          row.latest_result_publication?.term
+        } on ${formatAsDate(
+          row.latest_result_publication?.created_at,
+          dateTimeFormat
+        )}`;
+      },
     },
     {
       label: 'Credit (₦)',
