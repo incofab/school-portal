@@ -111,6 +111,12 @@ Route::group(['prefix' => '{institution}/admissions/', 'as' => 'institutions.'],
 Route::group(['middleware' => ['guest']], function () {
     Route::get('login', [Web\AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [Web\AuthController::class, 'login'])->name('login.store');
+    Route::get('exam-result/login', [Web\PublicExamResultController::class, 'create'])
+        ->name('exam-results.create');
+    Route::post('exam-result/login', [Web\PublicExamResultController::class, 'store'])
+        ->name('exam-results.store');
+    Route::get('exam-result/{exam:exam_no}', [Web\PublicExamResultController::class, 'show'])
+        ->name('exam-results.show');
     Route::get('register/{partner?}', [Web\InstitutionRegistrationRequestController::class, 'create'])->name('registration-requests.create');
     Route::post('register/{partner?}', [Web\InstitutionRegistrationRequestController::class, 'store'])->name('registration-requests.store');
 

@@ -185,6 +185,13 @@ export default function Login({
               >
                 Recruitment Text
               </MenuItem>
+              <MenuItem
+                as={InertiaLink}
+                href={route('exam-results.create')}
+                py={2}
+              >
+                Check Exam Result
+              </MenuItem>
             </MenuList>
           </Menu>
           {/* <Button
