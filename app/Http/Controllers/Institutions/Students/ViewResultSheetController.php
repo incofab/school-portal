@@ -113,7 +113,7 @@ class ViewResultSheetController extends Controller
     $viewData['signed_url'] = url()->current();
     /** @var TermResult|null $termResult */
     $termResult = $viewData['termResult'];
-    abort_unless($termResult->isActivated(), 403, 'Result not activated');
+    // abort_unless($termResult->isActivated(), 403, 'Result not activated');
     return $this->display($viewData);
   }
 
