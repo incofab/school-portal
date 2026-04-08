@@ -38,6 +38,7 @@ interface EventCourseableTransfer {
   assessment_id: number | '';
   for_mid_term: boolean;
   for_exam: boolean;
+  selected: boolean;
 }
 
 interface TransferFormData {
@@ -69,6 +70,7 @@ export default function TransferEventResultsMultiple({
       assessment_id: '',
       for_mid_term: false,
       for_exam: false,
+      selected: true,
     })),
   }));
 
@@ -101,12 +103,14 @@ export default function TransferEventResultsMultiple({
         {
           academic_session_id: data.academic_session_id,
           term: data.term,
-          event_courseables: data.event_courseables.map((item) => ({
-            event_courseable_id: item.event_courseable_id,
-            course_teacher_id: item.course_teacher_id?.value,
-            assessment_id: item.for_exam ? null : item.assessment_id || null,
-            for_mid_term: item.for_mid_term,
-          })),
+          event_courseables: data.event_courseables
+            .filter((item) => item.selected)
+            .map((item) => ({
+              event_courseable_id: item.event_courseable_id,
+              course_teacher_id: item.course_teacher_id?.value,
+              assessment_id: item.for_exam ? null : item.assessment_id || null,
+              for_mid_term: item.for_mid_term,
+            })),
         }
       );
     });
@@ -167,10 +171,27 @@ export default function TransferEventResultsMultiple({
                     borderWidth="1px"
                     borderRadius="md"
                     p={4}
+                    bg={transferData.selected ? 'transparent' : 'gray.50'}
                   >
-                    <Text fontWeight="semibold" mb={3}>
-                      {getCourseTitle(eventCourseable)}
-                    </Text>
+                    <HStack justify="space-between">
+                      <Text fontWeight="semibold" mb={3}>
+                        {getCourseTitle(eventCourseable)}
+                      </Text>
+                      <label htmlFor={`select-${eventCourseable.id}`}>
+                        Add/Remove
+                        <Checkbox
+                          id={`select-${eventCourseable.id}`}
+                          ml={2}
+                          mt={1}
+                          isChecked={transferData.selected}
+                          onChange={(e) => {
+                            updateCourseable(index, {
+                              selected: e.currentTarget.checked,
+                            });
+                          }}
+                        />
+                      </label>
+                    </HStack>
                     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                       <FormControl
                         isRequired
@@ -189,6 +210,7 @@ export default function TransferEventResultsMultiple({
                             })
                           }
                           required
+                          isDisabled={!transferData.selected}
                         />
                         <FormErrorMessage>
                           {errorFor(index, 'course_teacher_id')}
@@ -215,7 +237,9 @@ export default function TransferEventResultsMultiple({
                               for_exam: false,
                             })
                           }
-                          isDisabled={transferData.for_exam}
+                          isDisabled={
+                            transferData.for_exam || !transferData.selected
+                          }
                         />
                         <FormErrorMessage>
                           {errorFor(index, 'assessment_id')}
@@ -231,6 +255,7 @@ export default function TransferEventResultsMultiple({
                               for_mid_term: e.currentTarget.checked,
                             })
                           }
+                          isDisabled={!transferData.selected}
                         >
                           For Mid-Term Result
                         </Checkbox>
@@ -244,6 +269,7 @@ export default function TransferEventResultsMultiple({
                             assessment_id: '',
                           });
                         }}
+                        isDisabled={!transferData.selected}
                       >
                         Transfer to Exam scores
                       </Checkbox>

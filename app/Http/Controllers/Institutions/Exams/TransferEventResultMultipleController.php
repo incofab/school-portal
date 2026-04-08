@@ -57,7 +57,8 @@ class TransferEventResultMultipleController extends Controller
       'event_courseables' => [
         'required',
         'array',
-        'size:' . $eventCourseables->count()
+        'min:1'
+        // 'size:' . $eventCourseables->count()
       ],
       'event_courseables.*.event_courseable_id' => [
         'required',
