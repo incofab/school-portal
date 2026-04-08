@@ -15,6 +15,7 @@ import { TrashIcon, PencilIcon } from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import EditManagerModal from '@/components/modals/edit-manager-modal';
+import { formatAsCurrency } from '@/util/util';
 
 interface UserWithMeta extends User {
   partner_institution_groups_count: number;
@@ -59,6 +60,11 @@ export default function ListManagers({ managers }: Props) {
       value: 'partner_institution_groups_count',
     },
     {
+      label: 'Balance',
+      value: 'wallet',
+      render: (row) => formatAsCurrency(row.wallet ?? 0),
+    },
+    {
       label: 'Role',
       render: (row: UserWithMeta) => row.roles![0].name,
     },
@@ -95,7 +101,7 @@ export default function ListManagers({ managers }: Props) {
     <ManagerDashboardLayout>
       <Slab>
         <SlabHeading
-          title="Institutions"
+          title="Managers"
           rightElement={
             <Button
               colorScheme="brand"

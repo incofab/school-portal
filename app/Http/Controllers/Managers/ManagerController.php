@@ -23,8 +23,9 @@ class ManagerController extends Controller
   {
     $query = User::query()
       ->whereHas('roles')
-      ->with('roles')
-      ->withCount('partnerInstitutionGroups');
+      ->with('roles', 'partner')
+      ->withCount('partnerInstitutionGroups')
+      ->orderByRaw('partner_institution_groups_count desc');
     return inertia('managers/home/list-managers', [
       'managers' => paginateFromRequest($query)
     ]);
