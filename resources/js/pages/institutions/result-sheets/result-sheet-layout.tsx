@@ -23,7 +23,7 @@ export default function ResultSheetLayout({
     <PagePrintLayout
       useBgStyle={useBgStyle}
       filename={filename}
-      // signed_url={resultProps.signed_url}
+      signed_url={resultProps.signed_url}
       contentId={'result-sheet'}
     >
       {children}
