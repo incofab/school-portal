@@ -2,13 +2,16 @@
 namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Actions\ClassSheet;
+use App\Enums\InstitutionUserStatus;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\Institution;
+use App\Models\InstitutionUser;
 use App\Rules\ExcelRule;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 use Storage;
 
 class ClassificationController extends Controller
@@ -110,6 +113,37 @@ class ClassificationController extends Controller
     abort_unless($numOfStudents > 0, 403, 'This class contains some students');
     $classification->delete();
     return $this->ok();
+  }
+
+  function updateStudentStatus(
+    Request $request,
+    Institution $institution,
+    Classification $classification
+  ) {
+    $data = $request->validate([
+      'status' => ['required', new Enum(InstitutionUserStatus::class)],
+      'status_message' => ['nullable', 'string', 'max:255']
+    ]);
+
+    $status = InstitutionUserStatus::from($data['status']);
+    $studentInstitutionUserIds = $classification
+      ->students()
+      ->whereNotNull('institution_user_id')
+      ->select('institution_user_id');
+
+    $updatedCount = InstitutionUser::query()
+      ->whereIn('id', $studentInstitutionUserIds)
+      ->update([
+        'status' => $status->value,
+        'status_message' =>
+          $status === InstitutionUserStatus::Suspended
+            ? $data['status_message'] ?? null
+            : null
+      ]);
+
+    return $this->ok([
+      'message' => "{$updatedCount} student(s) updated successfully"
+    ]);
   }
 
   public function download(Request $request, Institution $institution)

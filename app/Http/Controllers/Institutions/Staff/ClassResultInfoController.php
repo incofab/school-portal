@@ -87,6 +87,32 @@ class ClassResultInfoController extends Controller
     return $this->ok();
   }
 
+  public function updateLock(
+    Institution $institution,
+    Request $request,
+    ClassResultInfo $classResultInfo
+  ) {
+    $data = $request->validate([
+      'is_locked' => ['required', 'boolean']
+    ]);
+
+    $classResultInfo->loadMissing('classification');
+    $user = currentUser();
+    abort_unless(
+      currentInstitutionUser()->isAdmin() ||
+        $classResultInfo->classification->form_teacher_id === $user->id,
+      403,
+      'You are not allowed to update this result lock'
+    );
+
+    $classResultInfo->update([
+      'is_locked' => $data['is_locked']
+    ]);
+    ClassResultInfo::clearResultLockCache();
+
+    return $this->ok();
+  }
+
   function setNextTermResumptionDate(
     Institution $institution,
     Request $request,

@@ -8,6 +8,7 @@ use App\Models\Institution;
 use App\Models\Instruction;
 use App\Models\Passage;
 use App\Models\Question;
+use App\Models\TheoryQuestion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CourseSessionFactory extends Factory
@@ -66,6 +67,15 @@ class CourseSessionFactory extends Factory
     return $this->afterCreating(
       fn(CourseSession $courseSession) => Instruction::factory($count)
         ->courseable($courseSession)
+        ->create()
+    );
+  }
+
+  public function theoryQuestions($count = 2): static
+  {
+    return $this->afterCreating(
+      fn(CourseSession $courseSession) => TheoryQuestion::factory($count)
+        ->courseSession($courseSession)
         ->create()
     );
   }

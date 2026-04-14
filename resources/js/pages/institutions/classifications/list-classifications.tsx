@@ -1,22 +1,25 @@
 import React from 'react';
-import { Classification, Timetable } from '@/types/models';
+import { Classification } from '@/types/models';
 import {
+  Button,
   HStack,
   IconButton,
   Icon,
   Text,
+  Textarea,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
+  VStack,
 } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
-import { PaginationResponse } from '@/types/types';
+import { InstitutionUserStatus, PaginationResponse } from '@/types/types';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
-import { BrandButton, LinkButton } from '@/components/buttons';
+import { LinkButton } from '@/components/buttons';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
@@ -30,6 +33,7 @@ import MigrateClassStudentsModal from '@/components/modals/migrate-class-student
 import UploadClassificationModal from '@/components/modals/upload-classification-modal';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 import useSharedProps from '@/hooks/use-shared-props';
+import GenericModal from '@/components/generic-modal';
 
 interface Props {
   classifications: PaginationResponse<Classification>;
@@ -43,6 +47,7 @@ export default function ListClassification({ classifications }: Props) {
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
   const migrateClassStudentsModalToggle = useModalValueToggle<Classification>();
+  const suspendStudentsModalToggle = useModalValueToggle<Classification>();
   const uploadClassModalToggle = useModalToggle();
 
   async function deleteItem(obj: Classification) {
@@ -70,6 +75,32 @@ export default function ListClassification({ classifications }: Props) {
     Inertia.visit(
       instRoute('pins.classification.student-pin-tiles', [classification])
     );
+  }
+
+  async function updateStudentStatus(
+    classification: Classification,
+    status: InstitutionUserStatus,
+    statusMessage?: string
+  ): Promise<boolean> {
+    const res = await form.submit((data, web) =>
+      web.post(instRoute('classifications.student-status', [classification]), {
+        status,
+        status_message: statusMessage,
+      })
+    );
+
+    if (!handleResponseToast(res)) return false;
+
+    Inertia.reload({ only: ['classifications'] });
+    return true;
+  }
+
+  function unsuspendStudents(classification: Classification) {
+    if (!window.confirm(`Unsuspend all students in ${classification.title}?`)) {
+      return;
+    }
+
+    updateStudentStatus(classification, InstitutionUserStatus.Active);
   }
 
   const headers: ServerPaginatedTableHeader<Classification>[] = [
@@ -175,6 +206,14 @@ export default function ListClassification({ classifications }: Props) {
                       Generate Result Pins
                     </MenuItem>
                     <MenuItem
+                      onClick={() => suspendStudentsModalToggle.open(row)}
+                    >
+                      Suspend Students
+                    </MenuItem>
+                    <MenuItem onClick={() => unsuspendStudents(row)}>
+                      Unsuspend Students
+                    </MenuItem>
+                    <MenuItem
                       as={InertiaLink}
                       href={instRoute('user-associations.create', [
                         'classification',
@@ -259,6 +298,75 @@ export default function ListClassification({ classifications }: Props) {
           onSuccess={() => Inertia.reload({ only: ['classifications'] })}
         />
       )}
+      {suspendStudentsModalToggle.state && (
+        <BulkStudentSuspensionModal
+          {...suspendStudentsModalToggle.props}
+          classification={suspendStudentsModalToggle.state}
+          isLoading={form.processing}
+          onSuccess={(statusMessage) =>
+            updateStudentStatus(
+              suspendStudentsModalToggle.state!,
+              InstitutionUserStatus.Suspended,
+              statusMessage
+            )
+          }
+        />
+      )}
     </DashboardLayout>
+  );
+}
+
+interface BulkStudentSuspensionModalProps {
+  classification: Classification;
+  isLoading: boolean;
+  isOpen: boolean;
+  onClose(): void;
+  onSuccess(statusMessage: string): Promise<boolean>;
+}
+
+function BulkStudentSuspensionModal({
+  classification,
+  isLoading,
+  isOpen,
+  onClose,
+  onSuccess,
+}: BulkStudentSuspensionModalProps) {
+  const [statusMessage, setStatusMessage] = React.useState('');
+
+  async function submit() {
+    if (await onSuccess(statusMessage)) {
+      onClose();
+    }
+  }
+
+  return (
+    <GenericModal
+      props={{ isOpen, onClose }}
+      headerContent={`Suspend students in ${classification.title}`}
+      bodyContent={
+        <VStack align={'stretch'} spacing={3}>
+          <Text>
+            This will suspend all students currently in {classification.title}.
+            They will not be able to access student-only areas until they are
+            unsuspended.
+          </Text>
+          <Textarea
+            value={statusMessage}
+            onChange={(e) => setStatusMessage(e.currentTarget.value)}
+            placeholder="Suspension message shown to affected students"
+          />
+        </VStack>
+      }
+      footerContent={
+        <HStack spacing={2}>
+          <Button variant={'ghost'} onClick={onClose}>
+            Close
+          </Button>
+          <Button colorScheme={'red'} onClick={submit} isLoading={isLoading}>
+            Suspend Students
+          </Button>
+        </HStack>
+      }
+    />
   );
 }

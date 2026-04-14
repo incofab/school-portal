@@ -38,8 +38,8 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <body>
 <header>
   <h1>Backend Architecture</h1>
-  <p>Generated 2026-02-23 23:12:06</p>
-  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a></nav>
+  <p>Last reviewed 2026-04-13</p>
+  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
 <section><h2>Routes</h2><ul><li><code>routes/api.php</code> — Route::group([&#x27;middleware&#x27; =&gt; [&#x27;auth:sanctum&#x27;, &#x27;institution.user&#x27;]], function () {</li>
@@ -102,6 +102,12 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><code>routes/ccd.php</code> — Route::post(&#x27;questions/courseable/{morphable}/upload&#x27;, [CCD\QuestionController::class, &#x27;uploadQuestionsStore&#x27;])-&gt;name(&#x27;questions.upload.store&#x27;);</li>
 <li><code>routes/ccd.php</code> — Route::get(&#x27;questions/courseable/{morphable}/download&#x27;, [CCD\QuestionController::class, &#x27;downloadQuestions&#x27;])-&gt;name(&#x27;questions.download&#x27;);</li>
 <li><code>routes/ccd.php</code> — // Route::get(&#x27;question-corrections/{questionCorrection}/mark-as-resolved&#x27;, [CCD\QuestionController::class, &#x27;markQuestionCorrectionAsResolved&#x27;])-&gt;name(&#x27;question-corrections.mark-as-resolved&#x27;);</li>
+<li><code>routes/ccd.php</code> — Route::get(&#x27;theory-questions/course-sessions/{courseSession}/index&#x27;, [CCD\TheoryQuestionController::class, &#x27;index&#x27;])-&gt;name(&#x27;theory-questions.index&#x27;);</li>
+<li><code>routes/ccd.php</code> — Route::get(&#x27;theory-questions/course-sessions/{courseSession}/create&#x27;, [CCD\TheoryQuestionController::class, &#x27;create&#x27;])-&gt;name(&#x27;theory-questions.create&#x27;);</li>
+<li><code>routes/ccd.php</code> — Route::post(&#x27;theory-questions/course-sessions/{courseSession}/store&#x27;, [CCD\TheoryQuestionController::class, &#x27;store&#x27;])-&gt;name(&#x27;theory-questions.store&#x27;);</li>
+<li><code>routes/ccd.php</code> — Route::get(&#x27;theory-questions/{theoryQuestion}/edit&#x27;, [CCD\TheoryQuestionController::class, &#x27;edit&#x27;])-&gt;name(&#x27;theory-questions.edit&#x27;);</li>
+<li><code>routes/ccd.php</code> — Route::put(&#x27;theory-questions/{theoryQuestion}/update&#x27;, [CCD\TheoryQuestionController::class, &#x27;update&#x27;])-&gt;name(&#x27;theory-questions.update&#x27;);</li>
+<li><code>routes/ccd.php</code> — Route::get(&#x27;theory-questions/{theoryQuestion}/delete&#x27;, [CCD\TheoryQuestionController::class, &#x27;destroy&#x27;])-&gt;name(&#x27;theory-questions.destroy&#x27;);</li>
 <li><code>routes/ccd.php</code> — Route::post(</li>
 <li><code>routes/ccd.php</code> — Route::post(&#x27;api/questions/{morphable}/store&#x27;, [CCD\QuestionController::class, &#x27;storeApi&#x27;])-&gt;name(&#x27;api.questions.store&#x27;);</li>
 <li><code>routes/exam.php</code> — Route::get(&#x27;events/{event}/download&#x27;, [Web\Exams\EventController::class, &#x27;download&#x27;])</li>
@@ -503,6 +509,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>InstructionController</strong> <span class="path"><code>app/Http/Controllers/CCD/CourseSession/InstructionController.php</code></span></div><div class="desc">HTTP controller for Instruction, handling requests, authorization, and responses.</div></li>
 <li><div><strong>PassageController</strong> <span class="path"><code>app/Http/Controllers/CCD/CourseSession/PassageController.php</code></span></div><div class="desc">HTTP controller for Passage, handling requests, authorization, and responses.</div></li>
 <li><div><strong>QuestionController</strong> <span class="path"><code>app/Http/Controllers/CCD/QuestionController.php</code></span></div><div class="desc">HTTP controller for Question, handling requests, authorization, and responses.</div></li>
+<li><div><strong>TheoryQuestionController</strong> <span class="path"><code>app/Http/Controllers/CCD/TheoryQuestionController.php</code></span></div><div class="desc">HTTP controller for course-session theory question CRUD, handling institution-scoped requests, validation, and responses.</div></li>
 <li><div><strong>TopicController</strong> <span class="path"><code>app/Http/Controllers/CCD/TopicController.php</code></span></div><div class="desc">HTTP controller for Topic, handling requests, authorization, and responses.</div></li>
 <li><div><strong>UploadContentController</strong> <span class="path"><code>app/Http/Controllers/CCD/UploadContentController.php</code></span></div><div class="desc">HTTP controller for Upload Content, handling requests, authorization, and responses.</div></li>
 <li><div><strong>UploadTinyMceImageController</strong> <span class="path"><code>app/Http/Controllers/CCD/UploadTinyMceImageController.php</code></span></div><div class="desc">HTTP controller for Upload Tiny Mce Image, handling requests, authorization, and responses.</div></li>
@@ -734,7 +741,8 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>UploadAdmissionApplicationRequest</strong> <span class="path"><code>app/Http/Requests/UploadAdmissionApplicationRequest.php</code></span></div><div class="desc">Form request for Upload Admission Application inputs with validation and authorization rules.</div></li>
 <li><div><strong>UploadClassSheetRequest</strong> <span class="path"><code>app/Http/Requests/UploadClassSheetRequest.php</code></span></div><div class="desc">Form request for Upload Class Sheet inputs with validation and authorization rules.</div></li>
 <li><div><strong>UploadClassificationRequest</strong> <span class="path"><code>app/Http/Requests/UploadClassificationRequest.php</code></span></div><div class="desc">Form request for Upload Classification inputs with validation and authorization rules.</div></li>
-<li><div><strong>UploadSessionQuestionsRequest</strong> <span class="path"><code>app/Http/Requests/UploadSessionQuestionsRequest.php</code></span></div><div class="desc">Form request for Upload Session Questions inputs with validation and authorization rules.</div></li></ul></section>
+<li><div><strong>UploadSessionQuestionsRequest</strong> <span class="path"><code>app/Http/Requests/UploadSessionQuestionsRequest.php</code></span></div><div class="desc">Form request for Upload Session Questions inputs with validation and authorization rules.</div></li>
+<li><div><strong>TheoryQuestionRequest</strong> <span class="path"><code>app/Http/Requests/TheoryQuestionRequest.php</code></span></div><div class="desc">Form request for validating course-session theory question number, sub-number, marks, answer, and marking scheme inputs.</div></li></ul></section>
 <section><h2>Rules</h2><ul class="detail-list"><li><div><strong>ExcelRule</strong> <span class="path"><code>app/Rules/ExcelRule.php</code></span></div><div class="desc">Validation rule that enforces Excel constraints.</div></li>
 <li><div><strong>InstitutionStudentRule</strong> <span class="path"><code>app/Rules/InstitutionStudentRule.php</code></span></div><div class="desc">Validation rule that enforces Institution Student constraints.</div></li>
 <li><div><strong>InstitutionUserRule</strong> <span class="path"><code>app/Rules/InstitutionUserRule.php</code></span></div><div class="desc">Validation rule that enforces Institution User constraints.</div></li>
@@ -886,6 +894,11 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>VerifyCsrfToken</strong> <span class="path"><code>app/Http/Middleware/VerifyCsrfToken.php</code></span></div><div class="desc">Middleware enforcing Verify Csrf Token checks for requests.</div></li>
 <li><div><strong>VerifyInstitutionUser</strong> <span class="path"><code>app/Http/Middleware/VerifyInstitutionUser.php</code></span></div><div class="desc">Middleware enforcing Verify Institution User checks for requests.</div></li>
 <li><div><strong>VerifyManager</strong> <span class="path"><code>app/Http/Middleware/VerifyManager.php</code></span></div><div class="desc">Middleware enforcing Verify Manager checks for requests.</div></li></ul></section>
+<section><h2>Current Feature Notes</h2><ul class="detail-list">
+<li><div><strong>Manager academic session administration</strong></div><div class="desc">Manager-admin routes now expose <code>Route::resource('academic-sessions', Web\AcademicSessions\AcademicSessionController::class)->except(['show'])</code> in <code>routes/manager.php</code>. The controller is <code>app/Http/Controllers/Managers/AcademicSessions/AcademicSessionController.php</code> and uses <code>CreateOrUpdateAcademicSessionRequest</code> with <code>AcademicSession</code>.</div></li>
+<li><div><strong>Class result locking</strong></div><div class="desc">Institution routes include <code>POST /class-result-info/{classResultInfo}/lock</code> handled by <code>ClassResultInfoController::updateLock</code>. Result calculation and recalculation lock class result info records; result recording, deletion, and bulk updates use <code>ClassResultInfo::ensureResultIsUnlocked</code> through result actions/controllers before mutating result data.</div></li>
+<li><div><strong>Theory question CRUD</strong></div><div class="desc"><code>routes/ccd.php</code> exposes institution-scoped course-session theory question CRUD handled by <code>app/Http/Controllers/CCD/TheoryQuestionController.php</code> and validated by <code>app/Http/Requests/TheoryQuestionRequest.php</code>.</div></li>
+</ul></section>
 </main>
 </body>
 </html>

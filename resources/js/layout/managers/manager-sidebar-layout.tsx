@@ -12,7 +12,6 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 import route from '@/util/route';
 import { Nullable, ManagerRole } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
-import useIsAdminManager from '@/hooks/use-is-admin-manager';
 import ManagerSidebarHeader from './manager-sidebar-header';
 
 interface MenuType {
@@ -28,7 +27,6 @@ interface MenuListType extends MenuType {
 
 export default function ManagerSideBarLayout() {
   const { currentUser } = useSharedProps();
-  const isAdminManager = useIsAdminManager();
   const managerRole = currentUser.roles![0]?.name;
 
   const menus: MenuListType[] = [
@@ -66,6 +64,11 @@ export default function ManagerSideBarLayout() {
     {
       label: 'Billings',
       route: route('managers.billings.index'),
+      roles: [ManagerRole.Admin],
+    },
+    {
+      label: 'Academic Sessions',
+      route: route('managers.academic-sessions.index'),
       roles: [ManagerRole.Admin],
     },
     {

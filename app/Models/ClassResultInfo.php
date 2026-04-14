@@ -13,6 +13,9 @@ class ClassResultInfo extends Model
   use HasFactory, InstitutionScope;
   public $table = 'class_result_info';
 
+  /** @var array<string, bool> */
+  private static array $resultLockCache = [];
+
   protected $guarded = [];
   protected $casts = [
     'term' => TermType::class,
@@ -23,9 +26,50 @@ class ClassResultInfo extends Model
     'num_of_students' => 'integer',
     'num_of_courses' => 'integer',
     'for_mid_term' => 'boolean',
+    'is_locked' => 'boolean',
     'next_term_resumption_date' => 'date',
     'whatsapp_message_count' => 'integer'
   ];
+
+  public static function ensureResultIsUnlocked(
+    int $classificationId,
+    int $academicSessionId,
+    string|TermType $term,
+    bool $forMidTerm
+  ): void {
+    $termValue = $term instanceof TermType ? $term->value : $term;
+    $cacheKey = implode(':', [
+      $classificationId,
+      $academicSessionId,
+      $termValue,
+      (int) $forMidTerm
+    ]);
+
+    if (array_key_exists($cacheKey, static::$resultLockCache)) {
+      $isLocked = static::$resultLockCache[$cacheKey];
+    } else {
+      $isLocked = static::query()
+        ->where('classification_id', $classificationId)
+        ->where('academic_session_id', $academicSessionId)
+        ->where('term', $termValue)
+        ->where('for_mid_term', $forMidTerm)
+        ->where('is_locked', true)
+        ->exists();
+
+      static::$resultLockCache[$cacheKey] = $isLocked;
+    }
+
+    abort_if(
+      $isLocked,
+      423,
+      'This class result is locked. Unlock it from Class Result Analysis before adding or editing results.'
+    );
+  }
+
+  public static function clearResultLockCache(): void
+  {
+    static::$resultLockCache = [];
+  }
 
   /**
    * @return \Illuminate\Database\Eloquent\Builder<\App\Models\CourseResult>

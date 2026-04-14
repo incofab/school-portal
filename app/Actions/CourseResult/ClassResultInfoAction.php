@@ -80,7 +80,8 @@ class ClassResultInfoAction
       'max_obtainable_score' => $numOfCourses * 100,
       'average' => round($totalScore / $numOfCourses / $numOfStudents, 2),
       'min_score' => $minScore,
-      'max_score' => $maxScore
+      'max_score' => $maxScore,
+      'is_locked' => true
     ];
 
     DB::beginTransaction();
@@ -88,6 +89,7 @@ class ClassResultInfoAction
       $bindingData,
       $data
     );
+    ClassResultInfo::clearResultLockCache();
 
     ProcessTermResult::run(
       $classification->institution,

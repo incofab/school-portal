@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Managers as Web;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/dummy', function () {
     dd('dskmsdsf');
-}); 
+});
 
 Route::get('/', [Web\ManagerController::class, 'dashboard'])
     ->name('dashboard');
@@ -43,9 +43,9 @@ Route::get('/institution-groups/search', [Web\InstitutionGroups\InstitutionGroup
 Route::resource('institution-groups', Web\InstitutionGroups\InstitutionGroupsController::class)
     ->except('show');
 Route::post('/institution-groups/{institution_group}/upload-photo', [Web\InstitutionGroups\InstitutionGroupsController::class, 'uploadBanner'])
-  ->name('institution-groups.upload-banner');
+    ->name('institution-groups.upload-banner');
 Route::post('/institution-groups/{institution_group}/update-status', [Web\InstitutionGroups\InstitutionGroupsController::class, 'updateStatus'])
-  ->name('institution-groups.update.status');
+    ->name('institution-groups.update.status');
 
 Route::get('/registration-requests/search', [Web\RegistrationRequests\RegistrationRequestsController::class, 'search'])
     ->name('registration-requests.search');
@@ -60,12 +60,11 @@ Route::delete('/registration-requests/{registrationRequest}', [Web\RegistrationR
 
 Route::get('partner-registrations', [Web\PartnerRequests\PartnerRegistrationRequestsController::class, 'index'])->name('partner-registration-requests.index');
 Route::post('/partner-registrations/{partnerRegistrationRequest}/onboard', [Web\PartnerRequests\PartnerRegistrationRequestsController::class, 'onboardPartner'])
-->name('partner-registration-requests.onboard');
+    ->name('partner-registration-requests.onboard');
 Route::delete('/partner-registrations/{partnerRegistrationRequest}', [Web\PartnerRequests\PartnerRegistrationRequestsController::class, 'destroy'])
-->name('partner-registration-requests.destroy');
+    ->name('partner-registration-requests.destroy');
 
-
-//Admin section
+// Admin section
 Route::group(['middleware' => 'admin'], function () {
     /*
     Route::get('/generate-pin', [Web\GeneratePinController::class, 'create'])
@@ -90,6 +89,9 @@ Route::group(['middleware' => 'admin'], function () {
         ->name('update');
     Route::delete('/destroy/{user}', [Web\ManagerController::class, 'destroy'])
         ->name('destroy');
+
+    Route::resource('academic-sessions', Web\AcademicSessions\AcademicSessionController::class)
+        ->except(['show']);
 });
 
 Route::post('funding/record-debt', [Web\Fundings\FundingController::class, 'recordDebt'])->name('funding.record-debt');
@@ -99,11 +101,11 @@ Route::post('funding/{funding}/revert', [Web\Fundings\FundingController::class, 
 Route::resource('funding', Web\Fundings\FundingController::class);
 Route::resource('billings', Web\Billings\BillingsController::class);
 
-//== BANK ACCOUNT DETAILS
+// == BANK ACCOUNT DETAILS
 Route::resource('/bank-accounts', Web\BankAccounts\BankAccountController::class);
 
-//== COMMISSIONS
+// == COMMISSIONS
 Route::resource('/commissions', Web\Commissions\CommissionController::class);
 
-//== WITHDRAWALS
+// == WITHDRAWALS
 Route::resource('/withdrawals', Web\Withdrawals\WithdrawalController::class);

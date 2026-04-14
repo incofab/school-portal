@@ -38,8 +38,8 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <body>
 <header>
   <h1>Frontend Architecture</h1>
-  <p>Generated 2026-02-23 23:12:06</p>
-  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a></nav>
+  <p>Last reviewed 2026-04-13</p>
+  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
 <section><h2>Pages</h2><h3>auth</h3><ul class="detail-list"><li><div><strong>activate-student-term-result</strong> <span class="path"><code>resources/js/pages/auth/activate-student-term-result.tsx</code></span></div><div class="desc">Activation screen for Student Term Result records and access.</div></li>
@@ -447,6 +447,11 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>token-user-util</strong> <span class="path"><code>resources/js/util/token-user-util.ts</code></span></div><div class="desc">Utility helpers for Token User Util formatting, parsing, or shared logic.</div></li>
 <li><div><strong>util</strong> <span class="path"><code>resources/js/util/util.ts</code></span></div><div class="desc">Utility helpers for Util formatting, parsing, or shared logic.</div></li>
 <li><div><strong>web</strong> <span class="path"><code>resources/js/util/web.ts</code></span></div><div class="desc">Utility helpers for Web formatting, parsing, or shared logic.</div></li></ul></section>
+<section><h2>Current Feature Notes</h2><ul class="detail-list">
+<li><div><strong>Manager academic sessions</strong></div><div class="desc">Manager UI includes <code>resources/js/pages/managers/academic-sessions/list-academic-sessions.tsx</code> and <code>resources/js/pages/managers/academic-sessions/create-edit-academic-session.tsx</code>. Navigation is surfaced from <code>resources/js/layout/managers/manager-sidebar-layout.tsx</code>.</div></li>
+<li><div><strong>Class result lock controls</strong></div><div class="desc">Class result analysis UI in <code>resources/js/pages/institutions/courses/list-class-result-info.tsx</code> shows locked/open state and posts to <code>institutions.class-result-info.lock</code>. The <code>ClassResultInfo</code> TypeScript model includes <code>is_locked: boolean</code> in <code>resources/js/types/models.ts</code>.</div></li>
+<li><div><strong>Theory question CCD views</strong></div><div class="desc">CCD theory question CRUD uses Blade views at <code>resources/views/ccd/theory-questions/index.blade.php</code> and <code>resources/views/ccd/theory-questions/create-theory-question.blade.php</code>, linked from the course-session list.</div></li>
+</ul></section>
 </main>
 </body>
 </html>

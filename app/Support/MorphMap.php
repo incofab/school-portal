@@ -96,6 +96,7 @@ class MorphMap
     'student-class-movement' => Models\StudentClassMovement::class,
     'summary' => Models\Summary::class,
     'term-result' => Models\TermResult::class,
+    'theory-question' => Models\TheoryQuestion::class,
     'token-user' => Models\TokenUser::class,
     'topic' => Models\Topic::class,
     'transaction' => Models\Transaction::class,

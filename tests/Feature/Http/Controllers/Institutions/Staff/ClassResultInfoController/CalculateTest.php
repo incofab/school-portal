@@ -9,10 +9,12 @@ use App\Models\CourseResult;
 use App\Models\Institution;
 use App\Models\Student;
 use App\Models\User;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
+  ClassResultInfo::clearResultLockCache();
   $this->institution = Institution::factory()->create();
   $this->instAdmin = $this->institution->createdBy;
   $this->academicSession = AcademicSession::factory()->create();
@@ -79,14 +81,179 @@ it('calculates result info for a route class', function () {
     ->assertOk();
 
   expect(
-    ClassResultInfo::query()
+    $classResultInfo = ClassResultInfo::query()
       ->where('institution_id', $this->institution->id)
       ->where('classification_id', $this->classA->id)
       ->where('academic_session_id', $this->academicSession->id)
       ->where('term', TermType::First)
       ->where('for_mid_term', false)
-      ->exists()
-  )->toBeTrue();
+      ->first()
+  )->not->toBeNull();
+
+  expect($classResultInfo->is_locked)->toBeTrue();
+});
+
+it('can unlock and relock a class result info record', function () {
+  $classResultInfo = ClassResultInfo::factory()
+    ->classification($this->classA)
+    ->create([
+      'academic_session_id' => $this->academicSession->id,
+      'term' => TermType::First,
+      'for_mid_term' => false,
+      'is_locked' => true
+    ]);
+
+  actingAs($this->instAdmin)
+    ->postJson(
+      route('institutions.class-result-info.lock', [
+        $this->institution->uuid,
+        $classResultInfo
+      ]),
+      ['is_locked' => false]
+    )
+    ->assertOk();
+
+  expect($classResultInfo->fresh()->is_locked)->toBeFalse();
+
+  actingAs($this->instAdmin)
+    ->postJson(
+      route('institutions.class-result-info.lock', [
+        $this->institution->uuid,
+        $classResultInfo
+      ]),
+      ['is_locked' => true]
+    )
+    ->assertOk();
+
+  expect($classResultInfo->fresh()->is_locked)->toBeTrue();
+});
+
+it('allows the form teacher to update the lock', function () {
+  $this->classA->fill(['form_teacher_id' => $this->teacher->id])->save();
+  $classResultInfo = ClassResultInfo::factory()
+    ->classification($this->classA)
+    ->create([
+      'academic_session_id' => $this->academicSession->id,
+      'term' => TermType::First,
+      'for_mid_term' => false,
+      'is_locked' => true
+    ]);
+
+  actingAs($this->teacher)
+    ->postJson(
+      route('institutions.class-result-info.lock', [
+        $this->institution->uuid,
+        $classResultInfo
+      ]),
+      ['is_locked' => false]
+    )
+    ->assertOk();
+
+  expect($classResultInfo->fresh()->is_locked)->toBeFalse();
+});
+
+it('prevents a teacher who is not the form teacher from updating the lock', function () {
+  $otherTeacher = User::factory()
+    ->teacher($this->institution)
+    ->create();
+  $classResultInfo = ClassResultInfo::factory()
+    ->classification($this->classA)
+    ->create([
+      'academic_session_id' => $this->academicSession->id,
+      'term' => TermType::First,
+      'for_mid_term' => false,
+      'is_locked' => true
+    ]);
+
+  actingAs($otherTeacher)
+    ->postJson(
+      route('institutions.class-result-info.lock', [
+        $this->institution->uuid,
+        $classResultInfo
+      ]),
+      ['is_locked' => false]
+    )
+    ->assertForbidden();
+
+  expect($classResultInfo->fresh()->is_locked)->toBeTrue();
+});
+
+it('locks the result info again when recalculated', function () {
+  seedClassResultCalculationData(
+    $this->institution,
+    $this->classA,
+    $this->academicSession,
+    $this->course,
+    $this->teacher
+  );
+
+  $classResultInfo = ClassResultInfo::factory()
+    ->classification($this->classA)
+    ->create([
+      'academic_session_id' => $this->academicSession->id,
+      'term' => TermType::First,
+      'for_mid_term' => false,
+      'is_locked' => false
+    ]);
+
+  actingAs($this->instAdmin)
+    ->postJson(
+      route('institutions.class-result-info.recalculate', [
+        $this->institution->uuid,
+        $classResultInfo
+      ])
+    )
+    ->assertOk();
+
+  expect($classResultInfo->fresh()->is_locked)->toBeTrue();
+});
+
+it('prevents duplicate lock lookups while recording multiple results', function () {
+  seedClassResultCalculationData(
+    $this->institution,
+    $this->classA,
+    $this->academicSession,
+    $this->course,
+    $this->teacher
+  );
+
+  $classResultInfo = ClassResultInfo::factory()
+    ->classification($this->classA)
+    ->create([
+      'academic_session_id' => $this->academicSession->id,
+      'term' => TermType::First,
+      'for_mid_term' => false,
+      'is_locked' => false
+    ]);
+
+  ClassResultInfo::ensureResultIsUnlocked(
+    $this->classA->id,
+    $this->academicSession->id,
+    TermType::First,
+    false
+  );
+
+  $classResultInfo->fill(['is_locked' => true])->save();
+
+  expect(
+    fn() => ClassResultInfo::ensureResultIsUnlocked(
+      $this->classA->id,
+      $this->academicSession->id,
+      TermType::First,
+      false
+    )
+  )->not->toThrow(HttpException::class);
+
+  ClassResultInfo::clearResultLockCache();
+
+  expect(
+    fn() => ClassResultInfo::ensureResultIsUnlocked(
+      $this->classA->id,
+      $this->academicSession->id,
+      TermType::First,
+      false
+    )
+  )->toThrow(HttpException::class);
 });
 
 it(

@@ -2,6 +2,7 @@
 
 use App\Enums\TermType;
 use App\Models\AcademicSession;
+use App\Models\ClassResultInfo;
 use App\Models\CourseResult;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
@@ -11,6 +12,7 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseMissing;
 
 beforeEach(function () {
+  ClassResultInfo::clearResultLockCache();
   $this->institution = Institution::factory()->create();
   $this->courseTeacher = CourseTeacher::factory()
     ->withInstitution($this->institution)
@@ -67,6 +69,51 @@ it('records course result for a student', function () {
     ->exam->toBe(floatval($result['exam']))
     ->result->toBe(floatval($result['exam'] + 15 + 14));
   expect(count($courseResult['assessment_values']))->toBe(2);
+});
+
+it('does not record a course result when the class result is locked', function () {
+  $student = Student::factory()
+    ->withInstitution($this->institution, $this->classification)
+    ->create();
+  ClassResultInfo::factory()
+    ->classification($this->classification)
+    ->create([
+      'academic_session_id' => $this->academicSession->id,
+      'term' => $this->term,
+      'for_mid_term' => false,
+      'is_locked' => true
+    ]);
+
+  actingAs($this->instAdmin)
+    ->postJson($this->route, [
+      ...$this->requestData,
+      'result' => [
+        [
+          'student_id' => $student->id,
+          'exam' => 40,
+          'ass' => [
+            $this->assessment1->raw_title => 15,
+            $this->assessment2->raw_title => 14
+          ]
+        ]
+      ]
+    ])
+    ->assertStatus(423)
+    ->assertJsonFragment([
+      'message' =>
+        'This class result is locked. Unlock it from Class Result Analysis before adding or editing results.'
+    ]);
+
+  expect(
+    CourseResult::query()
+      ->where('student_id', $student->id)
+      ->where('course_id', $this->courseTeacher->course_id)
+      ->where('classification_id', $this->classification->id)
+      ->where('academic_session_id', $this->academicSession->id)
+      ->where('term', $this->term)
+      ->where('for_mid_term', false)
+      ->exists()
+  )->toBeFalse();
 });
 
 it('records course result for multiple students', function () {
@@ -144,4 +191,41 @@ it('deletes an existing course result', function () {
     )
     ->assertOk();
   assertDatabaseMissing('course_results', ['id' => $c1->id]);
+});
+
+it('does not delete an existing course result when the class result is locked', function () {
+  $student = Student::factory()
+    ->withInstitution($this->institution, $this->classification)
+    ->create();
+  $courseResult = CourseResult::factory()->create([
+    'institution_id' => $this->institution->id,
+    'student_id' => $student->id,
+    'teacher_user_id' => $this->courseTeacher->user_id,
+    'course_id' => $this->courseTeacher->course_id,
+    'classification_id' => $this->classification->id,
+    'academic_session_id' => $this->academicSession->id,
+    'term' => $this->term,
+    'for_mid_term' => false,
+    'exam' => 60,
+    'result' => 60
+  ]);
+  ClassResultInfo::factory()
+    ->classification($this->classification)
+    ->create([
+      'academic_session_id' => $this->academicSession->id,
+      'term' => $this->term,
+      'for_mid_term' => false,
+      'is_locked' => true
+    ]);
+
+  actingAs($this->instAdmin)
+    ->deleteJson(
+      route('institutions.course-results.destroy', [
+        $this->institution->uuid,
+        $courseResult
+      ])
+    )
+    ->assertStatus(423);
+
+  expect($courseResult->fresh())->not->toBeNull();
 });

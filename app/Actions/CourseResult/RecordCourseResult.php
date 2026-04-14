@@ -2,6 +2,7 @@
 namespace App\Actions\CourseResult;
 
 use App\Actions\ResultUtil;
+use App\Models\ClassResultInfo;
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;
 use App\Models\Assessment;
@@ -55,6 +56,13 @@ class RecordCourseResult
 
   public function execute(): static
   {
+    ClassResultInfo::ensureResultIsUnlocked(
+      $this->courseTeacher->classification_id,
+      $this->data['academic_session_id'],
+      $this->data['term'],
+      $this->data['for_mid_term'] ?? false
+    );
+
     $courseResult = CourseResult::query()
       ->where($this->bindingData)
       ->first();

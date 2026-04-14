@@ -457,6 +457,7 @@ export interface ClassResultInfo extends InstitutionRow {
   max_score: number;
   min_score: number;
   average: number;
+  is_locked: boolean;
   whatsapp_message_count?: number;
   next_term_resumption_date: string;
   classification?: Classification;

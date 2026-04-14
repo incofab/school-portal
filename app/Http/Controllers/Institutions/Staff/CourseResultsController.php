@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RecordCourseResultRequest;
 use App\Http\Requests\UploadClassSheetRequest;
 use App\Models\Assessment;
+use App\Models\ClassResultInfo;
 use App\Models\Classification;
 use App\Models\CourseTeacher;
 use App\Models\CourseResult;
@@ -197,6 +198,13 @@ class CourseResultsController extends Controller
     $academicSessionId = $courseResult->academic_session_id;
     $term = $courseResult->term->value;
     $forMidTerm = $courseResult->for_mid_term;
+
+    ClassResultInfo::ensureResultIsUnlocked(
+      $courseResult->classification_id,
+      $academicSessionId,
+      $term,
+      $forMidTerm
+    );
 
     $courseResult->delete();
 

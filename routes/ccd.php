@@ -5,7 +5,7 @@ use App\Http\Controllers\CCD as CCD;
 
 Route::get('courses/{course}/export-content', [CCD\UploadContentController::class, 'exportCourse'])->name('courses.export-content');
 Route::get('courses/{course}/upload-content', [CCD\UploadContentController::class, 'uploadContentView'])->name('courses.upload-content.create');
-Route::post('courses/{course}/upload-content', [CCD\UploadContentController::class, 'uploadContent'])->name('courses.upload-content.store');    
+Route::post('courses/{course}/upload-content', [CCD\UploadContentController::class, 'uploadContent'])->name('courses.upload-content.store');
 
 Route::get('topics/{topic}/delete', [CCD\TopicController::class, 'destroy'])->name('topics.destroy');
 Route::get('topics/index/{course?}', [CCD\TopicController::class, 'index'])->name('topics.index');
@@ -41,8 +41,13 @@ Route::post('questions/courseable/{morphable}/upload', [CCD\QuestionController::
 Route::get('questions/courseable/{morphable}/download', [CCD\QuestionController::class, 'downloadQuestions'])->name('questions.download');
 // Route::get('question-corrections/{questionCorrection}/mark-as-resolved', [CCD\QuestionController::class, 'markQuestionCorrectionAsResolved'])->name('question-corrections.mark-as-resolved');
 
-
-
+// Theory Question
+Route::get('theory-questions/course-sessions/{courseSession}/index', [CCD\TheoryQuestionController::class, 'index'])->name('theory-questions.index');
+Route::get('theory-questions/course-sessions/{courseSession}/create', [CCD\TheoryQuestionController::class, 'create'])->name('theory-questions.create');
+Route::post('theory-questions/course-sessions/{courseSession}/store', [CCD\TheoryQuestionController::class, 'store'])->name('theory-questions.store');
+Route::get('theory-questions/{theoryQuestion}/edit', [CCD\TheoryQuestionController::class, 'edit'])->name('theory-questions.edit');
+Route::put('theory-questions/{theoryQuestion}/update', [CCD\TheoryQuestionController::class, 'update'])->name('theory-questions.update');
+Route::get('theory-questions/{theoryQuestion}/delete', [CCD\TheoryQuestionController::class, 'destroy'])->name('theory-questions.destroy');
 
 //----- API --------
 

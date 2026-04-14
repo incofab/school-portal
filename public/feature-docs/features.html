@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Feature Inventory</title>
+<title>EduManager Feature Inventory</title>
 <style>
 :root {
   --bg: #0f172a;
@@ -14,60 +14,373 @@
   --accent: #38bdf8;
   --accent-2: #34d399;
   --border: #1f2937;
+  --warn: #fbbf24;
 }
 * { box-sizing: border-box; }
-body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'; background: var(--bg); color: var(--text); }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+}
 header { padding: 24px; border-bottom: 1px solid var(--border); background: linear-gradient(120deg, #0b1220, #111827 60%, #0f172a); }
 header h1 { margin: 0 0 6px; font-size: 26px; }
 header p { margin: 0; color: var(--muted); }
-main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+main { padding: 24px; max-width: 1280px; margin: 0 auto; }
 nav { margin-top: 10px; }
 nav a { color: var(--accent); margin-right: 12px; text-decoration: none; }
 section { margin-bottom: 24px; padding: 18px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
-section h2 { margin-top: 0; }
+section h2 { margin: 0 0 12px; }
+h3 { margin: 18px 0 8px; }
 code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; }
-.detail-list { list-style: none; padding: 0; margin: 0; }
-.detail-list li { padding: 10px 0; border-bottom: 1px dashed var(--border); }
-.detail-list li:last-child { border-bottom: 0; }
-.desc { color: var(--muted); margin-top: 4px; }
-.path { color: var(--muted); margin-left: 8px; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
-.card { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+code { color: #d1fae5; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 12px; }
+.card { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+.card h3 { margin-top: 0; }
+.muted { color: var(--muted); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--accent-2); font-size: 12px; }
+.feature { padding: 16px 0; border-top: 1px dashed var(--border); }
+.feature:first-of-type { border-top: 0; padding-top: 0; }
+.feature h3 { display: flex; align-items: center; gap: 8px; margin-top: 0; }
+.feature h3 span { color: var(--accent); font-size: 14px; }
+.feature ul { margin: 8px 0 0; }
+.feature li { margin-bottom: 5px; }
+.cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.note { border-left: 3px solid var(--warn); padding-left: 12px; color: var(--muted); }
+@media (max-width: 820px) { .cols { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 <header>
-  <h1>Feature Inventory</h1>
-  <p>Generated 2026-02-23 23:12:06</p>
-  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a></nav>
+  <h1>EduManager Feature Inventory</h1>
+  <p>Last reviewed 2026-04-13. Technical map for AI CLI agents and maintainers.</p>
+  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
-<section><h2>Functional Feature Inventory</h2><ul class="detail-list"><li><div><strong>Authentication &amp; Access</strong></div><div class="desc">Feature area covering authentication &amp; access workflows and operations.Login, password reset, student login, impersonation, role gates, and auth middleware.
-<li><div><strong>Institution Registration</strong></div><div class="desc">Onboarding for institutions/partners, approval workflow, and registration status tracking.Institution/partner registration requests, onboarding, and status management.
-<li><div><strong>Institution Groups</strong></div><div class="desc">Group-level management for multi-school setups, branding, billing, and lifecycle status.Group CRUD, branding, invoices, and status updates.
-<li><div><strong>Institution Profile</strong></div><div class="desc">Institution profile settings, media uploads, and readiness checklist management.Profile settings, uploads, and setup checklist.
-<li><div><strong>Users &amp; Staff</strong></div><div class="desc">Feature area covering users &amp; staff workflows and operations.Staff CRUD, role changes, bulk upload/download, and ID cards.
-<li><div><strong>Students</strong></div><div class="desc">Student records, bulk imports, class changes, promotions, and student ID card outputs.Student CRUD, bulk upload, class changes, promotions, and ID cards.
-<li><div><strong>Guardians</strong></div><div class="desc">Guardian-to-student relationships, dependent management, and guardian impersonation.Guardian assignment, dependent management, and impersonation.
-<li><div><strong>Classifications</strong></div><div class="desc">Class structures, groups/divisions, student movement, and promotion workflows.Class groups/divisions, class lists, and promotions.
-<li><div><strong>Courses &amp; Teaching</strong></div><div class="desc">Feature area covering courses &amp; teaching workflows and operations.Course CRUD, teachers, sessions, and question bank workflows.
-<li><div><strong>Assessments</strong></div><div class="desc">Assessment definitions, mappings, and score ingestion into results.Assessment CRUD, dependencies, and score injection.
-<li><div><strong>Results &amp; Reporting</strong></div><div class="desc">Feature area covering results &amp; reporting workflows and operations.Term results, result sheets, transcripts, and publications.
-<li><div><strong>Exams &amp; Events</strong></div><div class="desc">Feature area covering exams &amp; events workflows and operations.Events, exams, courseables, and external exam flows.
-<li><div><strong>Attendance</strong></div><div class="desc">Attendance capture, rollups, and reporting views.Attendance capture and reports.
-<li><div><strong>Admissions</strong></div><div class="desc">Admission forms, applications, screening, uploads, and admission letters.Admission forms, applications, uploads, and letters.
-<li><div><strong>Curriculum</strong></div><div class="desc">Topics, schemes of work, lesson plans, and lesson notes.Topics, schemes of work, lesson plans/notes.
-<li><div><strong>Learning Evaluation</strong></div><div class="desc">Evaluation domains, behavioral scores, and comment templates.Domains, evaluations, and result comment templates.
-<li><div><strong>Pins</strong></div><div class="desc">PIN generation and distribution for result access and verification.Pin generators and student pins.
-<li><div><strong>Fees &amp; Payments</strong></div><div class="desc">Feature area covering fees &amp; payments workflows and operations.Fees, fee payments, receipts, and payment notifications.
-<li><div><strong>Fundings &amp; Wallets</strong></div><div class="desc">Feature area covering fundings &amp; wallets workflows and operations.Wallet funding, transactions, withdrawals, bank accounts.
-<li><div><strong>Payroll</strong></div><div class="desc">Salary setup, adjustments, summaries, and payroll generation.Salaries, types, adjustments, summaries, and generation.
-<li><div><strong>Expenses</strong></div><div class="desc">Expense categories, capture, and tracking for school operations.Expense categories and expense records.
-<li><div><strong>Messaging &amp; Notifications</strong></div><div class="desc">Feature area covering messaging &amp; notifications workflows and operations.Internal notifications, messaging, and delivery jobs.
-<li><div><strong>Timetables &amp; Activities</strong></div><div class="desc">Feature area covering timetables &amp; activities workflows and operations.Timetable CRUD and school activities.
-<li><div><strong>Associations</strong></div><div class="desc">User associations and affiliation management across entities.User associations and association management.
-<li><div><strong>Integrations</strong></div><div class="desc">Payment provider webhooks, monitoring, and external service hooks.Paystack/Monnify/PaymentPoint webhooks and Sentry.
-<li><div><strong>Offline Mock API</strong></div><div class="desc">Offline-capable endpoints for events/exams and client testing.Offline endpoints for events/exams.</ul></section>
+
+<section>
+  <h2>How To Use This File</h2>
+  <p>This inventory is the project-level feature map. Before changing behavior, locate the feature here, then inspect the referenced route files, controllers, actions, models, React pages, and tests. The implementation is a Laravel backend with Inertia + React/TypeScript frontend, Chakra UI components, Pest feature tests, and feature-specific route files included from <code>routes/institution.php</code>.</p>
+  <p class="note">Maintenance rule: every feature addition, behavioral change, new route, new workflow, data model change, or UI surface change must update <code>public/feature-docs/</code>. If a feature changes, update this inventory and any affected <code>backend.html</code>, <code>frontend.html</code>, <code>data.html</code>, recommendation, or proposal page.</p>
+</section>
+
+<section>
+  <h2>Primary User Surfaces</h2>
+  <div class="grid">
+    <div class="card"><h3>Public and Guest</h3><p class="muted">Home, institution registration, partner registration, login, password reset, student login, admission application, admission form purchase, admission letters, public result activation, public exam result lookup, and external exam entry points. Start in <code>routes/web.php</code>.</p></div>
+    <div class="card"><h3>Institution Staff</h3><p class="muted">Institution dashboard, setup checklist, profile/settings, users, students, guardians, classes, courses, assessments, results, exams, attendance, payments, payroll, messaging, notifications, curriculum, activities, and timetable operations. Start in <code>routes/institution.php</code>.</p></div>
+    <div class="card"><h3>Students and Guardians</h3><p class="muted">Student login, guardian dependents, impersonation, result sheets, transcripts, student fee payments and receipts, exam pages, and admission/exam access. Related controllers are under <code>app/Http/Controllers/Institutions/Students</code> and <code>.../Guardians</code>.</p></div>
+    <div class="card"><h3>Managers and Admins</h3><p class="muted">Manager dashboard, institution groups, institutions, registration requests, partner requests, managers, academic sessions, platform funding, billings, commissions, bank accounts, withdrawals, and notifications. Start in <code>routes/manager.php</code>.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Implemented Features</h2>
+
+  <div class="feature">
+    <h3><span>01</span> Authentication, Account Access, and Impersonation</h3>
+    <div class="cols">
+      <div>
+        <p>Supports staff login, student login, password reset, authenticated dashboard routing, user password changes, BVN/NIN updates, logout, manager-only impersonation of users/institutions, and stopping impersonation. Public result activation and exam-result login are also exposed to guest users.</p>
+        <ul>
+          <li>Routes: <code>routes/web.php</code>, <code>routes/api.php</code>.</li>
+          <li>Controllers: <code>AuthController</code>, <code>StudentAuthController</code>, <code>PublicExamResultController</code>, <code>TermResultActivationController</code>, <code>Users/*</code>, <code>Impersonate/*</code>.</li>
+          <li>Frontend: <code>resources/js/pages/auth/*</code>, <code>resources/js/pages/users/*</code>.</li>
+        </ul>
+      </div>
+      <div>
+        <ul>
+          <li>Middleware: <code>Authenticate</code>, <code>VerifyManager</code>, <code>VerifyInstitutionUser</code>, <code>VerifyAdmin</code>, <code>StudentAccess</code>.</li>
+          <li>Data: <code>User</code>, <code>Admin</code>, <code>InstitutionUser</code>, <code>Student</code>, Spatie permission tables.</li>
+          <li>Tests: <code>UserControllerTest</code>, <code>TermResultActivationControllerTest</code>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="feature">
+    <h3><span>02</span> Institution and Partner Onboarding</h3>
+    <p>Schools can submit registration requests, partners can submit partner registration requests, and managers can convert approved requests into institution groups, institutions, and partner records. Public admission routes also support institution-scoped form search and purchase flows.</p>
+    <ul>
+      <li>Routes: public <code>register/{partner?}</code>, <code>partner-registration</code>, manager <code>registration-requests</code>, <code>partner-registrations</code>, <code>institutions/create</code>.</li>
+      <li>Controllers: <code>InstitutionRegistrationRequestController</code>, <code>PartnerRegistrationRequestController</code>, <code>Managers/RegistrationRequests/RegistrationRequestsController</code>, <code>Managers/PartnerRequests/PartnerRegistrationRequestsController</code>, <code>Managers/Institutions/InstitutionRegistrationController</code>.</li>
+      <li>Actions and models: <code>RegisterInstitution</code>, <code>RegisterInstitutionGroup</code>, <code>RecordPartner</code>, <code>RegistrationRequest</code>, <code>PartnerRegistrationRequest</code>, <code>Partner</code>.</li>
+      <li>Frontend: <code>auth/register.tsx</code>, <code>auth/register-partner.tsx</code>, <code>auth/registration-form.tsx</code>, manager registration request pages.</li>
+      <li>Tests: institution and partner registration request controller tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>03</span> Manager Administration, Institution Groups, and Academic Sessions</h3>
+    <p>Managers administer platform-level entities: institutions, institution groups, managers, billing, commissions, fundings, bank accounts, withdrawals, notifications, and academic sessions. Institution groups include branding, banner/background, domain, wallet balance, loan limit, status, brand color, and invoice generation by academic session and term.</p>
+    <ul>
+      <li>Routes: <code>routes/manager.php</code>, especially <code>institution-groups</code>, <code>institutions</code>, <code>academic-sessions</code>, <code>funding</code>, <code>billings</code>, <code>commissions</code>, <code>withdrawals</code>.</li>
+      <li>Controllers: <code>Managers/InstitutionGroups/InstitutionGroupsController</code>, <code>Managers/Institutions/*</code>, <code>Managers/AcademicSessions/AcademicSessionController</code>, <code>Managers/ManagerController</code>.</li>
+      <li>Frontend: <code>resources/js/pages/managers/*</code>, including <code>academic-sessions/list-academic-sessions.tsx</code> and <code>academic-sessions/create-edit-academic-session.tsx</code>.</li>
+      <li>Data: <code>InstitutionGroup</code>, <code>Institution</code>, <code>AcademicSession</code>, <code>Funding</code>, <code>Commission</code>, <code>Withdrawal</code>, <code>BankAccount</code>.</li>
+      <li>Tests: manager funding, institution registration, registration request, and academic session tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>04</span> Institution Dashboard, Profile, Settings, and Setup Checklist</h3>
+    <p>Institution users get a dashboard, setup checklist, profile editing, photo upload, payment key settings, result settings, current academic session and term settings, and institution-level search endpoints. Shared props expose current institution, session, term, and role context to the React app.</p>
+    <ul>
+      <li>Routes/controllers: <code>InstitutionController</code>, <code>InstitutionSettingController</code>, <code>SettingsHandler</code>, <code>SetupChecklistHandler</code>, <code>InstitutionDashboardStat</code>.</li>
+      <li>Frontend: <code>institutions/dashboard.tsx</code>, <code>institution-profile.tsx</code>, <code>settings/create-edit-institution-settings.tsx</code>, <code>settings/result-settings.tsx</code>, <code>settings/payment-keys-settings.tsx</code>.</li>
+      <li>Data: <code>Institution</code>, <code>InstitutionSetting</code>, <code>TermDetail</code>, <code>AcademicSession</code>.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>05</span> Users, Staff, Roles, and Staff Assets</h3>
+    <p>Institution staff can create users, list/search users, update profiles, upload photos, bulk upload staff, download staff recording templates, update institution-user status, reset passwords, change roles, delete users, assign course-teacher records, and print staff ID cards.</p>
+    <ul>
+      <li>Controllers: <code>Institutions/Users/*</code>, <code>Institutions/Staff/CourseTeachersController</code>, <code>RecordStaff</code>, <code>DownloadStaffRecordingSheet</code>, <code>InsertStaffFromRecordingSheet</code>.</li>
+      <li>Frontend: <code>institutions/users/*</code>, <code>institutions/staff/list-course-teachers.tsx</code>, <code>register-course-teacher.tsx</code>, <code>students/staff-id-cards.tsx</code>.</li>
+      <li>Data: <code>User</code>, <code>Staff</code>, <code>InstitutionUser</code>, <code>CourseTeacher</code>, roles/permissions.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>06</span> Student Records and Lifecycle</h3>
+    <p>Student management covers CRUD, class-scoped student tiles, student code update, bulk upload, recording template download, student ID cards, fee-payment views, transcripts, term result details, session result sheets, class changes, multiple student class changes, migration, promotion, movement history, and movement rollback.</p>
+    <ul>
+      <li>Controllers: <code>StudentManagementController</code>, <code>UpdateStudentClassController</code>, <code>StudentClassMovementController</code>, <code>PromoteStudentsController</code>, <code>RevertStudentClassMovementController</code>, <code>Institutions/Students/*</code>.</li>
+      <li>Actions: <code>RecordStudent</code>, <code>StudentMigration</code>, <code>DownloadStudentRecordingSheet</code>, <code>InsertStudentFromRecordingSheet</code>.</li>
+      <li>Frontend: <code>institutions/students/*</code>, <code>classifications/change-multiple-students-class.tsx</code>, <code>promote-students.tsx</code>, <code>list-student-class-movements.tsx</code>, transcript pages.</li>
+      <li>Data/tests: <code>Student</code>, <code>StudentClassMovement</code>, <code>SessionResult</code>; student management, promotion, class change, and revert tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>07</span> Guardians and Dependents</h3>
+    <p>Guardian workflows include class-based guardian recording, guardian listing, assigning students to guardians, guardian dependent listing, guardian impersonation into a student account, and dependent removal.</p>
+    <ul>
+      <li>Controllers: <code>GuardianManagementController</code>, <code>ListDependentsController</code>, <code>ImpersonateStudentController</code>, <code>RemoveDependentController</code>.</li>
+      <li>Frontend: <code>institutions/guardians/list-guardians.tsx</code>, <code>record-class-students-guardians.tsx</code>, <code>list-dependents.tsx</code>, guardian modals.</li>
+      <li>Data/tests: <code>GuardianStudent</code>, <code>RecordGuardian</code>, guardian management and dependent tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>08</span> Classifications, Groups, Divisions, and Class Mapping</h3>
+    <p>The class structure uses classifications for classes/arms, classification groups for broader promotion/result grouping, class divisions for cross-class groupings, and mappings/classifiable links. It supports search, bulk class creation, download/upload, student status updates per classification, class migration, promotion, and division membership management.</p>
+    <ul>
+      <li>Controllers: <code>ClassificationController</code>, <code>ClassificationGroupController</code>, <code>ClassDivisionController</code>, <code>DownloadClassStudentsController</code>, promotion and movement controllers.</li>
+      <li>Frontend: classification, classification group, and class division pages under <code>resources/js/pages/institutions</code>.</li>
+      <li>Data: <code>Classification</code>, <code>ClassificationGroup</code>, <code>ClassDivision</code>, <code>StudentClassMovement</code>, <code>class_division_mappings</code>, <code>classifiable</code>.</li>
+      <li>Tests: classification, class division, promotion, update class, and revert movement tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>09</span> Courses, Course Teachers, CCD Content, and Question Bank</h3>
+    <p>Course workflows include CRUD, search, multi-create, course-teacher assignment, course sessions, topic-scoped content upload/export, passages, instructions, objective questions, theory questions, bulk objective question upload/download, TinyMCE image upload, practice question generation, and inserting generated objective questions into the question bank.</p>
+    <ul>
+      <li>Routes: <code>routes/institution.php</code> course routes and <code>routes/ccd.php</code> content routes.</li>
+      <li>Controllers/actions: <code>CoursesController</code>, <code>CCD/*</code>, <code>UploadCourseContent</code>, <code>ExportCourse</code>, <code>Questions/ExtractDocumentContent</code>, <code>Questions/ConvertDocumentToQuestions</code>, <code>GoogleAiHelper</code>.</li>
+      <li>Frontend: <code>institutions/courses/*</code>, <code>topics/*</code>, question-bank modals, practice question pages.</li>
+      <li>Data/tests: <code>Course</code>, <code>CourseTeacher</code>, <code>CourseSession</code>, <code>Topic</code>, <code>Instruction</code>, <code>Passage</code>, <code>Question</code>, <code>TheoryQuestion</code>, CCD controller tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>10</span> Curriculum, Schemes of Work, Lesson Plans, and Lesson Notes</h3>
+    <p>Curriculum features include institution topics and sub-topics, schemes of work attached to topics, lesson plans attached to schemes/course teachers, lesson notes, AI lesson-note generation, publication toggles, and detailed show/list/edit pages.</p>
+    <ul>
+      <li>Controllers: <code>Curriculums/TopicController</code>, <code>SchemeOfWorkController</code>, <code>LessonPlanController</code>, <code>LessonNoteController</code>.</li>
+      <li>Frontend: <code>institutions/topics/*</code>, <code>scheme-of-works/*</code>, <code>lesson-plans/*</code>, <code>lesson-notes/*</code>.</li>
+      <li>Data/tests: <code>Topic</code>, <code>SchemeOfWork</code>, <code>LessonPlan</code>, <code>LessonNote</code>; curriculum controller tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>11</span> Assignments and Submissions</h3>
+    <p>Assignment workflows support CRUD, class assignment mapping, submission listing, submission detail display, and scoring of submissions. Assignment classifications allow assignments to target one or more classes.</p>
+    <ul>
+      <li>Routes/controllers: <code>routes/assignment.php</code>, <code>AssignmentController</code>, <code>AssignmentSubmissionController</code>, <code>RecordAssignment</code>.</li>
+      <li>Frontend: <code>institutions/assignments/*</code>, assignment score modal.</li>
+      <li>Data/tests: <code>Assignment</code>, <code>AssignmentClassification</code>, <code>AssignmentSubmission</code>; assignment controller tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>12</span> Attendance and Attendance Reports</h3>
+    <p>Attendance supports creation, API-style CRUD, institution attendance listing, student attendance report retrieval, and an authenticated API endpoint for attendance posting.</p>
+    <ul>
+      <li>Routes/controllers: <code>routes/attendance.php</code>, <code>Institutions/Attendance/AttendanceController</code>, <code>StudentAttendanceReportController</code>, <code>API/Institutions/AttendanceController</code>.</li>
+      <li>Frontend: <code>institutions/attendances/create-attendance.tsx</code>, <code>list-institution-attendances.tsx</code>, <code>student-attendance-report.tsx</code>.</li>
+      <li>Data/tests: <code>Attendance</code>, <code>RecordAttendance</code>, attendance table filters and controller tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>13</span> Assessments, Learning Evaluation, and Comments</h3>
+    <p>Assessment features include assessment definitions, dependency rules, score insertion from course results, result comment templates, learning evaluation domains, learning evaluations, and setting evaluation values on term results.</p>
+    <ul>
+      <li>Controllers: <code>AssessmentController</code>, <code>InjectAssessmentScoreFromTermResultController</code>, <code>ResultCommentTemplateController</code>, <code>LearningEvaluationDomainController</code>, <code>LearningEvaluationController</code>.</li>
+      <li>Frontend: <code>assessments/*</code>, <code>learning-evaluations/*</code>, <code>result-comments/list-result-comment-templates.tsx</code>.</li>
+      <li>Data/tests: <code>Assessment</code>, <code>LearningEvaluation</code>, <code>LearningEvaluationDomain</code>, <code>ResultCommentTemplate</code>; assessment and result comment tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>14</span> Result Recording, Processing, Locking, Publishing, and Reports</h3>
+    <p>Results are a major domain. The app records individual course results, bulk uploads course result sheets, records whole-class sheets, downloads result recording sheets, calculates class result info, recalculates aggregate results, generates term results, generates session results, computes grades and positions, supports subject reports, cumulative result sheets, term details, teacher/principal comments, extra result data, class result sheet rendering, transcripts, signed result sheets, public result activation, result publications, and result delivery to guardians.</p>
+    <p>Class result info records now have an <code>is_locked</code> state. Calculation and recalculation lock the result info; authorized users or form teachers can unlock/relock; recording, updating, deleting, and bulk processing course/term results checks the lock before mutating result data.</p>
+    <ul>
+      <li>Routes/controllers: course-results and class-result-info routes in <code>routes/institution.php</code>, <code>CourseResultsController</code>, <code>RecordClassResultController</code>, <code>ClassResultInfoController</code>, <code>ListCourseResultInfoController</code>, <code>TransferCourseResultInfoController</code>, <code>ListTermResultController</code>, <code>DeleteTermResultController</code>, <code>ResultPublicationsController</code>, <code>SubjectReportController</code>, student result controllers.</li>
+      <li>Actions: <code>RecordCourseResult</code>, <code>RecordClassSheet</code>, <code>ProcessTermResult</code>, <code>ProcessSessionResult</code>, <code>ProcessClassGroupInfo</code>, <code>ClassResultInfoAction</code>, <code>GetGrade</code>, <code>GenerateSubjectReport</code>, <code>GenerateCourseSessionResult</code>, <code>TermResultDeleteHandler</code>, <code>DownloadResultRecordingSheet</code>, <code>DownloadCourseResult</code>, <code>SendTermResultToGuardians</code>.</li>
+      <li>Frontend: <code>institutions/courses/list-course-results.tsx</code>, <code>record-course-result.tsx</code>, <code>record-class-course-result.tsx</code>, <code>list-class-result-info.tsx</code>, <code>list-course-result-info.tsx</code>, <code>upload-class-sheet.tsx</code>, <code>result-sheets/*</code>, <code>session-result-sheets/*</code>, <code>results/list-term-results.tsx</code>, <code>result-publications/*</code>, transcript pages.</li>
+      <li>Data/tests: <code>CourseResult</code>, <code>CourseResultInfo</code>, <code>ClassResultInfo</code>, <code>ClassGroupResultInfo</code>, <code>TermResult</code>, <code>SessionResult</code>, <code>ResultPublication</code>, <code>TermDetail</code>; broad result action and controller tests including lock behavior.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>15</span> Result PINs and Student Result Access</h3>
+    <p>PIN features include pin generator creation, pin batch listing, pin download, showing generated pins, class and student PIN assignment, student PIN tile views, and activation of student term results.</p>
+    <ul>
+      <li>Controllers/actions: <code>PinGeneratorController</code>, <code>Staff/Pins/StudentPinController</code>, <code>DownloadPins</code>, <code>TermResultActivationController</code>.</li>
+      <li>Frontend: <code>institutions/pins/*</code>, class/student pin modals, <code>auth/activate-student-term-result.tsx</code>.</li>
+      <li>Data/tests: <code>Pin</code>, <code>PinGenerator</code>, student pin and pin generator tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>16</span> Exams, Events, CBT, External Exams, and Offline Mock API</h3>
+    <p>Exam features include events, event courseables, exams, exam courseables, event content download, result transfer from events into term/course results, multi-transfer, student/admission external exam login, token-user profile update, event display, external exam creation, exam display/pause/end/result pages, leaderboards, public exam result lookup, and offline mock API endpoints for client testing and offline scenarios.</p>
+    <ul>
+      <li>Routes: <code>routes/exam.php</code>, exam sections in <code>routes/web.php</code>, offline mock section in <code>routes/api.php</code>.</li>
+      <li>Controllers/support: <code>Institutions/Exams/*</code>, <code>Institutions/Exams/ExamPage/*</code>, <code>Institutions/Exams/External/*</code>, <code>API/OfflineMock/*</code>, <code>CreateExam</code>, <code>EventResultHandler</code>, <code>ExamHandler</code>, <code>MockEventHandler</code>, <code>MockExamHandler</code>, <code>ExamAttemptFileHandler</code>.</li>
+      <li>Frontend: <code>institutions/exams/*</code>, <code>auth/student-exam-login.tsx</code>, <code>auth/admissions-exam-login.tsx</code>, <code>auth/exam-result-login.tsx</code>.</li>
+      <li>Data/tests: <code>Event</code>, <code>EventCourseable</code>, <code>Exam</code>, <code>ExamCourseable</code>, <code>TokenUser</code>; exam, transfer, external exam, offline mock, exam handler, and file handler tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>17</span> Admissions and Admission Forms</h3>
+    <p>Admissions support admission form CRUD, public admission applications, application preview, form purchase, admission letters, application uploads, recording template download, status updates, application guardian data, and payment processing for admission form purchases.</p>
+    <ul>
+      <li>Controllers/actions: <code>Admissions/AdmissionFormController</code>, <code>Admissions/AdmissionApplicationController</code>, <code>RecordAdmissionApplication</code>, <code>ConfirmAdmissionFormPayment</code>, <code>HandleAdmission</code>.</li>
+      <li>Frontend: <code>institutions/admissions/*</code>.</li>
+      <li>Data/tests: <code>AdmissionForm</code>, <code>AdmissionApplication</code>, <code>AdmissionFormPurchase</code>, <code>ApplicationGuardian</code>; admission application and admission form purchase processor tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>18</span> Fees, Fee Payments, Receipts, and Payment Notifications</h3>
+    <p>Finance features include fee CRUD/search, fee categories/membership handling, fee payment recording, student fee payment views, fee payment summary retrieval, receipt listing/showing, universal receipt printing, payment notifications, admission form payments, payment references, and provider webhook processing.</p>
+    <ul>
+      <li>Controllers/actions/support: <code>Payments/FeeController</code>, <code>FeePaymentController</code>, <code>ReceiptController</code>, <code>PaymentNotificationController</code>, <code>RecordFee</code>, <code>FeePaymentHandler</code>, <code>RecordFeePaymentReminder</code>, <code>FeeMembersHandler</code>, <code>GetClassFeePaymentSummary</code>, <code>GetStudentFeePaymentSummary</code>, payment processors and merchants.</li>
+      <li>Frontend: <code>institutions/payments/*</code>, <code>students/payments/*</code>, receipt and fee modals.</li>
+      <li>Data/tests: <code>Fee</code>, <code>FeeCategory</code>, <code>FeePayment</code>, <code>Receipt</code>, <code>PaymentReference</code>; fee, fee payment, receipt, payment notification, and provider webhook tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>19</span> Wallets, Fundings, Transactions, Withdrawals, Bank Accounts, and Commissions</h3>
+    <p>Wallet operations cover institution group funding, user wallet funding, debt recording, wallet deductions, funding receipts, funding reversals, transaction listing by wallet type, bank account validation and CRUD, institution user bank accounts, reserved accounts, withdrawal initiation/processing, auto-withdrawal commands, commissions, and manager-level financial oversight.</p>
+    <ul>
+      <li>Controllers/actions/support: <code>FundingsController</code>, <code>TransactionController</code>, <code>WithdrawalController</code>, <code>BankAccountController</code>, <code>InstitutionUserBankAccountController</code>, manager funding/withdrawal/bank/commission controllers, <code>FundingHandler</code>, <code>RecordFunding</code>, <code>TransactionHandler</code>, <code>UserTransactionHandler</code>, <code>WithdrawalHandler</code>, <code>BankAccountHandler</code>, <code>CommissionHandler</code>.</li>
+      <li>Frontend: <code>institutions/fundings/*</code>, <code>institutions/withdrawals/*</code>, <code>bank-accounts/*</code>, corresponding manager pages.</li>
+      <li>Data/tests: <code>Funding</code>, <code>Transaction</code>, <code>UserTransaction</code>, <code>Withdrawal</code>, <code>Bank</code>, <code>BankAccount</code>, <code>ReservedAccount</code>, <code>Commission</code>; funding and bank tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>20</span> Payroll and Salaries</h3>
+    <p>Payroll includes salary types, salaries, payroll adjustment types, payroll adjustments, payroll summaries, payroll generation, payroll detail display, and payroll summary downloads.</p>
+    <ul>
+      <li>Controllers/actions: <code>PayrollsController</code>, <code>PayrollSummariesController</code>, <code>SalariesController</code>, <code>SalaryTypesController</code>, <code>PayrollAdjustmentsController</code>, <code>PayrollAdjustmentTypesController</code>, <code>GeneratePayroll</code>, <code>SalaryHandler</code>, <code>PayrollAdjustmentHandler</code>.</li>
+      <li>Frontend: <code>institutions/payrolls/*</code>, payroll modals.</li>
+      <li>Data/tests: <code>Payroll</code>, <code>PayrollSummary</code>, <code>Salary</code>, <code>SalaryType</code>, <code>PayrollAdjustment</code>, <code>PayrollAdjustmentType</code>; payroll controller tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>21</span> Expenses</h3>
+    <p>Expense management supports expense categories, expense CRUD, academic-session/term tagging, category search, viewing expense details, and UI filters.</p>
+    <ul>
+      <li>Controllers: <code>ExpenseController</code>, <code>ExpenseCategoryController</code>.</li>
+      <li>Frontend: <code>institutions/expenses/*</code>, expense category and view modals.</li>
+      <li>Data/tests: <code>Expense</code>, <code>ExpenseCategory</code>, <code>StoreExpenseRequest</code>, expense controller tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>22</span> Messaging, WhatsApp, Bulk SMS, and Internal Notifications</h3>
+    <p>Communication features include internal notifications for managers and institutions, sent notification management with read-aware deletion, recipient resolution, notification viewer state, institution messages, message charge handling, WhatsApp dispatch, BulkSMS jobs, and sending term results to guardians.</p>
+    <ul>
+      <li>Controllers/actions/services: institution and manager <code>Notifications/NotificationController</code>, <code>Staff/MessageController</code>, <code>CreateInternalNotification</code>, <code>RecordMessage</code>, <code>GenericMessageHandler</code>, <code>ApplyMessageCharges</code>, <code>SendTermResultToGuardians</code>, <code>MessageDispatcher</code>, <code>WhatsappClient</code>, <code>SendWhatsappMessage</code>, <code>SendBulksms</code>.</li>
+      <li>Frontend: <code>institutions/messages/*</code>, <code>institutions/notifications/*</code>, manager notification pages, shared notification pages.</li>
+      <li>Data/tests: <code>Message</code>, <code>MessageRecipient</code>, <code>InternalNotification</code>, <code>InternalNotificationTarget</code>, <code>InternalNotificationRead</code>, <code>SchoolNotification</code>; message and notification tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>23</span> Timetables, School Activities, To-do Lists, and Live Classes</h3>
+    <p>Scheduling and activity features include timetable CRUD, class timetable retrieval, timetable coordinators, school activity CRUD/search, live class CRUD, live class joining, and a to-do list page placeholder/surface.</p>
+    <ul>
+      <li>Controllers: <code>TimetableController</code>, <code>SchoolActivityController</code>, <code>LiveClassController</code>, <code>JoinLiveClassController</code>.</li>
+      <li>Frontend: <code>institutions/timetables/list-timetables.tsx</code>, <code>school-activities/*</code>, <code>live-classes/*</code>, <code>todo-list/list-todo-list.tsx</code>.</li>
+      <li>Data/tests: <code>Timetable</code>, <code>TimetableCoordinator</code>, <code>SchoolActivity</code>, <code>LiveClass</code>; live class tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>24</span> Associations and User Associations</h3>
+    <p>Association features manage named associations and morphable/user association assignments, allowing users or entities to be grouped for reporting or operational workflows.</p>
+    <ul>
+      <li>Controllers/actions: <code>AssociationController</code>, <code>UserAssociationController</code>, <code>RecordUserAssociation</code>.</li>
+      <li>Frontend: <code>institutions/associations/*</code>, association selector/modals.</li>
+      <li>Data/tests: <code>Association</code>, <code>UserAssociation</code>, association controller tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>25</span> Payments and External Integrations</h3>
+    <p>External integration support includes Paystack callbacks/reference verification/webhooks, Monnify checkout/callback/reference verification/webhooks, PaymentPoint webhook ingestion, bank account validation, Sentry monitoring through dependencies, Google AI helper usage for question/lesson content, AWS file helper utilities, and API endpoints for Sanctum-authenticated clients.</p>
+    <ul>
+      <li>Controllers/support: <code>Home/PaystackController</code>, <code>Home/MonnifyController</code>, <code>Home/PaymentPointController</code>, <code>BankController</code>, <code>Support/Payments/*</code>, <code>AwsFileHelper</code>, <code>GoogleAiHelper</code>.</li>
+      <li>Routes: <code>routes/web.php</code> payment provider endpoints and <code>routes/api.php</code> API endpoints.</li>
+      <li>Tests: bank, Monnify, PaymentPoint, payment processor, and offline API tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>26</span> Imports, Exports, Printable Outputs, and Document Handling</h3>
+    <p>The app includes extensive import/export and printable flows: student/staff/admission/class/course/result sheets, class student downloads, PIN downloads, course content export, question uploads/downloads, result sheets, session result sheets, transcripts, receipts, universal receipts, payroll summary downloads, signed result sheets, PDF bridge routes, and image/document helpers.</p>
+    <ul>
+      <li>Actions/helpers: <code>GenericExport</code>, <code>ClassSheet</code>, <code>Sheet/ConvertSheetToArray</code>, <code>SheetValueHandler</code>, download/insert actions, <code>ExamAttemptFileHandler</code>, <code>InstitutionBackgroundImage</code>.</li>
+      <li>Frontend: result sheet templates, session result templates, receipt layouts, ID card pages, upload modals, file dropper components.</li>
+      <li>Data contracts: request classes under <code>app/Http/Requests</code> and validation rules under <code>app/Rules</code>.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
+    <h3><span>27</span> Query, Filtering, and Shared UI Infrastructure</h3>
+    <p>Server-side filtering and reusable frontend controls are implemented across list pages. Query builders and table filters centralize search/filter behavior while React selectors, modals, hooks, typed page props, and web-form utilities standardize UX across modules.</p>
+    <ul>
+      <li>Backend: <code>app/Support/Queries/*</code>, <code>app/Support/UITableFilters/*</code>, validation rules, <code>MorphMap</code>, <code>MorphableHandler</code>.</li>
+      <li>Frontend: <code>resources/js/components/server-paginated-table.tsx</code>, <code>components/selectors/*</code>, <code>components/modals/*</code>, <code>hooks/*</code>, <code>util/*</code>, <code>types/models.ts</code>.</li>
+      <li>Tests: <code>Support/UITableFilters/BaseUITableFilterTest.php</code> and feature-specific controller tests.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Feature-to-Doc Cross Reference</h2>
+  <ul>
+    <li>Backend route/controller/action surface: <code>public/feature-docs/backend.html</code>.</li>
+    <li>Frontend page/component/hook surface: <code>public/feature-docs/frontend.html</code>.</li>
+    <li>Data model and migration surface: <code>public/feature-docs/data.html</code>.</li>
+    <li>Product expansion and AI opportunities: <code>public/feature-docs/product-recommendations.html</code>.</li>
+    <li>Buyer-facing product narrative: <code>public/feature-docs/proposal.html</code>.</li>
+  </ul>
+</section>
+
 </main>
 </body>
 </html>

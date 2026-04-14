@@ -38,8 +38,8 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <body>
 <header>
   <h1>Data Model &amp; Database</h1>
-  <p>Generated 2026-02-23 23:12:06</p>
-  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a></nav>
+  <p>Last reviewed 2026-04-13</p>
+  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
 <section><h2>Models</h2><ul class="detail-list"><li><div><strong>AcademicSession</strong> <span class="path"><code>app/Models/AcademicSession.php</code></span></div><div class="desc">Represents Academic Session records and relationships used for academic sessions and summaries.</div></li>
@@ -105,6 +105,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>PinGenerator</strong> <span class="path"><code>app/Models/PinGenerator.php</code></span></div><div class="desc">Represents Pin Generator records and relationships used for PIN access.</div></li>
 <li><div><strong>PriceList</strong> <span class="path"><code>app/Models/PriceList.php</code></span></div><div class="desc">Represents Price List records and relationships in the system.</div></li>
 <li><div><strong>Question</strong> <span class="path"><code>app/Models/Question.php</code></span></div><div class="desc">Represents Question records and relationships used for question bank.</div></li>
+<li><div><strong>TheoryQuestion</strong> <span class="path"><code>app/Models/TheoryQuestion.php</code></span></div><div class="desc">Represents theory question records attached to course sessions, including question number, sub-number, marks, answer, and marking scheme.</div></li>
 <li><div><strong>Receipt</strong> <span class="path"><code>app/Models/Receipt.php</code></span></div><div class="desc">Represents Receipt records and relationships used for payment receipts.</div></li>
 <li><div><strong>RegistrationRequest</strong> <span class="path"><code>app/Models/RegistrationRequest.php</code></span></div><div class="desc">Represents Registration Request records and relationships in the system.</div></li>
 <li><div><strong>ReservedAccount</strong> <span class="path"><code>app/Models/ReservedAccount.php</code></span></div><div class="desc">Represents Reserved Account records and relationships in the system.</div></li>
@@ -259,7 +260,8 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>2026_01_06_162941_add_status_message_to_institution_users_table</strong> <span class="path"><code>database/migrations/2026_01_06_162941_add_status_message_to_institution_users_table.php</code></span></div><div class="desc">Adds status message fields to the institution users table.</div></li>
 <li><div><strong>2026_01_10_010487_create_live_classes_table</strong> <span class="path"><code>database/migrations/2026_01_10_010487_create_live_classes_table.php</code></span></div><div class="desc">Creates the live classes table and its columns/keys.</div></li>
 <li><div><strong>2026_02_03_000001_create_internal_notification_tables</strong> <span class="path"><code>database/migrations/2026_02_03_000001_create_internal_notification_tables.php</code></span></div><div class="desc">Creates the internal notification table and its columns/keys.</div></li>
-<li><div><strong>2026_02_23_265911_add_class_group_position_to_term_results_table</strong> <span class="path"><code>database/migrations/2026_02_23_265911_add_class_group_position_to_term_results_table.php</code></span></div><div class="desc">Adds class group position fields to the term results table.</div></li></ul></section>
+<li><div><strong>2026_02_23_265911_add_class_group_position_to_term_results_table</strong> <span class="path"><code>database/migrations/2026_02_23_265911_add_class_group_position_to_term_results_table.php</code></span></div><div class="desc">Adds class group position fields to the term results table.</div></li>
+<li><div><strong>2026_04_13_000002_create_theory_questions_table</strong> <span class="path"><code>database/migrations/2026_04_13_000002_create_theory_questions_table.php</code></span></div><div class="desc">Creates the theory questions table with institution, course session, question number, sub-number, question, marks, answer, and marking scheme columns.</div></li></ul></section>
 <section><h2>Seeders</h2><ul class="detail-list"><li><div><strong>AcademicSessionSeeder</strong> <span class="path"><code>database/seeders/AcademicSessionSeeder.php</code></span></div><div class="desc">Seeds baseline Academic Session data for academic sessions and summaries flows.</div></li>
 <li><div><strong>BankSeeder</strong> <span class="path"><code>database/seeders/BankSeeder.php</code></span></div><div class="desc">Seeds baseline Bank data for financial accounts and payouts flows.</div></li>
 <li><div><strong>ClassDivisionSeeder</strong> <span class="path"><code>database/seeders/ClassDivisionSeeder.php</code></span></div><div class="desc">Seeds baseline Class Division data for class structure and grouping flows.</div></li>
@@ -327,6 +329,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>PinGeneratorFactory</strong> <span class="path"><code>database/factories/PinGeneratorFactory.php</code></span></div><div class="desc">Factory for Pin Generator model data used in tests and seed runs.</div></li>
 <li><div><strong>PriceListFactory</strong> <span class="path"><code>database/factories/PriceListFactory.php</code></span></div><div class="desc">Factory for Price List model data used in tests and seed runs.</div></li>
 <li><div><strong>QuestionFactory</strong> <span class="path"><code>database/factories/QuestionFactory.php</code></span></div><div class="desc">Factory for Question model data used in tests and seed runs.</div></li>
+<li><div><strong>TheoryQuestionFactory</strong> <span class="path"><code>database/factories/TheoryQuestionFactory.php</code></span></div><div class="desc">Factory for course-session Theory Question model data used in tests.</div></li>
 <li><div><strong>ReceiptFactory</strong> <span class="path"><code>database/factories/ReceiptFactory.php</code></span></div><div class="desc">Factory for Receipt model data used in tests and seed runs.</div></li>
 <li><div><strong>RegistrationRequestFactory</strong> <span class="path"><code>database/factories/RegistrationRequestFactory.php</code></span></div><div class="desc">Factory for Registration Request model data used in tests and seed runs.</div></li>
 <li><div><strong>ReservedAccountFactory</strong> <span class="path"><code>database/factories/ReservedAccountFactory.php</code></span></div><div class="desc">Factory for Reserved Account model data used in tests and seed runs.</div></li>
@@ -345,6 +348,11 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>TopicFactory</strong> <span class="path"><code>database/factories/TopicFactory.php</code></span></div><div class="desc">Factory for Topic model data used in tests and seed runs.</div></li>
 <li><div><strong>UserAssociationFactory</strong> <span class="path"><code>database/factories/UserAssociationFactory.php</code></span></div><div class="desc">Factory for User Association model data used in tests and seed runs.</div></li>
 <li><div><strong>UserFactory</strong> <span class="path"><code>database/factories/UserFactory.php</code></span></div><div class="desc">Factory for User model data used in tests and seed runs.</div></li></ul></section>
+<section><h2>Current Feature Notes</h2><ul class="detail-list">
+<li><div><strong>Class result locking schema</strong></div><div class="desc"><code>database/migrations/2026_04_13_000001_add_is_locked_to_class_result_info_table.php</code> adds <code>is_locked</code> to <code>class_result_info</code> with a default of <code>false</code>. The model surface is <code>app/Models/ClassResultInfo.php</code> and the frontend type surface is <code>resources/js/types/models.ts</code>.</div></li>
+<li><div><strong>Academic session manager data</strong></div><div class="desc"><code>AcademicSession</code> remains the canonical model for school sessions and is now managed through the manager admin resource. Tests use <code>database/factories/AcademicSessionFactory.php</code> and cover the manager controller in <code>tests/Feature/Http/Controllers/Managers/AcademicSessions/AcademicSessionControllerTest.php</code>.</div></li>
+<li><div><strong>Theory question data</strong></div><div class="desc"><code>TheoryQuestion</code> belongs to <code>CourseSession</code> through <code>course_session_id</code> and stores <code>question_number</code>, optional <code>question_sub_number</code>, <code>marks</code>, <code>answer</code>, and optional <code>marking_scheme</code>.</div></li>
+</ul></section>
 </main>
 </body>
 </html>

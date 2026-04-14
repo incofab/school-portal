@@ -16,7 +16,7 @@ class CourseSessionController extends Controller
     return view('ccd/course-sessions/index', [
       'allRecords' => $query
         ->with('course')
-        ->withCount(['questions'])
+        ->withCount(['questions', 'theoryQuestions'])
         ->paginate(100),
       'course' => $course,
       'courses' => Course::all()

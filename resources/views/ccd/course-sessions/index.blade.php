@@ -26,6 +26,7 @@
 					<th>Category</th>
 					<th>General Instrunction</th>
 					<th>Questions</th>
+					<th>Theory Questions</th>
 					<th></th>
 				</tr>
 				@foreach($allRecords as $record)
@@ -36,9 +37,12 @@
 					<td>{{$record->category}}</td>
 					<td>{{$record->general_instructions}}</td>
 					<td>{{$record->questions_count}}</td>
+					<td>{{$record->theory_questions_count}}</td>
 					<td>
 						<a href="{{instRoute('questions.index', $morphedId)}}" 
 							class="btn btn-sm btn-link"> Questions </a>
+						<a href="{{instRoute('theory-questions.index', $record)}}"
+							class="btn btn-sm btn-link"> Theory Questions </a>
 						<a href="{{instRoute('passages.index', $morphedId)}}" 
 							class="btn btn-sm btn-link"> Passages </a>
 						<a href="{{instRoute('instructions.index', $morphedId)}}" 

@@ -13,6 +13,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Switch,
   Text,
 } from '@chakra-ui/react';
 import { Inertia } from '@inertiajs/inertia';
@@ -46,7 +47,7 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
   const webForm = useWebForm({});
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
-  const { currentInstitution, currentUser } = useSharedProps();
+  const { currentUser } = useSharedProps();
   const calculateClassResultInfoToggle = useModalToggle();
   const classResultInfoFilterToggle = useModalToggle();
   const setResumptionDateModalToggle = useModalToggle();
@@ -98,6 +99,28 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
       (resultInfo.whatsapp_message_count ?? 0) + 1;
   }
 
+  async function updateResultLock(row: ClassResultInfo, isLocked: boolean) {
+    const action = isLocked ? 'lock' : 'unlock';
+    if (
+      !window.confirm(
+        `Do you want to ${action} ${row.classification?.title} results?`
+      )
+    ) {
+      return;
+    }
+
+    const res = await webForm.submit((data, web) => {
+      return web.post(instRoute('class-result-info.lock', [row.id]), {
+        is_locked: isLocked,
+      });
+    });
+
+    if (!handleResponseToast(res)) return;
+
+    row.is_locked = isLocked;
+    Inertia.reload({ only: ['classResultInfo'] });
+  }
+
   const headers: ServerPaginatedTableHeader<ClassResultInfo>[] = [
     {
       label: 'Class',
@@ -143,6 +166,25 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
     {
       label: 'Average',
       value: 'average',
+    },
+    {
+      label: 'Locked',
+      value: 'is_locked',
+      render: (row) => (
+        <HStack spacing={2}>
+          <Switch
+            isChecked={row.is_locked}
+            onChange={(e) => updateResultLock(row, e.target.checked)}
+            isDisabled={
+              webForm.processing ||
+              (!isAdmin &&
+                row.classification!.form_teacher_id !== currentUser.id)
+            }
+            colorScheme="brand"
+          />
+          <Text>{row.is_locked ? 'Locked' : 'Open'}</Text>
+        </HStack>
+      ),
     },
     {
       label: 'Action',
@@ -277,7 +319,7 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
           <ClassResultInfoTableFilters {...classResultInfoFilterToggle.props} />
           <SetResumptionDateModal
             {...setResumptionDateModalToggle.props}
-            onSuccess={() => {}}
+            onSuccess={() => Inertia.reload({ only: ['classResultInfo'] })}
           />
         </Slab>
       </Div>

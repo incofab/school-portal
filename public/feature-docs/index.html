@@ -38,8 +38,8 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <body>
 <header>
   <h1>EduManager Technical Documentation</h1>
-  <p>Generated 2026-02-23 23:12:06</p>
-  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a></nav>
+  <p>Last reviewed 2026-04-13</p>
+  <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
 
@@ -47,7 +47,8 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <h2>Introduction</h2>
 <p>EduManager is a full-stack school management platform that connects academic operations, finance, and communication in one coherent workflow. It is designed for institutions that need to manage admissions, classes, teaching, assessments, and results without losing visibility into payments, payroll, or compliance-driven reporting.</p>
 <p>The backend is a Laravel domain layer that models school entities (sessions, classes, courses, students, staff) and orchestrates workflows like result processing, attendance, and messaging. The frontend is an Inertia + React interface built around task-focused screens for staff, students, guardians, and administrators, with printable outputs for results, receipts, and transcripts.</p>
-<p>This documentation is a technical map of the system. Start with the backend to understand the business operations and HTTP surface, move to the frontend for UI flows and screens, then review the primary modules and entry points to locate how the application boots and where to extend it safely.</p>
+<p>This documentation is a technical map of the system. Start with the feature inventory because it is the AI-oriented source map of implemented capabilities, then use the backend, frontend, and data pages to locate routes, controllers, actions, pages, models, migrations, and tests.</p>
+<p>Documentation must be updated with every project change that adds, removes, renames, or changes feature behavior. Keep <code>features.html</code> current first, then update the backend, frontend, data, proposal, or recommendation pages when those surfaces change.</p>
 </section>
 <section>
 <h2>Project Summary</h2>
@@ -64,7 +65,9 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
   <li>Backend: controllers, actions, requests, services, middleware, and route map.</li>
   <li>Frontend: pages, layouts, components, hooks, utilities.</li>
   <li>Data: models, migrations, seeders, factories.</li>
-  <li>Features: functional capability list with references.</li>
+  <li>Features: detailed implemented feature inventory with source-code references for AI CLI agents.</li>
+  <li>Recommendations: product expansion, improvement opportunities, and AI enhancement map.</li>
+  <li>Proposal: polished marketing overview for school owners, principals, teachers, parents, and administrators.</li>
 </ul>
 </section>
 

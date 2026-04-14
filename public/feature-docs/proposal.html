@@ -1,0 +1,1447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EduManager School Digitization Proposal</title>
+<style>
+:root {
+  --ink: #17202a;
+  --body: #44515f;
+  --muted: #6d7a86;
+  --paper: #fffdf8;
+  --soft: #f4fbf8;
+  --mint: #dff6ef;
+  --teal: #047c75;
+  --teal-dark: #075e59;
+  --green: #21a67a;
+  --gold: #e2a329;
+  --coral: #d85b45;
+  --line: #d8e4df;
+  --white: #ffffff;
+  --shadow: 0 22px 60px rgba(23, 32, 42, .12);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  color: var(--body);
+  background:
+    linear-gradient(180deg, rgba(223, 246, 239, .86) 0, rgba(255, 253, 248, .96) 520px),
+    var(--paper);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+}
+
+a { color: inherit; }
+
+img { max-width: 100%; display: block; }
+
+.page {
+  overflow: hidden;
+}
+
+.shell {
+  width: min(1160px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(216, 228, 223, .8);
+  background: rgba(255, 253, 248, .94);
+  backdrop-filter: blur(18px);
+}
+
+.topbar .shell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand img {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--white);
+  border: 1px solid var(--line);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.nav a {
+  text-decoration: none;
+}
+
+.nav a:hover { color: var(--teal); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 11px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--teal);
+  background: var(--teal);
+  color: var(--white);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 12px 28px rgba(4, 124, 117, .2);
+}
+
+.btn.secondary {
+  background: var(--white);
+  color: var(--teal-dark);
+  border-color: var(--line);
+  box-shadow: none;
+}
+
+.hero {
+  min-height: 88vh;
+  display: grid;
+  align-items: center;
+  padding: 62px 0 42px;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(360px, .88fr);
+  align-items: center;
+  gap: 44px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-bottom: 18px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--teal-dark);
+  background: rgba(255, 255, 255, .72);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--green);
+}
+
+h1, h2, h3, h4 {
+  color: var(--ink);
+  line-height: 1.08;
+  margin: 0;
+}
+
+h1 {
+  max-width: 760px;
+  font-size: 88px;
+  letter-spacing: 0;
+}
+
+h2 {
+  font-size: 54px;
+  letter-spacing: 0;
+}
+
+h3 { font-size: 22px; }
+
+h4 { font-size: 16px; }
+
+p { margin: 0; }
+
+.lead {
+  max-width: 720px;
+  margin-top: 22px;
+  color: #3f4c58;
+  font-size: 22px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.trust-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 760px;
+  margin-top: 38px;
+}
+
+.trust-item {
+  min-height: 100%;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .74);
+}
+
+.trust-item strong {
+  display: block;
+  color: var(--ink);
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.trust-item span {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.proposal-visual {
+  position: relative;
+  border-radius: 8px;
+  background: var(--white);
+  border: 1px solid rgba(216, 228, 223, .92);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.visual-photo {
+  min-height: 230px;
+  padding: 26px;
+  background:
+    linear-gradient(135deg, rgba(4, 124, 117, .9), rgba(33, 166, 122, .82)),
+    url("../img/school-logo.png") center/220px 220px no-repeat;
+  color: var(--white);
+}
+
+.visual-photo img {
+  width: 74px;
+  height: 74px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .5);
+  background: rgba(255, 255, 255, .92);
+  object-fit: contain;
+}
+
+.visual-photo h3 {
+  max-width: 360px;
+  margin-top: 82px;
+  color: var(--white);
+  font-size: 32px;
+}
+
+.dashboard-card {
+  padding: 24px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.metric {
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+}
+
+.metric strong {
+  display: block;
+  color: var(--ink);
+  font-size: 26px;
+  line-height: 1;
+}
+
+.metric span {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.progress-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.progress-row {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.bar {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7efea;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--green);
+}
+
+.bar.gold span { background: var(--gold); }
+.bar.coral span { background: var(--coral); }
+
+section {
+  padding: 76px 0;
+}
+
+.section-head {
+  display: grid;
+  grid-template-columns: minmax(0, .86fr) minmax(280px, .54fr);
+  gap: 40px;
+  align-items: end;
+  margin-bottom: 34px;
+}
+
+.section-head p {
+  color: var(--muted);
+  font-size: 17px;
+}
+
+.kicker {
+  margin-bottom: 12px;
+  color: var(--teal-dark);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.band {
+  background: var(--white);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.issue {
+  min-height: 100%;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+}
+
+.issue .num {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 22px;
+  border-radius: 8px;
+  color: var(--white);
+  background: var(--coral);
+  font-weight: 900;
+}
+
+.issue h3 { margin-bottom: 10px; }
+
+.issue p { color: var(--muted); }
+
+.solution {
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: 36px;
+  align-items: stretch;
+}
+
+.solution-panel {
+  padding: 34px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #e7efe9;
+}
+
+.solution-panel h2,
+.solution-panel h3 { color: var(--white); }
+
+.solution-panel p {
+  margin-top: 18px;
+  color: #c8d4cf;
+}
+
+.quote {
+  margin-top: 34px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, .18);
+  color: var(--white);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.28;
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.module {
+  min-height: 100%;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+}
+
+.icon {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  background: var(--mint);
+  color: var(--teal-dark);
+  font-weight: 900;
+}
+
+.module h3 { margin-bottom: 9px; }
+.module p { color: var(--muted); }
+
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.audience {
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.audience h3 { margin-bottom: 12px; }
+.audience ul,
+.checklist,
+.timeline,
+.scope-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.audience li,
+.checklist li,
+.scope-list li {
+  position: relative;
+  padding-left: 24px;
+  margin-top: 12px;
+  color: var(--muted);
+}
+
+.audience li::before,
+.checklist li::before,
+.scope-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .62em;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--green);
+}
+
+.workflow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.step {
+  position: relative;
+  min-height: 100%;
+  padding: 22px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.step strong {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  background: var(--teal);
+  color: var(--white);
+}
+
+.step p { margin-top: 10px; color: var(--muted); }
+
+.feature-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--white);
+}
+
+.feature-block {
+  padding: 26px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.feature-block:nth-child(3n) { border-right: 0; }
+.feature-block:nth-last-child(-n + 3) { border-bottom: 0; }
+
+.feature-block h3 { margin-bottom: 12px; }
+.feature-block p { color: var(--muted); }
+
+.impact {
+  display: grid;
+  grid-template-columns: .92fr 1.08fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.impact-card {
+  padding: 30px;
+  border-radius: 8px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 34px rgba(23, 32, 42, .06);
+}
+
+.impact-card h3 {
+  margin-bottom: 14px;
+}
+
+.impact-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--white);
+  border: 1px solid var(--line);
+}
+
+.impact-table th,
+.impact-table td {
+  padding: 18px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+.impact-table th {
+  color: var(--ink);
+  background: var(--mint);
+}
+
+.impact-table tr:last-child td { border-bottom: 0; }
+.impact-table td { color: var(--muted); }
+
+.security-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.security-card {
+  padding: 24px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #dce7e2;
+}
+
+.security-card h3 {
+  margin-bottom: 10px;
+  color: var(--white);
+}
+
+.timeline-wrap {
+  padding: 32px;
+  border-radius: 8px;
+  background: var(--white);
+  border: 1px solid var(--line);
+}
+
+.timeline {
+  display: grid;
+  gap: 22px;
+}
+
+.timeline li {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.timeline li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.timeline time {
+  color: var(--teal-dark);
+  font-weight: 900;
+}
+
+.timeline h3 {
+  margin-bottom: 8px;
+}
+
+.timeline p {
+  color: var(--muted);
+}
+
+.cta {
+  padding: 66px 0;
+}
+
+.cta-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 36px;
+  align-items: center;
+  padding: 42px;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(4, 124, 117, .96), rgba(23, 32, 42, .96)),
+    url("../img/logo-single.png") right 40px center/220px 220px no-repeat;
+  color: var(--white);
+}
+
+.cta-panel h2 { color: var(--white); }
+.cta-panel p {
+  max-width: 760px;
+  margin-top: 16px;
+  color: #e5f1ed;
+  font-size: 18px;
+}
+
+.contact-card {
+  padding: 24px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .94);
+  color: var(--ink);
+}
+
+.contact-card p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.footer {
+  padding: 30px 0 48px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.footer .shell {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+}
+
+@media (max-width: 980px) {
+  .nav { display: none; }
+  .hero { min-height: auto; padding-top: 44px; }
+  h1 { font-size: 64px; }
+  h2 { font-size: 42px; }
+  .lead { font-size: 20px; }
+  .hero-grid,
+  .section-head,
+  .solution,
+  .impact,
+  .cta-panel {
+    grid-template-columns: 1fr;
+  }
+  .trust-row,
+  .challenge-grid,
+  .feature-matrix,
+  .security-grid {
+    grid-template-columns: 1fr;
+  }
+  .feature-block,
+  .feature-block:nth-child(3n),
+  .feature-block:nth-last-child(-n + 3) {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .feature-block:last-child { border-bottom: 0; }
+  .audience-grid,
+  .workflow,
+  .module-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .shell { width: min(100% - 28px, 1160px); }
+  .topbar .shell { gap: 12px; }
+  .brand span { font-size: 15px; }
+  .topbar .btn { display: none; }
+  h1 { font-size: 42px; }
+  h2 { font-size: 32px; }
+  .lead { font-size: 18px; }
+  section { padding: 54px 0; }
+  .trust-row,
+  .audience-grid,
+  .workflow,
+  .module-grid,
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+  .proposal-visual { margin-top: 10px; }
+  .visual-photo { min-height: 210px; }
+  .visual-photo h3 { margin-top: 64px; font-size: 28px; }
+  .progress-row { grid-template-columns: 92px minmax(0, 1fr) 38px; }
+  .timeline-wrap,
+  .cta-panel,
+  .solution-panel {
+    padding: 24px;
+  }
+  .timeline li { grid-template-columns: 1fr; gap: 8px; }
+  .footer .shell { flex-direction: column; }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 13mm 16mm;
+  }
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  html,
+  body {
+    width: 100%;
+    min-height: 297mm;
+    background: var(--white) !important;
+  }
+
+  body {
+    color: #34424f;
+    font-size: 10.5pt;
+    line-height: 1.45;
+  }
+
+  .page {
+    overflow: visible;
+  }
+
+  .shell {
+    width: 100%;
+    max-width: none;
+  }
+
+  .topbar {
+    position: static;
+    break-after: avoid;
+    page-break-after: avoid;
+    border-bottom: 1px solid #dbe5e0;
+    background: var(--white) !important;
+  }
+
+  .topbar .shell {
+    padding: 0 0 6mm;
+  }
+
+  .brand img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .brand span {
+    font-size: 12pt;
+  }
+
+  .nav,
+  .hero-actions,
+  .topbar .btn {
+    display: none !important;
+  }
+
+  main {
+    display: block;
+  }
+
+  section {
+    min-height: auto !important;
+    padding: 0;
+    margin: 0;
+    break-before: page;
+    page-break-before: always;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    background: transparent !important;
+    border: 0 !important;
+  }
+
+  section:first-child {
+    break-before: avoid;
+    page-break-before: avoid;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .kicker,
+  .section-head {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  h1 {
+    font-size: 35pt;
+    line-height: 1.04;
+  }
+
+  h2 {
+    font-size: 24pt;
+    line-height: 1.12;
+  }
+
+  h3 {
+    font-size: 13.5pt;
+    line-height: 1.18;
+  }
+
+  h4 {
+    font-size: 11pt;
+  }
+
+  p,
+  li,
+  td,
+  th {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .lead {
+    max-width: none;
+    margin-top: 5mm;
+    font-size: 13pt;
+    line-height: 1.45;
+  }
+
+  .eyebrow,
+  .kicker {
+    font-size: 8.5pt;
+  }
+
+  .hero {
+    display: block;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.02fr .78fr;
+    gap: 8mm;
+    align-items: start;
+  }
+
+  .trust-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4mm;
+    margin-top: 8mm;
+  }
+
+  .trust-item,
+  .issue,
+  .module,
+  .audience,
+  .step,
+  .feature-block,
+  .impact-card,
+  .security-card,
+  .timeline-wrap,
+  .contact-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border-color: #dbe5e0 !important;
+    border-radius: 6px;
+  }
+
+  .trust-item {
+    padding: 4mm;
+  }
+
+  .trust-item strong,
+  .metric strong {
+    font-size: 15pt;
+  }
+
+  .proposal-visual {
+    border: 1px solid #dbe5e0;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .visual-photo {
+    min-height: auto;
+    padding: 6mm;
+    background:
+      linear-gradient(135deg, rgba(4, 124, 117, .94), rgba(33, 166, 122, .86)),
+      url("../img/school-logo.png") center/38mm 38mm no-repeat !important;
+  }
+
+  .visual-photo img {
+    width: 16mm;
+    height: 16mm;
+  }
+
+  .visual-photo h3 {
+    margin-top: 22mm;
+    font-size: 16pt;
+  }
+
+  .dashboard-card {
+    padding: 5mm;
+  }
+
+  .metric-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3mm;
+  }
+
+  .metric {
+    padding: 4mm;
+    background: #f4fbf8 !important;
+  }
+
+  .progress-list {
+    gap: 3mm;
+    margin-top: 5mm;
+  }
+
+  .progress-row {
+    grid-template-columns: 26mm 1fr 10mm;
+    gap: 3mm;
+    font-size: 8.5pt;
+  }
+
+  .section-head {
+    grid-template-columns: 1fr .72fr;
+    gap: 8mm;
+    margin-bottom: 8mm;
+    align-items: start;
+  }
+
+  .section-head p {
+    font-size: 10.5pt;
+  }
+
+  .challenge-grid,
+  .security-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4mm;
+  }
+
+  .issue,
+  .module,
+  .audience,
+  .step,
+  .feature-block,
+  .impact-card,
+  .security-card {
+    padding: 5mm;
+  }
+
+  .issue .num,
+  .icon,
+  .step strong {
+    width: 9mm;
+    height: 9mm;
+    margin-bottom: 4mm;
+  }
+
+  .solution {
+    grid-template-columns: .9fr 1.1fr;
+    gap: 7mm;
+    align-items: start;
+  }
+
+  .solution-panel {
+    padding: 7mm;
+    border-radius: 6px;
+    background: #17202a !important;
+  }
+
+  .quote {
+    margin-top: 7mm;
+    padding-top: 5mm;
+    font-size: 14pt;
+  }
+
+  .module-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4mm;
+  }
+
+  .audience-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4mm;
+  }
+
+  .audience li,
+  .checklist li,
+  .scope-list li {
+    margin-top: 2.2mm;
+    padding-left: 5mm;
+  }
+
+  .workflow {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4mm;
+  }
+
+  .step p {
+    margin-top: 2mm;
+  }
+
+  .feature-matrix {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border: 1px solid #dbe5e0;
+    overflow: visible;
+  }
+
+  #features {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  .feature-block,
+  .feature-block:nth-child(3n),
+  .feature-block:nth-last-child(-n + 3) {
+    border-right: 1px solid #dbe5e0;
+    border-bottom: 1px solid #dbe5e0;
+  }
+
+  .feature-block:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .feature-block:nth-child(7) {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  .impact {
+    grid-template-columns: .88fr 1.12fr;
+    gap: 6mm;
+  }
+
+  .impact-table th,
+  .impact-table td {
+    padding: 3.8mm;
+  }
+
+  .timeline-wrap {
+    padding: 6mm;
+  }
+
+  .timeline {
+    gap: 4mm;
+  }
+
+  .timeline li {
+    grid-template-columns: 25mm 1fr;
+    gap: 6mm;
+    padding-bottom: 4mm;
+  }
+
+  .cta {
+    padding: 0;
+  }
+
+  .cta-panel {
+    grid-template-columns: 1fr 58mm;
+    gap: 7mm;
+    padding: 8mm;
+    border-radius: 6px;
+    background:
+      linear-gradient(135deg, rgba(4, 124, 117, .96), rgba(23, 32, 42, .96)),
+      url("../img/logo-single.png") right 8mm center/42mm 42mm no-repeat !important;
+  }
+
+  .cta-panel p {
+    font-size: 11pt;
+  }
+
+  .solution-panel,
+  .security-card,
+  .cta-panel {
+    background: #f3fbf7 !important;
+    color: #34424f !important;
+    border: 1px solid #dbe5e0;
+  }
+
+  .solution-panel h2,
+  .solution-panel h3,
+  .security-card h3,
+  .cta-panel h2,
+  .cta-panel h3 {
+    color: #17202a !important;
+  }
+
+  .solution-panel p,
+  .security-card p,
+  .cta-panel p {
+    color: #44515f !important;
+  }
+
+  .cta-panel .kicker {
+    color: #075e59 !important;
+  }
+
+  .quote {
+    color: #075e59 !important;
+    border-top-color: #dbe5e0;
+  }
+
+  .contact-card {
+    background: #ffffff !important;
+  }
+
+  .proposal-visual,
+  .impact-card,
+  .cta-panel {
+    box-shadow: none;
+  }
+
+  .footer {
+    padding: 0;
+    margin-top: 8mm;
+    break-before: avoid;
+    page-break-before: avoid;
+  }
+
+  .footer .shell {
+    padding-top: 5mm;
+    font-size: 8.5pt;
+  }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="topbar">
+    <div class="shell">
+      <a class="brand" href="index.html" aria-label="EduManager documentation home">
+        <img src="../img/logo.png" alt="EduManager logo" />
+        <span>EduManager</span>
+      </a>
+      <nav class="nav" aria-label="Proposal sections">
+        <a href="#solution">Solution</a>
+        <a href="#features">Features</a>
+        <a href="#workflow">How it works</a>
+        <a href="#implementation">Implementation</a>
+      </nav>
+      <a class="btn secondary" href="#next-step">Book a school walkthrough</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="cover">
+      <div class="shell hero-grid">
+        <div>
+          <div class="eyebrow">School administration, digitized end to end</div>
+          <h1>A modern operating system for ambitious schools.</h1>
+          <p class="lead">EduManager helps school owners, principals, bursars, teachers, parents, and students move from paper files and scattered spreadsheets to one coordinated platform for admissions, academics, finance, communication, and reporting.</p>
+          <div class="hero-actions">
+            <a class="btn" href="#next-step">Start the conversation</a>
+            <a class="btn secondary" href="#features">Explore the platform</a>
+          </div>
+          <div class="trust-row" aria-label="Platform strengths">
+            <div class="trust-item"><strong>One</strong><span>connected record for every student, class, staff member, guardian, fee, and result.</span></div>
+            <div class="trust-item"><strong>Faster</strong><span>daily administration with bulk uploads, automated workflows, and printable outputs.</span></div>
+            <div class="trust-item"><strong>Clearer</strong><span>visibility for leadership, teachers, finance teams, parents, and students.</span></div>
+          </div>
+        </div>
+
+        <aside class="proposal-visual" aria-label="EduManager overview">
+          <div class="visual-photo">
+            <img src="../img/school-logo.png" alt="School emblem placeholder" />
+            <h3>Run the school day from a single source of truth.</h3>
+          </div>
+          <div class="dashboard-card">
+            <div class="metric-grid">
+              <div class="metric"><strong>360</strong><span>degree student and guardian records</span></div>
+              <div class="metric"><strong>24/7</strong><span>parent and student access flows</span></div>
+              <div class="metric"><strong>Bulk</strong><span>imports for students, staff, scores, and applications</span></div>
+              <div class="metric"><strong>Live</strong><span>payments, receipts, wallets, and notifications</span></div>
+            </div>
+            <div class="progress-list">
+              <div class="progress-row"><span>Admissions</span><div class="bar"><span style="width: 92%"></span></div><span>92%</span></div>
+              <div class="progress-row"><span>Results</span><div class="bar gold"><span style="width: 88%"></span></div><span>88%</span></div>
+              <div class="progress-row"><span>Finance</span><div class="bar coral"><span style="width: 84%"></span></div><span>84%</span></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <div class="kicker">The Problem</div>
+            <h2>Schools lose time and money when operations live in disconnected places.</h2>
+          </div>
+          <p>Manual administration creates slow decisions, duplicate data entry, delayed fee tracking, result errors, weak parent communication, and limited accountability. EduManager gives each team a shared operational backbone.</p>
+        </div>
+        <div class="challenge-grid">
+          <div class="issue"><span class="num">1</span><h3>Paper-heavy workflows</h3><p>Student records, admission applications, fee ledgers, attendance registers, result sheets, and staff records become difficult to find, verify, and audit.</p></div>
+          <div class="issue"><span class="num">2</span><h3>Slow reporting cycles</h3><p>Teachers and administrators spend valuable time merging scores, formatting reports, producing receipts, and reconciling payment records.</p></div>
+          <div class="issue"><span class="num">3</span><h3>Limited stakeholder visibility</h3><p>Parents wait for updates, school leaders lack timely insight, and finance teams struggle to turn operational data into confident decisions.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="solution">
+      <div class="shell solution">
+        <div class="solution-panel">
+          <div class="kicker">The Solution</div>
+          <h2>EduManager brings the full school workflow into one secure digital command center.</h2>
+          <p>From the first admission enquiry to fee payment, lesson planning, attendance, assessments, report publication, guardian messaging, payroll, and school-wide reporting, EduManager keeps the work connected.</p>
+          <div class="quote">Leadership gets control. Teachers get time back. Parents get clarity. Students get a smoother learning experience.</div>
+        </div>
+        <div class="module-grid">
+          <div class="module"><span class="icon">01</span><h3>Academic administration</h3><p>Manage sessions, terms, classes, divisions, courses, teachers, assessments, attendance, timetables, assignments, lesson plans, lesson notes, schemes of work, and result publications.</p></div>
+          <div class="module"><span class="icon">02</span><h3>Student lifecycle</h3><p>Digitize admissions, student registration, guardian assignment, class movements, promotions, ID cards, result PINs, transcripts, and parent or student access flows.</p></div>
+          <div class="module"><span class="icon">03</span><h3>Finance and accountability</h3><p>Track fees, payments, receipts, fee reminders, bank accounts, wallets, withdrawals, payroll, salary adjustments, expenses, commissions, and group-level billing.</p></div>
+          <div class="module"><span class="icon">04</span><h3>Communication and reporting</h3><p>Send institution messages, internal notifications, fee reminders, result updates, admission letters, and operational reports from the same trusted data source.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Designed For Every Stakeholder</div>
+            <h2>One platform, clear value for the people who run and support the school.</h2>
+          </div>
+          <p>EduManager is not just an admin tool. It gives every stakeholder the right workflow, the right access, and the right information at the right time.</p>
+        </div>
+        <div class="audience-grid">
+          <article class="audience"><h3>Owners and principals</h3><ul><li>Monitor school performance and setup readiness.</li><li>Control roles, approvals, publications, and institutional records.</li><li>Strengthen accountability across academic and financial teams.</li></ul></article>
+          <article class="audience"><h3>Teachers and staff</h3><ul><li>Record scores, attendance, assignments, lesson plans, and lesson notes.</li><li>Download result sheets and recording templates.</li><li>Communicate faster with students, guardians, and colleagues.</li></ul></article>
+          <article class="audience"><h3>Bursars and managers</h3><ul><li>Create fees, record payments, issue receipts, and view summaries.</li><li>Track payroll, salaries, adjustments, expenses, withdrawals, and wallets.</li><li>Improve reconciliation and fee recovery.</li></ul></article>
+          <article class="audience"><h3>Parents and students</h3><ul><li>Access results, exam flows, receipts, admission updates, and learning activities.</li><li>Receive timely school messages and payment reminders.</li><li>Stay connected to academic progress and school obligations.</li></ul></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="workflow">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <div class="kicker">How It Works</div>
+            <h2>A clear path from setup to everyday digital operations.</h2>
+          </div>
+          <p>Schools can begin with core records and expand into deeper academic, finance, and communication workflows as adoption grows.</p>
+        </div>
+        <div class="workflow">
+          <div class="step"><strong>1</strong><h3>Set up the institution</h3><p>Create the school profile, academic sessions, terms, roles, permissions, classes, divisions, courses, and result settings.</p></div>
+          <div class="step"><strong>2</strong><h3>Import people and records</h3><p>Upload students, guardians, staff, classifications, admission applications, score templates, and supporting records in bulk.</p></div>
+          <div class="step"><strong>3</strong><h3>Run daily operations</h3><p>Record attendance, plan lessons, manage assignments, create exams or events, process fees, issue receipts, and send messages.</p></div>
+          <div class="step"><strong>4</strong><h3>Publish trusted reports</h3><p>Process results, apply evaluations and comments, generate sheets, activate result access, and share outcomes with guardians.</p></div>
+          <div class="step"><strong>5</strong><h3>Review and improve</h3><p>Use dashboards, summaries, records, and exports to track performance, arrears, payroll, adoption, and operational gaps.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="features">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Core Features</div>
+            <h2>Everything a modern school needs to reduce manual work and grow with confidence.</h2>
+          </div>
+          <p>EduManager covers the most important administrative, academic, financial, and communication workflows already needed by private schools, group schools, and growth-focused institutions.</p>
+        </div>
+        <div class="feature-matrix">
+          <article class="feature-block"><h3>Admissions and onboarding</h3><p>Admission forms, application purchases, application uploads, screening status, admission letters, institution registration, partner registration, and setup checklist tracking.</p></article>
+          <article class="feature-block"><h3>Student and guardian records</h3><p>Student profiles, bulk uploads, class changes, promotions, guardian assignments, dependent management, ID cards, student login, and guardian impersonation flows.</p></article>
+          <article class="feature-block"><h3>Classes, courses, and teaching</h3><p>Class groups, class divisions, courses, course teachers, topics, schemes of work, lesson plans, lesson notes, live classes, assignments, and question bank workflows.</p></article>
+          <article class="feature-block"><h3>Assessment and results</h3><p>Assessment definitions, score recording, sheet uploads, result calculation, term results, session results, cumulative results, transcripts, result sheets, comments, PINs, and publication controls.</p></article>
+          <article class="feature-block"><h3>Attendance, exams, and events</h3><p>Attendance capture, attendance reports, exams, events, online exam flows, result transfer, corrections view, timetables, and school activity management.</p></article>
+          <article class="feature-block"><h3>Finance, payroll, and expenses</h3><p>Fees, payment summaries, receipts, reminders, bank accounts, wallets, funding, withdrawals, payroll generation, salary types, adjustments, expense categories, and commissions.</p></article>
+          <article class="feature-block"><h3>Messaging and notifications</h3><p>Institution messages, internal notifications, sent notifications, fee payment reminders, result messages to guardians, admission mail, bulk SMS, and WhatsApp delivery jobs.</p></article>
+          <article class="feature-block"><h3>Institution and group control</h3><p>Institution profile, branding, institution groups, managers, users, associations, roles, permissions, setup settings, result templates, payment keys, and lifecycle status control.</p></article>
+          <article class="feature-block"><h3>Integrations and exports</h3><p>Paystack, Monnify, PaymentPoint, Sentry monitoring, printable receipts, downloadable result sheets, student templates, staff templates, admission templates, and offline exam mock endpoints.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell impact">
+        <div class="impact-card">
+          <div class="kicker">Business Case</div>
+          <h2>Digitization pays back through speed, trust, and financial control.</h2>
+          <p>EduManager turns routine administrative work into repeatable workflows. That means fewer errors, faster reporting, better fee visibility, stronger parent engagement, and a more professional school experience.</p>
+          <ul class="checklist" style="margin-top: 22px;">
+            <li>Reduce spreadsheet dependence across admissions, finance, and academics.</li>
+            <li>Protect institutional memory when staff change roles or leave.</li>
+            <li>Make leadership reporting easier at term, session, and group level.</li>
+            <li>Create a cleaner parent experience for payments, results, and school updates.</li>
+          </ul>
+        </div>
+        <table class="impact-table" aria-label="Expected outcomes">
+          <thead><tr><th>Area</th><th>Expected improvement</th></tr></thead>
+          <tbody>
+            <tr><td>Administrative speed</td><td>Bulk imports, templates, reusable settings, and structured workflows reduce repeated manual entry.</td></tr>
+            <tr><td>Academic reporting</td><td>Result processing, comments, evaluations, transcripts, and report sheets become easier to produce and verify.</td></tr>
+            <tr><td>Finance visibility</td><td>Fee summaries, receipts, reminders, payroll, expenses, wallets, and withdrawals create a clearer financial trail.</td></tr>
+            <tr><td>Parent trust</td><td>Guardians receive clearer updates, payment records, result access, and student-related communication.</td></tr>
+            <tr><td>School growth</td><td>Multi-school groups, institutional profiles, roles, permissions, and scalable workflows support expansion without operational chaos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Security And Governance</div>
+            <h2>Built around controlled access, clear records, and operational accountability.</h2>
+          </div>
+          <p>Schools handle sensitive student, parent, academic, and financial data. EduManager supports responsible administration with role-based access, authenticated workflows, and structured records.</p>
+        </div>
+        <div class="security-grid">
+          <div class="security-card"><h3>Role-aware access</h3><p>Administrators, managers, institution users, staff, students, and guardians operate through separated access flows and permissions.</p></div>
+          <div class="security-card"><h3>Reliable records</h3><p>Students, guardians, staff, fees, payments, results, attendance, and institutional operations are managed as structured records, not loose files.</p></div>
+          <div class="security-card"><h3>Operational controls</h3><p>Result settings, payment keys, publication steps, registration status, and institution setup controls help leadership manage sensitive processes.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="implementation">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Implementation Plan</div>
+            <h2>A practical rollout that fits the school calendar.</h2>
+          </div>
+          <p>The recommended rollout starts with the data that powers everything else, then moves into daily operations and reporting. Training can be grouped by role so each team learns the screens they actually use.</p>
+        </div>
+        <div class="timeline-wrap">
+          <ol class="timeline">
+            <li><time>Phase 1</time><div><h3>Discovery and configuration</h3><p>Confirm school structure, academic terms, roles, permissions, fees, reporting templates, institution profile, payment settings, and migration priorities.</p></div></li>
+            <li><time>Phase 2</time><div><h3>Data migration and validation</h3><p>Import students, staff, guardians, classes, courses, admission data, finance records, and academic templates using structured upload workflows.</p></div></li>
+            <li><time>Phase 3</time><div><h3>Team training and pilot</h3><p>Train administrators, teachers, bursars, and support staff. Run a controlled pilot for admissions, fee payments, attendance, result recording, and communication.</p></div></li>
+            <li><time>Phase 4</time><div><h3>Go-live and parent activation</h3><p>Launch daily operations, introduce parent and student access flows, publish communication guidelines, and support the first reporting or payment cycle.</p></div></li>
+            <li><time>Phase 5</time><div><h3>Optimization and expansion</h3><p>Review adoption, refine workflows, add more modules, improve reports, and prepare leadership dashboards for continuous operational improvement.</p></div></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Scope Of Engagement</div>
+            <h2>What a school can expect during adoption.</h2>
+          </div>
+          <p>The platform rollout can be packaged around the school's current readiness, data quality, preferred payment workflow, and academic calendar.</p>
+        </div>
+        <div class="audience-grid">
+          <article class="audience"><h3>Platform setup</h3><ul class="scope-list"><li>Institution profile and branding.</li><li>Academic structure and role setup.</li><li>Payment and result settings.</li></ul></article>
+          <article class="audience"><h3>Data support</h3><ul class="scope-list"><li>Structured import templates.</li><li>Student, staff, guardian, and class records.</li><li>Validation before go-live.</li></ul></article>
+          <article class="audience"><h3>Training</h3><ul class="scope-list"><li>Leadership orientation.</li><li>Teacher and bursar sessions.</li><li>Parent access guidance.</li></ul></article>
+          <article class="audience"><h3>Success support</h3><ul class="scope-list"><li>Go-live monitoring.</li><li>Reporting cycle support.</li><li>Workflow refinement after adoption.</li></ul></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" id="next-step">
+      <div class="shell">
+        <div class="cta-panel">
+          <div>
+            <div class="kicker" style="color:#bff4df;">Next Step</div>
+            <h2>Give your school the operational confidence of a digital-first institution.</h2>
+            <p>Book a focused walkthrough with your leadership, academic, and finance teams. The session maps EduManager to your current school process, identifies quick wins, and defines a rollout plan that fits your term calendar.</p>
+          </div>
+          <aside class="contact-card" aria-label="Contact details">
+            <h3>Proposal Contact</h3>
+            <p><strong>EduManager Implementation Team</strong></p>
+            <p>Email: hello@example.com</p>
+            <p>Phone: +234 000 000 0000</p>
+            <p>Web: your-domain.example</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell">
+      <span>EduManager School Digitization Proposal</span>
+      <span>Prepared for school owners, principals, administrators, teachers, parents, and education leaders.</span>
+    </div>
+  </footer>
+</div>
+</body>
+</html>

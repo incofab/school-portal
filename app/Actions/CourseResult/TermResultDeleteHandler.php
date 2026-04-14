@@ -2,6 +2,7 @@
 
 namespace App\Actions\CourseResult;
 
+use App\Models\ClassResultInfo;
 use App\Models\CourseResult;
 use App\Models\TermResult;
 
@@ -13,6 +14,13 @@ class TermResultDeleteHandler
 
   function delete()
   {
+    ClassResultInfo::ensureResultIsUnlocked(
+      $this->termResult->classification_id,
+      $this->termResult->academic_session_id,
+      $this->termResult->term,
+      $this->termResult->for_mid_term
+    );
+
     CourseResult::query()
       ->where([
         'academic_session_id' => $this->termResult->academic_session_id,
@@ -42,6 +50,13 @@ class TermResultDeleteHandler
 
   function restore()
   {
+    ClassResultInfo::ensureResultIsUnlocked(
+      $this->termResult->classification_id,
+      $this->termResult->academic_session_id,
+      $this->termResult->term,
+      $this->termResult->for_mid_term
+    );
+
     $this->termResult->restore();
     CourseResult::query()
       ->where([

@@ -45,6 +45,8 @@ Route::get('/classifications/search', [Web\Classifications\ClassificationControl
   ->name('classifications.search');
 Route::post('/classifications/{classification}/migrate-students', [Web\Classifications\UpdateStudentClassController::class, 'migrateClassStudents'])
   ->name('classifications.migrate-students');
+Route::post('/classifications/{classification}/student-status', [Web\Classifications\ClassificationController::class, 'updateStudentStatus'])
+  ->name('classifications.student-status');
 
 Route::get('/student-class-movements', [Web\Classifications\StudentClassMovementController::class, 'index'])
   ->name('student-class-movements.index');
@@ -264,6 +266,8 @@ Route::post('/class-result-info/calculate', [Web\Staff\ClassResultInfoController
   ->name('class-result-info.calculate');
 Route::post('/class-result-info/recalculate/{classResultInfo}', [Web\Staff\ClassResultInfoController::class, 'reCalculate'])
   ->name('class-result-info.recalculate');
+Route::post('/class-result-info/{classResultInfo}/lock', [Web\Staff\ClassResultInfoController::class, 'updateLock'])
+  ->name('class-result-info.lock');
 Route::post('/class-result-info/set-resumption-date/{classificationGroup?}', [Web\Staff\ClassResultInfoController::class, 'setNextTermResumptionDate'])
   ->name('class-result-info.set-resumption-date');
 Route::get('/class-result-info/{classResultInfo}/result-sheets', [Web\Staff\ClassResultInfoController::class, 'viewClassResultSheets'])

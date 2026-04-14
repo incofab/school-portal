@@ -35,6 +35,11 @@ class CourseSession extends QuestionCourseable
     return $this->belongsTo(Course::class);
   }
 
+  function theoryQuestions()
+  {
+    return $this->hasMany(TheoryQuestion::class);
+  }
+
   function getName()
   {
     return "{$this->course->title} {$this->session}";
