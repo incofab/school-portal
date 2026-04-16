@@ -22,7 +22,7 @@ class EventResultHandler
    *  academic_session_id: int,
    * } $data
    */
-  function __construct(
+  public function __construct(
     private CourseTeacher $courseTeacher,
     private array $data,
     private EventCourseable $eventCourseable,
@@ -30,7 +30,7 @@ class EventResultHandler
   ) {
   }
 
-  function transferEventResult(Event $event)
+  public function transferEventResult(Event $event)
   {
     if (
       $this->eventCourseable->courseable->course_id !==
@@ -41,15 +41,19 @@ class EventResultHandler
       ]);
     }
 
-    DB::transaction(function () use ($event) {
+    $recordResultObj = null;
+
+    DB::transaction(function () use ($event, &$recordResultObj) {
       foreach ($event->exams as $key => $exam) {
-        $this->transferExamResult($exam);
+        $recordResultObj = $this->transferExamResult($exam) ?? $recordResultObj;
       }
-      $event->fill(['transferred_at' => now()])->save();
-    });
+    }, 3);
+
+    $recordResultObj?->evaluateResult();
+    $event->fill(['transferred_at' => now()])->save();
   }
 
-  function transferExamResult(Exam $studentExam)
+  public function transferExamResult(Exam $studentExam): ?RecordCourseResult
   {
     $recordResultObj = null;
     foreach ($studentExam->examCourseables as $key => $examCourseable) {
@@ -68,7 +72,8 @@ class EventResultHandler
         );
       }
     }
-    $recordResultObj?->evaluateResult();
+
+    return $recordResultObj;
   }
 
   private function recordResult(

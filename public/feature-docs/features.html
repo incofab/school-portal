@@ -54,7 +54,7 @@ code { color: #d1fae5; }
 <body>
 <header>
   <h1>EduManager Feature Inventory</h1>
-  <p>Last reviewed 2026-04-13. Technical map for AI CLI agents and maintainers.</p>
+  <p>Last reviewed 2026-04-16. Technical map for AI CLI agents and maintainers.</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -229,6 +229,7 @@ code { color: #d1fae5; }
   <div class="feature">
     <h3><span>14</span> Result Recording, Processing, Locking, Publishing, and Reports</h3>
     <p>Results are a major domain. The app records individual course results, bulk uploads course result sheets, records whole-class sheets, downloads result recording sheets, calculates class result info, recalculates aggregate results, generates term results, generates session results, computes grades and positions, supports subject reports, cumulative result sheets, term details, teacher/principal comments, extra result data, class result sheet rendering, transcripts, signed result sheets, public result activation, result publications, and result delivery to guardians.</p>
+    <p>Course result upserts are protected by lookup constraints on student/course/class/session/term/mid-term keys, and class/course summary lookups use indexed keys to reduce lock contention during result recording and exam result transfer.</p>
     <p>Class result info records now have an <code>is_locked</code> state. Calculation and recalculation lock the result info; authorized users or form teachers can unlock/relock; recording, updating, deleting, and bulk processing course/term results checks the lock before mutating result data.</p>
     <ul>
       <li>Routes/controllers: course-results and class-result-info routes in <code>routes/institution.php</code>, <code>CourseResultsController</code>, <code>RecordClassResultController</code>, <code>ClassResultInfoController</code>, <code>ListCourseResultInfoController</code>, <code>TransferCourseResultInfoController</code>, <code>ListTermResultController</code>, <code>DeleteTermResultController</code>, <code>ResultPublicationsController</code>, <code>SubjectReportController</code>, student result controllers.</li>
@@ -251,6 +252,7 @@ code { color: #d1fae5; }
   <div class="feature">
     <h3><span>16</span> Exams, Events, CBT, External Exams, and Offline Mock API</h3>
     <p>Exam features include events, event courseables, exams, exam courseables, event content download, result transfer from events into term/course results, multi-transfer, student/admission external exam login, token-user profile update, event display, external exam creation, objective/theory question switching within each exam subject, manual theory answer evaluation by authorized staff, exam display/pause/end/result pages, leaderboards, public exam result lookup, and offline mock API endpoints for client testing and offline scenarios.</p>
+    <p>Event result transfer records all matching student scores inside a short retried transaction, then recalculates course result info and positions once after the transaction commits.</p>
     <ul>
       <li>Routes: <code>routes/exam.php</code>, exam sections in <code>routes/web.php</code>, offline mock section in <code>routes/api.php</code>.</li>
       <li>Controllers/support: <code>Institutions/Exams/*</code>, <code>Institutions/Exams/ExamPage/*</code>, <code>Institutions/Exams/External/*</code>, <code>API/OfflineMock/*</code>, <code>CreateExam</code>, <code>EventResultHandler</code>, <code>ExamHandler</code>, <code>MockEventHandler</code>, <code>MockExamHandler</code>, <code>ExamAttemptFileHandler</code>.</li>

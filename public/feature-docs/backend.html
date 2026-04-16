@@ -38,7 +38,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <body>
 <header>
   <h1>Backend Architecture</h1>
-  <p>Last reviewed 2026-04-13</p>
+  <p>Last reviewed 2026-04-16</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -672,7 +672,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>CreateExam</strong> <span class="path"><code>app/Actions/CreateExam.php</code></span></div><div class="desc">Action class that runs the Create Exam workflow and coordinates domain logic.</div></li>
 <li><div><strong>DownloadResult</strong> <span class="path"><code>app/Actions/DownloadResult.php</code></span></div><div class="desc">Action class that runs the Download Result workflow and coordinates domain logic.</div></li>
 <li><div><strong>ReworkFees</strong> <span class="path"><code>app/Actions/Dummy/ReworkFees.php</code></span></div><div class="desc">Action class that runs the Rework Fees workflow and coordinates domain logic.</div></li>
-<li><div><strong>EventResultHandler</strong> <span class="path"><code>app/Actions/Event/EventResultHandler.php</code></span></div><div class="desc">Action class that runs the Event Result Handler workflow and coordinates domain logic.</div></li>
+<li><div><strong>EventResultHandler</strong> <span class="path"><code>app/Actions/Event/EventResultHandler.php</code></span></div><div class="desc">Action class that runs the Event Result Handler workflow, records event exam scores in a retried transaction, and recalculates course result info once after commit.</div></li>
 <li><div><strong>ExportCourse</strong> <span class="path"><code>app/Actions/ExportCourse.php</code></span></div><div class="desc">Action class that runs the Export Course workflow and coordinates domain logic.</div></li>
 <li><div><strong>FeeMembersHandler</strong> <span class="path"><code>app/Actions/Fees/FeeMembersHandler.php</code></span></div><div class="desc">Action class that runs the Fee Members Handler workflow and coordinates domain logic.</div></li>
 <li><div><strong>GetClassFeePaymentSummary</strong> <span class="path"><code>app/Actions/Fees/GetClassFeePaymentSummary.php</code></span></div><div class="desc">Action class that runs the Get Class Fee Payment Summary workflow and coordinates domain logic.</div></li>

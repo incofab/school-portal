@@ -38,7 +38,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <body>
 <header>
   <h1>Data Model &amp; Database</h1>
-  <p>Last reviewed 2026-04-13</p>
+  <p>Last reviewed 2026-04-16</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -63,8 +63,8 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>ClassificationGroup</strong> <span class="path"><code>app/Models/ClassificationGroup.php</code></span></div><div class="desc">Represents Classification Group records and relationships used for class structure and grouping.</div></li>
 <li><div><strong>Commission</strong> <span class="path"><code>app/Models/Commission.php</code></span></div><div class="desc">Represents Commission records and relationships in the system.</div></li>
 <li><div><strong>Course</strong> <span class="path"><code>app/Models/Course.php</code></span></div><div class="desc">Represents Course records and relationships used for courses, teaching, and curriculum.</div></li>
-<li><div><strong>CourseResult</strong> <span class="path"><code>app/Models/CourseResult.php</code></span></div><div class="desc">Represents Course Result records and relationships used for courses, teaching, and curriculum.</div></li>
-<li><div><strong>CourseResultInfo</strong> <span class="path"><code>app/Models/CourseResultInfo.php</code></span></div><div class="desc">Represents Course Result Info records and relationships used for courses, teaching, and curriculum.</div></li>
+<li><div><strong>CourseResult</strong> <span class="path"><code>app/Models/CourseResult.php</code></span></div><div class="desc">Represents Course Result records and relationships used for result recording, event transfers, courses, teaching, and curriculum.</div></li>
+<li><div><strong>CourseResultInfo</strong> <span class="path"><code>app/Models/CourseResultInfo.php</code></span></div><div class="desc">Represents Course Result Info summary records for class/course/session/term result calculations.</div></li>
 <li><div><strong>CourseSession</strong> <span class="path"><code>app/Models/CourseSession.php</code></span></div><div class="desc">Represents Course Session records and relationships used for courses, teaching, and curriculum.</div></li>
 <li><div><strong>CourseTeacher</strong> <span class="path"><code>app/Models/CourseTeacher.php</code></span></div><div class="desc">Represents Course Teacher records and relationships used for courses, teaching, and curriculum.</div></li>
 <li><div><strong>Event</strong> <span class="path"><code>app/Models/Event.php</code></span></div><div class="desc">Represents Event records and relationships used for events and exams.</div></li>
@@ -263,6 +263,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>2026_02_23_265911_add_class_group_position_to_term_results_table</strong> <span class="path"><code>database/migrations/2026_02_23_265911_add_class_group_position_to_term_results_table.php</code></span></div><div class="desc">Adds class group position fields to the term results table.</div></li>
 <li><div><strong>2026_04_13_000002_create_theory_questions_table</strong> <span class="path"><code>database/migrations/2026_04_13_000002_create_theory_questions_table.php</code></span></div><div class="desc">Creates the theory questions table with institution, <code>courseable_type</code>, <code>courseable_id</code>, <code>question_no</code>, sub-number, question, marks, answer, and marking scheme columns.</div></li>
 <li><div><strong>2026_04_13_000003_add_theory_fields_to_exam_courseables_table</strong> <span class="path"><code>database/migrations/2026_04_13_000003_add_theory_fields_to_exam_courseables_table.php</code></span></div><div class="desc">Adds theory evaluation fields to <code>exam_courseables</code> and <code>exams</code>: awarded score, max score, question count, per-question score map, and <code>theory_evaluated</code> flags.</div></li>
+<li><div><strong>2026_04_16_000001_add_result_lookup_constraints</strong> <span class="path"><code>database/migrations/2026_04_16_000001_add_result_lookup_constraints.php</code></span></div><div class="desc">Adds course result and course result info lookup constraints/indexes for student/course/class/session/term/mid-term upserts and class/course result recalculation.</div></li>
 <section><h2>Seeders</h2><ul class="detail-list"><li><div><strong>AcademicSessionSeeder</strong> <span class="path"><code>database/seeders/AcademicSessionSeeder.php</code></span></div><div class="desc">Seeds baseline Academic Session data for academic sessions and summaries flows.</div></li>
 <li><div><strong>BankSeeder</strong> <span class="path"><code>database/seeders/BankSeeder.php</code></span></div><div class="desc">Seeds baseline Bank data for financial accounts and payouts flows.</div></li>
 <li><div><strong>ClassDivisionSeeder</strong> <span class="path"><code>database/seeders/ClassDivisionSeeder.php</code></span></div><div class="desc">Seeds baseline Class Division data for class structure and grouping flows.</div></li>

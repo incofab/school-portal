@@ -4,9 +4,8 @@ use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Assessment;
-use App\Models\Course;
 use App\Models\CourseResult;
-use App\Models\CourseSession;
+use App\Models\CourseResultInfo;
 use App\Models\CourseTeacher;
 use App\Models\Event;
 use App\Models\Exam;
@@ -47,7 +46,7 @@ beforeEach(function () {
   $this->examCourseable = ExamCourseable::factory()
     ->exam($this->exam)
     ->courseable($this->eventCourseable->courseable)
-    ->create();
+    ->create(['score' => 40]);
 
   $this->route = route('institutions.events.transfer-results', [
     $this->institution->uuid,
@@ -107,3 +106,58 @@ it('transfers event result to course assessment score', function () {
     $this->examCourseable->score
   );
 });
+
+it(
+  'evaluates event transfer results after all student scores are recorded',
+  function () {
+    $secondStudent = Student::factory()
+      ->withInstitution($this->institution)
+      ->create();
+    $secondExam = Exam::factory()
+      ->event($this->event)
+      ->examable($secondStudent)
+      ->create();
+    ExamCourseable::factory()
+      ->exam($secondExam)
+      ->courseable($this->eventCourseable->courseable)
+      ->create(['score' => 80]);
+
+    actingAs($this->admin)
+      ->post($this->route, $this->post)
+      ->assertStatus(200);
+
+    $firstResult = CourseResult::where([
+      'student_id' => $this->student->id,
+      'course_id' => $this->courseTeacher->course_id,
+      'classification_id' => $this->courseTeacher->classification_id,
+      'academic_session_id' => $this->academicSession->id,
+      'term' => $this->term,
+      'for_mid_term' => false
+    ])->firstOrFail();
+
+    $secondResult = CourseResult::where([
+      'student_id' => $secondStudent->id,
+      'course_id' => $this->courseTeacher->course_id,
+      'classification_id' => $this->courseTeacher->classification_id,
+      'academic_session_id' => $this->academicSession->id,
+      'term' => $this->term,
+      'for_mid_term' => false
+    ])->firstOrFail();
+
+    expect($firstResult->position)->toBe(2);
+    expect($secondResult->position)->toBe(1);
+
+    $courseResultInfo = CourseResultInfo::where([
+      'institution_id' => $this->institution->id,
+      'course_id' => $this->courseTeacher->course_id,
+      'classification_id' => $this->courseTeacher->classification_id,
+      'academic_session_id' => $this->academicSession->id,
+      'term' => $this->term,
+      'for_mid_term' => false
+    ])->firstOrFail();
+
+    expect((int) $courseResultInfo->num_of_students)->toBe(2);
+    expect((float) $courseResultInfo->total_score)->toBe(120.0);
+    expect((float) $courseResultInfo->average)->toBe(60.0);
+  }
+);
