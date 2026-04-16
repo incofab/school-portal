@@ -44,8 +44,10 @@ it('successfully uploads new exam results for existing students', function () {
       [
         'course_session_id' => $this->courseSession->id,
         'score' => 80,
+        'theory_score' => 15.5,
         'status' => ExamStatus::Ended->value,
-        'num_of_questions' => 10
+        'num_of_questions' => 10,
+        'theory_num_of_questions' => 2
       ]
     ]
   ];
@@ -79,8 +81,11 @@ it('successfully uploads new exam results for existing students', function () {
     'courseable_id' => $this->courseSession->id,
     'courseable_type' => MorphMap::key(CourseSession::class),
     'score' => $examData['exam_courses'][0]['score'],
+    'theory_score' => $examData['exam_courses'][0]['theory_score'],
     'status' => $examData['exam_courses'][0]['status'],
-    'num_of_questions' => $examData['exam_courses'][0]['num_of_questions']
+    'num_of_questions' => $examData['exam_courses'][0]['num_of_questions'],
+    'theory_num_of_questions' =>
+      $examData['exam_courses'][0]['theory_num_of_questions']
   ]);
 });
 
@@ -112,8 +117,10 @@ it('updates existing exam results if exam_no and event_id match', function () {
       [
         'course_session_id' => $this->courseSession->id,
         'score' => 7, // Updated
+        'theory_score' => 20, // Updated
         'status' => ExamStatus::Ended->value, // Updated
-        'num_of_questions' => 7 // Updated
+        'num_of_questions' => 7, // Updated
+        'theory_num_of_questions' => 3 // Updated
       ]
     ]
   ];
@@ -143,8 +150,10 @@ it('updates existing exam results if exam_no and event_id match', function () {
     'exam_id' => $initialExam->id,
     'courseable_id' => $this->courseSession->id,
     'score' => 7,
+    'theory_score' => 20,
     'status' => ExamStatus::Ended->value,
-    'num_of_questions' => 7
+    'num_of_questions' => 7,
+    'theory_num_of_questions' => 3
   ]);
 });
 

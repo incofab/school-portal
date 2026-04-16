@@ -2,6 +2,7 @@ import {connect} from 'react-redux'
 import K from '../../config/k'
 import Data from '../../config/startup'
 import examSync from '../../helpers/ExamSync'
+import { getCurrentQuestionType, getQuestionList } from '../../helpers/QuestionType'
 
 var gProps;
 
@@ -14,8 +15,12 @@ const questionNoSelected = (question_index) => {
     var tabIndex = gProps.current_tab;
 
     if(question_index < 0) return;
-    if(question_index >= Data.exam_data.all_exam_subject_data[tabIndex]
-        .questions.length) return;
+    let subjectStateData = gProps.all_exam_subjects_state_data[tabIndex];
+    let questionType = getCurrentQuestionType(subjectStateData);
+    if(question_index >= getQuestionList(
+        Data.exam_data.all_exam_subject_data[tabIndex],
+        questionType
+    ).length) return;
 
     gProps.dispatch({
         type: K.ACTION_QUESTION_NAVIGATED,

@@ -41,7 +41,7 @@
 					<td>
 						<a href="{{instRoute('questions.index', $morphedId)}}" 
 							class="btn btn-sm btn-link"> Questions </a>
-						<a href="{{instRoute('theory-questions.index', $record)}}"
+						<a href="{{instRoute('theory-questions.index', $morphedId)}}"
 							class="btn btn-sm btn-link"> Theory Questions </a>
 						<a href="{{instRoute('passages.index', $morphedId)}}" 
 							class="btn btn-sm btn-link"> Passages </a>

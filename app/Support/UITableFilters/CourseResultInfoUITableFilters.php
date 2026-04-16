@@ -53,16 +53,32 @@ class CourseResultInfoUITableFilters extends BaseUITableFilter
     return $this;
   }
 
-  function forFormTeacher(?InstitutionUser $institutionUser = null): static
+  private function joinCourseTeacher(): static
+  {
+    $this->callOnce(
+      'joinCourseTeacher',
+      fn() => $this->baseQuery->join(
+        'course_teachers',
+        'course_teachers.classification_id',
+        'course_result_info.classification_id'
+      )
+    );
+    return $this;
+  }
+
+  function forTeacher(?InstitutionUser $institutionUser = null): static
   {
     if (!$institutionUser || !$institutionUser->isTeacher()) {
       return $this;
     }
 
-    $this->joinClassification()->baseQuery->where(
-      'classifications.form_teacher_id',
-      $institutionUser->user_id
-    );
+    $this->joinClassification()
+      ->joinCourseTeacher()
+      ->baseQuery->where(
+        fn($q) => $q
+          ->where('classifications.form_teacher_id', $institutionUser->user_id)
+          ->orWhere('course_teachers.user_id', $institutionUser->user_id)
+      );
     return $this;
   }
 

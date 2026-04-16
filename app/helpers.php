@@ -205,3 +205,10 @@ if (!function_exists('trimAiResponse')) {
     return str_replace(['```json', '```html', '```'], '', $content);
   }
 }
+
+if (!function_exists('trimDecimal')) {
+  function trimDecimal($value)
+  {
+    return $value == (int) $value ? (int) $value : (float) $value;
+  }
+}

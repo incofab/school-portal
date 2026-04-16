@@ -5,57 +5,62 @@ namespace App\Http\Controllers\CCD;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TheoryQuestionRequest;
 use App\Models\CourseSession;
+use App\Models\EventCourseable;
 use App\Models\Institution;
+use App\Models\Support\QuestionCourseable;
 use App\Models\TheoryQuestion;
+use App\Support\MorphableHandler;
 
 class TheoryQuestionController extends Controller
 {
-    public function index(Institution $institution, CourseSession $courseSession)
+    public function index(Institution $institution, QuestionCourseable $morphable)
     {
-        $this->authorizeCourseSession($institution, $courseSession);
+        $this->authorizeCourseable($institution, $morphable);
+        $morphable->loadParent();
 
         return view('ccd/theory-questions/index', [
             'allRecords' => paginateFromRequest(
-                $courseSession
+                $morphable
                     ->theoryQuestions()
-                    ->oldest('question_number')
+                    ->oldest('question_no')
                     ->oldest('question_sub_number')
             ),
-            'courseSession' => $courseSession->load('course'),
+            'courseable' => $morphable,
         ]);
     }
 
-    public function create(Institution $institution, CourseSession $courseSession)
+    public function create(Institution $institution, QuestionCourseable $morphable)
     {
-        $this->authorizeCourseSession($institution, $courseSession);
+        $this->authorizeCourseable($institution, $morphable);
+        $morphable->loadParent();
 
-        $lastQuestion = $courseSession
+        $lastQuestion = $morphable
             ->theoryQuestions()
-            ->latest('question_number')
+            ->latest('question_no')
             ->first();
-        $questionNumber = intval($lastQuestion?->question_number) + 1;
+        $questionNumber = intval($lastQuestion?->question_no) + 1;
 
         return view('ccd/theory-questions/create-theory-question', [
             'edit' => null,
             'questionNumber' => $questionNumber,
-            'courseSession' => $courseSession->load('course'),
+            'courseable' => $morphable,
         ]);
     }
 
     public function store(
         Institution $institution,
-        CourseSession $courseSession,
+        QuestionCourseable $morphable,
         TheoryQuestionRequest $request
     ) {
-        $this->authorizeCourseSession($institution, $courseSession);
+        $this->authorizeCourseable($institution, $morphable);
 
         $data = $request->validated();
         $data['institution_id'] = $institution->id;
 
-        $courseSession->theoryQuestions()->updateOrCreate(
+        $morphable->theoryQuestions()->updateOrCreate(
             [
                 'institution_id' => $institution->id,
-                'question_number' => $data['question_number'],
+                'question_no' => $data['question_no'],
                 'question_sub_number' => $data['question_sub_number'] ?? null,
             ],
             $data
@@ -63,18 +68,20 @@ class TheoryQuestionController extends Controller
 
         return $this->res(
             successRes('Theory question created'),
-            instRoute('theory-questions.create', [$courseSession])
+            instRoute('theory-questions.create', [$morphable->getMorphedId()])
         );
     }
 
     public function edit(Institution $institution, TheoryQuestion $theoryQuestion)
     {
         $this->authorizeTheoryQuestion($institution, $theoryQuestion);
+        $courseable = $theoryQuestion->courseable;
+        $courseable->loadParent();
 
         return view('ccd/theory-questions/create-theory-question', [
             'edit' => $theoryQuestion,
-            'courseSession' => $theoryQuestion->courseSession->load('course'),
-            'questionNumber' => $theoryQuestion->question_number,
+            'courseable' => $courseable,
+            'questionNumber' => $theoryQuestion->question_no,
         ]);
     }
 
@@ -89,7 +96,9 @@ class TheoryQuestionController extends Controller
 
         return $this->res(
             successRes('Theory question record updated'),
-            instRoute('theory-questions.index', [$theoryQuestion->course_session_id])
+            instRoute('theory-questions.index', [
+                MorphableHandler::make()->buildIdFromCourseable($theoryQuestion),
+            ])
         );
     }
 
@@ -100,20 +109,23 @@ class TheoryQuestionController extends Controller
         $institutionUser = currentInstitutionUser();
         abort_unless($institutionUser->isAdmin(), 403, 'Access denied');
 
-        $courseSessionId = $theoryQuestion->course_session_id;
+        $courseableId = MorphableHandler::make()->buildIdFromCourseable($theoryQuestion);
         $theoryQuestion->delete();
 
         return $this->res(
             successRes('Theory question record deleted'),
-            instRoute('theory-questions.index', [$courseSessionId])
+            instRoute('theory-questions.index', [$courseableId])
         );
     }
 
-    private function authorizeCourseSession(
+    private function authorizeCourseable(
         Institution $institution,
-        CourseSession $courseSession
+        QuestionCourseable $courseable
     ): void {
-        abort_unless($courseSession->institution_id === $institution->id, 404);
+        abort_unless(
+            $this->courseableInstitutionId($courseable) === $institution->id,
+            404
+        );
     }
 
     private function authorizeTheoryQuestion(
@@ -121,5 +133,18 @@ class TheoryQuestionController extends Controller
         TheoryQuestion $theoryQuestion
     ): void {
         abort_unless($theoryQuestion->institution_id === $institution->id, 404);
+    }
+
+    private function courseableInstitutionId(QuestionCourseable $courseable): int
+    {
+        if ($courseable instanceof CourseSession) {
+            return $courseable->institution_id;
+        }
+
+        if ($courseable instanceof EventCourseable) {
+            return $courseable->event->institution_id;
+        }
+
+        abort(404);
     }
 }

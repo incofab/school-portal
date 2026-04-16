@@ -26,9 +26,16 @@ export const QUESTION_NAVIGATED = {
     },
 }
 
+export const QUESTION_TYPE_CHANGED = {
+    "type": K.ACTION_QUESTION_TYPE_CHANGED,
+    "payload": {
+        'question_type': 'objective',
+        'tab_index': 0
+    },
+}
+
 export const ANSWERS_UPLOADED = {
     "type": K.ACTION_ANSWERS_UPLOADED,
     "payload": {
     },
 }
-

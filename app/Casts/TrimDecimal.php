@@ -5,13 +5,14 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 class TrimDecimal implements CastsAttributes
 {
-    public function get($model, $key, $value, $attributes)
-    {
-        return $value == (int)$value ? (int)$value : (float)$value;
-    }
+  public function get($model, $key, $value, $attributes)
+  {
+    return trimDecimal($value);
+    // return $value == (int) $value ? (int) $value : (float) $value;
+  }
 
-    public function set($model, $key, $value, $attributes)
-    {
-        return $value;
-    }
+  public function set($model, $key, $value, $attributes)
+  {
+    return $value;
+  }
 }

@@ -14,15 +14,15 @@ class TheoryQuestion extends Model
 
     protected $casts = [
         'institution_id' => 'integer',
-        'course_session_id' => 'integer',
-        'question_number' => 'integer',
+        'courseable_id' => 'integer',
+        'question_no' => 'integer',
         'marks' => 'float',
     ];
 
     public static function createRule(?TheoryQuestion $theoryQuestion = null): array
     {
         return [
-            'question_number' => ['required', 'integer', 'min:1'],
+            'question_no' => ['required', 'integer', 'min:1'],
             'question_sub_number' => ['nullable', 'string', 'max:20'],
             'question' => ['required', 'string'],
             'marks' => ['required', 'numeric', 'min:0'],
@@ -36,8 +36,8 @@ class TheoryQuestion extends Model
         return $this->belongsTo(Institution::class);
     }
 
-    public function courseSession()
+    public function courseable()
     {
-        return $this->belongsTo(CourseSession::class);
+        return $this->morphTo();
     }
 }

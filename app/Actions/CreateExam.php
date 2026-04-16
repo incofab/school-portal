@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Actions;
 
 use App\Enums\ExamStatus;
 use App\Models\Event;
 use App\Models\Exam;
 use App\Models\Question;
+use App\Models\TheoryQuestion;
 use App\Support\ExamHandler;
 use DB;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +20,7 @@ class CreateExam
    *  examable_id: int,
    * } $post
    */
-  function __construct(private Event $event, private array $post)
+  public function __construct(private Event $event, private array $post)
   {
   }
 
@@ -48,7 +50,7 @@ class CreateExam
     return (new self($event, $post))->execute();
   }
 
-  function execute()
+  public function execute()
   {
     $examData = [
       'institution_id' => $this->event->institution_id,
@@ -74,21 +76,26 @@ class CreateExam
     ]);
 
     foreach ($this->post['courseables'] as $key => $courseable) {
+      $courseableData = collect($courseable)
+        ->only(['courseable_id', 'courseable_type'])
+        ->toArray();
       $questionsCount = Question::query()
-        ->where(
-          collect($courseable)
-            ->only(['courseable_id', 'courseable_type'])
-            ->toArray()
-        )
+        ->where($courseableData)
         ->count();
-      $exam
-        ->examCourseables()
-        ->firstOrCreate([
-          ...$courseable,
-          'num_of_questions' => $questionsCount
-        ]);
+      $theoryQuestionQuery = TheoryQuestion::query()->where($courseableData);
+      $theoryQuestionsCount = (clone $theoryQuestionQuery)->count();
+      $theoryMaxScore = (clone $theoryQuestionQuery)->sum('marks');
+      $exam->examCourseables()->updateOrCreate($courseableData, [
+        'num_of_questions' => $questionsCount,
+        'theory_score' => 0,
+        'theory_max_score' => $theoryMaxScore,
+        'theory_num_of_questions' => $theoryQuestionsCount,
+        'theory_question_scores' => null,
+        'theory_evaluated' => $theoryQuestionsCount === 0
+      ]);
     }
     DB::commit();
+
     return $this->onExamCreated($exam);
   }
 
@@ -97,6 +104,7 @@ class CreateExam
     if (!empty($this->post['start_now'])) {
       ExamHandler::make($exam)->startExam();
     }
+
     return $exam;
   }
 }

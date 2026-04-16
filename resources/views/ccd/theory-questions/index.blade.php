@@ -6,7 +6,9 @@
 	@include('ccd._breadcrumb', [
 		'headerTitle' => 'Theory Questions',
 		'crumbs' => [
-			breadCrumb('Sessions', instRoute('course-sessions.index', [$courseSession->course_id])),
+			$courseable instanceof \App\Models\CourseSession
+				? breadCrumb('Sessions', instRoute('course-sessions.index', [$courseable->course_id]))
+				: breadCrumb('Courseable'),
 			breadCrumb('Theory Questions')->active()
 		]
 	])
@@ -14,8 +16,8 @@
 		<div class="tile full p-0">
 			<div class="tile-title p-2">
 				<div class="clearfix">
-					<div class="float-left">All Theory Questions for {{$courseSession->getName()}}</div>
-					<a href="{{instRoute('theory-questions.create', [$courseSession])}}" class="btn btn-success float-right" >
+					<div class="float-left">All Theory Questions for {{$courseable->getName()}}</div>
+					<a href="{{instRoute('theory-questions.create', [$courseable->getMorphedId()])}}" class="btn btn-success float-right" >
 						<i class="fa fa-plus"></i> New
 					</a>
 				</div>
@@ -28,7 +30,7 @@
 					<div class="col-12">
 						<div class="row">
 							<div class="col-md-3">
-								<div><b>No: {{$record->question_number}}{{$record->question_sub_number ? $record->question_sub_number : ''}}</b></div>
+								<div><b>No: {{$record->question_no}}{{$record->question_sub_number ? $record->question_sub_number : ''}}</b></div>
 							</div>
 							<div class="col-md-3">
 								<div><b>Marks: {{$record->marks}}</b></div>

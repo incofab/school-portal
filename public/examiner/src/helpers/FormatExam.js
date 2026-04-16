@@ -1,22 +1,27 @@
+import { getQuestionList, OBJECTIVE_QUESTION_TYPE } from './QuestionType'
 
 class FormatExam{
 
     questionNo = 0;
     questionIndex;
 
-    subject = { exam_subject_id:'', session_id:'', :'', :'',
+    subject = { exam_subject_id:'', session_id:'',
         year:'', general_instructions:'', instructions: [], passages: [],
         attempted_questions: [], questions: [this.currentQuestion],
+        theory_questions: [],
     } 
 
     currentQuestion = {question_id:'',question_no:'', question:'', 
         option_a:'',option_b:'',option_c:'',option_d:'',option_e:''}
 
-    constructor(subject, questionIndex){
+    constructor(subject, questionIndex, questionType = OBJECTIVE_QUESTION_TYPE){
         this.questionIndex = questionIndex;
         this.questionNo = questionIndex + 1;
         this.subject = subject;
-        this.currentQuestion = this.subject.questions[this.questionIndex];
+        this.currentQuestion = getQuestionList(
+            this.subject,
+            questionType
+        )[this.questionIndex];
     }
 
     /**@deprecated */

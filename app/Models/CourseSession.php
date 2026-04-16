@@ -8,40 +8,36 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CourseSession extends QuestionCourseable
 {
-  use HasFactory, InstitutionScope;
+    use HasFactory, InstitutionScope;
 
-  protected $guarded = [];
-  protected $casts = [
-    'institution_id' => 'integer',
-    'course_id' => 'integer'
-  ];
+    protected $guarded = [];
 
-  static function createRule($editUser = null)
-  {
-    return [
-      'session' => ['required', 'string'],
-      'category' => ['nullable', 'string'],
-      'general_instructions' => ['nullable', 'string']
+    protected $casts = [
+        'institution_id' => 'integer',
+        'course_id' => 'integer',
     ];
-  }
 
-  function institution()
-  {
-    return $this->belongsTo(Institution::class);
-  }
+    public static function createRule($editUser = null)
+    {
+        return [
+            'session' => ['required', 'string'],
+            'category' => ['nullable', 'string'],
+            'general_instructions' => ['nullable', 'string'],
+        ];
+    }
 
-  function course()
-  {
-    return $this->belongsTo(Course::class);
-  }
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
+    }
 
-  function theoryQuestions()
-  {
-    return $this->hasMany(TheoryQuestion::class);
-  }
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
 
-  function getName()
-  {
-    return "{$this->course->title} {$this->session}";
-  }
+    public function getName()
+    {
+        return "{$this->course->title} {$this->session}";
+    }
 }

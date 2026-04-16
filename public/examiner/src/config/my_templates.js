@@ -3,11 +3,13 @@ export const attempt_template = {
     tab_index: '',
     exam_subject_id:'',
     question_id: '',
-    attempt: ''
+    attempt: '',
+    question_type: 'objective'
 }
 
 export const subject_data_template = {
     current_question_index: 0,
+    current_question_type: 'objective',
 
     attempted_questions: { //Contains question attempts with key = questiond IDs
         '1':attempt_template,
@@ -31,4 +33,3 @@ export const initialStore = {
         //More than 5 subjects cannot be written at a time
     ]
 }
-

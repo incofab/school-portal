@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Institutions\Exams;
 
 use App\Actions\CreateExam;
 use App\Enums\InstitutionUserType;
+use App\Helpers\ExamAttemptFileHandler;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExamRequest;
 use App\Models\Event;
@@ -95,6 +96,7 @@ class ExamController extends Controller
 
   function destroy(Institution $institution, Exam $exam)
   {
+    ExamAttemptFileHandler::make($exam)->deleteExamFile();
     $exam->delete();
     return $this->ok();
   }

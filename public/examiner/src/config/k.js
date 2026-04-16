@@ -8,6 +8,7 @@ const K = {
     ACTION_TAB_CHANGED: 'Nav Tab Changed',
     ACTION_ANSWER_SELECTED: 'Answer Selected',
     ACTION_QUESTION_NAVIGATED: 'Question Navigated',
+    ACTION_QUESTION_TYPE_CHANGED: 'Question Type Changed',
     ACTION_ANSWERS_UPLOADED: 'Answers Uploaded', // To be called when selected answers has been uploaded to server
     ACTION_TOGGLE_CALCULATOR: 'Toggle Calculator',
     ACTION_PAUSE_EXAM: 'Pause Exam',

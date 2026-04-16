@@ -2,6 +2,14 @@ import Data from '../../../config/startup'
 import K from '../../../config/k'
 import {connect} from 'react-redux'
 import SubjectPage from './subject_page'
+import {
+    OBJECTIVE_QUESTION_TYPE,
+    THEORY_QUESTION_TYPE,
+    getCurrentQuestionType,
+    getQuestionAttemptKey,
+    getQuestionList,
+    getQuestionNumber,
+} from '../../../helpers/QuestionType'
 
 var gProps;
 
@@ -30,6 +38,18 @@ const questionNoSelected = (e) => {
     }); 
 }
 
+const questionTypeSelected = (e) => {
+    var question_type = e.target.attributes.getNamedItem('data-question_type').value;
+
+    gProps.dispatch({
+        type: K.ACTION_QUESTION_TYPE_CHANGED,
+        payload: {
+            question_type: question_type,
+            tab_index: gProps.current_tab,
+        }
+    });
+}
+
 const question = (props) => {
     
     gProps = props;
@@ -37,23 +57,43 @@ const question = (props) => {
     var questionDisplay = Data.exam_data.all_exam_subject_data.map((subject, i) => {
 
         let questionIndex = getCurrentQuestionIndex(i);
+        let subjectStateData = props.all_exam_subjects_state_data[i];
+        let questionType = getCurrentQuestionType(subjectStateData);
+        let questions = getQuestionList(subject, questionType);
+        let objectiveCount = getQuestionList(subject, OBJECTIVE_QUESTION_TYPE).length;
+        let theoryCount = getQuestionList(subject, THEORY_QUESTION_TYPE).length;
 
-        var tiles = subject.questions.map((question, index) => {
-            return <li data-question_no={question.question_no}
-                data-question_id={question.question_id}
+        var tiles = questions.map((question, index) => {
+            let attemptKey = getQuestionAttemptKey(question, questionType);
+            return <li data-question_no={getQuestionNumber(question)}
+                data-question_id={attemptKey}
                 data-question_index={index}
-                className={'pointer '+((questionIndex == index)?'current':'')
-                    + ' '+ (isAttempted(question.question_id, props.current_tab)?'attempted':'')} 
-                key={'tile-' + question.question_id}
+                className={'pointer '+((parseInt(questionIndex) === index)?'current':'')
+                    + ' '+ (isAttempted(attemptKey, i)?'attempted':'')}
+                key={'tile-' + attemptKey}
                 onClick={questionNoSelected}
             >{index + 1}</li>
         });
 
-        return <div className={'tab-pane fade show '+((props.current_tab == i)?'active':'')} 
+        return <div className={'tab-pane fade show '+((props.current_tab === i)?'active':'')}
             id={'nav-' + subject.exam_subject_id}
             role="tabpanel" key={'question-' + i} >
             <div className="question-main">
-                <SubjectPage questionIndex={questionIndex} subject={subject} />
+                <div className="question-type-switch mb-3">
+                    <button type="button"
+                        className={'btn btn-sm mr-2 '+(questionType === OBJECTIVE_QUESTION_TYPE ? 'btn-primary' : 'btn-outline-primary')}
+                        data-question_type={OBJECTIVE_QUESTION_TYPE}
+                        onClick={questionTypeSelected}>
+                        Objective ({objectiveCount})
+                    </button>
+                    <button type="button"
+                        className={'btn btn-sm '+(questionType === THEORY_QUESTION_TYPE ? 'btn-primary' : 'btn-outline-primary')}
+                        data-question_type={THEORY_QUESTION_TYPE}
+                        onClick={questionTypeSelected}>
+                        Theory ({theoryCount})
+                    </button>
+                </div>
+                <SubjectPage questionIndex={questionIndex} subject={subject} tabIndex={i} />
             </div>
             <ul className="question-numbers-tab list-unstyled clearfix text-center">
                 {tiles}

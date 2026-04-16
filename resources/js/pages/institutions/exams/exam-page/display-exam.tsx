@@ -1,12 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Exam, ExamCourseable, Question, TheoryQuestion } from '@/types/models';
 import {
-  Exam,
-  ExamCourseable,
-  Question,
-  TokenUser,
-  User,
-} from '@/types/models';
-import {
+  Button,
   Center,
   HStack,
   Icon,
@@ -19,6 +14,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  Textarea,
   VStack,
   Wrap,
   WrapItem,
@@ -53,13 +49,13 @@ export default function DisplayExam({
   existingAttempts,
 }: Props) {
   const [isExamActive, setIsExamActive] = useState(true);
-  const [key, setKey] = useState<string>('0');
+  const [, forceRender] = useState(0);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const webForm = useWebForm({});
   const calculatorModalToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
   function updateExamUtil() {
-    setKey(Math.random() + '');
+    forceRender((value) => value + 1);
   }
 
   const examUtil = useMemo(() => {
@@ -117,21 +113,29 @@ export default function DisplayExam({
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (
+      ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+      target.isContentEditable
+    ) {
+      return;
+    }
     const pressedKey = event.key.toUpperCase() ?? '';
-    console.log('Key pressed:', event.key);
     switch (pressedKey) {
       case 'A':
       case 'B':
       case 'C':
-      case 'D':
-        // case 'E':
-        examUtil
-          .getAttemptManager()
-          .setAttempt(
-            examUtil.getTabManager().getCurrentQuestion()?.id,
-            pressedKey
-          );
+      case 'D': {
+        if (examUtil.getTabManager().getCurrentQuestionType() !== 'objective') {
+          return;
+        }
+        const currentQuestion = examUtil.getTabManager().getCurrentQuestion();
+        if (!currentQuestion) {
+          return;
+        }
+        examUtil.getAttemptManager().setAttempt(currentQuestion.id, pressedKey);
         break;
+      }
       case 'N':
         nextClicked();
         break;
@@ -171,7 +175,7 @@ export default function DisplayExam({
       }
       onKeyDown={handleKeyDown}
     >
-      <Tabs key={key} index={examUtil.getTabManager().getCurrentTabIndex()}>
+      <Tabs index={examUtil.getTabManager().getCurrentTabIndex()}>
         <TabList overflowX={'auto'}>
           {exam.exam_courseables?.map((item, index) => (
             <Tab
@@ -189,6 +193,7 @@ export default function DisplayExam({
             examUtil.getTabManager().setTab(index, {
               currentQuestionIndex: tab?.currentQuestionIndex ?? 0,
               exam_courseable_id: examCourseable.id,
+              currentQuestionType: tab?.currentQuestionType ?? 'objective',
             });
             return (
               <TabPanel key={examCourseable.id}>
@@ -260,28 +265,69 @@ function DisplayQuestion({
   examUtil: ExamUtil;
 }) {
   const attemptManager = examUtil.getAttemptManager();
-  const questions = examCourseable.courseable!.questions!;
-
+  const objectiveQuestions = examCourseable.courseable!.questions ?? [];
+  const theoryQuestions = examCourseable.courseable!.theory_questions ?? [];
+  const questionType = examUtil.getTabManager().getCurrentQuestionType();
+  const questions = examUtil.getTabManager().getCurrentCourseableQuestions();
   const questionIndex = examUtil.getTabManager().getCurrentQuestionIndex();
   const question = questions[questionIndex];
   const courseable = examCourseable.courseable!;
   const questionImageHandler = new QuestionImageHandler(courseable);
-  if (!question) {
-    return null;
+  const questionNumber =
+    questionType === 'objective'
+      ? (question as Question | undefined)?.question_no
+      : (question as TheoryQuestion | undefined)?.question_no;
+  const currentAttemptKey =
+    questionType === 'theory' && question
+      ? ExamUtil.getTheoryAttemptKey(question.id)
+      : question?.id;
+
+  function setQuestionType(type: 'objective' | 'theory') {
+    examUtil.getTabManager().setCurrentQuestionType(type);
   }
-  const passage = courseable.passages?.find(
-    (item) =>
-      question.question_no >= item.from && question.question_no <= item.to
-  );
-  const instruction = courseable.instructions?.find(
-    (item) =>
-      question.question_no >= item.from && question.question_no <= item.to
-  );
+
+  if (!question) {
+    return (
+      <VStack align={'stretch'} className="question-container">
+        <QuestionTypeSwitcher
+          questionType={questionType}
+          objectiveCount={objectiveQuestions.length}
+          theoryCount={theoryQuestions.length}
+          setQuestionType={setQuestionType}
+        />
+        <Text>No {questionType} questions for this subject.</Text>
+      </VStack>
+    );
+  }
+  const passage =
+    questionType === 'objective'
+      ? courseable.passages?.find(
+          (item) => questionNumber! >= item.from && questionNumber! <= item.to
+        )
+      : null;
+  const instruction =
+    questionType === 'objective'
+      ? courseable.instructions?.find(
+          (item) => questionNumber! >= item.from && questionNumber! <= item.to
+        )
+      : null;
 
   return (
     <VStack align={'stretch'} className="question-container">
+      <QuestionTypeSwitcher
+        questionType={questionType}
+        objectiveCount={objectiveQuestions.length}
+        theoryCount={theoryQuestions.length}
+        setQuestionType={setQuestionType}
+      />
       <Text fontWeight={'bold'}>
         Question {questionIndex + 1} of {questions.length}
+        {questionType === 'theory' && (
+          <Text as={'span'} fontWeight={'normal'}>
+            {' '}
+            ({(question as TheoryQuestion).marks} marks)
+          </Text>
+        )}
       </Text>
       {passage && (
         <Text my={2} dangerouslySetInnerHTML={{ __html: passage.passage }} />
@@ -298,38 +344,59 @@ function DisplayQuestion({
           __html: questionImageHandler.handleImages(question.question),
         }}
       />
-      <VStack align={'stretch'} spacing={1}>
-        {[
-          {
-            optionText: questionImageHandler.handleImages(question.option_a),
-            optionLetter: 'A',
-          },
-          {
-            optionText: questionImageHandler.handleImages(question.option_b),
-            optionLetter: 'B',
-          },
-          {
-            optionText: questionImageHandler.handleImages(question.option_c),
-            optionLetter: 'C',
-          },
-          {
-            optionText: questionImageHandler.handleImages(question.option_d),
-            optionLetter: 'D',
-          },
-          {
-            optionText: questionImageHandler.handleImages(question.option_e),
-            optionLetter: 'E',
-          },
-        ].map((item) => (
-          <DisplayOption
-            key={item.optionLetter}
-            optionText={item.optionText}
-            optionLetter={item.optionLetter}
-            examUtil={examUtil}
-            question={question}
-          />
-        ))}
-      </VStack>
+      {questionType === 'objective' ? (
+        <VStack align={'stretch'} spacing={1}>
+          {[
+            {
+              optionText: questionImageHandler.handleImages(
+                (question as Question).option_a
+              ),
+              optionLetter: 'A',
+            },
+            {
+              optionText: questionImageHandler.handleImages(
+                (question as Question).option_b
+              ),
+              optionLetter: 'B',
+            },
+            {
+              optionText: questionImageHandler.handleImages(
+                (question as Question).option_c
+              ),
+              optionLetter: 'C',
+            },
+            {
+              optionText: questionImageHandler.handleImages(
+                (question as Question).option_d
+              ),
+              optionLetter: 'D',
+            },
+            {
+              optionText: questionImageHandler.handleImages(
+                (question as Question).option_e
+              ),
+              optionLetter: 'E',
+            },
+          ].map((item) => (
+            <DisplayOption
+              key={item.optionLetter}
+              optionText={item.optionText}
+              optionLetter={item.optionLetter}
+              examUtil={examUtil}
+              question={question as Question}
+            />
+          ))}
+        </VStack>
+      ) : (
+        <Textarea
+          minH={'180px'}
+          value={attemptManager.getAttempt(currentAttemptKey!) ?? ''}
+          onChange={(e) => {
+            attemptManager.setAttempt(currentAttemptKey!, e.target.value);
+          }}
+          placeholder="Type your answer here"
+        />
+      )}
       <Spacer />
       <Wrap>
         {questions.map((item, index) => (
@@ -347,7 +414,11 @@ function DisplayQuestion({
               backgroundColor={
                 item.id === question.id
                   ? 'brand.500'
-                  : attemptManager.isAttempted(item.id)
+                  : attemptManager.isAttempted(
+                      questionType === 'theory'
+                        ? ExamUtil.getTheoryAttemptKey(item.id)
+                        : item.id
+                    )
                   ? 'brand.100'
                   : 'transparent'
               }
@@ -358,6 +429,37 @@ function DisplayQuestion({
         ))}
       </Wrap>
     </VStack>
+  );
+}
+
+function QuestionTypeSwitcher({
+  questionType,
+  objectiveCount,
+  theoryCount,
+  setQuestionType,
+}: {
+  questionType: 'objective' | 'theory';
+  objectiveCount: number;
+  theoryCount: number;
+  setQuestionType: (type: 'objective' | 'theory') => void;
+}) {
+  return (
+    <HStack>
+      <Button
+        size={'sm'}
+        variant={questionType === 'objective' ? 'solid' : 'outline'}
+        onClick={() => setQuestionType('objective')}
+      >
+        Objective ({objectiveCount})
+      </Button>
+      <Button
+        size={'sm'}
+        variant={questionType === 'theory' ? 'solid' : 'outline'}
+        onClick={() => setQuestionType('theory')}
+      >
+        Theory ({theoryCount})
+      </Button>
+    </HStack>
   );
 }
 
@@ -382,7 +484,7 @@ function DisplayOption({
         isChecked={
           examUtil.getAttemptManager().getAttempt(question.id) === optionLetter
         }
-        onChange={(e) => {
+        onChange={() => {
           examUtil.getAttemptManager().setAttempt(question.id, optionLetter);
         }}
       >

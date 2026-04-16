@@ -11,11 +11,12 @@ class ListCourseResultInfoController extends Controller
 {
   public function __invoke(Institution $institution)
   {
+    $institutionUser = currentInstitutionUser();
     $query = CourseResultInfoUITableFilters::make(
       request()->all(),
       CourseResultInfo::query()->select('course_result_info.*')
     )
-      ->forFormTeacher(currentInstitutionUser())
+      ->forTeacher($institutionUser)
       ->filterQuery()
       ->getQuery();
 

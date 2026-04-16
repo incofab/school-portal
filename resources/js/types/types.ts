@@ -283,7 +283,7 @@ export enum WithdrawalStatusType {
 }
 
 export interface ExamAttempt {
-  [questionId: string | number]: string;
+  [questionId: string | number]: string | { attempt?: string };
 }
 
 export interface BreadCrumbParam {

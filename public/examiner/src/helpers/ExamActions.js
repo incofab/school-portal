@@ -1,5 +1,6 @@
 import K from '../config/k'
 import Data from '../config/startup'
+import { getCurrentQuestionType, getQuestionAttemptKey, getQuestionList } from './QuestionType'
 
 class ExamActions{
 
@@ -21,8 +22,13 @@ class ExamActions{
         let tabIndex = currentState.current_tab;
         var questionIndex = this.getCurrentQuestionIndex(currentState);
         let subject = Data.exam_data.all_exam_subject_data[tabIndex];
-        
-        let question_id = subject.questions[questionIndex].question_id;
+        let subjectStateData = currentState.all_exam_subjects_state_data[tabIndex];
+        let questionType = getCurrentQuestionType(subjectStateData);
+        let currentQuestion = getQuestionList(subject, questionType)[questionIndex];
+
+        if(!currentQuestion || questionType !== 'objective') return;
+
+        let question_id = getQuestionAttemptKey(currentQuestion, questionType);
         let exam_subject_id = subject.exam_subject_id;
 
         store.dispatch({
@@ -32,6 +38,7 @@ class ExamActions{
                 'exam_subject_id':exam_subject_id,
                 'question_id':question_id,
                 'attempt':option,
+                'question_type':questionType,
             }
         });
     }
@@ -51,8 +58,12 @@ class ExamActions{
         // console.log('currentState = ', currentState);
         // console.log('tabIndex = ', tabIndex);
         if(question_index < 0) return;
-        if(question_index >= Data.exam_data.all_exam_subject_data[tabIndex]
-            .questions.length) return;
+        let subjectStateData = currentState.all_exam_subjects_state_data[tabIndex];
+        let questionType = getCurrentQuestionType(subjectStateData);
+        if(question_index >= getQuestionList(
+            Data.exam_data.all_exam_subject_data[tabIndex],
+            questionType
+        ).length) return;
 
         store.dispatch({
             type: K.ACTION_QUESTION_NAVIGATED,

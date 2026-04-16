@@ -21,7 +21,13 @@ class ExamResultController extends Controller
       ->with('event')
       ->with(
         'examCourseables.courseable',
-        fn($q) => $q->with('course', 'questions', 'passages', 'instructions')
+        fn($q) => $q->with(
+          'course',
+          'questions',
+          'theoryQuestions',
+          'passages',
+          'instructions'
+        )
       )
       ->with([
         'examable' => function (MorphTo $morphTo) {

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class ExamCourseable extends Model
 {
   use HasFactory;
+
   public $guarded = [];
 
   protected $casts = [
@@ -16,10 +17,15 @@ class ExamCourseable extends Model
     'course_id' => 'integer',
     'exam_id' => 'integer',
     'num_of_questions' => 'integer',
-    'score' => TrimDecimal::class
+    'theory_num_of_questions' => 'integer',
+    'score' => TrimDecimal::class,
+    'theory_score' => TrimDecimal::class,
+    'theory_max_score' => TrimDecimal::class,
+    'theory_question_scores' => 'array',
+    'theory_evaluated' => 'boolean'
   ];
 
-  static function ruleCreate()
+  public static function ruleCreate()
   {
     return [
       //             'exam_no' => ['required', 'string'],
@@ -31,20 +37,30 @@ class ExamCourseable extends Model
 
   const STATUSES = ['active', 'ended'];
 
-  function scorePercent()
+  public function scorePercent()
   {
     return ($this->score /
       ($this->num_of_questions == 0 ? 1 : $this->num_of_questions)) *
       100;
   }
 
-  function exam()
+  public function totalNumOfQuestions()
+  {
+    return $this->num_of_questions + $this->theory_num_of_questions;
+  }
+
+  public function hasTheoryQuestions()
+  {
+    return $this->theory_num_of_questions > 0;
+  }
+
+  public function exam()
   {
     return $this->belongsTo(Exam::class);
   }
 
   // CourseSession | EventCourseable (QuestionCourseable)
-  function courseable()
+  public function courseable()
   {
     return $this->morphTo('courseable');
   }

@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\CourseSession;
-use App\Models\Event;
 use App\Models\Exam;
 use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -22,7 +21,12 @@ class ExamCourseableFactory extends Factory
       'courseable_type' => (new CourseSession())->getMorphClass(),
       'courseable_id' => CourseSession::factory(),
       'score' => fake()->randomNumber(2),
-      'num_of_questions' => 30
+      'num_of_questions' => 30,
+      'theory_score' => 0,
+      'theory_max_score' => 0,
+      'theory_num_of_questions' => 0,
+      'theory_question_scores' => null,
+      'theory_evaluated' => false
     ];
   }
 

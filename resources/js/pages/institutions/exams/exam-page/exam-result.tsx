@@ -9,7 +9,6 @@ import { LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import CenteredBox from '@/components/centered-box';
 import tokenUserUtil from '@/util/token-user-util';
-import useIsStudent from '@/hooks/use-is-student';
 import route from '@/util/route';
 
 interface Props {
@@ -19,13 +18,31 @@ interface Props {
 
 export default function ExamResult({ exam }: Props) {
   const { instRoute } = useInstitutionRoute();
-  const isStudent = useIsStudent();
   const displayData = [
     { label: 'Exam No', value: exam.exam_no },
     { label: 'Num of Subjects', value: exam.exam_courseables?.length },
     { label: 'Num of Questions', value: exam.num_of_questions },
-    { label: 'Total Score', value: exam.score },
+    { label: 'Objective Score', value: exam.score },
   ];
+  const theoryNumOfQuestions =
+    exam.exam_courseables?.reduce(
+      (total, item) => total + Number(item.theory_num_of_questions ?? 0),
+      0
+    ) ?? 0;
+  const objectiveNumOfQuestions =
+    Number(exam.num_of_questions ?? 0) - theoryNumOfQuestions;
+  const theoryScore =
+    exam.exam_courseables?.reduce(
+      (total, item) => total + Number(item.theory_score ?? 0),
+      0
+    ) ?? 0;
+  const theoryMaxScore =
+    exam.exam_courseables?.reduce(
+      (total, item) => total + Number(item.theory_max_score ?? 0),
+      0
+    ) ?? 0;
+  const totalScore = Number(exam.score ?? 0) + theoryScore;
+  const totalObtainable = objectiveNumOfQuestions + theoryMaxScore;
   return (
     <ExamLayout
       title={exam.event?.title}
@@ -61,7 +78,7 @@ export default function ExamResult({ exam }: Props) {
               <Text
                 fontWeight={'bold'}
                 fontSize={'3xl'}
-              >{`${exam.score}/${exam.num_of_questions}`}</Text>
+              >{`${totalScore}/${totalObtainable}`}</Text>
             </Div>
           </HStack>
           <br />
@@ -74,6 +91,16 @@ export default function ExamResult({ exam }: Props) {
                 labelProps={{ width: '150px' }}
               />
             ))}
+            <LabelText
+              label={'Theory Questions'}
+              text={theoryNumOfQuestions}
+              labelProps={{ width: '150px' }}
+            />
+            <LabelText
+              label={'Theory Score'}
+              text={`${theoryScore}/${theoryMaxScore}`}
+              labelProps={{ width: '150px' }}
+            />
           </VStack>
           <br />
           <VStack align={'stretch'} spacing={3} divider={<Divider />}>
@@ -83,8 +110,8 @@ export default function ExamResult({ exam }: Props) {
               fontWeight={'bold'}
             >
               <Text flex={1}>Subject(s)</Text>
-              <Text flex={1}>Num of Questions</Text>
-              <Text flex={1}>Score</Text>
+              <Text flex={1}>Objective</Text>
+              <Text flex={1}>Theory</Text>
             </HStack>
             {exam.exam_courseables?.map((examCoursable) => {
               return (
@@ -96,8 +123,14 @@ export default function ExamResult({ exam }: Props) {
                   <Text flex={1}>
                     {examCoursable.courseable?.course?.title}
                   </Text>
-                  <Text flex={1}>{examCoursable.num_of_questions}</Text>
-                  <Text flex={1}>{examCoursable.score}</Text>
+                  <Text flex={1}>
+                    {examCoursable.score}/{examCoursable.num_of_questions}
+                  </Text>
+                  <Text flex={1}>
+                    {examCoursable.theory_score}/
+                    {examCoursable.theory_max_score} marks
+                    {!examCoursable.theory_evaluated ? ' (pending)' : ''}
+                  </Text>
                 </HStack>
               );
             })}

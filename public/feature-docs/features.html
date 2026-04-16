@@ -182,7 +182,7 @@ code { color: #d1fae5; }
       <li>Routes: <code>routes/institution.php</code> course routes and <code>routes/ccd.php</code> content routes.</li>
       <li>Controllers/actions: <code>CoursesController</code>, <code>CCD/*</code>, <code>UploadCourseContent</code>, <code>ExportCourse</code>, <code>Questions/ExtractDocumentContent</code>, <code>Questions/ConvertDocumentToQuestions</code>, <code>GoogleAiHelper</code>.</li>
       <li>Frontend: <code>institutions/courses/*</code>, <code>topics/*</code>, question-bank modals, practice question pages.</li>
-      <li>Data/tests: <code>Course</code>, <code>CourseTeacher</code>, <code>CourseSession</code>, <code>Topic</code>, <code>Instruction</code>, <code>Passage</code>, <code>Question</code>, <code>TheoryQuestion</code>, CCD controller tests.</li>
+      <li>Data/tests: <code>Course</code>, <code>CourseTeacher</code>, <code>CourseSession</code>, <code>Topic</code>, <code>Instruction</code>, <code>Passage</code>, <code>Question</code>, courseable-backed <code>TheoryQuestion</code>, CCD controller tests.</li>
     </ul>
   </div>
 
@@ -250,12 +250,12 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>16</span> Exams, Events, CBT, External Exams, and Offline Mock API</h3>
-    <p>Exam features include events, event courseables, exams, exam courseables, event content download, result transfer from events into term/course results, multi-transfer, student/admission external exam login, token-user profile update, event display, external exam creation, exam display/pause/end/result pages, leaderboards, public exam result lookup, and offline mock API endpoints for client testing and offline scenarios.</p>
+    <p>Exam features include events, event courseables, exams, exam courseables, event content download, result transfer from events into term/course results, multi-transfer, student/admission external exam login, token-user profile update, event display, external exam creation, objective/theory question switching within each exam subject, manual theory answer evaluation by authorized staff, exam display/pause/end/result pages, leaderboards, public exam result lookup, and offline mock API endpoints for client testing and offline scenarios.</p>
     <ul>
       <li>Routes: <code>routes/exam.php</code>, exam sections in <code>routes/web.php</code>, offline mock section in <code>routes/api.php</code>.</li>
       <li>Controllers/support: <code>Institutions/Exams/*</code>, <code>Institutions/Exams/ExamPage/*</code>, <code>Institutions/Exams/External/*</code>, <code>API/OfflineMock/*</code>, <code>CreateExam</code>, <code>EventResultHandler</code>, <code>ExamHandler</code>, <code>MockEventHandler</code>, <code>MockExamHandler</code>, <code>ExamAttemptFileHandler</code>.</li>
-      <li>Frontend: <code>institutions/exams/*</code>, <code>auth/student-exam-login.tsx</code>, <code>auth/admissions-exam-login.tsx</code>, <code>auth/exam-result-login.tsx</code>.</li>
-      <li>Data/tests: <code>Event</code>, <code>EventCourseable</code>, <code>Exam</code>, <code>ExamCourseable</code>, <code>TokenUser</code>; exam, transfer, external exam, offline mock, exam handler, and file handler tests.</li>
+      <li>Frontend: <code>institutions/exams/*</code>, <code>public/examiner</code>, <code>auth/student-exam-login.tsx</code>, <code>auth/admissions-exam-login.tsx</code>, <code>auth/exam-result-login.tsx</code>.</li>
+      <li>Data/tests: <code>Event</code>, <code>EventCourseable</code>, <code>Exam</code>, <code>ExamCourseable</code> with objective score/count, theory awarded/max score, theory question count, per-question theory score map, and theory evaluation flags, <code>TheoryQuestion</code>, <code>TokenUser</code>; exam, transfer, external exam, offline mock, exam handler, and file handler tests.</li>
     </ul>
   </div>
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Casts\TrimDecimal;
 use App\Enums\ExamStatus;
 use App\Helpers\ExamAttemptFileHandler;
 use App\Models\Event;
@@ -8,6 +9,7 @@ use App\Models\ExamCourseable;
 use App\Models\Institution;
 use App\Models\Question;
 use App\Models\Student;
+use App\Models\TheoryQuestion;
 use App\Support\ExamHandler;
 
 use function PHPUnit\Framework\assertFalse;
@@ -117,6 +119,43 @@ it('can end an exam', function () {
   expect($this->exam->num_of_questions)->toBe(2);
   expect($this->exam->attempts->toArray())->toEqual($studentAttempts);
 });
+
+it(
+  'includes theory questions in exam question totals without auto scoring them',
+  function () {
+    $this->exam->update([
+      'status' => ExamStatus::Active,
+      'end_time' => now()->addMinutes(10)
+    ]);
+    $questions = Question::factory(2)
+      ->courseable($this->examCourseable->courseable)
+      ->create();
+    $theoryQuestions = TheoryQuestion::factory(3)
+      ->courseable($this->examCourseable->courseable)
+      ->create();
+    $studentAttempts =
+      $questions
+        ->mapWithKeys(fn($item) => [$item->id => $item->answer])
+        ->toArray() +
+      $theoryQuestions
+        ->mapWithKeys(fn($item) => ["theory-{$item->id}" => 'Essay answer'])
+        ->toArray();
+    $this->examAttemptFileHandler->syncExamFile();
+    $this->examAttemptFileHandler->attemptQuestion($studentAttempts);
+    $this->examHandler->endExam();
+
+    expect($this->exam->score)->toBe(floatval(2));
+    expect($this->exam->num_of_questions)->toBe(5);
+    expect($this->examCourseable->refresh()->num_of_questions)->toBe(2);
+    expect($this->examCourseable->theory_num_of_questions)->toBe(3);
+    expect($this->examCourseable->theory_score)->toBe(0);
+    expect($this->examCourseable->theory_max_score)->toBe(
+      trimDecimal($theoryQuestions->sum('marks'))
+    );
+    expect($this->examCourseable->theory_evaluated)->toBeFalse();
+    expect($this->exam->attempts->toArray())->toEqual($studentAttempts);
+  }
+);
 
 it('can re-evaluate an already ended exam', function () {
   $this->exam->update(['status' => ExamStatus::Ended]);

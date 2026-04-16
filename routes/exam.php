@@ -19,6 +19,8 @@ Route::resource('/{event}/exams', Web\Exams\ExamController::class)
 
 Route::delete('exam-courseables/{examCourseable}/delete', [Web\Exams\ExamCourseableController::class, 'destroy'])
     ->name('exam-courseables.destroy');
+Route::post('/{exam}/exam-courseables/{examCourseable}/evaluate-theory', [Web\Exams\ExamCourseableController::class, 'evaluateTheory'])
+    ->name('exam-courseables.evaluate-theory');
 Route::resource('/{exam}/exam-courseables', Web\Exams\ExamCourseableController::class)
     ->except(['edit', 'update', 'destroy']);
     

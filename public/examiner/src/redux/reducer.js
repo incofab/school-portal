@@ -48,6 +48,7 @@ function reducer(state = iStore, action) {
                     attempt.exam_subject_id = p.exam_subject_id;
                     attempt.question_id = p.question_id;
                     attempt.attempt = p.attempt;
+                    attempt.question_type = p.question_type || 'objective';
                     
                     subjectData.attempted_questions[p.question_id] = attempt;
                     
@@ -66,6 +67,16 @@ function reducer(state = iStore, action) {
                 subjectData.current_question_index = p.question_index;
             });
 
+        case K.ACTION_QUESTION_TYPE_CHANGED:
+            return produce(state, (draftState) => {
+                let subjectData = draftState.all_exam_subjects_state_data[p.tab_index];
+
+                if(!subjectData) return;
+
+                subjectData.current_question_type = p.question_type;
+                subjectData.current_question_index = 0;
+            });
+
         case K.ACTION_TOGGLE_CALCULATOR:
             return produce(state, (draftState) => {
                 draftState.show_calculator = p.show_calculator;
@@ -80,4 +91,3 @@ function reducer(state = iStore, action) {
 }
 
 export default reducer;
-

@@ -32,7 +32,12 @@ class App extends Component{
   }
   
   keyListener(e) {
-    console.log("Keylistener", e, e.key);
+    if (
+      ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) ||
+      e.target.isContentEditable
+    ) {
+      return;
+    }
     // if(!e.key) return;
     // this.handleKeyPresses(Store.getState(), e.key);
     let keyUpperCase = e.key;
@@ -90,4 +95,3 @@ class App extends Component{
   
 }
 export default App;
-

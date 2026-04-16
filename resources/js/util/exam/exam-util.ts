@@ -1,10 +1,13 @@
 import { WebForm } from '@/hooks/use-web-form';
-import { Exam } from '@/types/models';
+import { Exam, Question, TheoryQuestion } from '@/types/models';
 import { ExamAttempt } from '@/types/types';
+
+export type ExamQuestionType = 'objective' | 'theory';
 
 export interface ExamTab {
   currentQuestionIndex: number;
   exam_courseable_id: number;
+  currentQuestionType?: ExamQuestionType;
 }
 
 class ExamUtil {
@@ -37,6 +40,9 @@ class ExamUtil {
   getExamNavManager() {
     return this.examNavManager;
   }
+  static getTheoryAttemptKey(questionId: number | string) {
+    return `theory-${questionId}`;
+  }
 }
 
 class TabManager {
@@ -44,7 +50,7 @@ class TabManager {
   public tabs: {
     [tabIndex: number]: ExamTab;
   } = {};
-  public currentTabIndex: number = 0;
+  public currentTabIndex = 0;
 
   setCurrentTabIndex(tabIndex: number) {
     this.currentTabIndex = tabIndex;
@@ -65,14 +71,29 @@ class TabManager {
   setCurrentQuestion(currentQuestionIndex: number) {
     const tab = this.tabs[this.currentTabIndex];
     if (!tab) {
-      console.log(`Tab of ${this.currentTabIndex} index, has not been set`);
       return;
     }
     this.tabs[this.currentTabIndex] = {
       currentQuestionIndex: currentQuestionIndex,
       exam_courseable_id: tab.exam_courseable_id,
+      currentQuestionType: tab.currentQuestionType ?? 'objective',
     };
     this.reRender();
+  }
+  setCurrentQuestionType(currentQuestionType: ExamQuestionType) {
+    const tab = this.tabs[this.currentTabIndex];
+    if (!tab) {
+      return;
+    }
+    this.tabs[this.currentTabIndex] = {
+      currentQuestionIndex: 0,
+      exam_courseable_id: tab.exam_courseable_id,
+      currentQuestionType,
+    };
+    this.reRender();
+  }
+  getCurrentQuestionType() {
+    return this.getCurrentTab()?.currentQuestionType ?? 'objective';
   }
   getCurrentQuestion() {
     return this.getCurrentCourseableQuestions()?.[
@@ -82,10 +103,12 @@ class TabManager {
   getCurrentQuestionIndex() {
     return this.getCurrentTab().currentQuestionIndex;
   }
-  getCurrentCourseableQuestions() {
+  getCurrentCourseableQuestions(): (Question | TheoryQuestion)[] {
     const examCourseable = this.exam.exam_courseables![this.currentTabIndex];
-    const questions = examCourseable.courseable!.questions!;
-    return questions;
+    if (this.getCurrentQuestionType() === 'theory') {
+      return examCourseable.courseable!.theory_questions ?? [];
+    }
+    return examCourseable.courseable!.questions ?? [];
   }
 }
 
@@ -98,18 +121,18 @@ class AttemptManager {
     private reRender: () => void
   ) {
     this.attempts = existingAttempts;
-    console.log('existing attempts', existingAttempts);
   }
-  setAttempt(questionId: number, attempt: string) {
+  setAttempt(questionId: number | string, attempt: string) {
     this.attempts[questionId] = attempt;
     this.attemptsToSend[questionId] = attempt;
     this.reRender();
   }
-  getAttempt(questionId: number) {
-    return this.attempts[questionId];
+  getAttempt(questionId: number | string) {
+    const attempt = this.attempts[questionId];
+    return typeof attempt === 'object' ? attempt?.attempt : attempt;
   }
-  isAttempted(questionId: number) {
-    return Boolean(this.attempts[questionId]);
+  isAttempted(questionId: number | string) {
+    return Boolean(this.getAttempt(questionId));
   }
 
   resetAttempts() {
@@ -117,7 +140,9 @@ class AttemptManager {
     this.attemptsToSend = {};
   }
 
-  async sendAttempts(webForm: WebForm<{}, Record<never, string>>) {
+  async sendAttempts(
+    webForm: WebForm<Record<string, never>, Record<never, string>>
+  ) {
     // console.log('Sending attempts', this.attemptsToSend);
     if (Object.entries(this.attemptsToSend).length < 1) {
       return;

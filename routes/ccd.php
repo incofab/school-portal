@@ -42,9 +42,9 @@ Route::get('questions/courseable/{morphable}/download', [CCD\QuestionController:
 // Route::get('question-corrections/{questionCorrection}/mark-as-resolved', [CCD\QuestionController::class, 'markQuestionCorrectionAsResolved'])->name('question-corrections.mark-as-resolved');
 
 // Theory Question
-Route::get('theory-questions/course-sessions/{courseSession}/index', [CCD\TheoryQuestionController::class, 'index'])->name('theory-questions.index');
-Route::get('theory-questions/course-sessions/{courseSession}/create', [CCD\TheoryQuestionController::class, 'create'])->name('theory-questions.create');
-Route::post('theory-questions/course-sessions/{courseSession}/store', [CCD\TheoryQuestionController::class, 'store'])->name('theory-questions.store');
+Route::get('theory-questions/courseable/{morphable}/index', [CCD\TheoryQuestionController::class, 'index'])->name('theory-questions.index');
+Route::get('theory-questions/courseable/{morphable}/create', [CCD\TheoryQuestionController::class, 'create'])->name('theory-questions.create');
+Route::post('theory-questions/courseable/{morphable}/store', [CCD\TheoryQuestionController::class, 'store'])->name('theory-questions.store');
 Route::get('theory-questions/{theoryQuestion}/edit', [CCD\TheoryQuestionController::class, 'edit'])->name('theory-questions.edit');
 Route::put('theory-questions/{theoryQuestion}/update', [CCD\TheoryQuestionController::class, 'update'])->name('theory-questions.update');
 Route::get('theory-questions/{theoryQuestion}/delete', [CCD\TheoryQuestionController::class, 'destroy'])->name('theory-questions.destroy');

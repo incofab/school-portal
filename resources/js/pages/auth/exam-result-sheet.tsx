@@ -1,6 +1,5 @@
 import { Div } from '@/components/semantic';
 import { Exam, Institution, Student } from '@/types/models';
-import route from '@/util/route';
 import {
   Badge,
   Box,
@@ -13,9 +12,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { InertiaLink } from '@inertiajs/inertia-react';
 import {
-  ArrowPathIcon,
   BuildingLibraryIcon,
   ChartBarIcon,
   CheckBadgeIcon,
@@ -38,10 +35,27 @@ const getPerformanceRemark = (percent: number) => {
 
 export default function ExamResultSheet({ exam, institution }: Props) {
   const student = exam.examable as Student;
-  const totalScore = Number(exam.score ?? 0);
   const totalQuestions = Number(exam.num_of_questions ?? 0);
+  const totalTheoryQuestions =
+    exam.exam_courseables?.reduce(
+      (total, item) => total + Number(item.theory_num_of_questions ?? 0),
+      0
+    ) ?? 0;
+  const objectiveQuestions = totalQuestions - totalTheoryQuestions;
+  const totalTheoryScore =
+    exam.exam_courseables?.reduce(
+      (total, item) => total + Number(item.theory_score ?? 0),
+      0
+    ) ?? 0;
+  const totalTheoryMaxScore =
+    exam.exam_courseables?.reduce(
+      (total, item) => total + Number(item.theory_max_score ?? 0),
+      0
+    ) ?? 0;
+  const totalScore = Number(exam.score ?? 0) + totalTheoryScore;
+  const totalObtainable = objectiveQuestions + totalTheoryMaxScore;
   const scorePercent =
-    totalQuestions > 0 ? Math.round((totalScore / totalQuestions) * 100) : 0;
+    totalObtainable > 0 ? Math.round((totalScore / totalObtainable) * 100) : 0;
   const subjectCount = exam.exam_courseables?.length ?? 0;
   const resultMeta = [
     {
@@ -163,7 +177,7 @@ export default function ExamResultSheet({ exam, institution }: Props) {
                 </Circle>
                 <VStack spacing={0}>
                   <Text fontSize="2xl" fontWeight="bold">
-                    {totalScore}/{totalQuestions}
+                    {totalScore}/{totalObtainable}
                   </Text>
                   <Text color="whiteAlpha.900" fontSize="sm">
                     {getPerformanceRemark(scorePercent)}
@@ -262,6 +276,30 @@ export default function ExamResultSheet({ exam, institution }: Props) {
                   </Text>
                   <Text fontSize="2xl" fontWeight="bold" color="orange.500">
                     {totalQuestions}
+                  </Text>
+                </Box>
+                <Box rounded="xl" bg="brand.50" p={4}>
+                  <Text
+                    fontSize="xs"
+                    textTransform="uppercase"
+                    color="gray.500"
+                  >
+                    Theory Questions
+                  </Text>
+                  <Text fontSize="2xl" fontWeight="bold" color="brand.700">
+                    {totalTheoryQuestions}
+                  </Text>
+                </Box>
+                <Box rounded="xl" bg="orange.50" p={4}>
+                  <Text
+                    fontSize="xs"
+                    textTransform="uppercase"
+                    color="gray.500"
+                  >
+                    Theory Marks
+                  </Text>
+                  <Text fontSize="2xl" fontWeight="bold" color="orange.500">
+                    {totalTheoryScore}/{totalTheoryMaxScore}
                   </Text>
                 </Box>
               </SimpleGrid>
@@ -380,7 +418,14 @@ export default function ExamResultSheet({ exam, institution }: Props) {
                 const numOfQuestions = Number(
                   examCourseable.num_of_questions ?? 0
                 );
+                const theoryNumOfQuestions = Number(
+                  examCourseable.theory_num_of_questions ?? 0
+                );
                 const subjectScore = Number(examCourseable.score ?? 0);
+                const theoryScore = Number(examCourseable.theory_score ?? 0);
+                const theoryMaxScore = Number(
+                  examCourseable.theory_max_score ?? 0
+                );
                 const subjectPercent =
                   numOfQuestions > 0
                     ? Math.round((subjectScore / numOfQuestions) * 100)
@@ -413,7 +458,8 @@ export default function ExamResultSheet({ exam, institution }: Props) {
                           </Text>
                           <Text fontSize="sm" color="gray.500">
                             {numOfQuestions} question
-                            {numOfQuestions === 1 ? '' : 's'}
+                            {numOfQuestions === 1 ? '' : 's'} ·{' '}
+                            {theoryNumOfQuestions} theory
                           </Text>
                         </VStack>
                       </HStack>
@@ -427,12 +473,25 @@ export default function ExamResultSheet({ exam, institution }: Props) {
                     <Box mt={4}>
                       <HStack justify="space-between" mb={2}>
                         <Text fontSize="sm" color="gray.600">
-                          Subject score
+                          Objective score
                         </Text>
                         <Text fontWeight="semibold" color="gray.800">
                           {subjectScore}/{numOfQuestions}
                         </Text>
                       </HStack>
+                      {theoryNumOfQuestions > 0 && (
+                        <HStack justify="space-between" mb={2}>
+                          <Text fontSize="sm" color="gray.600">
+                            Theory score
+                          </Text>
+                          <Text fontWeight="semibold" color="gray.800">
+                            {theoryScore}/{theoryMaxScore} marks
+                            {!examCourseable.theory_evaluated
+                              ? ' (pending)'
+                              : ''}
+                          </Text>
+                        </HStack>
+                      )}
                       <Progress
                         value={subjectPercent}
                         colorScheme={subjectPercent >= 50 ? 'green' : 'red'}

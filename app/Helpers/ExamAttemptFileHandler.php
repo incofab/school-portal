@@ -126,6 +126,9 @@ class ExamAttemptFileHandler
     // $subjectAttempts = $examFileContent['attempts']; //[$examSubjectId];
     foreach ($questions as $question) {
       $attempt = $subjectAttempts[$question['id']] ?? null;
+      if (is_array($attempt)) {
+        $attempt = $attempt['attempt'] ?? null;
+      }
       if ($attempt === $question['answer']) {
         $score++;
       }

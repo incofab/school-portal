@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\API\OfflineMock;
 
 use App\Http\Controllers\Controller;
@@ -14,14 +15,14 @@ use Illuminate\Http\Request;
 
 class ExamController extends Controller
 {
-  function index(Institution $institution, Event $event)
+  public function index(Institution $institution, Event $event)
   {
     // Todo: This will be completed when Event Participants is implemeted
     // use the participants to get the users, then call MockExamHandler to format it
     return [];
   }
 
-  function uploadEventResult(Institution $institution, Request $request)
+  public function uploadEventResult(Institution $institution, Request $request)
   {
     $request->validate([
       'exams' => ['required', 'array'],
@@ -34,13 +35,24 @@ class ExamController extends Controller
       'exams.*.end_time' => ['nullable', 'string'],
       'exams.*.status' => ['nullable', 'string'],
       'exams.*.num_of_questions' => ['nullable', 'integer'],
+      'exams.*.theory_score' => ['nullable', 'numeric'],
+      'exams.*.theory_max_score' => ['nullable', 'numeric'],
+      'exams.*.theory_evaluated' => ['nullable', 'boolean'],
       'exams.*.student_id' => ['nullable'],
 
       'exams.*.exam_courses' => ['required', 'array', 'min:1'],
       'exams.*.exam_courses.*.course_session_id' => ['required', 'integer'],
       'exams.*.exam_courses.*.score' => ['nullable', 'numeric'],
+      'exams.*.exam_courses.*.theory_score' => ['nullable', 'numeric'],
+      'exams.*.exam_courses.*.theory_max_score' => ['nullable', 'numeric'],
+      'exams.*.exam_courses.*.theory_question_scores' => ['nullable', 'array'],
+      'exams.*.exam_courses.*.theory_evaluated' => ['nullable', 'boolean'],
       'exams.*.exam_courses.*.status' => ['nullable', 'string'],
-      'exams.*.exam_courses.*.num_of_questions' => ['nullable', 'integer']
+      'exams.*.exam_courses.*.num_of_questions' => ['nullable', 'integer'],
+      'exams.*.exam_courses.*.theory_num_of_questions' => [
+        'nullable',
+        'integer'
+      ]
     ]);
     $exams = $request->exams;
 
@@ -51,6 +63,7 @@ class ExamController extends Controller
     foreach ($exams as $exam) {
       if (empty($exam['attempts'])) {
         $fail[] = $this->uploadStatus($exam['exam_no'], 'No attempts found');
+
         continue;
       }
       $code =
@@ -60,6 +73,7 @@ class ExamController extends Controller
         ->first();
       if (!$student) {
         $fail[] = $this->uploadStatus($exam['exam_no'], 'Student not found');
+
         continue;
       }
       $createdExam = Exam::query()->updateOrCreate(
@@ -74,12 +88,15 @@ class ExamController extends Controller
           ->only(
             'num_of_questions',
             'score',
+            'theory_score',
+            'theory_max_score',
             'attempts',
             'time_remaining',
             'start_time',
             'pause_time',
             'end_time',
-            'status'
+            'status',
+            'theory_evaluated'
           )
           ->toArray()
       );
@@ -92,7 +109,16 @@ class ExamController extends Controller
             'courseable_id' => $examCourse['course_session_id']
           ],
           collect($examCourse)
-            ->only('score', 'status', 'num_of_questions')
+            ->only(
+              'score',
+              'theory_score',
+              'theory_max_score',
+              'theory_question_scores',
+              'theory_evaluated',
+              'status',
+              'num_of_questions',
+              'theory_num_of_questions'
+            )
             ->toArray()
         );
       }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions\OfflineMock;
 
 use App\Enums\ExamStatus;
@@ -10,11 +11,11 @@ use App\Models\User;
 
 class MockExamHandler
 {
-  function __construct(private Event $event)
+  public function __construct(private Event $event)
   {
   }
 
-  static function make(Event $event)
+  public static function make(Event $event)
   {
     return new self($event);
   }
@@ -26,6 +27,7 @@ class MockExamHandler
     foreach ($classificationGroup->classifications as $key => $classification) {
       $arr[] = $this->makeExamForClass($classification);
     }
+
     return $arr;
   }
 
@@ -35,6 +37,7 @@ class MockExamHandler
     foreach ($classification->students as $key => $student) {
       $arr[] = $this->makeExam($student->user);
     }
+
     return $arr;
   }
 
@@ -50,6 +53,9 @@ class MockExamHandler
       'num_of_questions' => 0,
       'time_remaining' => 0,
       'score' => 0,
+      'theory_score' => 0,
+      'theory_max_score' => 0,
+      'theory_evaluated' => false,
       'event_id' => $this->event->id,
       'student' => [
         'id' => $user->id,
@@ -61,11 +67,17 @@ class MockExamHandler
         ->map(function (EventCourseable $eventCourseable) {
           $courseSession = $eventCourseable->courseable;
           $course = $courseSession->course;
+
           return [
             'course_session_id' => $eventCourseable->courseable_id,
             'score' => 0,
+            'theory_score' => 0,
+            'theory_max_score' => 0,
+            'theory_question_scores' => null,
+            'theory_evaluated' => false,
             'status' => ExamStatus::Pending->value,
             'num_of_questions' => 0,
+            'theory_num_of_questions' => 0,
             'course_code' => $course->code,
             'session' => $courseSession->session,
             'course_session' => [

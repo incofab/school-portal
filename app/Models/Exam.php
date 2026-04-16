@@ -6,14 +6,15 @@ use App\Enums\ExamStatus;
 use App\Support\MorphMap;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Exam extends Model
 {
   use HasFactory, InstitutionScope;
 
   public $guarded = [];
+
   public $casts = [
     'status' => ExamStatus::class,
     'start_time' => 'datetime',
@@ -25,10 +26,13 @@ class Exam extends Model
     'examable_id' => 'integer',
     'num_of_questions' => 'integer',
     'score' => 'float',
-    'attempts' => AsArrayObject::class
+    'attempts' => AsArrayObject::class,
+    'theory_score' => 'float',
+    'theory_max_score' => 'float',
+    'theory_evaluated' => 'boolean'
   ];
 
-  static function generateExamNo()
+  public static function generateExamNo()
   {
     $key = date('Y') . rand(10000000, 99999999);
 
@@ -39,26 +43,26 @@ class Exam extends Model
     return $key;
   }
 
-  static function scopeForExamable($query, $examable)
+  public static function scopeForExamable($query, $examable)
   {
     return $query
       ->where('examable_id', $examable->id)
       ->where('examable_type', MorphMap::key(get_class($examable)));
   }
 
-  function isEnded()
+  public function isEnded()
   {
     return $this->status === ExamStatus::Ended;
   }
 
-  function scorePercent()
+  public function scorePercent()
   {
     return ($this->score /
       ($this->num_of_questions == 0 ? 1 : $this->num_of_questions)) *
       100;
   }
 
-  function getExamableName()
+  public function getExamableName()
   {
     if ($this->examable instanceof User) {
       return $this->examable->full_name;
@@ -71,23 +75,23 @@ class Exam extends Model
     }
   }
 
-  function examCourseables()
+  public function examCourseables()
   {
     return $this->hasMany(ExamCourseable::class);
   }
 
   // TokenUser|User|Student|AdmissionApplication
-  function examable()
+  public function examable()
   {
     return $this->morphTo();
   }
 
-  function institution()
+  public function institution()
   {
     return $this->belongsTo(Institution::class);
   }
 
-  function event()
+  public function event()
   {
     return $this->belongsTo(Event::class);
   }

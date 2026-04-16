@@ -36,7 +36,10 @@ class ExamFactory extends Factory
       'time_remaining' => 0,
       'start_time' => now(),
       'pause_time' => null,
-      'end_time' => now()->addMinutes(60)
+      'end_time' => now()->addMinutes(60),
+      'theory_score' => 0,
+      'theory_max_score' => 0,
+      'theory_evaluated' => false
     ];
   }
 

@@ -22,47 +22,47 @@ beforeEach(function () {
 
 test('index displays theory questions for a course session', function () {
     TheoryQuestion::factory(3)
-        ->courseSession($this->courseSession)
+        ->courseable($this->courseSession)
         ->create();
 
     $response = actingAs($this->instAdmin)->get(
         route('institutions.theory-questions.index', [
             $this->institution,
-            $this->courseSession,
+            $this->courseSession->getMorphedId(),
         ])
     );
 
     $response->assertOk();
     $response->assertViewIs('ccd.theory-questions.index');
     $response->assertViewHas('allRecords');
-    $response->assertViewHas('courseSession');
+    $response->assertViewHas('courseable');
     expect($response['allRecords']->count())->toBe(3);
 });
 
 test('create displays a form to record a theory question', function () {
     TheoryQuestion::factory()
-        ->courseSession($this->courseSession)
-        ->create(['question_number' => 4, 'question_sub_number' => 'a']);
+        ->courseable($this->courseSession)
+        ->create(['question_no' => 4, 'question_sub_number' => 'a']);
 
     $response = actingAs($this->instAdmin)->get(
         route('institutions.theory-questions.create', [
             $this->institution,
-            $this->courseSession,
+            $this->courseSession->getMorphedId(),
         ])
     );
 
     $response->assertOk();
     $response->assertViewIs('ccd.theory-questions.create-theory-question');
     $response->assertViewHas('edit', null);
-    $response->assertViewHas('courseSession');
+    $response->assertViewHas('courseable');
     $response->assertViewHas('questionNumber', 5);
 });
 
 test('store creates a new theory question', function () {
     $data = TheoryQuestion::factory()
-        ->courseSession($this->courseSession)
+        ->courseable($this->courseSession)
         ->raw([
-            'question_number' => 1,
+            'question_no' => 1,
             'question_sub_number' => 'a',
             'question' => 'Explain photosynthesis.',
             'marks' => 5,
@@ -73,7 +73,7 @@ test('store creates a new theory question', function () {
     $response = actingAs($this->instAdmin)->post(
         route('institutions.theory-questions.store', [
             $this->institution,
-            $this->courseSession,
+            $this->courseSession->getMorphedId(),
         ]),
         $data
     );
@@ -82,8 +82,9 @@ test('store creates a new theory question', function () {
     expect(TheoryQuestion::count())->toBe(1);
     $this->assertDatabaseHas('theory_questions', [
         'institution_id' => $this->institution->id,
-        'course_session_id' => $this->courseSession->id,
-        'question_number' => 1,
+        'courseable_type' => $this->courseSession->getMorphClass(),
+        'courseable_id' => $this->courseSession->id,
+        'question_no' => 1,
         'question_sub_number' => 'a',
         'question' => 'Explain photosynthesis.',
         'marks' => 5,
@@ -92,7 +93,7 @@ test('store creates a new theory question', function () {
 
 test('edit displays a form to edit a theory question', function () {
     $theoryQuestion = TheoryQuestion::factory()
-        ->courseSession($this->courseSession)
+        ->courseable($this->courseSession)
         ->create();
 
     $response = actingAs($this->instAdmin)->get(
@@ -105,19 +106,19 @@ test('edit displays a form to edit a theory question', function () {
     $response->assertOk();
     $response->assertViewIs('ccd.theory-questions.create-theory-question');
     $response->assertViewHas('edit', $theoryQuestion);
-    $response->assertViewHas('courseSession');
-    $response->assertViewHas('questionNumber', $theoryQuestion->question_number);
+    $response->assertViewHas('courseable');
+    $response->assertViewHas('questionNumber', $theoryQuestion->question_no);
 });
 
 test('updates an existing theory question', function () {
     $theoryQuestion = TheoryQuestion::factory()
-        ->courseSession($this->courseSession)
-        ->create(['question_number' => 1, 'question_sub_number' => 'a']);
+        ->courseable($this->courseSession)
+        ->create(['question_no' => 1, 'question_sub_number' => 'a']);
 
     $newData = TheoryQuestion::factory()
-        ->courseSession($this->courseSession)
+        ->courseable($this->courseSession)
         ->raw([
-            'question_number' => 2,
+            'question_no' => 2,
             'question_sub_number' => 'b',
             'question' => 'Updated Theory Question Text',
             'marks' => 7.5,
@@ -136,14 +137,14 @@ test('updates an existing theory question', function () {
     $response->assertRedirect();
     $theoryQuestion->refresh();
     expect($theoryQuestion->question)->toBe('Updated Theory Question Text');
-    expect($theoryQuestion->question_number)->toBe(2);
+    expect($theoryQuestion->question_no)->toBe(2);
     expect($theoryQuestion->question_sub_number)->toBe('b');
     expect($theoryQuestion->marks)->toBe(7.5);
 });
 
 test('deletes a theory question', function () {
     $theoryQuestion = TheoryQuestion::factory()
-        ->courseSession($this->courseSession)
+        ->courseable($this->courseSession)
         ->create();
 
     $response = actingAs($this->instAdmin)->get(

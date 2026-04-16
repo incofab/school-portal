@@ -7,6 +7,7 @@ import {
   Divider,
   VStack,
   Spacer,
+  Badge,
 } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
@@ -64,14 +65,33 @@ export default function ListExamCourseables({ exam, examCourseables }: Props) {
         `${row.courseable?.course?.title} - ${row.courseable?.session}`,
     },
     {
-      label: 'Score',
+      label: 'Objective Score',
       value: 'score',
       render: (row) => row.score + '',
     },
     {
-      label: 'Num Of Questions',
+      label: 'Objective Questions',
       value: 'num_of_questions',
       render: (row) => row.num_of_questions + '',
+    },
+    {
+      label: 'Theory Score',
+      value: 'theory_score',
+      render: (row) => `${row.theory_score} / ${row.theory_max_score}`,
+    },
+    {
+      label: 'Theory Questions',
+      value: 'theory_num_of_questions',
+      render: (row) => row.theory_num_of_questions + '',
+    },
+    {
+      label: 'Theory Status',
+      value: 'theory_evaluated',
+      render: (row) => (
+        <Badge colorScheme={row.theory_evaluated ? 'green' : 'orange'}>
+          {row.theory_evaluated ? 'Evaluated' : 'Pending'}
+        </Badge>
+      ),
     },
     ...(isStaff
       ? [
@@ -113,7 +133,15 @@ export default function ListExamCourseables({ exam, examCourseables }: Props) {
       value: tokenUserUtil(exam.examable).getName() ?? exam.external_reference,
     },
     { label: 'Exam No', value: exam.exam_no },
-    { label: 'Score', value: exam.score },
+    { label: 'Objective Score', value: exam.score },
+    {
+      label: 'Theory Score',
+      value: `${exam.theory_score ?? 0} / ${exam.theory_max_score ?? 0}`,
+    },
+    {
+      label: 'Theory Status',
+      value: exam.theory_evaluated ? 'Evaluated' : 'Pending',
+    },
     { label: 'Num of Questions', value: exam.num_of_questions },
     { label: 'Status', value: exam.status },
   ];

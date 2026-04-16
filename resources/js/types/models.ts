@@ -773,6 +773,17 @@ export interface Question extends InstitutionRow {
   answer_meta: string;
 }
 
+export interface TheoryQuestion extends InstitutionRow {
+  courseable_type: string;
+  courseable_id: number;
+  question_no: number;
+  question_sub_number?: string | null;
+  question: string;
+  marks: number;
+  answer: string;
+  marking_scheme?: string | null;
+}
+
 export interface CourseSession extends InstitutionRow {
   course_id: number;
   session: string;
@@ -780,6 +791,7 @@ export interface CourseSession extends InstitutionRow {
   general_instruction: string;
   course?: Course;
   questions?: Question[];
+  theory_questions?: TheoryQuestion[];
   instructions?: Instruction[];
   passages?: Passage[];
 }
@@ -949,6 +961,9 @@ export interface Exam extends InstitutionRow {
   score: number;
   num_of_questions: number;
   status: string;
+  theory_score: number;
+  theory_max_score: number;
+  theory_evaluated: boolean;
   examable_type: string;
   examable_id: number;
   examable: Examable;
@@ -964,6 +979,11 @@ export interface ExamCourseable extends Row {
   status: string;
   score: number;
   num_of_questions: number;
+  theory_score: number;
+  theory_max_score: number;
+  theory_num_of_questions: number;
+  theory_question_scores?: Record<string | number, number> | null;
+  theory_evaluated: boolean;
   exam?: Exam;
   courseable?: CourseSession;
 }

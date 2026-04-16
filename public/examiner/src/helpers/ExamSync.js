@@ -7,15 +7,13 @@ class ExamSync{
     // attemptsUploading = {};
 
     addAttempt(attemptData){
-        this.attemptsToUpload[attemptData.question_id] = attemptData;
+        this.attemptsToUpload[attemptData.question_id] = attemptData.attempt;
     }
     
     addMultiAttempts(multipleAttemtps){
         for (const questionId in multipleAttemtps) {
             if (Object.hasOwnProperty.call(multipleAttemtps, questionId)) {
                 const attempt = multipleAttemtps[questionId];
-                if(this.attemptsToUpload.question_id == attempt.question_id)
-                    continue;
                 this.attemptsToUpload[questionId] = attempt;
             }
         }

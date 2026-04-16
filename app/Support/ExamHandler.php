@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Support;
 
 use App\Enums\EventStatus;
@@ -10,16 +11,16 @@ use DB;
 
 class ExamHandler
 {
-  function __construct(private Exam $exam)
+  public function __construct(private Exam $exam)
   {
   }
 
-  static function make(Exam $exam)
+  public static function make(Exam $exam)
   {
     return new self($exam);
   }
 
-  function canRun(bool $canAbort = true)
+  public function canRun(bool $canAbort = true)
   {
     if (!$this->isEventActive()) {
       return false;
@@ -41,13 +42,15 @@ class ExamHandler
     if ($canAbort) {
       $this->endAndAbort('Time Elapsed');
     }
+
     return false;
   }
 
-  function startExam()
+  public function startExam()
   {
     if (!$this->canRun()) {
       abort(401, 'Exam cannot be started');
+
       return;
     }
 
@@ -57,11 +60,11 @@ class ExamHandler
 
     $duration = $this->isPaused()
       ? $this->exam->time_remaining
-      : $this->exam->event->getDurationInSeconds(); //gets the duration in seconds
+      : $this->exam->event->getDurationInSeconds(); // gets the duration in seconds
 
     $this->exam
       ->fill([
-        'start_time' => $this->exam->start_time ?? now(), //Maintain original start_time
+        'start_time' => $this->exam->start_time ?? now(), // Maintain original start_time
         'pause_time' => null,
         'end_time' => now()->addSeconds(floatval($duration)),
         'time_remaining' => null,
@@ -86,7 +89,7 @@ class ExamHandler
     return $this;
   }
 
-  function pauseExam()
+  public function pauseExam()
   {
     if ($this->isEnded() || $this->isPaused()) {
       return;
@@ -94,6 +97,7 @@ class ExamHandler
 
     if (!$this->hasSomeTimeRemaining()) {
       $this->endAndAbort('Time has elapsed');
+
       return;
     }
 
@@ -109,7 +113,7 @@ class ExamHandler
       ->save();
   }
 
-  function endExam(bool $reEvaluate = false)
+  public function endExam(bool $reEvaluate = false)
   {
     if ($this->isEnded() && !$reEvaluate) {
       return;
@@ -117,25 +121,44 @@ class ExamHandler
     $this->exam->examCourseables;
     $examAttemptFileHandler = ExamAttemptFileHandler::make($this->exam);
     $totalScore = 0;
+    $totalTheoryScore = 0;
+    $totalTheoryMaxScore = 0;
     $totalNumOfQuestions = 0;
     DB::beginTransaction();
     /** @var ExamCourseable $examCourseable */
     foreach ($this->exam->examCourseables as $key => $examCourseable) {
       $questions = $examCourseable->courseable->questions()->get();
+      $theoryQuestions = $examCourseable->courseable->theoryQuestions()->get();
       $scoreCalc = $examAttemptFileHandler->calculateScoreFromFile($questions);
       $score = $scoreCalc['score'] ?? $examCourseable->score;
       $numOfQuestions = $questions->count();
+      $theoryNumOfQuestions = $theoryQuestions->count();
+      $theoryMaxScore = $theoryQuestions->sum('marks');
+      $theoryScore =
+        $theoryNumOfQuestions > 0 && $examCourseable->theory_evaluated
+          ? $examCourseable->theory_score
+          : 0;
 
       $examCourseable
         ->fill([
           'score' => $score,
-          'num_of_questions' => $numOfQuestions
+          'num_of_questions' => $numOfQuestions,
+          'theory_score' => $theoryScore,
+          'theory_max_score' => $theoryMaxScore,
+          'theory_num_of_questions' => $theoryNumOfQuestions,
+          'theory_evaluated' =>
+            $theoryNumOfQuestions === 0
+              ? true
+              : $examCourseable->theory_evaluated
         ])
         ->save();
       $totalScore += $score;
-      $totalNumOfQuestions += $numOfQuestions;
+      $totalTheoryScore += $theoryScore;
+      $totalTheoryMaxScore += $theoryMaxScore;
+      $totalNumOfQuestions += $numOfQuestions + $theoryNumOfQuestions;
     }
 
+    $this->exam->load('examCourseables');
     $this->exam
       ->fill([
         'pause_time' => null,
@@ -143,7 +166,15 @@ class ExamHandler
         'time_remaining' => 0,
         'status' => ExamStatus::Ended,
         'score' => $totalScore,
+        'theory_score' => $totalTheoryScore,
+        'theory_max_score' => $totalTheoryMaxScore,
         'num_of_questions' => $totalNumOfQuestions,
+        'theory_evaluated' => !$this->exam->examCourseables->contains(
+          fn(
+            ExamCourseable $courseable
+          ) => $courseable->theory_num_of_questions > 0 &&
+            !$courseable->theory_evaluated
+        ),
         'attempts' => $examAttemptFileHandler->getQuestionAttempts()
       ])
       ->save();
@@ -151,44 +182,45 @@ class ExamHandler
     DB::commit();
   }
 
-  function endAndAbort($reason = null)
+  public function endAndAbort($reason = null)
   {
     $this->endExam();
     abort(401, $reason ?? 'Exam has ended');
   }
 
-  function hasSomeTimeRemaining()
+  public function hasSomeTimeRemaining()
   {
     $timeRemaining = $this->getTimeRemaining();
+
     return $timeRemaining > 5;
   }
 
-  function getTimeRemaining()
+  public function getTimeRemaining()
   {
     return now()->diffInSeconds($this->exam->end_time, false);
   }
 
-  function isPending()
+  public function isPending()
   {
     return $this->exam->status === ExamStatus::Pending;
   }
 
-  function isPaused()
+  public function isPaused()
   {
     return $this->exam->status === ExamStatus::Paused;
   }
 
-  function isStarted()
+  public function isStarted()
   {
     return $this->exam->status === ExamStatus::Active;
   }
 
-  function isEnded()
+  public function isEnded()
   {
     return $this->exam->status === ExamStatus::Ended;
   }
 
-  function isEventActive()
+  public function isEventActive()
   {
     $event = $this->exam->event;
     if ($event->status === EventStatus::Ended) {
@@ -197,6 +229,7 @@ class ExamHandler
     if (!$event->starts_at) {
       return true;
     }
+
     return $event->starts_at->lessThanOrEqualTo(now());
   }
 }
