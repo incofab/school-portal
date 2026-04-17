@@ -21,8 +21,9 @@ export default function ExamTableFilters({ isOpen, onClose }: Props) {
       <FilterFormControlBox title="Class">
         <ClassificationSelect
           onChange={(e: any) =>
-            setFilters({ ...filters, classification: e.value })
+            setFilters({ ...filters, classification: e?.value })
           }
+          isClearable={true}
         />
       </FilterFormControlBox>
     </BaseTableFilter>

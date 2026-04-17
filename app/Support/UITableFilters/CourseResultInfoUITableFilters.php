@@ -25,6 +25,15 @@ class CourseResultInfoUITableFilters extends BaseUITableFilter
 
   protected function generalSearch(string $search)
   {
+    $this->joinCourse()
+      ->joinClassification()
+      ->baseQuery->where(function ($q) use ($search) {
+        $q->where('courses.title', 'like', "%{$search}%")->orWhere(
+          'classifications.name',
+          'like',
+          "%{$search}%"
+        );
+      });
   }
 
   private function joinCourse(): static

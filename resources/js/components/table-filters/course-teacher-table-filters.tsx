@@ -25,7 +25,8 @@ export default function CourseTeacherTableFilters({ isOpen, onClose }: Props) {
       <FilterFormControlBox title="Subject">
         <CourseSelect
           selectValue={filters.course}
-          onChange={(e: any) => setFilters({ ...filters, course: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, course: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Class">
@@ -40,7 +41,8 @@ export default function CourseTeacherTableFilters({ isOpen, onClose }: Props) {
       <FilterFormControlBox title="Teacher">
         <StaffSelect
           rolesIn={[InstitutionUserType.Teacher]}
-          onChange={(e: any) => setFilters({ ...filters, teacher: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, teacher: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
     </BaseTableFilter>

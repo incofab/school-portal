@@ -87,7 +87,8 @@ export default function LessonNoteTableFilters({ isOpen, onClose }: Props) {
             <EnumSelect
               selectValue={filters.term}
               enumData={TermType}
-              onChange={(e: any) => setFilters({ ...filters, term: e.value })}
+              onChange={(e: any) => setFilters({ ...filters, term: e?.value })}
+              isClearable={true}
             />
           </FilterFormControlBox>
         </>

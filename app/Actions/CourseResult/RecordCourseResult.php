@@ -54,7 +54,7 @@ class RecordCourseResult
     ))->execute();
   }
 
-  public function execute(): static
+  private function execute(): static
   {
     ClassResultInfo::ensureResultIsUnlocked(
       $this->courseTeacher->classification_id,

@@ -36,42 +36,48 @@ export default function StudentClassMovementTableFilters({
         <ClassificationSelect
           selectValue={filters.sourceClass}
           onChange={(e: any) =>
-            setFilters({ ...filters, sourceClass: e.value })
+            setFilters({ ...filters, sourceClass: e?.value })
           }
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Destination Class">
         <ClassificationSelect
           selectValue={filters.destinationClass}
           onChange={(e: any) =>
-            setFilters({ ...filters, destinationClass: e.value })
+            setFilters({ ...filters, destinationClass: e?.value })
           }
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Student">
         <StudentSelect
-          onChange={(e: any) => setFilters({ ...filters, student: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, student: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Staff">
         <StaffSelect
           rolesIn={[InstitutionUserType.Teacher, InstitutionUserType.Admin]}
-          onChange={(e: any) => setFilters({ ...filters, user: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, user: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Academic Session">
         <AcademicSessionSelect
           selectValue={filters.academicSession}
           onChange={(e: any) =>
-            setFilters({ ...filters, academicSession: e.value })
+            setFilters({ ...filters, academicSession: e?.value })
           }
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Term">
         <EnumSelect
           selectValue={filters.term}
           enumData={TermType}
-          onChange={(e: any) => setFilters({ ...filters, term: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, term: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
     </BaseTableFilter>

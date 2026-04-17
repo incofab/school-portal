@@ -27,23 +27,26 @@ export default function PinsTableFilters({ isOpen, onClose }: Props) {
       <FilterFormControlBox title="School">
         <InstitutionSelect
           onChange={(e: any) =>
-            setFilters({ ...filters, institution_id: e.value })
+            setFilters({ ...filters, institution_id: e?.value })
           }
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Academic Session">
         <AcademicSessionSelect
           selectValue={filters.academicSession}
           onChange={(e: any) =>
-            setFilters({ ...filters, academicSession: e.value })
+            setFilters({ ...filters, academicSession: e?.value })
           }
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Term">
         <EnumSelect
           selectValue={filters.term}
           enumData={TermType}
-          onChange={(e: any) => setFilters({ ...filters, term: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, term: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
     </BaseTableFilter>

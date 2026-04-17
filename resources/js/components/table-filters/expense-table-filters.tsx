@@ -10,74 +10,84 @@ import { Input } from '@chakra-ui/react';
 import ExpenseCategorySelect from '../selectors/expense-category-select';
 
 interface Props {
-    isOpen: boolean;
-    onClose(): void;
+  isOpen: boolean;
+  onClose(): void;
 }
 
 export default function ExpenseTableFilters({ isOpen, onClose }: Props) {
-    const { params } = useQueryString();
-    const { currentAcademicSessionId, currentTerm} = useSharedProps();
+  const { params } = useQueryString();
+  const { currentAcademicSessionId, currentTerm } = useSharedProps();
 
-    const [filters, setFilters] = useState(() => ({
-        title: params.title ?? '',
-        amount: params.amount ?? '',
-        academicSession: params.academicSession ?? '',
-        term: params.term ?? '',
-        expenseDate: params.expenseDate ??'',
-        expenseCategory: params.expenseCategory ?? '',
-    }));
+  const [filters, setFilters] = useState(() => ({
+    title: params.title ?? '',
+    amount: params.amount ?? '',
+    academicSession: params.academicSession ?? '',
+    term: params.term ?? '',
+    expenseDate: params.expenseDate ?? '',
+    expenseCategory: params.expenseCategory ?? '',
+  }));
 
-    return (
-        <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
-            <FilterFormControlBox title="Title">
-                <Input
-                    type="text"
-                    onChange={(e: any) => setFilters({ ...filters, title: e.currentTarget.value})}
-                    value={filters.title}
-                />
-            </FilterFormControlBox>
-            
-            <FilterFormControlBox title="Amount">
-                <Input
-                    type="number"
-                    onChange={(e: any) => setFilters({ ...filters, amount: e.currentTarget.value })}
-                    value={filters.amount}
-                />
-            </FilterFormControlBox> 
+  return (
+    <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
+      <FilterFormControlBox title="Title">
+        <Input
+          type="text"
+          onChange={(e: any) =>
+            setFilters({ ...filters, title: e.currentTarget.value })
+          }
+          value={filters.title}
+        />
+      </FilterFormControlBox>
 
-            <FilterFormControlBox title="Academic Session">
-                <AcademicSessionSelect
-                    selectValue={filters.academicSession}
-                    onChange={(e: any) =>
-                        setFilters({ ...filters, academicSession: e.value })
-                    }
-                />
-            </FilterFormControlBox>
+      <FilterFormControlBox title="Amount">
+        <Input
+          type="number"
+          onChange={(e: any) =>
+            setFilters({ ...filters, amount: e.currentTarget.value })
+          }
+          value={filters.amount}
+        />
+      </FilterFormControlBox>
 
-            <FilterFormControlBox title="Term">
-                <EnumSelect
-                    selectValue={filters.term}
-                    enumData={TermType}
-                    onChange={(e: any) => setFilters({ ...filters, term: e.value })}
-                />
-            </FilterFormControlBox>
-            
-            <FilterFormControlBox title="Expense Date">
-                <Input
-                    type="date"
-                    onChange={(e: any) => setFilters({ ...filters, expenseDate: e.currentTarget.value})}
-                    value={filters.expenseDate}
-                />
-            </FilterFormControlBox> 
-           
-            <FilterFormControlBox title="Expense Category">
-                <ExpenseCategorySelect
-                    selectValue={filters.expenseCategory}
-                    onChange={(e: any) =>
-                        setFilters({ ...filters, expenseCategory: e.value })
-                    }
-                />
-            </FilterFormControlBox>
-        </BaseTableFilter>
-    );
+      <FilterFormControlBox title="Academic Session">
+        <AcademicSessionSelect
+          selectValue={filters.academicSession}
+          onChange={(e: any) =>
+            setFilters({ ...filters, academicSession: e?.value })
+          }
+          isClearable={true}
+        />
+      </FilterFormControlBox>
+
+      <FilterFormControlBox title="Term">
+        <EnumSelect
+          selectValue={filters.term}
+          enumData={TermType}
+          onChange={(e: any) => setFilters({ ...filters, term: e?.value })}
+          isClearable={true}
+        />
+      </FilterFormControlBox>
+
+      <FilterFormControlBox title="Expense Date">
+        <Input
+          type="date"
+          onChange={(e: any) =>
+            setFilters({ ...filters, expenseDate: e.currentTarget.value })
+          }
+          value={filters.expenseDate}
+        />
+      </FilterFormControlBox>
+
+      <FilterFormControlBox title="Expense Category">
+        <ExpenseCategorySelect
+          selectValue={filters.expenseCategory}
+          onChange={(e: any) =>
+            setFilters({ ...filters, expenseCategory: e?.value })
+          }
+          isClearable={true}
+          expenseCategories={[]}
+        />
+      </FilterFormControlBox>
+    </BaseTableFilter>
+  );
 }

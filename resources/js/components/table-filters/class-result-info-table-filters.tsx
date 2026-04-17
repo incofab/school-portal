@@ -27,30 +27,33 @@ export default function ClassResultInfoTableFilters({
     classification: params.classification ?? '',
     forMidTerm: params.forMidTerm,
   }));
- 
+
   return (
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
       <FilterFormControlBox title="Class">
         <ClassificationSelect
           selectValue={filters.classification}
           onChange={(e: any) =>
-            setFilters({ ...filters, classification: e.value })
+            setFilters({ ...filters, classification: e?.value })
           }
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Academic Session">
         <AcademicSessionSelect
           selectValue={filters.academicSession}
           onChange={(e: any) =>
-            setFilters({ ...filters, academicSession: e.value })
+            setFilters({ ...filters, academicSession: e?.value })
           }
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Term">
         <EnumSelect
           selectValue={filters.term}
           enumData={TermType}
-          onChange={(e: any) => setFilters({ ...filters, term: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, term: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
       {usesMidTermResult && (

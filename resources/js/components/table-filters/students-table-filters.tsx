@@ -26,8 +26,9 @@ export default function StudentsTableFilters({ isOpen, onClose }: Props) {
         <ClassificationSelect
           selectValue={filters.classification}
           onChange={(e: any) =>
-            setFilters({ ...filters, classification: e.value })
+            setFilters({ ...filters, classification: e?.value })
           }
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Role">
@@ -42,7 +43,7 @@ export default function StudentsTableFilters({ isOpen, onClose }: Props) {
           selectValue={filters.studentRole}
           isClearable={true}
           onChange={(e: any) =>
-            setFilters({ ...filters, studentRole: e.value })
+            setFilters({ ...filters, studentRole: e?.value })
           }
         />
       </FilterFormControlBox>

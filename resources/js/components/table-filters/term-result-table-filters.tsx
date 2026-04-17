@@ -38,16 +38,18 @@ export default function TermResultsTableFilters({ isOpen, onClose }: Props) {
             <ClassificationSelect
               selectValue={filters.classification}
               onChange={(e: any) =>
-                setFilters({ ...filters, classification: e.value })
+                setFilters({ ...filters, classification: e?.value })
               }
+              isClearable={true}
             />
           </FilterFormControlBox>
           <FilterFormControlBox title="Student">
             <StudentSelect
               value={filters.student}
               onChange={(e: any) =>
-                setFilters({ ...filters, student: e.value })
+                setFilters({ ...filters, student: e?.value })
               }
+              isClearable={true}
             />
           </FilterFormControlBox>
         </>
@@ -56,15 +58,17 @@ export default function TermResultsTableFilters({ isOpen, onClose }: Props) {
         <AcademicSessionSelect
           selectValue={filters.academicSession}
           onChange={(e: any) =>
-            setFilters({ ...filters, academicSession: e.value })
+            setFilters({ ...filters, academicSession: e?.value })
           }
+          isClearable={true}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Term">
         <EnumSelect
           enumData={TermType}
           selectValue={filters.term}
-          onChange={(e: any) => setFilters({ ...filters, term: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, term: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
       {usesMidTermResult && (

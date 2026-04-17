@@ -23,6 +23,22 @@ class ClassResultInfoUITableFilters extends BaseUITableFilter
 
   protected function generalSearch(string $search)
   {
+    $this->joinClassification()->baseQuery->where(function ($q) use ($search) {
+      $q->where('classifications.title', 'like', "%{$search}%");
+    });
+  }
+
+  private function joinClassification(): static
+  {
+    $this->callOnce(
+      'joinClassification',
+      fn() => $this->baseQuery->join(
+        'classifications',
+        'classifications.id',
+        'class_result_info.classification_id'
+      )
+    );
+    return $this;
   }
 
   protected function directQuery()

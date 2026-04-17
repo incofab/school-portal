@@ -54,8 +54,9 @@ export default function UsersTableFilters({ isOpen, onClose }: Props) {
                 value={filters.role}
                 refreshKey={filters.role}
                 onChange={(e: any) =>
-                  setFilters({ ...filters, role: e.currentTarget.value })
+                  setFilters({ ...filters, role: e?.value })
                 }
+                isClearable={true}
               />
             </FormControl>
           </VStack>

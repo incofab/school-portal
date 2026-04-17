@@ -36,16 +36,18 @@ export default function LessonPlanTableFilters({ isOpen, onClose }: Props) {
             <ClassificationGroupSelect
               selectValue={filters.classificationGroup}
               onChange={(e: any) =>
-                setFilters({ ...filters, classificationGroup: e.value })
+                setFilters({ ...filters, classificationGroup: e?.value })
               }
+              isClearable={true}
             />
           </FilterFormControlBox>
           <FilterFormControlBox title="Class">
             <ClassificationSelect
               selectValue={filters.classification}
               onChange={(e: any) =>
-                setFilters({ ...filters, classification: e.value })
+                setFilters({ ...filters, classification: e?.value })
               }
+              isClearable={true}
             />
           </FilterFormControlBox>
         </>
@@ -54,7 +56,8 @@ export default function LessonPlanTableFilters({ isOpen, onClose }: Props) {
       <FilterFormControlBox title="Subject">
         <CourseSelect
           selectValue={filters.course}
-          onChange={(e: any) => setFilters({ ...filters, course: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, course: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
       {isStaff && (
@@ -62,8 +65,9 @@ export default function LessonPlanTableFilters({ isOpen, onClose }: Props) {
           <CourseTeacherSelect
             value={filters.courseTeacher}
             onChange={(e: any) =>
-              setFilters({ ...filters, courseTeacher: e.value })
+              setFilters({ ...filters, courseTeacher: e?.value })
             }
+            isClearable={true}
           />
         </FilterFormControlBox>
       )}
@@ -71,7 +75,8 @@ export default function LessonPlanTableFilters({ isOpen, onClose }: Props) {
         <EnumSelect
           selectValue={filters.term}
           enumData={TermType}
-          onChange={(e: any) => setFilters({ ...filters, term: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, term: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
     </BaseTableFilter>

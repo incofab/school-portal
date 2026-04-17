@@ -22,9 +22,8 @@ export default function StaffTableFilters({ isOpen, onClose }: Props) {
         <EnumSelect
           selectValue={filters.role}
           enumData={InstitutionUserType}
-          onChange={(e: any) =>
-            setFilters({ ...filters, role: e.currentTarget.value })
-          }
+          onChange={(e: any) => setFilters({ ...filters, role: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
     </BaseTableFilter>
