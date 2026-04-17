@@ -24,12 +24,16 @@ import CourseResultInfoTableFilters from '@/components/table-filters/course-resu
 import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useIsStaff from '@/hooks/use-is-staff';
+import useIsAdmin from '@/hooks/use-is-admin';
 import UploadCourseResultsModal from '@/components/modals/upload-course-results-modal';
-import { CloudArrowDownIcon } from '@heroicons/react/24/solid';
+import { CloudArrowDownIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { Inertia } from '@inertiajs/inertia';
 import DownloadCourseResultModal from '@/components/modals/download-course-result-modal';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { InertiaLink } from '@inertiajs/inertia-react';
+import useWebForm from '@/hooks/use-web-form';
+import useMyToast from '@/hooks/use-my-toast';
+import DestructivePopover from '@/components/destructive-popover';
 
 interface Props {
   courseResultInfo: PaginationResponse<CourseResultInfo>;
@@ -42,6 +46,17 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
   const uploadCourseResultModalToggle = useModalValueToggle();
   const { instRoute } = useInstitutionRoute();
   const isStaff = useIsStaff();
+  const isAdmin = useIsAdmin();
+  const deleteForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
+
+  async function deleteItem(obj: CourseResultInfo) {
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(instRoute('course-result-info.destroy', [obj.id]))
+    );
+    handleResponseToast(res);
+    Inertia.reload({ only: ['courseResultInfo'] });
+  }
 
   const headers: ServerPaginatedTableHeader<CourseResultInfo>[] = [
     {
@@ -141,6 +156,20 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
               )}
             </MenuList>
           </Menu>
+          {isAdmin && (
+            <DestructivePopover
+              label={'Delete this course result info'}
+              onConfirm={() => deleteItem(row)}
+              isLoading={deleteForm.processing}
+            >
+              <IconButton
+                aria-label={'Delete Course Result Info'}
+                icon={<Icon as={TrashIcon} />}
+                variant={'ghost'}
+                colorScheme={'red'}
+              />
+            </DestructivePopover>
+          )}
         </HStack>
       ),
     },

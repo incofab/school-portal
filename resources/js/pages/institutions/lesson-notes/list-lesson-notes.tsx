@@ -162,7 +162,7 @@ export default function ListLessonNotes({ lessonNotes }: Props) {
             paginator={lessonNotes}
             validFilters={[
               'classificationGroup',
-              'classification',
+              // 'classification',
               'courseTeacher',
               'course',
               'status',

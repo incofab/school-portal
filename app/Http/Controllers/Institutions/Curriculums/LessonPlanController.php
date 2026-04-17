@@ -8,6 +8,7 @@ use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\LessonPlan;
 use App\Models\SchemeOfWork;
+use App\Support\UITableFilters\LessonPlanUITableFilters;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -23,7 +24,36 @@ class LessonPlanController extends Controller
     $this->allowedRoles([InstitutionUserType::Admin])->only('destroy');
   }
 
-  function createOrEdit(
+  public function index(Institution $institution, Request $request)
+  {
+    $institutionUser = currentInstitutionUser();
+    $query = LessonPlan::query();
+
+    if ($institutionUser->isTeacher()) {
+      $query->whereIn(
+        'course_teacher_id',
+        $institutionUser->user->courseTeachers()->pluck('id')
+      );
+    }
+
+    LessonPlanUITableFilters::make($request->all(), $query)->filterQuery();
+
+    return Inertia::render('institutions/lesson-plans/list-lesson-plans', [
+      'lessonPlans' => paginateFromRequest(
+        $query
+          ->with(
+            'schemeOfWork.topic.classificationGroup',
+            'schemeOfWork.topic.course',
+            'courseTeacher.classification',
+            'courseTeacher.user',
+            'lessonNote'
+          )
+          ->latest('id')
+      )
+    ]);
+  }
+
+  public function createOrEdit(
     Institution $institution,
     ?SchemeOfWork $schemeOfWork = null,
     ?LessonPlan $lessonPlan = null
@@ -34,7 +64,7 @@ class LessonPlanController extends Controller
     // Initialize $params
     $params = [];
 
-    //== Edit Existing Lesson Plan ==
+    // == Edit Existing Lesson Plan ==
     if ($lessonPlan) {
       $schemeOfWork = $lessonPlan->schemeOfWork;
       $courseId = $lessonPlan->schemeOfWork->topic->course_id;
@@ -46,7 +76,7 @@ class LessonPlanController extends Controller
       $params['lessonPlan'] = $lessonPlan->load('courseTeacher.user');
     }
 
-    //== Create New Lesson Plan ==
+    // == Create New Lesson Plan ==
     if ($schemeOfWork) {
       $courseId = $schemeOfWork->topic->course_id;
 
@@ -59,7 +89,7 @@ class LessonPlanController extends Controller
       $params['schemeOfWork'] = $schemeOfWork;
     }
 
-    //== Fetch the Teachers that teaches the subject for the class. ==
+    // == Fetch the Teachers that teaches the subject for the class. ==
     if ($institutionUser->isTeacher()) {
       $query = CourseTeacher::where('user_id', $user->id);
     }
@@ -73,7 +103,7 @@ class LessonPlanController extends Controller
       ->with('user', 'classification')
       ->get();
 
-    //== Check if the teacher is allowed to create a LessonPlan for this subject/class. ==
+    // == Check if the teacher is allowed to create a LessonPlan for this subject/class. ==
     if ($institutionUser->isTeacher() && $lessonPlanCourseTeachers->isEmpty()) {
       abort(
         401,
@@ -89,7 +119,7 @@ class LessonPlanController extends Controller
     );
   }
 
-  function storeOrUpdate(
+  public function storeOrUpdate(
     Institution $institution,
     Request $request,
     ?LessonPlan $lessonPlan = null
@@ -118,26 +148,30 @@ class LessonPlanController extends Controller
     return $this->ok();
   }
 
-  function show(Institution $institution, LessonPlan $lessonPlan)
+  public function show(Institution $institution, LessonPlan $lessonPlan)
   {
-    $lessonPlan->loadCount(
-      'schemeOfWork.topic.course',
-      'schemeOfWork.topic.classification',
-      'schemeOfWork.topic.parentTopic',
-      'courseTeacher'
-    );
+    $lessonPlan
+      ->load(
+        'schemeOfWork.topic.course',
+        'schemeOfWork.topic.classification',
+        'schemeOfWork.topic.parentTopic',
+        'courseTeacher'
+      )
+      ->loadCount('lessonNotes');
+
     return Inertia::render('institutions/lesson-plans/show-lesson-plan', [
       'lessonPlan' => $lessonPlan
     ]);
   }
 
-  function destroy(Institution $institution, LessonPlan $lessonPlan)
+  public function destroy(Institution $institution, LessonPlan $lessonPlan)
   {
     if (count($lessonPlan->lessonNote()->get()) > 0) {
       return $this->message('This Lesson-Plan already has a Lesson-Note.', 403);
     }
 
     $lessonPlan->delete();
+
     return $this->ok();
   }
 }

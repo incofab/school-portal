@@ -8,6 +8,7 @@ use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\Course;
 use App\Models\CourseResult;
+use App\Models\CourseResultInfo;
 use App\Models\Institution;
 use App\Models\Student;
 use App\Models\TermResult;
@@ -93,6 +94,23 @@ class CourseResultFactory extends Factory
         'academic_session_id' => $termResult->academic_session_id,
         'term' => $termResult->term,
         'for_mid_term' => $termResult->for_mid_term ?? false
+      ]
+    );
+  }
+
+  function forCourseResultInfo(CourseResultInfo $courseResultInfo): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'institution_id' => $courseResultInfo->institution_id,
+        'course_id' => $courseResultInfo->course_id,
+        'student_id' => Student::factory()->withInstitution(
+          $courseResultInfo->institution
+        ),
+        'classification_id' => $courseResultInfo->classification_id,
+        'academic_session_id' => $courseResultInfo->academic_session_id,
+        'term' => $courseResultInfo->term,
+        'for_mid_term' => $courseResultInfo->for_mid_term ?? false
       ]
     );
   }

@@ -36,7 +36,7 @@ interface MenuListType extends MenuType {
 
 export default function SideBarLayout() {
   const { currentUser, currentInstitutionUser } = useSharedProps();
-  const { toggleSidebar, collapseSidebar, broken, collapsed } = useProSidebar();
+  const { toggleSidebar } = useProSidebar();
   const { instRoute } = useInstitutionRoute();
   const isTeacher = useIsTeacher();
   const reportModalToggle = useModalValueToggle<GenericSelectorModalConfig>();
@@ -391,14 +391,38 @@ export default function SideBarLayout() {
       ],
     },
     {
-      label: 'Topics',
-      route: instRoute('inst-topics.index'),
-      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
-    },
-    {
-      label: 'Lesson Notes',
-      route: instRoute('lesson-notes.index'),
-      roles: [InstitutionUserType.Student],
+      label: 'Curriculum',
+      roles: [
+        InstitutionUserType.Admin,
+        InstitutionUserType.Teacher,
+        InstitutionUserType.Student,
+      ],
+      sub_items: [
+        {
+          label: 'Topics',
+          route: instRoute('inst-topics.index'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Scheme of Work',
+          route: instRoute('scheme-of-works.index'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Lesson Plans',
+          route: instRoute('lesson-plans.index'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Lesson Notes',
+          route: instRoute('lesson-notes.index'),
+          roles: [
+            InstitutionUserType.Admin,
+            InstitutionUserType.Teacher,
+            InstitutionUserType.Student,
+          ],
+        },
+      ],
     },
     {
       label: 'Assignments',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClassificationGroup, Topic, SchemeOfWork } from '@/types/models';
+import { SchemeOfWork } from '@/types/models';
 import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
@@ -18,20 +18,19 @@ import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
 import useIsAdmin from '@/hooks/use-is-admin';
+import useModalToggle from '@/hooks/use-modal-toggle';
+import SchemeOfWorkTableFilters from '@/components/table-filters/scheme-of-work-table-filters';
 
 interface Props {
   schemeOfWorks: PaginationResponse<SchemeOfWork>;
-  classificationGroups: ClassificationGroup[];
 }
 
-export default function ListSchemeOfWork({
-  schemeOfWorks,
-  classificationGroups,
-}: Props) {
+export default function ListSchemeOfWork({ schemeOfWorks }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
+  const filterToggle = useModalToggle();
 
   async function deleteItem(obj: SchemeOfWork) {
     const res = await deleteForm.submit((data, web) =>
@@ -61,6 +60,7 @@ export default function ListSchemeOfWork({
       label: 'Week Number',
       value: 'week_number',
       render: (row) => <Text>{row.week_number}</Text>,
+      sortKey: 'weekNumber',
     },
     {
       label: 'Last Update',
@@ -101,7 +101,7 @@ export default function ListSchemeOfWork({
               colorScheme={'red'}
             />
           </DestructivePopover>
-          {row.lesson_plan === null && (
+          {row.lesson_plans?.length === 0 && (
             <LinkButton
               href={instRoute('lesson-plans.create', [row.id])}
               variant={'link'}
@@ -120,10 +120,7 @@ export default function ListSchemeOfWork({
           title="Scheme of Works"
           rightElement={
             isAdmin && (
-              <LinkButton
-                href={instRoute('scheme-of-works.create')}
-                title={'New'}
-              />
+              <LinkButton href={instRoute('inst-topics.index')} title={'New'} />
             )
           }
         />
@@ -134,8 +131,16 @@ export default function ListSchemeOfWork({
             data={schemeOfWorks.data}
             keyExtractor={(row) => row.id}
             paginator={schemeOfWorks}
+            validFilters={[
+              'classificationGroup',
+              'classification',
+              'course',
+              'term',
+            ]}
+            onFilterButtonClick={filterToggle.open}
           />
         </SlabBody>
+        <SchemeOfWorkTableFilters {...filterToggle.props} />
       </Slab>
     </DashboardLayout>
   );

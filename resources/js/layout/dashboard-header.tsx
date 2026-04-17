@@ -42,6 +42,7 @@ export default function DashboardHeader() {
       background={useColorModeValue('white', 'gray.700')}
       py={1}
       boxShadow={'0px 2px 6px rgba(0, 0, 0, 0.1)'}
+      className="hidden-on-print"
     >
       <SideBarToggleButton />
       <TermSessionDisplay />

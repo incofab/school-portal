@@ -177,7 +177,11 @@ class LessonNoteController extends Controller
     }
 
     return Inertia::render('institutions/lesson-notes/show-lesson-note', [
-      'lessonNote' => $lessonNote->load('classification', 'course')
+      'lessonNote' => $lessonNote->load(
+        'classification',
+        'course',
+        'lessonPlan.schemeOfWork.topic'
+      )
     ]);
   }
 

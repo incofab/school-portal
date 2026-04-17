@@ -2,14 +2,21 @@
 
 namespace App\Http\Controllers\Institutions\Staff;
 
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
+use App\Models\ClassResultInfo;
 use App\Models\CourseResultInfo;
 use App\Models\Institution;
 use App\Support\UITableFilters\CourseResultInfoUITableFilters;
 
-class ListCourseResultInfoController extends Controller
+class CourseResultInfoController extends Controller
 {
-  public function __invoke(Institution $institution)
+  public function __construct()
+  {
+    $this->allowedRoles([InstitutionUserType::Admin])->only('destroy');
+  }
+
+  public function index(Institution $institution)
   {
     $institutionUser = currentInstitutionUser();
     $query = CourseResultInfoUITableFilters::make(
@@ -27,5 +34,22 @@ class ListCourseResultInfoController extends Controller
           ->latest('course_result_info.id')
       )
     ]);
+  }
+
+  public function destroy(
+    Institution $institution,
+    CourseResultInfo $courseResultInfo
+  ) {
+    ClassResultInfo::ensureResultIsUnlocked(
+      $courseResultInfo->classification_id,
+      $courseResultInfo->academic_session_id,
+      $courseResultInfo->term,
+      (bool) $courseResultInfo->for_mid_term
+    );
+
+    $courseResultInfo->courseResultQuery()->delete();
+    $courseResultInfo->delete();
+
+    return $this->ok();
   }
 }

@@ -239,8 +239,12 @@ Route::get('/record-class-results/{courseTeacher}', [Web\Staff\RecordClassResult
 Route::post('/record-class-results/{courseTeacher}', [Web\Staff\RecordClassResultController::class, 'store'])
   ->name('record-class-results.store');
 
-Route::get('/course-result-info/index', Web\Staff\ListCourseResultInfoController::class)
+Route::get('/course-result-info/index', [Web\Staff\CourseResultInfoController::class, 'index'])
   ->name('course-result-info.index');
+Route::delete(
+  '/course-result-info/{courseResultInfo}/destroy',
+  [Web\Staff\CourseResultInfoController::class, 'destroy']
+)->name('course-result-info.destroy');
 Route::get(
   '/course-result-info/{courseResultInfo}/transfer',
   [Web\Staff\TransferCourseResultInfoController::class, 'create']

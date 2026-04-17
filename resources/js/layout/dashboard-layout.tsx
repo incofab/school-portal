@@ -4,9 +4,12 @@ import useSharedProps from '@/hooks/use-shared-props';
 import ImpersonationBanner from '@/layout/impersonation-banner';
 import SideBarLayout from './sidebar-layout';
 import DashboardHeader from './dashboard-header';
-import { Spacer, useColorModeValue } from '@chakra-ui/react';
+import { BoxProps, Spacer, useColorModeValue } from '@chakra-ui/react';
 
-export default function DashboardLayout({ children }: PropsWithChildren) {
+export default function DashboardLayout({
+  children,
+  mainBarProps,
+}: PropsWithChildren & { mainBarProps?: BoxProps }) {
   const { isImpersonating } = useSharedProps();
   return (
     <Div>
@@ -17,6 +20,7 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
           w={'full'}
           background={useColorModeValue('brand.50', 'gray.900')}
           overflow={'auto'}
+          {...mainBarProps}
         >
           <DashboardHeader />
           <Div

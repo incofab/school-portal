@@ -27,8 +27,9 @@ export default function TopicTableFilters({ isOpen, onClose }: Props) {
             <ClassificationGroupSelect
               selectValue={filters.classificationGroup}
               onChange={(e: any) =>
-                setFilters({ ...filters, classificationGroup: e.value })
+                setFilters({ ...filters, classificationGroup: e?.value })
               }
+              isClearable={true}
             />
           </FilterFormControlBox>
         </>
@@ -37,7 +38,8 @@ export default function TopicTableFilters({ isOpen, onClose }: Props) {
       <FilterFormControlBox title="Subject">
         <CourseSelect
           selectValue={filters.course}
-          onChange={(e: any) => setFilters({ ...filters, course: e.value })}
+          onChange={(e: any) => setFilters({ ...filters, course: e?.value })}
+          isClearable={true}
         />
       </FilterFormControlBox>
     </BaseTableFilter>

@@ -61,14 +61,36 @@ export default function ListCourse({ courses }: Props) {
             title="Practice Question"
           />
           {(isAdmin || isTeacher) && (
-            <Button
-              as={'a'}
-              href={instRoute('course-sessions.index', [row.id])}
-              variant={'link'}
-              colorScheme={'brand'}
-            >
-              Question Bank
-            </Button>
+            <>
+              <Button
+                as={'a'}
+                href={instRoute('lesson-plans.index', {
+                  course: row.id,
+                })}
+                variant={'link'}
+                colorScheme={'brand'}
+              >
+                Lesson Plans
+              </Button>
+              <Button
+                as={'a'}
+                href={instRoute('inst-topics.index', {
+                  course: row.id,
+                })}
+                variant={'link'}
+                colorScheme={'brand'}
+              >
+                List Topics
+              </Button>
+              <Button
+                as={'a'}
+                href={instRoute('course-sessions.index', [row.id])}
+                variant={'link'}
+                colorScheme={'brand'}
+              >
+                Question Bank
+              </Button>
+            </>
           )}
 
           {isAdmin && (

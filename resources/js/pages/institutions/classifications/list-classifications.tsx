@@ -34,6 +34,7 @@ import UploadClassificationModal from '@/components/modals/upload-classification
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 import useSharedProps from '@/hooks/use-shared-props';
 import GenericModal from '@/components/generic-modal';
+import useIsTeacher from '@/hooks/use-is-teacher';
 
 interface Props {
   classifications: PaginationResponse<Classification>;
@@ -41,11 +42,12 @@ interface Props {
 
 export default function ListClassification({ classifications }: Props) {
   const { instRoute } = useInstitutionRoute();
-  const { currentTerm, currentAcademicSession } = useSharedProps();
+  const { currentTerm, currentAcademicSession, currentUser } = useSharedProps();
   const deleteForm = useWebForm({});
   const form = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
+  const isTeacher = useIsTeacher();
   const migrateClassStudentsModalToggle = useModalValueToggle<Classification>();
   const suspendStudentsModalToggle = useModalValueToggle<Classification>();
   const uploadClassModalToggle = useModalToggle();
@@ -103,6 +105,10 @@ export default function ListClassification({ classifications }: Props) {
     updateStudentStatus(classification, InstitutionUserStatus.Active);
   }
 
+  function isFormTeacher(classification: Classification) {
+    return classification.form_teacher_id === currentUser?.id;
+  }
+
   const headers: ServerPaginatedTableHeader<Classification>[] = [
     {
       label: 'Group',
@@ -125,129 +131,162 @@ export default function ListClassification({ classifications }: Props) {
       label: 'Form Teacher',
       render: (row) => <DisplayUserFullname user={row.form_teacher} />,
     },
-    ...(isAdmin
+    ...(isAdmin || isTeacher
       ? [
           {
             label: 'Action',
             render: (row: Classification) => (
               <HStack spacing={3}>
+                {(isAdmin || isFormTeacher(row)) && (
+                  <LinkButton
+                    title="Results"
+                    href={instRoute('class-result-info.index', {
+                      classification: row.id,
+                    })}
+                    variant={'link'}
+                  />
+                )}
                 <LinkButton
-                  title="Results"
-                  href={instRoute('class-result-info.index', {
+                  title="List Lesson Plans"
+                  href={instRoute('lesson-plans.index', {
                     classification: row.id,
                   })}
                   variant={'link'}
                 />
-                <IconButton
-                  aria-label={'Edit Class'}
-                  icon={<Icon as={PencilIcon} />}
-                  as={InertiaLink}
-                  href={instRoute('classifications.edit', [row.id])}
-                  variant={'ghost'}
-                  colorScheme={'brand'}
+                <LinkButton
+                  title="List Topics"
+                  href={instRoute('inst-topics.index', {
+                    classificationGroup: row.classification_group_id,
+                  })}
+                  variant={'link'}
                 />
+                {isAdmin && (
+                  <IconButton
+                    aria-label={'Edit Class'}
+                    icon={<Icon as={PencilIcon} />}
+                    as={InertiaLink}
+                    href={instRoute('classifications.edit', [row.id])}
+                    variant={'ghost'}
+                    colorScheme={'brand'}
+                  />
+                )}
                 {/*                 
                 <BrandButton
                   title="Move Students"
                   onClick={() => migrateClassStudentsModalToggle.open(row)}
                 /> */}
-                <DestructivePopover
-                  label={'Delete this class'}
-                  onConfirm={() => deleteItem(row)}
-                  isLoading={deleteForm.processing}
-                >
-                  <IconButton
-                    aria-label={'Delete Class'}
-                    icon={<Icon as={TrashIcon} />}
-                    variant={'ghost'}
-                    colorScheme={'red'}
-                  />
-                </DestructivePopover>
+                {isAdmin && (
+                  <DestructivePopover
+                    label={'Delete this class'}
+                    onConfirm={() => deleteItem(row)}
+                    isLoading={deleteForm.processing}
+                  >
+                    <IconButton
+                      aria-label={'Delete Class'}
+                      icon={<Icon as={TrashIcon} />}
+                      variant={'ghost'}
+                      colorScheme={'red'}
+                    />
+                  </DestructivePopover>
+                )}
                 {/*                 
                 <LinkButton
                   title="Student Tiles"
                   href={instRoute('classifications.students', [row])}
                   variant={'link'}
                 /> */}
-                <Menu>
-                  <MenuButton
-                    as={IconButton}
-                    aria-label={'open file menu'}
-                    icon={<Icon as={EllipsisVerticalIcon} />}
-                    size={'sm'}
-                    variant={'ghost'}
-                  />
-                  <MenuList>
-                    <MenuItem
-                      as={InertiaLink}
-                      href={instRoute('timetables.classTimetable', [row])}
-                    >
-                      Timetable
-                    </MenuItem>
-                    <MenuItem
-                      as={InertiaLink}
-                      href={instRoute('classifications.students', [row])}
-                    >
-                      Student Tiles
-                    </MenuItem>
-                    <MenuItem
-                      as={InertiaLink}
-                      href={instRoute('users.idcards', [row])}
-                    >
-                      Students ID Cards
-                    </MenuItem>
+                {isAdmin && (
+                  <Menu>
+                    <MenuButton
+                      as={IconButton}
+                      aria-label={'open file menu'}
+                      icon={<Icon as={EllipsisVerticalIcon} />}
+                      size={'sm'}
+                      variant={'ghost'}
+                    />
+                    <MenuList>
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute('timetables.classTimetable', [row])}
+                      >
+                        Timetable
+                      </MenuItem>
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute('classifications.students', [row])}
+                      >
+                        Student Tiles
+                      </MenuItem>
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute('users.idcards', [row])}
+                      >
+                        Students ID Cards
+                      </MenuItem>
 
-                    <MenuItem
-                      onClick={() => migrateClassStudentsModalToggle.open(row)}
-                    >
-                      Move Students
-                    </MenuItem>
-                    <MenuItem onClick={() => generateResultPin(row)}>
-                      Generate Result Pins
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => suspendStudentsModalToggle.open(row)}
-                    >
-                      Suspend Students
-                    </MenuItem>
-                    <MenuItem onClick={() => unsuspendStudents(row)}>
-                      Unsuspend Students
-                    </MenuItem>
-                    <MenuItem
-                      as={InertiaLink}
-                      href={instRoute('user-associations.create', [
-                        'classification',
-                        row.id,
-                      ])}
-                    >
-                      Add to Divisions
-                    </MenuItem>
-                    <MenuItem
-                      as={InertiaLink}
-                      href={instRoute('pins.classification.student-pin-tiles', [
-                        row,
-                      ])}
-                    >
-                      View Result Pins
-                    </MenuItem>
-                    <MenuItem
-                      as={InertiaLink}
-                      href={instRoute('guardians.classifications.create', [
-                        row,
-                      ])}
-                    >
-                      Record Guardians
-                    </MenuItem>
-                    <MenuItem
-                      as={InertiaLink}
-                      href={instRoute('students.index', {
-                        classification: row.id,
-                      })}
-                    >
-                      View Students
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
+                      <MenuItem
+                        onClick={() =>
+                          migrateClassStudentsModalToggle.open(row)
+                        }
+                      >
+                        Move Students
+                      </MenuItem>
+                      <MenuItem onClick={() => generateResultPin(row)}>
+                        Generate Result Pins
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => suspendStudentsModalToggle.open(row)}
+                      >
+                        Suspend Students
+                      </MenuItem>
+                      <MenuItem onClick={() => unsuspendStudents(row)}>
+                        Unsuspend Students
+                      </MenuItem>
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute('user-associations.create', [
+                          'classification',
+                          row.id,
+                        ])}
+                      >
+                        Add to Divisions
+                      </MenuItem>
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute(
+                          'pins.classification.student-pin-tiles',
+                          [row]
+                        )}
+                      >
+                        View Result Pins
+                      </MenuItem>
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute('guardians.classifications.create', [
+                          row,
+                        ])}
+                      >
+                        Record Guardians
+                      </MenuItem>
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute('students.index', {
+                          classification: row.id,
+                        })}
+                      >
+                        View Students
+                      </MenuItem>
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute('lesson-notes.index', {
+                          classification: row.id,
+                        })}
+                      >
+                        Lesson Notes
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                )}
               </HStack>
             ),
           },

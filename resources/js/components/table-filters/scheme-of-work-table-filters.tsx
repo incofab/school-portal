@@ -4,11 +4,10 @@ import BaseTableFilter from './base-table-filter';
 import FilterFormControlBox from './filter-form-control-box';
 import ClassificationSelect from '../selectors/classification-select';
 import CourseSelect from '../selectors/course-select';
-import { NoteStatusType, TermType } from '@/types/types';
+import { TermType } from '@/types/types';
 import EnumSelect from '../dropdown-select/enum-select';
 import useSharedProps from '@/hooks/use-shared-props';
 import ClassificationGroupSelect from '../selectors/classification-group-select';
-import CourseTeacherSelect from '../selectors/course-teacher-select';
 import useIsStaff from '@/hooks/use-is-staff';
 
 interface Props {
@@ -16,7 +15,7 @@ interface Props {
   onClose(): void;
 }
 
-export default function LessonNoteTableFilters({ isOpen, onClose }: Props) {
+export default function SchemeOfWorkTableFilters({ isOpen, onClose }: Props) {
   const { params } = useQueryString();
   const { currentTerm } = useSharedProps();
   const isStaff = useIsStaff();
@@ -24,10 +23,7 @@ export default function LessonNoteTableFilters({ isOpen, onClose }: Props) {
     term: params.term ?? currentTerm,
     classification: params.classification ?? '',
     classificationGroup: params.classificationGroup ?? '',
-    courseTeacher: params.courseTeacher ?? '',
     course: params.course ?? '',
-    // teacher: params.teacher ?? '',
-    status: params.status,
   }));
 
   return (
@@ -38,18 +34,16 @@ export default function LessonNoteTableFilters({ isOpen, onClose }: Props) {
             <ClassificationGroupSelect
               selectValue={filters.classificationGroup}
               onChange={(e: any) =>
-                setFilters({ ...filters, classificationGroup: e?.value })
+                setFilters({ ...filters, classificationGroup: e.value })
               }
-              isClearable={true}
             />
           </FilterFormControlBox>
           <FilterFormControlBox title="Class">
             <ClassificationSelect
               selectValue={filters.classification}
               onChange={(e: any) =>
-                setFilters({ ...filters, classification: e?.value })
+                setFilters({ ...filters, classification: e.value })
               }
-              isClearable={true}
             />
           </FilterFormControlBox>
         </>
@@ -58,40 +52,16 @@ export default function LessonNoteTableFilters({ isOpen, onClose }: Props) {
       <FilterFormControlBox title="Subject">
         <CourseSelect
           selectValue={filters.course}
-          onChange={(e: any) => setFilters({ ...filters, course: e?.value })}
-          isClearable={true}
+          onChange={(e: any) => setFilters({ ...filters, course: e.value })}
         />
       </FilterFormControlBox>
-      {isStaff && (
-        <>
-          <FilterFormControlBox title="Teacher's Subjects">
-            <CourseTeacherSelect
-              value={filters.courseTeacher}
-              onChange={(e: any) =>
-                setFilters({ ...filters, courseTeacher: e?.value })
-              }
-              isClearable={true}
-            />
-          </FilterFormControlBox>
-          <FilterFormControlBox title="Status">
-            <EnumSelect
-              selectValue={filters.status}
-              enumData={NoteStatusType}
-              onChange={(e: any) =>
-                setFilters({ ...filters, status: e?.value })
-              }
-              isClearable={true}
-            />
-          </FilterFormControlBox>
-          <FilterFormControlBox title="Term">
-            <EnumSelect
-              selectValue={filters.term}
-              enumData={TermType}
-              onChange={(e: any) => setFilters({ ...filters, term: e.value })}
-            />
-          </FilterFormControlBox>
-        </>
-      )}
+      <FilterFormControlBox title="Term">
+        <EnumSelect
+          selectValue={filters.term}
+          enumData={TermType}
+          onChange={(e: any) => setFilters({ ...filters, term: e.value })}
+        />
+      </FilterFormControlBox>
     </BaseTableFilter>
   );
 }

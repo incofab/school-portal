@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClassificationGroup, LessonPlan } from '@/types/models';
+import { LessonPlan } from '@/types/models';
 import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
@@ -17,19 +17,18 @@ import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
+import useModalToggle from '@/hooks/use-modal-toggle';
+import LessonPlanTableFilters from '@/components/table-filters/lesson-plan-table-filters';
 
 interface Props {
   lessonPlans: PaginationResponse<LessonPlan>;
-  classificationGroups: ClassificationGroup[];
 }
 
-export default function LessonPlans({
-  lessonPlans,
-  classificationGroups,
-}: Props) {
+export default function LessonPlans({ lessonPlans }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
+  const filterToggle = useModalToggle();
 
   async function deleteItem(obj: LessonPlan) {
     const res = await deleteForm.submit((data, web) =>
@@ -134,8 +133,17 @@ export default function LessonPlans({
             data={lessonPlans.data}
             keyExtractor={(row) => row.id}
             paginator={lessonPlans}
+            validFilters={[
+              'classificationGroup',
+              'classification',
+              'courseTeacher',
+              'course',
+              'term',
+            ]}
+            onFilterButtonClick={filterToggle.open}
           />
         </SlabBody>
+        <LessonPlanTableFilters {...filterToggle.props} />
       </Slab>
     </DashboardLayout>
   );

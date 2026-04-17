@@ -53,6 +53,18 @@ function ListLecturerCourses({ courseTeachers }: Props) {
     Inertia.reload({ only: ['courseTeachers'] });
   }
 
+  function topicFilterParams(row: CourseTeacher) {
+    const params: { course: number; classificationGroup?: number } = {
+      course: row.course_id,
+    };
+
+    if (row.classification?.classification_group_id) {
+      params.classificationGroup = row.classification.classification_group_id;
+    }
+
+    return params;
+  }
+
   const headers: ServerPaginatedTableHeader<CourseTeacher>[] = [
     {
       label: 'Teacher',
@@ -79,6 +91,21 @@ function ListLecturerCourses({ courseTeachers }: Props) {
               <HStack>
                 {(isAdmin || currentUser.id === row.user_id) && (
                   <>
+                    <LinkButton
+                      href={instRoute('lesson-plans.index', {
+                        courseTeacher: row.id,
+                      })}
+                      variant={'link'}
+                      title="List Lesson Plans"
+                    />
+                    <LinkButton
+                      href={instRoute(
+                        'inst-topics.index',
+                        topicFilterParams(row)
+                      )}
+                      variant={'link'}
+                      title="List Topics"
+                    />
                     <Menu>
                       <MenuButton
                         as={Button}

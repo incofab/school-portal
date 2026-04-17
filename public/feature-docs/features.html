@@ -54,7 +54,7 @@ code { color: #d1fae5; }
 <body>
 <header>
   <h1>EduManager Feature Inventory</h1>
-  <p>Last reviewed 2026-04-16. Technical map for AI CLI agents and maintainers.</p>
+  <p>Last reviewed 2026-04-17. Technical map for AI CLI agents and maintainers.</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -166,7 +166,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>08</span> Classifications, Groups, Divisions, and Class Mapping</h3>
-    <p>The class structure uses classifications for classes/arms, classification groups for broader promotion/result grouping, class divisions for cross-class groupings, and mappings/classifiable links. It supports search, bulk class creation, download/upload, student status updates per classification, class migration, promotion, and division membership management.</p>
+    <p>The class structure uses classifications for classes/arms, classification groups for broader promotion/result grouping, class divisions for cross-class groupings, and mappings/classifiable links. It supports search, bulk class creation, download/upload, student status updates per classification, class migration, promotion, division membership management, and per-class shortcuts to filtered lesson plans and topics.</p>
     <ul>
       <li>Controllers: <code>ClassificationController</code>, <code>ClassificationGroupController</code>, <code>ClassDivisionController</code>, <code>DownloadClassStudentsController</code>, promotion and movement controllers.</li>
       <li>Frontend: classification, classification group, and class division pages under <code>resources/js/pages/institutions</code>.</li>
@@ -177,7 +177,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>09</span> Courses, Course Teachers, CCD Content, and Question Bank</h3>
-    <p>Course workflows include CRUD, search, multi-create, course-teacher assignment, course sessions, topic-scoped content upload/export, passages, instructions, objective questions, theory questions, bulk objective question upload/download, TinyMCE image upload, practice question generation, and inserting generated objective questions into the question bank.</p>
+    <p>Course workflows include CRUD, search, multi-create, course-teacher assignment, course sessions, topic-scoped content upload/export, passages, instructions, objective questions, theory questions, bulk objective question upload/download, TinyMCE image upload, practice question generation, inserting generated objective questions into the question bank, and row shortcuts to filtered lesson plans and topics from subject and subject-teacher lists.</p>
     <ul>
       <li>Routes: <code>routes/institution.php</code> course routes and <code>routes/ccd.php</code> content routes.</li>
       <li>Controllers/actions: <code>CoursesController</code>, <code>CCD/*</code>, <code>UploadCourseContent</code>, <code>ExportCourse</code>, <code>Questions/ExtractDocumentContent</code>, <code>Questions/ConvertDocumentToQuestions</code>, <code>GoogleAiHelper</code>.</li>
@@ -188,7 +188,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>10</span> Curriculum, Schemes of Work, Lesson Plans, and Lesson Notes</h3>
-    <p>Curriculum features include institution topics and sub-topics, schemes of work attached to topics, lesson plans attached to schemes/course teachers, lesson notes, AI lesson-note generation, publication toggles, and detailed show/list/edit pages.</p>
+    <p>Curriculum features include institution topics and sub-topics, searchable/filterable scheme-of-work lists, searchable/filterable lesson-plan lists, lesson notes with class/subject/teacher/status/term filters, AI lesson-note generation, publication toggles, and detailed show/list/edit pages. The classes, subjects, and subject-teacher lists link each row directly to filtered lesson plans and topics, and the classes list also links each class to filtered lesson notes.</p>
     <ul>
       <li>Controllers: <code>Curriculums/TopicController</code>, <code>SchemeOfWorkController</code>, <code>LessonPlanController</code>, <code>LessonNoteController</code>.</li>
       <li>Frontend: <code>institutions/topics/*</code>, <code>scheme-of-works/*</code>, <code>lesson-plans/*</code>, <code>lesson-notes/*</code>.</li>
@@ -228,9 +228,9 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>14</span> Result Recording, Processing, Locking, Publishing, and Reports</h3>
-    <p>Results are a major domain. The app records individual course results, bulk uploads course result sheets, records whole-class sheets, downloads result recording sheets, calculates class result info, recalculates aggregate results, generates term results, generates session results, computes grades and positions, supports subject reports, cumulative result sheets, term details, teacher/principal comments, extra result data, class result sheet rendering, transcripts, signed result sheets, public result activation, result publications, and result delivery to guardians.</p>
+    <p>Results are a major domain. The app records individual course results, bulk uploads course result sheets, records whole-class sheets, downloads result recording sheets, lists and deletes course result info summaries, calculates class result info, recalculates aggregate results, generates term results, generates session results, computes grades and positions, supports subject reports, cumulative result sheets, term details, teacher/principal comments, extra result data, class result sheet rendering, transcripts, signed result sheets, public result activation, result publications, and result delivery to guardians.</p>
     <p>Course result upserts are protected by lookup constraints on student/course/class/session/term/mid-term keys, and class/course summary lookups use indexed keys to reduce lock contention during result recording and exam result transfer.</p>
-    <p>Class result info records now have an <code>is_locked</code> state. Calculation and recalculation lock the result info; authorized users or form teachers can unlock/relock; recording, updating, deleting, and bulk processing course/term results checks the lock before mutating result data.</p>
+    <p>Class result info records now have an <code>is_locked</code> state. Calculation and recalculation lock the result info; authorized users or form teachers can unlock/relock; recording, updating, deleting course results, deleting course result info summaries, and bulk processing course/term results checks the lock before mutating result data.</p>
     <ul>
       <li>Routes/controllers: course-results and class-result-info routes in <code>routes/institution.php</code>, <code>CourseResultsController</code>, <code>RecordClassResultController</code>, <code>ClassResultInfoController</code>, <code>ListCourseResultInfoController</code>, <code>TransferCourseResultInfoController</code>, <code>ListTermResultController</code>, <code>DeleteTermResultController</code>, <code>ResultPublicationsController</code>, <code>SubjectReportController</code>, student result controllers.</li>
       <li>Actions: <code>RecordCourseResult</code>, <code>RecordClassSheet</code>, <code>ProcessTermResult</code>, <code>ProcessSessionResult</code>, <code>ProcessClassGroupInfo</code>, <code>ClassResultInfoAction</code>, <code>GetGrade</code>, <code>GenerateSubjectReport</code>, <code>GenerateCourseSessionResult</code>, <code>TermResultDeleteHandler</code>, <code>DownloadResultRecordingSheet</code>, <code>DownloadCourseResult</code>, <code>SendTermResultToGuardians</code>.</li>

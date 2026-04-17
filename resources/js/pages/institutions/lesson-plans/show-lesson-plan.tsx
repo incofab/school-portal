@@ -38,7 +38,7 @@ export default function ShowLessonPlan({ lessonPlan }: Props) {
         />
 
         <SlabBody>
-          <LabelText label="Subject" text={topic?.course?.code} />
+          {/* <LabelText label="Subject" text={topic?.course?.code} />
           <LabelText label="Theme" text={topic?.title} />
           <LabelText
             label="Topic"
@@ -50,9 +50,31 @@ export default function ShowLessonPlan({ lessonPlan }: Props) {
           <LabelText
             label="Number of Pupils"
             text={topic?.classification?.students_count}
-          />
-
-          <Heading size={'sm'} fontWeight={'bold'} paddingBottom="10px">
+          /> */}
+          {[
+            { label: 'Subject', text: topic?.course?.code },
+            { label: 'Theme', text: topic?.title },
+            {
+              label: 'Topic',
+              text: isSubTopic ? topic?.parent_topic?.title : topic?.title,
+            },
+            { label: 'Sub Topic', text: isSubTopic ? topic?.title : '' },
+            { label: 'Date', text: formatAsDate(lessonPlan.created_at) },
+            { label: 'Class', text: topic?.classification?.title },
+            {
+              label: 'No in Class',
+              text: topic?.classification?.students_count,
+            },
+          ].map((item) => (
+            <LabelText
+              key={item.label}
+              label={item.label}
+              text={item.text}
+              my={2}
+              labelProps={{ fontWeight: 'bold', width: '120px' }}
+            />
+          ))}
+          <Heading size={'sm'} fontWeight={'bold'} paddingBottom="10px" mt={5}>
             LEARNING OBJECTIVE ::
           </Heading>
           <Div
@@ -60,7 +82,7 @@ export default function ShowLessonPlan({ lessonPlan }: Props) {
             dangerouslySetInnerHTML={{ __html: objective }}
           />
 
-          <Heading size={'sm'} fontWeight={'bold'} paddingBottom="10px">
+          <Heading size={'sm'} fontWeight={'bold'} paddingBottom="10px" mt={3}>
             ACTIVITIES ::
           </Heading>
           <Div
