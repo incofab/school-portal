@@ -1,15 +1,17 @@
 <?php
+
 namespace App\Actions\CourseResult;
 
 use App\Actions\ResultUtil;
-use App\Models\ClassResultInfo;
-use App\Models\CourseTeacher;
-use App\Models\CourseResult;
 use App\Models\Assessment;
+use App\Models\ClassResultInfo;
+use App\Models\CourseResult;
+use App\Models\CourseTeacher;
 
 class RecordCourseResult
 {
   private $bindingData;
+
   /**
    * @param array{
    *  institution_id: int,
@@ -67,9 +69,7 @@ class RecordCourseResult
       ->where($this->bindingData)
       ->first();
 
-    [$result, $assessmentValues] = $this->getResultScore(
-      (array) ($courseResult?->assessment_values ?? [])
-    );
+    [$result, $assessmentValues] = $this->getResultScore($courseResult);
     $forMidTerm = $this->data['for_mid_term'] ?? false;
     CourseResult::query()->updateOrCreate($this->bindingData, [
       ...collect($this->data)
@@ -86,10 +86,11 @@ class RecordCourseResult
     if ($this->processCourseResultForClass) {
       $this->evaluateResult();
     }
+
     return $this;
   }
 
-  function evaluateResult()
+  public function evaluateResult()
   {
     EvaluateCourseResultForClass::run(
       $this->courseTeacher->classification,
@@ -100,8 +101,10 @@ class RecordCourseResult
     );
   }
 
-  private function getResultScore(array $existingAssessmentValues)
+  private function getResultScore(?CourseResult $courseResult)
   {
+    $existingAssessmentValues =
+      (array) ($courseResult?->assessment_values ?? []);
     $term = $this->data['term'];
     $forMidTerm = $this->data['for_mid_term'] ?? false;
 
@@ -111,7 +114,7 @@ class RecordCourseResult
       $this->courseTeacher->classification_id
     );
 
-    $result = $this->data['exam'] ?? 0;
+    $result = $this->data['exam'] ?? ($courseResult?->exam ?? 0);
 
     $allAssessmentValues = [
       ...$existingAssessmentValues,
@@ -155,6 +158,7 @@ class RecordCourseResult
     }
     $result = $dependentCourseResult?->result ?? 0;
     $score = round(($result / 100) * $assessment->max, 2);
+
     return $score;
   }
 }

@@ -19,7 +19,13 @@ class CourseResultInfo extends Model
     'institution_id' => 'integer',
     'classification_id' => 'integer',
     'academic_session_id' => 'integer',
-    'for_mid_term' => 'boolean'
+    'for_mid_term' => 'boolean',
+    'num_of_students' => 'integer',
+    'total_score' => 'float',
+    'average' => 'float',
+    'min_score' => 'float',
+    'max_score' => 'float',
+    'max_obtainable_score' => 'float'
   ];
 
   function courseResultQuery()

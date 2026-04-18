@@ -54,7 +54,7 @@ code { color: #d1fae5; }
 <body>
 <header>
   <h1>EduManager Feature Inventory</h1>
-  <p>Last reviewed 2026-04-17. Technical map for AI CLI agents and maintainers.</p>
+  <p>Last reviewed 2026-04-18. Technical map for AI CLI agents and maintainers.</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -71,7 +71,7 @@ code { color: #d1fae5; }
     <div class="card"><h3>Public and Guest</h3><p class="muted">Home, institution registration, partner registration, login, password reset, student login, admission application, admission form purchase, admission letters, public result activation, public exam result lookup, and external exam entry points. Start in <code>routes/web.php</code>.</p></div>
     <div class="card"><h3>Institution Staff</h3><p class="muted">Institution dashboard, setup checklist, profile/settings, users, students, guardians, classes, courses, assessments, results, exams, attendance, payments, payroll, messaging, notifications, curriculum, activities, and timetable operations. Start in <code>routes/institution.php</code>.</p></div>
     <div class="card"><h3>Students and Guardians</h3><p class="muted">Student login, guardian dependents, impersonation, result sheets, transcripts, student fee payments and receipts, exam pages, and admission/exam access. Related controllers are under <code>app/Http/Controllers/Institutions/Students</code> and <code>.../Guardians</code>.</p></div>
-    <div class="card"><h3>Managers and Admins</h3><p class="muted">Manager dashboard, institution groups, institutions, registration requests, partner requests, managers, academic sessions, platform funding, billings, commissions, bank accounts, withdrawals, and notifications. Start in <code>routes/manager.php</code>.</p></div>
+    <div class="card"><h3>Managers and Admins</h3><p class="muted">Manager dashboard, institution groups, institutions, registration requests, partner requests, managers, admin user listing and impersonation, academic sessions, platform funding, billings, commissions, bank accounts, withdrawals, and notifications. Start in <code>routes/manager.php</code>.</p></div>
   </div>
 </section>
 
@@ -82,7 +82,7 @@ code { color: #d1fae5; }
     <h3><span>01</span> Authentication, Account Access, and Impersonation</h3>
     <div class="cols">
       <div>
-        <p>Supports staff login, student login, password reset, authenticated dashboard routing, user password changes, BVN/NIN updates, logout, manager-only impersonation of users/institutions, and stopping impersonation. Public result activation and exam-result login are also exposed to guest users.</p>
+        <p>Supports staff login, student login, password reset, authenticated dashboard routing, user password changes, BVN/NIN updates, logout, manager-only impersonation of users/institutions, admin user-list impersonation, and stopping impersonation. Public result activation and exam-result login are also exposed to guest users.</p>
         <ul>
           <li>Routes: <code>routes/web.php</code>, <code>routes/api.php</code>.</li>
           <li>Controllers: <code>AuthController</code>, <code>StudentAuthController</code>, <code>PublicExamResultController</code>, <code>TermResultActivationController</code>, <code>Users/*</code>, <code>Impersonate/*</code>.</li>
@@ -113,10 +113,10 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>03</span> Manager Administration, Institution Groups, and Academic Sessions</h3>
-    <p>Managers administer platform-level entities: institutions, institution groups, managers, billing, commissions, fundings, bank accounts, withdrawals, notifications, and academic sessions. Institution groups include branding, banner/background, domain, wallet balance, loan limit, status, brand color, and invoice generation by academic session and term.</p>
+    <p>Managers administer platform-level entities: institutions, institution groups, managers, user lookup, billing, commissions, fundings, bank accounts, withdrawals, notifications, and academic sessions. Admin managers can list platform users with search and role/institution/status filters, then impersonate any user from the list. Institution groups include branding, banner/background, domain, wallet balance, loan limit, status, brand color, and invoice generation by academic session and term.</p>
     <ul>
-      <li>Routes: <code>routes/manager.php</code>, especially <code>institution-groups</code>, <code>institutions</code>, <code>academic-sessions</code>, <code>funding</code>, <code>billings</code>, <code>commissions</code>, <code>withdrawals</code>.</li>
-      <li>Controllers: <code>Managers/InstitutionGroups/InstitutionGroupsController</code>, <code>Managers/Institutions/*</code>, <code>Managers/AcademicSessions/AcademicSessionController</code>, <code>Managers/ManagerController</code>.</li>
+      <li>Routes: <code>routes/manager.php</code>, especially <code>users</code>, <code>institution-groups</code>, <code>institutions</code>, <code>academic-sessions</code>, <code>funding</code>, <code>billings</code>, <code>commissions</code>, <code>withdrawals</code>.</li>
+      <li>Controllers: <code>Managers/Users/ListUsersController</code>, <code>Managers/InstitutionGroups/InstitutionGroupsController</code>, <code>Managers/Institutions/*</code>, <code>Managers/AcademicSessions/AcademicSessionController</code>, <code>Managers/ManagerController</code>.</li>
       <li>Frontend: <code>resources/js/pages/managers/*</code>, including <code>academic-sessions/list-academic-sessions.tsx</code> and <code>academic-sessions/create-edit-academic-session.tsx</code>.</li>
       <li>Data: <code>InstitutionGroup</code>, <code>Institution</code>, <code>AcademicSession</code>, <code>Funding</code>, <code>Commission</code>, <code>Withdrawal</code>, <code>BankAccount</code>.</li>
       <li>Tests: manager funding, institution registration, registration request, and academic session tests.</li>
@@ -229,7 +229,7 @@ code { color: #d1fae5; }
   <div class="feature">
     <h3><span>14</span> Result Recording, Processing, Locking, Publishing, and Reports</h3>
     <p>Results are a major domain. The app records individual course results, bulk uploads course result sheets, records whole-class sheets, downloads result recording sheets, lists and deletes course result info summaries, calculates class result info, recalculates aggregate results, generates term results, generates session results, computes grades and positions, supports subject reports, cumulative result sheets, term details, teacher/principal comments, extra result data, class result sheet rendering, transcripts, signed result sheets, public result activation, result publications, and result delivery to guardians.</p>
-    <p>Course result upserts are protected by lookup constraints on student/course/class/session/term/mid-term keys, and class/course summary lookups use indexed keys to reduce lock contention during result recording and exam result transfer.</p>
+    <p>Course result upserts are protected by lookup constraints on student/course/class/session/term/mid-term keys, preserve existing exam or assessment values during partial updates, honor assessment term/mid-term/class filters and dependency mappings, and class/course summary lookups use indexed keys to reduce lock contention during result recording and exam result transfer.</p>
     <p>Class result info records now have an <code>is_locked</code> state. Calculation and recalculation lock the result info; authorized users or form teachers can unlock/relock; recording, updating, deleting course results, deleting course result info summaries, and bulk processing course/term results checks the lock before mutating result data.</p>
     <ul>
       <li>Routes/controllers: course-results and class-result-info routes in <code>routes/institution.php</code>, <code>CourseResultsController</code>, <code>RecordClassResultController</code>, <code>ClassResultInfoController</code>, <code>ListCourseResultInfoController</code>, <code>TransferCourseResultInfoController</code>, <code>ListTermResultController</code>, <code>DeleteTermResultController</code>, <code>ResultPublicationsController</code>, <code>SubjectReportController</code>, student result controllers.</li>

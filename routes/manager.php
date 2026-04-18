@@ -79,6 +79,8 @@ Route::group(['middleware' => 'admin'], function () {
     */
     Route::get('/index', [Web\ManagerController::class, 'index'])
         ->name('index');
+    Route::get('/users', Web\Users\ListUsersController::class)
+        ->name('users.index');
     Route::get('/create', [Web\ManagerController::class, 'create'])
         ->name('create');
     Route::post('/store', [Web\ManagerController::class, 'store'])

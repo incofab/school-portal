@@ -2,16 +2,17 @@
 
 namespace App\Support\UITableFilters;
 
+use App\Enums\InstitutionUserStatus;
 use App\Enums\InstitutionUserType;
 use Illuminate\Validation\Rules\Enum;
 
 class UserUITableFilters extends BaseUITableFilter
 {
   protected array $sortableColumns = [
-    'firstName' => 'first_name',
-    'lastName' => 'last_name',
-    'email' => 'email',
-    'createdAt' => 'created_at'
+    'firstName' => 'users.first_name',
+    'lastName' => 'users.last_name',
+    'email' => 'users.email',
+    'createdAt' => 'users.created_at'
   ];
 
   protected function extraValidationRules(): array
@@ -21,7 +22,8 @@ class UserUITableFilters extends BaseUITableFilter
       'last_name' => ['sometimes', 'string'],
       'name' => ['sometimes', 'string'],
       'email' => ['sometimes', 'string'],
-      'role' => ['sometimes', new Enum(InstitutionUserType::class)]
+      'role' => ['sometimes', new Enum(InstitutionUserType::class)],
+      'status' => ['sometimes', new Enum(InstitutionUserStatus::class)]
     ];
   }
 
@@ -47,13 +49,16 @@ class UserUITableFilters extends BaseUITableFilter
         'institution_users.user_id'
       )
     );
+
     return $this;
   }
 
   protected function directQuery()
   {
     $this->when(
-      $this->requestGet('institution_id') || $this->requestGet('role'),
+      $this->requestGet('institution_id') ||
+        $this->requestGet('role') ||
+        $this->requestGet('status'),
       fn(self $that) => $that->joinInstitutionUser()
     )
       ->baseQuery->when(
@@ -81,6 +86,10 @@ class UserUITableFilters extends BaseUITableFilter
       ->when(
         $this->requestGet('role'),
         fn($q, $value) => $q->where('institution_users.role', $value)
+      )
+      ->when(
+        $this->requestGet('status'),
+        fn($q, $value) => $q->where('institution_users.status', $value)
       );
 
     return $this;
