@@ -1,24 +1,18 @@
 import { Div } from '@/components/semantic';
 import { generateRandomString, preventNativeSubmit } from '@/util/util';
 import route from '@/util/route';
-import { FormControl, Icon, Input, Text, useToast, VStack } from '@chakra-ui/react';
+import { FormControl, Icon, Input, Text, VStack } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import useSharedProps from '@/hooks/use-shared-props';
 import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Gender } from '@/types/types';
 import CenteredLayout from '@/components/centered-layout';
 import useWebForm from '@/hooks/use-web-form';
-import { Inertia } from '@inertiajs/inertia';
 import { FormButton, LinkButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import { ArrowDownIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
-interface Props {}
-
-export default function RegisterPartner({}: Props) {
-  const { message } = useSharedProps();
-  const toast = useToast();
+export default function RegisterPartner() {
   const { handleResponseToast } = useMyToast();
 
   const [completed, setCompleted] = useState<boolean>(false);
@@ -51,13 +45,34 @@ export default function RegisterPartner({}: Props) {
     // Inertia.visit(route('managers.index'));
   };
 
-  return (
-    completed
-    ? <ShowMessage />
-    :
+  return completed ? (
+    <ShowMessage />
+  ) : (
     <CenteredLayout title="Partner Registration" boxProps={{ maxW: 'lg' }}>
       <Div as={'form'} onSubmit={preventNativeSubmit(submit)} p={6}>
         <VStack spacing={4} align={'stretch'}>
+          <Div>
+            <Text fontSize={'lg'} fontWeight={'semibold'} color={'brand.500'}>
+              Earn with EduManager by connecting schools to better management.
+            </Text>
+            <Text mt={3}>
+              Do you have access to schools, school owners, administrators, or
+              education decision makers? Can you visit schools around you, reach
+              them online, and show them how EduManager can simplify their daily
+              school operations?
+            </Text>
+            <Text mt={3}>
+              EduManager partners introduce the platform to schools and support
+              them through the first conversation. When your referrals become
+              paying customers, you earn attractive commissions for the value
+              you bring.
+            </Text>
+            <Text mt={3}>
+              If you can open doors, start conversations, and follow up with
+              school owners, we would like to work with you. Fill the form below
+              and our team will contact you with the next steps.
+            </Text>
+          </Div>
           <FormControlBox form={form} title="First Name" formKey="first_name">
             <Input
               type="text"
@@ -162,24 +177,27 @@ export default function RegisterPartner({}: Props) {
 }
 
 function ShowMessage() {
-  const message = 'We have received your registration application. Our team will contact you shortly to proceed with the onboarding process.';
-  return (<CenteredLayout boxProps={{ maxW: '800px' }}>
-  <Text fontSize={'2xl'} color={'green.600'}>
-    Registration Successful
-  </Text>
-  <Icon as={ArrowDownIcon} w={10} h={10} mt={6} />
-  <Text
-    my={5}
-    fontSize={'2xl'}
-    dangerouslySetInnerHTML={{ __html: message }}
-  />
-  <LinkButton
-    variant={'outline'}
-    colorScheme="brand"
-    leftIcon={<Icon as={XMarkIcon} />}
-    mt={4}
-    href={route('home')}
-    title={'Home'}
-  />
-</CenteredLayout>);
+  const message =
+    'We have received your registration application. Our team will contact you shortly to proceed with the onboarding process.';
+  return (
+    <CenteredLayout boxProps={{ maxW: '800px' }}>
+      <Text fontSize={'2xl'} color={'green.600'}>
+        Registration Successful
+      </Text>
+      <Icon as={ArrowDownIcon} w={10} h={10} mt={6} />
+      <Text
+        my={5}
+        fontSize={'2xl'}
+        dangerouslySetInnerHTML={{ __html: message }}
+      />
+      <LinkButton
+        variant={'outline'}
+        colorScheme="brand"
+        leftIcon={<Icon as={XMarkIcon} />}
+        mt={4}
+        href={route('home')}
+        title={'Home'}
+      />
+    </CenteredLayout>
+  );
 }

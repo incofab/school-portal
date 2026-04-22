@@ -51,8 +51,9 @@ abstract class PaymentMerchant
    * @param string $merchant
    * @return static
    * */
-  public static function make(string $merchant)
+  public static function make(?string $merchant = null)
   {
+    $merchant = $merchant ?? PaymentMerchantType::Monnify->value;
     switch ($merchant) {
       case PaymentMerchantType::Paystack->value:
         return new PaymentPaystack($merchant);

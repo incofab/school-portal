@@ -64,12 +64,21 @@ class CourseResultInfoUITableFilters extends BaseUITableFilter
 
   private function joinCourseTeacher(): static
   {
-    $this->callOnce(
+    // $this->callOnce(
+    //   'joinCourseTeacher',
+    //   fn() => $this->baseQuery->join(
+    //     'course_teachers',
+    //     'course_teachers.classification_id',
+    //     'course_result_info.classification_id'
+    //   )
+    // );
+
+    $this->joinClassification()->callOnce(
       'joinCourseTeacher',
       fn() => $this->baseQuery->join(
         'course_teachers',
         'course_teachers.classification_id',
-        'course_result_info.classification_id'
+        'classifications.id'
       )
     );
     return $this;

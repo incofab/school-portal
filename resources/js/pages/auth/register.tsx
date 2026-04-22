@@ -74,35 +74,48 @@ export default function Register({
   const imageUrl = institutionGroup?.banner;
   return (
     <CenteredLayout
-      title="Join Us"
+      title="Register Your Institution"
       boxProps={{ maxW: 'lg' }}
       bgImage={imageUrl}
     >
       <Div w={'full'} as={'form'} onSubmit={preventNativeSubmit(onSubmit)}>
-        <VStack spacing={4} align={'stretch'} px={6} pb={6}>
-          {imageUrl ? (
+        <Slab>
+          <SlabBody>
+            <Text fontSize={'lg'} fontWeight={'semibold'} color={'brand.500'}>
+              Bring your school into one simple digital workspace.
+            </Text>
+            <Text mt={3}>
+              EduManager helps schools manage daily academic and administrative
+              work from one platform, including students, staff, classes,
+              attendance, assessments, results, fees, admissions, messaging,
+              payroll, expenses, and reports.
+            </Text>
+            <Text mt={3}>
+              Registering your institution gives your school a clear path to
+              reduce paperwork, improve record keeping, make payments and result
+              processing easier, and give staff, students, and parents faster
+              access to the information they need.
+            </Text>
+            <Text mt={3}>
+              This form should only be completed by an owner, director,
+              administrator, or authorised staff member of the institution being
+              registered. Fill in your details and your school information
+              below, and our team will contact you to continue the onboarding
+              process.
+            </Text>
+          </SlabBody>
+        </Slab>
+        <VStack spacing={4} align={'stretch'} px={4} pb={6}>
+          {imageUrl && (
             <Image
-              src={imageUrl} // Set the path to your image
-              alt="Description of the image"
+              src={imageUrl}
+              alt="Institution registration banner"
               style={{
-                width: '100%', // Makes the image span the full width of the Slab
-                height: 'auto', // Maintains the aspect ratio of the image
-                marginBottom: '20px', // Optional: Adds space below the image
+                width: '100%',
+                height: 'auto',
+                marginBottom: '20px',
               }}
             />
-          ) : (
-            <Slab>
-              <SlabBody>
-                <Text as={'span'} color={'brand.500'} fontWeight={'semibold'}>
-                  Thank you
-                </Text>{' '}
-                for your interest in Edumanager, This is the best School
-                Management Solution for your School at a very cheap rate.
-                <br />
-                Kindly fill the form with your personal and school information
-                and one of our staff will contact you.
-              </SlabBody>
-            </Slab>
           )}
           <br />
           <FormControlBox form={form} title="First Name" formKey="first_name">

@@ -21,7 +21,7 @@ class CourseResultInfoController extends Controller
     $institutionUser = currentInstitutionUser();
     $query = CourseResultInfoUITableFilters::make(
       request()->all(),
-      CourseResultInfo::query()->select('course_result_info.*')
+      CourseResultInfo::query()->select('course_result_info.*')->distinct()
     )
       ->forTeacher($institutionUser)
       ->filterQuery()
