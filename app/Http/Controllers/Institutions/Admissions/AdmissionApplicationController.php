@@ -7,22 +7,23 @@ use App\Actions\GenericExport;
 use App\Actions\HandleAdmission;
 use App\DTO\PaymentReferenceDto;
 use App\Enums\AdmissionStatusType;
-use Inertia\Inertia;
-use App\Models\Student;
-use App\Models\Institution;
 use App\Enums\InstitutionUserType;
 use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\Payments\PaymentPurpose;
 use App\Http\Controllers\Controller;
-use App\Models\AdmissionApplication;
 use App\Http\Requests\AdmissionApplicationRequest;
 use App\Http\Requests\UploadAdmissionApplicationRequest;
+use App\Models\AdmissionApplication;
 use App\Models\AdmissionForm;
 use App\Models\Classification;
+use App\Models\Institution;
+use App\Models\ManualPayment;
+use App\Models\Student;
 use App\Rules\ValidateExistsRule;
 use App\Support\Payments\Merchants\PaymentMerchant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
+use Inertia\Inertia;
 
 class AdmissionApplicationController extends Controller
 {
@@ -37,12 +38,15 @@ class AdmissionApplicationController extends Controller
     ]);
   }
 
-  function index(Institution $institution, ?AdmissionForm $admissionForm = null)
-  {
+  public function index(
+    Institution $institution,
+    ?AdmissionForm $admissionForm = null
+  ) {
     $query = (
       $admissionForm?->admissionApplications()->getQuery() ??
       AdmissionApplication::query()
     )->with('admissionForm');
+
     return Inertia::render(
       'institutions/admissions/list-admission-applications',
       [
@@ -88,7 +92,7 @@ class AdmissionApplicationController extends Controller
     return (new GenericExport([], $filename, $headers))->download();
   }
 
-  function uploadAdmissionApplication(
+  public function uploadAdmissionApplication(
     Institution $institution,
     AdmissionForm $admissionForm,
     UploadAdmissionApplicationRequest $request
@@ -102,6 +106,7 @@ class AdmissionApplicationController extends Controller
         'reference' => "$reference-$key"
       ]);
     }
+
     return $this->ok();
   }
 
@@ -124,12 +129,12 @@ class AdmissionApplicationController extends Controller
       ]
     ]);
 
-    //== If Admitted, fill the necessary DB Tables with the needed information
+    // == If Admitted, fill the necessary DB Tables with the needed information
     if ($data['admission_status'] === AdmissionStatusType::Admitted->value) {
       HandleAdmission::make()->admitStudent($admissionApplication, $data);
     }
 
-    //== Update the 'admission_status' on the 'admission_applications' DB Table
+    // == Update the 'admission_status' on the 'admission_applications' DB Table
     $admissionApplication
       ->fill(['admission_status' => $data['admission_status']])
       ->save();
@@ -171,7 +176,12 @@ class AdmissionApplicationController extends Controller
     if (!$admissionApplication->hasBeenPaid()) {
       return Inertia::render(
         'institutions/admissions/buy-admission-application',
-        ['admissionApplication' => $admissionApplication]
+        [
+          'admissionApplication' => $admissionApplication,
+          'bankAccounts' => $institution->institutionGroup
+            ->bankAccounts()
+            ->get()
+        ]
       );
     }
 
@@ -189,14 +199,15 @@ class AdmissionApplicationController extends Controller
     AdmissionApplication $admissionApplication
   ) {
     $admissionApplication->delete();
+
     return $this->ok();
   }
 
-  function buyAdmissionForm(
+  public function buyAdmissionForm(
     Request $request,
     Institution $institution,
     AdmissionForm $admissionForm,
-    AdmissionApplication|null $admissionApplication
+    ?AdmissionApplication $admissionApplication
   ) {
     $request->validate([
       'reference' => [
@@ -207,6 +218,32 @@ class AdmissionApplicationController extends Controller
       'merchant' => ['nullable', new Enum(PaymentMerchantType::class)]
     ]);
     $merchant = $request->merchant ?? PaymentMerchantType::Monnify->value;
+    if ($merchant === PaymentMerchantType::Manual->value) {
+      $reference = ManualPayment::generateReference();
+      $paymentReferenceDto = new PaymentReferenceDto(
+        institution_id: $institution->id,
+        merchant: $merchant,
+        payable: $admissionForm,
+        paymentable: $admissionApplication,
+        amount: $admissionForm->price,
+        purpose: PaymentPurpose::AdmissionFormPurchase,
+        user_id: null,
+        reference: $reference,
+        redirect_url: route('institutions.manual-payments.show', [
+          $institution,
+          $reference
+        ]),
+        meta: [
+          'admission_application_id' => $admissionApplication->id
+        ]
+      );
+
+      [$res] = PaymentMerchant::make($merchant)->init($paymentReferenceDto);
+      abort_unless($res->isSuccessful(), 403, $res->getMessage());
+
+      return $this->ok($res->toArray());
+    }
+
     $paymentReferenceDto = new PaymentReferenceDto(
       institution_id: $admissionForm->institution_id,
       merchant: $merchant,
@@ -227,6 +264,7 @@ class AdmissionApplicationController extends Controller
       $paymentReferenceDto
     );
     abort_unless($res->isSuccessful(), 403, $res->getMessage());
+
     return $this->ok($res->toArray());
   }
 }

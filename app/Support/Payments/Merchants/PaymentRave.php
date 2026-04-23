@@ -1,38 +1,40 @@
 <?php
+
 namespace App\Support\Payments\Merchants;
 
 // use App\Core\RaveHelper;
+use App\Contracts\Payments\PaymentRecord;
 use App\DTO\PaymentReferenceDto;
-use App\Models\PaymentReference;
 use App\Support\Res;
 
 class PaymentRave extends PaymentMerchant
 {
-  function init(
-    PaymentReferenceDto $paymentReferenceDto,
-    bool $generateReferenceOnly = false
-  ) {
-    $paymentReference = $this->createPaymentReference($paymentReferenceDto);
-    $ret = successRes('', [
-      'reference' => $paymentReference->reference
-    ]);
+    public function init(
+        PaymentReferenceDto $paymentReferenceDto,
+        bool $generateReferenceOnly = false
+    ) {
+        $paymentReference = $this->createPaymentReference($paymentReferenceDto);
+        $ret = successRes('', [
+            'reference' => $paymentReference->reference,
+        ]);
 
-    if (!$generateReferenceOnly) {
-      // $ret = RaveHelper::make()->initialize(
-      //   $paymentReference->user,
-      //   $paymentReference->amount,
-      //   route('rave-callback'),
-      //   $paymentReference->reference
-      // );
+        if (! $generateReferenceOnly) {
+            // $ret = RaveHelper::make()->initialize(
+            //   $paymentReference->user,
+            //   $paymentReference->amount,
+            //   route('rave-callback'),
+            //   $paymentReference->reference
+            // );
+        }
+
+        $ret['amount'] = $paymentReferenceDto->amount;
+
+        return [$ret, $paymentReference];
     }
 
-    $ret['amount'] = $paymentReferenceDto->amount;
-    return [$ret, $paymentReference];
-  }
-
-  function verify(PaymentReference $paymentReference): Res
-  {
-    return failRes('');
-    // return RaveHelper::make()->verifyReference($paymentReference->reference);
-  }
+    public function verify(PaymentRecord $paymentReference): Res
+    {
+        return failRes('');
+        // return RaveHelper::make()->verifyReference($paymentReference->reference);
+    }
 }

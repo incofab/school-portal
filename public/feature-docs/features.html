@@ -54,7 +54,7 @@ code { color: #d1fae5; }
 <body>
 <header>
   <h1>EduManager Feature Inventory</h1>
-  <p>Last reviewed 2026-04-18. Technical map for AI CLI agents and maintainers.</p>
+  <p>Last reviewed 2026-04-22. Technical map for AI CLI agents and maintainers.</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -263,7 +263,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>17</span> Admissions and Admission Forms</h3>
-    <p>Admissions support admission form CRUD, public admission applications, application preview, form purchase, admission letters, application uploads, recording template download, status updates, application guardian data, and payment processing for admission form purchases.</p>
+    <p>Admissions support admission form CRUD, public admission applications, application preview, instant or manual form purchase, admission letters, application uploads, recording template download, status updates, application guardian data, and payment processing for admission form purchases.</p>
     <ul>
       <li>Controllers/actions: <code>Admissions/AdmissionFormController</code>, <code>Admissions/AdmissionApplicationController</code>, <code>RecordAdmissionApplication</code>, <code>ConfirmAdmissionFormPayment</code>, <code>HandleAdmission</code>.</li>
       <li>Frontend: <code>institutions/admissions/*</code>.</li>
@@ -273,11 +273,11 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>18</span> Fees, Fee Payments, Receipts, and Payment Notifications</h3>
-    <p>Finance features include fee CRUD/search, fee categories/membership handling, fee payment recording, student fee payment views, fee payment summary retrieval, receipt listing/showing, universal receipt printing, payment notifications, admission form payments, payment references, and provider webhook processing.</p>
+    <p>Finance features include fee CRUD/search, fee categories/membership handling, fee payment recording, student fee payment views, manual bank-transfer payment requests for fees and admission form purchases, manual payment review/confirmation/rejection, fee payment summary retrieval, receipt listing/showing, universal receipt printing, payment notifications, admission form payments, payment references, and provider webhook processing.</p>
     <ul>
-      <li>Controllers/actions/support: <code>Payments/FeeController</code>, <code>FeePaymentController</code>, <code>ReceiptController</code>, <code>PaymentNotificationController</code>, <code>RecordFee</code>, <code>FeePaymentHandler</code>, <code>RecordFeePaymentReminder</code>, <code>FeeMembersHandler</code>, <code>GetClassFeePaymentSummary</code>, <code>GetStudentFeePaymentSummary</code>, payment processors and merchants.</li>
-      <li>Frontend: <code>institutions/payments/*</code>, <code>students/payments/*</code>, receipt and fee modals.</li>
-      <li>Data/tests: <code>Fee</code>, <code>FeeCategory</code>, <code>FeePayment</code>, <code>Receipt</code>, <code>PaymentReference</code>; fee, fee payment, receipt, payment notification, and provider webhook tests.</li>
+      <li>Controllers/actions/support: <code>Payments/FeeController</code>, <code>FeePaymentController</code>, <code>ManualPaymentController</code>, <code>ReceiptController</code>, <code>PaymentNotificationController</code>, <code>RecordFee</code>, <code>FeePaymentHandler</code>, <code>ManualPaymentHandler</code>, <code>RecordFeePaymentReminder</code>, <code>FeeMembersHandler</code>, <code>GetClassFeePaymentSummary</code>, <code>GetStudentFeePaymentSummary</code>, payment processors and merchants including <code>PaymentManual</code> and the shared payment record contract.</li>
+      <li>Frontend: <code>institutions/payments/*</code>, <code>students/payments/*</code>, receipt and fee modals. Fee and admission payment entry screens now start with a minimal payment-method selector; manual transfer then continues to a shared pending page for optional proof upload, bank selection, and extra transfer details, while staff finance pages keep pending-first manual payment review.</li>
+      <li>Data/tests: <code>Fee</code>, <code>FeeCategory</code>, <code>FeePayment</code>, <code>ManualPayment</code>, <code>Receipt</code>, <code>PaymentReference</code>; fee, manual payment, fee payment, receipt, payment notification, and provider webhook tests.</li>
     </ul>
   </div>
 

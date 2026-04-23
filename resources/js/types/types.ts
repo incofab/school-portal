@@ -346,4 +346,5 @@ export enum PaymentMerchantType {
   Paystack = 'paystack',
   Rave = 'rave',
   UserWallet = 'user-wallet',
+  Manual = 'manual',
 }

@@ -12,345 +12,352 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Institution extends Model
 {
-  use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes;
 
-  protected $guarded = [];
-  public $casts = [
-    'institution_group_id' => 'integer',
-    'user_id' => 'integer',
-    'status' => InstitutionStatus::class
-  ];
+    protected $guarded = [];
 
-  public static function generalRule($prefix = '')
-  {
-    return [
-      $prefix . 'name' => ['required', 'string'],
-      $prefix . 'institution_group_id' => [
-        'required',
-        'exists:institution_groups,id'
-      ],
-      $prefix . 'phone' => ['nullable', 'string'],
-      $prefix . 'email' => ['nullable', 'string'],
-      $prefix . 'address' => ['nullable', 'string']
+    public $casts = [
+        'institution_group_id' => 'integer',
+        'user_id' => 'integer',
+        'status' => InstitutionStatus::class,
     ];
-  }
 
-  public static function query(): InstitutionQueryBuilder
-  {
-    return parent::query();
-  }
-
-  public function newEloquentBuilder($query)
-  {
-    return new InstitutionQueryBuilder($query);
-  }
-
-  public function getRouteKeyName()
-  {
-    return 'uuid';
-  }
-
-  public function resolveRouteBinding($value, $field = null)
-  {
-    $user = currentUser();
-    $field = $field ?? 'uuid';
-    // $field = 'uuid';
-    $institutionModel = Institution::query()
-      ->select('institutions.*')
-      ->join(
-        'institution_users',
-        'institution_users.institution_id',
-        'institutions.id'
-      )
-      ->where($field, $value)
-      ->when(
-        $user && !$user->isManager(),
-        fn($q) => $q
-          ->where('institution_users.user_id', $user->id)
-          ->with(
-            'institutionUsers',
-            fn($q) => $q
-              ->where('institution_users.user_id', $user->id)
-              ->with('student')
-          )
-      )
-      ->with('institutionSettings', 'institutionGroup')
-      ->first();
-
-    abort_unless($institutionModel, 403, 'Institution not found for this user');
-
-    return $institutionModel;
-  }
-
-  /** Return the institution folder without a leading or preceding slash */
-  function folder(S3Folder $s3Folder = S3Folder::Base, $append = '')
-  {
-    $dir = "institutions/{$this->id}/{$s3Folder->value}";
-    return $append ? "$dir/$append" : $dir;
-  }
-
-  static function generateInstitutionCode()
-  {
-    $key = mt_rand(100000, 999999);
-
-    while (Institution::whereCode($key)->first()) {
-      $key = mt_rand(100000, 999999);
+    public static function generalRule($prefix = '')
+    {
+        return [
+            $prefix.'name' => ['required', 'string'],
+            $prefix.'institution_group_id' => [
+                'required',
+                'exists:institution_groups,id',
+            ],
+            $prefix.'phone' => ['nullable', 'string'],
+            $prefix.'email' => ['nullable', 'string'],
+            $prefix.'address' => ['nullable', 'string'],
+        ];
     }
 
-    return $key;
-  }
+    public static function query(): InstitutionQueryBuilder
+    {
+        return parent::query();
+    }
 
-  function courses()
-  {
-    return $this->hasMany(Course::class);
-  }
+    public function newEloquentBuilder($query)
+    {
+        return new InstitutionQueryBuilder($query);
+    }
 
-  function courseTeachers()
-  {
-    return $this->hasMany(CourseTeacher::class);
-  }
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
 
-  function classifications()
-  {
-    return $this->hasMany(Classification::class);
-  }
+    public function resolveRouteBinding($value, $field = null)
+    {
+        $user = currentUser();
+        $field = $field ?? 'uuid';
+        // $field = 'uuid';
+        $institutionModel = Institution::query()
+            ->select('institutions.*')
+            ->join(
+                'institution_users',
+                'institution_users.institution_id',
+                'institutions.id'
+            )
+            ->where($field, $value)
+            ->when(
+                $user && ! $user->isManager(),
+                fn ($q) => $q
+                    ->where('institution_users.user_id', $user->id)
+                    ->with(
+                        'institutionUsers',
+                        fn ($q) => $q
+                            ->where('institution_users.user_id', $user->id)
+                            ->with('student')
+                    )
+            )
+            ->with('institutionSettings', 'institutionGroup')
+            ->first();
 
-  function classificationGroups()
-  {
-    return $this->hasMany(ClassificationGroup::class);
-  }
+        abort_unless($institutionModel, 403, 'Institution not found for this user');
 
-  function classDivisions()
-  {
-    return $this->hasMany(ClassDivision::class);
-  }
+        return $institutionModel;
+    }
 
-  function users()
-  {
-    return $this->belongsToMany(User::class);
-  }
+    /** Return the institution folder without a leading or preceding slash */
+    public function folder(S3Folder $s3Folder = S3Folder::Base, $append = '')
+    {
+        $dir = "institutions/{$this->id}/{$s3Folder->value}";
 
-  function institutionUsers()
-  {
-    return $this->hasMany(InstitutionUser::class);
-  }
+        return $append ? "$dir/$append" : $dir;
+    }
 
-  function createdBy()
-  {
-    return $this->belongsTo(User::class, 'user_id');
-  }
+    public static function generateInstitutionCode()
+    {
+        $key = mt_rand(100000, 999999);
 
-  function termResults()
-  {
-    return $this->hasMany(TermResult::class);
-  }
+        while (Institution::whereCode($key)->first()) {
+            $key = mt_rand(100000, 999999);
+        }
 
-  function sessionResults()
-  {
-    return $this->hasMany(SessionResult::class);
-  }
+        return $key;
+    }
 
-  function pins()
-  {
-    return $this->hasMany(Pin::class);
-  }
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
 
-  function pinGenerators()
-  {
-    return $this->hasMany(PinGenerator::class);
-  }
+    public function courseTeachers()
+    {
+        return $this->hasMany(CourseTeacher::class);
+    }
 
-  function fees()
-  {
-    return $this->hasMany(Fee::class);
-  }
+    public function classifications()
+    {
+        return $this->hasMany(Classification::class);
+    }
 
-  function receipts()
-  {
-    return $this->hasMany(Receipt::class);
-  }
+    public function classificationGroups()
+    {
+        return $this->hasMany(ClassificationGroup::class);
+    }
 
-  function feePayments()
-  {
-    return $this->hasMany(FeePayment::class);
-  }
+    public function classDivisions()
+    {
+        return $this->hasMany(ClassDivision::class);
+    }
 
-  function paymentReferences()
-  {
-    return $this->hasMany(PaymentReference::class);
-  }
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
 
-  function institutionSettings()
-  {
-    return $this->hasMany(InstitutionSetting::class);
-  }
+    public function institutionUsers()
+    {
+        return $this->hasMany(InstitutionUser::class);
+    }
 
-  function admissionApplications()
-  {
-    return $this->hasMany(AdmissionApplication::class);
-  }
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
-  function assessments()
-  {
-    return $this->hasMany(Assessment::class);
-  }
+    public function termResults()
+    {
+        return $this->hasMany(TermResult::class);
+    }
 
-  function learningEvaluationDomains()
-  {
-    return $this->hasMany(LearningEvaluationDomain::class);
-  }
+    public function sessionResults()
+    {
+        return $this->hasMany(SessionResult::class);
+    }
 
-  function learningEvaluations()
-  {
-    return $this->hasMany(LearningEvaluation::class);
-  }
+    public function pins()
+    {
+        return $this->hasMany(Pin::class);
+    }
 
-  function resultCommentTemplates()
-  {
-    return $this->hasMany(ResultCommentTemplate::class);
-  }
+    public function pinGenerators()
+    {
+        return $this->hasMany(PinGenerator::class);
+    }
 
-  function events()
-  {
-    return $this->hasMany(Event::class);
-  }
+    public function fees()
+    {
+        return $this->hasMany(Fee::class);
+    }
 
-  function assignments()
-  {
-    return $this->hasMany(Assignment::class);
-  }
+    public function receipts()
+    {
+        return $this->hasMany(Receipt::class);
+    }
 
-  function exams()
-  {
-    return $this->hasMany(Exam::class);
-  }
+    public function feePayments()
+    {
+        return $this->hasMany(FeePayment::class);
+    }
 
-  function tokenUsers()
-  {
-    return $this->hasMany(TokenUser::class);
-  }
+    public function paymentReferences()
+    {
+        return $this->hasMany(PaymentReference::class);
+    }
 
-  function user()
-  {
-    return $this->belongsTo(User::class);
-  }
+    public function institutionSettings()
+    {
+        return $this->hasMany(InstitutionSetting::class);
+    }
 
-  function institutionGroup()
-  {
-    return $this->belongsTo(InstitutionGroup::class);
-  }
+    public function admissionApplications()
+    {
+        return $this->hasMany(AdmissionApplication::class);
+    }
 
-  public function schoolActivities()
-  {
-    return $this->hasMany(SchoolActivity::class);
-  }
+    public function assessments()
+    {
+        return $this->hasMany(Assessment::class);
+    }
 
-  public function schemeOfWorks()
-  {
-    return $this->hasMany(SchemeOfWork::class);
-  }
+    public function learningEvaluationDomains()
+    {
+        return $this->hasMany(LearningEvaluationDomain::class);
+    }
 
-  public function admissionForms()
-  {
-    return $this->hasMany(AdmissionForm::class);
-  }
+    public function learningEvaluations()
+    {
+        return $this->hasMany(LearningEvaluation::class);
+    }
 
-  public function associations()
-  {
-    return $this->hasMany(Association::class);
-  }
+    public function resultCommentTemplates()
+    {
+        return $this->hasMany(ResultCommentTemplate::class);
+    }
 
-  public function courseResults()
-  {
-    return $this->hasMany(CourseResult::class);
-  }
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
 
-  public function students()
-  {
-    return $this->hasManyThrough(
-      User::class,
-      InstitutionUser::class,
-      'institution_id', // Foreign key on InstitutionUser table
-      'id', // Foreign key on User table
-      'id', // Local key on Institution table
-      'user_id' // Local key on InstitutionUser table
-    )->whereHas('institutionUsers', function ($query) {
-      $query->where('role', InstitutionUserType::Student);
-    });
-  }
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
 
-  public function teachers()
-  {
-    return $this->hasManyThrough(
-      User::class,
-      InstitutionUser::class,
-      'institution_id', // Foreign key on InstitutionUser table
-      'id', // Foreign key on User table
-      'id', // Local key on Institution table
-      'user_id' // Local key on InstitutionUser table
-    )->whereHas('institutionUsers', function ($query) {
-      $query->where('role', InstitutionUserType::Teacher);
-    });
-  }
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
+    }
 
-  public function staff()
-  {
-    return $this->hasMany(InstitutionUser::class)->whereIn('role', [
-      InstitutionUserType::Teacher,
-      InstitutionUserType::Accountant,
-      InstitutionUserType::Admin
-    ]);
-  }
+    public function tokenUsers()
+    {
+        return $this->hasMany(TokenUser::class);
+    }
 
-  function expenses()
-  {
-    return $this->hasMany(Expense::class);
-  }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
-  function expenseCategories()
-  {
-    return $this->hasMany(ExpenseCategory::class);
-  }
+    public function institutionGroup()
+    {
+        return $this->belongsTo(InstitutionGroup::class);
+    }
 
-  function salaryTypes()
-  {
-    return $this->hasMany(SalaryType::class);
-  }
+    public function schoolActivities()
+    {
+        return $this->hasMany(SchoolActivity::class);
+    }
 
-  function salaries()
-  {
-    return $this->hasMany(Salary::class);
-  }
+    public function schemeOfWorks()
+    {
+        return $this->hasMany(SchemeOfWork::class);
+    }
 
-  function payrollAdjustmentTypes()
-  {
-    return $this->hasMany(PayrollAdjustmentType::class);
-  }
+    public function admissionForms()
+    {
+        return $this->hasMany(AdmissionForm::class);
+    }
 
-  function payrollAdjustments()
-  {
-    return $this->hasMany(PayrollAdjustment::class);
-  }
+    public function associations()
+    {
+        return $this->hasMany(Association::class);
+    }
 
-  function payrolls()
-  {
-    return $this->hasMany(Payroll::class);
-  }
+    public function courseResults()
+    {
+        return $this->hasMany(CourseResult::class);
+    }
 
-  function payrollSummaries()
-  {
-    return $this->hasMany(PayrollSummary::class);
-  }
+    public function students()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            InstitutionUser::class,
+            'institution_id', // Foreign key on InstitutionUser table
+            'id', // Foreign key on User table
+            'id', // Local key on Institution table
+            'user_id' // Local key on InstitutionUser table
+        )->whereHas('institutionUsers', function ($query) {
+            $query->where('role', InstitutionUserType::Student);
+        });
+    }
 
-  function attendances()
-  {
-    return $this->hasMany(Attendance::class);
-  }
+    public function teachers()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            InstitutionUser::class,
+            'institution_id', // Foreign key on InstitutionUser table
+            'id', // Foreign key on User table
+            'id', // Local key on Institution table
+            'user_id' // Local key on InstitutionUser table
+        )->whereHas('institutionUsers', function ($query) {
+            $query->where('role', InstitutionUserType::Teacher);
+        });
+    }
 
-  function latestResultPublication()
-  {
-    return $this->hasOne(ResultPublication::class)
-      ->with('academicSession')
-      ->latestOfMany();
-  }
+    public function staff()
+    {
+        return $this->hasMany(InstitutionUser::class)->whereIn('role', [
+            InstitutionUserType::Teacher,
+            InstitutionUserType::Accountant,
+            InstitutionUserType::Admin,
+        ]);
+    }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+    public function expenseCategories()
+    {
+        return $this->hasMany(ExpenseCategory::class);
+    }
+
+    public function salaryTypes()
+    {
+        return $this->hasMany(SalaryType::class);
+    }
+
+    public function salaries()
+    {
+        return $this->hasMany(Salary::class);
+    }
+
+    public function payrollAdjustmentTypes()
+    {
+        return $this->hasMany(PayrollAdjustmentType::class);
+    }
+
+    public function payrollAdjustments()
+    {
+        return $this->hasMany(PayrollAdjustment::class);
+    }
+
+    public function payrolls()
+    {
+        return $this->hasMany(Payroll::class);
+    }
+
+    public function payrollSummaries()
+    {
+        return $this->hasMany(PayrollSummary::class);
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function manualPayments()
+    {
+        return $this->hasMany(ManualPayment::class);
+    }
+
+    public function latestResultPublication()
+    {
+        return $this->hasOne(ResultPublication::class)
+            ->with('academicSession')
+            ->latestOfMany();
+    }
 }

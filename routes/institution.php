@@ -1,92 +1,92 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Institutions as Web;
 use App\Mail\AdmissionLetterMail;
 use App\Mail\InstitutionMessageMail;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Route;
 
-//Institution
+// Institution
 
 Route::get('dummy', function () {
-  // dd('dmoddsdsd');
-  // Mail::to('email@email.com')->send(new AdmissionLetterMail(User::first()));
-  // Mail::to('email@email.com')->queue(new AdmissionLetterMail(User::first()));
-  // return new InstitutionMessageMail('Welcome', 'This is a welcome message');
-  $url = "https://texturl.com";
-  // return new AdmissionLetterMail(User::first(), $url);
+    // dd('dmoddsdsd');
+    // Mail::to('email@email.com')->send(new AdmissionLetterMail(User::first()));
+    // Mail::to('email@email.com')->queue(new AdmissionLetterMail(User::first()));
+    // return new InstitutionMessageMail('Welcome', 'This is a welcome message');
+    $url = 'https://texturl.com';
+    // return new AdmissionLetterMail(User::first(), $url);
 })->name('dummy');
 
 Route::get('/dashboard', [Web\InstitutionController::class, 'index'])
-  ->name('dashboard');  
+    ->name('dashboard');
 Route::get('/dashboard/setup-checklist', [Web\InstitutionController::class, 'setupChecklist'])
-  ->name('dashboard.setup-checklist');
+    ->name('dashboard.setup-checklist');
 Route::get('/notifications', [Web\Notifications\NotificationController::class, 'index'])
-  ->name('notifications.index');
+    ->name('notifications.index');
 Route::get('/notifications/create', [Web\Notifications\NotificationController::class, 'create'])
-  ->name('notifications.create');
+    ->name('notifications.create');
 Route::get('/notifications/sent', [Web\Notifications\NotificationController::class, 'sentIndex'])
-  ->name('notifications.sent.index');
+    ->name('notifications.sent.index');
 Route::get('/notifications/sent/{internalNotification}', [Web\Notifications\NotificationController::class, 'sentShow'])
-  ->name('notifications.sent.show');
+    ->name('notifications.sent.show');
 Route::post('/notifications', [Web\Notifications\NotificationController::class, 'store'])
-  ->name('notifications.store');
+    ->name('notifications.store');
 Route::delete('/notifications/sent/{internalNotification}', [Web\Notifications\NotificationController::class, 'sentDestroy'])
-  ->name('notifications.sent.destroy');
+    ->name('notifications.sent.destroy');
 Route::get('/profile', [Web\InstitutionController::class, 'profile'])
-  ->name('profile');
+    ->name('profile');
 Route::put('/update', [Web\InstitutionController::class, 'update'])
-  ->name('update');
+    ->name('update');
 Route::post('/upload-photo', [Web\InstitutionController::class, 'uploadPhoto'])
-  ->name('upload-photo');
+    ->name('upload-photo');
 
 Route::get('/classifications/search', [Web\Classifications\ClassificationController::class, 'search'])
-  ->name('classifications.search');
+    ->name('classifications.search');
 Route::post('/classifications/{classification}/migrate-students', [Web\Classifications\UpdateStudentClassController::class, 'migrateClassStudents'])
-  ->name('classifications.migrate-students');
+    ->name('classifications.migrate-students');
 Route::post('/classifications/{classification}/student-status', [Web\Classifications\ClassificationController::class, 'updateStudentStatus'])
-  ->name('classifications.student-status');
+    ->name('classifications.student-status');
 
 Route::get('/student-class-movements', [Web\Classifications\StudentClassMovementController::class, 'index'])
-  ->name('student-class-movements.index');
+    ->name('student-class-movements.index');
 Route::get('/student-class-movements/search', [Web\Classifications\StudentClassMovementController::class, 'search'])
-  ->name('student-class-movements.search');
+    ->name('student-class-movements.search');
 Route::post('/student-class-movements/batch-revert', [Web\Classifications\RevertStudentClassMovementController::class, 'revertBatchStudentClassMovement'])
-  ->name('student-class-movements.batch-revert');
+    ->name('student-class-movements.batch-revert');
 Route::post('/student-class-movements/{studentClassMovement}/revert', [Web\Classifications\RevertStudentClassMovementController::class, 'revertSingleStudentClassMovement'])
-  ->name('student-class-movements.revert');
+    ->name('student-class-movements.revert');
 
 Route::get('/classifications/download', [Web\Classifications\ClassificationController::class, 'download'])
-  ->name('classifications.download');
+    ->name('classifications.download');
 Route::post('/classifications/upload', [Web\Classifications\ClassificationController::class, 'upload'])
-  ->name('classifications.upload');
+    ->name('classifications.upload');
 Route::get('/classifications/multi-create', [Web\Classifications\ClassificationController::class, 'multiCreate'])
-  ->name('classifications.multi-create');
+    ->name('classifications.multi-create');
 Route::post('/classifications/multi-store', [Web\Classifications\ClassificationController::class, 'multiStore'])
-  ->name('classifications.multi-store');
+    ->name('classifications.multi-store');
 Route::resource('/classifications', Web\Classifications\ClassificationController::class)
-  ->except(['show']);
+    ->except(['show']);
 
 Route::get('/classification-groups/search', [Web\Classifications\ClassificationGroupController::class, 'search'])
-  ->name('classification-groups.search');
+    ->name('classification-groups.search');
 Route::resource('/classification-groups', Web\Classifications\ClassificationGroupController::class)
-  ->except(['show']);
+    ->except(['show']);
 
 Route::get('/class-divisions/search', [Web\Classifications\ClassDivisionController::class, 'search'])
-  ->name('class-divisions.search');
+    ->name('class-divisions.search');
 Route::resource('/class-divisions', Web\Classifications\ClassDivisionController::class)
-  ->except(['show', 'create', 'edit']);
+    ->except(['show', 'create', 'edit']);
 
 Route::post('/class-divisions/{classDivision}/classifications', [Web\Classifications\ClassDivisionController::class, 'storeClassification'])
-  ->name('class-divisions.classifications.store');
+    ->name('class-divisions.classifications.store');
 Route::delete('/class-divisions/{classDivision}/classifications/{classification}', [Web\Classifications\ClassDivisionController::class, 'destroyClassification'])
-  ->name('class-divisions.classifications.destroy');
+    ->name('class-divisions.classifications.destroy');
 
 Route::get('/classification-groups/{classificationGroup}/promote-students/{destinationClassificatiinGroup?}', [Web\Classifications\PromoteStudentsController::class, 'create'])
-  ->name('classification-groups.promote-students.create');
+    ->name('classification-groups.promote-students.create');
 Route::post('/classification-groups/{classificationGroup}/promote-students', [Web\Classifications\PromoteStudentsController::class, 'store'])
-  ->name('classification-groups.promote-students.store');
+    ->name('classification-groups.promote-students.store');
 
 // Route::get('/students/search', Web\Students\SearchStudentController::class)
 //     ->name('students.search');
@@ -110,205 +110,204 @@ Route::get('/course-session-results/{academicSession}/{classification}', [Web\St
 // Route::get('/students/{student}/fee-payments/create', [Web\Students\StudentFeePaymentController::class, 'feePaymentView'])->name('students.fee-payments.create');
 // Route::post('/students/{student}/fee-payments/store', [Web\Students\StudentFeePaymentController::class, 'feePaymentStore'])->name('students.fee-payments.store');
 
-
 Route::post('/students/{student}/update-code', [Web\Staff\StudentManagementController::class, 'updateCode'])
-  ->name('students.update-code');
+    ->name('students.update-code');
 Route::get('/classifications/{classification}/students-download', Web\Classifications\DownloadClassStudentsController::class)
-  ->name('classifications.students-download');
+    ->name('classifications.students-download');
 Route::get('/students/download-recording-template', [Web\Staff\StudentManagementController::class, 'downloadTemplate'])
-  ->name('students.download-recording-template');
+    ->name('students.download-recording-template');
 Route::post('/students/upload/{classification}', [Web\Staff\StudentManagementController::class, 'uploadStudents'])
-  ->name('students.upload');
+    ->name('students.upload');
 
 Route::resource('/students', Web\Staff\StudentManagementController::class)->except(['show']);
 Route::post('/term-results/{termResult}/teacher-comment', [Web\Staff\TermResultCommentController::class, 'teacherComment'])
-  ->name('term-results.teacher-comment');
+    ->name('term-results.teacher-comment');
 Route::post('/term-results/{termResult}/principal-comment', [Web\Staff\TermResultCommentController::class, 'principalComment'])
-  ->name('term-results.principal-comment');
+    ->name('term-results.principal-comment');
 Route::post('/term-results/{termResult}/extra-data-update', Web\Staff\UpdateTermResultExtraDataController::class)
-  ->name('term-results.extra-data.update');
+    ->name('term-results.extra-data.update');
 Route::get('/term-details/{termDetail?}', [Web\Staff\TermDetailController::class, 'index'])
-  ->name('term-details.index');
+    ->name('term-details.index');
 Route::put('/term-details/{termDetail}/update', [Web\Staff\TermDetailController::class, 'update'])
-  ->name('term-details.update');
+    ->name('term-details.update');
 Route::post('/students/{student}/change-class', [Web\Classifications\UpdateStudentClassController::class, 'changeStudentClass'])
-  ->name('students.change-class');
+    ->name('students.change-class');
 Route::get('/change-multi-student-class/{classification}', [Web\Classifications\UpdateStudentClassController::class, 'changeMultipleStudentClassView'])
-  ->name('change-multi-student-class.create');
+    ->name('change-multi-student-class.create');
 Route::post('/change-multi-student-class', [Web\Classifications\UpdateStudentClassController::class, 'changeMultipleStudentClass'])
-  ->name('change-multi-student-class.store');
+    ->name('change-multi-student-class.store');
 Route::get('/classifications/{classification}/students', [Web\Staff\StudentManagementController::class, 'classStudentsTiles'])
-  ->name('classifications.students');
+    ->name('classifications.students');
 Route::get('/classifications/{classification}/idcards', [Web\Staff\StudentManagementController::class, 'classStudentsIdCards'])
-  ->name('classifications.idcards');
+    ->name('classifications.idcards');
 
 Route::get('/guardians', [Web\Staff\GuardianManagementController::class, 'index'])
-  ->name('guardians.index');
+    ->name('guardians.index');
 Route::get('/guardians/classifications/{classification}/create', [Web\Staff\GuardianManagementController::class, 'create'])
-  ->name('guardians.classifications.create');
+    ->name('guardians.classifications.create');
 Route::post('/guardians/classifications/{classification}/store', [Web\Staff\GuardianManagementController::class, 'store'])
     ->name('guardians.classifications.store');
 Route::post('/guardians/{guardianUser}/assign-student', [Web\Staff\GuardianManagementController::class, 'assignStudent'])
     ->name('guardians.assign-student');
 Route::get('/guardians/list-dependents', Web\Guardians\ListDependentsController::class)
-  ->name('guardians.list-dependents');
+    ->name('guardians.list-dependents');
 Route::get('/guardians/impersonate/{student}', Web\Guardians\ImpersonateStudentController::class)
-  ->name('guardians.impersonate');
+    ->name('guardians.impersonate');
 Route::delete('/guardians/remove-dependent/{student}', Web\Guardians\RemoveDependentController::class)
-  ->name('guardians.remove-dependent');
+    ->name('guardians.remove-dependent');
 
 Route::get('/courses/search', [Web\CoursesController::class, 'search'])
-  ->name('courses.search');
+    ->name('courses.search');
 Route::get('/courses/practice-questions', [Web\CoursesController::class, 'viewPracticeQuestions'])
-  ->name('courses.view-practice-questions');
+    ->name('courses.view-practice-questions');
 Route::post('/courses/practice-questions', [Web\CoursesController::class, 'generatePracticeQuestions'])
-  ->name('courses.practice-questions');
+    ->name('courses.practice-questions');
 Route::post('/courses/insert-questions/{courseSession}', [Web\CoursesController::class, 'insertQuestionsToQuestionbank'])
-  ->name('courses.insert-questions');
+    ->name('courses.insert-questions');
 Route::get('/courses/multi-create', [Web\CoursesController::class, 'multiCreate'])
-  ->name('courses.multi-create');
+    ->name('courses.multi-create');
 Route::post('/courses/multi-store', [Web\CoursesController::class, 'multiStore'])
-  ->name('courses.multi-store');
+    ->name('courses.multi-store');
 Route::resource('/courses', Web\CoursesController::class);
 
 Route::get('/users/{user}/profile', [Web\Users\UpdateInstitutionUserController::class, 'profile'])
-  ->name('users.profile');
+    ->name('users.profile');
 Route::get('/users/{editInstitutionUser}/edit', [Web\Users\UpdateInstitutionUserController::class, 'edit'])
-  ->name('users.edit');
+    ->name('users.edit');
 Route::put('/users/{editInstitutionUser}/update', [Web\Users\UpdateInstitutionUserController::class, 'update'])
-  ->name('users.update');
+    ->name('users.update');
 Route::post('/users/{user}/upload-photo', [Web\Users\UpdateInstitutionUserController::class, 'uploadPhoto'])
-  ->name('users.upload-photo');
+    ->name('users.upload-photo');
 Route::post('/institution-users/{institutionUser}/update-status', [Web\Users\UpdateInstitutionUserController::class, 'updateStatus'])
-  ->name('institution-users.update-status');
+    ->name('institution-users.update-status');
 Route::get('/users/idcards/{classification?}', [Web\Users\InstitutionUserController::class, 'idCards'])
-  ->name('users.idcards');
+    ->name('users.idcards');
 Route::resource('/users', Web\Users\InstitutionUserController::class)
-  ->only(['create', 'store']);
+    ->only(['create', 'store']);
 
 Route::get('/users/index', [Web\Users\ListInstitutionUserController::class, 'index'])
-  ->name('users.index');
+    ->name('users.index');
 Route::get('/users/search', [Web\Users\ListInstitutionUserController::class, 'search'])
-  ->name('users.search');
+    ->name('users.search');
 Route::get('/users/download-recording-template', [Web\Users\InstitutionUserController::class, 'downloadTemplate'])
-  ->name('users.download-recording-template');
+    ->name('users.download-recording-template');
 Route::post('/users/upload', [Web\Users\InstitutionUserController::class, 'uploadStaff'])
-  ->name('users.upload');
+    ->name('users.upload');
 Route::post('/users/{user}/reset-password', Web\Users\ResetUserPasswordController::class)
-  ->name('users.reset-password');
+    ->name('users.reset-password');
 Route::delete('/users/{user}', Web\Users\DeleteUserController::class)
-  ->name('users.destroy');
+    ->name('users.destroy');
 Route::post('/users/{suppliedInstitutionUser}/change-role', Web\Users\ChangeUserRoleController::class)
-  ->name('users.change-role');
+    ->name('users.change-role');
 
 // Teacher courses
 Route::get('/course-teachers/index/{user?}', [Web\Staff\CourseTeachersController::class, 'index'])
-  ->name('course-teachers.index');
+    ->name('course-teachers.index');
 Route::get('/course-teachers/search', [Web\Staff\CourseTeachersController::class, 'search'])
-  ->name('course-teachers.search');
+    ->name('course-teachers.search');
 Route::get('/course-teachers/create/{user?}', [Web\Staff\CourseTeachersController::class, 'create'])
-  ->name('course-teachers.create');
+    ->name('course-teachers.create');
 Route::post('/course-teachers/store/{user}', [Web\Staff\CourseTeachersController::class, 'store'])
-  ->name('course-teachers.store');
+    ->name('course-teachers.store');
 Route::delete('/course-teachers/{courseTeacher}/destroy', [Web\Staff\CourseTeachersController::class, 'destroy'])
-  ->name('course-teachers.destroy');
+    ->name('course-teachers.destroy');
 
 Route::get('/course-results/index', [Web\Staff\CourseResultsController::class, 'index'])
-  ->name('course-results.index');
+    ->name('course-results.index');
 Route::get('/course-results/create/{courseTeacher}', [Web\Staff\CourseResultsController::class, 'create'])
-  ->name('course-results.create');
+    ->name('course-results.create');
 Route::get('/course-results/{courseResult}/edit', [Web\Staff\CourseResultsController::class, 'edit'])
-  ->name('course-results.edit');
+    ->name('course-results.edit');
 Route::post('/course-results/store/{courseTeacher}', [Web\Staff\CourseResultsController::class, 'store'])
-  ->name('course-results.store');
+    ->name('course-results.store');
 Route::delete('/course-results/{courseResult}/destroy', [Web\Staff\CourseResultsController::class, 'destroy'])
-  ->name('course-results.destroy');
+    ->name('course-results.destroy');
 Route::post('/course-results/upload/{courseTeacher}', [Web\Staff\CourseResultsController::class, 'upload'])
-  ->name('course-results.upload');
+    ->name('course-results.upload');
 Route::get('/course-results/class-sheet/upload', [Web\Staff\CourseResultsController::class, 'uploadClassSheetView'])
-  ->name('course-results.class-sheet.upload');
+    ->name('course-results.class-sheet.upload');
 Route::post('/course-results/class-sheet/upload', [Web\Staff\CourseResultsController::class, 'uploadClassSheetStore'])
-  ->name('course-results.class-sheet.upload.store');
+    ->name('course-results.class-sheet.upload.store');
 Route::get('/course-results/download', Web\Staff\DownloadCourseResultSheetController::class)
-  ->name('course-results.download');
+    ->name('course-results.download');
 Route::get('/download-result-recording-sheet', Web\Staff\DownloadResultRecordingSheetController::class)
-  ->name('download-result-recording-sheet');
+    ->name('download-result-recording-sheet');
 
 Route::get('/record-class-results/{courseTeacher}', [Web\Staff\RecordClassResultController::class, 'create'])
-  ->name('record-class-results.create');
+    ->name('record-class-results.create');
 Route::post('/record-class-results/{courseTeacher}', [Web\Staff\RecordClassResultController::class, 'store'])
-  ->name('record-class-results.store');
+    ->name('record-class-results.store');
 
 Route::get('/course-result-info/index', [Web\Staff\CourseResultInfoController::class, 'index'])
-  ->name('course-result-info.index');
+    ->name('course-result-info.index');
 Route::delete(
-  '/course-result-info/{courseResultInfo}/destroy',
-  [Web\Staff\CourseResultInfoController::class, 'destroy']
+    '/course-result-info/{courseResultInfo}/destroy',
+    [Web\Staff\CourseResultInfoController::class, 'destroy']
 )->name('course-result-info.destroy');
 Route::get(
-  '/course-result-info/{courseResultInfo}/transfer',
-  [Web\Staff\TransferCourseResultInfoController::class, 'create']
+    '/course-result-info/{courseResultInfo}/transfer',
+    [Web\Staff\TransferCourseResultInfoController::class, 'create']
 )->name('course-result-info.transfer.create');
 Route::post(
-  '/course-result-info/{courseResultInfo}/transfer',
-  [Web\Staff\TransferCourseResultInfoController::class, 'store']
+    '/course-result-info/{courseResultInfo}/transfer',
+    [Web\Staff\TransferCourseResultInfoController::class, 'store']
 )->name('course-result-info.transfer.store');
 
 Route::get('/live-classes/{liveClass}/join', Web\LiveClasses\JoinLiveClassController::class)
-  ->name('live-classes.join');
+    ->name('live-classes.join');
 Route::resource('/live-classes', Web\LiveClasses\LiveClassController::class)
-  ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
 Route::get('/reports/subject-report', Web\Reports\SubjectReportController::class)
-  ->name('reports.subject-report');
+    ->name('reports.subject-report');
 
 Route::get('/class-result-info/index', [Web\Staff\ClassResultInfoController::class, 'index'])
-  ->name('class-result-info.index');
+    ->name('class-result-info.index');
 Route::get('/class-result-info/{classResultInfo}/download', [Web\Staff\ClassResultInfoController::class, 'downloadClassResult'])
-  ->name('class-result-info.download');
+    ->name('class-result-info.download');
 Route::post('/class-result-info/calculate', [Web\Staff\ClassResultInfoController::class, 'calculate'])
-  ->name('class-result-info.calculate');
+    ->name('class-result-info.calculate');
 Route::post('/class-result-info/recalculate/{classResultInfo}', [Web\Staff\ClassResultInfoController::class, 'reCalculate'])
-  ->name('class-result-info.recalculate');
+    ->name('class-result-info.recalculate');
 Route::post('/class-result-info/{classResultInfo}/lock', [Web\Staff\ClassResultInfoController::class, 'updateLock'])
-  ->name('class-result-info.lock');
+    ->name('class-result-info.lock');
 Route::post('/class-result-info/set-resumption-date/{classificationGroup?}', [Web\Staff\ClassResultInfoController::class, 'setNextTermResumptionDate'])
-  ->name('class-result-info.set-resumption-date');
+    ->name('class-result-info.set-resumption-date');
 Route::get('/class-result-info/{classResultInfo}/result-sheets', [Web\Staff\ClassResultInfoController::class, 'viewClassResultSheets'])
-  ->name('class-result-info.result-sheets');
+    ->name('class-result-info.result-sheets');
 Route::get('/class-result-info/result-sheets', [Web\Staff\ClassResultInfoController::class, 'fetchClassResultSheets'])
-  ->name('class-result-info.fetch-result-sheets');
+    ->name('class-result-info.fetch-result-sheets');
 Route::get('/class-result-info/{classResultInfo}/record-evaluations', [Web\Staff\ClassResultInfoController::class, 'recordEvaluations'])
-  ->name('class-result-info.record-evaluations');
+    ->name('class-result-info.record-evaluations');
 Route::post('/class-result-info/{classResultInfo}/send-results', [Web\Staff\ClassResultInfoController::class, 'sendResults'])
-  ->name('class-result-info.send-results');
+    ->name('class-result-info.send-results');
 
 Route::get('/term-results/index/{user?}', [Web\Results\ListTermResultController::class, 'index'])
-  ->name('term-results.index');
+    ->name('term-results.index');
 Route::get('/term-results/{classResultInfo}/index', [Web\Results\ListTermResultController::class, 'indexByClassResultInfo'])
-  ->name('term-results.class-result-info.index');
+    ->name('term-results.class-result-info.index');
 Route::delete('/term-results/delete/{termResult?}', Web\Results\DeleteTermResultController::class)
-  ->name('term-results.destroy');
+    ->name('term-results.destroy');
 Route::get('/cummulative-result/index', Web\Staff\CummulativeResultController::class)
-  ->name('cummulative-result.index');
+    ->name('cummulative-result.index');
 
 Route::get('/pins/classifications/{classification}/tiles', [Web\Staff\Pins\StudentPinController::class, 'indexTiles'])
-  ->name('pins.classification.student-pin-tiles');
+    ->name('pins.classification.student-pin-tiles');
 Route::post('/pins/students/{student}', [Web\Staff\Pins\StudentPinController::class, 'storeStudentPin'])
-  ->name('pins.students.store');
+    ->name('pins.students.store');
 Route::post('/pins/classifications/{classification}', [Web\Staff\Pins\StudentPinController::class, 'storeClassStudentPin'])
-  ->name('pins.classifications.store');
+    ->name('pins.classifications.store');
 
 Route::get('/pin-generators/{pinGenerator}/download', [Web\Pins\PinGeneratorController::class, 'downloadPins'])
-  ->name('pin-generators.download');
+    ->name('pin-generators.download');
 Route::get('/pin-generators', [Web\Pins\PinGeneratorController::class, 'index'])
-  ->name('pin-generators.index');
+    ->name('pin-generators.index');
 Route::get('/pin-generators/create', [Web\Pins\PinGeneratorController::class, 'create'])
-  ->name('pin-generators.create');
+    ->name('pin-generators.create');
 Route::get('/pin-generators/{pinGenerator}', [Web\Pins\PinGeneratorController::class, 'show'])
-  ->name('pin-generators.show');
+    ->name('pin-generators.show');
 Route::post('/pin-generators/store', [Web\Pins\PinGeneratorController::class, 'store'])
-  ->name('pin-generators.store');
+    ->name('pin-generators.store');
 
 Route::get('/fees/search', [Web\Payments\FeeController::class, 'search'])->name('fees.search');
 Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
@@ -318,10 +317,14 @@ Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
 Route::get('/fee-payments/summary', [Web\Payments\FeePaymentController::class, 'feePaymentSummary'])->name('fee-payments.summary');
 Route::get('/fee-payments/index/{fee?}', [Web\Payments\FeePaymentController::class, 'index'])->name('fee-payments.index');
 Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['index', 'edit', 'update']);
+Route::get('/manual-payments', [Web\Payments\ManualPaymentController::class, 'index'])->name('manual-payments.index');
+Route::get('/manual-payments/history', [Web\Payments\ManualPaymentController::class, 'history'])->name('manual-payments.history');
+Route::post('/manual-payments/{manualPayment}/confirm', [Web\Payments\ManualPaymentController::class, 'confirm'])->name('manual-payments.confirm');
+Route::post('/manual-payments/{manualPayment}/reject', [Web\Payments\ManualPaymentController::class, 'reject'])->name('manual-payments.reject');
 Route::get('/receipts', [Web\Payments\ReceiptController::class, 'index'])->name('receipts.index');
 
 Route::get('/receipts/universal-receipt/{user}', [Web\Payments\ReceiptController::class, 'printUniversalReceipt'])
-  ->name('receipts.print-universal-receipt');
+    ->name('receipts.print-universal-receipt');
 
 Route::get('/receipts/{receipt}', [Web\Payments\ReceiptController::class, 'show'])->name('receipts.show');
 
@@ -334,41 +337,41 @@ Route::post('/assessments/store', [Web\Staff\AssessmentController::class, 'store
 Route::put('/assessments/{assessment}/update', [Web\Staff\AssessmentController::class, 'update'])->name('assessments.update');
 Route::delete('/assessments/{assessment}/destroy', [Web\Staff\AssessmentController::class, 'destroy'])->name('assessments.destroy');
 Route::get('/assessments/{assessment}/insert-score-from-course-result', [Web\Staff\InjectAssessmentScoreFromTermResultController::class, 'create'])
-  ->name('assessments.insert-score-from-course-result.create');
+    ->name('assessments.insert-score-from-course-result.create');
 Route::post('/assessments/{assessment}/set-dependency', [Web\Staff\AssessmentController::class, 'setDependency'])
-  ->name('assessments.set-dependency');
+    ->name('assessments.set-dependency');
 Route::post('/assessments/{assessment}/insert-score-from-course-result', [Web\Staff\InjectAssessmentScoreFromTermResultController::class, 'store'])
-  ->name('assessments.insert-score-from-course-result.store');
+    ->name('assessments.insert-score-from-course-result.store');
 
 Route::get('/result-comment-templates/index/{resultCommentTemplate?}', [Web\Staff\ResultCommentTemplateController::class, 'index'])
-  ->name('result-comment-templates.index');
+    ->name('result-comment-templates.index');
 Route::post('/result-comment-templates/store/{resultCommentTemplate?}', [Web\Staff\ResultCommentTemplateController::class, 'store'])
-  ->name('result-comment-templates.store');
+    ->name('result-comment-templates.store');
 Route::delete('/result-comment-templates/destroy/{resultCommentTemplate}', [Web\Staff\ResultCommentTemplateController::class, 'destroy'])
-  ->name('result-comment-templates.destroy');
+    ->name('result-comment-templates.destroy');
 
 Route::get('/learning-evaluation-domains/index/{learningEvaluationDomain?}', [Web\Staff\LearningEvaluationDomainController::class, 'index'])
-  ->name('learning-evaluation-domains.index');
+    ->name('learning-evaluation-domains.index');
 Route::post('/learning-evaluation-domains/store/{learningEvaluationDomain?}', [Web\Staff\LearningEvaluationDomainController::class, 'store'])
-  ->name('learning-evaluation-domains.store');
+    ->name('learning-evaluation-domains.store');
 Route::delete('/learning-evaluation-domains/destroy/{learningEvaluationDomain}', [Web\Staff\LearningEvaluationDomainController::class, 'destroy'])
-  ->name('learning-evaluation-domains.destroy');
+    ->name('learning-evaluation-domains.destroy');
 
 Route::get('/learning-evaluations/index/{learningEvaluation?}', [Web\Staff\LearningEvaluationController::class, 'index'])
-  ->name('learning-evaluations.index');
+    ->name('learning-evaluations.index');
 Route::post('/learning-evaluations/store/{learningEvaluation?}', [Web\Staff\LearningEvaluationController::class, 'store'])
-  ->name('learning-evaluations.store');
+    ->name('learning-evaluations.store');
 Route::delete('/learning-evaluations/destroy/{learningEvaluation}', [Web\Staff\LearningEvaluationController::class, 'destroy'])
-  ->name('learning-evaluations.destroy');
+    ->name('learning-evaluations.destroy');
 Route::post('/set-term-result-learning-evaluation/{termResult?}', [Web\Staff\LearningEvaluationController::class, 'setTermResultEvaluation'])
-  ->name('set-term-result-learning-evaluation');
+    ->name('set-term-result-learning-evaluation');
 
 Route::get('/admission-applications/download-recording-template', [Web\Admissions\AdmissionApplicationController::class, 'downloadTemplate'])->name('admission-applications.download-recording-template');
 Route::get('/admission-applications/index/{admissionForm?}', [Web\Admissions\AdmissionApplicationController::class, 'index'])->name('admission-applications.index');
 Route::post('admission-forms/{admissionForm}/admission-applications/upload', [Web\Admissions\AdmissionApplicationController::class, 'uploadAdmissionApplication'])->name('admission-forms.admission-applications.upload');
 Route::resource('/admission-applications', Web\Admissions\AdmissionApplicationController::class)->except('store', 'index');
 Route::post('/admission-applications/{admissionApplication}/update-status', [Web\Admissions\AdmissionApplicationController::class, 'updateStatus'])
-  ->name('admission-applications.update-status');
+    ->name('admission-applications.update-status');
 
 Route::resource('admission-forms', Web\Admissions\AdmissionFormController::class);
 
@@ -378,7 +381,6 @@ Route::get('user-associations/index/{association}', [Web\Associations\UserAssoci
 Route::get('user-associations/create/{morphClass?}/{morphId?}', [Web\Associations\UserAssociationController::class, 'create'])->name('user-associations.create');
 Route::post('user-associations/store', [Web\Associations\UserAssociationController::class, 'store'])->name('user-associations.store');
 Route::delete('user-associations/{userAssociation}/destroy', [Web\Associations\UserAssociationController::class, 'destroy'])->name('user-associations.destroy');
-
 
 include base_path('routes/assignment.php');
 include base_path('routes/attendance.php');
@@ -390,7 +392,7 @@ Route::resource('/fundings', Web\Fundings\FundingsController::class)->only('crea
 Route::get('/fundings/{walletType?}', [Web\Fundings\FundingsController::class, 'index'])->name('fundings.index');
 Route::resource('/result-publications', Web\ResultPublications\ResultPublicationsController::class)->only('index', 'create', 'store');
 
-//A route named 'topics' already exist in 'ccd' route file, hence I use 'inst-topics'
+// A route named 'topics' already exist in 'ccd' route file, hence I use 'inst-topics'
 Route::get('/inst-topics', [Web\Curriculums\TopicController::class, 'index'])->name('inst-topics.index');
 // Route::get('/inst-topics/{topic}/edit', [Web\Curriculums\TopicController::class, 'edit'])->name('inst-topics.edit');
 Route::get('/inst-topics/{topic}/sub-topics', [Web\Curriculums\TopicController::class, 'subTopicIndex'])->name('inst-topics.sub-topics');
@@ -402,11 +404,11 @@ Route::get('/inst-topics/create-edit/{topic?}', [Web\Curriculums\TopicController
 Route::get('/inst-topics/search', [Web\Curriculums\TopicController::class, 'search'])->name('inst-topics.search');
 Route::get('/inst-topics/{topic}', [Web\Curriculums\TopicController::class, 'show'])->name('inst-topics.show');
 
-//== SCHEME OF WORK ::
+// == SCHEME OF WORK ::
 Route::get('/scheme-of-works/{topic}/create', [Web\Curriculums\SchemeOfWorkController::class, 'create'])->name('scheme-of-works.create');
 Route::resource('/scheme-of-works', Web\Curriculums\SchemeOfWorkController::class)->except('create');
 
-//== LESSON PLAN ::
+// == LESSON PLAN ::
 // Route::resource('/lesson-plans', Web\Curriculum\LessonPlanController::class);
 Route::get('/lesson-plans', [Web\Curriculums\LessonPlanController::class, 'index'])->name('lesson-plans.index');
 Route::get('/lesson-plans/{schemeOfWork}/create', [Web\Curriculums\LessonPlanController::class, 'createOrEdit'])->name('lesson-plans.create');
@@ -415,7 +417,7 @@ Route::get('/lesson-plans/{lessonPlan}', [Web\Curriculums\LessonPlanController::
 Route::post('/lesson-plans/{lessonPlan?}', [Web\Curriculums\LessonPlanController::class, 'storeOrUpdate'])->name('lesson-plans.store-or-update');
 Route::delete('/lesson-plans/{lessonPlan}/destroy', [Web\Curriculums\LessonPlanController::class, 'destroy'])->name('lesson-plans.destroy');
 
-//== LESSON NOTES ::
+// == LESSON NOTES ::
 Route::get('/lesson-notes', [Web\Curriculums\LessonNoteController::class, 'index'])->name('lesson-notes.index');
 Route::post('/lesson-notes/generate-ai-note', [Web\Curriculums\LessonNoteController::class, 'generateAiNote'])->name('lesson-notes.gen-ai-note');
 Route::get('/lesson-notes/{lessonPlan}/create', [Web\Curriculums\LessonNoteController::class, 'createOrEdit'])->name('lesson-notes.create');
@@ -426,35 +428,33 @@ Route::post('/lesson-notes/{lessonNote}/toggle-publish', [Web\Curriculums\Lesson
 Route::delete('/lesson-notes/{lessonNote}/destroy', [Web\Curriculums\LessonNoteController::class, 'destroy'])->name('lesson-notes.destroy');
 
 Route::get('/school-activities/search', [Web\SchoolActivities\SchoolActivityController::class, 'search'])
-  ->name('school-activities.search');
+    ->name('school-activities.search');
 Route::resource('/school-activities', Web\SchoolActivities\SchoolActivityController::class);
 
 Route::get('/timetables/{classification}/class', [Web\Timetables\TimetableController::class, 'classTimetable'])
-  ->name('timetables.classTimetable');
+    ->name('timetables.classTimetable');
 Route::resource('/timetables', Web\Timetables\TimetableController::class);
 
-
-
 Route::resource('/payment-notifications', Web\PaymentNotifications\PaymentNotificationController::class);
-//Route::post('/payment-notifications', [Web\PaymentNotifications\PaymentNotificationController::class, 'store'])->name('payment-notifications.store');
+// Route::post('/payment-notifications', [Web\PaymentNotifications\PaymentNotificationController::class, 'store'])->name('payment-notifications.store');
 
-//== BANK ACCOUNT DETAILS 
+// == BANK ACCOUNT DETAILS
 Route::resource('/inst-bank-accounts', Web\BankAccounts\BankAccountController::class)->except('show');
 
 Route::resource('/inst-user-bank-accounts', Web\BankAccounts\InstitutionUserBankAccountController::class)->except('show');
 
-//== WITHDRAWALS
+// == WITHDRAWALS
 Route::resource('/inst-withdrawals', Web\Withdrawals\WithdrawalController::class);
 
 Route::get('/messages/index', [Web\Staff\MessageController::class, 'index'])->name('messages.index');
 Route::post('/messages/store', [Web\Staff\MessageController::class, 'store'])->name('messages.store');
 Route::get('/messages/create', [Web\Staff\MessageController::class, 'create'])->name('messages.create');
 
-//== Expenses and ExpensesCategory
+// == Expenses and ExpensesCategory
 Route::resource('/expenses', Web\Expenses\ExpenseController::class);
 Route::resource('/expense-categories', Web\Expenses\ExpenseCategoryController::class);
 
-//== PAYROLL
+// == PAYROLL
 Route::get('/payroll-adjustments/{payroll}', [Web\Payrolls\PayrollAdjustmentsController::class, 'payrollAdjustments'])->name('payroll-adjustments.payroll');
 Route::get('/payroll-summaries/{payrollSummary}/payroll-adjustments', [Web\Payrolls\PayrollAdjustmentsController::class, 'index'])->name('payroll-summaries.payroll-adjustments.index');
 Route::post('/payroll-summaries/{payrollSummary}/payroll-adjustments', [Web\Payrolls\PayrollAdjustmentsController::class, 'store'])->name('payroll-summaries.payroll-adjustments.store');

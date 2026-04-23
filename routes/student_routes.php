@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Institutions as Web;
+use Illuminate\Support\Facades\Route;
 
-//Institution
-Route::get('dummy', function() {
+// Institution
+Route::get('dummy', function () {
     dd('dmoddsdsd');
 })->name('dummy');
 
@@ -22,18 +22,18 @@ Route::prefix('students/{student}')->name('students.')->middleware(['student.acc
         ->name('result-sheet');
 
     Route::get('transcript', Web\Students\ShowTranscriptController::class)->name('transcript');
-    
+
     Route::get('term-results', Web\Students\ListStudentTermResultController::class)
         ->name('term-results.index');
 
     Route::get('receipts', [Web\Students\StudentFeePaymentController::class, 'receipts'])->name('receipts.index');
-    
+
     Route::get('fee-payments/create', [Web\Students\StudentFeePaymentController::class, 'feePaymentView'])->name('fee-payments.create');
     Route::post('fee-payments/store', [Web\Students\StudentFeePaymentController::class, 'feePaymentStore'])->name('fee-payments.store');
+    Route::get('manual-payments', [Web\Payments\ManualPaymentController::class, 'history'])->name('manual-payments.history');
     Route::get('fee-payments/{receipt}', [Web\Students\StudentFeePaymentController::class, 'index'])->name('fee-payments.index');
 });
-    
-    
+
 Route::get('/session-results/index', [Web\Students\SessionResultController::class, 'index'])
     ->name('session-results.index');
 Route::get('/students/{student}/session-results/index', [Web\Students\SessionResultController::class, 'indexByStudent'])
@@ -44,4 +44,3 @@ Route::get('/session-results/{sessionResult}', [Web\Students\SessionResultContro
     ->name('session-results.show');
 Route::delete('/session-results/{sessionResult}', [Web\Students\SessionResultController::class, 'destroy'])
     ->name('session-results.destroy');
-

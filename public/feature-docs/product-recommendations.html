@@ -1,233 +1,589 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Product Recommendations</title>
-<style>
-:root {
-  --bg: #0f172a;
-  --panel: #111827;
-  --panel-2: #0b1220;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
-  --accent: #38bdf8;
-  --accent-2: #34d399;
-  --border: #1f2937;
-  --warn: #fbbf24;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.5;
-}
-header {
-  padding: 24px;
-  border-bottom: 1px solid var(--border);
-  background: linear-gradient(120deg, #0b1220, #111827 60%, #0f172a);
-}
-header h1 { margin: 0 0 6px; font-size: 26px; }
-header p { margin: 0; color: var(--muted); }
-main { padding: 24px; max-width: 1200px; margin: 0 auto; }
-nav { margin-top: 10px; }
-nav a { color: var(--accent); margin-right: 12px; text-decoration: none; }
-section {
-  margin-bottom: 24px;
-  padding: 18px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-section h2 { margin-top: 0; }
-code, pre {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-}
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
-.card {
-  background: var(--panel-2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px;
-}
-.card h3 { margin: 0 0 6px; font-size: 16px; }
-.card p { margin: 0; color: var(--muted); }
-.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--border); color: var(--muted); }
-.badge.acc { color: var(--accent-2); border-color: #14532d; background: rgba(20,83,45,.2); }
-.badge.warn { color: var(--warn); border-color: #78350f; background: rgba(120,53,15,.2); }
-.detail-list { list-style: none; padding: 0; margin: 0; }
-.detail-list li { padding: 12px 0; border-bottom: 1px dashed var(--border); }
-.detail-list li:last-child { border-bottom: 0; }
-.muted { color: var(--muted); }
-.kicker { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
-</style>
-</head>
-<body>
-<header>
-  <h1>Product Recommendations</h1>
-  <p>EduManager feature expansion, improvement opportunities, and AI enhancement map. Last reviewed 2026-04-13.</p>
-  <nav>
-    <a href="index.html">Overview</a>
-    <a href="features.html">Feature Inventory</a>
-    <a href="product-recommendations.html">Recommendations</a>
-  </nav>
-</header>
-<main>
-<section>
-  <div class="kicker">Baseline</div>
-  <h2>What Exists Today (Observed Feature Areas)</h2>
-  <p class="muted">Based on the current feature inventory and route surface, the platform already covers core school operations: authentication, institution onboarding, manager administration, academic sessions, institution groups, staff and student records, guardian/dependent management, class structure, courses and teaching, CCD content and question banks, assessments and result locking, result processing/publication/reporting, exams and events, offline mock APIs, attendance, admissions, curriculum and lesson plans/notes, evaluation domains, result PINs, fees and payments, wallets and funding, payroll, expenses, messaging and notifications, timetables, live classes, school activities, associations, imports/exports, printable outputs, and integrations (payments, banking, monitoring, AI/document helpers).</p>
-  <p class="muted">For exact source-code references, use <a href="features.html">features.html</a> as the maintained technical inventory.</p>
-</section>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Product Recommendations</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --panel: #111827;
+        --panel-2: #0b1220;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --accent: #38bdf8;
+        --accent-2: #34d399;
+        --border: #1f2937;
+        --warn: #fbbf24;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+      }
+      header {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(120deg, #0b1220, #111827 60%, #0f172a);
+      }
+      header h1 {
+        margin: 0 0 6px;
+        font-size: 26px;
+      }
+      header p {
+        margin: 0;
+        color: var(--muted);
+      }
+      main {
+        padding: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      nav {
+        margin-top: 10px;
+      }
+      nav a {
+        color: var(--accent);
+        margin-right: 12px;
+        text-decoration: none;
+      }
+      section {
+        margin-bottom: 24px;
+        padding: 18px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      section h2 {
+        margin-top: 0;
+      }
+      code,
+      pre {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          'Liberation Mono', 'Courier New', monospace;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 12px;
+      }
+      .card {
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px;
+      }
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 16px;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+      .badge.acc {
+        color: var(--accent-2);
+        border-color: #14532d;
+        background: rgba(20, 83, 45, 0.2);
+      }
+      .badge.warn {
+        color: var(--warn);
+        border-color: #78350f;
+        background: rgba(120, 53, 15, 0.2);
+      }
+      .detail-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .detail-list li {
+        padding: 12px 0;
+        border-bottom: 1px dashed var(--border);
+      }
+      .detail-list li:last-child {
+        border-bottom: 0;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .kicker {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Product Recommendations</h1>
+      <p>
+        EduManager feature expansion, improvement opportunities, and AI
+        enhancement map. Last reviewed 2026-04-13.
+      </p>
+      <nav>
+        <a href="index.html">Overview</a>
+        <a href="features.html">Feature Inventory</a>
+        <a href="product-recommendations.html">Recommendations</a>
+      </nav>
+    </header>
+    <main>
+      <section>
+        <div class="kicker">Baseline</div>
+        <h2>What Exists Today (Observed Feature Areas)</h2>
+        <p class="muted">
+          Based on the current feature inventory and route surface, the platform
+          already covers core school operations: authentication, institution
+          onboarding, manager administration, academic sessions, institution
+          groups, staff and student records, guardian/dependent management,
+          class structure, courses and teaching, CCD content and question banks,
+          assessments and result locking, result
+          processing/publication/reporting, exams and events, offline mock APIs,
+          attendance, admissions, curriculum and lesson plans/notes, evaluation
+          domains, result PINs, fees, instant and manual payments, wallets and
+          funding, payroll, expenses, messaging and notifications, timetables,
+          live classes, school activities, associations, imports/exports,
+          printable outputs, and integrations (payments, banking, monitoring,
+          AI/document helpers).
+        </p>
+        <p class="muted">
+          For exact source-code references, use
+          <a href="features.html">features.html</a> as the maintained technical
+          inventory.
+        </p>
+      </section>
 
-<section>
-  <div class="kicker">Expansion</div>
-  <h2>Worthy Features To Add (Comprehensive Product Coverage)</h2>
-  <div class="grid">
-    <div class="card"><h3>Student Lifecycle Hub</h3><p>Student journey map (admission → enrollment → progression → alumni) with status transitions, required tasks, and automated checklists. This reduces drop-offs and makes every transition auditable.</p></div>
-    <div class="card"><h3>Parent Portal &amp; Family Accounts</h3><p>Family-level billing, unified access to multiple dependents, approvals for trips and policies, and event RSVP. It improves guardian engagement and payment conversion.</p></div>
-    <div class="card"><h3>Behavior &amp; Discipline Management</h3><p>Incident logging, behavior points, restorative actions, and communication logs. This is vital for compliance, counseling, and safety visibility.</p></div>
-    <div class="card"><h3>Special Education &amp; Learning Support</h3><p>IEP/learning plan tracking, accommodations, and specialist notes with role-based access. Supports inclusivity and regulatory obligations.</p></div>
-    <div class="card"><h3>Library &amp; Learning Resources</h3><p>Catalog, check-in/out, fines, digital resources, and reading lists tied to curricula. Connects learning materials to classes and homework.</p></div>
-    <div class="card"><h3>Homework &amp; Assignment System</h3><p>Assignments with submissions, rubrics, plagiarism checks, and feedback loops. It completes the learning loop alongside assessments.</p></div>
-    <div class="card"><h3>Continuous Assessment Planner</h3><p>Assessment calendar, weight distribution, and rule checks to avoid overload and ensure policy compliance before scores go live.</p></div>
-    <div class="card"><h3>Student Wellness &amp; Counseling</h3><p>Confidential counselor notes, referral flows, appointment scheduling, and follow-ups. Keeps sensitive care in one secure place.</p></div>
-    <div class="card"><h3>Transportation Management</h3><p>Bus routes, stops, manifests, vehicle maintenance, and parent notifications for delays. This is high-value for daily operations.</p></div>
-    <div class="card"><h3>Meal Plans &amp; Cafeteria</h3><p>Meal ordering, dietary restrictions, daily menus, and payment tie-in. Improves service planning and parent satisfaction.</p></div>
-    <div class="card"><h3>Hostel/Dormitory Operations</h3><p>Bed assignment, attendance, incident logs, and fees. Important for boarding schools and multi-campus institutions.</p></div>
-    <div class="card"><h3>Asset &amp; Inventory Management</h3><p>Equipment tracking, depreciation, custody, and maintenance schedules. Prevents losses and supports audits.</p></div>
-    <div class="card"><h3>Facility Booking</h3><p>Room and resource scheduling with conflict detection and approvals. Reduces calendar chaos for halls, labs, and sports.</p></div>
-    <div class="card"><h3>Unified Document Center</h3><p>Policy documents, handbooks, consent forms, and storage of student records with retention rules. Simplifies compliance.</p></div>
-    <div class="card"><h3>Alumni &amp; Fundraising</h3><p>Alumni directory, events, donations, and sponsorship tracking. Helpful for community engagement and funding.</p></div>
-    <div class="card"><h3>Scholarships &amp; Financial Aid</h3><p>Eligibility rules, award workflows, and renewal checks. Links to fees so discounts are consistent and auditable.</p></div>
-    <div class="card"><h3>HR &amp; Appraisals</h3><p>Recruitment pipeline, contract management, staff KPIs, and appraisal cycles. Complements payroll with performance management.</p></div>
-    <div class="card"><h3>Compliance &amp; Accreditation</h3><p>Accreditation timelines, evidence logs, and audit readiness checklists. Reduces risk and prepares for inspections.</p></div>
-    <div class="card"><h3>Data Warehouse &amp; BI</h3><p>Analytics workspace with configurable KPIs, cohort analysis, and export APIs for advanced reporting tools.</p></div>
-    <div class="card"><h3>Multi-Channel Communications</h3><p>SMS, email, WhatsApp, and push with templates, scheduling, and delivery tracking. Extends internal messaging to real-world channels.</p></div>
-    <div class="card"><h3>Mobile Apps</h3><p>Dedicated staff, student, and guardian apps with offline support and instant notifications. Improves adoption and daily usage.</p></div>
-    <div class="card"><h3>Integration Marketplace</h3><p>Prebuilt connectors for LMS, video conferencing, identity providers, accounting, and payment processors. Speeds onboarding.</p></div>
-    <div class="card"><h3>Public Site &amp; Admissions Microsites</h3><p>Embeddable admission forms, event pages, and school landing pages synced to CRM. Increases conversion and brand control.</p></div>
-    <div class="card"><h3>Fee Plans &amp; Dunning</h3><p>Installment plans, automated reminders, late fee rules, and debt recovery workflows. Helps cash flow and reduces arrears.</p></div>
-    <div class="card"><h3>Teacher Collaboration Hub</h3><p>Shared lesson libraries, co-teaching workflows, and professional development records. Improves consistency across classes.</p></div>
-  </div>
-</section>
+      <section>
+        <div class="kicker">Expansion</div>
+        <h2>Worthy Features To Add (Comprehensive Product Coverage)</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Student Lifecycle Hub</h3>
+            <p>
+              Student journey map (admission → enrollment → progression →
+              alumni) with status transitions, required tasks, and automated
+              checklists. This reduces drop-offs and makes every transition
+              auditable.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Parent Portal &amp; Family Accounts</h3>
+            <p>
+              Family-level billing, unified access to multiple dependents,
+              approvals for trips and policies, and event RSVP. It improves
+              guardian engagement and payment conversion.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Behavior &amp; Discipline Management</h3>
+            <p>
+              Incident logging, behavior points, restorative actions, and
+              communication logs. This is vital for compliance, counseling, and
+              safety visibility.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Special Education &amp; Learning Support</h3>
+            <p>
+              IEP/learning plan tracking, accommodations, and specialist notes
+              with role-based access. Supports inclusivity and regulatory
+              obligations.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Library &amp; Learning Resources</h3>
+            <p>
+              Catalog, check-in/out, fines, digital resources, and reading lists
+              tied to curricula. Connects learning materials to classes and
+              homework.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Homework &amp; Assignment System</h3>
+            <p>
+              Assignments with submissions, rubrics, plagiarism checks, and
+              feedback loops. It completes the learning loop alongside
+              assessments.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Continuous Assessment Planner</h3>
+            <p>
+              Assessment calendar, weight distribution, and rule checks to avoid
+              overload and ensure policy compliance before scores go live.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Student Wellness &amp; Counseling</h3>
+            <p>
+              Confidential counselor notes, referral flows, appointment
+              scheduling, and follow-ups. Keeps sensitive care in one secure
+              place.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Transportation Management</h3>
+            <p>
+              Bus routes, stops, manifests, vehicle maintenance, and parent
+              notifications for delays. This is high-value for daily operations.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Meal Plans &amp; Cafeteria</h3>
+            <p>
+              Meal ordering, dietary restrictions, daily menus, and payment
+              tie-in. Improves service planning and parent satisfaction.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Hostel/Dormitory Operations</h3>
+            <p>
+              Bed assignment, attendance, incident logs, and fees. Important for
+              boarding schools and multi-campus institutions.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Asset &amp; Inventory Management</h3>
+            <p>
+              Equipment tracking, depreciation, custody, and maintenance
+              schedules. Prevents losses and supports audits.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Facility Booking</h3>
+            <p>
+              Room and resource scheduling with conflict detection and
+              approvals. Reduces calendar chaos for halls, labs, and sports.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Unified Document Center</h3>
+            <p>
+              Policy documents, handbooks, consent forms, and storage of student
+              records with retention rules. Simplifies compliance.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Alumni &amp; Fundraising</h3>
+            <p>
+              Alumni directory, events, donations, and sponsorship tracking.
+              Helpful for community engagement and funding.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Scholarships &amp; Financial Aid</h3>
+            <p>
+              Eligibility rules, award workflows, and renewal checks. Links to
+              fees so discounts are consistent and auditable.
+            </p>
+          </div>
+          <div class="card">
+            <h3>HR &amp; Appraisals</h3>
+            <p>
+              Recruitment pipeline, contract management, staff KPIs, and
+              appraisal cycles. Complements payroll with performance management.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Compliance &amp; Accreditation</h3>
+            <p>
+              Accreditation timelines, evidence logs, and audit readiness
+              checklists. Reduces risk and prepares for inspections.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Data Warehouse &amp; BI</h3>
+            <p>
+              Analytics workspace with configurable KPIs, cohort analysis, and
+              export APIs for advanced reporting tools.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Multi-Channel Communications</h3>
+            <p>
+              SMS, email, WhatsApp, and push with templates, scheduling, and
+              delivery tracking. Extends internal messaging to real-world
+              channels.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Mobile Apps</h3>
+            <p>
+              Dedicated staff, student, and guardian apps with offline support
+              and instant notifications. Improves adoption and daily usage.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Integration Marketplace</h3>
+            <p>
+              Prebuilt connectors for LMS, video conferencing, identity
+              providers, accounting, and payment processors. Speeds onboarding.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Public Site &amp; Admissions Microsites</h3>
+            <p>
+              Embeddable admission forms, event pages, and school landing pages
+              synced to CRM. Increases conversion and brand control.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Fee Plans &amp; Dunning</h3>
+            <p>
+              Installment plans, automated reminders, late fee rules, and debt
+              recovery workflows. Helps cash flow and reduces arrears.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Teacher Collaboration Hub</h3>
+            <p>
+              Shared lesson libraries, co-teaching workflows, and professional
+              development records. Improves consistency across classes.
+            </p>
+          </div>
+        </div>
+      </section>
 
-<section>
-  <div class="kicker">Improvements</div>
-  <h2>Existing Features That Need Improvement</h2>
-  <p class="muted">These are improvements to current feature areas already present in EduManager. They focus on scale, usability, auditability, and reducing manual effort.</p>
-  <ul class="detail-list">
-    <li>
-      <strong>Admissions</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Add pipeline stages, SLA timers, auto-reminders, admission scoring rubrics, and conversion dashboards. This will reduce bottlenecks and improve intake quality.</div>
-    </li>
-    <li>
-      <strong>Students &amp; Guardians</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Improve bulk updates, student history timelines, and guardian self-service updates with approval flows. It reduces admin workload and improves data accuracy.</div>
-    </li>
-    <li>
-      <strong>Classifications &amp; Promotions</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Introduce promotion rule templates, preview simulations, and rollback safety checks. This prevents errors and clarifies the impact of mass changes.</div>
-    </li>
-    <li>
-      <strong>Courses, Curriculum, and Lesson Plans</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Add lesson plan versioning, attachment support, and alignment with learning outcomes. This helps teachers reuse content and stay compliant with curriculum plans.</div>
-    </li>
-    <li>
-      <strong>Assessments &amp; Results</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Improve score validation, moderation workflows, and result dispute resolution with audit logs. Increases trust and reduces correction loops.</div>
-    </li>
-    <li>
-      <strong>Attendance</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Add quick capture modes, device integrations, and analytics for chronic absenteeism. This turns attendance into actionable insights.</div>
-    </li>
-    <li>
-      <strong>Fees &amp; Payments</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Improve reconciliation, multi-year fee planning, discounts/scholarships, and arrears management. Aligns finance with real-world payment behavior.</div>
-    </li>
-    <li>
-      <strong>Payroll</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Add statutory deductions, payslip customization, and approval workflows. This makes payroll compliant and easier to audit.</div>
-    </li>
-    <li>
-      <strong>Messaging &amp; Notifications</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Expand to multi-channel delivery, template management, scheduling, and delivery analytics. Improves communication reliability and visibility.</div>
-    </li>
-    <li>
-      <strong>Exams &amp; Events</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Introduce exam timetable conflict detection, invigilator allocation, and exam pack generation. Simplifies complex scheduling.</div>
-    </li>
-    <li>
-      <strong>Timetables &amp; Activities</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Add auto-scheduling, teacher load balancing, and clash detection. Reduces manual timetable tuning.</div>
-    </li>
-    <li>
-      <strong>Institution Onboarding &amp; Setup</strong> <span class="badge warn">Enhance</span>
-      <div class="muted">Strengthen setup checklists with guided imports, sample data, and progress tracking. Speeds up time-to-value.</div>
-    </li>
-  </ul>
-</section>
+      <section>
+        <div class="kicker">Improvements</div>
+        <h2>Existing Features That Need Improvement</h2>
+        <p class="muted">
+          These are improvements to current feature areas already present in
+          EduManager. They focus on scale, usability, auditability, and reducing
+          manual effort.
+        </p>
+        <ul class="detail-list">
+          <li>
+            <strong>Admissions</strong> <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Add pipeline stages, SLA timers, auto-reminders, admission scoring
+              rubrics, and conversion dashboards. This will reduce bottlenecks
+              and improve intake quality.
+            </div>
+          </li>
+          <li>
+            <strong>Students &amp; Guardians</strong>
+            <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Improve bulk updates, student history timelines, and guardian
+              self-service updates with approval flows. It reduces admin
+              workload and improves data accuracy.
+            </div>
+          </li>
+          <li>
+            <strong>Classifications &amp; Promotions</strong>
+            <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Introduce promotion rule templates, preview simulations, and
+              rollback safety checks. This prevents errors and clarifies the
+              impact of mass changes.
+            </div>
+          </li>
+          <li>
+            <strong>Courses, Curriculum, and Lesson Plans</strong>
+            <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Add lesson plan versioning, attachment support, and alignment with
+              learning outcomes. This helps teachers reuse content and stay
+              compliant with curriculum plans.
+            </div>
+          </li>
+          <li>
+            <strong>Assessments &amp; Results</strong>
+            <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Improve score validation, moderation workflows, and result dispute
+              resolution with audit logs. Increases trust and reduces correction
+              loops.
+            </div>
+          </li>
+          <li>
+            <strong>Attendance</strong> <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Add quick capture modes, device integrations, and analytics for
+              chronic absenteeism. This turns attendance into actionable
+              insights.
+            </div>
+          </li>
+          <li>
+            <strong>Fees &amp; Payments</strong>
+            <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Improve reconciliation around manual confirmations, multi-year fee
+              planning, discounts/scholarships, and arrears management. Aligns
+              finance with real-world payment behavior.
+            </div>
+          </li>
+          <li>
+            <strong>Payroll</strong> <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Add statutory deductions, payslip customization, and approval
+              workflows. This makes payroll compliant and easier to audit.
+            </div>
+          </li>
+          <li>
+            <strong>Messaging &amp; Notifications</strong>
+            <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Expand to multi-channel delivery, template management, scheduling,
+              and delivery analytics. Improves communication reliability and
+              visibility.
+            </div>
+          </li>
+          <li>
+            <strong>Exams &amp; Events</strong>
+            <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Introduce exam timetable conflict detection, invigilator
+              allocation, and exam pack generation. Simplifies complex
+              scheduling.
+            </div>
+          </li>
+          <li>
+            <strong>Timetables &amp; Activities</strong>
+            <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Add auto-scheduling, teacher load balancing, and clash detection.
+              Reduces manual timetable tuning.
+            </div>
+          </li>
+          <li>
+            <strong>Institution Onboarding &amp; Setup</strong>
+            <span class="badge warn">Enhance</span>
+            <div class="muted">
+              Strengthen setup checklists with guided imports, sample data, and
+              progress tracking. Speeds up time-to-value.
+            </div>
+          </li>
+        </ul>
+      </section>
 
-<section>
-  <div class="kicker">AI Opportunities</div>
-  <h2>Where AI Can Deliver Better Tools and Experience</h2>
-  <div class="grid">
-    <div class="card">
-      <h3>AI Result Reviewer</h3>
-      <p>Flag outliers, missing scores, and suspicious grade shifts before results are published. It reduces costly corrections and builds trust.</p>
-    </div>
-    <div class="card">
-      <h3>Lesson Plan &amp; Worksheet Generator</h3>
-      <p>Generate lesson outlines, differentiated activities, and printable worksheets aligned to the curriculum map. Saves teacher time.</p>
-    </div>
-    <div class="card">
-      <h3>Student Progress Insights</h3>
-      <p>Provide personalized progress summaries for students and guardians, with clear next-step recommendations. Improves engagement.</p>
-    </div>
-    <div class="card">
-      <h3>Behavior &amp; Attendance Risk Signals</h3>
-      <p>Early warning indicators based on attendance, discipline, and performance data. Helps leadership intervene early.</p>
-    </div>
-    <div class="card">
-      <h3>AI Communication Assistant</h3>
-      <p>Draft notices, fee reminders, and policy updates with tone control and translation. Maintains consistent messaging.</p>
-    </div>
-    <div class="card">
-      <h3>Smart Search &amp; Ask-Your-Data</h3>
-      <p>Natural-language queries over students, fees, and results. This makes analytics accessible to non-technical staff.</p>
-    </div>
-    <div class="card">
-      <h3>Auto-Tagging &amp; Document Filing</h3>
-      <p>Classify uploads (reports, letters, consent forms) and auto-attach to the right student or class. Reduces filing errors.</p>
-    </div>
-    <div class="card">
-      <h3>Exam Paper Builder</h3>
-      <p>Suggest questions from the bank, balance difficulty, and format papers quickly. Saves time and standardizes quality.</p>
-    </div>
-    <div class="card">
-      <h3>Finance Anomaly Detection</h3>
-      <p>Detect unusual payment patterns, duplicate receipts, or fee waivers. Increases financial control and audit readiness.</p>
-    </div>
-    <div class="card">
-      <h3>Support Copilot</h3>
-      <p>Answer staff how-to questions using internal documentation and product knowledge. Reduces support load.</p>
-    </div>
-  </div>
-  <p class="muted" style="margin-top:12px;">AI features should include data access controls, human approvals for sensitive actions, and clear audit trails. Start with low-risk productivity features, then expand to higher-impact decision support once trust is established.</p>
-</section>
+      <section>
+        <div class="kicker">AI Opportunities</div>
+        <h2>Where AI Can Deliver Better Tools and Experience</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>AI Result Reviewer</h3>
+            <p>
+              Flag outliers, missing scores, and suspicious grade shifts before
+              results are published. It reduces costly corrections and builds
+              trust.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Lesson Plan &amp; Worksheet Generator</h3>
+            <p>
+              Generate lesson outlines, differentiated activities, and printable
+              worksheets aligned to the curriculum map. Saves teacher time.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Student Progress Insights</h3>
+            <p>
+              Provide personalized progress summaries for students and
+              guardians, with clear next-step recommendations. Improves
+              engagement.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Behavior &amp; Attendance Risk Signals</h3>
+            <p>
+              Early warning indicators based on attendance, discipline, and
+              performance data. Helps leadership intervene early.
+            </p>
+          </div>
+          <div class="card">
+            <h3>AI Communication Assistant</h3>
+            <p>
+              Draft notices, fee reminders, and policy updates with tone control
+              and translation. Maintains consistent messaging.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Smart Search &amp; Ask-Your-Data</h3>
+            <p>
+              Natural-language queries over students, fees, and results. This
+              makes analytics accessible to non-technical staff.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Auto-Tagging &amp; Document Filing</h3>
+            <p>
+              Classify uploads (reports, letters, consent forms) and auto-attach
+              to the right student or class. Reduces filing errors.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Exam Paper Builder</h3>
+            <p>
+              Suggest questions from the bank, balance difficulty, and format
+              papers quickly. Saves time and standardizes quality.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Finance Anomaly Detection</h3>
+            <p>
+              Detect unusual payment patterns, duplicate receipts, or fee
+              waivers. Increases financial control and audit readiness.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Support Copilot</h3>
+            <p>
+              Answer staff how-to questions using internal documentation and
+              product knowledge. Reduces support load.
+            </p>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 12px">
+          AI features should include data access controls, human approvals for
+          sensitive actions, and clear audit trails. Start with low-risk
+          productivity features, then expand to higher-impact decision support
+          once trust is established.
+        </p>
+      </section>
 
-<section>
-  <div class="kicker">Next Steps</div>
-  <h2>Suggested Sequencing</h2>
-  <ul class="detail-list">
-    <li><strong>Phase 1 (High Impact, Low Risk)</strong><div class="muted">Multi-channel messaging, assignment system enhancements, improved admissions pipeline, and AI drafting tools.</div></li>
-    <li><strong>Phase 2 (Operational Depth)</strong><div class="muted">Transportation, asset inventory, fee plan automation, and curriculum resource management.</div></li>
-    <li><strong>Phase 3 (Strategic Expansion)</strong><div class="muted">Alumni, fundraising, advanced BI, and AI risk/insight systems.</div></li>
-  </ul>
-</section>
-
-</main>
-</body>
+      <section>
+        <div class="kicker">Next Steps</div>
+        <h2>Suggested Sequencing</h2>
+        <ul class="detail-list">
+          <li>
+            <strong>Phase 1 (High Impact, Low Risk)</strong>
+            <div class="muted">
+              Multi-channel messaging, assignment system enhancements, improved
+              admissions pipeline, and AI drafting tools.
+            </div>
+          </li>
+          <li>
+            <strong>Phase 2 (Operational Depth)</strong>
+            <div class="muted">
+              Transportation, asset inventory, fee plan automation, and
+              curriculum resource management.
+            </div>
+          </li>
+          <li>
+            <strong>Phase 3 (Strategic Expansion)</strong>
+            <div class="muted">
+              Alumni, fundraising, advanced BI, and AI risk/insight systems.
+            </div>
+          </li>
+        </ul>
+      </section>
+    </main>
+  </body>
 </html>

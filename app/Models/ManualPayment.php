@@ -11,55 +11,69 @@ use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-// User: The user making the payment or inst admin user
-// Payable: The entity making the payment
-// Paymentable: The entity this payment is meant for, it is nullable
-class PaymentReference extends Model implements PaymentRecord
+class ManualPayment extends Model implements PaymentRecord
 {
-    use HasFactory, InstitutionScope;
+    use HasFactory, InstitutionScope, SoftDeletes;
 
     protected $guarded = [];
 
     protected $casts = [
         'institution_id' => 'integer',
         'user_id' => 'integer',
+        'bank_account_id' => 'integer',
         'payable_id' => 'integer',
         'paymentable_id' => 'integer',
+        'confirmed_by_user_id' => 'integer',
+        'rejected_by_user_id' => 'integer',
+        'amount' => 'float',
+        'paid_at' => 'datetime',
+        'reviewed_at' => 'datetime',
         'processed_at' => 'datetime',
-        'merchant' => PaymentMerchantType::class,
-        'status' => PaymentStatus::class,
         'method' => PaymentMethod::class,
         'purpose' => PaymentPurpose::class,
+        'status' => PaymentStatus::class,
         'meta' => AsArrayObject::class,
         'payload' => AsArrayObject::class,
     ];
 
+    public static function generateReference(): string
+    {
+        return (string) Str::orderedUuid();
+    }
+
     public function confirmPayment(?User $user = null): void
     {
-        $this->fill(['status' => PaymentStatus::Confirmed])->save();
+        $this->fill([
+            'status' => PaymentStatus::Confirmed,
+            'confirmed_by_user_id' => $user?->id ?? currentUser()?->id,
+            'reviewed_at' => now(),
+            'processed_at' => now(),
+        ])->save();
     }
 
     public function cancelPayment(
         ?User $user = null,
         ?string $reviewNote = null
     ): void {
-        $this->fill(['status' => PaymentStatus::Cancelled])->save();
+        $this->fill([
+            'status' => PaymentStatus::Cancelled,
+            'rejected_by_user_id' => $user?->id,
+            'review_note' => $reviewNote,
+            'reviewed_at' => now(),
+        ])->save();
     }
 
     public function getPaymentMerchant(): PaymentMerchantType
     {
-        return $this->merchant;
+        return PaymentMerchantType::Manual;
     }
 
     public function getPaymentMethod(): PaymentMethod
     {
-        if ($this->merchant === PaymentMerchantType::UserWallet) {
-            return PaymentMethod::Wallet;
-        }
-
-        return $this->method ?? PaymentMethod::Card;
+        return $this->method ?? PaymentMethod::Bank;
     }
 
     public function getInstitution(): Institution
@@ -112,21 +126,11 @@ class PaymentReference extends Model implements PaymentRecord
         return $this;
     }
 
-    public function scopeConfirmed($query)
+    public function scopePendingFirst($query)
     {
-        return $query->where('payment_references.status', PaymentStatus::Confirmed);
-    }
-
-    public function scopeIsProcessed($query, $forProcessed = true)
-    {
-        return $forProcessed
-          ? $query->whereNotNull('processed_at')
-          : $query->whereNull('processed_at');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
+        return $query->orderByRaw('status = ? desc', [
+            PaymentStatus::Pending->value,
+        ]);
     }
 
     public function institution()
@@ -134,24 +138,31 @@ class PaymentReference extends Model implements PaymentRecord
         return $this->belongsTo(Institution::class);
     }
 
-    public static function generateReference($username = null): string
+    public function user()
     {
-        return Str::orderedUuid();
+        return $this->belongsTo(User::class);
     }
 
-    /**
-     * The entity making the payment. Cannot be null
-     * Morphs to User | InstitutionGroup
-     */
+    public function bankAccount()
+    {
+        return $this->belongsTo(BankAccount::class);
+    }
+
+    public function confirmedBy()
+    {
+        return $this->belongsTo(User::class, 'confirmed_by_user_id');
+    }
+
+    public function rejectedBy()
+    {
+        return $this->belongsTo(User::class, 'rejected_by_user_id');
+    }
+
     public function payable()
     {
         return $this->morphTo();
     }
 
-    /**
-     * The entity this payment is meant for, it is nullable
-     * Morphs to AdmissionForm|null
-     */
     public function paymentable()
     {
         return $this->morphTo();

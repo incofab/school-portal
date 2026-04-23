@@ -2,106 +2,108 @@
 
 namespace App\Support;
 
-use App\Models as Models;
+use App\Models;
 
 class MorphMap
 {
-  static function key($value): string|null
-  {
-    return array_search($value, self::MAP);
-  }
-
-  static function keys(array $values): array
-  {
-    $keys = [];
-    foreach ($values as $key => $value) {
-      if ($searchKey = array_search($value, self::MAP)) {
-        $keys[] = $searchKey;
-      }
+    public static function key($value): ?string
+    {
+        return array_search($value, self::MAP);
     }
-    return $keys;
-  }
 
-  static function value($key): string|null
-  {
-    return self::MAP[$key] ?? null;
-  }
+    public static function keys(array $values): array
+    {
+        $keys = [];
+        foreach ($values as $key => $value) {
+            if ($searchKey = array_search($value, self::MAP)) {
+                $keys[] = $searchKey;
+            }
+        }
 
-  const MAP = [
-    'academic-session' => Models\AcademicSession::class,
-    'admin' => Models\Admin::class,
-    'admission-application' => Models\AdmissionApplication::class,
-    'admission-form' => Models\AdmissionForm::class,
-    'admission-form-purchase' => Models\AdmissionFormPurchase::class,
-    'application-guardian' => Models\ApplicationGuardian::class,
-    'assessment' => Models\Assessment::class,
-    'assignment' => Models\Assignment::class,
-    'assignment-submission' => Models\AssignmentSubmission::class,
-    'association' => Models\Association::class,
-    'attendance' => Models\Attendance::class,
-    'bank' => Models\Bank::class,
-    'bank-account' => Models\BankAccount::class,
-    'classification' => Models\Classification::class,
-    'classification-group' => Models\ClassificationGroup::class,
-    'class-division' => Models\ClassDivision::class,
-    'class-result-info' => Models\ClassResultInfo::class,
-    'commission' => Models\Commission::class,
-    'course' => Models\Course::class,
-    'course-result' => Models\CourseResult::class,
-    'course-result-info' => Models\CourseResultInfo::class,
-    'course-session' => Models\CourseSession::class,
-    'course-teacher' => Models\CourseTeacher::class,
-    'event' => Models\Event::class,
-    'event-courseable' => Models\EventCourseable::class,
-    'exam' => Models\Exam::class,
-    'exam-courseable' => Models\ExamCourseable::class,
-    'expense' => Models\Expense::class,
-    'expense-category' => Models\ExpenseCategory::class,
-    'fee' => Models\Fee::class,
-    'fee-payment' => Models\FeePayment::class,
-    'funding' => Models\Funding::class,
-    'user-transaction' => Models\UserTransaction::class,
-    'guardian-student' => Models\GuardianStudent::class,
-    'institution' => Models\Institution::class,
-    'institution-group' => Models\InstitutionGroup::class,
-    'institution-setting' => Models\InstitutionSetting::class,
-    'institution-user' => Models\InstitutionUser::class,
-    'instruction' => Models\Instruction::class,
-    'learning-evaluation' => Models\LearningEvaluation::class,
-    'learning-evaluation-domain' => Models\LearningEvaluationDomain::class,
-    'live-class' => Models\LiveClass::class,
-    'message' => Models\Message::class,
-    'message-recipient' => Models\MessageRecipient::class,
-    'partner' => Models\Partner::class,
-    'passage' => Models\Passage::class,
-    'payment-reference' => Models\PaymentReference::class,
-    'payroll' => Models\Payroll::class,
-    'payroll-adjustment' => Models\PayrollAdjustment::class,
-    'payroll-adjustment-type' => Models\PayrollAdjustmentType::class,
-    'payroll-summary' => Models\PayrollSummary::class,
-    'pin' => Models\Pin::class,
-    'pin-generator' => Models\PinGenerator::class,
-    'question' => Models\Question::class,
-    'receipt' => Models\Receipt::class,
-    'registration-request' => Models\RegistrationRequest::class,
-    'reserved-account' => Models\ReservedAccount::class,
-    'result-comment-template' => Models\ResultCommentTemplate::class,
-    'result-publication' => Models\ResultPublication::class,
-    'salary' => Models\Salary::class,
-    'salary-type' => Models\SalaryType::class,
-    'school-activity' => Models\SchoolActivity::class,
-    'school-notification' => Models\SchoolNotification::class,
-    'session-result' => Models\SessionResult::class,
-    'student' => Models\Student::class,
-    'student-class-movement' => Models\StudentClassMovement::class,
-    'summary' => Models\Summary::class,
-    'term-result' => Models\TermResult::class,
-    'theory-question' => Models\TheoryQuestion::class,
-    'token-user' => Models\TokenUser::class,
-    'topic' => Models\Topic::class,
-    'transaction' => Models\Transaction::class,
-    'user' => Models\User::class,
-    'withdrawal' => Models\Withdrawal::class,
-    'user-association' => Models\UserAssociation::class
-  ];
+        return $keys;
+    }
+
+    public static function value($key): ?string
+    {
+        return self::MAP[$key] ?? null;
+    }
+
+    const MAP = [
+        'academic-session' => Models\AcademicSession::class,
+        'admin' => Models\Admin::class,
+        'admission-application' => Models\AdmissionApplication::class,
+        'admission-form' => Models\AdmissionForm::class,
+        'admission-form-purchase' => Models\AdmissionFormPurchase::class,
+        'application-guardian' => Models\ApplicationGuardian::class,
+        'assessment' => Models\Assessment::class,
+        'assignment' => Models\Assignment::class,
+        'assignment-submission' => Models\AssignmentSubmission::class,
+        'association' => Models\Association::class,
+        'attendance' => Models\Attendance::class,
+        'bank' => Models\Bank::class,
+        'bank-account' => Models\BankAccount::class,
+        'classification' => Models\Classification::class,
+        'classification-group' => Models\ClassificationGroup::class,
+        'class-division' => Models\ClassDivision::class,
+        'class-result-info' => Models\ClassResultInfo::class,
+        'commission' => Models\Commission::class,
+        'course' => Models\Course::class,
+        'course-result' => Models\CourseResult::class,
+        'course-result-info' => Models\CourseResultInfo::class,
+        'course-session' => Models\CourseSession::class,
+        'course-teacher' => Models\CourseTeacher::class,
+        'event' => Models\Event::class,
+        'event-courseable' => Models\EventCourseable::class,
+        'exam' => Models\Exam::class,
+        'exam-courseable' => Models\ExamCourseable::class,
+        'expense' => Models\Expense::class,
+        'expense-category' => Models\ExpenseCategory::class,
+        'fee' => Models\Fee::class,
+        'fee-payment' => Models\FeePayment::class,
+        'funding' => Models\Funding::class,
+        'user-transaction' => Models\UserTransaction::class,
+        'guardian-student' => Models\GuardianStudent::class,
+        'institution' => Models\Institution::class,
+        'institution-group' => Models\InstitutionGroup::class,
+        'institution-setting' => Models\InstitutionSetting::class,
+        'institution-user' => Models\InstitutionUser::class,
+        'instruction' => Models\Instruction::class,
+        'learning-evaluation' => Models\LearningEvaluation::class,
+        'learning-evaluation-domain' => Models\LearningEvaluationDomain::class,
+        'live-class' => Models\LiveClass::class,
+        'manual-payment' => Models\ManualPayment::class,
+        'message' => Models\Message::class,
+        'message-recipient' => Models\MessageRecipient::class,
+        'partner' => Models\Partner::class,
+        'passage' => Models\Passage::class,
+        'payment-reference' => Models\PaymentReference::class,
+        'payroll' => Models\Payroll::class,
+        'payroll-adjustment' => Models\PayrollAdjustment::class,
+        'payroll-adjustment-type' => Models\PayrollAdjustmentType::class,
+        'payroll-summary' => Models\PayrollSummary::class,
+        'pin' => Models\Pin::class,
+        'pin-generator' => Models\PinGenerator::class,
+        'question' => Models\Question::class,
+        'receipt' => Models\Receipt::class,
+        'registration-request' => Models\RegistrationRequest::class,
+        'reserved-account' => Models\ReservedAccount::class,
+        'result-comment-template' => Models\ResultCommentTemplate::class,
+        'result-publication' => Models\ResultPublication::class,
+        'salary' => Models\Salary::class,
+        'salary-type' => Models\SalaryType::class,
+        'school-activity' => Models\SchoolActivity::class,
+        'school-notification' => Models\SchoolNotification::class,
+        'session-result' => Models\SessionResult::class,
+        'student' => Models\Student::class,
+        'student-class-movement' => Models\StudentClassMovement::class,
+        'summary' => Models\Summary::class,
+        'term-result' => Models\TermResult::class,
+        'theory-question' => Models\TheoryQuestion::class,
+        'token-user' => Models\TokenUser::class,
+        'topic' => Models\Topic::class,
+        'transaction' => Models\Transaction::class,
+        'user' => Models\User::class,
+        'withdrawal' => Models\Withdrawal::class,
+        'user-association' => Models\UserAssociation::class,
+    ];
 }

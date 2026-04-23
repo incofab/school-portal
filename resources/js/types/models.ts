@@ -621,6 +621,35 @@ export interface FeePayment extends InstitutionRow {
   payable?: User;
 }
 
+export interface ManualPayment extends InstitutionRow {
+  user_id?: number;
+  bank_account_id?: number;
+  payable_type?: string;
+  payable_id?: number;
+  paymentable_type?: string;
+  paymentable_id?: number;
+  reference: string;
+  amount: number;
+  purpose: string;
+  method?: string;
+  status: string;
+  depositor_name?: string;
+  proof_url?: string;
+  paid_at?: string;
+  reviewed_at?: string;
+  processed_at?: string;
+  review_note?: string;
+  payload?: {
+    note?: string;
+  };
+  user?: User;
+  payable?: User;
+  paymentable?: Fee | AdmissionForm;
+  bank_account?: BankAccount;
+  confirmed_by?: User;
+  rejected_by?: User;
+}
+
 export interface InstitutionSetting extends InstitutionRow {
   key: string;
   value: string | any;

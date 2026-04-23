@@ -54,6 +54,7 @@ export default function SideBarLayout() {
   const studentOrAlumni = [
     InstitutionUserType.Student,
     InstitutionUserType.Alumni,
+    InstitutionUserType.Guardian,
   ];
 
   const menus: MenuListType[] = [
@@ -565,6 +566,11 @@ export default function SideBarLayout() {
           roles: accountant,
         },
         {
+          label: 'Manual Payments',
+          route: instRoute('manual-payments.index'),
+          roles: accountant,
+        },
+        {
           label: 'Receipts',
           route: instRoute('receipts.index'),
           roles: accountant,
@@ -579,6 +585,13 @@ export default function SideBarLayout() {
               {
                 label: 'Pay Fees',
                 route: instRoute('students.fee-payments.create', [student.id]),
+                roles: studentOrAlumni,
+              },
+              {
+                label: 'Manual Payments',
+                route: instRoute('students.manual-payments.history', [
+                  student.id,
+                ]),
                 roles: studentOrAlumni,
               },
             ]

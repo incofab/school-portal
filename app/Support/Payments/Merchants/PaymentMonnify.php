@@ -1,32 +1,34 @@
 <?php
+
 namespace App\Support\Payments\Merchants;
 
+use App\Contracts\Payments\PaymentRecord;
 use App\Core\MonnifyHelper;
 use App\DTO\PaymentReferenceDto;
-use App\Models\PaymentReference;
 use App\Support\Res;
 
 class PaymentMonnify extends PaymentMerchant
 {
-  function init(
-    PaymentReferenceDto $paymentReferenceDto,
-    bool $generateReferenceOnly = false
-  ) {
-    $paymentReference = $this->createPaymentReference($paymentReferenceDto);
-    $ret = successRes('', [
-      'reference' => $paymentReference->reference,
-      'amount' => $paymentReferenceDto->amount,
-      'authorization_url' => route('monnify.checkout', [
-        'reference' => $paymentReference->reference
-      ])
-    ]);
-    return [$ret, $paymentReference];
-  }
+    public function init(
+        PaymentReferenceDto $paymentReferenceDto,
+        bool $generateReferenceOnly = false
+    ) {
+        $paymentReference = $this->createPaymentReference($paymentReferenceDto);
+        $ret = successRes('', [
+            'reference' => $paymentReference->reference,
+            'amount' => $paymentReferenceDto->amount,
+            'authorization_url' => route('monnify.checkout', [
+                'reference' => $paymentReference->reference,
+            ]),
+        ]);
 
-  function verify(PaymentReference $paymentReference): Res
-  {
-    return MonnifyHelper::make()->getTransactionStatus(
-      $paymentReference->reference
-    );
-  }
+        return [$ret, $paymentReference];
+    }
+
+    public function verify(PaymentRecord $paymentReference): Res
+    {
+        return MonnifyHelper::make()->getTransactionStatus(
+            $paymentReference->getReference()
+        );
+    }
 }

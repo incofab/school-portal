@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Support\Payments\Processors;
 
 use App\Actions\Payments\FeePaymentHandler;
-use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use App\Models\Fee;
 use App\Support\Res;
@@ -11,49 +11,54 @@ use DB;
 
 class FeePaymentProcessor extends PaymentProcessor
 {
-  function processPayment(): Res
-  {
-    if ($this->paymentReference->status != PaymentStatus::Pending) {
-      return failRes('Payment already resolved');
+    public function processPayment(): Res
+    {
+        if ($this->paymentReference->getStatus() !== PaymentStatus::Pending) {
+            return failRes('Payment already resolved');
+        }
+
+        $res = $this->verify();
+
+        if ($res->isNotSuccessful()) {
+            return $res;
+        }
+
+        $fee = $this->paymentReference->getPaymentable();
+        if (! ($fee instanceof Fee)) {
+            return failRes('Fee record not found');
+        }
+
+        DB::beginTransaction();
+        $this->paymentMerchant->completePayment(
+            $this->paymentReference,
+            $this->confirmingUser
+        );
+        $user = $this->paymentReference->getPayable();
+
+        FeePaymentHandler::make($this->paymentReference->getInstitution())->create(
+            [
+                'reference' => $this->paymentReference->getReference(),
+                'user_id' => $user->id ?? $this->paymentReference->getUser()?->id,
+                'amount' => $this->paymentReference->getAmount(),
+                'method' => $this->paymentReference->getPaymentMethod()->value,
+            ],
+            $fee,
+            $this->paymentReference->getPayable(),
+            $this->confirmingUser,
+            allowOverPayment: true
+        );
+
+        TransactionHandler::make(
+            $this->paymentReference->getInstitution(),
+            $this->paymentReference->getReference()
+        )->topupCreditWallet(
+            $this->paymentReference->getAmount(),
+            $this->paymentReference->getModel(),
+            'Fee payment for: '.$fee->title
+        );
+
+        DB::commit();
+
+        return successRes('Fee Payment processed successfully');
     }
-
-    $res = $this->verify();
-
-    if ($res->isNotSuccessful()) {
-      return $res;
-    }
-
-    $fee = $this->paymentReference->paymentable;
-    if (!($fee instanceof Fee)) {
-      return failRes('Fee record not found');
-    }
-
-    DB::beginTransaction();
-    $this->paymentMerchant->completePayment($this->paymentReference);
-    $user = $this->paymentReference->payable;
-
-    FeePaymentHandler::make($this->paymentReference->institution)->create(
-      [
-        'reference' => $this->paymentReference->reference,
-        'user_id' => $user->id ?? $this->paymentReference->user_id,
-        'amount' => $this->paymentReference->amount,
-        'method' => PaymentMethod::Card->value
-      ],
-      $fee,
-      $this->paymentReference->payable,
-      allowOverPayment: true
-    );
-
-    TransactionHandler::makeFromPaymentReference(
-      $this->paymentReference
-    )->topupCreditWallet(
-      $this->paymentReference->amount,
-      $this->paymentReference,
-      'Fee payment for: ' . $fee->title
-    );
-
-    DB::commit();
-
-    return successRes('Fee Payment processed successfully');
-  }
 }

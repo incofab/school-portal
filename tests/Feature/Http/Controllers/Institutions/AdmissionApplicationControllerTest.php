@@ -6,13 +6,14 @@ use App\Enums\Payments\PaymentPurpose;
 use App\Models\AdmissionApplication;
 use App\Models\AdmissionForm;
 use App\Models\ApplicationGuardian;
+use App\Models\Classification;
 use App\Models\Institution;
+use App\Models\ManualPayment;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
-use Inertia\Testing\AssertableInertia;
-
-use App\Models\Classification;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\Fluent\AssertableJson;
+use Inertia\Testing\AssertableInertia;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseCount;
@@ -226,5 +227,50 @@ it(
         'admission_application_id' => $admissionApplication->id
       ])
     ]);
+  }
+);
+
+it(
+  'records a manual admission form payment and returns pending redirect',
+  function () {
+    $admissionApplication = AdmissionApplication::factory()
+      ->admissionForm($this->admissionForm)
+      ->create();
+
+    $response = postJson(
+      route('institutions.admission-forms.buy', [
+        $this->institution->uuid,
+        $this->admissionForm->id,
+        $admissionApplication->id
+      ]),
+      [
+        'merchant' => PaymentMerchantType::Manual->value
+      ]
+    )
+      ->assertOk()
+      ->assertJsonPath(
+        'message',
+        'Your manual payment has been recorded and is awaiting confirmation from the institution.'
+      );
+
+    $manualPayment = ManualPayment::query()->first();
+
+    assertDatabaseHas('manual_payments', [
+      'institution_id' => $this->institution->id,
+      'paymentable_id' => $admissionApplication->id,
+      'paymentable_type' => $admissionApplication->getMorphClass(),
+      'payable_id' => $this->admissionForm->id,
+      'payable_type' => $this->admissionForm->getMorphClass(),
+      'amount' => $this->admissionForm->price,
+      'purpose' => PaymentPurpose::AdmissionFormPurchase->value,
+      'status' => 'pending'
+    ]);
+
+    expect($response->json('redirect_url'))->toBe(
+      route('institutions.manual-payments.show', [
+        $this->institution->uuid,
+        $manualPayment->reference
+      ])
+    );
   }
 );

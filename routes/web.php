@@ -1,14 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Home as Home;
 use App\Http\Controllers as Web;
-use App\Http\Controllers\Institutions\Exams\External as External;
-use App\Http\Controllers\Institutions\Admissions as Admissions;
+use App\Http\Controllers\Home;
+use App\Http\Controllers\Institutions\Admissions;
+use App\Http\Controllers\Institutions\Exams\External;
+use Illuminate\Support\Facades\Route;
 
 Route::get('dummy1', function () {
-    
-    die('Dummy page');
+
+    exit('Dummy page');
 });
 
 Route::get('/dummy', [Web\DummyController::class, 'sendWhatsappMessage']);
@@ -23,7 +23,7 @@ Route::get('/school/{instUuid}', function ($instUuid) {
         'for_mid_term' => false,
     ];
     $classResultInfo = \App\Models\ClassResultInfo::query()
-      ->where($b)->get();
+        ->where($b)->get();
     dd($classResultInfo->count());
     foreach ($classResultInfo as $key => $info) {
         // $info->courseResultsQuery()->delete();
@@ -32,8 +32,8 @@ Route::get('/school/{instUuid}', function ($instUuid) {
     }
     \App\Models\CourseResultInfo::query()->where($b)->update(['for_mid_term' => true]);
     $count = \App\Models\CourseResult::query()
-      ->where($b)->update(['for_mid_term' => true]);
-      dd('Done = '.$count);
+        ->where($b)->update(['for_mid_term' => true]);
+    dd('Done = '.$count);
 });
 
 Route::get('deduct-credit', function () {
@@ -45,19 +45,20 @@ Route::get('deduct-credit', function () {
         null,
         'Over credit was recorded on the account during funding. This is to rectify the issue.'
     );
-    die('Dummy page');
+    exit('Dummy page');
 });
 
 Route::get('/activate-result/{instUuid}', function ($instUuid) {
     $inst = \App\Models\Institution::where('uuid', $instUuid)->firstOrFail();
     $termResults = \App\Models\TermResult::query()
-      ->where('institution_id', $inst->id)
-      ->where('for_mid_term', false)
-      ->where('term', \App\Enums\TermType::First)
-      ->where('academic_session_id', 5)
-      ->activated(false)
+        ->where('institution_id', $inst->id)
+        ->where('for_mid_term', false)
+        ->where('term', \App\Enums\TermType::First)
+        ->where('academic_session_id', 5)
+        ->activated(false)
     //   ->update(['is_activated' => true]);
-      ->count();
+        ->count();
+
     return "Result $termResults";
 });
 
@@ -80,7 +81,7 @@ Route::get('institutions/search', Web\SearchInstitutionController::class)
     ->name('institutions.search');
 Route::get('academic-sessions/search', [Web\AcademicSessionController::class, 'search'])
     ->name('academic-sessions.search');
-Route::get('/expense-categories/search', [Web\Institutions\Expenses\ExpenseCategoryController ::class, 'search'])
+Route::get('/expense-categories/search', [Web\Institutions\Expenses\ExpenseCategoryController::class, 'search'])
     ->name('expense-categories.search');
 Route::get('/salary-types/search', [Web\Institutions\Payrolls\SalaryTypesController::class, 'search'])
     ->name('salary-types.search');
@@ -88,7 +89,7 @@ Route::get('/payroll-adjustment-types/search', [Web\Institutions\Payrolls\Payrol
     ->name('payroll-adjustment-types.search');
 Route::post('activate-result', [Web\TermResultActivationController::class, 'store'])
     ->name('activate-term-result.store');
-    
+
 Route::get('error', [Home\HomeController::class, 'error'])->name('home.error');
 
 Route::get('/institutions/{institution}/admission-forms/search', [Admissions\AdmissionFormController::class, 'search'])->name('institutions.admission-forms.search');
@@ -106,6 +107,13 @@ Route::group(['prefix' => '{institution}/admissions/', 'as' => 'institutions.'],
         ->name('admission-applications.preview');
     Route::any('/admission-forms/{admissionForm}/buy/{admissionApplication}', [Admissions\AdmissionApplicationController::class, 'buyAdmissionForm'])
         ->name('admission-forms.buy');
+});
+
+Route::group(['prefix' => '{institution}/manual-payments', 'as' => 'institutions.manual-payments.'], function () {
+    Route::get('/{manualPayment:reference}/pending', [Web\Institutions\Payments\ManualPaymentController::class, 'show'])
+        ->name('show');
+    Route::post('/{manualPayment:reference}/pending', [Web\Institutions\Payments\ManualPaymentController::class, 'updatePending'])
+        ->name('pending.update');
 });
 
 Route::group(['middleware' => ['guest']], function () {

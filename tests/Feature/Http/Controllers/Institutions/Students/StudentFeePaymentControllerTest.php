@@ -3,12 +3,14 @@
 use App\Actions\Payments\FeePaymentHandler;
 use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentStatus;
 use App\Models\Fee;
 use App\Models\FeePayment;
 use App\Models\GuardianStudent;
+use App\Models\Institution;
+use App\Models\ManualPayment;
 use App\Models\Receipt;
 use App\Models\Student;
-use App\Models\Institution;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
@@ -165,6 +167,56 @@ test(
     ]);
   }
 );
+
+test('fee payment store records manual payment request', function () {
+  $fee = Fee::factory()
+    ->institution($this->institution)
+    ->feeCategories()
+    ->create();
+
+  $response = actingAs($this->student->user)
+    ->postJson(
+      route('institutions.students.fee-payments.store', [
+        $this->institution->uuid,
+        $this->student
+      ]),
+      [
+        'fee_id' => $fee->id,
+        'academic_session_id' => $fee->academic_session_id,
+        'term' => $fee->term?->value,
+        'amount' => $fee->amount,
+        'merchant' => PaymentMerchantType::Manual->value
+      ]
+    )
+    ->assertOk()
+    ->assertJsonPath(
+      'message',
+      'Your manual payment has been recorded and is awaiting confirmation from the institution.'
+    );
+
+  $manualPayment = ManualPayment::query()->first();
+
+  expect($response->json('redirect_url'))->toBe(
+    route('institutions.manual-payments.show', [
+      $this->institution->uuid,
+      $manualPayment->reference
+    ])
+  );
+
+  assertDatabaseHas('manual_payments', [
+    'institution_id' => $this->institution->id,
+    'user_id' => $this->student->user_id,
+    'payable_id' => $this->student->user_id,
+    'payable_type' => $this->student->user->getMorphClass(),
+    'paymentable_id' => $fee->id,
+    'paymentable_type' => $fee->getMorphClass(),
+    'amount' => $fee->amount,
+    'purpose' => PaymentPurpose::Fee->value,
+    'status' => PaymentStatus::Pending->value
+  ]);
+  expect($manualPayment->bank_account_id)->toBeNull();
+  expect($manualPayment->proof_path)->toBeNull();
+});
 
 test('It aborts if fee is already paid', function () {
   $fee = Fee::factory()

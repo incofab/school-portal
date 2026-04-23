@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Fee;
 use App\Models\FeePayment;
 use App\Models\Institution;
+use App\Models\ManualPayment;
 use App\Models\PaymentReference;
 use App\Models\Receipt;
 use App\Models\Student;
@@ -25,7 +26,7 @@ use Illuminate\Validation\Rules\Enum;
 
 class StudentFeePaymentController extends Controller
 {
-  function index(
+  public function index(
     Institution $institution,
     Student $student,
     ?Receipt $receipt = null
@@ -42,6 +43,7 @@ class StudentFeePaymentController extends Controller
       ->filterQuery()
       ->getQuery()
       ->with('fee', 'receipt');
+
     return inertia('institutions/students/payments/list-student-fee-payments', [
       'receipt' => $receipt,
       'feePayments' => paginateFromRequest($query->latest('id')),
@@ -49,7 +51,7 @@ class StudentFeePaymentController extends Controller
     ]);
   }
 
-  function receipts(Institution $institution, Student $student)
+  public function receipts(Institution $institution, Student $student)
   {
     $settingshandler = SettingsHandler::makeFromRoute();
     $query = ReceiptUITableFilters::make(
@@ -69,7 +71,7 @@ class StudentFeePaymentController extends Controller
     ]);
   }
 
-  function printReceipt(Institution $institution, Receipt $receipt)
+  public function printReceipt(Institution $institution, Receipt $receipt)
   {
     $receipt->load(
       'fee',
@@ -87,7 +89,7 @@ class StudentFeePaymentController extends Controller
     ]);
   }
 
-  function feePaymentView(Institution $institution, Student $student)
+  public function feePaymentView(Institution $institution, Student $student)
   {
     $student->load('classification');
 
@@ -95,12 +97,13 @@ class StudentFeePaymentController extends Controller
       'institutions/students/payments/record-student-fee-payment',
       [
         'student' => $student,
-        'fees' => $student->studentFees()
+        'fees' => $student->studentFees(),
+        'bankAccounts' => $institution->institutionGroup->bankAccounts()->get()
       ]
     );
   }
 
-  function feePaymentStore(
+  public function feePaymentStore(
     Request $request,
     Institution $institution,
     Student $student
@@ -124,6 +127,36 @@ class StudentFeePaymentController extends Controller
     $settingshandler = SettingsHandler::makeFromRoute();
 
     $merchant = $request->merchant ?? PaymentMerchantType::Monnify->value;
+    if ($merchant === PaymentMerchantType::Manual->value) {
+      $reference = ManualPayment::generateReference();
+      $paymentReferenceDto = new PaymentReferenceDto(
+        institution_id: $institution->id,
+        merchant: $merchant,
+        payable: $student->user,
+        paymentable: $fee,
+        amount: $amount,
+        purpose: PaymentPurpose::Fee,
+        user_id: $user->id,
+        reference: $reference,
+        redirect_url: route('institutions.manual-payments.show', [
+          $institution,
+          $reference
+        ]),
+        meta: [
+          ...$data,
+          'academic_session_id' =>
+            $data['academic_session_id'] ??
+            $settingshandler->getCurrentAcademicSession(),
+          'term' => $data['term'] ?? $settingshandler->getCurrentTerm()
+        ]
+      );
+
+      [$res] = PaymentMerchant::make($merchant)->init($paymentReferenceDto);
+      abort_unless($res->isSuccessful(), 403, $res->getMessage());
+
+      return $this->ok($res->toArray());
+    }
+
     $paymentReferenceDto = new PaymentReferenceDto(
       institution_id: $institution->id,
       merchant: $merchant,
@@ -150,8 +183,10 @@ class StudentFeePaymentController extends Controller
     abort_unless($res->isSuccessful(), 403, $res->getMessage());
     if ($merchant === PaymentMerchantType::UserWallet->value) {
       $res = PaymentProcessor::make($paymentReference)->processPayment();
+
       return $this->apiRes($res, 402);
     }
+
     return $this->ok($res->toArray());
   }
 }
