@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Institutions;
 
 use App\Actions\Users\InstitutionDashboardStat;
+use App\Enums\InstitutionUserType;
+use App\Enums\Payments\PaymentStatus;
 use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
+use App\Models\ManualPayment;
 use App\Models\Institution;
 use App\Models\ReservedAccount;
 use App\Support\SetupChecklistHandler;
@@ -24,6 +27,11 @@ class InstitutionController extends Controller
     )->isSetupComplete();
 
     $institutionGroup = currentInstitution()->institutionGroup;
+    $currentInstitutionUser = currentInstitutionUser();
+    $showAttentionSection = in_array($currentInstitutionUser->role, [
+      InstitutionUserType::Admin,
+      InstitutionUserType::Accountant
+    ]);
 
     return inertia('institutions/dashboard', [
       'institutionGroup' => $institutionGroup,
@@ -31,9 +39,19 @@ class InstitutionController extends Controller
       'reservedAccounts' => currentInstitutionUser()->isGuardian()
         ? ReservedAccount::getReservedAccounts(currentUser(), true)
         : [],
+      'attentionSummary' => $showAttentionSection
+        ? [
+          'pendingManualPaymentsCount' => ManualPayment::query()
+            ->where('institution_id', $institution->id)
+            ->where('status', PaymentStatus::Pending)
+            ->count(),
+          'hasBankAccounts' => $institutionGroup->bankAccounts()->exists(),
+          'canManageBankAccounts' => $currentInstitutionUser->isAdmin()
+        ]
+        : null,
       'dashboardData' => InstitutionDashboardStat::make(
         $institution,
-        currentInstitutionUser()
+        $currentInstitutionUser
       )->getStat($request->refresh)
     ]);
   }

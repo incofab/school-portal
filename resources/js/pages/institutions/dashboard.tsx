@@ -39,6 +39,8 @@ import CenteredBox from '@/components/centered-box';
 import { LinkButton } from '@/components/buttons';
 import {
   ArrowRightIcon,
+  BellAlertIcon,
+  BuildingLibraryIcon,
   ClipboardIcon,
   EnvelopeIcon,
   WalletIcon,
@@ -50,7 +52,7 @@ import useModalToggle from '@/hooks/use-modal-toggle';
 import ListReservedAccountsModal from '@/components/modals/users/list-reserved-accounts-modal';
 import DashboardCharts from '@/components/dashboard-charts';
 import { DashboardData } from '@/types/dashboard';
-import useIsStaff from '@/hooks/use-is-staff';
+import Slab from '@/components/slab';
 
 interface ItemCardProps {
   route: string;
@@ -71,6 +73,11 @@ interface Props {
   isSetupComplete: string;
   reservedAccounts: ReservedAccount[];
   dashboardData: DashboardData;
+  attentionSummary?: {
+    pendingManualPaymentsCount: number;
+    hasBankAccounts: boolean;
+    canManageBankAccounts: boolean;
+  } | null;
 }
 
 function DashboardItemCard(prop: ItemCardProps) {
@@ -139,13 +146,13 @@ export default function InstitutionDashboard({
   isSetupComplete,
   reservedAccounts,
   dashboardData,
+  attentionSummary,
 }: Props) {
   // console.log('Dashboard data', dashboardData);
   const { currentInstitutionUser, currentUser } = useSharedProps();
   const student = currentInstitutionUser.student;
-  const { forTeacher } = useInstitutionRole();
+  const { forTeacher, forAccountant } = useInstitutionRole();
   const { instRoute } = useInstitutionRoute();
-  const isStaff = useIsStaff();
   const isAdmin = currentInstitutionUser.role === InstitutionUserType.Admin;
   const isGuardian =
     currentInstitutionUser.role === InstitutionUserType.Guardian;
@@ -153,6 +160,67 @@ export default function InstitutionDashboard({
     InstitutionUserType.Admin,
     InstitutionUserType.Accountant,
   ];
+  const attentionItems = attentionSummary
+    ? [
+        ...(attentionSummary.pendingManualPaymentsCount > 0
+          ? [
+              {
+                key: 'manual-payments',
+                title: 'Pending manual payments',
+                description: `${numberFormat(
+                  attentionSummary.pendingManualPaymentsCount
+                )} payment${
+                  attentionSummary.pendingManualPaymentsCount === 1 ? '' : 's'
+                } awaiting review.`,
+                cta: 'Review Payments',
+                href: instRoute('manual-payments.index'),
+                icon: BellAlertIcon,
+                accent: {
+                  border: useColorModeValue('orange.200', 'orange.700'),
+                  bg: useColorModeValue(
+                    'linear-gradient(135deg, rgba(251, 191, 36, 0.18), rgba(249, 115, 22, 0.10))',
+                    'linear-gradient(135deg, rgba(251, 191, 36, 0.14), rgba(124, 45, 18, 0.45))'
+                  ),
+                  badgeBg: useColorModeValue('orange.500', 'orange.300'),
+                  badgeColor: useColorModeValue('white', 'gray.900'),
+                  iconBg: useColorModeValue('orange.100', 'orange.900'),
+                  iconColor: useColorModeValue('orange.600', 'orange.200'),
+                  textColor: useColorModeValue('gray.800', 'gray.100'),
+                  mutedColor: useColorModeValue('gray.600', 'gray.300'),
+                },
+              },
+            ]
+          : []),
+        ...(!attentionSummary.hasBankAccounts
+          ? [
+              {
+                key: 'bank-accounts',
+                title: 'Bank accounts not set',
+                description:
+                  "Add the school's bank account so manual transfer payments can be directed correctly.",
+                cta: attentionSummary.canManageBankAccounts
+                  ? 'Configure Accounts'
+                  : 'View Bank Accounts',
+                href: instRoute('inst-bank-accounts.index'),
+                icon: BuildingLibraryIcon,
+                accent: {
+                  border: useColorModeValue('blue.200', 'blue.700'),
+                  bg: useColorModeValue(
+                    'linear-gradient(135deg, rgba(59, 130, 246, 0.16), rgba(6, 182, 212, 0.10))',
+                    'linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(8, 145, 178, 0.35))'
+                  ),
+                  badgeBg: useColorModeValue('blue.500', 'blue.300'),
+                  badgeColor: useColorModeValue('white', 'gray.900'),
+                  iconBg: useColorModeValue('blue.100', 'blue.900'),
+                  iconColor: useColorModeValue('blue.600', 'blue.200'),
+                  textColor: useColorModeValue('gray.800', 'gray.100'),
+                  mutedColor: useColorModeValue('gray.600', 'gray.300'),
+                },
+              },
+            ]
+          : []),
+      ]
+    : [];
 
   const items: ItemCardProps[] = [
     {
@@ -252,6 +320,123 @@ export default function InstitutionDashboard({
 
   return (
     <DashboardLayout>
+      {forAccountant && attentionItems.length > 0 && (
+        <Slab mb={6}>
+          <Stack spacing={5}>
+            <Flex
+              align={{ base: 'start', md: 'center' }}
+              justify="space-between"
+              direction={{ base: 'column', md: 'row' }}
+              gap={2}
+            >
+              <Box>
+                <Text
+                  textTransform="uppercase"
+                  letterSpacing="0.16em"
+                  fontSize="xs"
+                  fontWeight="bold"
+                  color={useColorModeValue('brand.600', 'brand.200')}
+                >
+                  Attention
+                </Text>
+                <PageTitle mb={0}>Items that need quick action</PageTitle>
+              </Box>
+              <Text
+                fontSize="sm"
+                color={useColorModeValue('gray.500', 'gray.400')}
+              >
+                Review and resolve operational blockers from one place.
+              </Text>
+            </Flex>
+
+            <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={4}>
+              {attentionItems.map((item) => (
+                <Box
+                  key={item.key}
+                  position="relative"
+                  overflow="hidden"
+                  rounded="2xl"
+                  borderWidth={1}
+                  borderColor={item.accent.border}
+                  bg={item.accent.bg}
+                  p={{ base: 5, md: 6 }}
+                  boxShadow="0 18px 40px rgba(15, 23, 42, 0.08)"
+                >
+                  <Box
+                    position="absolute"
+                    top="-18px"
+                    right="-18px"
+                    w="110px"
+                    h="110px"
+                    rounded="full"
+                    bg={useColorModeValue(
+                      'rgba(255,255,255,0.32)',
+                      'rgba(255,255,255,0.05)'
+                    )}
+                  />
+                  <Stack spacing={5} position="relative">
+                    <Flex align="start" justify="space-between" gap={4}>
+                      <HStack spacing={4} align="start">
+                        <Flex
+                          w="52px"
+                          h="52px"
+                          rounded="xl"
+                          align="center"
+                          justify="center"
+                          bg={item.accent.iconBg}
+                          color={item.accent.iconColor}
+                          boxShadow="inset 0 1px 0 rgba(255,255,255,0.35)"
+                        >
+                          <Icon as={item.icon} boxSize={6} />
+                        </Flex>
+                        <Box>
+                          <Text
+                            fontSize="lg"
+                            fontWeight="semibold"
+                            color={item.accent.textColor}
+                          >
+                            {item.title}
+                          </Text>
+                          <Text
+                            mt={1}
+                            fontSize="sm"
+                            lineHeight="tall"
+                            color={item.accent.mutedColor}
+                          >
+                            {item.description}
+                          </Text>
+                        </Box>
+                      </HStack>
+                      <Box
+                        px={3}
+                        py={1}
+                        rounded="full"
+                        bg={item.accent.badgeBg}
+                        color={item.accent.badgeColor}
+                        fontSize="xs"
+                        fontWeight="bold"
+                        letterSpacing="0.08em"
+                        textTransform="uppercase"
+                      >
+                        Action
+                      </Box>
+                    </Flex>
+
+                    <LinkButton
+                      href={item.href}
+                      title={item.cta}
+                      alignSelf="start"
+                      rightIcon={<Icon as={ArrowRightIcon} />}
+                      borderRadius="full"
+                      px={5}
+                    />
+                  </Stack>
+                </Box>
+              ))}
+            </SimpleGrid>
+          </Stack>
+        </Slab>
+      )}
       {!isSetupComplete && isAdmin ? (
         <CenteredBox mb={5}>
           <Alert status="error" variant="left-accent">

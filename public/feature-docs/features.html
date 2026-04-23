@@ -54,7 +54,7 @@ code { color: #d1fae5; }
 <body>
 <header>
   <h1>EduManager Feature Inventory</h1>
-  <p>Last reviewed 2026-04-22. Technical map for AI CLI agents and maintainers.</p>
+  <p>Last reviewed 2026-04-23. Technical map for AI CLI agents and maintainers.</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -125,7 +125,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>04</span> Institution Dashboard, Profile, Settings, and Setup Checklist</h3>
-    <p>Institution users get a dashboard, setup checklist, profile editing, photo upload, payment key settings, result settings, current academic session and term settings, and institution-level search endpoints. Shared props expose current institution, session, term, and role context to the React app.</p>
+    <p>Institution users get a dashboard, setup checklist, profile editing, photo upload, payment key settings, result settings, current academic session and term settings, and institution-level search endpoints. Admin and accountant dashboards now include a top attention section showing the current pending manual-payment count with a quick link to review requests, plus a bank-account configuration prompt when the institution group has not added any bank accounts yet. Shared props expose current institution, session, term, and role context to the React app.</p>
     <ul>
       <li>Routes/controllers: <code>InstitutionController</code>, <code>InstitutionSettingController</code>, <code>SettingsHandler</code>, <code>SetupChecklistHandler</code>, <code>InstitutionDashboardStat</code>.</li>
       <li>Frontend: <code>institutions/dashboard.tsx</code>, <code>institution-profile.tsx</code>, <code>settings/create-edit-institution-settings.tsx</code>, <code>settings/result-settings.tsx</code>, <code>settings/payment-keys-settings.tsx</code>.</li>
