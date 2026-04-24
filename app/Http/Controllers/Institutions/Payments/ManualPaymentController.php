@@ -48,10 +48,14 @@ class ManualPaymentController extends Controller
     ]);
   }
 
-  public function history(Institution $institution, Student $student)
+  public function history(Institution $institution, ?Student $student = null)
   {
+    $userId = $student?->user_id ?? currentUser()?->id;
+
+    abort_unless($userId, 403);
+
     $query = ManualPayment::query()
-      ->where('user_id', $student->user_id)
+      ->where('user_id', $userId)
       ->with('paymentable', 'bankAccount', 'confirmedBy', 'rejectedBy')
       ->pendingFirst()
       ->latest('id');
@@ -104,12 +108,6 @@ class ManualPaymentController extends Controller
       'Only pending manual payments can be updated.'
     );
 
-    abort_if(
-      $manualPayment->user_id !== currentUser()->id,
-      403,
-      'You are not allowed to update this manual payment.'
-    );
-
     $data = $request->validate([
       'bank_account_id' => ['required', 'integer'],
       'payment_proof' => [
@@ -148,6 +146,8 @@ class ManualPaymentController extends Controller
       $proofUrl = Storage::disk('s3_public')->url($proofPath);
     }
 
+    $payload = $manualPayment->payload?->getArrayCopy() ?? [];
+
     $manualPayment
       ->fill([
         'bank_account_id' => $bankAccountId,
@@ -157,8 +157,8 @@ class ManualPaymentController extends Controller
         'proof_path' => $proofPath,
         'proof_url' => $proofUrl,
         'payload' => [
-          ...$manualPayment->payload?->getArrayCopy() ?? [],
-          'note' => $data['note'] ?? ($manualPayment->payload['note'] ?? null)
+          ...$payload,
+          'note' => $data['note'] ?? ($payload['note'] ?? null)
         ]
       ])
       ->save();

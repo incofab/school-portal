@@ -75,6 +75,12 @@ export enum InstitutionUserType {
   Guardian = 'guardian',
 }
 
+export enum ChatThreadType {
+  DirectUser = 'direct-user',
+  Institution = 'institution',
+  Role = 'role',
+}
+
 export enum UserRoleType {
   Admin = 'admin',
   Student = 'student',

@@ -449,6 +449,10 @@ Route::resource('/inst-withdrawals', Web\Withdrawals\WithdrawalController::class
 Route::get('/messages/index', [Web\Staff\MessageController::class, 'index'])->name('messages.index');
 Route::post('/messages/store', [Web\Staff\MessageController::class, 'store'])->name('messages.store');
 Route::get('/messages/create', [Web\Staff\MessageController::class, 'create'])->name('messages.create');
+Route::get('/chats', [Web\Chats\ChatController::class, 'index'])->name('chats.index');
+Route::post('/chats', [Web\Chats\ChatController::class, 'store'])->name('chats.store');
+Route::get('/chats/{chatThread}', [Web\Chats\ChatController::class, 'show'])->name('chats.show');
+Route::post('/chats/{chatThread}/messages', [Web\Chats\ChatMessageController::class, 'store'])->name('chats.messages.store');
 
 // == Expenses and ExpensesCategory
 Route::resource('/expenses', Web\Expenses\ExpenseController::class);

@@ -19,6 +19,7 @@ import {
 } from '@chakra-ui/react';
 import {
   BellIcon,
+  ChatBubbleLeftRightIcon,
   MoonIcon,
   SunIcon,
   UserIcon,
@@ -37,6 +38,7 @@ export default function DashboardHeader() {
   const notificationsRoute = currentInstitution
     ? instRoute('notifications.index')
     : route('managers.notifications.index');
+  const chatsRoute = currentInstitution ? instRoute('chats.index') : null;
   return (
     <HStack
       background={useColorModeValue('white', 'gray.700')}
@@ -86,6 +88,15 @@ export default function DashboardHeader() {
           </Badge>
         )}
       </Box>
+      {chatsRoute && (
+        <IconButton
+          aria-label={'chats'}
+          icon={<Icon as={ChatBubbleLeftRightIcon} />}
+          variant={'ghost'}
+          as={InertiaLink}
+          href={chatsRoute}
+        />
+      )}
       <Menu>
         <MenuButton
           as={Button}

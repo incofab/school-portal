@@ -1,9 +1,4 @@
-import {
-  InstitutionSettingType,
-  Message,
-  PaymentKey,
-  ResultSettingType,
-} from '@/types/types';
+import { InstitutionSettingType, Message, PaymentKey } from '@/types/types';
 import {
   AcademicSession,
   Institution,

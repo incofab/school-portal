@@ -52,6 +52,7 @@ it('shows dashboard attention summary for institution admins', function () {
       $page
         ->component('institutions/dashboard')
         ->where('attentionSummary.pendingManualPaymentsCount', 1)
+        ->where('attentionSummary.unreadChatCount', 0)
         ->where('attentionSummary.hasBankAccounts', false)
         ->where('attentionSummary.canManageBankAccounts', true);
     });
@@ -69,6 +70,7 @@ it('shows dashboard attention summary for accountants', function () {
       $page
         ->component('institutions/dashboard')
         ->where('attentionSummary.pendingManualPaymentsCount', 1)
+        ->where('attentionSummary.unreadChatCount', 0)
         ->where('attentionSummary.hasBankAccounts', true)
         ->where('attentionSummary.canManageBankAccounts', false);
     });

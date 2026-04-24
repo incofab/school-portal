@@ -7,6 +7,7 @@ use App\Enums\InstitutionUserType;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
+use App\Models\ChatThread;
 use App\Models\ManualPayment;
 use App\Models\Institution;
 use App\Models\ReservedAccount;
@@ -45,6 +46,11 @@ class InstitutionController extends Controller
             ->where('institution_id', $institution->id)
             ->where('status', PaymentStatus::Pending)
             ->count(),
+          'unreadChatCount' => ChatThread::unreadCountFor(
+            $institution,
+            currentUser(),
+            $currentInstitutionUser
+          ),
           'hasBankAccounts' => $institutionGroup->bankAccounts()->exists(),
           'canManageBankAccounts' => $currentInstitutionUser->isAdmin()
         ]

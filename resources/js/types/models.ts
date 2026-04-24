@@ -1064,6 +1064,54 @@ export interface MessageRecipient extends InstitutionRow {
   message?: Message;
 }
 
+export interface ChatThreadSummary {
+  id: number;
+  type: string;
+  title: string;
+  subtitle: string;
+  photo_url?: string | null;
+  last_message_preview?: string | null;
+  last_message_at?: string | null;
+  has_unread: boolean;
+}
+
+export interface ChatThreadMessage {
+  id: number;
+  body: string;
+  created_at: string;
+  is_mine: boolean;
+  sender: {
+    id?: number;
+    full_name?: string;
+    photo_url?: string;
+    role?: string;
+  };
+}
+
+export interface ChatThreadDetail {
+  id: number;
+  type: string;
+  title: string;
+  subtitle: string;
+  photo_url?: string | null;
+  profile_url?: string | null;
+  messages: ChatThreadMessage[];
+}
+
+export interface ChatComposerTarget {
+  value?: string | number;
+  label: string;
+  description: string;
+  photo_url?: string;
+}
+
+export interface ChatComposerOptions {
+  canDirectMessageStaff: boolean;
+  institutionTarget: ChatComposerTarget;
+  roleTargets: ChatComposerTarget[];
+  staffTargets: ChatComposerTarget[];
+}
+
 export interface ReservedAccount extends Row {
   reservable_id: number;
   reservable_type: string;

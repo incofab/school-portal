@@ -62,6 +62,11 @@ export default function SideBarLayout() {
       label: 'Dashboard',
       route: instRoute('dashboard'),
     },
+    {
+      label: 'Chats',
+      route: instRoute('chats.index'),
+      roles: null,
+    },
     ...(student
       ? [
           {

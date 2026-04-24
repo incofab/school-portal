@@ -257,6 +257,16 @@ class Institution extends Model
         return $this->hasMany(AdmissionForm::class);
     }
 
+    public function chatThreads()
+    {
+        return $this->hasMany(ChatThread::class);
+    }
+
+    public function chatMessages()
+    {
+        return $this->hasMany(ChatMessage::class);
+    }
+
     public function associations()
     {
         return $this->hasMany(Association::class);

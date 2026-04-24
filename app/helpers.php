@@ -209,6 +209,10 @@ if (!function_exists('trimAiResponse')) {
 if (!function_exists('trimDecimal')) {
   function trimDecimal($value)
   {
-    return $value == (int) $value ? (int) $value : (float) $value;
+    $normalized = round((float) $value, 6);
+
+    return $normalized == (int) $normalized
+      ? (int) $normalized
+      : $normalized;
   }
 }

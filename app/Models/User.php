@@ -244,4 +244,19 @@ class User extends Authenticatable
   {
     return $this->hasMany(Receipt::class);
   }
+
+  function requestedChatThreads()
+  {
+    return $this->hasMany(ChatThread::class, 'requester_user_id');
+  }
+
+  function targetedChatThreads()
+  {
+    return $this->hasMany(ChatThread::class, 'target_user_id');
+  }
+
+  function chatMessages()
+  {
+    return $this->hasMany(ChatMessage::class, 'sender_user_id');
+  }
 }

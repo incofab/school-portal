@@ -75,6 +75,7 @@ interface Props {
   dashboardData: DashboardData;
   attentionSummary?: {
     pendingManualPaymentsCount: number;
+    unreadChatCount: number;
     hasBankAccounts: boolean;
     canManageBankAccounts: boolean;
   } | null;
@@ -185,6 +186,35 @@ export default function InstitutionDashboard({
                   badgeColor: useColorModeValue('white', 'gray.900'),
                   iconBg: useColorModeValue('orange.100', 'orange.900'),
                   iconColor: useColorModeValue('orange.600', 'orange.200'),
+                  textColor: useColorModeValue('gray.800', 'gray.100'),
+                  mutedColor: useColorModeValue('gray.600', 'gray.300'),
+                },
+              },
+            ]
+          : []),
+        ...(attentionSummary.unreadChatCount > 0
+          ? [
+              {
+                key: 'unread-chats',
+                title: 'Unread chats',
+                description: `${numberFormat(
+                  attentionSummary.unreadChatCount
+                )} unread chat${
+                  attentionSummary.unreadChatCount === 1 ? '' : 's'
+                } need your response.`,
+                cta: 'Open Chats',
+                href: instRoute('chats.index'),
+                icon: EnvelopeIcon,
+                accent: {
+                  border: useColorModeValue('emerald.200', 'emerald.700'),
+                  bg: useColorModeValue(
+                    'linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 182, 212, 0.10))',
+                    'linear-gradient(135deg, rgba(5, 150, 105, 0.18), rgba(8, 145, 178, 0.35))'
+                  ),
+                  badgeBg: useColorModeValue('emerald.500', 'emerald.300'),
+                  badgeColor: useColorModeValue('white', 'gray.900'),
+                  iconBg: useColorModeValue('emerald.100', 'emerald.900'),
+                  iconColor: useColorModeValue('emerald.600', 'emerald.200'),
                   textColor: useColorModeValue('gray.800', 'gray.100'),
                   mutedColor: useColorModeValue('gray.600', 'gray.300'),
                 },
