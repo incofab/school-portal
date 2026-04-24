@@ -1,7 +1,8 @@
 import React from 'react';
 import { InstitutionUser, User } from '@/types/models';
-import { Badge, HStack, Stack, Text } from '@chakra-ui/react';
+import { Badge, Button, HStack, Stack, Text } from '@chakra-ui/react';
 import route from '@/util/route';
+import { InertiaLink } from '@inertiajs/inertia-react';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
@@ -27,6 +28,21 @@ function ListUsers({ users }: Props) {
     {
       label: 'Name',
       value: 'full_name',
+      render: (row) => {
+        return (
+          <Button
+            as={InertiaLink}
+            colorScheme={'brand'}
+            size={'sm'}
+            fontWeight={'normal'}
+            variant={'link'}
+            href={route('managers.users.show', [row.id])}
+            color={'brand.600'}
+          >
+            {row.full_name}
+          </Button>
+        );
+      },
       sortKey: 'firstName',
     },
     {
