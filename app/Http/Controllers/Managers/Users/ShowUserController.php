@@ -31,8 +31,8 @@ class ShowUserController extends Controller
       'You cannot reset your own password here.'
     );
 
-    $newPassword = Hash::make(config('app.user_default_password', 'password'));
-    $user->fill(['password' => $newPassword])->save();
+    $newPassword = config('app.user_default_password', 'password');
+    $user->fill(['password' => Hash::make($newPassword)])->save();
 
     return $this->message(
       "{$user->full_name}'s password has been reset to default: ({$newPassword})."

@@ -20,8 +20,8 @@ class ResetUserPasswordController extends Controller
     abort_unless($currentUser->isInstitutionAdmin(), 403);
     abort_unless($user->institutionUser(), 403);
 
-    $newPassword = Hash::make(config('app.user_default_password', 'password'));
-    $user->fill(['password' => $newPassword])->save();
+    $newPassword = config('app.user_default_password', 'password');
+    $user->fill(['password' => Hash::make($newPassword)])->save();
     return $this->message(
       "{$user->first_name}'s password has been reset to default: ({$newPassword})"
     );
