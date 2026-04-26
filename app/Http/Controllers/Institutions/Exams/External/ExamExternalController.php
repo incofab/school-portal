@@ -50,7 +50,7 @@ class ExamExternalController extends Controller
     ]);
   }
 
-  function studentExamLoginStore(Request $request, Institution $institution)
+  function studentExamLoginStore(Request $request)
   {
     $data = $request->validate([
       'event_code' => ['required', 'string'],
@@ -80,6 +80,10 @@ class ExamExternalController extends Controller
       'start_now' => true
     ])->execute();
 
+    if ($request->expectsJson()) {
+      return $this->ok(['exam' => $exam, 'institution' => $event->institution]);
+    }
+
     return redirect(
       route('institutions.display-exam-page', [
         $event->institution->uuid,
@@ -93,7 +97,7 @@ class ExamExternalController extends Controller
     return Inertia::render('auth/admissions-exam-login');
   }
 
-  function admissionExamLoginStore(Request $request, Institution $institution)
+  function admissionExamLoginStore(Request $request)
   {
     $data = $request->validate([
       'event_code' => ['required', 'string'],
@@ -125,6 +129,10 @@ class ExamExternalController extends Controller
       $event->eventCourseables,
       ['start_now' => true]
     )->execute();
+
+    if ($request->expectsJson()) {
+      return $this->ok(['exam' => $exam, 'institution' => $event->institution]);
+    }
 
     return redirect(
       route('institutions.display-exam-page', [

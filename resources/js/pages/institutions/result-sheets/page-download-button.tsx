@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button, ButtonProps } from '@chakra-ui/react';
-import ResultUtil from '@/util/result-util';
 import { anchorDownload, sanitizeFilename } from '@/util/util';
 import useDownloadHtml from '@/util/download-html';
 

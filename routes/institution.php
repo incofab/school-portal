@@ -9,13 +9,8 @@ use Illuminate\Support\Facades\Route;
 
 // Institution
 
-Route::get('dummy', function () {
-    // dd('dmoddsdsd');
-    // Mail::to('email@email.com')->send(new AdmissionLetterMail(User::first()));
-    // Mail::to('email@email.com')->queue(new AdmissionLetterMail(User::first()));
-    // return new InstitutionMessageMail('Welcome', 'This is a welcome message');
-    $url = 'https://texturl.com';
-    // return new AdmissionLetterMail(User::first(), $url);
+Route::get('dummy2', function (\App\Models\Institution $institution) {
+    return view('Dummy page');
 })->name('dummy');
 
 Route::get('/dashboard', [Web\InstitutionController::class, 'index'])

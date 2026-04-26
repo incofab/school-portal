@@ -159,7 +159,7 @@ class AdmissionApplicationController extends Controller
   public function admissionLetter(Institution $institution, Student $student)
   {
     return Inertia::render('institutions/admissions/show-admission-letter', [
-      'student' => $student->load('user.institutionUser', 'classification')
+      'student' => $student->load('institutionUser', 'user', 'classification')
     ]);
   }
 

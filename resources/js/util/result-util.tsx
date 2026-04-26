@@ -18,7 +18,6 @@ import {
   ResultSettingType,
 } from '@/types/types';
 import { Text } from '@chakra-ui/react';
-import jsPDF from 'jspdf';
 
 const ResultUtil = {
   getPositionSuffix: function (position: number) {
@@ -182,7 +181,11 @@ const ResultUtil = {
     return total;
   },
 
-  exportAsPdf: function (id: string, filename: string | undefined = undefined) {
+  exportAsPdf: async function (
+    id: string,
+    filename: string | undefined = undefined
+  ) {
+    const { default: jsPDF } = await import('jspdf');
     const doc = new jsPDF('portrait', 'pt', 'a4');
 
     const allowance = 40;

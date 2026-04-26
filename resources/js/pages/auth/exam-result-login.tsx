@@ -7,38 +7,31 @@ import {
   HStack,
   Icon,
   Input,
-  SimpleGrid,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import React from 'react';
-import { useForm } from '@inertiajs/react';
 import { InertiaLink } from '@inertiajs/inertia-react';
-import {
-  ArrowLeftIcon,
-  IdentificationIcon,
-  TrophyIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import CenteredLayout from '@/components/centered-layout';
 import { BrandButton, LinkButton } from '@/components/buttons';
 import { preventNativeSubmit } from '@/util/util';
 import route from '@/util/route';
 import { InstitutionGroup } from '@/types/models';
-import { Div } from '@/components/semantic';
 import { Inertia } from '@inertiajs/inertia';
+import useWebForm from '@/hooks/use-web-form';
 
 export default function ExamResultLogin({
   institutionGroup,
 }: {
   institutionGroup?: InstitutionGroup;
 }) {
-  const { data, setData, post, processing, errors } = useForm({
+  const webForm = useWebForm({
     exam_no: '',
   });
 
   const handleSubmit = () => {
-    // post(route('exam-results.store'));
-    Inertia.visit(route('exam-results.show', data.exam_no));
+    Inertia.visit(route('exam-results.show', webForm.data.exam_no));
   };
 
   return (
@@ -123,20 +116,20 @@ export default function ExamResultLogin({
           </Div>
         </SimpleGrid> */}
 
-        <FormControl isInvalid={!!errors.exam_no}>
+        <FormControl isInvalid={!!webForm.errors.exam_no}>
           <FormLabel>Exam Number</FormLabel>
           <Input
             type="text"
             size="lg"
-            value={data.exam_no}
-            onChange={(e) => setData('exam_no', e.currentTarget.value)}
+            value={webForm.data.exam_no}
+            onChange={(e) => webForm.setValue('exam_no', e.currentTarget.value)}
             placeholder="Enter exam number"
           />
-          <FormErrorMessage>{errors.exam_no}</FormErrorMessage>
+          <FormErrorMessage>{webForm.errors.exam_no}</FormErrorMessage>
         </FormControl>
 
         <BrandButton
-          isLoading={processing}
+          isLoading={webForm.processing}
           type="submit"
           title="Check Result"
           size="lg"

@@ -33,7 +33,6 @@
         "@inertiajs/inertia": "^0.11.1",
         "@inertiajs/inertia-react": "^0.8.1",
         "@inertiajs/progress": "^0.1.2",
-        "@inertiajs/react": "^1.0.2",
         "@tinymce/tinymce-react": "^5.1.1",
         "chart.js": "^4.5.1",
         "datatables.net-bs5": "^1.13.3",
@@ -51,7 +50,6 @@
         "react-chartjs-2": "^5.3.1",
         "react-dom": "^18.2.0",
         "react-dropzone": "^14.2.3",
-        "react-html2pdf": "^1.0.1",
         "react-pro-sidebar": "^1.0.0",
         "react-select": "^5.7.0",
         "ziggy-js": "^1.5.0"
