@@ -13,8 +13,9 @@ import useModalToggle from '@/hooks/use-modal-toggle';
 import { BrandButton } from '@/components/buttons';
 import { formatAsCurrency } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { HStack } from '@chakra-ui/react';
+import { HStack, Text } from '@chakra-ui/react';
 import { format } from 'date-fns';
+import { Div } from '@/components/semantic';
 
 interface Props {
   bankAccounts: BankAccount[];
@@ -39,7 +40,27 @@ export default function ListWithdrawals({ bankAccounts, withdrawals }: Props) {
     withdrawalOverviewModalToggle.open();
   }
 
+  function getWithdrawableName(row: Withdrawal) {
+    if (!row.withdrawable) {
+      return '-';
+    }
+
+    if ('user' in row.withdrawable && row.withdrawable.user?.full_name) {
+      return row.withdrawable.user.full_name;
+    }
+
+    if ('name' in row.withdrawable) {
+      return row.withdrawable.name;
+    }
+
+    return '-';
+  }
+
   const headers: ServerPaginatedTableHeader<Withdrawal>[] = [
+    {
+      label: 'Requested By',
+      render: (row) => getWithdrawableName(row),
+    },
     {
       label: 'Amount',
       value: 'amount',
@@ -52,9 +73,16 @@ export default function ListWithdrawals({ bankAccounts, withdrawals }: Props) {
     {
       label: 'Payout Bank',
       render: (row) =>
-        row.bank_account
-          ? `${row.bank_account?.bank_name} - ${row.bank_account?.account_number}`
-          : '',
+        row.bank_account ? (
+          <Div>
+            <Text>
+              {row.bank_account?.bank_name} - {row.bank_account?.account_number}
+            </Text>
+            <Text>{row.bank_account?.account_name}</Text>
+          </Div>
+        ) : (
+          ''
+        ),
     },
     {
       label: 'Request At',
@@ -64,12 +92,17 @@ export default function ListWithdrawals({ bankAccounts, withdrawals }: Props) {
     {
       label: 'Settled At',
       render: (row) =>
-        row.paid_at ? format(new Date(row.paid_at), 'PPP p') : 
-      (isAdminManager ? <BrandButton
-        variant="ghost"
-        title="Update Status"
-        onClick={() => openStatusUpdateModal(row)}
-      /> : '-'),
+        row.paid_at ? (
+          format(new Date(row.paid_at), 'PPP p')
+        ) : isAdminManager ? (
+          <BrandButton
+            variant="ghost"
+            title="Update Status"
+            onClick={() => openStatusUpdateModal(row)}
+          />
+        ) : (
+          '-'
+        ),
     },
 
     ...(isAdminManager

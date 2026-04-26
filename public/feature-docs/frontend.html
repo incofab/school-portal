@@ -38,7 +38,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <body>
 <header>
   <h1>Frontend Architecture</h1>
-  <p>Last reviewed 2026-04-22</p>
+  <p>Last reviewed 2026-04-27</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -234,10 +234,10 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>list-bank-accounts</strong> <span class="path"><code>resources/js/pages/managers/bank-accounts/list-bank-accounts.tsx</code></span></div><div class="desc">Listing screen for Bank Accounts, with search, filters, and management actions.</div></li>
 <li><div><strong>list-billings</strong> <span class="path"><code>resources/js/pages/managers/billings/list-billings.tsx</code></span></div><div class="desc">Listing screen for Billings, with search, filters, and management actions.</div></li>
 <li><div><strong>list-commissions</strong> <span class="path"><code>resources/js/pages/managers/commissions/list-commissions.tsx</code></span></div><div class="desc">Listing screen for Commissions, with search, filters, and management actions.</div></li>
-<li><div><strong>dashboard</strong> <span class="path"><code>resources/js/pages/managers/dashboard.tsx</code></span></div><div class="desc">Institution dashboard summarizing key metrics and quick actions.</div></li>
+<li><div><strong>dashboard</strong> <span class="path"><code>resources/js/pages/managers/dashboard.tsx</code></span></div><div class="desc">Manager dashboard summarizing key metrics and quick actions, including an admin attention notice for pending withdrawals and a partner commission-balance card.</div></li>
 <li><div><strong>list-fundings</strong> <span class="path"><code>resources/js/pages/managers/fundings/list-fundings.tsx</code></span></div><div class="desc">Listing screen for Fundings, with search, filters, and management actions.</div></li>
 <li><div><strong>create-manager</strong> <span class="path"><code>resources/js/pages/managers/home/create-manager.tsx</code></span></div><div class="desc">Create screen for Manager, capturing key details and submitting the form.</div></li>
-<li><div><strong>list-managers</strong> <span class="path"><code>resources/js/pages/managers/home/list-managers.tsx</code></span></div><div class="desc">Listing screen for Managers, with search, filters, and management actions.</div></li>
+<li><div><strong>list-managers</strong> <span class="path"><code>resources/js/pages/managers/home/list-managers.tsx</code></span></div><div class="desc">Listing screen for Managers, with search, filters, wallet balances, and management actions.</div></li>
 <li><div><strong>list-registration-requests</strong> <span class="path"><code>resources/js/pages/managers/home/list-registration-requests.tsx</code></span></div><div class="desc">Listing screen for Registration Requests, with search, filters, and management actions.</div></li>
 <li><div><strong>create-institution-group</strong> <span class="path"><code>resources/js/pages/managers/institution-groups/create-institution-group.tsx</code></span></div><div class="desc">Create screen for Institution Group, capturing key details and submitting the form.</div></li>
 <li><div><strong>edit-institution-group</strong> <span class="path"><code>resources/js/pages/managers/institution-groups/edit-institution-group.tsx</code></span></div><div class="desc">Edit screen for Institution Group, allowing updates to existing records.</div></li>
@@ -252,7 +252,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>show-sent-notification</strong> <span class="path"><code>resources/js/pages/managers/notifications/show-sent-notification.tsx</code></span></div><div class="desc">Detail view of Sent Notification, highlighting core fields and related records.</div></li>
 <li><div><strong>list-partner-registration-requests</strong> <span class="path"><code>resources/js/pages/managers/partner-registration-requests/list-partner-registration-requests.tsx</code></span></div><div class="desc">Listing screen for Partner Registration Requests, with search, filters, and management actions.</div></li>
 <li><div><strong>list-pins</strong> <span class="path"><code>resources/js/pages/managers/pins/list-pins.tsx</code></span></div><div class="desc">Listing screen for Pins, with search, filters, and management actions.</div></li>
-<li><div><strong>list-withdrawals</strong> <span class="path"><code>resources/js/pages/managers/withdrawals/list-withdrawals.tsx</code></span></div><div class="desc">Listing screen for Withdrawals, with search, filters, and management actions.</div></li></ul>
+<li><div><strong>list-withdrawals</strong> <span class="path"><code>resources/js/pages/managers/withdrawals/list-withdrawals.tsx</code></span></div><div class="desc">Listing screen for Withdrawals, with accountable requester names, payout-bank details, filters, and management actions.</div></li></ul>
 <h3>message.tsx</h3><ul class="detail-list"><li><div><strong>message</strong> <span class="path"><code>resources/js/pages/message.tsx</code></span></div><div class="desc">Inertia page for Message workflows and UI interactions.</div></li></ul>
 <h3>notifications</h3><ul class="detail-list"><li><div><strong>create-notification-form</strong> <span class="path"><code>resources/js/pages/notifications/create-notification-form.tsx</code></span></div><div class="desc">Create screen for Notification Form, capturing key details and submitting the form.</div></li>
 <li><div><strong>list-sent-notifications</strong> <span class="path"><code>resources/js/pages/notifications/list-sent-notifications.tsx</code></span></div><div class="desc">Listing screen for Sent Notifications, with search, filters, and management actions.</div></li>

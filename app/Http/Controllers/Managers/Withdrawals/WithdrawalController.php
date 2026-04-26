@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Managers\Withdrawals;
 use App\Actions\Payments\WithdrawalHandler;
 use App\Http\Controllers\Controller;
 use App\Enums\WithdrawalStatus;
+use App\Models\InstitutionGroup;
+use App\Models\Partner;
 use Illuminate\Http\Request;
 use App\Models\Withdrawal;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 
@@ -16,13 +19,22 @@ class WithdrawalController extends Controller
   public function index()
   {
     $user = currentUser();
+    $withdrawalsQuery = [
+      'bankAccount',
+      'withdrawable' => function (MorphTo $morphTo) {
+        $morphTo->morphWith([
+          Partner::class => ['user'],
+          InstitutionGroup::class => [],
+        ]);
+      },
+    ];
 
     if ($user->isAdmin()) {
       $bankAccounts = [];
-      $withdrawals = Withdrawal::query()->with('bankAccount');
+      $withdrawals = Withdrawal::query()->with($withdrawalsQuery);
     } elseif ($user->isPartner()) {
       $bankAccounts = $user->partner->bankAccounts()->get();
-      $withdrawals = $user->partner->withdrawals()->with('bankAccount');
+      $withdrawals = $user->partner->withdrawals()->with($withdrawalsQuery);
     }
 
     return Inertia::render('managers/withdrawals/list-withdrawals', [

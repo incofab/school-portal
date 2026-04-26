@@ -61,8 +61,7 @@ export default function ListManagers({ managers }: Props) {
     },
     {
       label: 'Balance',
-      value: 'wallet',
-      render: (row) => formatAsCurrency(row.wallet ?? 0),
+      render: (row) => formatAsCurrency(row.partner?.wallet ?? row.wallet ?? 0),
     },
     {
       label: 'Role',

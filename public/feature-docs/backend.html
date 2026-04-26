@@ -38,7 +38,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <body>
 <header>
   <h1>Backend Architecture</h1>
-  <p>Last reviewed 2026-04-22</p>
+  <p>Last reviewed 2026-04-27</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -653,12 +653,12 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>InstitutionManagementController</strong> <span class="path"><code>app/Http/Controllers/Managers/Institutions/InstitutionManagementController.php</code></span></div><div class="desc">HTTP controller for Institution Management, handling requests, authorization, and responses.</div></li>
 <li><div><strong>InstitutionRegistrationController</strong> <span class="path"><code>app/Http/Controllers/Managers/Institutions/InstitutionRegistrationController.php</code></span></div><div class="desc">HTTP controller for Institution Registration, handling requests, authorization, and responses.</div></li>
 <li><div><strong>ListInstitutionsController</strong> <span class="path"><code>app/Http/Controllers/Managers/Institutions/ListInstitutionsController.php</code></span></div><div class="desc">HTTP controller for List Institutions, handling requests, authorization, and responses.</div></li>
-<li><div><strong>ManagerController</strong> <span class="path"><code>app/Http/Controllers/Managers/ManagerController.php</code></span></div><div class="desc">HTTP controller for Manager, handling requests, authorization, and responses.</div></li>
+<li><div><strong>ManagerController</strong> <span class="path"><code>app/Http/Controllers/Managers/ManagerController.php</code></span></div><div class="desc">Manager dashboard and manager-list controller that now exposes admin pending-withdrawal attention data and manager partner wallet balances to the frontend.</div></li>
 <li><div><strong>ListUsersController</strong> <span class="path"><code>app/Http/Controllers/Managers/Users/ListUsersController.php</code></span></div><div class="desc">Admin-manager user listing controller using <code>UserUITableFilters</code> for search plus role, institution, and institution-user status filtering.</div></li>
 <li><div><strong>NotificationController</strong> <span class="path"><code>app/Http/Controllers/Managers/Notifications/NotificationController.php</code></span></div><div class="desc">HTTP controller for Notification, handling requests, authorization, and responses.</div></li>
 <li><div><strong>PartnerRegistrationRequestsController</strong> <span class="path"><code>app/Http/Controllers/Managers/PartnerRequests/PartnerRegistrationRequestsController.php</code></span></div><div class="desc">HTTP controller for Partner Registration Requests, handling requests, authorization, and responses.</div></li>
 <li><div><strong>RegistrationRequestsController</strong> <span class="path"><code>app/Http/Controllers/Managers/RegistrationRequests/RegistrationRequestsController.php</code></span></div><div class="desc">HTTP controller for Registration Requests, handling requests, authorization, and responses.</div></li>
-<li><div><strong>WithdrawalController</strong> <span class="path"><code>app/Http/Controllers/Managers/Withdrawals/WithdrawalController.php</code></span></div><div class="desc">HTTP controller for Withdrawal, handling requests, authorization, and responses.</div></li>
+<li><div><strong>WithdrawalController</strong> <span class="path"><code>app/Http/Controllers/Managers/Withdrawals/WithdrawalController.php</code></span></div><div class="desc">Manager withdrawal controller that lists admin or partner withdrawals with bank-account data plus accountable morph details for partner and institution-group requesters.</div></li>
 <li><div><strong>PartnerRegistrationRequestController</strong> <span class="path"><code>app/Http/Controllers/PartnerRegistrationRequestController.php</code></span></div><div class="desc">HTTP controller for Partner Registration Request, handling requests, authorization, and responses.</div></li>
 <li><div><strong>SearchInstitutionController</strong> <span class="path"><code>app/Http/Controllers/SearchInstitutionController.php</code></span></div><div class="desc">HTTP controller for Search Institution, handling requests, authorization, and responses.</div></li>
 <li><div><strong>StudentAuthController</strong> <span class="path"><code>app/Http/Controllers/StudentAuthController.php</code></span></div><div class="desc">HTTP controller for Student Auth, handling requests, authorization, and responses.</div></li>

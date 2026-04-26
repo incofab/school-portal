@@ -45,6 +45,7 @@ export interface User extends Row {
   has_bvn: boolean;
   has_nin: boolean;
   roles?: Role[];
+  partner?: Partner;
   institution_user?: InstitutionUser;
   student?: Student;
 }
@@ -179,6 +180,7 @@ export interface Withdrawal extends InstitutionRow {
   amount: number;
   status: string;
   bank_account?: BankAccount;
+  withdrawable?: Partner | InstitutionGroup;
   paid_at: string;
   remark: string;
 }

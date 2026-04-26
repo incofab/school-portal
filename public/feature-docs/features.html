@@ -54,7 +54,7 @@ code { color: #d1fae5; }
 <body>
 <header>
   <h1>EduManager Feature Inventory</h1>
-  <p>Last reviewed 2026-04-23. Technical map for AI CLI agents and maintainers.</p>
+  <p>Last reviewed 2026-04-27. Technical map for AI CLI agents and maintainers.</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -113,7 +113,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>03</span> Manager Administration, Institution Groups, and Academic Sessions</h3>
-    <p>Managers administer platform-level entities: institutions, institution groups, managers, user lookup, billing, commissions, fundings, bank accounts, withdrawals, notifications, and academic sessions. Admin managers can list platform users with search and role/institution/status filters, then impersonate any user from the list. Institution groups include branding, banner/background, domain, wallet balance, loan limit, status, brand color, and invoice generation by academic session and term.</p>
+    <p>Managers administer platform-level entities: institutions, institution groups, managers, user lookup, billing, commissions, fundings, bank accounts, withdrawals, notifications, and academic sessions. Admin managers can list platform users with search and role/institution/status filters, see each manager wallet balance, then impersonate any user from the list. The manager dashboard now surfaces pending withdrawal requests in its attention notice section for admins, and the manager withdrawals list shows the accountable requester name for each withdrawal. Institution groups include branding, banner/background, domain, wallet balance, loan limit, status, brand color, and invoice generation by academic session and term.</p>
     <ul>
       <li>Routes: <code>routes/manager.php</code>, especially <code>users</code>, <code>institution-groups</code>, <code>institutions</code>, <code>academic-sessions</code>, <code>funding</code>, <code>billings</code>, <code>commissions</code>, <code>withdrawals</code>.</li>
       <li>Controllers: <code>Managers/Users/ListUsersController</code>, <code>Managers/InstitutionGroups/InstitutionGroupsController</code>, <code>Managers/Institutions/*</code>, <code>Managers/AcademicSessions/AcademicSessionController</code>, <code>Managers/ManagerController</code>.</li>

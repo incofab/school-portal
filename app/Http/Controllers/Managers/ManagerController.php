@@ -2,9 +2,11 @@
 namespace App\Http\Controllers\Managers;
 
 use App\Actions\RecordUsers\RecordPartner;
+use App\Enums\WithdrawalStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Partner;
 use App\Models\User;
+use App\Models\Withdrawal;
 use Illuminate\Http\Request;
 
 class ManagerController extends Controller
@@ -13,9 +15,17 @@ class ManagerController extends Controller
   {
     $user = currentUser();
     $commissionBalance = $user->isPartner() ? $user->partner?->wallet ?? 0 : 0;
+    $attentionSummary = $user->isAdmin()
+      ? [
+          'pendingWithdrawalsCount' => Withdrawal::query()
+            ->where('status', WithdrawalStatus::Pending->value)
+            ->count(),
+        ]
+      : null;
 
     return inertia('managers/dashboard', [
-      'commissionBalance' => $commissionBalance
+      'commissionBalance' => $commissionBalance,
+      'attentionSummary' => $attentionSummary,
     ]);
   }
 

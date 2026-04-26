@@ -1,12 +1,18 @@
 import React from 'react';
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
   Icon,
+  HStack,
   SimpleGrid,
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
 import ManagerDashboardLayout from '@/layout/managers/manager-dashboard-layout';
+import useIsAdminManager from '@/hooks/use-is-admin-manager';
 import useIsPartner from '@/hooks/use-is-partner';
 import useSharedProps from '@/hooks/use-shared-props';
 import route from '@/util/route';
@@ -16,9 +22,13 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 import { PageTitle } from '@/components/page-header';
 import { formatAsCurrency } from '@/util/util';
 import { CurrencyDollarIcon } from '@heroicons/react/24/solid';
+import { LinkButton } from '@/components/buttons';
 
 interface Props {
   commissionBalance: number;
+  attentionSummary?: {
+    pendingWithdrawalsCount: number;
+  } | null;
 }
 
 interface ItemCardProps {
@@ -77,7 +87,8 @@ function DashboardItemCard(prop: ItemCardProps) {
   );
 }
 
-function ManagerDashboard({ commissionBalance }: Props) {
+function ManagerDashboard({ commissionBalance, attentionSummary }: Props) {
+  const isAdminManager = useIsAdminManager();
   const isPartner = useIsPartner();
   const { currentUser } = useSharedProps();
   const onboardingUrl = route('registration-requests.create', [currentUser]);
@@ -94,6 +105,44 @@ function ManagerDashboard({ commissionBalance }: Props) {
 
   return (
     <ManagerDashboardLayout>
+      {isAdminManager && (attentionSummary?.pendingWithdrawalsCount ?? 0) > 0 && (
+        <Slab my={2}>
+          <SlabBody>
+            <Alert
+              status="warning"
+              variant="subtle"
+              rounded="md"
+              alignItems="flex-start"
+            >
+              <AlertIcon mt={1} />
+              <HStack
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={4}
+                width="full"
+                flexWrap="wrap"
+              >
+                <Text>
+                  <AlertTitle mr={2}>Attention Notice</AlertTitle>
+                  <AlertDescription display="inline">
+                    {attentionSummary?.pendingWithdrawalsCount} withdrawal
+                    {attentionSummary?.pendingWithdrawalsCount === 1
+                      ? ''
+                      : 's'}{' '}
+                    pending review.
+                  </AlertDescription>
+                </Text>
+                <LinkButton
+                  href={route('managers.withdrawals.index')}
+                  title="Review Withdrawals"
+                  variant="outline"
+                />
+              </HStack>
+            </Alert>
+          </SlabBody>
+        </Slab>
+      )}
+
       {isPartner && (
         <>
           <Slab my={2}>
