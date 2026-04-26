@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\WithdrawalStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,5 +27,13 @@ class BankAccount extends Model
   public function withdrawals()
   {
     return $this->hasMany(Withdrawal::class);
+  }
+
+  public function validWithdrawals()
+  {
+    return $this->withdrawals()->whereIn('status', [
+      WithdrawalStatus::Pending,
+      WithdrawalStatus::Paid
+    ]);
   }
 }

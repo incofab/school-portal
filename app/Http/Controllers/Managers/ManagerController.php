@@ -12,7 +12,7 @@ class ManagerController extends Controller
   function dashboard(Request $request)
   {
     $user = currentUser();
-    $commissionBalance = $user->isPartner() ? $user->partner->wallet : 0;
+    $commissionBalance = $user->isPartner() ? $user->partner?->wallet ?? 0 : 0;
 
     return inertia('managers/dashboard', [
       'commissionBalance' => $commissionBalance

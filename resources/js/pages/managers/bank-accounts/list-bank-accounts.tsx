@@ -1,17 +1,12 @@
 import React from 'react';
-import { BankAccount, InstitutionUser } from '@/types/models';
+import { BankAccount } from '@/types/models';
 import { HStack, IconButton, Icon } from '@chakra-ui/react';
-import DashboardLayout from '@/layout/dashboard-layout';
 import ManagerDashboardLayout from '@/layout/managers/manager-dashboard-layout';
-import useModalToggle from '@/hooks/use-modal-toggle';
-import ServerPaginatedTable from '@/components/server-paginated-table';
-import { InstitutionUserType, PaginationResponse } from '@/types/types';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
-import { BrandButton, LinkButton } from '@/components/buttons';
-import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
+import { LinkButton } from '@/components/buttons';
 import { InertiaLink } from '@inertiajs/inertia-react';
-import { CloudArrowUpIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { TrashIcon } from '@heroicons/react/24/solid';
 import { Inertia } from '@inertiajs/inertia';
 import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
@@ -51,7 +46,7 @@ export default function ListBankAccounts({ bankAccounts }: Props) {
     {
       label: 'Action',
       render: (row) =>
-        row.withdrawals_count < 1 ? (
+        row.valid_withdrawals_count < 1 ? (
           <HStack>
             <IconButton
               as={InertiaLink}

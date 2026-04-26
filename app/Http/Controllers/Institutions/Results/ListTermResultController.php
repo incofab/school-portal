@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Results;
 
+use App\Actions\CourseResult\GetGrade;
 use App\Http\Controllers\Controller;
 use App\Models\ClassResultInfo;
 use App\Models\GuardianStudent;
@@ -47,13 +48,16 @@ class ListTermResultController extends Controller
       ->oldest('users.last_name')
       ->latest('term_results.academic_session_id');
 
+    $gradeReport = GetGrade::getGradeReport($classResultInfo);
+
     return Inertia::render('institutions/results/list-term-results', [
       'termResults' => paginateFromRequest(
         $query
           ->with('academicSession', 'classification', 'student.user')
           ->oldest('term_results.position')
       ),
-      'classResultInfo' => $classResultInfo
+      'classResultInfo' => $classResultInfo,
+      'gradeReport' => $gradeReport
     ]);
   }
 

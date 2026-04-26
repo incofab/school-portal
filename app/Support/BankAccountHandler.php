@@ -69,7 +69,7 @@ class BankAccountHandler
   function destroy(BankAccount $bankAccount)
   {
     abort_if(
-      $bankAccount->withdrawals()->exists(),
+      $bankAccount->validWithdrawals()->exists(),
       403,
       'This account has made withdrawals. Cannot be deleted'
     );

@@ -4,7 +4,19 @@ import ServerPaginatedTable, {
 import useModalToggle from '@/hooks/use-modal-toggle';
 import { ClassResultInfo, TermResult } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
-import { Icon, IconButton, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  Icon,
+  IconButton,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
 import startCase from 'lodash/startCase';
 import React from 'react';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -23,14 +35,22 @@ import { Inertia } from '@inertiajs/inertia';
 import { useResultSetting } from '@/util/result-util';
 import { roundNumber } from '@/util/util';
 
+interface GradeReportItem {
+  grade: string;
+  count: number;
+  percentage: number;
+}
+
 interface Props {
   termResults: PaginationResponse<TermResult>;
   classResultInfo?: ClassResultInfo;
+  gradeReport?: GradeReportItem[];
 }
 
 export default function ListTermResults({
   termResults,
   classResultInfo,
+  gradeReport,
 }: Props) {
   const termResultFilterToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
@@ -164,6 +184,39 @@ export default function ListTermResults({
             }
             onFilterButtonClick={termResultFilterToggle.open}
           />
+
+          {gradeReport && gradeReport.length > 0 && (
+            <Box mt={10}>
+              <Heading size="md" mb={4}>
+                Grade Report Summary
+              </Heading>
+              <Table variant="simple" size="sm" colorScheme="blue">
+                <Thead bg="gray.50">
+                  <Tr>
+                    <Th>Grade</Th>
+                    <Th isNumeric>Students</Th>
+                    <Th isNumeric>Percentage (%)</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {gradeReport.map((item) => (
+                    <Tr key={item.grade}>
+                      <Td fontWeight="bold">{item.grade}</Td>
+                      <Td isNumeric>{item.count}</Td>
+                      <Td isNumeric>{item.percentage}%</Td>
+                    </Tr>
+                  ))}
+                  <Tr bg="gray.50" fontWeight="bold">
+                    <Td>Total</Td>
+                    <Td isNumeric>
+                      {gradeReport.reduce((acc, item) => acc + item.count, 0)}
+                    </Td>
+                    <Td isNumeric>100%</Td>
+                  </Tr>
+                </Tbody>
+              </Table>
+            </Box>
+          )}
         </SlabBody>
         <TermResultsTableFilters {...termResultFilterToggle.props} />
       </Slab>

@@ -20,7 +20,7 @@ class BankAccountController extends Controller
   {
     $bankAccounts = $institution->institutionGroup
       ->bankAccounts()
-      ->withCount('withdrawals')
+      ->withCount('validWithdrawals')
       ->get();
 
     return Inertia::render('institutions/bank-accounts/list-bank-accounts', [

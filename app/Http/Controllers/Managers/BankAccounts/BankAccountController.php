@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Managers\BankAccounts;
 use App\Http\Requests\StoreBankAccountRequest;
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
+use App\Models\Partner;
 use App\Support\BankAccountHandler;
+use App\Support\MorphMap;
 use Inertia\Inertia;
 
 class BankAccountController extends Controller
@@ -14,13 +16,17 @@ class BankAccountController extends Controller
   public function index()
   {
     $user = currentUser();
-    $bankAccounts = $user->partner
-      ->bankAccounts()
-      ->withCount('withdrawals')
-      ->get();
+    $bankAccounts = $user->isAdmin()
+      ? BankAccount::query()
+        ->where('accountable_type', MorphMap::key(Partner::class))
+        ->get()
+      : $user->partner
+        ?->bankAccounts()
+        ->withCount('validWithdrawals')
+        ->get();
 
     return Inertia::render('managers/bank-accounts/list-bank-accounts', [
-      'bankAccounts' => $bankAccounts
+      'bankAccounts' => $bankAccounts ?? []
     ]);
   }
 

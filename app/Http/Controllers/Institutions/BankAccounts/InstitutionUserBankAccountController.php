@@ -15,7 +15,7 @@ class InstitutionUserBankAccountController extends Controller
   {
     $bankAccounts = currentInstitutionUser()
       ->bankAccounts()
-      ->withCount('withdrawals')
+      ->withCount('validWithdrawals')
       ->get();
 
     return Inertia::render(

@@ -207,6 +207,7 @@ export interface BankAccount extends InstitutionRow {
   bank_name: string;
   account_name: string;
   account_number: string;
+  valid_withdrawals_count: number;
   withdrawals_count: number;
   is_primary: boolean;
 }

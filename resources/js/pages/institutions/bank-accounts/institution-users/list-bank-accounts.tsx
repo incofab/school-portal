@@ -78,7 +78,7 @@ export default function ListBankAccounts({ bankAccounts }: Props) {
     {
       label: 'Action',
       render: (row) =>
-        row.withdrawals_count < 1 ? (
+        row.valid_withdrawals_count < 1 ? (
           <HStack>
             <IconButton
               as={InertiaLink}

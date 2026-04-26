@@ -111,6 +111,14 @@ export default function DashboardHeader() {
         </MenuButton>
         <MenuList>
           {/* <MenuItem as={InertiaLink} href={route('logout')}>Profile</MenuItem> */}
+          {currentInstitution && (
+            <MenuItem
+              as={InertiaLink}
+              href={instRoute('users.profile', [currentUser.id])}
+            >
+              Profile
+            </MenuItem>
+          )}
           <MenuItem as={InertiaLink} href={route('users.password.edit')}>
             Change Password
           </MenuItem>
