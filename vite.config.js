@@ -9,7 +9,7 @@ const vendorGroups = [
   },
   {
     name: 'vendor-inertia',
-    packages: ['@inertiajs', 'axios', 'ziggy-js'],
+    packages: ['@inertiajs', 'axios', 'ziggy-js', 'nprogress'],
   },
   {
     name: 'vendor-chakra',

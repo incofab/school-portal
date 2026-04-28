@@ -11,7 +11,6 @@ import {
 } from 'react-pro-sidebar';
 import { SidebarHeader } from '../components/sidebar-header';
 import { InertiaLink } from '@inertiajs/inertia-react';
-import route from '@/util/route';
 import { Nullable, InstitutionUserType } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
 import useInstitutionRoute from '@/hooks/use-institution-route';
@@ -249,6 +248,11 @@ export default function SideBarLayout() {
       label: 'Reports',
       roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
       sub_items: [
+        {
+          label: 'Grade Report',
+          route: instRoute('reports.grade-report'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
         {
           label: 'Subject Report',
           route: instRoute('reports.subject-report'),

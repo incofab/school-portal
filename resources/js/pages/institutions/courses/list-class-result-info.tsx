@@ -222,6 +222,18 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
                 <MenuList>
                   <MenuItem
                     as={InertiaLink}
+                    href={instRoute('reports.grade-report', {
+                      classification: row.classification_id,
+                      academicSession: row.academic_session_id,
+                      term: row.term,
+                      forMidTerm: row.for_mid_term ? 1 : 0,
+                    })}
+                    py={2}
+                  >
+                    Grade Report
+                  </MenuItem>
+                  <MenuItem
+                    as={InertiaLink}
                     href={instRoute('class-result-info.record-evaluations', [
                       row.id,
                     ])}

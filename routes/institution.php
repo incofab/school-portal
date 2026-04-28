@@ -1,10 +1,7 @@
 <?php
 
 use App\Http\Controllers\Institutions as Web;
-use App\Mail\AdmissionLetterMail;
-use App\Mail\InstitutionMessageMail;
 use App\Models\User;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 // Institution
@@ -255,6 +252,8 @@ Route::resource('/live-classes', Web\LiveClasses\LiveClassController::class)
 
 Route::get('/reports/subject-report', Web\Reports\SubjectReportController::class)
     ->name('reports.subject-report');
+Route::get('/reports/grade-report', Web\Reports\GradeReportController::class)
+    ->name('reports.grade-report');
 
 Route::get('/class-result-info/index', [Web\Staff\ClassResultInfoController::class, 'index'])
     ->name('class-result-info.index');
