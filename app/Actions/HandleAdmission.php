@@ -2,14 +2,13 @@
 
 namespace App\Actions;
 
-use App\Models\User;
-use App\Models\Institution;
-use Illuminate\Support\Str;
-use App\Actions\RecordStudent;
-use App\Actions\RecordGuardian;
-use Illuminate\Support\Facades\DB;
+use App\Enums\Media\MediaVisibility;
 use App\Models\AdmissionApplication;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Institution;
+use App\Models\User;
+use App\Support\Media\MediaManager;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class HandleAdmission
 {
@@ -30,18 +29,7 @@ class HandleAdmission
     $data
   ) {
     $guardians = $admissionApplication->applicationGuardians()->get();
-    $destinationUrl = '';
-    if ($admissionApplication->photo) {
-      $sourcePath = $admissionApplication->photo;
-
-      $parts = explode('/', $sourcePath);
-      $fileName = end($parts);
-
-      $destinationPath = 'avatars/users/' . $fileName;
-
-      Storage::disk('s3_public')->move($sourcePath, $destinationPath);
-      $destinationUrl = Storage::disk('s3_public')->url($destinationPath);
-    }
+    $destinationUrl = $admissionApplication->photo;
 
     DB::beginTransaction();
     $student = RecordStudent::make($this->institution, [
@@ -67,6 +55,30 @@ class HandleAdmission
         ])->create($student->id);
       }
     }
+
+    if ($admissionApplication->photo) {
+      $path = $admissionApplication->latestMediaForCollection('admission_photo')
+        ?->path;
+
+      if ($path) {
+        app(MediaManager::class)->registerExistingFile(
+          path: $path,
+          mediable: $student->user,
+          collectionName: 'profile_photo',
+          institution: $this->institution,
+          uploadedBy: currentUser(),
+          visibility: MediaVisibility::Public,
+          meta: [
+            'source_type' => $admissionApplication->getMorphClass(),
+            'source_id' => $admissionApplication->id
+          ],
+          legacyUrlColumn: 'photo'
+        );
+      } else {
+        $student->user->forceFill(['photo' => $destinationUrl])->save();
+      }
+    }
+
     DB::commit();
   }
 }

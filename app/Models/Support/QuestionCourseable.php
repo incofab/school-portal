@@ -9,11 +9,14 @@ use App\Models\Passage;
 use App\Models\Question;
 use App\Models\TheoryQuestion;
 use App\Support\MorphableHandler;
+use App\Traits\HasMedia;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 
 abstract class QuestionCourseable extends Model
 {
+    use HasMedia;
+
     public function loadParent()
     {
         if ($this instanceof CourseSession) {

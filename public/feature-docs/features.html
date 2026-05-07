@@ -54,7 +54,7 @@ code { color: #d1fae5; }
 <body>
 <header>
   <h1>EduManager Feature Inventory</h1>
-  <p>Last reviewed 2026-04-27. Technical map for AI CLI agents and maintainers.</p>
+  <p>Last reviewed 2026-05-07. Technical map for AI CLI agents and maintainers.</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -77,6 +77,16 @@ code { color: #d1fae5; }
 
 <section>
   <h2>Implemented Features</h2>
+
+  <div class="feature">
+    <h3><span>00</span> Shared Media Tracking and Upload Lifecycle</h3>
+    <p>All first-party uploads that end up on the public S3 disk now pass through a shared media-management layer that creates a database record before upload, stores file metadata and ownership details, and then marks the media row uploaded or failed after transfer. Legacy URL/path columns are still synchronized for compatibility while the new <code>media</code> table becomes the auditable source of truth.</p>
+    <ul>
+      <li>Backend: <code>App\Support\Media\MediaManager</code>, <code>App\Models\Media</code>, <code>App\Traits\HasMedia</code>, and <code>media:migrate-legacy</code>.</li>
+      <li>Migrated upload flows: institution profile photos, institution setting images, user avatars, institution-group banners, admission application photos, manual payment proofs, TinyMCE/CCD inline images, and imported CCD course-content image assets.</li>
+      <li>Migration: <code>php artisan media:migrate-legacy</code> backfills media records from legacy model fields and can scan the S3 disk for unattached legacy files.</li>
+    </ul>
+  </div>
 
   <div class="feature">
     <h3><span>01</span> Authentication, Account Access, and Impersonation</h3>
@@ -125,7 +135,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>04</span> Institution Dashboard, Profile, Settings, and Setup Checklist</h3>
-    <p>Institution users get a dashboard, setup checklist, profile editing, photo upload, payment key settings, result settings, current academic session and term settings, and institution-level search endpoints. Admin and accountant dashboards now include a top attention section showing unread chats, the current pending manual-payment count with a quick link to review requests, plus a bank-account configuration prompt when the institution group has not added any bank accounts yet. Shared props expose current institution, session, term, and role context to the React app.</p>
+    <p>Institution users get a dashboard, setup checklist, profile editing, photo upload, payment key settings, result settings, current academic session and term settings, and institution-level search endpoints. Admin and accountant dashboards now include a top attention section showing unread chats, the current pending manual-payment count with a quick link to review requests, plus a bank-account configuration prompt when the institution group has not added any bank accounts yet. Shared props expose current institution, session, term, and role context to the React app. Institution photos and setting images are now tracked in the shared media table before the S3 upload completes.</p>
     <ul>
       <li>Routes/controllers: <code>InstitutionController</code>, <code>InstitutionSettingController</code>, <code>SettingsHandler</code>, <code>SetupChecklistHandler</code>, <code>InstitutionDashboardStat</code>.</li>
       <li>Frontend: <code>institutions/dashboard.tsx</code>, <code>institution-profile.tsx</code>, <code>settings/create-edit-institution-settings.tsx</code>, <code>settings/result-settings.tsx</code>, <code>settings/payment-keys-settings.tsx</code>.</li>
@@ -135,7 +145,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>05</span> Users, Staff, Roles, and Staff Assets</h3>
-    <p>Institution staff can create users, list/search users, update profiles, upload photos, bulk upload staff, download staff recording templates, update institution-user status, reset passwords, change roles, delete users, assign course-teacher records, and print staff ID cards.</p>
+    <p>Institution staff can create users, list/search users, update profiles, upload photos, bulk upload staff, download staff recording templates, update institution-user status, reset passwords, change roles, delete users, assign course-teacher records, and print staff ID cards. User avatar uploads now create media records with uploader, collection, and storage metadata before upload.</p>
     <ul>
       <li>Controllers: <code>Institutions/Users/*</code>, <code>Institutions/Staff/CourseTeachersController</code>, <code>RecordStaff</code>, <code>DownloadStaffRecordingSheet</code>, <code>InsertStaffFromRecordingSheet</code>.</li>
       <li>Frontend: <code>institutions/users/*</code>, <code>institutions/staff/list-course-teachers.tsx</code>, <code>register-course-teacher.tsx</code>, <code>students/staff-id-cards.tsx</code>.</li>
@@ -177,7 +187,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>09</span> Courses, Course Teachers, CCD Content, and Question Bank</h3>
-    <p>Course workflows include CRUD, search, multi-create, course-teacher assignment, course sessions, topic-scoped content upload/export, passages, instructions, objective questions, theory questions, bulk objective question upload/download, TinyMCE image upload, practice question generation, inserting generated objective questions into the question bank, and row shortcuts to filtered lesson plans and topics from subject and subject-teacher lists.</p>
+    <p>Course workflows include CRUD, search, multi-create, course-teacher assignment, course sessions, topic-scoped content upload/export, passages, instructions, objective questions, theory questions, bulk objective question upload/download, TinyMCE image upload, practice question generation, inserting generated objective questions into the question bank, and row shortcuts to filtered lesson plans and topics from subject and subject-teacher lists. TinyMCE images and imported course-content image assets are now tracked in the shared media subsystem before they are written to S3.</p>
     <ul>
       <li>Routes: <code>routes/institution.php</code> course routes and <code>routes/ccd.php</code> content routes.</li>
       <li>Controllers/actions: <code>CoursesController</code>, <code>CCD/*</code>, <code>UploadCourseContent</code>, <code>ExportCourse</code>, <code>Questions/ExtractDocumentContent</code>, <code>Questions/ConvertDocumentToQuestions</code>, <code>GoogleAiHelper</code>.</li>
@@ -263,7 +273,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>17</span> Admissions and Admission Forms</h3>
-    <p>Admissions support admission form CRUD, public admission applications, application preview, instant or manual form purchase, admission letters, application uploads, recording template download, status updates, application guardian data, and payment processing for admission form purchases.</p>
+    <p>Admissions support admission form CRUD, public admission applications, application preview, instant or manual form purchase, admission letters, application uploads, recording template download, status updates, application guardian data, and payment processing for admission form purchases. Applicant photos are now tracked in the shared media table before upload, and admitted students can inherit that tracked asset into their user profile.</p>
     <ul>
       <li>Controllers/actions: <code>Admissions/AdmissionFormController</code>, <code>Admissions/AdmissionApplicationController</code>, <code>RecordAdmissionApplication</code>, <code>ConfirmAdmissionFormPayment</code>, <code>HandleAdmission</code>.</li>
       <li>Frontend: <code>institutions/admissions/*</code>.</li>
@@ -273,7 +283,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>18</span> Fees, Fee Payments, Receipts, and Payment Notifications</h3>
-    <p>Finance features include fee CRUD/search, fee categories/membership handling, fee payment recording, student fee payment views, manual bank-transfer payment requests for fees and admission form purchases, manual payment review/confirmation/rejection, fee payment summary retrieval, receipt listing/showing, universal receipt printing, payment notifications, admission form payments, payment references, and provider webhook processing.</p>
+    <p>Finance features include fee CRUD/search, fee categories/membership handling, fee payment recording, student fee payment views, manual bank-transfer payment requests for fees and admission form purchases, manual payment review/confirmation/rejection, fee payment summary retrieval, receipt listing/showing, universal receipt printing, payment notifications, admission form payments, payment references, and provider webhook processing. Manual payment proof uploads are now tracked through the shared media subsystem while continuing to synchronize the legacy proof path and URL columns.</p>
     <ul>
       <li>Controllers/actions/support: <code>Payments/FeeController</code>, <code>FeePaymentController</code>, <code>ManualPaymentController</code>, <code>ReceiptController</code>, <code>PaymentNotificationController</code>, <code>RecordFee</code>, <code>FeePaymentHandler</code>, <code>ManualPaymentHandler</code>, <code>RecordFeePaymentReminder</code>, <code>FeeMembersHandler</code>, <code>GetClassFeePaymentSummary</code>, <code>GetStudentFeePaymentSummary</code>, payment processors and merchants including <code>PaymentManual</code> and the shared payment record contract.</li>
       <li>Frontend: <code>institutions/payments/*</code>, <code>students/payments/*</code>, receipt and fee modals. Fee and admission payment entry screens now start with a minimal payment-method selector; manual transfer then continues to a shared pending page by payment reference for optional proof upload, bank selection, and extra transfer details, while staff finance pages keep pending-first manual payment review and users can open their own manual payment history from either institution or student routes.</li>

@@ -3,7 +3,6 @@
 namespace App\Support\Payments\Processors;
 
 use App\Actions\Payments\FeePaymentHandler;
-use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\Payments\PaymentStatus;
 use App\Models\Fee;
 use App\Support\Res;

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\TrimDecimal;
 use App\Enums\ManagerRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +19,7 @@ class Partner extends Model
     'commission' => 'float',
     'referral_commission' => 'float',
     'user_id' => 'integer',
-    'wallet' => 'float'
+    'wallet' => TrimDecimal::class
   ];
 
   static function createRule(?User $user = null)

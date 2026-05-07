@@ -17,15 +17,15 @@ class ManagerController extends Controller
     $commissionBalance = $user->isPartner() ? $user->partner?->wallet ?? 0 : 0;
     $attentionSummary = $user->isAdmin()
       ? [
-          'pendingWithdrawalsCount' => Withdrawal::query()
-            ->where('status', WithdrawalStatus::Pending->value)
-            ->count(),
-        ]
+        'pendingWithdrawalsCount' => Withdrawal::query()
+          ->where('status', WithdrawalStatus::Pending->value)
+          ->count()
+      ]
       : null;
 
     return inertia('managers/dashboard', [
       'commissionBalance' => $commissionBalance,
-      'attentionSummary' => $attentionSummary,
+      'attentionSummary' => $attentionSummary
     ]);
   }
 

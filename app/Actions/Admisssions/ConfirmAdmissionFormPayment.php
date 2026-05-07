@@ -1,16 +1,17 @@
 <?php
+
 namespace App\Actions\Admisssions;
 
 use App\Models\AdmissionApplication;
 use App\Models\AdmissionForm;
 use App\Models\ApplicationGuardian;
 use App\Models\Institution;
+use App\Support\Media\MediaManager;
 use Illuminate\Http\UploadedFile;
-use Storage;
 
 class ConfirmAdmissionFormPayment
 {
-  function __construct(private Institution $institution)
+  public function __construct(private Institution $institution)
   {
   }
 
@@ -23,15 +24,6 @@ class ConfirmAdmissionFormPayment
 
     /** @var UploadedFile|null $photo */
     $photo = $data['photo'] ?? null;
-
-    if ($photo) {
-      $imagePath = $photo->store(
-        "{$this->institution->uuid}/admission",
-        's3_public'
-      );
-      $publicUrl = Storage::disk('s3_public')->url($imagePath);
-      $applicantData['photo'] = $publicUrl;
-    }
 
     // Create the Admission Application
     $admissionApplication = $this->institution
@@ -49,6 +41,18 @@ class ConfirmAdmissionFormPayment
         'admission_application_id' => $admissionApplication->id
       ];
       ApplicationGuardian::create($modGuardianData);
+    }
+
+    if ($photo) {
+      app(MediaManager::class)->storeUploadedFile(
+        $photo,
+        $admissionApplication,
+        'admission_photo',
+        "{$this->institution->uuid}/admission",
+        $this->institution,
+        currentUser(),
+        legacyUrlColumn: 'photo'
+      );
     }
   }
 }

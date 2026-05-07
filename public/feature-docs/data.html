@@ -38,7 +38,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <body>
 <header>
   <h1>Data Model &amp; Database</h1>
-  <p>Last reviewed 2026-04-22</p>
+  <p>Last reviewed 2026-05-07</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -97,6 +97,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>ManualPayment</strong> <span class="path"><code>app/Models/ManualPayment.php</code></span></div><div class="desc">Represents manual bank-transfer payment requests with generic payable/paymentable morphs, selected institution bank account, optional proof upload URL, status, review fields, and processing timestamps. Implements the shared payment record contract used by payment merchants and processors.</div></li>
 <li><div><strong>Message</strong> <span class="path"><code>app/Models/Message.php</code></span></div><div class="desc">Represents Message records and relationships used for messaging.</div></li>
 <li><div><strong>MessageRecipient</strong> <span class="path"><code>app/Models/MessageRecipient.php</code></span></div><div class="desc">Represents Message Recipient records and relationships used for messaging.</div></li>
+<li><div><strong>Media</strong> <span class="path"><code>app/Models/Media.php</code></span></div><div class="desc">Tracks uploaded files before and after S3 transfer with polymorphic ownership, collection naming, disk/path metadata, mime and size details, upload status, uploader, institution, and migration metadata for legacy assets.</div></li>
 <li><div><strong>Partner</strong> <span class="path"><code>app/Models/Partner.php</code></span></div><div class="desc">Represents Partner records and relationships in the system.</div></li>
 <li><div><strong>PartnerRegistrationRequest</strong> <span class="path"><code>app/Models/PartnerRegistrationRequest.php</code></span></div><div class="desc">Represents Partner Registration Request records and relationships in the system.</div></li>
 <li><div><strong>Passage</strong> <span class="path"><code>app/Models/Passage.php</code></span></div><div class="desc">Represents Passage records and relationships used for passages for assessments.</div></li>

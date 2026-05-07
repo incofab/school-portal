@@ -6,13 +6,14 @@ use App\Enums\InstitutionStatus;
 use App\Enums\InstitutionUserType;
 use App\Enums\S3Folder;
 use App\Support\Queries\InstitutionQueryBuilder;
+use App\Traits\HasMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Institution extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasMedia, SoftDeletes;
 
     protected $guarded = [];
 

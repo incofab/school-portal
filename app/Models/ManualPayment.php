@@ -7,6 +7,7 @@ use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
+use App\Traits\HasMedia;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +17,7 @@ use Illuminate\Support\Str;
 
 class ManualPayment extends Model implements PaymentRecord
 {
-    use HasFactory, InstitutionScope, SoftDeletes;
+    use HasFactory, HasMedia, InstitutionScope, SoftDeletes;
 
     protected $guarded = [];
 

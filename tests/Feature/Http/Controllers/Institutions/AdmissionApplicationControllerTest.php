@@ -99,6 +99,11 @@ it('store admission application data', function () {
       ->toArray()
   );
   assertNotNull($admissionApplication->photo);
+  assertDatabaseHas('media', [
+    'mediable_type' => $admissionApplication->getMorphClass(),
+    'mediable_id' => $admissionApplication->id,
+    'collection_name' => 'admission_photo'
+  ]);
   assertDatabaseCount('application_guardians', 2);
   foreach ($guardians as $key => $guardian) {
     assertDatabaseHas(

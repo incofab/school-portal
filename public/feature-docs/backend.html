@@ -38,10 +38,13 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <body>
 <header>
   <h1>Backend Architecture</h1>
-  <p>Last reviewed 2026-04-27</p>
+  <p>Last reviewed 2026-05-07</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
+<section><h2>Shared Media Subsystem</h2><ul class="detail-list"><li><div><code>app/Support/Media/MediaManager.php</code></div><div class="desc">Central upload service that creates a pending media database row first, uploads second, then marks the media record uploaded or failed and can synchronize legacy URL/path columns on the owning model.</div></li>
+<li><div><code>app/Console/Commands/MigrateLegacyMediaCommand.php</code></div><div class="desc">Backfill command exposed as <code>php artisan media:migrate-legacy</code> for migrating legacy model references and scanning the S3 disk for unattached files.</div></li>
+<li><div><code>InstitutionController::uploadPhoto</code>, <code>InstitutionSettingController::saveRecord</code>, <code>UpdateInstitutionUserController::uploadPhoto</code>, <code>InstitutionGroupsController::uploadBanner</code>, <code>RecordAdmissionApplication</code>, <code>ConfirmAdmissionFormPayment</code>, <code>ManualPaymentController::updatePending</code>, <code>UploadTinyMceImageController</code>, and <code>UploadCourseContent::transferImages</code></div><div class="desc">Current upload entry points migrated to the shared media manager.</div></li></ul></section>
 <section><h2>Routes</h2><ul><li><code>routes/api.php</code> — Route::group([&#x27;middleware&#x27; =&gt; [&#x27;auth:sanctum&#x27;, &#x27;institution.user&#x27;]], function () {</li>
 <li><code>routes/api.php</code> — Route::post(&#x27;/{institution:code}/attendance&#x27;, [Inst\AttendanceController::class, &#x27;store&#x27;]);</li>
 <li><code>routes/api.php</code> — Route::post(&#x27;/login&#x27;, [AuthController::class, &#x27;login&#x27;]); // Login route for API</li>

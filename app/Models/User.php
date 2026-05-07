@@ -5,19 +5,20 @@ namespace App\Models;
 use App\Enums\Gender;
 use App\Enums\InstitutionUserType;
 use App\Enums\ManagerRole;
-use Illuminate\Notifications\Notifiable;
+use App\Traits\HasMedia;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Validation\Rules\Enum;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-  use Notifiable, HasApiTokens, HasFactory, SoftDeletes, HasRoles;
+  use HasApiTokens, HasFactory, HasMedia, HasRoles, Notifiable, SoftDeletes;
 
   /**
    * The attributes that are mass assignable.
@@ -27,6 +28,7 @@ class User extends Authenticatable
   protected $guarded = [];
 
   protected $appends = ['full_name', 'photo_url', 'has_bvn', 'has_nin'];
+
   /**
    * The attributes that should be hidden for arrays.
    *
@@ -68,10 +70,12 @@ class User extends Authenticatable
   {
     if (!$this->photo) {
       $encodedName = urlencode($this->getAttribute('full_name'));
+
       return new Attribute(
         get: fn() => "https://ui-avatars.com/api/?name={$encodedName}"
       );
     }
+
     return new Attribute(get: fn() => $this->photo);
   }
 
@@ -92,7 +96,7 @@ class User extends Authenticatable
     return Attribute::make(get: fn() => !empty($this->nin));
   }
 
-  function getReference()
+  public function getReference()
   {
     return str_pad($this->id, 12, '0', STR_PAD_LEFT);
   }
@@ -102,13 +106,13 @@ class User extends Authenticatable
   // }
 
   /** Institutions created by this user */
-  function createdInstitutions()
+  public function createdInstitutions()
   {
     return $this->hasMany(Institution::class);
   }
 
   /** Institutions this user is assigned to */
-  function institutions()
+  public function institutions()
   {
     return $this->belongsToMany(
       Institution::class,
@@ -116,17 +120,18 @@ class User extends Authenticatable
     )->withTimestamps();
   }
 
-  function institutionUsers(): HasMany
+  public function institutionUsers(): HasMany
   {
     return $this->hasMany(InstitutionUser::class);
   }
 
-  function institutionUser()
+  public function institutionUser()
   {
     $currentInstitution = currentInstitution();
     if (!$currentInstitution) {
       return null;
     }
+
     return $this->hasOne(InstitutionUser::class)
       ->latestOfMany()
       ->where('institution_id', $currentInstitution->id);
@@ -135,34 +140,34 @@ class User extends Authenticatable
     //   ->with('student');
   }
 
-  function courseTeachers()
+  public function courseTeachers()
   {
     return $this->hasMany(CourseTeacher::class);
   }
 
-  function student()
+  public function student()
   {
     return $this->hasOne(Student::class);
   }
 
-  function institutionStudent(): Student|null
+  public function institutionStudent(): ?Student
   {
     return $this->institutionUser()
       ->with('student.classification')
       ->first()?->student;
   }
 
-  function exams()
+  public function exams()
   {
     return $this->morphMany(Exam::class, 'examable');
   }
 
-  function reservedAccounts()
+  public function reservedAccounts()
   {
     return $this->morphMany(ReservedAccount::class, 'reservable');
   }
 
-  function hasInstitutionRole(InstitutionUserType|array $role): bool
+  public function hasInstitutionRole(InstitutionUserType|array $role): bool
   {
     return $this->institutionUser()
       ->when(
@@ -173,53 +178,58 @@ class User extends Authenticatable
       ->exists();
   }
 
-  function isInstitutionAdmin()
+  public function isInstitutionAdmin()
   {
     return $this->hasInstitutionRole(InstitutionUserType::Admin);
   }
 
-  function isInstitutionTeacher()
+  public function isInstitutionTeacher()
   {
     return $this->hasInstitutionRole(InstitutionUserType::Teacher);
   }
 
-  function isInstitutionStudent()
+  public function isInstitutionStudent()
   {
     return $this->hasInstitutionRole(InstitutionUserType::Student);
   }
 
-  function isInstitutionGuardian()
+  public function isInstitutionGuardian()
   {
     return $this->hasInstitutionRole(InstitutionUserType::Guardian);
   }
 
-  function isAdmin()
+  public function isAdmin()
   {
     return $this->hasRole(ManagerRole::Admin);
   }
-  function isPartner()
+
+  public function isPartner()
   {
     return $this->hasRole(ManagerRole::Partner);
   }
-  function isManager()
+
+  public function isManager()
   {
     return $this->hasRole([ManagerRole::Admin, ManagerRole::Partner]);
   }
 
-  function institutionGroups()
+  public function institutionGroups()
   {
     return $this->hasMany(InstitutionGroup::class);
   }
-  function partnerInstitutionGroups()
+
+  public function partnerInstitutionGroups()
   {
     return $this->hasMany(InstitutionGroup::class, 'partner_user_id');
   }
-  function registrationRequests()
+
+  public function registrationRequests()
   {
     return $this->hasMany(RegistrationRequest::class, 'partner_user_id');
   }
+
   /** Children/wards of a parent */
-  function dependents()
+  public function dependents()
   {
     return $this->hasManyThrough(
       Student::class,
@@ -230,32 +240,33 @@ class User extends Authenticatable
       'student_id'
     );
   }
-  function guardianStudents()
+
+  public function guardianStudents()
   {
     return $this->hasMany(GuardianStudent::class, 'guardian_user_id', 'id');
   }
 
-  function partner()
+  public function partner()
   {
     return $this->hasOne(Partner::class);
   }
 
-  function receipts()
+  public function receipts()
   {
     return $this->hasMany(Receipt::class);
   }
 
-  function requestedChatThreads()
+  public function requestedChatThreads()
   {
     return $this->hasMany(ChatThread::class, 'requester_user_id');
   }
 
-  function targetedChatThreads()
+  public function targetedChatThreads()
   {
     return $this->hasMany(ChatThread::class, 'target_user_id');
   }
 
-  function chatMessages()
+  public function chatMessages()
   {
     return $this->hasMany(ChatMessage::class, 'sender_user_id');
   }

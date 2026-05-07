@@ -1,30 +1,33 @@
 <?php
+
 namespace App\Actions;
 
+use App\Enums\Media\MediaVisibility;
 use App\Enums\S3Folder;
 use App\Models\Course;
 use App\Models\CourseSession;
 use App\Models\Instruction;
 use App\Models\Passage;
 use App\Models\Question;
+use App\Support\Media\MediaManager;
 use DB;
 use File;
 use Illuminate\Http\UploadedFile;
 
 class UploadCourseContent
 {
-  function __construct(
+  public function __construct(
     private Course $course,
     private UploadedFile $uploadedFile
   ) {
   }
 
-  static function run(Course $course, UploadedFile $uploadedFile)
+  public static function run(Course $course, UploadedFile $uploadedFile)
   {
     return (new self($course, $uploadedFile))->execute();
   }
 
-  function execute()
+  public function execute()
   {
     ini_set('max_execution_time', 20 * 60);
     $baseFolder = self::unzipFile($this->uploadedFile);
@@ -88,7 +91,7 @@ class UploadCourseContent
 
     $questionsArr = json_decode(file_get_contents($questionsFile), true);
 
-    Question::multiInsert($courseSession, $questionsArr); 
+    Question::multiInsert($courseSession, $questionsArr);
   }
 
   private static function transferImages(
@@ -105,10 +108,24 @@ class UploadCourseContent
       "{$destinationCourseSession->course_id}/{$destinationCourseSession->id}"
     );
 
-    AwsFileHelper::uploadDirectory($sessionImagesFolder, $destinationFolder);
+    foreach (File::files($sessionImagesFolder) as $file) {
+      app(MediaManager::class)->storeLocalFile(
+        $file->getPathname(),
+        $destinationCourseSession,
+        'course_content_image',
+        $destinationFolder,
+        $destinationCourseSession->institution,
+        currentUser(),
+        visibility: MediaVisibility::Public,
+        meta: [
+          'source_session_id' => $sourceCourseSession['id'] ?? null,
+          'course_id' => $destinationCourseSession->course_id
+        ]
+      );
+    }
   }
 
-  static function unzipFile(UploadedFile $uploadedFile)
+  public static function unzipFile(UploadedFile $uploadedFile)
   {
     $zipPath = $uploadedFile->store('temp'); // Store the uploaded zip file in the 'temp' folder
     $zipFilePath = storage_path("app/$zipPath");
@@ -125,6 +142,7 @@ class UploadCourseContent
 
     // Clean up: Delete the uploaded zip file
     File::delete($zipFilePath);
+
     return $unzipPath;
   }
 }

@@ -10,6 +10,7 @@ use App\Models\BankAccount;
 use App\Models\Fee;
 use App\Models\Institution;
 use App\Models\ManualPayment;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -86,9 +87,7 @@ it('allows accountants to confirm manual fee payments', function () {
 
   expect($manualPayment->fresh()->status)->toBe(PaymentStatus::Confirmed);
   expect($receipt->fresh()->amount_paid)->toBe($this->fee->amount);
-  expect($this->institutionGroup->fresh()->credit_wallet)->toBe(
-    $this->fee->amount
-  );
+  expect($this->institutionGroup->fresh()->credit_wallet)->toBe(0.0);
 
   assertDatabaseHas('fee_payments', [
     'reference' => $manualPayment->reference,
@@ -96,6 +95,11 @@ it('allows accountants to confirm manual fee payments', function () {
     'confirmed_by_user_id' => $this->accountant->id,
     'amount' => $this->fee->amount
   ]);
+  expect(
+    Transaction::query()
+      ->where('reference', $manualPayment->reference)
+      ->exists()
+  )->toBeFalse();
 });
 
 it('allows admins to reject manual payments', function () {
@@ -161,7 +165,12 @@ it('confirms manual admission form purchases', function () {
   expect($admissionApplication->fresh()->admission_form_purchase_id)->toBe(
     $purchase->id
   );
-  expect($this->institutionGroup->fresh()->credit_wallet)->toBe(2500.0);
+  expect($this->institutionGroup->fresh()->credit_wallet)->toBe(0.0);
+  expect(
+    Transaction::query()
+      ->where('reference', $manualPayment->reference)
+      ->exists()
+  )->toBeFalse();
 });
 
 it('prevents non finance staff from confirming manual payments', function () {
@@ -243,6 +252,11 @@ it('updates optional pending manual payment details', function () {
     'id' => $manualPayment->id,
     'bank_account_id' => $this->bankAccount->id,
     'depositor_name' => 'Jane Depositor'
+  ]);
+  assertDatabaseHas('media', [
+    'mediable_type' => $manualPayment->getMorphClass(),
+    'mediable_id' => $manualPayment->id,
+    'collection_name' => 'payment_proof'
   ]);
 
   expect($manualPayment->fresh()->proof_path)->not->toBeNull();

@@ -1,18 +1,20 @@
 <?php
+
 namespace App\Http\Controllers\CCD;
 
+use App\Enums\Media\MediaVisibility;
 use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\Support\QuestionCourseable;
+use App\Support\Media\MediaManager;
 use Illuminate\Http\Request;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
-use Storage;
 use Str;
 
 class UploadTinyMceImageController extends Controller
 {
-  function __invoke(
+  public function __invoke(
     Institution $institution,
     QuestionCourseable $morphable,
     Request $request
@@ -23,17 +25,19 @@ class UploadTinyMceImageController extends Controller
     $filename = Str::orderedUuid() . '.' . $file->clientExtension();
     ImageOptimizer::optimize($file);
 
-    $imagePath = $file->storeAs(
+    $media = app(MediaManager::class)->storeUploadedFile(
+      $file,
+      $morphable,
+      'tinymce_image',
       $institution->folder(S3Folder::CCD),
-      $filename,
-      's3_public'
+      $institution,
+      currentUser(),
+      visibility: MediaVisibility::Public,
+      meta: ['requested_filename' => $filename]
     );
 
-    $publicUrl = Storage::disk('s3_public')->url($imagePath);
-
     return response()->json([
-      // 'location' => basename($publicUrl)
-      'location' => $publicUrl
+      'location' => $media->url
     ]);
   }
 }

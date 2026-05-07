@@ -4,6 +4,7 @@ use App\Models\Event;
 use App\Models\Exam;
 use App\Models\Institution;
 use App\Models\Student;
+use Illuminate\Testing\Fluent\AssertableJson;
 
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\postJson;
@@ -30,19 +31,17 @@ it(
     ];
 
     // Act
-    $response = postJson(
-      route('student.exam.login.store'),
-      $data
-    )->assertStatus(302);
+    $response = postJson(route('student.exam.login.store'), $data)->assertOk();
     $exam = Exam::query()
       ->where('examable_id', $this->student->id)
       ->where('examable_type', $this->student->getMorphClass())
       ->first();
-    $response->assertRedirect(
-      route('institutions.display-exam-page', [
-        $this->institution->uuid,
-        $exam->exam_no
-      ])
+    $response->assertJson(
+      fn(AssertableJson $json) => $json
+        ->where('ok', true)
+        ->where('institution.uuid', (string) $this->institution->uuid)
+        ->where('exam.exam_no', $exam->exam_no)
+        ->etc()
     );
     assertDatabaseHas('exams', [
       'examable_id' => $this->student->id,
