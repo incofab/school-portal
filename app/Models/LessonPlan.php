@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Rules\ValidateExistsRule;
+use App\Traits\HasMedia;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,63 +11,65 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LessonPlan extends Model
 {
-  use HasFactory, InstitutionScope, SoftDeletes;
-  protected $table = 'lesson_plans';
-  protected $guarded = [];
+    use HasFactory, HasMedia, InstitutionScope, SoftDeletes;
 
-  protected $casts = [
-    'institution_group_id' => 'integer',
-    'institution_id' => 'integer',
-    'scheme_of_work_id' => 'integer',
-    'course_teacher_id' => 'integer'
-  ];
+    protected $table = 'lesson_plans';
 
-  static function createRule()
-  {
-    return [
-      'course_teacher_id' => [
-        'required',
-        new ValidateExistsRule(CourseTeacher::class)
-      ],
-      'scheme_of_work_id' => [
-        'nullable',
-        new ValidateExistsRule(SchemeOfWork::class)
-      ],
-      'objective' => ['nullable', 'string'],
-      'activities' => ['nullable', 'string'],
-      'content' => ['required', 'string'],
-      'is_used_by_institution_group' => ['required', 'boolean'],
-      'institution_id' => ['required']
+    protected $guarded = [];
+
+    protected $casts = [
+        'institution_group_id' => 'integer',
+        'institution_id' => 'integer',
+        'scheme_of_work_id' => 'integer',
+        'course_teacher_id' => 'integer',
     ];
-  }
 
-  public function institutionGroup()
-  {
-    return $this->belongsTo(InstitutionGroup::class);
-  }
+    public static function createRule()
+    {
+        return [
+            'course_teacher_id' => [
+                'required',
+                new ValidateExistsRule(CourseTeacher::class),
+            ],
+            'scheme_of_work_id' => [
+                'nullable',
+                new ValidateExistsRule(SchemeOfWork::class),
+            ],
+            'objective' => ['nullable', 'string'],
+            'activities' => ['nullable', 'string'],
+            'content' => ['required', 'string'],
+            'is_used_by_institution_group' => ['required', 'boolean'],
+            'institution_id' => ['required'],
+        ];
+    }
 
-  public function institution()
-  {
-    return $this->belongsTo(Institution::class);
-  }
+    public function institutionGroup()
+    {
+        return $this->belongsTo(InstitutionGroup::class);
+    }
 
-  public function schemeOfWork()
-  {
-    return $this->belongsTo(SchemeOfWork::class);
-  }
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
+    }
 
-  public function lessonNote()
-  {
-    return $this->hasOne(LessonNote::class);
-  }
+    public function schemeOfWork()
+    {
+        return $this->belongsTo(SchemeOfWork::class);
+    }
 
-  public function lessonNotes()
-  {
-    return $this->hasMany(LessonNote::class);
-  }
+    public function lessonNote()
+    {
+        return $this->hasOne(LessonNote::class);
+    }
 
-  public function courseTeacher()
-  {
-    return $this->belongsTo(CourseTeacher::class);
-  }
+    public function lessonNotes()
+    {
+        return $this->hasMany(LessonNote::class);
+    }
+
+    public function courseTeacher()
+    {
+        return $this->belongsTo(CourseTeacher::class);
+    }
 }

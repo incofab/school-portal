@@ -935,6 +935,7 @@ export interface LessonPlan extends InstitutionRow {
   course_teacher?: CourseTeacher;
   lesson_note?: LessonNote;
   scheme_of_work?: SchemeOfWork;
+  media?: Media[];
 }
 
 export interface LessonNote extends InstitutionRow {
@@ -949,6 +950,24 @@ export interface LessonNote extends InstitutionRow {
   classification?: Classification;
   course_teacher?: CourseTeacher;
   lesson_plan?: LessonPlan;
+  media?: Media[];
+}
+
+export interface Media extends Row {
+  institution_id?: number | null;
+  collection_name: string;
+  disk: string;
+  directory?: string | null;
+  path: string;
+  filename: string;
+  original_name?: string | null;
+  extension?: string | null;
+  mime_type?: string | null;
+  size?: number | null;
+  kind: string;
+  visibility: string;
+  status: string;
+  url: string;
 }
 
 export interface Note extends InstitutionRow {

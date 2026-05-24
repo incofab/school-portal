@@ -10,7 +10,6 @@ import { FormButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
-import { Editor } from '@tinymce/tinymce-react';
 import { SingleValue } from 'react-select';
 import { SelectOptionType } from '@/types/types';
 import LessonPlanCourseTeacherSelect from '@/components/selectors/lesson-plan-course-teacher-select';
@@ -21,8 +20,6 @@ interface Props {
   lessonPlan?: LessonPlan;
   lessonPlanCourseTeachers?: CourseTeacher[];
 }
-
-const tinymceApiKey = import.meta.env.VITE_TINYMCE_API_KEY;
 
 export default function CreateOrUpdateTopic({
   schemeOfWork,
@@ -61,17 +58,13 @@ export default function CreateOrUpdateTopic({
 
   const submit = async () => {
     const res = await webForm.submit((data, web) => {
-      data.course_teacher_id = String(courseTeacher?.value);
       return web.post(
         instRoute('lesson-plans.store-or-update', lessonPlan ?? [lessonPlan]),
-        data
+        {
+          ...data,
+          course_teacher_id: courseTeacher?.value,
+        }
       );
-
-      /*
-      return lessonPlan
-        ? web.put(instRoute('lesson-plans.update', [lessonPlan]), data)
-        : web.post(instRoute('lesson-plans.store'), data);
-        */
     });
 
     if (!handleResponseToast(res)) {

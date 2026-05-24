@@ -6,6 +6,7 @@ import {
   HStack,
   Icon,
   Spacer,
+  Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -28,6 +29,7 @@ interface Props {
   canRename?: boolean;
   maxSize?: number;
   multiple?: boolean;
+  isLoading?: boolean;
 }
 
 export default function FileDropper({
@@ -37,6 +39,7 @@ export default function FileDropper({
   canRename = true,
   maxSize = MAX_FILE_SIZE_BYTES,
   multiple,
+  isLoading,
 }: Props) {
   const { extensions, mimes } = useMemo(() => {
     const extensions: string[] = [];
@@ -57,6 +60,7 @@ export default function FileDropper({
   });
 
   function onDrop(acceptedFiles: File[]) {
+    if (isLoading) return;
     onChange([...files, ...acceptedFiles.map((file) => new FileObject(file))]);
   }
 
@@ -98,7 +102,11 @@ export default function FileDropper({
             })}
       >
         <input {...getInputProps()} />
-        <Icon as={CloudArrowUpIcon} w={16} h={16} color={'blue.400'} />
+        {isLoading ? (
+          <Spinner size={'lg'} color="brand.500" />
+        ) : (
+          <Icon as={CloudArrowUpIcon} w={16} h={16} color={'blue.400'} />
+        )}
         <VStack spacing={1}>
           <Text>Drop {multiple ? 'files' : 'a file'} or click here</Text>
           <Text fontSize={'sm'} color={'blackAlpha.700'}>

@@ -21,8 +21,6 @@ interface Props {
   lessonNote?: LessonNote;
 }
 
-const tinymceApiKey = import.meta.env.VITE_TINYMCE_API_KEY;
-
 export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -50,7 +48,7 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
       : false,
   });
 
-  const webForm_genWithAi = useWebForm({
+  const webFormGenWithAi = useWebForm({
     topic_id: 0,
     title: '',
   });
@@ -74,12 +72,11 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
   };
 
   const genNoteWithAi = async () => {
-    const response = await webForm_genWithAi.submit((data, web) => {
+    const response = await webFormGenWithAi.submit((data, web) => {
       data.topic_id = topicId ?? 0;
       data.title = webForm.data.title;
       return web.post(instRoute('lesson-notes.gen-ai-note'), data);
     });
-    console.log('response', response);
 
     webForm.setValue('content', response.data?.result);
 
@@ -153,7 +150,7 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
                     size="xs"
                     variant={'outline'}
                     title="Generate with AI"
-                    isLoading={webForm_genWithAi.processing}
+                    isLoading={webFormGenWithAi.processing}
                     loadingText="Processing... Please Wait!!"
                     onClick={preventNativeSubmit(() => {
                       if (!webForm.data.title) {
@@ -201,7 +198,7 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
               <FormControl>
                 <FormButton
                   isLoading={webForm.processing}
-                  isDisabled={webForm_genWithAi.processing}
+                  isDisabled={webFormGenWithAi.processing}
                 />
               </FormControl>
             </VStack>

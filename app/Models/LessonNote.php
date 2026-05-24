@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\NoteStatusType;
 use App\Rules\ValidateExistsRule;
+use App\Traits\HasMedia;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,8 +12,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LessonNote extends Model
 {
-    use HasFactory, InstitutionScope, SoftDeletes;
+    use HasFactory, HasMedia, InstitutionScope, SoftDeletes;
+
     protected $table = 'lesson_notes';
+
     protected $guarded = [];
 
     protected $casts = [
@@ -27,7 +30,7 @@ class LessonNote extends Model
         'status' => NoteStatusType::class,
     ];
 
-    static function createRule()
+    public static function createRule()
     {
         return [
             // 'classification_group_id' => ['nullable', new ValidateExistsRule(ClassificationGroup::class)],

@@ -3,18 +3,22 @@
 namespace App\Http\Controllers\Institutions\Curriculums;
 
 use App\Enums\InstitutionUserType;
-use Inertia\Inertia;
+use App\Enums\Media\MediaVisibility;
+use App\Enums\NoteStatusType;
+use App\Enums\S3Folder;
+use App\Http\Controllers\Controller;
+use App\Models\ClassificationGroup;
+use App\Models\CourseTeacher;
+use App\Models\Institution;
 use App\Models\LessonNote;
 use App\Models\LessonPlan;
-use App\Models\Institution;
-use Illuminate\Http\Request;
-use App\Enums\NoteStatusType;
-use App\Helpers\GoogleAiHelper;
-use App\Models\CourseTeacher;
-use App\Models\ClassificationGroup;
-use App\Http\Controllers\Controller;
+use App\Models\Media;
 use App\Models\Topic;
+use App\Support\Media\MediaManager;
 use App\Support\UITableFilters\LessonNoteUITableFilters;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class LessonNoteController extends Controller
 {
@@ -75,14 +79,14 @@ class LessonNoteController extends Controller
     ]);
   }
 
-  function createOrEdit(
+  public function createOrEdit(
     Institution $institution,
     ?LessonPlan $lessonPlan = null,
     ?LessonNote $lessonNote = null
   ) {
-    //== Create New Lesson Note ==
+    // == Create New Lesson Note ==
     if (!empty($lessonPlan)) {
-      //== A LessonPlan should have ONLY 1 LessonNote. Hence, check if a LessonNote already exist for this LessonPlan
+      // == A LessonPlan should have ONLY 1 LessonNote. Hence, check if a LessonNote already exist for this LessonPlan
       $hasLessonNote = LessonNote::where(
         'lesson_plan_id',
         $lessonPlan->id
@@ -95,9 +99,9 @@ class LessonNoteController extends Controller
       $params['lessonPlan'] = $lessonPlan->load('schemeOfWork.topic');
     }
 
-    //== Edit Existing Lesson Note ==
+    // == Edit Existing Lesson Note ==
     if (!empty($lessonNote)) {
-      $params['lessonNote'] = $lessonNote;
+      $params['lessonNote'] = $lessonNote->load('media', 'lessonPlan');
     }
 
     return Inertia::render(
@@ -106,7 +110,7 @@ class LessonNoteController extends Controller
     );
   }
 
-  function storeOrUpdate(
+  public function storeOrUpdate(
     Institution $institution,
     Request $request,
     ?LessonNote $lessonNote = null
@@ -153,7 +157,7 @@ class LessonNoteController extends Controller
     ];
 
     if (empty($lessonNote)) {
-      LessonNote::create($params);
+      $lessonNote = LessonNote::create($params);
     } else {
       $lessonNote->update($params);
     }
@@ -161,7 +165,52 @@ class LessonNoteController extends Controller
     return $this->ok();
   }
 
-  function show(Institution $institution, LessonNote $lessonNote)
+  public function uploadMedia(
+    Institution $institution,
+    Request $request,
+    LessonNote $lessonNote
+  ) {
+    $data = $request->validate([
+      'file' => [
+        'required',
+        'file',
+        'mimes:jpg,jpeg,png,webp,pdf,doc,docx,mp4,mov,avi,mkv,mp3,wav',
+        'max:10240'
+      ]
+    ]);
+
+    $media = app(MediaManager::class)->storeUploadedFile(
+      $data['file'],
+      $lessonNote,
+      'attachments',
+      $institution->folder(S3Folder::LessonNotes, (string) $lessonNote->id),
+      $institution,
+      currentUser(),
+      visibility: MediaVisibility::Public
+    );
+
+    return $this->ok(['media' => $media]);
+  }
+
+  public function destroyMedia(
+    Institution $institution,
+    LessonNote $lessonNote,
+    Media $media
+  ) {
+    abort_unless(
+      $media->mediable_type === $lessonNote->getMorphClass() &&
+        $media->mediable_id === $lessonNote->id &&
+        $media->collection_name === 'attachments',
+      404
+    );
+
+    Storage::disk($media->disk)->delete($media->path);
+    $media->delete();
+
+    return $this->ok();
+  }
+
+  public function show(Institution $institution, LessonNote $lessonNote)
   {
     $institutionUser = currentInstitutionUser();
 
@@ -180,12 +229,13 @@ class LessonNoteController extends Controller
       'lessonNote' => $lessonNote->load(
         'classification',
         'course',
-        'lessonPlan.schemeOfWork.topic'
+        'lessonPlan.schemeOfWork.topic',
+        'media'
       )
     ]);
   }
 
-  function destroy(Institution $institution, LessonNote $lessonNote)
+  public function destroy(Institution $institution, LessonNote $lessonNote)
   {
     $institutionUser = currentInstitutionUser();
 
@@ -199,11 +249,14 @@ class LessonNoteController extends Controller
     }
 
     $lessonNote->delete();
+
     return $this->ok();
   }
 
-  function togglePublish(Institution $institution, LessonNote $lessonNote)
-  {
+  public function togglePublish(
+    Institution $institution,
+    LessonNote $lessonNote
+  ) {
     $institutionUser = currentInstitutionUser();
     abort_unless(
       $institutionUser->isAdmin(),
@@ -219,13 +272,14 @@ class LessonNoteController extends Controller
             : NoteStatusType::Published
       ])
       ->save();
+
     return $this->ok();
   }
 
-  function generateAiNote(Request $request, Institution $institution)
+  public function generateAiNote(Request $request, Institution $institution)
   {
-    //$model = 'gemma-3-27b-it';
-    //$model = 'gemini-1.5-pro';
+    // $model = 'gemma-3-27b-it';
+    // $model = 'gemini-1.5-pro';
 
     $getTopic = Topic::where('id', $request->topic_id)->first();
 
@@ -243,6 +297,7 @@ class LessonNoteController extends Controller
       ->withPrompt($question)
       ->asText();
     $fullNote = trimAiResponse($aiRes->text);
+
     return $this->ok(['result' => $fullNote]);
 
     // $res = GoogleAiHelper::ask($question);

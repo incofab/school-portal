@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Institutions\Curriculums;
 
 use App\Enums\InstitutionUserType;
+use App\Enums\Media\MediaVisibility;
+use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\LessonPlan;
+use App\Models\Media;
 use App\Models\SchemeOfWork;
+use App\Support\Media\MediaManager;
 use App\Support\UITableFilters\LessonPlanUITableFilters;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class LessonPlanController extends Controller
@@ -73,7 +78,7 @@ class LessonPlanController extends Controller
         ->pluck('id');
 
       // Pass the LessonPlan to the view
-      $params['lessonPlan'] = $lessonPlan->load('courseTeacher.user');
+      $params['lessonPlan'] = $lessonPlan->load('courseTeacher.user', 'media');
     }
 
     // == Create New Lesson Plan ==
@@ -140,10 +145,55 @@ class LessonPlanController extends Controller
       ->toArray();
 
     if (empty($lessonPlan)) {
-      LessonPlan::create($params);
+      $lessonPlan = LessonPlan::create($params);
     } else {
       $lessonPlan->update($params);
     }
+
+    return $this->ok();
+  }
+
+  public function uploadMedia(
+    Institution $institution,
+    Request $request,
+    LessonPlan $lessonPlan
+  ) {
+    $data = $request->validate([
+      'file' => [
+        'required',
+        'file',
+        'mimes:jpg,jpeg,png,webp,pdf,doc,docx,mp4,mov,avi,mkv,mp3,wav',
+        'max:10240'
+      ]
+    ]);
+
+    $media = app(MediaManager::class)->storeUploadedFile(
+      $data['file'],
+      $lessonPlan,
+      'attachments',
+      $institution->folder(S3Folder::LessonPlans, (string) $lessonPlan->id),
+      $institution,
+      currentUser(),
+      visibility: MediaVisibility::Public
+    );
+
+    return $this->ok(['media' => $media]);
+  }
+
+  public function destroyMedia(
+    Institution $institution,
+    LessonPlan $lessonPlan,
+    Media $media
+  ) {
+    abort_unless(
+      $media->mediable_type === $lessonPlan->getMorphClass() &&
+        $media->mediable_id === $lessonPlan->id &&
+        $media->collection_name === 'attachments',
+      404
+    );
+
+    Storage::disk($media->disk)->delete($media->path);
+    $media->delete();
 
     return $this->ok();
   }
@@ -155,7 +205,8 @@ class LessonPlanController extends Controller
         'schemeOfWork.topic.course',
         'schemeOfWork.topic.classification',
         'schemeOfWork.topic.parentTopic',
-        'courseTeacher'
+        'courseTeacher',
+        'media'
       )
       ->loadCount('lessonNotes');
 

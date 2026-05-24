@@ -40,6 +40,38 @@ export const FileDropperType = {
       'application/zip': [],
     },
   },
+  Media: {
+    extensionLabels: [
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.webp',
+      '.pdf',
+      '.doc',
+      '.docx',
+      '.mp4',
+      '.mov',
+      '.avi',
+      '.mkv',
+      '.mp3',
+      '.wav',
+    ],
+    mimes: {
+      'image/jpeg': [],
+      'image/png': [],
+      'image/webp': [],
+      'application/pdf': [],
+      'application/msword': [],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        [],
+      'video/mp4': [],
+      'video/quicktime': [],
+      'video/x-msvideo': [],
+      'video/x-matroska': [],
+      'audio/mpeg': [],
+      'audio/wav': [],
+    },
+  },
   Excel: {
     extensionLabels: ['.xlsx'],
     mimes: {

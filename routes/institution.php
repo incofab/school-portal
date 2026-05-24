@@ -409,6 +409,8 @@ Route::get('/lesson-plans/{schemeOfWork}/create', [Web\Curriculums\LessonPlanCon
 Route::get('/lesson-plans/{lessonPlan}/edit', [Web\Curriculums\LessonPlanController::class, 'createOrEdit'])->name('lesson-plans.edit');
 Route::get('/lesson-plans/{lessonPlan}', [Web\Curriculums\LessonPlanController::class, 'show'])->name('lesson-plans.show');
 Route::post('/lesson-plans/{lessonPlan?}', [Web\Curriculums\LessonPlanController::class, 'storeOrUpdate'])->name('lesson-plans.store-or-update');
+Route::post('/lesson-plans/{lessonPlan}/media', [Web\Curriculums\LessonPlanController::class, 'uploadMedia'])->name('lesson-plans.media.store');
+Route::delete('/lesson-plans/{lessonPlan}/media/{media}', [Web\Curriculums\LessonPlanController::class, 'destroyMedia'])->name('lesson-plans.media.destroy');
 Route::delete('/lesson-plans/{lessonPlan}/destroy', [Web\Curriculums\LessonPlanController::class, 'destroy'])->name('lesson-plans.destroy');
 
 // == LESSON NOTES ::
@@ -418,6 +420,8 @@ Route::get('/lesson-notes/{lessonPlan}/create', [Web\Curriculums\LessonNoteContr
 Route::get('/lesson-notes/{lessonNote}/edit', [Web\Curriculums\LessonNoteController::class, 'createOrEdit'])->name('lesson-notes.edit');
 Route::get('/lesson-notes/{lessonNote}', [Web\Curriculums\LessonNoteController::class, 'show'])->name('lesson-notes.show');
 Route::post('/lesson-notes/{lessonNote?}', [Web\Curriculums\LessonNoteController::class, 'storeOrUpdate'])->name('lesson-notes.store-or-update');
+Route::post('/lesson-notes/{lessonNote}/media', [Web\Curriculums\LessonNoteController::class, 'uploadMedia'])->name('lesson-notes.media.store');
+Route::delete('/lesson-notes/{lessonNote}/media/{media}', [Web\Curriculums\LessonNoteController::class, 'destroyMedia'])->name('lesson-notes.media.destroy');
 Route::post('/lesson-notes/{lessonNote}/toggle-publish', [Web\Curriculums\LessonNoteController::class, 'togglePublish'])->name('lesson-notes.toggle-publish');
 Route::delete('/lesson-notes/{lessonNote}/destroy', [Web\Curriculums\LessonNoteController::class, 'destroy'])->name('lesson-notes.destroy');
 

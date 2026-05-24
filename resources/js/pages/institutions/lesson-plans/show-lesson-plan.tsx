@@ -1,14 +1,21 @@
-import React from 'react';
-import { LessonPlan } from '@/types/models';
+import React, { useState } from 'react';
+import { LessonPlan, Media } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import DOMPurify from 'dompurify';
 import { Div } from '@/components/semantic';
-import { Heading } from '@chakra-ui/react';
+import { Heading, Text, VStack } from '@chakra-ui/react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { LinkButton } from '@/components/buttons';
 import { LabelText } from '@/components/result-helper-components';
 import { formatAsDate } from '@/util/util';
+import MediaAttachmentsList from '@/components/media-attachments-list';
+import FileDropper from '@/components/file-dropper';
+import FileObject from '@/components/file-dropper/file-object';
+import { FileDropperType } from '@/components/file-dropper/common';
+import useWebForm from '@/hooks/use-web-form';
+import useMyToast from '@/hooks/use-my-toast';
+import { Inertia } from '@inertiajs/inertia';
 
 interface Props {
   lessonPlan: LessonPlan;
@@ -16,6 +23,11 @@ interface Props {
 
 export default function ShowLessonPlan({ lessonPlan }: Props) {
   const { instRoute } = useInstitutionRoute();
+  const { handleResponseToast } = useMyToast();
+  const uploadWebForm = useWebForm({});
+  const deleteWebForm = useWebForm({});
+  const [uploadFiles, setUploadFiles] = useState<FileObject[]>([]);
+  const [deletingMediaId, setDeletingMediaId] = useState<number | null>(null);
 
   const objective = DOMPurify.sanitize(lessonPlan.objective);
   const activities = DOMPurify.sanitize(lessonPlan.activities);
@@ -23,6 +35,37 @@ export default function ShowLessonPlan({ lessonPlan }: Props) {
   const schemeOfWork = lessonPlan.scheme_of_work;
   const topic = schemeOfWork?.topic;
   const isSubTopic = Boolean(topic?.parent_topic);
+
+  const uploadMedia = async (files: FileObject[]) => {
+    if (files.length === 0) {
+      setUploadFiles([]);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', files[0].file, files[0].getNameWithExtension());
+    const res = await uploadWebForm.submit((data, web) =>
+      web.post(instRoute('lesson-plans.media.store', [lessonPlan]), formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+    );
+    setUploadFiles([]);
+    if (!handleResponseToast(res)) return;
+    Inertia.reload({ only: ['lessonPlan'], preserveScroll: true });
+  };
+
+  const deleteMedia = async (media: Media) => {
+    setDeletingMediaId(media.id);
+
+    const res = await deleteWebForm.submit((data, web) =>
+      web.delete(instRoute('lesson-plans.media.destroy', [lessonPlan, media]))
+    );
+
+    setDeletingMediaId(null);
+    if (!handleResponseToast(res)) return;
+
+    Inertia.reload({ only: ['lessonPlan'], preserveScroll: true });
+  };
 
   return (
     <DashboardLayout>
@@ -97,6 +140,28 @@ export default function ShowLessonPlan({ lessonPlan }: Props) {
             style={{ marginBottom: '30px' }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
+
+          <Heading size={'sm'} fontWeight={'bold'} paddingBottom="10px">
+            ATTACHMENTS ::
+          </Heading>
+          <VStack align={'stretch'} spacing={3}>
+            <FileDropper
+              files={uploadFiles}
+              onChange={uploadMedia}
+              accept={[FileDropperType.Media]}
+              multiple={false}
+              canRename={false}
+              isLoading={uploadWebForm.processing}
+            />
+            <Text fontSize={'sm'} color={'blackAlpha.700'}>
+              Uploads are saved one file at a time.
+            </Text>
+            <MediaAttachmentsList
+              media={lessonPlan.media}
+              onDelete={deleteMedia}
+              deletingMediaId={deletingMediaId}
+            />
+          </VStack>
         </SlabBody>
       </Slab>
     </DashboardLayout>

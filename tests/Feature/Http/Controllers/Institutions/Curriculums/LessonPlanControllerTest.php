@@ -7,10 +7,13 @@ use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\LessonPlan;
+use App\Models\Media;
 use App\Models\SchemeOfWork;
 use App\Models\Student;
 use App\Models\Topic;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia;
 
 use function Pest\Laravel\actingAs;
@@ -196,6 +199,63 @@ it('updates lesson plan data', function () {
     assertEquals($updatedData['objective'], $lessonPlan->objective);
     assertEquals($updatedData['activities'], $lessonPlan->activities);
     assertEquals($updatedData['content'], $lessonPlan->content);
+});
+
+it('uploads lesson plan media one file at a time', function () {
+    Storage::fake('s3_public');
+
+    $lessonPlan = LessonPlan::factory()
+        ->schemeOfWork($this->schemeOfWork)
+        ->create();
+
+    $route = route('institutions.lesson-plans.media.store', [
+        'institution' => $this->institution->uuid,
+        'lessonPlan' => $lessonPlan->id,
+    ]);
+
+    actingAs($this->admin)
+        ->post($route, [
+            'file' => UploadedFile::fake()->create('lesson.mp4', 100, 'video/mp4'),
+        ])
+        ->assertOk();
+
+    assertDatabaseHas('media', [
+        'mediable_type' => $lessonPlan->getMorphClass(),
+        'mediable_id' => $lessonPlan->id,
+        'collection_name' => 'attachments',
+    ]);
+});
+
+it('deletes lesson plan media', function () {
+    Storage::fake('s3_public');
+
+    $lessonPlan = LessonPlan::factory()
+        ->schemeOfWork($this->schemeOfWork)
+        ->create();
+
+    $media = app(\App\Support\Media\MediaManager::class)->storeUploadedFile(
+        UploadedFile::fake()->image('plan.jpg'),
+        $lessonPlan,
+        'attachments',
+        $this->institution->folder(\App\Enums\S3Folder::LessonPlans, (string) $lessonPlan->id),
+        $this->institution,
+        $this->admin
+    );
+
+    Storage::disk($media->disk)->assertExists($media->path);
+
+    $route = route('institutions.lesson-plans.media.destroy', [
+        'institution' => $this->institution->uuid,
+        'lessonPlan' => $lessonPlan->id,
+        'media' => $media->id,
+    ]);
+
+    actingAs($this->admin)
+        ->deleteJson($route)
+        ->assertOk();
+
+    expect(Media::query()->find($media->id))->toBeNull();
+    Storage::disk($media->disk)->assertMissing($media->path);
 });
 
 it('deletes a lesson plan', function () {

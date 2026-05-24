@@ -40,7 +40,8 @@ class EventController extends Controller
       'eventCourseables.courseable.course',
       'eventCourseables.courseable.passages',
       'eventCourseables.courseable.instructions',
-      'eventCourseables.courseable.questions'
+      'eventCourseables.courseable.questions',
+      'eventCourseables.courseable.theoryQuestions'
     );
     return $this->successApiRes(
       MockEventHandler::make()->formatEvent($event, true)
