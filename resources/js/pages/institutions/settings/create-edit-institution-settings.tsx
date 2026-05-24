@@ -22,7 +22,12 @@ import { BrandButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import EnumSelect from '@/components/dropdown-select/enum-select';
-import { InstitutionSettingType, TermType } from '@/types/types';
+import {
+  InstitutionSettingType,
+  SelectOptionType,
+  TermType,
+  UserFullNameFormat,
+} from '@/types/types';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import useSharedProps from '@/hooks/use-shared-props';
 import { Div } from '@/components/semantic';
@@ -40,11 +45,40 @@ interface Props {
   settings: { [key: string]: InstitutionSetting };
 }
 
+const fullNameFormatOptions: SelectOptionType<string>[] = [
+  { label: 'No institution override', value: '' },
+  {
+    label: 'First name / Other names / Surname',
+    value: UserFullNameFormat.FirstOtherLast,
+  },
+  {
+    label: 'First name / Surname / Other names',
+    value: UserFullNameFormat.FirstLastOther,
+  },
+  {
+    label: 'Surname / First name / Other names',
+    value: UserFullNameFormat.LastFirstOther,
+  },
+  {
+    label: 'Surname / Other names / First name',
+    value: UserFullNameFormat.LastOtherFirst,
+  },
+  // {
+  //   label: 'Other names / First name / Surname',
+  //   value: UserFullNameFormat.OtherFirstLast,
+  // },
+  // {
+  //   label: 'Other names / Surname / First name',
+  //   value: UserFullNameFormat.OtherLastFirst,
+  // },
+];
+
 export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const [activeSetting, setActiveSetting] = useState<string>('');
-  const { currentTerm, currentAcademicSessionId } = useSharedProps();
+  const { currentTerm, currentAcademicSessionId, currentUser } =
+    useSharedProps();
 
   const webForm = useWebForm({
     [InstitutionSettingType.CurrentTerm]:
@@ -70,7 +104,18 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
     [InstitutionSettingType.LockTermSession]: Boolean(
       parseInt(settings[InstitutionSettingType.LockTermSession]?.value ?? 1)
     ),
+    [InstitutionSettingType.UserFullNameFormat]:
+      settings[InstitutionSettingType.UserFullNameFormat]?.value ?? '',
   } as { [key: string]: any });
+
+  const fullNamePreview = formatFullNamePreview(
+    {
+      first_name: currentUser?.first_name || 'First name',
+      other_names: currentUser?.other_names || 'Other names',
+      last_name: currentUser?.last_name || 'Last name',
+    },
+    webForm.data[InstitutionSettingType.UserFullNameFormat]
+  );
 
   const submit = async (activeSetting: InstitutionSettingType, value?: any) => {
     setActiveSetting(activeSetting);
@@ -191,7 +236,7 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   }
                   onChange={(e) => {
                     const isChecked = e.target.checked;
-                    let message =
+                    const message =
                       'Disabling this will allow change of term and session when filling out results';
                     if (!isChecked && !window.confirm(message)) {
                       return;
@@ -251,6 +296,44 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   size={'md'}
                 />
               </HStack>
+              <Divider />
+              <Text>User Full Name Display Order</Text>
+              <HStack align={'stretch'} spacing={2}>
+                <FormControl>
+                  <DataSelect
+                    data={{
+                      main: fullNameFormatOptions,
+                      label: 'label',
+                      value: 'value',
+                    }}
+                    selectValue={
+                      webForm.data[InstitutionSettingType.UserFullNameFormat]
+                    }
+                    onChange={(e: any) =>
+                      webForm.setValue(
+                        InstitutionSettingType.UserFullNameFormat,
+                        e?.value ?? ''
+                      )
+                    }
+                  />
+                </FormControl>
+                <BrandButton
+                  title="Update"
+                  onClick={() =>
+                    submit(InstitutionSettingType.UserFullNameFormat)
+                  }
+                  isLoading={
+                    activeSetting ===
+                      InstitutionSettingType.UserFullNameFormat &&
+                    webForm.processing
+                  }
+                  size={'md'}
+                />
+              </HStack>
+              <Div fontSize={13} color={'gray.600'}>
+                Applies only inside institution pages and institution-scoped
+                responses. Preview: {fullNamePreview}
+              </Div>
               <Spacer height={3} />
               <FormLabel border={'1px solid #999999AA'} p={2} borderRadius={5}>
                 <Switch
@@ -261,7 +344,7 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                   }
                   onChange={(e) => {
                     const isChecked = e.target.checked;
-                    let message =
+                    const message =
                       'If you diable this, Students will be able to check their results without requiring activation pins.';
                     if (!isChecked && !window.confirm(message)) {
                       return;
@@ -341,6 +424,35 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
       </CenteredBox>
     </DashboardLayout>
   );
+}
+
+function formatFullNamePreview(
+  values: {
+    first_name: string;
+    other_names: string;
+    last_name: string;
+  },
+  format?: string
+) {
+  const parts = (() => {
+    switch (format) {
+      case UserFullNameFormat.FirstLastOther:
+        return [values.first_name, values.last_name, values.other_names];
+      case UserFullNameFormat.LastFirstOther:
+        return [values.last_name, values.first_name, values.other_names];
+      case UserFullNameFormat.LastOtherFirst:
+        return [values.last_name, values.other_names, values.first_name];
+      case UserFullNameFormat.OtherFirstLast:
+        return [values.other_names, values.first_name, values.last_name];
+      case UserFullNameFormat.OtherLastFirst:
+        return [values.other_names, values.last_name, values.first_name];
+      case UserFullNameFormat.FirstOtherLast:
+      default:
+        return [values.first_name, values.other_names, values.last_name];
+    }
+  })();
+
+  return parts.filter(Boolean).join(' ');
 }
 
 function UpdateStamp({ settings }: Props) {

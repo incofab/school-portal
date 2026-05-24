@@ -5,6 +5,7 @@ use App\Actions\GenericExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuestionPayloadRequest;
 use App\Http\Requests\UploadSessionQuestionsRequest;
+use App\Models\Course;
 use App\Models\Institution;
 use App\Models\Question;
 use App\Models\Support\QuestionCourseable;
@@ -14,6 +15,7 @@ class QuestionController extends Controller
 {
   function index(Institution $institution, QuestionCourseable $morphable)
   {
+    $this->authorizeQuestionBank($morphable);
     $query = $morphable->questions();
     $morphable->loadParent();
     return view('ccd/questions/index', [
@@ -24,6 +26,7 @@ class QuestionController extends Controller
 
   function create(Institution $institution, QuestionCourseable $morphable)
   {
+    $this->authorizeQuestionBank($morphable);
     $lastQuestion = $morphable
       ->questions()
       ->latest('question_no')
@@ -42,6 +45,8 @@ class QuestionController extends Controller
     QuestionCourseable $morphable,
     QuestionPayloadRequest $request
   ) {
+    $this->authorizeQuestionBank($morphable);
+
     $data = $request->validated();
     $this->storeQuestion($institution, $morphable, $data);
 
@@ -53,6 +58,7 @@ class QuestionController extends Controller
     QuestionCourseable $morphable,
     QuestionPayloadRequest $request
   ) {
+    $this->authorizeQuestionBank($morphable);
     $data = $request->validated();
     $this->storeQuestion($institution, $morphable, $data);
 
@@ -67,6 +73,7 @@ class QuestionController extends Controller
     QuestionCourseable $morphable,
     array $validatedData = []
   ) {
+    $this->authorizeQuestionBank($morphable);
     $question = $morphable->questions()->updateOrCreate(
       [
         'question_no' => $validatedData['question_no'],
@@ -80,6 +87,7 @@ class QuestionController extends Controller
 
   function edit(Institution $institution, Question $question)
   {
+    $this->authorizeQuestionBank($question->courseable);
     return view('ccd/questions/create-question', [
       'edit' => $question,
       'courseable' => $question->courseable,
@@ -92,6 +100,7 @@ class QuestionController extends Controller
     Question $question,
     QuestionPayloadRequest $request
   ) {
+    $this->authorizeQuestionBank($question->courseable);
     $data = $request->validated();
 
     $question->fill($data)->save();
@@ -106,9 +115,7 @@ class QuestionController extends Controller
 
   function destroy(Institution $institution, Question $question)
   {
-    $institutionUser = currentInstitutionUser();
-    abort_unless($institutionUser->isAdmin(), 403, 'Access denied');
-
+    $this->authorizeQuestionBank($question->courseable);
     $courseSession = $question->courseable;
     $question->delete();
 
@@ -122,6 +129,7 @@ class QuestionController extends Controller
     Institution $institution,
     QuestionCourseable $morphable
   ) {
+    $this->authorizeQuestionBank($morphable);
     return view('ccd/questions/upload-session-questions', [
       'courseable' => $morphable
     ]);
@@ -132,6 +140,7 @@ class QuestionController extends Controller
     QuestionCourseable $morphable,
     UploadSessionQuestionsRequest $uploadSessionQuestionsRequest
   ) {
+    $this->authorizeQuestionBank($morphable);
     $data = $uploadSessionQuestionsRequest->validated();
     foreach ($data['questions'] as $key => $item) {
       $this->storeQuestion($institution, $morphable, $item);
@@ -146,6 +155,7 @@ class QuestionController extends Controller
     Institution $institution,
     QuestionCourseable $morphable
   ) {
+    $this->authorizeQuestionBank($morphable);
     $questions = $morphable
       ->questions()
       ->oldest('question_no')
@@ -165,5 +175,13 @@ class QuestionController extends Controller
     );
 
     return (new GenericExport($data, 'questions.xlsx'))->download();
+  }
+
+  private function authorizeQuestionBank(QuestionCourseable $morphable): void
+  {
+    $this->authorize('viewQuestionBank', [
+      Course::class,
+      $morphable->getCourse()
+    ]);
   }
 }

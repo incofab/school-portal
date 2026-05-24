@@ -183,6 +183,16 @@ export enum InstitutionSettingType {
   ResultActivationRequired = 'result-activation-required',
   PinUsageCount = 'pin-usage-count',
   LockTermSession = 'lock-term-session',
+  UserFullNameFormat = 'user-full-name-format',
+}
+
+export enum UserFullNameFormat {
+  FirstOtherLast = 'first-other-last',
+  FirstLastOther = 'first-last-other',
+  LastFirstOther = 'last-first-other',
+  LastOtherFirst = 'last-other-first',
+  OtherFirstLast = 'other-first-last',
+  OtherLastFirst = 'other-last-first',
 }
 
 export enum ResultSettingType {

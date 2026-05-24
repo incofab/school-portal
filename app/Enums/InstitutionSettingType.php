@@ -19,4 +19,5 @@ enum InstitutionSettingType: string
   case ResultActivationRequired = 'result-activation-required';
   case PinUsageCount = 'pin-usage-count';
   case LockTermSession = 'lock-term-session';
+  case UserFullNameFormat = 'user-full-name-format';
 }

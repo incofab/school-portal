@@ -6,6 +6,7 @@ use App\Models\Exam;
 use App\Models\Institution;
 use App\Models\Student;
 use App\Models\User;
+use Inertia\Testing\AssertableInertia;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
@@ -31,6 +32,25 @@ it('displays the create event form', function () {
   actingAs($this->admin)
     ->get(instRoute('events.create', [], $this->institution))
     ->assertStatus(200);
+});
+
+it('displays the offline cbt setup guide for staff', function () {
+  actingAs($this->admin)
+    ->get(instRoute('events.offline-cbt.setup-guide', [], $this->institution))
+    ->assertInertia(fn(AssertableInertia $page) => $page
+      ->component('institutions/exams/offline-cbt-setup-guide')
+      ->where(
+        'videoUrl',
+        'https://www.youtube.com/watch?v=RpbM29SH9Q0'
+      )
+      ->where('downloadUrl', route('download-offline-cbt-app'))
+    );
+});
+
+it('prevents students from viewing the offline cbt setup guide', function () {
+  actingAs($this->nonAdminUser)
+    ->get(instRoute('events.offline-cbt.setup-guide', [], $this->institution))
+    ->assertForbidden();
 });
 
 it('deletes an event', function () {

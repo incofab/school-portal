@@ -189,4 +189,13 @@ class SettingsHandler
       $this->getValue(InstitutionSettingType::PinUsageCount->value) ?? 1
     );
   }
+
+  function getUserFullNameFormat(): ?string
+  {
+    $format = $this->getValue(
+      InstitutionSettingType::UserFullNameFormat->value
+    );
+
+    return filled($format) ? $format : null;
+  }
 }

@@ -90,6 +90,9 @@ Route::get('/payroll-adjustment-types/search', [Web\Institutions\Payrolls\Payrol
 Route::post('activate-result', [Web\TermResultActivationController::class, 'store'])
     ->name('activate-term-result.store');
 
+Route::get('download-offline-cbt-app', [Home\HomeController::class, 'downloadOfflineCbtApp'])
+    ->name('download-offline-cbt-app');
+
 Route::get('error', [Home\HomeController::class, 'error'])->name('home.error');
 
 Route::get('/institutions/{institution}/admission-forms/search', [Admissions\AdmissionFormController::class, 'search'])->name('institutions.admission-forms.search');

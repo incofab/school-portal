@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\InstitutionSettingType;
 use App\Enums\TermType;
+use App\Enums\UserFullNameFormat;
 use App\Models\AcademicSession;
 use App\Models\Institution;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -81,5 +82,18 @@ class InstitutionSettingFactory extends Factory
   public function pinUsageSession(Institution $institution): static
   {
     return $this->pinUsageCount($institution, 3);
+  }
+
+  public function userFullNameFormat(
+    Institution $institution,
+    UserFullNameFormat|string $value
+  ): static {
+    return $this->state(
+      fn(array $attributes) => [
+        'institution_id' => $institution->id,
+        'key' => InstitutionSettingType::UserFullNameFormat->value,
+        'value' => $value instanceof UserFullNameFormat ? $value->value : $value,
+      ]
+    );
   }
 }

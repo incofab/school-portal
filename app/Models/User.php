@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\Gender;
 use App\Enums\InstitutionUserType;
 use App\Enums\ManagerRole;
+use App\Enums\UserFullNameFormat;
+use App\Support\SettingsHandler;
 use App\Traits\HasMedia;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -82,7 +84,26 @@ class User extends Authenticatable
   protected function fullName(): Attribute
   {
     return Attribute::make(
-      get: fn() => "{$this->first_name} {$this->other_names} {$this->last_name}"
+      get: function () {
+        $default = collect([
+          $this->first_name,
+          $this->other_names,
+          $this->last_name,
+        ])
+          ->filter(fn(?string $value) => filled($value))
+          ->implode(' ');
+
+        if (!currentInstitution()) {
+          return $default;
+        }
+
+        $format = SettingsHandler::makeFromRoute()->getUserFullNameFormat();
+        if (!$format) {
+          return $default;
+        }
+
+        return UserFullNameFormat::tryFrom($format)?->format($this) ?? $default;
+      }
     );
   }
 

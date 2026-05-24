@@ -64,4 +64,9 @@ class HomeController extends Controller
       'message' => session('message', 'An error occurred.')
     ]);
   }
+
+  function downloadOfflineCbtApp()
+  {
+    return redirect(env('OFFLINE_CBT_APP_DOWNLOAD_URL'));
+  }
 }

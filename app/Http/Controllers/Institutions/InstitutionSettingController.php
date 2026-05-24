@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Institutions;
 
+use App\Enums\InstitutionSettingType;
 use App\Enums\InstitutionUserType;
 use App\Enums\Media\MediaVisibility;
 use App\Enums\S3Folder;
+use App\Enums\UserFullNameFormat;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\InstitutionSetting;
@@ -12,6 +14,7 @@ use App\Support\Media\MediaManager;
 use App\Support\SettingsHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\Rules\Enum;
 
 class InstitutionSettingController extends Controller
 {
@@ -74,6 +77,8 @@ class InstitutionSettingController extends Controller
 
     private function saveRecord(Institution $institution, array $data)
     {
+        $this->validateSettingValue($data);
+
         $rawValue = $data['value'] ?? null;
         $data['value'] =
           Arr::get($data, 'type') === 'array' ? json_encode($rawValue) : $rawValue;
@@ -110,5 +115,16 @@ class InstitutionSettingController extends Controller
             ],
             collect($data)->except('photo')->toArray()
         );
+    }
+
+    private function validateSettingValue(array $data): void
+    {
+        if (($data['key'] ?? null) !== InstitutionSettingType::UserFullNameFormat->value) {
+            return;
+        }
+
+        validator($data, [
+            'value' => ['nullable', new Enum(UserFullNameFormat::class)],
+        ])->validate();
     }
 }

@@ -3,6 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Institutions as Web;
 
+Route::get(
+  'events/offline-cbt/setup-guide',
+  [Web\Exams\EventController::class, 'offlineCbtSetupGuide']
+)->name('events.offline-cbt.setup-guide');
+
 Route::get('events/{event}/download', [Web\Exams\EventController::class, 'download'])
     ->name('events.download');
 Route::resource('/events', Web\Exams\EventController::class);

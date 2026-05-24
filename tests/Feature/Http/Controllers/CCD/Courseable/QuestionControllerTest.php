@@ -5,9 +5,11 @@ use App\Models\Institution;
 
 use App\Models\Course;
 use App\Models\CourseSession;
+use App\Models\CourseTeacher;
 use App\Models\EventCourseable;
 use App\Models\Question;
 use App\Models\Topic;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 
 use function Pest\Laravel\actingAs;
@@ -33,6 +35,19 @@ beforeEach(function () {
   // dd($this->eventCourseable->event->toArray());
   $this->topic = Topic::factory()
     ->course($this->course)
+    ->create();
+
+  $this->assignedTeacher = User::factory()
+    ->teacher($this->institution)
+    ->create();
+  CourseTeacher::factory()->create([
+    'institution_id' => $this->institution->id,
+    'course_id' => $this->course->id,
+    'user_id' => $this->assignedTeacher->id,
+  ]);
+
+  $this->otherTeacher = User::factory()
+    ->teacher($this->institution)
     ->create();
 });
 
@@ -200,4 +215,64 @@ test('updates an existing question via payload file', function ($class) {
 
   $response->assertRedirect();
   expect(Question::first()->question)->toBe('Updated Question Text');
+})->with([[CourseSession::class], [EventCourseable::class]]);
+
+test('assigned course teacher can access question upload and download routes', function ($class) {
+  $courseable = $this->courseable[$class];
+  Question::factory(2)
+    ->courseable($courseable, $this->institution)
+    ->create();
+
+  actingAs($this->assignedTeacher)
+    ->get(route('institutions.questions.upload.create', [
+      $this->institution,
+      $courseable->getMorphedId(),
+    ]))
+    ->assertOk();
+
+  actingAs($this->assignedTeacher)
+    ->get(route('institutions.questions.download', [
+      $this->institution,
+      $courseable->getMorphedId(),
+    ]))
+    ->assertOk();
+})->with([[CourseSession::class], [EventCourseable::class]]);
+
+test('unassigned teacher cannot access question bank routes', function ($class) {
+  $courseable = $this->courseable[$class];
+  $question = Question::factory()
+    ->courseable($courseable, $this->institution)
+    ->create();
+
+  actingAs($this->otherTeacher)
+    ->get(route('institutions.questions.index', [
+      $this->institution,
+      $courseable->getMorphedId(),
+    ]))
+    ->assertForbidden();
+
+  actingAs($this->otherTeacher)
+    ->post(route('institutions.questions.store', [
+      $this->institution,
+      $courseable->getMorphedId(),
+    ]), Question::factory()->courseable($courseable, $this->institution)->raw())
+    ->assertForbidden();
+
+  actingAs($this->otherTeacher)
+    ->get(route('institutions.questions.edit', [$this->institution, $question]))
+    ->assertForbidden();
+
+  actingAs($this->otherTeacher)
+    ->get(route('institutions.questions.upload.create', [
+      $this->institution,
+      $courseable->getMorphedId(),
+    ]))
+    ->assertForbidden();
+
+  actingAs($this->otherTeacher)
+    ->get(route('institutions.questions.download', [
+      $this->institution,
+      $courseable->getMorphedId(),
+    ]))
+    ->assertForbidden();
 })->with([[CourseSession::class], [EventCourseable::class]]);

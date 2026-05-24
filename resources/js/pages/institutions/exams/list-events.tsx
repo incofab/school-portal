@@ -1,6 +1,16 @@
 import React from 'react';
 import { Assessment, CourseTeacher, Event } from '@/types/models';
-import { HStack, IconButton, Icon } from '@chakra-ui/react';
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  HStack,
+  IconButton,
+  Icon,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -187,6 +197,44 @@ export default function ListEvents({
 
   return (
     <DashboardLayout>
+      {isStaff && (
+        <Alert
+          status="info"
+          variant="left-accent"
+          mb={2}
+          borderRadius="md"
+          alignItems="flex-start"
+        >
+          <AlertIcon mt={1} />
+          <Stack
+            direction={{ base: 'column', lg: 'row' }}
+            justify="space-between"
+            align={{ base: 'flex-start', lg: 'center' }}
+            spacing={3}
+            w="full"
+          >
+            <div>
+              <AlertTitle>To run CBT Exams without internet</AlertTitle>
+              <AlertDescription>
+                We have provided you a guide on how to use EduManager&apos;s
+                Offline CBT App to run your exams without internet connection,
+                Goto this setup guide page for a step by step explanation on to
+                conduct offline CBT exams.
+              </AlertDescription>
+            </div>
+            <InertiaLink href={instRoute('events.offline-cbt.setup-guide')}>
+              <Text
+                colorScheme="brand"
+                fontWeight={'bold'}
+                size={'sm'}
+                textDecoration={'underline'}
+              >
+                Offline CBT Guide
+              </Text>
+            </InertiaLink>
+          </Stack>
+        </Alert>
+      )}
       <Slab>
         <SlabHeading
           title="List Events"

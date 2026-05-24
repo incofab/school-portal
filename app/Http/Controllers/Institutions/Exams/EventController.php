@@ -43,6 +43,14 @@ class EventController extends Controller
     ]);
   }
 
+  function offlineCbtSetupGuide(Institution $institution)
+  {
+    return Inertia::render('institutions/exams/offline-cbt-setup-guide', [
+      'videoUrl' => 'https://www.youtube.com/watch?v=RpbM29SH9Q0',
+      'downloadUrl' => route('download-offline-cbt-app'),
+    ]);
+  }
+
   function create(Institution $institution)
   {
     return Inertia::render('institutions/exams/create-edit-event', [

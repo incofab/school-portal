@@ -11,7 +11,8 @@ class CourseSessionController extends Controller
 {
   function index(Institution $institution, ?Course $course = null)
   {
-    $query = $course ? $course->sessions() : CourseSession::query();
+    $this->authorizeQuestionBank($course);
+    $query = $course ? $course->courseSessions() : CourseSession::query();
 
     return view('ccd/course-sessions/index', [
       'allRecords' => $query
@@ -25,6 +26,7 @@ class CourseSessionController extends Controller
 
   function create(Institution $institution, Course $course)
   {
+    $this->authorizeQuestionBank($course);
     return view('ccd/course-sessions/create', [
       'edit' => null,
       'course' => $course
@@ -33,10 +35,11 @@ class CourseSessionController extends Controller
 
   function store(Institution $institution, Course $course, Request $request)
   {
+    $this->authorizeQuestionBank($course);
     $data = request()->validate(CourseSession::createRule());
 
     $course
-      ->sessions()
+      ->courseSessions()
       ->getQuery()
       ->updateOrCreate(
         [
@@ -59,6 +62,7 @@ class CourseSessionController extends Controller
 
   function edit(Institution $institution, CourseSession $courseSession)
   {
+    $this->authorizeQuestionBank($courseSession->course);
     return view('ccd/course-sessions/create', [
       'edit' => $courseSession,
       'course' => $courseSession->course
@@ -67,25 +71,30 @@ class CourseSessionController extends Controller
 
   function update(Institution $institution, CourseSession $courseSession)
   {
+    $this->authorizeQuestionBank($courseSession->course);
     $data = request()->validate(CourseSession::createRule($courseSession));
 
     $courseSession->fill($data)->save();
 
     return $this->res(
       successRes('Course session record updated'),
-      instRoute('course-sessions.index', [$courseSession->course_id])
+      instRoute('course-sessions.index', [$courseSession->course])
     );
   }
 
   function destroy(Institution $institution, CourseSession $courseSession)
   {
-    $institutionUser = currentInstitutionUser();
-    abort_unless($institutionUser->isAdmin(), 403, 'Access denied');
+    $this->authorizeQuestionBank($courseSession->course);
     $courseSession->delete();
 
     return $this->res(
       successRes('Course session record deleted'),
       instRoute('course-sessions.index')
     );
+  }
+
+  private function authorizeQuestionBank(?Course $course): void
+  {
+    $this->authorize('viewQuestionBank', [Course::class, $course]);
   }
 }
