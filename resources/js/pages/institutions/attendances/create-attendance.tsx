@@ -40,7 +40,6 @@ import {
 } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
 import ClassificationSelect from '@/components/selectors/classification-select';
-import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
 import { InstitutionUser } from '@/types/models';
 
 interface Props {
@@ -61,8 +60,6 @@ export default function MarkAttendance({ staff }: Props) {
   const { instRoute } = useInstitutionRoute();
   const { currentInstitution } = useSharedProps();
   const [mode, setMode] = useState<RegisterMode>('students');
-  const [classificationGroup, setClassificationGroup] =
-    useState<Nullable<SingleValue<SelectOptionType<number>>>>(null);
   const [classification, setClassification] =
     useState<Nullable<SingleValue<SelectOptionType<number>>>>(null);
   const [students, setStudents] = useState<AttendanceUser[]>([]);
@@ -95,7 +92,7 @@ export default function MarkAttendance({ staff }: Props) {
       return;
     }
 
-    if (!classificationGroup?.value) {
+    if (!classification?.value) {
       setStudents([]);
       return;
     }
@@ -104,15 +101,14 @@ export default function MarkAttendance({ staff }: Props) {
       .submit((data, web) =>
         web.get(instRoute('attendances.students', []), {
           params: {
-            classification_group_id: classificationGroup.value,
-            classification_id: classification?.value,
+            classification_id: classification.value,
           },
         })
       )
       .then((res) => {
         setStudents(res.ok ? res.data.result : []);
       });
-  }, [classification?.value, classificationGroup?.value, mode, refreshIndex]);
+  }, [classification?.value, mode, refreshIndex]);
 
   useEffect(() => {
     const alreadyMarkedIds = visiblePeople
@@ -192,7 +188,7 @@ export default function MarkAttendance({ staff }: Props) {
             <SlabHeading title={'Batch Attendance'} />
             <SlabBody>
               <Stack spacing={5}>
-                <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
+                <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
                   <FormControlBox
                     form={batchForm as any}
                     title="Register"
@@ -235,43 +231,22 @@ export default function MarkAttendance({ staff }: Props) {
                   </FormControlBox>
 
                   {mode === 'students' && (
-                    <>
-                      <FormControlBox
-                        form={batchForm as any}
-                        title="Class Group"
-                        formKey="classification_group"
-                      >
-                        <ClassificationGroupSelect
-                          selectValue={classificationGroup}
-                          onChange={(value: any) => {
-                            setClassificationGroup(value);
-                            setClassification(null);
-                            setStudents([]);
-                            setSelectedIds([]);
-                          }}
-                          isClearable
-                          isMulti={false}
-                        />
-                      </FormControlBox>
-
-                      <FormControlBox
-                        form={batchForm as any}
-                        title="Class [optional]"
-                        formKey="classification"
-                      >
-                        <ClassificationSelect
-                          selectValue={classification}
-                          classGroupId={classificationGroup?.value}
-                          onChange={(value: any) => {
-                            setClassification(value);
-                            setSelectedIds([]);
-                          }}
-                          isClearable
-                          isDisabled={!classificationGroup}
-                          isMulti={false}
-                        />
-                      </FormControlBox>
-                    </>
+                    <FormControlBox
+                      form={batchForm as any}
+                      title="Class"
+                      formKey="classification"
+                    >
+                      <ClassificationSelect
+                        selectValue={classification}
+                        onChange={(value: any) => {
+                          setClassification(value);
+                          setStudents([]);
+                          setSelectedIds([]);
+                        }}
+                        isClearable
+                        isMulti={false}
+                      />
+                    </FormControlBox>
                   )}
                 </SimpleGrid>
 
@@ -301,7 +276,7 @@ export default function MarkAttendance({ staff }: Props) {
                         size="sm"
                         variant="outline"
                         isLoading={studentLoadForm.processing}
-                        isDisabled={!classificationGroup}
+                        isDisabled={!classification}
                         onClick={() => {
                           setRefreshIndex((current) => current + 1);
                         }}
@@ -390,7 +365,7 @@ export default function MarkAttendance({ staff }: Props) {
                           <Td colSpan={5}>
                             <Text color="gray.500" py={4}>
                               {mode === 'students'
-                                ? 'Select a class group to load students.'
+                                ? 'Select a class to load students.'
                                 : 'No staff found.'}
                             </Text>
                           </Td>

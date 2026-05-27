@@ -141,7 +141,7 @@ it('allows authorized user to bulk sign in students in a class', function () {
   }
 });
 
-it('loads students for a class group with attendance status', function () {
+it('loads students for a class with attendance status', function () {
   Carbon::setTestNow(Carbon::parse('2024-06-04 08:00:00'));
   $classification = Classification::factory()
     ->withInstitution($this->institution)
@@ -163,35 +163,6 @@ it('loads students for a class group with attendance status', function () {
 
   $route = route('institutions.attendances.students', [
     'institution' => $this->institution,
-    'classification_group_id' => $classification->classification_group_id
-  ]);
-
-  actingAs($this->admin)
-    ->getJson($route)
-    ->assertOk()
-    ->assertJsonCount(1, 'result')
-    ->assertJsonPath('result.0.id', $student->institution_user_id)
-    ->assertJsonPath('result.0.attendance_status.checked_in', true)
-    ->assertJsonPath('result.0.attendance_status.checked_out', false);
-});
-
-it('loads students for a selected class within a class group', function () {
-  $classification = Classification::factory()
-    ->withInstitution($this->institution)
-    ->create();
-  $otherClassification = Classification::factory()
-    ->classificationGroup($classification->classificationGroup)
-    ->create();
-  $student = Student::factory()
-    ->withInstitution($this->institution, $classification)
-    ->create();
-  Student::factory()
-    ->withInstitution($this->institution, $otherClassification)
-    ->create();
-
-  $route = route('institutions.attendances.students', [
-    'institution' => $this->institution,
-    'classification_group_id' => $classification->classification_group_id,
     'classification_id' => $classification->id
   ]);
 
@@ -200,6 +171,51 @@ it('loads students for a selected class within a class group', function () {
     ->assertOk()
     ->assertJsonCount(1, 'result')
     ->assertJsonPath('result.0.id', $student->institution_user_id);
+});
+
+it('renders the class attendance register view', function () {
+  $route = route('institutions.attendances.class-register.view', [
+    'institution' => $this->institution->uuid
+  ]);
+
+  actingAs($this->admin)
+    ->get($route)
+    ->assertOk();
+});
+
+it('returns a weekly class attendance register', function () {
+  Carbon::setTestNow(Carbon::parse('2024-06-04 08:00:00'));
+  $classification = Classification::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  $student = Student::factory()
+    ->withInstitution($this->institution, $classification)
+    ->create();
+  Attendance::factory()
+    ->signedInOnly()
+    ->institutionUser($student->institutionUser)
+    ->create(['signed_in_at' => Carbon::parse('2024-06-04 08:00:00')]);
+
+  $route = route('institutions.attendances.class-register', [
+    'institution' => $this->institution,
+    'classification_id' => $classification->id,
+    'mode' => 'week',
+    'date' => '2024-06-04'
+  ]);
+
+  $response = actingAs($this->admin)
+    ->getJson($route)
+    ->assertOk()
+    ->assertJsonCount(1, 'result.students')
+    ->assertJsonCount(7, 'result.days')
+    ->assertJsonPath('result.mode', 'week');
+
+  expect(
+    data_get(
+      $response->json(),
+      'result.attendance.' . $student->institution_user_id . '.2024-06-04.id'
+    )
+  )->not->toBeNull();
 });
 
 // Test attendance store with 'sign-out' type

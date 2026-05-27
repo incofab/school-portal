@@ -238,6 +238,11 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
+          label: 'Class Register',
+          route: instRoute('attendances.class-register.view'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
           label: 'Attendance Report',
           route: instRoute('attendance-reports.index'),
           roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],

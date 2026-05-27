@@ -72,6 +72,8 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><code>routes/assignment.php</code> — Route::get(&#x27;/assignment-submissions/{assignment}/submissions&#x27;, [Web\Assignments\AssignmentSubmissionController::class, &#x27;list&#x27;])</li>
 <li><code>routes/attendance.php</code> — Route::get(&#x27;/attendances/create&#x27;, [Web\Attendance\AttendanceController::class, &#x27;create&#x27;])-&gt;name(&#x27;attendances.create&#x27;);</li>
 <li><code>routes/attendance.php</code> — Route::get(&#x27;/attendances/students&#x27;, [Web\Attendance\AttendanceController::class, &#x27;students&#x27;])-&gt;name(&#x27;attendances.students&#x27;);</li>
+<li><code>routes/attendance.php</code> — Route::get(&#x27;/attendances/class-register&#x27;, [Web\Attendance\AttendanceController::class, &#x27;classRegister&#x27;])-&gt;name(&#x27;attendances.class-register&#x27;);</li>
+<li><code>routes/attendance.php</code> — Route::get(&#x27;/attendances/class-register/view&#x27;, [Web\Attendance\AttendanceController::class, &#x27;classRegisterView&#x27;])-&gt;name(&#x27;attendances.class-register.view&#x27;);</li>
 <li><code>routes/attendance.php</code> — Route::post(&#x27;/attendances/bulk&#x27;, [Web\Attendance\AttendanceController::class, &#x27;bulkStore&#x27;])-&gt;name(&#x27;attendances.bulk-store&#x27;);</li>
 <li><code>routes/attendance.php</code> — Route::apiResource(&#x27;/attendances&#x27;, Web\Attendance\AttendanceController::class);</li>
 <li><code>routes/attendance.php</code> — Route::get(&#x27;/attendance-reports&#x27;, [Web\Attendance\StudentAttendanceReportController::class, &#x27;index&#x27;])</li>
