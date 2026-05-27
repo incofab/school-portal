@@ -221,6 +221,10 @@ export interface InstitutionUser extends InstitutionRow {
   status_message: string;
   user?: User;
   student?: Student;
+  attendance_status?: {
+    checked_in: boolean;
+    checked_out: boolean;
+  };
 }
 
 export interface SalaryType extends InstitutionRow {

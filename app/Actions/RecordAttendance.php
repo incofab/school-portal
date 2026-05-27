@@ -14,6 +14,7 @@ class RecordAttendance
   /**
    * @param array {
    *  institution_user_id: number,
+   *  force?: bool,
    *  reference?: string, // required if type is 'in'
    *  remark?: string,
    *  type: string,
@@ -49,19 +50,55 @@ class RecordAttendance
       ->where('institution_user_id', $this->post['institution_user_id'])
       ->first();
     if ($attendance) {
-      return successRes('User already signed in today.');
+      if ($this->post['force'] ?? false) {
+        $attendance
+          ->fill([
+            'remark' => $this->post['remark'] ?? $attendance->remark,
+            'institution_staff_user_id' => $this->staffInstitutionUser->id,
+            'signed_in_at' => $now
+          ])
+          ->save();
+
+        return successRes('', ['status' => 'recorded']);
+      }
+
+      return successRes('User already signed in today.', [
+        'status' => 'skipped'
+      ]);
     }
     Attendance::create([
-      ...collect($this->post)->except('type'),
+      ...collect($this->post)->except('type', 'force'),
       'institution_id' => $this->institution->id,
       'institution_staff_user_id' => $this->staffInstitutionUser->id,
       'signed_in_at' => now()
     ]);
-    return successRes();
+    return successRes('', ['status' => 'recorded']);
   }
 
   function checkOut(): Res
   {
+    $todaySignOut = Attendance::where(
+      'institution_user_id',
+      $this->post['institution_user_id']
+    )
+      ->whereDate('signed_out_at', now()->toDateString())
+      ->latest()
+      ->first();
+
+    if ($todaySignOut && ($this->post['force'] ?? false)) {
+      $todaySignOut
+        ->fill([
+          'remark' => array_key_exists('remark', $this->post)
+            ? $this->post['remark']
+            : $todaySignOut->remark,
+          'institution_staff_user_id' => $this->staffInstitutionUser->id,
+          'signed_out_at' => now()
+        ])
+        ->save();
+
+      return successRes('', ['status' => 'recorded']);
+    }
+
     $lastSignIn = Attendance::where(
       'institution_user_id',
       $this->post['institution_user_id']
@@ -76,11 +113,19 @@ class RecordAttendance
 
     $lastSignIn
       ->fill([
-        'remark' => $lastSignIn->remark . ' ' . ($this->post['remark'] ?? ''),
+        'remark' => $this->appendRemark($lastSignIn->remark),
+        'institution_staff_user_id' => $this->staffInstitutionUser->id,
         'signed_out_at' => now()
       ])
       ->save();
-    return successRes();
+    return successRes('', ['status' => 'recorded']);
+  }
+
+  private function appendRemark(?string $existingRemark): string
+  {
+    return trim(
+      trim($existingRemark ?? '') . ' ' . ($this->post['remark'] ?? '')
+    );
   }
 
   private function ensureActiveDay(): Res

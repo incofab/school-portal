@@ -71,6 +71,8 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><code>routes/assignment.php</code> — Route::post(&#x27;/assignment-submissions/{assignmentSubmission}/score&#x27;, [Web\Assignments\AssignmentSubmissionController::class, &#x27;score&#x27;])</li>
 <li><code>routes/assignment.php</code> — Route::get(&#x27;/assignment-submissions/{assignment}/submissions&#x27;, [Web\Assignments\AssignmentSubmissionController::class, &#x27;list&#x27;])</li>
 <li><code>routes/attendance.php</code> — Route::get(&#x27;/attendances/create&#x27;, [Web\Attendance\AttendanceController::class, &#x27;create&#x27;])-&gt;name(&#x27;attendances.create&#x27;);</li>
+<li><code>routes/attendance.php</code> — Route::get(&#x27;/attendances/students&#x27;, [Web\Attendance\AttendanceController::class, &#x27;students&#x27;])-&gt;name(&#x27;attendances.students&#x27;);</li>
+<li><code>routes/attendance.php</code> — Route::post(&#x27;/attendances/bulk&#x27;, [Web\Attendance\AttendanceController::class, &#x27;bulkStore&#x27;])-&gt;name(&#x27;attendances.bulk-store&#x27;);</li>
 <li><code>routes/attendance.php</code> — Route::apiResource(&#x27;/attendances&#x27;, Web\Attendance\AttendanceController::class);</li>
 <li><code>routes/attendance.php</code> — Route::get(&#x27;/attendance-reports&#x27;, [Web\Attendance\StudentAttendanceReportController::class, &#x27;index&#x27;])</li>
 <li><code>routes/attendance.php</code> — Route::post(&#x27;/attendance-reports/retrieve&#x27;, [Web\Attendance\StudentAttendanceReportController::class, &#x27;report&#x27;])</li>
@@ -723,6 +725,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <li><div><strong>SalaryHandler</strong> <span class="path"><code>app/Actions/Payrolls/SalaryHandler.php</code></span></div><div class="desc">Action class that runs the Salary Handler workflow and coordinates domain logic.</div></li>
 <li><div><strong>RecordAssignment</strong> <span class="path"><code>app/Actions/RecordAssignment.php</code></span></div><div class="desc">Action class that runs the Record Assignment workflow and coordinates domain logic.</div></li>
 <li><div><strong>RecordAttendance</strong> <span class="path"><code>app/Actions/RecordAttendance.php</code></span></div><div class="desc">Action class that runs the Record Attendance workflow and coordinates domain logic.</div></li>
+<li><div><strong>RecordBulkAttendance</strong> <span class="path"><code>app/Actions/RecordBulkAttendance.php</code></span></div><div class="desc">Action class that records newly selected check-in/check-out attendance and unmarks explicitly changed unchecked users in one request.</div></li>
 <li><div><strong>RecordGuardian</strong> <span class="path"><code>app/Actions/RecordGuardian.php</code></span></div><div class="desc">Action class that runs the Record Guardian workflow and coordinates domain logic.</div></li>
 <li><div><strong>RecordStaff</strong> <span class="path"><code>app/Actions/RecordStaff.php</code></span></div><div class="desc">Action class that runs the Record Staff workflow and coordinates domain logic.</div></li>
 <li><div><strong>RecordStudent</strong> <span class="path"><code>app/Actions/RecordStudent.php</code></span></div><div class="desc">Action class that runs the Record Student workflow and coordinates domain logic.</div></li>
