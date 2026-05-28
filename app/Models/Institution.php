@@ -223,6 +223,11 @@ class Institution extends Model
         return $this->hasMany(Assignment::class);
     }
 
+    public function libraries()
+    {
+        return $this->hasMany(Library::class);
+    }
+
     public function exams()
     {
         return $this->hasMany(Exam::class);

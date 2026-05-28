@@ -469,6 +469,30 @@ export default function SideBarLayout() {
       ],
     },
     {
+      label: 'E-Library',
+      roles: [
+        InstitutionUserType.Student,
+        InstitutionUserType.Admin,
+        InstitutionUserType.Teacher,
+      ],
+      sub_items: [
+        {
+          label: 'Library Materials',
+          route: instRoute('libraries.index'),
+          roles: [
+            InstitutionUserType.Student,
+            InstitutionUserType.Admin,
+            InstitutionUserType.Teacher,
+          ],
+        },
+        {
+          label: 'Add Material',
+          route: instRoute('libraries.create'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+      ],
+    },
+    {
       label: 'Admin',
       roles: [InstitutionUserType.Admin],
       sub_items: [

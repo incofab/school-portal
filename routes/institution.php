@@ -378,6 +378,7 @@ Route::delete('user-associations/{userAssociation}/destroy', [Web\Associations\U
 
 include base_path('routes/assignment.php');
 include base_path('routes/attendance.php');
+include base_path('routes/libraries.php');
 include base_path('routes/exam.php');
 include base_path('routes/student_routes.php');
 

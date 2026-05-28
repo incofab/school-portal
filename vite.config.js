@@ -4,12 +4,34 @@ import react from '@vitejs/plugin-react';
 
 const vendorGroups = [
   {
-    name: 'vendor-react',
-    packages: ['react', 'react-dom', 'scheduler'],
-  },
-  {
-    name: 'vendor-inertia',
-    packages: ['@inertiajs', 'axios', 'ziggy-js', 'nprogress'],
+    name: 'vendor-core',
+    packages: [
+      'react',
+      'react-dom',
+      'scheduler',
+      'loose-envify',
+      '@inertiajs',
+      'axios',
+      'call-bind',
+      'deepmerge',
+      'define-data-property',
+      'es-define-property',
+      'es-errors',
+      'function-bind',
+      'get-intrinsic',
+      'gopd',
+      'has-property-descriptors',
+      'has-proto',
+      'has-symbols',
+      'hasown',
+      'lodash.isequal',
+      'object-inspect',
+      'qs',
+      'set-function-length',
+      'side-channel',
+      'ziggy-js',
+      'nprogress',
+    ],
   },
   {
     name: 'vendor-chakra',
@@ -71,12 +93,18 @@ const vendorGroups = [
 ];
 
 function manualChunks(id) {
-  if (!id.includes('node_modules')) {
+  const normalizedId = id.replace(/\\/g, '/');
+
+  if (normalizedId.endsWith('/resources/js/util/color-util.tsx')) {
+    return 'app-color-util';
+  }
+
+  if (!normalizedId.includes('node_modules')) {
     return;
   }
 
   const group = vendorGroups.find(({ packages }) =>
-    packages.some((pkg) => id.includes(`/node_modules/${pkg}/`))
+    packages.some((pkg) => normalizedId.includes(`/node_modules/${pkg}/`))
   );
 
   return group?.name ?? 'vendor-misc';

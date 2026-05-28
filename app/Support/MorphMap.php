@@ -72,6 +72,7 @@ class MorphMap
     'learning-evaluation-domain' => Models\LearningEvaluationDomain::class,
     'lesson-note' => Models\LessonNote::class,
     'lesson-plan' => Models\LessonPlan::class,
+    'library' => Models\Library::class,
     'live-class' => Models\LiveClass::class,
     'manual-payment' => Models\ManualPayment::class,
     'media' => Models\Media::class,

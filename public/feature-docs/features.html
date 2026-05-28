@@ -217,6 +217,16 @@ code { color: #d1fae5; }
   </div>
 
   <div class="feature">
+    <h3><span>11B</span> E-Library</h3>
+    <p>The E-Library module lets admins and teachers publish academic materials as small uploaded files or external links. Uploaded Word/PDF/image/video/document files are capped at 1MB and tracked through the shared media subsystem, while larger files can be hosted elsewhere and saved as external-link library materials. Library materials can be tagged to a course, target multiple classifications, or be left unassigned as institution-wide materials for every student.</p>
+    <ul>
+      <li>Routes/controllers: <code>routes/libraries.php</code>, <code>Institutions/Libraries/LibraryController</code>, <code>RecordLibrary</code>, <code>LibraryRequest</code>.</li>
+      <li>Frontend: <code>institutions/libraries/list-libraries.tsx</code>, <code>create-edit-library.tsx</code>, and <code>show-library.tsx</code>, linked from the sidebar for students, teachers, and admins.</li>
+      <li>Data/tests: <code>Library</code>, <code>LibraryClassification</code>, media attachment rows, class-targeted visibility, institution-wide visibility, and file-size validation tests.</li>
+    </ul>
+  </div>
+
+  <div class="feature">
     <h3><span>12</span> Attendance and Attendance Reports</h3>
     <p>Attendance supports single-person creation, batch check-in/check-out for class-filtered student registers and all-staff registers, improved attendance record display with check-in/check-out status, class day and weekly attendance register reports, API-style CRUD, institution attendance listing, student attendance report retrieval, and an authenticated API endpoint for attendance posting. Batch registers show today's check-in/check-out status and submit only changed rows: newly checked rows are marked, newly unchecked check-ins remove open check-in records, and newly unchecked check-outs reopen the attendance by clearing checkout time.</p>
     <ul>

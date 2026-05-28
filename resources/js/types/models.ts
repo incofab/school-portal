@@ -892,6 +892,34 @@ export interface AssignmentClassification extends InstitutionRow {
   classification?: Classification;
 }
 
+export interface Library extends InstitutionRow {
+  institution_user_id: number;
+  academic_session_id?: number;
+  course_id?: number;
+  term?: TermType;
+  title: string;
+  material_type: string;
+  source_type: 'upload' | 'external';
+  description?: string;
+  is_public: boolean;
+  is_published: boolean;
+  external_url?: string;
+  file_url?: string;
+  file_path?: string;
+  file_name?: string;
+  file_mime_type?: string;
+  file_extension?: string;
+  file_size?: number;
+  file_size_label?: string;
+  access_url?: string;
+  source_label?: string;
+  published_at?: string;
+  course?: Course;
+  classifications?: Classification[];
+  institution_user?: InstitutionUser;
+  media?: Media[];
+}
+
 export interface Todo {
   count: number;
   route: string;
