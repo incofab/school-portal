@@ -38,3 +38,6 @@ _ide_helper.php
 .DS_Store
 
 .phpunit.cache
+
+error_log
+public/error_log
