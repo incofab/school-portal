@@ -406,6 +406,17 @@ export default function SideBarLayout() {
       ],
     },
     {
+      label: 'Recruitment',
+      roles: [InstitutionUserType.Admin],
+      sub_items: [
+        {
+          label: 'Vacancy Posts',
+          route: instRoute('vacancy-posts.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+      ],
+    },
+    {
       label: 'Curriculum',
       roles: [
         InstitutionUserType.Admin,

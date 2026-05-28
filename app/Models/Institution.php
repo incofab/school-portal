@@ -263,6 +263,16 @@ class Institution extends Model
         return $this->hasMany(AdmissionForm::class);
     }
 
+    public function vacancyPosts()
+    {
+        return $this->hasMany(VacancyPost::class);
+    }
+
+    public function recruitmentApplications()
+    {
+        return $this->hasMany(RecruitmentApplication::class);
+    }
+
     public function chatThreads()
     {
         return $this->hasMany(ChatThread::class);

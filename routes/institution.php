@@ -369,6 +369,13 @@ Route::post('/admission-applications/{admissionApplication}/update-status', [Web
 
 Route::resource('admission-forms', Web\Admissions\AdmissionFormController::class);
 
+Route::get('/recruitment-applications/index/{vacancyPost}', [Web\Recruitment\RecruitmentApplicationController::class, 'index'])->name('recruitment-applications.index');
+Route::resource('/recruitment-applications', Web\Recruitment\RecruitmentApplicationController::class)->only(['show', 'destroy']);
+Route::post('/recruitment-applications/{recruitmentApplication}/update-status', [Web\Recruitment\RecruitmentApplicationController::class, 'updateStatus'])
+    ->name('recruitment-applications.update-status');
+
+Route::resource('vacancy-posts', Web\Recruitment\VacancyPostController::class)->except(['show']);
+
 Route::resource('associations', Web\Associations\AssociationController::class)->except('edit', 'create');
 
 Route::get('user-associations/index/{association}', [Web\Associations\UserAssociationController::class, 'index'])->name('user-associations.index');

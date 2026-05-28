@@ -4,6 +4,7 @@ use App\Http\Controllers as Web;
 use App\Http\Controllers\Home;
 use App\Http\Controllers\Institutions\Admissions;
 use App\Http\Controllers\Institutions\Exams\External;
+use App\Http\Controllers\Institutions\Recruitment;
 use Illuminate\Support\Facades\Route;
 
 Route::get('dummy1', function () {
@@ -110,6 +111,19 @@ Route::group(['prefix' => '{institution}/admissions/', 'as' => 'institutions.'],
         ->name('admission-applications.preview');
     Route::any('/admission-forms/{admissionForm}/buy/{admissionApplication}', [Admissions\AdmissionApplicationController::class, 'buyAdmissionForm'])
         ->name('admission-forms.buy');
+});
+
+Route::group(['prefix' => '{institution}/recruitment/', 'as' => 'institutions.'], function () {
+    Route::get('/', [Recruitment\VacancyPostController::class, 'publicIndex'])
+        ->name('recruitment.public-index');
+    Route::get('applications/{recruitmentApplication}/success', [Recruitment\RecruitmentApplicationController::class, 'success'])
+        ->name('recruitment-applications.success');
+    Route::get('{vacancyPost}', [Recruitment\VacancyPostController::class, 'publicShow'])
+        ->name('recruitment.public-show');
+    Route::get('{vacancyPost}/apply', [Recruitment\RecruitmentApplicationController::class, 'create'])
+        ->name('recruitment-applications.create');
+    Route::post('{vacancyPost}/apply', [Recruitment\RecruitmentApplicationController::class, 'store'])
+        ->name('recruitment-applications.store');
 });
 
 Route::group(['prefix' => '{institution}/manual-payments', 'as' => 'institutions.manual-payments.'], function () {

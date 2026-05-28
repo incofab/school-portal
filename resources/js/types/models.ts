@@ -700,6 +700,45 @@ export interface AdmissionForm extends InstitutionRow {
   academic_session?: AcademicSession;
 }
 
+export interface VacancyPost extends InstitutionRow {
+  title: string;
+  department?: string;
+  employment_type: string;
+  location?: string;
+  summary?: string;
+  description: string;
+  requirements?: string;
+  responsibilities?: string;
+  salary_range?: string;
+  positions_available: number;
+  application_deadline?: string;
+  is_published: boolean;
+  recruitment_applications_count?: number;
+}
+
+export interface RecruitmentApplication extends InstitutionRow {
+  vacancy_post_id: number;
+  application_no: string;
+  reference: string;
+  first_name: string;
+  last_name: string;
+  other_names?: string;
+  name: string;
+  email: string;
+  phone: string;
+  current_role?: string;
+  years_of_experience?: number;
+  highest_qualification?: string;
+  cv_url?: string;
+  cover_letter?: string;
+  cover_letter_url?: string;
+  portfolio_url?: string;
+  available_from?: string;
+  status: string;
+  review_note?: string;
+  vacancy_post?: VacancyPost;
+}
+
 export interface ApplicationGuardian extends Row {
   first_name: string;
   last_name: string;

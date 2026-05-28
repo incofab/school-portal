@@ -292,6 +292,13 @@ export enum AdmissionStatusType {
   Declined = 'declined',
 }
 
+export enum RecruitmentApplicationStatus {
+  Pending = 'pending',
+  Shortlisted = 'shortlisted',
+  Hired = 'hired',
+  Declined = 'declined',
+}
+
 export enum WithdrawalStatusType {
   // Pending = 'pending',
   Paid = 'paid',
