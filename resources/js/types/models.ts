@@ -509,6 +509,7 @@ export interface TermDetail extends InstitutionRow {
   inactive_weekdays?: number[];
   special_active_days?: TermDayReason[];
   inactive_days?: TermDayReason[];
+  result_exam_mode?: string;
   for_mid_term: boolean;
   academic_session?: AcademicSession;
 }

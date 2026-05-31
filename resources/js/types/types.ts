@@ -198,12 +198,20 @@ export enum UserFullNameFormat {
 export enum ResultSettingType {
   Template = 'template',
   PositionDisplayType = 'position-display-type',
+  ExamMode = 'exam-mode',
 }
 
 export enum PositionDisplayType {
   Hidden = 'hidden',
   Position = 'position',
   Grade = 'grade',
+}
+
+export enum ResultExamMode {
+  None = 'none',
+  MidTerm = 'mid-term',
+  FullTerm = 'full-term',
+  Both = 'both',
 }
 
 export enum ResultTemplate {

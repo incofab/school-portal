@@ -38,6 +38,7 @@ export default function Template2(props: ResultProps) {
     resultCommentTemplate,
     learningEvaluations,
     courseResultInfoData,
+    showExamResult,
   } = props;
   const { currentInstitution } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
@@ -192,7 +193,7 @@ export default function Template2(props: ResultProps) {
                   <tr>
                     <th>Subject</th>
                     <th>CA</th>
-                    <th>Exam</th>
+                    {showExamResult && <th>Exam</th>}
                     <th>Total</th>
                     <th>Grade</th>
                     {/* <th>Highest/Lowest</th> */}
@@ -222,7 +223,7 @@ export default function Template2(props: ResultProps) {
                           {courseResult.course?.title}
                         </td>
                         <td>{getAssessmentScore(courseResult)}</td>
-                        <td>{courseResult.exam}</td>
+                        {showExamResult && <td>{courseResult.exam}</td>}
                         <td>{courseResult.result}</td>
                         <td>{grade}</td>
                         {/* <td>
@@ -234,7 +235,7 @@ export default function Template2(props: ResultProps) {
                   })}
                   <tr>
                     <td>Total</td>
-                    <td></td>
+                    {showExamResult && <td></td>}
                     <td></td>
                     <td>{termResult.total_score}</td>
                     <td></td>

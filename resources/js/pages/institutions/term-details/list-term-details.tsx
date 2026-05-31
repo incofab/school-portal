@@ -2,7 +2,7 @@ import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
 import { TermDayReason, TermDetail } from '@/types/models';
-import { PaginationResponse, WeekDay } from '@/types/types';
+import { PaginationResponse, ResultExamMode, WeekDay } from '@/types/types';
 import {
   Button,
   Checkbox,
@@ -36,6 +36,7 @@ import DateTimeDisplay from '@/components/date-time-display';
 import { format } from 'date-fns';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import EnumSelect from '@/components/dropdown-select/enum-select';
 
 interface Props {
   termDetail: TermDetail;
@@ -103,6 +104,15 @@ export default function ListTermDetails({ termDetail, termDetails }: Props) {
     {
       label: 'School Held',
       value: 'expected_attendance_count',
+    },
+    {
+      label: 'Exam Result',
+      value: 'result_exam_mode',
+      render: (row) => (
+        <Text fontSize={'sm'}>
+          {row.result_exam_mode ? startCase(row.result_exam_mode) : 'Inherit'}
+        </Text>
+      ),
     },
     {
       label: 'Next Term Resumption',
@@ -178,6 +188,7 @@ function UpdateTermDetail({ termDetail }: { termDetail: TermDetail }) {
     ),
     special_active_days: termDetail.special_active_days ?? [],
     inactive_days: termDetail.inactive_days ?? [],
+    result_exam_mode: termDetail.result_exam_mode ?? '',
   });
 
   const cleanDayReasons = (days: TermDayReason[]) =>
@@ -210,6 +221,7 @@ function UpdateTermDetail({ termDetail }: { termDetail: TermDetail }) {
       inactive_days: cleanDayReasons(
         (webForm.data.inactive_days as TermDayReason[]) ?? []
       ),
+      result_exam_mode: webForm.data.result_exam_mode || null,
     };
     const res = await webForm.submit((_data, web) =>
       web.put(instRoute('term-details.update', [termDetail]), payload)
@@ -271,6 +283,24 @@ function UpdateTermDetail({ termDetail }: { termDetail: TermDetail }) {
           webForm.setValue('expected_attendance_count', e.currentTarget.value)
         }
       />
+      <FormControlBox
+        form={webForm as any}
+        title="Show Exam Result"
+        formKey="result_exam_mode"
+      >
+        <EnumSelect
+          enumData={ResultExamMode}
+          additionalEnumData={{ Inherit: '' }}
+          selectValue={webForm.data.result_exam_mode}
+          onChange={(e: any) =>
+            webForm.setValue('result_exam_mode' as any, e.value)
+          }
+          isClearable={true}
+        />
+        <Text fontSize={'sm'} color={'gray.600'} mt={1}>
+          Leave as inherit to use the institution result setting.
+        </Text>
+      </FormControlBox>
       <FormControlBox
         form={webForm as any}
         title="Inactive Weekdays"

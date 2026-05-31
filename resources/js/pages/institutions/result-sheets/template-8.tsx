@@ -43,6 +43,7 @@ export default function Template8(props: ResultProps) {
     courseResultInfoData,
     learningEvaluations,
     termDetail,
+    showExamResult,
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition } = useResultSetting();
@@ -244,9 +245,11 @@ export default function Template8(props: ResultProps) {
                     {a.title}
                   </Th>
                 ))}
-                <Th isNumeric color="white">
-                  Exam
-                </Th>
+                {showExamResult && (
+                  <Th isNumeric color="white">
+                    Exam
+                  </Th>
+                )}
                 <Th isNumeric color="white">
                   Total
                 </Th>
@@ -278,7 +281,7 @@ export default function Template8(props: ResultProps) {
                         {result.assessment_values[a.raw_title] ?? '-'}
                       </Td>
                     ))}
-                    <Td isNumeric>{result.exam}</Td>
+                    {showExamResult && <Td isNumeric>{result.exam}</Td>}
                     <Td isNumeric fontWeight="bold">
                       {result.result}
                     </Td>

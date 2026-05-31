@@ -32,6 +32,7 @@ export default function Template4(props: ResultProps) {
     resultCommentTemplate,
     learningEvaluations,
     termDetail,
+    showExamResult,
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
@@ -230,15 +231,17 @@ export default function Template4(props: ResultProps) {
                       {startCase(assessment.title)}
                     </th>
                   ))}
-                  <th
-                    style={{
-                      background: '#5b9bd5',
-                      border: '1px solid #FFF',
-                      color: '#FFF',
-                    }}
-                  >
-                    Exam
-                  </th>
+                  {showExamResult && (
+                    <th
+                      style={{
+                        background: '#5b9bd5',
+                        border: '1px solid #FFF',
+                        color: '#FFF',
+                      }}
+                    >
+                      Exam
+                    </th>
+                  )}
                   <th>Total</th>
                   {!hidePosition && <th>Subject Position</th>}
                   <th>Grade</th>
@@ -265,7 +268,7 @@ export default function Template4(props: ResultProps) {
                           ] ?? '-'}
                         </td>
                       ))}
-                      <td>{courseResult.exam}</td>
+                      {showExamResult && <td>{courseResult.exam}</td>}
                       <td style={{ fontWeight: 'bold' }}>
                         {courseResult.result}
                       </td>

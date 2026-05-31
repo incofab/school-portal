@@ -310,5 +310,6 @@ export interface ResultProps {
   learningEvaluations: LearningEvaluation[];
   resultCommentTemplate: ResultCommentTemplate[];
   termDetail?: TermDetail;
+  showExamResult: boolean;
   signed_url: string;
 }

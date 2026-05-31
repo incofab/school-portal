@@ -40,6 +40,7 @@ export default function Template7(props: ResultProps) {
     signed_url,
     learningEvaluations,
     termDetail,
+    showExamResult,
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
@@ -82,7 +83,7 @@ export default function Template7(props: ResultProps) {
       render: (cr: CourseResult) =>
         String(cr.assessment_values[a.raw_title] ?? ''),
     })),
-    { label: 'Exam', value: 'exam' },
+    ...(showExamResult ? [{ label: 'Exam', value: 'exam' }] : []),
     { label: 'Total', value: 'result' },
     {
       label: 'Grade',

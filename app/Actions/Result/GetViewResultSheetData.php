@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions\Result;
 
 use App\Models\AcademicSession;
@@ -11,6 +12,7 @@ use App\Models\ResultCommentTemplate;
 use App\Models\Student;
 use App\Models\TermDetail;
 use App\Models\TermResult;
+use App\Support\SettingsHandler;
 use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
@@ -92,6 +94,11 @@ class GetViewResultSheetData
       $forMidTerm
     );
 
+    $termDetail = TermDetail::query()
+      ->forTermResult($termResult)
+      ->first();
+    $settingsHandler = SettingsHandler::makeFromInstitution($institution);
+
     $viewData = [
       'institution' => currentInstitution(),
       'courseResults' => $courseResults,
@@ -105,15 +112,18 @@ class GetViewResultSheetData
       'resultDetails' => self::getResultDetails($classResultInfo, $termResult),
       'assessments' => $assessments,
       'resultCommentTemplate' => $resultCommentTemplate,
-      'termDetail' => TermDetail::query()
-        ->forTermResult($termResult)
-        ->first(),
+      'termDetail' => $termDetail,
+      'showExamResult' => $settingsHandler->shouldDisplayExamResults(
+        $termDetail,
+        $termResult->for_mid_term
+      ),
       'learningEvaluations' => $institution
         ->learningEvaluations()
         ->with('learningEvaluationDomain')
         ->orderBy('learning_evaluation_domain_id')
         ->get()
     ];
+
     return $viewData;
   }
 

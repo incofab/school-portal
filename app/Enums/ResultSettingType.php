@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum ResultSettingType: string
 {
-  case Template = 'template';
-  case PositionDisplayType = 'position-display-type';
+    case Template = 'template';
+    case PositionDisplayType = 'position-display-type';
+    case ExamMode = 'exam-mode';
 }

@@ -17,15 +17,14 @@ import EnumSelect from '@/components/dropdown-select/enum-select';
 import {
   InstitutionSettingType,
   PositionDisplayType,
+  ResultExamMode,
   ResultSettingType,
   ResultTemplate,
 } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
 import { Div } from '@/components/semantic';
 
-interface Props {}
-
-export default function ResultSettings({}: Props) {
+export default function ResultSettings() {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const { resultSetting } = useSharedProps();
@@ -36,6 +35,8 @@ export default function ResultSettings({}: Props) {
       PositionDisplayType.Position,
     [ResultSettingType.Template]:
       resultSetting?.[ResultSettingType.Template] ?? ResultTemplate.Template1,
+    [ResultSettingType.ExamMode]:
+      resultSetting?.[ResultSettingType.ExamMode] ?? ResultExamMode.Both,
   } as { [key: string]: string });
 
   const submit = async () => {
@@ -74,6 +75,16 @@ export default function ResultSettings({}: Props) {
             selectValue={webForm.data[ResultSettingType.Template]}
             onChange={(e: any) =>
               webForm.setValue(ResultSettingType.Template, e.value)
+            }
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Show Exam Result</FormLabel>
+          <EnumSelect
+            enumData={ResultExamMode}
+            selectValue={webForm.data[ResultSettingType.ExamMode]}
+            onChange={(e: any) =>
+              webForm.setValue(ResultSettingType.ExamMode, e.value)
             }
           />
         </FormControl>

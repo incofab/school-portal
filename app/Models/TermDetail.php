@@ -1,11 +1,13 @@
 <?php
+
 namespace App\Models;
 
+use App\Enums\ResultExamMode;
 use App\Enums\TermType;
 use App\Traits\InstitutionScope;
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class TermDetail extends Model
 {
@@ -22,6 +24,7 @@ class TermDetail extends Model
     'inactive_weekdays' => 'array',
     'special_active_days' => 'array',
     'inactive_days' => 'array',
+    'result_exam_mode' => ResultExamMode::class,
     'start_date' => 'date',
     'end_date' => 'date',
     'next_term_resumption_date' => 'date',
@@ -34,7 +37,7 @@ class TermDetail extends Model
     'inactive_days' => '[]'
   ];
 
-  function scopeForTermResult($query, TermResult $termResult)
+  public function scopeForTermResult($query, TermResult $termResult)
   {
     return $query->where([
       'academic_session_id' => $termResult->academic_session_id,
@@ -43,12 +46,12 @@ class TermDetail extends Model
     ]);
   }
 
-  function institution()
+  public function institution()
   {
     return $this->belongsTo(Institution::class);
   }
 
-  function academicSession()
+  public function academicSession()
   {
     return $this->belongsTo(AcademicSession::class);
   }

@@ -6,14 +6,16 @@ use App\Rules\ValidateUniqueRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
 {
-  use HasFactory, InstitutionScope;
+  use HasFactory, InstitutionScope, SoftDeletes;
 
   protected $casts = [
     'institution_id' => 'integer'
   ];
+
   protected $fillable = [
     'code',
     'category',
@@ -23,7 +25,7 @@ class Course extends Model
     'institution_id'
   ];
 
-  static function createRule(?Course $course = null, $prefix = '')
+  public static function createRule(?Course $course = null, $prefix = '')
   {
     return [
       $prefix . 'title' => [
@@ -48,18 +50,32 @@ class Course extends Model
 
   public function canDelete()
   {
-    return $this->sessions()
-      ->get()
-      ->count() === 0 &&
-      $this->topics()
-        ->get()
-        ->count() === 0 &&
-      $this->summaryChapters()
-        ->get()
-        ->count() === 0;
+    return !$this->hasExistingReferences();
   }
 
-  function institution()
+  public function hasExistingReferences(): bool
+  {
+    return $this->courseSessions()
+      ->withTrashed()
+      ->exists() ||
+      $this->topics()
+        ->withTrashed()
+        ->exists() ||
+      $this->summaryChapters()->exists() ||
+      //   $this->courseTeachers()
+      //       ->withTrashed()
+      //       ->exists() ||
+      $this->courseResults()->exists() ||
+      $this->courseResultInfo()->exists() ||
+      $this->assignments()->exists() ||
+      $this->lessonNotes()
+        ->withTrashed()
+        ->exists() ||
+      $this->libraries()->exists() ||
+      $this->examCourseables()->exists();
+  }
+
+  public function institution()
   {
     return $this->belongsTo(Institution::class);
   }
@@ -67,28 +83,58 @@ class Course extends Model
   /**
    * @deprecated use courseSessions()
    */
-  function sessions()
+  public function sessions()
   {
     return $this->hasMany(CourseSession::class);
   }
 
-  function courseSessions()
+  public function courseSessions()
   {
     return $this->hasMany(CourseSession::class);
   }
 
-  function topics()
+  public function topics()
   {
     return $this->hasMany(Topic::class);
   }
 
-  function summaryChapters()
+  public function summaryChapters()
   {
     return $this->hasMany(Summary::class);
   }
 
-  function courseTeachers()
+  public function courseTeachers()
   {
     return $this->hasMany(CourseTeacher::class);
+  }
+
+  public function courseResults()
+  {
+    return $this->hasMany(CourseResult::class);
+  }
+
+  public function courseResultInfo()
+  {
+    return $this->hasMany(CourseResultInfo::class);
+  }
+
+  public function assignments()
+  {
+    return $this->hasMany(Assignment::class);
+  }
+
+  public function lessonNotes()
+  {
+    return $this->hasMany(LessonNote::class);
+  }
+
+  public function libraries()
+  {
+    return $this->hasMany(Library::class);
+  }
+
+  public function examCourseables()
+  {
+    return $this->hasMany(ExamCourseable::class);
   }
 }

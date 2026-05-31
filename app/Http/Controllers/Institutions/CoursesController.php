@@ -6,7 +6,6 @@ use App\Enums\InstitutionUserType;
 use App\Enums\NoteStatusType;
 use App\Helpers\GoogleAiHelper;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Session;
 use App\Models\Course;
 use App\Models\CourseSession;
 use App\Models\Institution;
@@ -14,6 +13,7 @@ use App\Models\LessonNote;
 use App\Models\Question;
 use App\Support\UITableFilters\CoursesUITableFilters;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 class CoursesController extends Controller
@@ -29,7 +29,7 @@ class CoursesController extends Controller
     ]);
   }
 
-  function index(Institution $institution, Request $request)
+  public function index(Institution $institution, Request $request)
   {
     $query = Course::query()
       ->select('courses.*')
@@ -41,67 +41,83 @@ class CoursesController extends Controller
     ]);
   }
 
-  function search(Institution $institution, Request $request)
+  public function search(Institution $institution, Request $request)
   {
     $query = Course::query()->when(
       $request->search,
       fn($q, $value) => $q->where('title', 'LIKE', "%$value%")
     );
+
     return response()->json([
       'result' => $query->latest('courses.id')->get()
     ]);
   }
 
-  function create(Institution $institution)
+  public function create(Institution $institution)
   {
     return Inertia::render('institutions/courses/create-edit-course', []);
   }
 
-  function multiCreate(Institution $institution)
+  public function multiCreate(Institution $institution)
   {
     return Inertia::render('institutions/courses/create-multi-courses', []);
   }
 
-  function edit(Institution $institution, Course $course)
+  public function edit(Institution $institution, Course $course)
   {
     return Inertia::render('institutions/courses/create-edit-course', [
       'course' => $course
     ]);
   }
 
-  function destroy(Institution $institution, Course $course)
+  public function destroy(Institution $institution, Course $course)
   {
+    abort_if(
+      $course->hasExistingReferences(),
+      400,
+      'This course cannot be deleted because it has existing references'
+    );
+
     $course->courseTeachers()->delete();
-    $course->delete();
+    $course->forceDelete();
+
     return $this->ok();
   }
 
-  function store(Institution $institution, Request $request)
+  public function store(Institution $institution, Request $request)
   {
     $data = $request->validate(Course::createRule());
     $institution->courses()->create($data);
+
     return $this->ok();
   }
 
-  function multiStore(Institution $institution, Request $request)
+  public function multiStore(Institution $institution, Request $request)
   {
     $data = $request->validate(Course::createRule(null, 'courses.*.'));
     foreach ($data['courses'] as $key => $value) {
       $institution->courses()->create($value);
     }
+
     return $this->ok();
   }
 
-  function update(Request $request, Institution $institution, Course $course)
-  {
+  public function update(
+    Request $request,
+    Institution $institution,
+    Course $course
+  ) {
     $data = $request->validate(Course::createRule($course));
     $course->fill($data)->update();
+
     return $this->ok();
   }
 
-  //= using A.I
-  function generatePracticeQuestions(Request $request, Institution $institution)
-  {
+  // = using A.I
+  public function generatePracticeQuestions(
+    Request $request,
+    Institution $institution
+  ) {
     $request->validate([
       'topic_ids' => ['required', 'array', 'min:1'],
       'topics.*' => ['required', 'integer']
@@ -161,18 +177,18 @@ class CoursesController extends Controller
       ->asText();
     $practiceQuestions = trimAiResponse($aiRes->text);
     /*
-    $res = GoogleAiHelper::ask($question);
+            $res = GoogleAiHelper::ask($question);
 
-    $res_parts = $res['candidates'][0]['content']['parts'] ?? [];
-    $resQuestions = '';
+            $res_parts = $res['candidates'][0]['content']['parts'] ?? [];
+            $resQuestions = '';
 
-    foreach ($res_parts as $res_part) {
-      $resQuestions .= $res_part['text'];
-    }
+            foreach ($res_parts as $res_part) {
+              $resQuestions .= $res_part['text'];
+            }
 
-    $practiceQuestions = str_replace('```json', '', $resQuestions);
-    $practiceQuestions = str_replace('```', '', $practiceQuestions);
-    */
+            $practiceQuestions = str_replace('```json', '', $resQuestions);
+            $practiceQuestions = str_replace('```', '', $practiceQuestions);
+            */
     $practiceQuestions = json_decode($practiceQuestions, true) ?? [];
 
     $practiceData = [
@@ -187,7 +203,7 @@ class CoursesController extends Controller
     // return $this->ok(['practice_questions' => $practiceQuestions]);
   }
 
-  function viewPracticeQuestions(Institution $institution)
+  public function viewPracticeQuestions(Institution $institution)
   {
     $practiceData = Session::get('practiceData', []);
 
@@ -211,7 +227,7 @@ class CoursesController extends Controller
     );
   }
 
-  function insertQuestionsToQuestionbank(
+  public function insertQuestionsToQuestionbank(
     Institution $institution,
     CourseSession $courseSession,
     Request $request
@@ -229,6 +245,7 @@ class CoursesController extends Controller
     }
 
     Question::multiInsert($courseSession, $questions);
+
     return $this->ok();
   }
 }

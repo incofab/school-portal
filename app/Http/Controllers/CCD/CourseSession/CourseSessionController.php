@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\CCD\CourseSession;
 
 use App\Http\Controllers\Controller;
@@ -9,7 +10,7 @@ use Illuminate\Http\Request;
 
 class CourseSessionController extends Controller
 {
-  function index(Institution $institution, ?Course $course = null)
+  public function index(Institution $institution, ?Course $course = null)
   {
     $this->authorizeQuestionBank($course);
     $query = $course ? $course->courseSessions() : CourseSession::query();
@@ -24,17 +25,21 @@ class CourseSessionController extends Controller
     ]);
   }
 
-  function create(Institution $institution, Course $course)
+  public function create(Institution $institution, Course $course)
   {
     $this->authorizeQuestionBank($course);
+
     return view('ccd/course-sessions/create', [
       'edit' => null,
       'course' => $course
     ]);
   }
 
-  function store(Institution $institution, Course $course, Request $request)
-  {
+  public function store(
+    Institution $institution,
+    Course $course,
+    Request $request
+  ) {
     $this->authorizeQuestionBank($course);
     $data = request()->validate(CourseSession::createRule());
 
@@ -60,16 +65,17 @@ class CourseSessionController extends Controller
     );
   }
 
-  function edit(Institution $institution, CourseSession $courseSession)
+  public function edit(Institution $institution, CourseSession $courseSession)
   {
     $this->authorizeQuestionBank($courseSession->course);
+
     return view('ccd/course-sessions/create', [
       'edit' => $courseSession,
       'course' => $courseSession->course
     ]);
   }
 
-  function update(Institution $institution, CourseSession $courseSession)
+  public function update(Institution $institution, CourseSession $courseSession)
   {
     $this->authorizeQuestionBank($courseSession->course);
     $data = request()->validate(CourseSession::createRule($courseSession));
@@ -82,10 +88,17 @@ class CourseSessionController extends Controller
     );
   }
 
-  function destroy(Institution $institution, CourseSession $courseSession)
-  {
+  public function destroy(
+    Institution $institution,
+    CourseSession $courseSession
+  ) {
     $this->authorizeQuestionBank($courseSession->course);
-    $courseSession->delete();
+    abort_if(
+      $courseSession->hasExistingReferences(),
+      400,
+      'This course session has existing references. It cannot be deleted.'
+    );
+    $courseSession->forceDelete();
 
     return $this->res(
       successRes('Course session record deleted'),

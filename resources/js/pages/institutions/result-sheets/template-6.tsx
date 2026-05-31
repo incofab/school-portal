@@ -43,6 +43,7 @@ export default function Template6(props: ResultProps) {
     signed_url,
     learningEvaluations,
     termDetail,
+    showExamResult,
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
@@ -143,11 +144,17 @@ export default function Template6(props: ResultProps) {
         </Div>
       ),
     })),
-    {
-      label: 'Exam',
-      value: 'exam',
-      render: (row) => <Div className="cell">{row.exam}</Div>,
-    },
+    ...(showExamResult
+      ? [
+          {
+            label: 'Exam',
+            value: 'exam',
+            render: (row: CourseResult) => (
+              <Div className="cell">{row.exam}</Div>
+            ),
+          },
+        ]
+      : []),
     {
       label: 'Total',
       value: 'result',

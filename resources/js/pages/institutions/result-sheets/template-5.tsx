@@ -40,6 +40,7 @@ export default function Template5(props: ResultProps) {
     signed_url,
     learningEvaluations,
     termDetail,
+    showExamResult,
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
@@ -131,10 +132,14 @@ export default function Template5(props: ResultProps) {
       render: (courseResult: CourseResult) =>
         String(courseResult.assessment_values[assessment.raw_title] ?? ''),
     })),
-    {
-      label: 'Exam',
-      value: 'exam',
-    },
+    ...(showExamResult
+      ? [
+          {
+            label: 'Exam',
+            value: 'exam',
+          },
+        ]
+      : []),
     {
       label: 'Total',
       value: 'result',

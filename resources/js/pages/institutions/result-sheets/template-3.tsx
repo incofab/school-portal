@@ -35,6 +35,7 @@ export default function Template3(props: ResultProps) {
     courseResultInfoData,
     learningEvaluations,
     termDetail,
+    showExamResult,
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
@@ -287,7 +288,7 @@ export default function Template3(props: ResultProps) {
                   {assessments.map((assessment) => (
                     <th key={assessment.id}>{startCase(assessment.title)}</th>
                   ))}
-                  <th>Exam</th>
+                  {showExamResult && <th>Exam</th>}
                   <th>Total</th>
                   {!hidePosition && <th>Subject Position</th>}
                   <th>Grade</th>
@@ -317,7 +318,7 @@ export default function Template3(props: ResultProps) {
                           ] ?? '-'}
                         </td>
                       ))}
-                      <td>{courseResult.exam}</td>
+                      {showExamResult && <td>{courseResult.exam}</td>}
                       <td style={{ fontWeight: 'bold' }}>
                         {courseResult.result}
                       </td>

@@ -4,6 +4,8 @@ namespace App\Support;
 
 use App\DTO\PaymentKeyDto;
 use App\Enums\InstitutionSettingType;
+use App\Enums\ResultExamMode;
+use App\Enums\ResultSettingType;
 use App\Enums\ResultTemplateType;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
@@ -13,43 +15,46 @@ use App\Models\TermDetail;
 
 class SettingsHandler
 {
-  function __construct(private array $settings)
+  public function __construct(private array $settings)
   {
   }
 
-  function all()
+  public function all()
   {
     return $this->settings;
   }
 
   // Used in tests
-  static function clear()
+  public static function clear()
   {
     self::$instance = null;
   }
 
   private static ?self $instance = null;
-  static function makeFromRoute(bool $refresh = false): static
+
+  public static function makeFromRoute(bool $refresh = false): static
   {
     if (self::$instance && !$refresh) {
       return self::$instance;
     }
     $institutionSettings = currentInstitution()?->institutionSettings ?? [];
     self::$instance = self::make($institutionSettings);
+
     return self::$instance;
   }
 
-  static function makeFromInstitution(Institution $institution): static
+  public static function makeFromInstitution(Institution $institution): static
   {
     $institutionSettings = $institution->institutionSettings ?? [];
     self::$instance = self::make($institutionSettings);
+
     return self::$instance;
   }
 
   /**
-   * @param \Illuminate\Database\Eloquent\Collection<int, InstitutionSetting>|array $institutionSettings
+   * @param  \Illuminate\Database\Eloquent\Collection<int, InstitutionSetting>|array  $institutionSettings
    */
-  static function make($institutionSettings): static
+  public static function make($institutionSettings): static
   {
     $formatted = [];
     foreach ($institutionSettings as $key => $value) {
@@ -58,20 +63,21 @@ class SettingsHandler
       }
       $formatted[$value->key] = $value;
     }
+
     return new self($formatted);
   }
 
-  function get(string $key): InstitutionSetting|null
+  public function get(string $key): ?InstitutionSetting
   {
     return $this->settings[$key] ?? null;
   }
 
-  function getValue(string $key, $default = null)
+  public function getValue(string $key, $default = null)
   {
     return $this->get($key)?->value ?? $default;
   }
 
-  function usesMidTerm()
+  public function usesMidTerm()
   {
     return $this->getValue(
       InstitutionSettingType::UsesMidTermResult->value,
@@ -79,7 +85,7 @@ class SettingsHandler
     );
   }
 
-  function resultActivationRequired()
+  public function resultActivationRequired()
   {
     return boolval(
       $this->getValue(
@@ -90,27 +96,29 @@ class SettingsHandler
   }
 
   /** Indicates whether the school is currently on Mid or Full term */
-  function isOnMidTerm()
+  public function isOnMidTerm()
   {
     if (!$this->usesMidTerm()) {
       return false;
     }
+
     return $this->getValue(
       InstitutionSettingType::CurrentlyOnMidTerm->value,
       false
     );
   }
 
-  function getCurrentTerm($default = null)
+  public function getCurrentTerm($default = null)
   {
     if (!$default) {
       $default = TermType::First->value;
     }
+
     return $this->getValue(InstitutionSettingType::CurrentTerm->value) ??
       $default;
   }
 
-  function getCurrentAcademicSession($default = 'fetch'): int|string|null
+  public function getCurrentAcademicSession($default = 'fetch'): int|string|null
   {
     return $this->getValue(
       InstitutionSettingType::CurrentAcademicSession->value
@@ -122,17 +130,43 @@ class SettingsHandler
         : $default);
   }
 
-  function getResultTemplate($default = null)
+  public function getResultTemplate($default = null)
   {
     if (!$default) {
       $default = ResultTemplateType::Template1->value;
     }
     $resultSetting = $this->getValue(InstitutionSettingType::Result->value);
+
     return $resultSetting['template'] ?? $default;
     // return $this->getValue(InstitutionSettingType::Result->value) ?? $default;
   }
 
-  function academicQueryData(
+  public function getResultExamMode(): string
+  {
+    $resultSetting = $this->getValue(InstitutionSettingType::Result->value, []);
+
+    return $resultSetting[ResultSettingType::ExamMode->value] ??
+      ResultExamMode::Both->value;
+  }
+
+  public function shouldDisplayExamResults(
+    ?TermDetail $termDetail,
+    bool $forMidTerm
+  ): bool {
+    $mode = $termDetail?->result_exam_mode ?: $this->getResultExamMode();
+    if ($mode instanceof ResultExamMode) {
+      $mode = $mode->value;
+    }
+
+    return match ($mode) {
+      ResultExamMode::None->value => false,
+      ResultExamMode::MidTerm->value => $forMidTerm,
+      ResultExamMode::FullTerm->value => !$forMidTerm,
+      default => true
+    };
+  }
+
+  public function academicQueryData(
     $table = '',
     $academicSessionId = null,
     $term = null,
@@ -141,6 +175,7 @@ class SettingsHandler
     if ($table) {
       $table .= '.';
     }
+
     return [
       "{$table}academic_session_id" =>
         $academicSessionId ?? $this->getCurrentAcademicSession(),
@@ -150,7 +185,7 @@ class SettingsHandler
     ];
   }
 
-  function getPaystackKeys(): PaymentKeyDto
+  public function getPaystackKeys(): PaymentKeyDto
   {
     $paymentSetting = $this->getValue(
       InstitutionSettingType::PaymentKeys->value,
@@ -158,13 +193,14 @@ class SettingsHandler
     );
 
     $paystack = $paymentSetting['paystack'] ?? [];
+
     return new PaymentKeyDto(
       $paystack['public_key'] ?? '',
       $paystack['private_key'] ?? ''
     );
   }
 
-  function fetchCurrentTermDetail(): TermDetail
+  public function fetchCurrentTermDetail(): TermDetail
   {
     $academicSessionId = $this->getCurrentAcademicSession();
     $term = $this->getCurrentTerm();
@@ -173,6 +209,7 @@ class SettingsHandler
       401,
       'You need to set the current term and academic session first'
     );
+
     return TermDetail::query()
       ->with('academicSession')
       ->firstOrCreate([
@@ -183,14 +220,14 @@ class SettingsHandler
       ]);
   }
 
-  function getPinUsageCount()
+  public function getPinUsageCount()
   {
     return intval(
       $this->getValue(InstitutionSettingType::PinUsageCount->value) ?? 1
     );
   }
 
-  function getUserFullNameFormat(): ?string
+  public function getUserFullNameFormat(): ?string
   {
     $format = $this->getValue(
       InstitutionSettingType::UserFullNameFormat->value
