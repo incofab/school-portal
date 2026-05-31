@@ -167,7 +167,7 @@ class LessonPlanController extends Controller
       ]
     ]);
 
-    $media = app(MediaManager::class)->storeUploadedFile(
+    $res = app(MediaManager::class)->storeUploadedFile(
       $data['file'],
       $lessonPlan,
       'attachments',
@@ -177,7 +177,7 @@ class LessonPlanController extends Controller
       visibility: MediaVisibility::Public
     );
 
-    return $this->ok(['media' => $media]);
+    return $this->ok(['media' => $res->media]);
   }
 
   public function destroyMedia(

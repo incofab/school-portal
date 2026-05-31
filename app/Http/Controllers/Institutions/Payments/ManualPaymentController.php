@@ -21,334 +21,336 @@ use Illuminate\Http\Request;
 
 class ManualPaymentController extends Controller
 {
-    public function __construct()
-    {
-        $this->allowedRoles([
-            InstitutionUserType::Admin,
-            InstitutionUserType::Accountant,
-        ])->except(['history', 'show', 'updatePending']);
+  public function __construct()
+  {
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Accountant
+    ])->except(['history', 'show', 'updatePending']);
+  }
+
+  public function index(Institution $institution)
+  {
+    $query = ManualPayment::query()
+      ->where('institution_id', $institution->id)
+      ->with(
+        'user',
+        'payable',
+        'paymentable',
+        'bankAccount',
+        'confirmedBy',
+        'rejectedBy'
+      )
+      ->pendingFirst()
+      ->latest('id');
+
+    return inertia('institutions/payments/list-manual-payments', [
+      'manualPayments' => paginateFromRequest($query)
+    ]);
+  }
+
+  public function history(Institution $institution, ?Student $student = null)
+  {
+    $userId = $student?->user_id ?? currentUser()?->id;
+
+    abort_unless($userId, 403);
+
+    $query = ManualPayment::query()
+      ->where('user_id', $userId)
+      ->with('paymentable', 'bankAccount', 'confirmedBy', 'rejectedBy')
+      ->pendingFirst()
+      ->latest('id');
+
+    return inertia('institutions/payments/manual-payment-history', [
+      'manualPayments' => paginateFromRequest($query)
+    ]);
+  }
+
+  public function show(Institution $institution, ManualPayment $manualPayment)
+  {
+    abort_unless(
+      $manualPayment->institution_id === $institution->id,
+      404,
+      'Manual payment not found'
+    );
+
+    return inertia('institutions/payments/manual-payment-pending', [
+      'manualPayment' => $manualPayment->load(
+        'bankAccount',
+        'payable',
+        'paymentable'
+      ),
+      'bankAccounts' => $institution->institutionGroup->bankAccounts()->get(),
+      'payableDetails' => $this->describePaymentEntity(
+        $manualPayment->payable,
+        'Paid By'
+      ),
+      'paymentableDetails' => $this->describePaymentEntity(
+        $manualPayment->paymentable,
+        'Payment For'
+      )
+    ]);
+  }
+
+  public function updatePending(
+    Request $request,
+    Institution $institution,
+    ManualPayment $manualPayment
+  ) {
+    abort_unless(
+      $manualPayment->institution_id === $institution->id,
+      404,
+      'Manual payment not found'
+    );
+
+    abort_if(
+      $manualPayment->status !== PaymentStatus::Pending,
+      422,
+      'Only pending manual payments can be updated.'
+    );
+
+    $data = $request->validate([
+      'bank_account_id' => ['required', 'integer'],
+      'payment_proof' => [
+        'nullable',
+        'file',
+        'mimes:jpg,jpeg,png,pdf',
+        'max:4096'
+      ],
+      'depositor_name' => ['nullable', 'string', 'max:255'],
+      'paid_at' => ['nullable', 'date'],
+      'note' => ['nullable', 'string', 'max:1000']
+    ]);
+
+    $bankAccountId = $data['bank_account_id'];
+    $bankAccount = BankAccount::query()
+      ->where('id', $bankAccountId)
+      ->where(
+        'accountable_type',
+        $institution->institutionGroup->getMorphClass()
+      )
+      ->where('accountable_id', $institution->institutionGroup->id)
+      ->first();
+
+    abort_unless(
+      $bankAccount,
+      422,
+      'Please select a valid institution bank account.'
+    );
+
+    $proofPath = $manualPayment->proof_path;
+    $proofUrl = $manualPayment->proof_url;
+    if ($request->hasFile('payment_proof')) {
+      $res = app(MediaManager::class)->storeUploadedFile(
+        $request->file('payment_proof'),
+        $manualPayment,
+        'payment_proof',
+        "institutions/{$institution->id}/manual-payments",
+        $institution,
+        currentUser(),
+        visibility: MediaVisibility::Public,
+        legacyUrlColumn: 'proof_url',
+        legacyPathColumn: 'proof_path'
+      );
+      $proofPath = $res->media?->path;
+      $proofUrl = $res->media?->url;
     }
 
-    public function index(Institution $institution)
-    {
-        $query = ManualPayment::query()
-            ->where('institution_id', $institution->id)
-            ->with(
-                'user',
-                'payable',
-                'paymentable',
-                'bankAccount',
-                'confirmedBy',
-                'rejectedBy'
-            )
-            ->pendingFirst()
-            ->latest('id');
+    $payload = $manualPayment->payload?->getArrayCopy() ?? [];
 
-        return inertia('institutions/payments/list-manual-payments', [
-            'manualPayments' => paginateFromRequest($query),
-        ]);
+    $manualPayment
+      ->fill([
+        'bank_account_id' => $bankAccountId,
+        'depositor_name' =>
+          $data['depositor_name'] ?? $manualPayment->depositor_name,
+        'paid_at' => $data['paid_at'] ?? $manualPayment->paid_at,
+        'proof_path' => $proofPath,
+        'proof_url' => $proofUrl,
+        'payload' => [
+          ...$payload,
+          'note' => $data['note'] ?? ($payload['note'] ?? null)
+        ]
+      ])
+      ->save();
+
+    return $this->ok([
+      'manualPayment' => $manualPayment->fresh()->load('bankAccount'),
+      'message' => 'Your manual payment details have been updated.'
+    ]);
+  }
+
+  public function confirm(
+    Institution $institution,
+    ManualPayment $manualPayment
+  ) {
+    abort_unless(
+      $manualPayment->institution_id === $institution->id,
+      404,
+      'Manual payment not found'
+    );
+
+    $res = (new ManualPaymentHandler())->confirm(
+      $manualPayment->load('institution', 'payable', 'paymentable'),
+      currentUser()
+    );
+
+    return $this->apiRes($res);
+  }
+
+  public function reject(
+    Request $request,
+    Institution $institution,
+    ManualPayment $manualPayment
+  ) {
+    abort_unless(
+      $manualPayment->institution_id === $institution->id,
+      404,
+      'Manual payment not found'
+    );
+
+    $data = $request->validate([
+      'review_note' => ['nullable', 'string', 'max:1000']
+    ]);
+
+    $res = (new ManualPaymentHandler())->reject(
+      $manualPayment,
+      currentUser(),
+      $data['review_note'] ?? null
+    );
+
+    return $this->apiRes($res);
+  }
+
+  private function describePaymentEntity(?Model $entity, string $fallbackLabel)
+  {
+    if (!$entity) {
+      return null;
     }
 
-    public function history(Institution $institution, ?Student $student = null)
-    {
-        $userId = $student?->user_id ?? currentUser()?->id;
+    if ($entity instanceof User) {
+      $entity->loadMissing('student.classification');
 
-        abort_unless($userId, 403);
-
-        $query = ManualPayment::query()
-            ->where('user_id', $userId)
-            ->with('paymentable', 'bankAccount', 'confirmedBy', 'rejectedBy')
-            ->pendingFirst()
-            ->latest('id');
-
-        return inertia('institutions/payments/manual-payment-history', [
-            'manualPayments' => paginateFromRequest($query),
-        ]);
-    }
-
-    public function show(Institution $institution, ManualPayment $manualPayment)
-    {
-        abort_unless(
-            $manualPayment->institution_id === $institution->id,
-            404,
-            'Manual payment not found'
-        );
-
-        return inertia('institutions/payments/manual-payment-pending', [
-            'manualPayment' => $manualPayment->load(
-                'bankAccount',
-                'payable',
-                'paymentable'
-            ),
-            'bankAccounts' => $institution->institutionGroup->bankAccounts()->get(),
-            'payableDetails' => $this->describePaymentEntity(
-                $manualPayment->payable,
-                'Paid By'
-            ),
-            'paymentableDetails' => $this->describePaymentEntity(
-                $manualPayment->paymentable,
-                'Payment For'
-            ),
-        ]);
-    }
-
-    public function updatePending(
-        Request $request,
-        Institution $institution,
-        ManualPayment $manualPayment
-    ) {
-        abort_unless(
-            $manualPayment->institution_id === $institution->id,
-            404,
-            'Manual payment not found'
-        );
-
-        abort_if(
-            $manualPayment->status !== PaymentStatus::Pending,
-            422,
-            'Only pending manual payments can be updated.'
-        );
-
-        $data = $request->validate([
-            'bank_account_id' => ['required', 'integer'],
-            'payment_proof' => [
-                'nullable',
-                'file',
-                'mimes:jpg,jpeg,png,pdf',
-                'max:4096',
+      return [
+        'label' => $fallbackLabel,
+        'title' => $entity->full_name,
+        'subtitle' => 'User',
+        'attributes' => array_values(
+          array_filter(
+            [
+              ['label' => 'Email', 'value' => $entity->email],
+              ['label' => 'Phone', 'value' => $entity->phone],
+              ['label' => 'Username', 'value' => $entity->username],
+              [
+                'label' => 'Student Code',
+                'value' => $entity->student?->full_code
+              ],
+              [
+                'label' => 'Class',
+                'value' => $entity->student?->classification?->title
+              ]
             ],
-            'depositor_name' => ['nullable', 'string', 'max:255'],
-            'paid_at' => ['nullable', 'date'],
-            'note' => ['nullable', 'string', 'max:1000'],
-        ]);
+            fn($item) => filled($item['value'])
+          )
+        )
+      ];
+    }
 
-        $bankAccountId = $data['bank_account_id'];
-        $bankAccount = BankAccount::query()
-            ->where('id', $bankAccountId)
-            ->where(
-                'accountable_type',
-                $institution->institutionGroup->getMorphClass()
-            )
-            ->where('accountable_id', $institution->institutionGroup->id)
-            ->first();
+    if ($entity instanceof Fee) {
+      $entity->loadMissing('academicSession');
 
-        abort_unless(
-            $bankAccount,
-            422,
-            'Please select a valid institution bank account.'
-        );
+      return [
+        'label' => $fallbackLabel,
+        'title' => $entity->title,
+        'subtitle' => 'Fee',
+        'attributes' => array_values(
+          array_filter(
+            [
+              [
+                'label' => 'Amount',
+                'value' => number_format($entity->amount)
+              ],
+              ['label' => 'Interval', 'value' => $entity->payment_interval],
+              [
+                'label' => 'Term',
+                'value' => $entity->term?->value ?? $entity->term
+              ],
+              [
+                'label' => 'Academic Session',
+                'value' => $entity->academicSession?->title
+              ]
+            ],
+            fn($item) => filled($item['value'])
+          )
+        )
+      ];
+    }
 
-        $proofPath = $manualPayment->proof_path;
-        $proofUrl = $manualPayment->proof_url;
-        if ($request->hasFile('payment_proof')) {
-            $media = app(MediaManager::class)->storeUploadedFile(
-                $request->file('payment_proof'),
-                $manualPayment,
-                'payment_proof',
-                "institutions/{$institution->id}/manual-payments",
-                $institution,
-                currentUser(),
-                visibility: MediaVisibility::Public,
-                legacyUrlColumn: 'proof_url',
-                legacyPathColumn: 'proof_path'
-            );
-            $proofPath = $media->path;
-            $proofUrl = $media->url;
-        }
+    if ($entity instanceof AdmissionForm) {
+      $entity->loadMissing('academicSession');
 
-        $payload = $manualPayment->payload?->getArrayCopy() ?? [];
+      return [
+        'label' => $fallbackLabel,
+        'title' => $entity->title,
+        'subtitle' => 'Admission Form',
+        'attributes' => array_values(
+          array_filter(
+            [
+              ['label' => 'Price', 'value' => number_format($entity->price)],
+              [
+                'label' => 'Term',
+                'value' => $entity->term?->value ?? $entity->term
+              ],
+              [
+                'label' => 'Academic Session',
+                'value' => $entity->academicSession?->title
+              ],
+              [
+                'label' => 'Published',
+                'value' => $entity->is_published ? 'Yes' : 'No'
+              ]
+            ],
+            fn($item) => filled($item['value'])
+          )
+        )
+      ];
+    }
 
-        $manualPayment
-            ->fill([
-                'bank_account_id' => $bankAccountId,
-                'depositor_name' => $data['depositor_name'] ?? $manualPayment->depositor_name,
-                'paid_at' => $data['paid_at'] ?? $manualPayment->paid_at,
-                'proof_path' => $proofPath,
-                'proof_url' => $proofUrl,
-                'payload' => [
-                    ...$payload,
-                    'note' => $data['note'] ?? ($payload['note'] ?? null),
-                ],
+    if ($entity instanceof AdmissionApplication) {
+      return [
+        'label' => $fallbackLabel,
+        'title' =>
+          $entity->name ?:
+          trim(
+            implode(' ', [
+              $entity->first_name,
+              $entity->last_name,
+              $entity->other_names
             ])
-            ->save();
-
-        return $this->ok([
-            'manualPayment' => $manualPayment->fresh()->load('bankAccount'),
-            'message' => 'Your manual payment details have been updated.',
-        ]);
+          ),
+        'subtitle' => 'Admission Application',
+        'attributes' => array_values(
+          array_filter(
+            [
+              ['label' => 'Application No', 'value' => $entity->application_no],
+              ['label' => 'Email', 'value' => $entity->email],
+              ['label' => 'Phone', 'value' => $entity->phone],
+              [
+                'label' => 'Intended Class',
+                'value' => $entity->intended_class_of_admission
+              ],
+              ['label' => 'Status', 'value' => $entity->admission_status]
+            ],
+            fn($item) => filled($item['value'])
+          )
+        )
+      ];
     }
 
-    public function confirm(
-        Institution $institution,
-        ManualPayment $manualPayment
-    ) {
-        abort_unless(
-            $manualPayment->institution_id === $institution->id,
-            404,
-            'Manual payment not found'
-        );
-
-        $res = (new ManualPaymentHandler)->confirm(
-            $manualPayment->load('institution', 'payable', 'paymentable'),
-            currentUser()
-        );
-
-        return $this->apiRes($res);
-    }
-
-    public function reject(
-        Request $request,
-        Institution $institution,
-        ManualPayment $manualPayment
-    ) {
-        abort_unless(
-            $manualPayment->institution_id === $institution->id,
-            404,
-            'Manual payment not found'
-        );
-
-        $data = $request->validate([
-            'review_note' => ['nullable', 'string', 'max:1000'],
-        ]);
-
-        $res = (new ManualPaymentHandler)->reject(
-            $manualPayment,
-            currentUser(),
-            $data['review_note'] ?? null
-        );
-
-        return $this->apiRes($res);
-    }
-
-    private function describePaymentEntity(?Model $entity, string $fallbackLabel)
-    {
-        if (! $entity) {
-            return null;
-        }
-
-        if ($entity instanceof User) {
-            $entity->loadMissing('student.classification');
-
-            return [
-                'label' => $fallbackLabel,
-                'title' => $entity->full_name,
-                'subtitle' => 'User',
-                'attributes' => array_values(
-                    array_filter(
-                        [
-                            ['label' => 'Email', 'value' => $entity->email],
-                            ['label' => 'Phone', 'value' => $entity->phone],
-                            ['label' => 'Username', 'value' => $entity->username],
-                            [
-                                'label' => 'Student Code',
-                                'value' => $entity->student?->full_code,
-                            ],
-                            [
-                                'label' => 'Class',
-                                'value' => $entity->student?->classification?->title,
-                            ],
-                        ],
-                        fn ($item) => filled($item['value'])
-                    )
-                ),
-            ];
-        }
-
-        if ($entity instanceof Fee) {
-            $entity->loadMissing('academicSession');
-
-            return [
-                'label' => $fallbackLabel,
-                'title' => $entity->title,
-                'subtitle' => 'Fee',
-                'attributes' => array_values(
-                    array_filter(
-                        [
-                            [
-                                'label' => 'Amount',
-                                'value' => number_format($entity->amount),
-                            ],
-                            ['label' => 'Interval', 'value' => $entity->payment_interval],
-                            [
-                                'label' => 'Term',
-                                'value' => $entity->term?->value ?? $entity->term,
-                            ],
-                            [
-                                'label' => 'Academic Session',
-                                'value' => $entity->academicSession?->title,
-                            ],
-                        ],
-                        fn ($item) => filled($item['value'])
-                    )
-                ),
-            ];
-        }
-
-        if ($entity instanceof AdmissionForm) {
-            $entity->loadMissing('academicSession');
-
-            return [
-                'label' => $fallbackLabel,
-                'title' => $entity->title,
-                'subtitle' => 'Admission Form',
-                'attributes' => array_values(
-                    array_filter(
-                        [
-                            ['label' => 'Price', 'value' => number_format($entity->price)],
-                            [
-                                'label' => 'Term',
-                                'value' => $entity->term?->value ?? $entity->term,
-                            ],
-                            [
-                                'label' => 'Academic Session',
-                                'value' => $entity->academicSession?->title,
-                            ],
-                            [
-                                'label' => 'Published',
-                                'value' => $entity->is_published ? 'Yes' : 'No',
-                            ],
-                        ],
-                        fn ($item) => filled($item['value'])
-                    )
-                ),
-            ];
-        }
-
-        if ($entity instanceof AdmissionApplication) {
-            return [
-                'label' => $fallbackLabel,
-                'title' => $entity->name ?:
-                  trim(
-                      implode(' ', [
-                          $entity->first_name,
-                          $entity->last_name,
-                          $entity->other_names,
-                      ])
-                  ),
-                'subtitle' => 'Admission Application',
-                'attributes' => array_values(
-                    array_filter(
-                        [
-                            ['label' => 'Application No', 'value' => $entity->application_no],
-                            ['label' => 'Email', 'value' => $entity->email],
-                            ['label' => 'Phone', 'value' => $entity->phone],
-                            [
-                                'label' => 'Intended Class',
-                                'value' => $entity->intended_class_of_admission,
-                            ],
-                            ['label' => 'Status', 'value' => $entity->admission_status],
-                        ],
-                        fn ($item) => filled($item['value'])
-                    )
-                ),
-            ];
-        }
-
-        return [
-            'label' => $fallbackLabel,
-            'title' => class_basename($entity),
-            'subtitle' => 'Record',
-            'attributes' => [['label' => 'ID', 'value' => $entity->id]],
-        ];
-    }
+    return [
+      'label' => $fallbackLabel,
+      'title' => class_basename($entity),
+      'subtitle' => 'Record',
+      'attributes' => [['label' => 'ID', 'value' => $entity->id]]
+    ];
+  }
 }

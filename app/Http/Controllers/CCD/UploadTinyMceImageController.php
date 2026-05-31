@@ -25,7 +25,7 @@ class UploadTinyMceImageController extends Controller
     $filename = Str::orderedUuid() . '.' . $file->clientExtension();
     ImageOptimizer::optimize($file);
 
-    $media = app(MediaManager::class)->storeUploadedFile(
+    $res = app(MediaManager::class)->storeUploadedFile(
       $file,
       $morphable,
       'tinymce_image',
@@ -37,7 +37,7 @@ class UploadTinyMceImageController extends Controller
     );
 
     return response()->json([
-      'location' => $media->url
+      'location' => $res->media?->url
     ]);
   }
 }

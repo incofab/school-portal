@@ -179,7 +179,7 @@ class LessonNoteController extends Controller
       ]
     ]);
 
-    $media = app(MediaManager::class)->storeUploadedFile(
+    $res = app(MediaManager::class)->storeUploadedFile(
       $data['file'],
       $lessonNote,
       'attachments',
@@ -189,7 +189,7 @@ class LessonNoteController extends Controller
       visibility: MediaVisibility::Public
     );
 
-    return $this->ok(['media' => $media]);
+    return $this->ok(['media' => $res->media]);
   }
 
   public function destroyMedia(
