@@ -99,6 +99,23 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
       (resultInfo.whatsapp_message_count ?? 0) + 1;
   }
 
+  async function generateAiComments(resultInfo: ClassResultInfo) {
+    if (
+      !window.confirm(
+        `Generate AI comments for ${resultInfo.classification?.title} results?`
+      )
+    ) {
+      return;
+    }
+
+    const res = await webForm.submit((data, web) => {
+      return web.post(
+        instRoute('class-result-info.generate-ai-comments', [resultInfo.id])
+      );
+    });
+    if (!handleResponseToast(res)) return;
+  }
+
   async function updateResultLock(row: ClassResultInfo, isLocked: boolean) {
     const action = isLocked ? 'lock' : 'unlock';
     if (
@@ -263,6 +280,14 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
                     py={2}
                   >
                     Send Results via Whatsapp
+                  </MenuItem>
+                  <MenuItem
+                    as={Button}
+                    onClick={() => generateAiComments(row)}
+                    py={2}
+                    isDisabled={webForm.processing}
+                  >
+                    Generate AI Comments
                   </MenuItem>
                 </MenuList>
               </Menu>

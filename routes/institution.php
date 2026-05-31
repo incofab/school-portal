@@ -265,6 +265,8 @@ Route::post('/class-result-info/recalculate/{classResultInfo}', [Web\Staff\Class
     ->name('class-result-info.recalculate');
 Route::post('/class-result-info/{classResultInfo}/lock', [Web\Staff\ClassResultInfoController::class, 'updateLock'])
     ->name('class-result-info.lock');
+Route::post('/class-result-info/{classResultInfo}/generate-ai-comments', [Web\Staff\ClassResultInfoController::class, 'generateAiComments'])
+    ->name('class-result-info.generate-ai-comments');
 Route::post('/class-result-info/set-resumption-date/{classificationGroup?}', [Web\Staff\ClassResultInfoController::class, 'setNextTermResumptionDate'])
     ->name('class-result-info.set-resumption-date');
 Route::get('/class-result-info/{classResultInfo}/result-sheets', [Web\Staff\ClassResultInfoController::class, 'viewClassResultSheets'])

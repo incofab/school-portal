@@ -71,8 +71,7 @@ class Course extends Model
       $this->lessonNotes()
         ->withTrashed()
         ->exists() ||
-      $this->libraries()->exists() ||
-      $this->examCourseables()->exists();
+      $this->libraries()->exists();
   }
 
   public function institution()
@@ -131,10 +130,5 @@ class Course extends Model
   public function libraries()
   {
     return $this->hasMany(Library::class);
-  }
-
-  public function examCourseables()
-  {
-    return $this->hasMany(ExamCourseable::class);
   }
 }

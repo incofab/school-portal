@@ -14,7 +14,6 @@ class ExamCourseable extends Model
 
   protected $casts = [
     'courseable_id' => 'integer',
-    'course_id' => 'integer',
     'exam_id' => 'integer',
     'num_of_questions' => 'integer',
     'theory_num_of_questions' => 'integer',
