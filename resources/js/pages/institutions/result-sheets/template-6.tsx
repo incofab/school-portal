@@ -306,8 +306,8 @@ export default function Template6(props: ResultProps) {
               />
               <Spacer />
               <LabelText
-                label={'Percentage Average'}
-                text={`${termResult.average}%`}
+                label={'Student Average'}
+                text={`${termResult.average}`}
               />
             </HStack>
             <HStack mt={0}>
@@ -320,8 +320,8 @@ export default function Template6(props: ResultProps) {
               />
               <Spacer />
               <LabelText
-                label={'Overall Grade'}
-                text={`${classResultInfo.average}%`}
+                label={'Class Average'}
+                text={`${classResultInfo.average}`}
               />
             </HStack>
           </Div>

@@ -183,7 +183,7 @@ export default function Template8(props: ResultProps) {
         {/* Summary Cards */}
         <SimpleGrid columns={4} spacing={4} px={6} mb={6}>
           <SummaryCard label="Total Score" value={termResult.total_score} />
-          <SummaryCard label="Average" value={`${termResult.average}%`} />
+          <SummaryCard label="Average" value={`${termResult.average}`} />
           <SummaryCard
             label="Position"
             value={
