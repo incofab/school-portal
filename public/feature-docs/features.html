@@ -401,6 +401,17 @@ code { color: #d1fae5; }
       <li>Tests: <code>Support/UITableFilters/BaseUITableFilterTest.php</code> and feature-specific controller tests.</li>
     </ul>
   </div>
+
+  <div class="feature">
+    <h3><span>28</span> Audit Logs and Activity Monitoring</h3>
+    <p>A reusable audit logging foundation records activity events with actor, subject, institution, request context, severity, JSON properties, and old/new value snapshots. The logger is safe for HTTP requests, jobs, commands, tests, and guest/system events, and centrally redacts sensitive keys before persistence. Manager and institution admin list pages expose paginated, searchable, filterable activity logs with a detail drawer.</p>
+    <ul>
+      <li>Backend: <code>App\Support\Audit\ActivityLogger</code>, <code>AuditRequestContext</code>, <code>ActivityLogSanitizer</code>, <code>ActivityLogPolicy</code>, manager/institution <code>ActivityLogController</code>, <code>ActivityLogUITableFilters</code>, and enum-backed <code>ActivityLogCategory</code>/<code>ActivityLogSeverity</code> filter options.</li>
+      <li>Routes: <code>managers.activity-logs.index</code> for global manager viewing and <code>institutions.activity-logs.index</code> for current-institution scoped viewing.</li>
+      <li>Frontend: shared <code>components/activity-logs/activity-log-list.tsx</code>, manager <code>managers/activity-logs/list-activity-logs.tsx</code>, and institution <code>institutions/activity-logs/list-activity-logs.tsx</code>.</li>
+      <li>Data/tests: <code>ActivityLog</code>, <code>activity_logs</code>, <code>ActivityLogFactory</code>, and <code>tests/Feature/Audit/ActivityLoggerTest.php</code>.</li>
+    </ul>
+  </div>
 </section>
 
 <section>

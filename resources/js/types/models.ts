@@ -70,6 +70,38 @@ export interface InternalNotificationRead extends Row {
   read_at: string;
 }
 
+export interface ActivityLog extends Row {
+  uuid: string;
+  institution_id?: number;
+  institution_group_id?: number;
+  actor_type?: string;
+  actor_id?: number;
+  actor_name?: string;
+  actor_role?: string;
+  actor_guard?: string;
+  action: string;
+  category: string;
+  event: string;
+  subject_type?: string;
+  subject_id?: number;
+  subject_name?: string;
+  description?: string;
+  properties?: { [key: string]: any };
+  old_values?: { [key: string]: any };
+  new_values?: { [key: string]: any };
+  ip_address?: string;
+  user_agent?: string;
+  route_name?: string;
+  url?: string;
+  method?: string;
+  request_id?: string;
+  impersonator_type?: string;
+  impersonator_id?: number;
+  severity: string;
+  institution?: Institution;
+  institution_group?: InstitutionGroup;
+}
+
 export interface NotificationRecipient {
   reader_type: string;
   reader_id: number;

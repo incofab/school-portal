@@ -245,7 +245,7 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
                       term: row.term,
                       forMidTerm: row.for_mid_term ? 1 : 0,
                     })}
-                    py={2}
+                    py={3}
                   >
                     Grade Report
                   </MenuItem>
@@ -254,14 +254,14 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
                     href={instRoute('class-result-info.record-evaluations', [
                       row.id,
                     ])}
-                    py={2}
+                    py={3}
                   >
                     Record Evaluations
                   </MenuItem>
                   <MenuItem
                     aria-label="Download"
                     onClick={() => downloadResults(row)}
-                    py={2}
+                    py={3}
                   >
                     Download Results
                   </MenuItem>
@@ -270,21 +270,16 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
                     href={instRoute('class-result-info.result-sheets', [
                       row.id,
                     ])}
-                    py={2}
+                    py={3}
                   >
                     All Result Sheets
                   </MenuItem>
-                  <MenuItem
-                    as={Button}
-                    onClick={() => sendViaWhatsapp(row)}
-                    py={2}
-                  >
+                  <MenuItem onClick={() => sendViaWhatsapp(row)} py={2}>
                     Send Results via Whatsapp
                   </MenuItem>
                   <MenuItem
-                    as={Button}
                     onClick={() => generateAiComments(row)}
-                    py={2}
+                    py={3}
                     isDisabled={webForm.processing}
                   >
                     Generate AI Comments
