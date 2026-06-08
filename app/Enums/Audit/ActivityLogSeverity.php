@@ -10,6 +10,7 @@ enum ActivityLogSeverity: string
 
     case Info = 'info';
     case Notice = 'notice';
+    case Security = 'security';
     case Warning = 'warning';
     case Error = 'error';
     case Critical = 'critical';

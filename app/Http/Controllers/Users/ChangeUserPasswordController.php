@@ -3,18 +3,19 @@
 namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
+use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class ChangeUserPasswordController extends Controller
 {
-  function edit()
+  public function edit()
   {
     return Inertia::render('users/change-password', ['user' => currentUser()]);
   }
 
-  function update(Request $request)
+  public function update(Request $request)
   {
     $user = currentUser();
     $data = $request->validate([
@@ -32,6 +33,14 @@ class ChangeUserPasswordController extends Controller
 
     $user->password = Hash::make($data['new_password']);
     $user->save();
+
+    app(SecurityActivityLogger::class)->passwordChanged(
+      $user,
+      $user
+        ->institutionUsers()
+        ->with('institution')
+        ->first()?->institution
+    );
 
     return response()->json(['message' => 'Password changed successfully']);
   }

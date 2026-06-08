@@ -11,6 +11,7 @@ use App\Http\Requests\CreateStaffRequest;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\User;
+use App\Support\Audit\SecurityActivityLogger;
 use App\Support\Media\MediaManager;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
@@ -130,6 +131,7 @@ class UpdateInstitutionUserController extends Controller
       'status_message' => ['nullable', 'string', 'max:255']
     ]);
     $status = $request->status;
+    $oldStatus = $institutionUser->status?->value;
 
     abort_if(
       $status === InstitutionUserStatus::Suspended->value &&
@@ -144,6 +146,17 @@ class UpdateInstitutionUserController extends Controller
         'status_message' => $request->status_message
       ])
       ->save();
+
+    $institutionUser->loadMissing('user');
+
+    app(SecurityActivityLogger::class)->userStatusChanged(
+      currentUser(),
+      $institutionUser,
+      $institution,
+      $oldStatus,
+      $status,
+      $request->status_message
+    );
 
     return $this->ok();
   }

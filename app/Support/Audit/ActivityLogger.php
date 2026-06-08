@@ -100,21 +100,21 @@ class ActivityLogger
 
     public function properties(array $properties): static
     {
-        $this->payload['properties'] = ActivityLogSanitizer::sanitize($properties);
+        $this->payload['properties'] = ActivityLogSanitizer::sanitizeJsonArray($properties);
 
         return $this;
     }
 
     public function oldValues(array $oldValues): static
     {
-        $this->payload['old_values'] = ActivityLogSanitizer::sanitize($oldValues);
+        $this->payload['old_values'] = ActivityLogSanitizer::sanitizeJsonArray($oldValues);
 
         return $this;
     }
 
     public function newValues(array $newValues): static
     {
-        $this->payload['new_values'] = ActivityLogSanitizer::sanitize($newValues);
+        $this->payload['new_values'] = ActivityLogSanitizer::sanitizeJsonArray($newValues);
 
         return $this;
     }

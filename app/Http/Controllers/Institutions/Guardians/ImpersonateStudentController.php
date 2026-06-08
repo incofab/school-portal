@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\GuardianStudent;
 use App\Models\Institution;
 use App\Models\Student;
+use App\Support\Audit\SecurityActivityLogger;
 
 class ImpersonateStudentController extends Controller
 {
@@ -19,6 +20,13 @@ class ImpersonateStudentController extends Controller
 
     $student->loadMissing('user');
     abort_unless($student->user, 403, 'Student user not found');
+
+    app(SecurityActivityLogger::class)->impersonationStarted(
+      $user,
+      $student->user,
+      $institution,
+      'guardian_student'
+    );
 
     session([
       'impersonator_id' => $user->id,

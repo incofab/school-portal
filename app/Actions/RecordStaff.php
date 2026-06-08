@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions;
 
 use App\Models\Institution;
@@ -7,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class RecordStaff
 {
-  function __construct(
+  public function __construct(
     private Institution $institution,
     private array $userData
   ) {
@@ -18,7 +19,7 @@ class RecordStaff
     return new self($institution, $userData);
   }
 
-  public function create()
+  public function create(): User
   {
     DB::beginTransaction();
 
@@ -31,9 +32,11 @@ class RecordStaff
     $this->syncRole($user);
 
     DB::commit();
+
+    return $user;
   }
 
-  function update(User $user)
+  public function update(User $user): User
   {
     DB::beginTransaction();
 
@@ -45,9 +48,11 @@ class RecordStaff
       )
       ->save();
     DB::commit();
+
+    return $user;
   }
 
-  function syncRole(User $user)
+  public function syncRole(User $user)
   {
     $user
       ->institutions()

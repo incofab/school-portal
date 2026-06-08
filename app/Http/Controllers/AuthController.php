@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -29,10 +31,30 @@ class AuthController extends Controller
     $credentials = request()->only(['email', 'password']);
 
     if (!Auth::attempt($credentials)) {
+      $target = User::query()
+        ->where('email', $credentials['email'])
+        ->with('institutionUsers.institution')
+        ->first();
+
+      app(SecurityActivityLogger::class)->loginFailed(
+        $credentials['email'],
+        institution: $target?->institutionUsers->first()?->institution,
+        subject: $target
+      );
+
       throw ValidationException::withMessages([
         'email' => ['invalid credentials']
       ]);
     }
+
+    app(SecurityActivityLogger::class)->loginSucceeded(
+      currentUser(),
+      currentUser()
+        ?->institutionUsers()
+        ->with('institution')
+        ->first()?->institution
+    );
+
     return $this->ok();
     // return redirect()->route('home');
     // return redirect()->intended(route('user.dashboard'));
@@ -52,6 +74,10 @@ class AuthController extends Controller
     ]);
 
     $status = Password::sendResetLink(request()->only('email'));
+
+    app(SecurityActivityLogger::class)->passwordResetRequested(
+      request('email')
+    );
 
     return $status === Password::RESET_LINK_SENT
       ? back()->with(['status' => __($status)])
@@ -91,6 +117,8 @@ class AuthController extends Controller
         $user->save();
 
         event(new PasswordReset($user));
+
+        app(SecurityActivityLogger::class)->passwordResetCompleted($user);
       }
     );
 
@@ -104,6 +132,13 @@ class AuthController extends Controller
     $currentUser = currentUser();
     $isImpersonating = session()->has('impersonator_id');
     $institutionUsers = $currentUser->institutionUsers()->get();
+    $institution = $institutionUsers->first()?->institution;
+
+    app(SecurityActivityLogger::class)->logout(
+      $currentUser,
+      $institution,
+      $isImpersonating
+    );
 
     \Auth::logout();
     Session::forget([

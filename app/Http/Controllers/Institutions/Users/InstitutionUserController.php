@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Institutions\Users;
 
+use App\Actions\RecordStaff;
 use App\Actions\Users\DownloadStaffRecordingSheet;
 use App\Actions\Users\InsertStaffFromRecordingSheet;
-use App\Actions\RecordStaff;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateStaffRequest;
@@ -12,6 +12,7 @@ use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Rules\ExcelRule;
+use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Storage;
@@ -25,7 +26,15 @@ class InstitutionUserController extends Controller
 
   public function store(Institution $institution, CreateStaffRequest $request)
   {
-    RecordStaff::make($institution, $request->validated())->create();
+    $data = $request->validated();
+    $user = RecordStaff::make($institution, $data)->create();
+
+    app(SecurityActivityLogger::class)->userCreated(
+      currentUser(),
+      $user,
+      $institution,
+      $data['role']
+    );
 
     return $this->ok();
   }
@@ -56,21 +65,22 @@ class InstitutionUserController extends Controller
       $request->file,
       $request->role
     );
+
     return $this->ok();
   }
 
-  function idCards(
+  public function idCards(
     Institution $institution,
     ?Classification $classification = null
   ) {
     if (!empty($classification)) {
-      //Returns Students
+      // Returns Students
       $persons = $classification
         ->students()
         ->with('user')
         ->get();
     } else {
-      //Returns Staff
+      // Returns Staff
       $persons = InstitutionUser::whereNotIn('role', [
         InstitutionUserType::Student->value,
         InstitutionUserType::Alumni->value

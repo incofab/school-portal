@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Enums\InstitutionUserType;
 use App\Models\Student;
+use App\Support\Audit\SecurityActivityLogger;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -48,6 +49,13 @@ class StudentAccess
 
     private function eject(Request $request, string $message)
     {
+        app(SecurityActivityLogger::class)->unauthorizedAccess(
+            currentUser(),
+            $message,
+            $request->route()?->parameter('institution'),
+            $request->route('student')
+        );
+
         return $request->expectsJson()
           ? abort(403, $message)
           : redirect()->route('user.dashboard'); // Redirect::guest(URL::route('login'));

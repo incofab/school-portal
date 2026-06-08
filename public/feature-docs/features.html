@@ -54,7 +54,7 @@ code { color: #d1fae5; }
 <body>
 <header>
   <h1>EduManager Feature Inventory</h1>
-  <p>Last reviewed 2026-05-28. Technical map for AI CLI agents and maintainers.</p>
+  <p>Last reviewed 2026-06-08. Technical map for AI CLI agents and maintainers.</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
@@ -92,10 +92,10 @@ code { color: #d1fae5; }
     <h3><span>01</span> Authentication, Account Access, and Impersonation</h3>
     <div class="cols">
       <div>
-        <p>Supports staff login, student login, password reset, authenticated dashboard routing, user password changes, BVN/NIN updates, logout, manager-only impersonation of users/institutions, admin user-list impersonation, and stopping impersonation. Public result activation and exam-result login are also exposed to guest users.</p>
+        <p>Supports staff login, student login, password reset, authenticated dashboard routing, user password changes, BVN/NIN updates, logout, manager-only impersonation of users/institutions, admin user-list impersonation, and stopping impersonation. These security-sensitive workflows now emit explicit audit events for login success/failure, logout, password reset request/completion, password changes, identity updates, impersonation start/stop, and intercepted unauthorized access attempts. Public result activation and exam-result login are also exposed to guest users.</p>
         <ul>
           <li>Routes: <code>routes/web.php</code>, <code>routes/api.php</code>.</li>
-          <li>Controllers: <code>AuthController</code>, <code>StudentAuthController</code>, <code>PublicExamResultController</code>, <code>TermResultActivationController</code>, <code>Users/*</code>, <code>Impersonate/*</code>.</li>
+          <li>Controllers/services: <code>AuthController</code>, <code>StudentAuthController</code>, <code>PublicExamResultController</code>, <code>TermResultActivationController</code>, <code>Users/*</code>, <code>Impersonate/*</code>, and <code>SecurityActivityLogger</code>.</li>
           <li>Frontend: <code>resources/js/pages/auth/*</code>, <code>resources/js/pages/users/*</code>.</li>
         </ul>
       </div>
@@ -103,7 +103,7 @@ code { color: #d1fae5; }
         <ul>
           <li>Middleware: <code>Authenticate</code>, <code>VerifyManager</code>, <code>VerifyInstitutionUser</code>, <code>VerifyAdmin</code>, <code>StudentAccess</code>.</li>
           <li>Data: <code>User</code>, <code>Admin</code>, <code>InstitutionUser</code>, <code>Student</code>, Spatie permission tables.</li>
-          <li>Tests: <code>UserControllerTest</code>, <code>TermResultActivationControllerTest</code>.</li>
+          <li>Tests: <code>UserControllerTest</code>, <code>TermResultActivationControllerTest</code>, <code>SecurityActivityLoggingTest</code>.</li>
         </ul>
       </div>
     </div>
@@ -145,7 +145,7 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>05</span> Users, Staff, Roles, and Staff Assets</h3>
-    <p>Institution staff can create users, list/search users, update profiles, upload photos, bulk upload staff, download staff recording templates, update institution-user status, reset passwords, change roles, delete users, assign course-teacher records, and print staff ID cards. User avatar uploads now create media records with uploader, collection, and storage metadata before upload.</p>
+    <p>Institution staff can create users, list/search users, update profiles, upload photos, bulk upload staff, download staff recording templates, update institution-user status, reset passwords, change roles, delete users, assign course-teacher records, and print staff ID cards. User create, status change, role change, admin password reset, and delete workflows now record explicit access audit events with actor, target user, institution, severity, and old/new role or status context. User avatar uploads now create media records with uploader, collection, and storage metadata before upload.</p>
     <ul>
       <li>Controllers: <code>Institutions/Users/*</code>, <code>Institutions/Staff/CourseTeachersController</code>, <code>RecordStaff</code>, <code>DownloadStaffRecordingSheet</code>, <code>InsertStaffFromRecordingSheet</code>.</li>
       <li>Frontend: <code>institutions/users/*</code>, <code>institutions/staff/list-course-teachers.tsx</code>, <code>register-course-teacher.tsx</code>, <code>students/staff-id-cards.tsx</code>.</li>
@@ -404,13 +404,13 @@ code { color: #d1fae5; }
 
   <div class="feature">
     <h3><span>28</span> Audit Logs and Activity Monitoring</h3>
-  <p>A reusable audit logging foundation records activity events with actor, subject, institution, request context, severity, JSON properties, and old/new value snapshots. The logger is safe for HTTP requests, jobs, commands, tests, and guest/system events, and centrally redacts sensitive keys before persistence. Manager and institution admin list pages expose paginated, searchable, filterable activity logs with a detail drawer. Automatic model auditing now records opted-in high-value create, update, delete, restore, and force-delete events without controller changes.</p>
+  <p>A reusable audit logging foundation records activity events with actor, subject, institution, request context, severity, JSON properties, and old/new value snapshots. The logger is safe for HTTP requests, jobs, commands, tests, and guest/system events, and centrally redacts sensitive keys before persistence. Manager and institution admin list pages expose paginated, searchable, filterable activity logs with a detail drawer. Automatic model auditing now records opted-in high-value create, update, delete, restore, and force-delete events without controller changes, while <code>SecurityActivityLogger</code> records explicit authentication, authorization, account, role, and impersonation domain events.</p>
     <ul>
-      <li>Backend: <code>App\Support\Audit\ActivityLogger</code>, <code>AuditRequestContext</code>, <code>ActivityLogSanitizer</code>, <code>ModelAuditRegistry</code>, <code>ModelAuditObserver</code>, <code>ActivityLogPolicy</code>, manager/institution <code>ActivityLogController</code>, <code>ActivityLogUITableFilters</code>, and enum-backed <code>ActivityLogCategory</code>/<code>ActivityLogSeverity</code> filter options.</li>
+      <li>Backend: <code>App\Support\Audit\ActivityLogger</code>, <code>SecurityActivityLogger</code>, <code>AuditRequestContext</code>, <code>ActivityLogSanitizer</code>, <code>ModelAuditRegistry</code>, <code>ModelAuditObserver</code>, <code>ActivityLogPolicy</code>, manager/institution <code>ActivityLogController</code>, <code>ActivityLogUITableFilters</code>, and enum-backed <code>ActivityLogCategory</code>/<code>ActivityLogSeverity</code> filter options.</li>
       <li>Routes: <code>managers.activity-logs.index</code> for global manager viewing and <code>institutions.activity-logs.index</code> for current-institution scoped viewing.</li>
       <li>Frontend: shared <code>components/activity-logs/activity-log-list.tsx</code>, manager <code>managers/activity-logs/list-activity-logs.tsx</code>, and institution <code>institutions/activity-logs/list-activity-logs.tsx</code>.</li>
       <li>Automatic coverage: institutions/groups/users/students/guardians/classes/courses/curriculum/assignments, result records, fees/payments/wallets/withdrawals/bank accounts/commissions, admissions/application records, and <code>Media</code>.</li>
-      <li>Data/tests: <code>ActivityLog</code>, <code>activity_logs</code>, <code>ActivityLogFactory</code>, <code>tests/Feature/Audit/ActivityLoggerTest.php</code>, and <code>tests/Feature/Audit/ModelAuditObserverTest.php</code>.</li>
+      <li>Data/tests: <code>ActivityLog</code>, <code>activity_logs</code>, <code>ActivityLogFactory</code>, <code>tests/Feature/Audit/ActivityLoggerTest.php</code>, <code>tests/Feature/Audit/ModelAuditObserverTest.php</code>, and <code>tests/Feature/Audit/SecurityActivityLoggingTest.php</code>.</li>
     </ul>
   </div>
 </section>

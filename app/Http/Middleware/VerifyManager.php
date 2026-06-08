@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Enums\ManagerRole;
+use App\Support\Audit\SecurityActivityLogger;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -11,8 +12,6 @@ class VerifyManager
   /**
    * Handle an incoming request.
    *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  \Closure  $next
    * @return mixed
    */
   public function handle(Request $request, Closure $next)
@@ -28,8 +27,13 @@ class VerifyManager
 
   private function eject(Request $request, string $message)
   {
+    app(SecurityActivityLogger::class)->unauthorizedAccess(
+      currentUser(),
+      $message
+    );
+
     return $request->expectsJson()
       ? abort(403, $message)
-      : redirect()->route('user.dashboard'); //Redirect::guest(URL::route('login'));
+      : redirect()->route('user.dashboard'); // Redirect::guest(URL::route('login'));
   }
 }

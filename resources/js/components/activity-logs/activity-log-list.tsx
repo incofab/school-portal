@@ -141,7 +141,11 @@ export default function ActivityLogList({
       {
         label: 'Severity',
         sortKey: 'severity',
-        render: (row) => <Badge>{row.severity}</Badge>,
+        render: (row) => (
+          <Badge colorScheme={severityColor(row.severity)}>
+            {row.severity}
+          </Badge>
+        ),
       },
       {
         label: 'Action',
@@ -301,6 +305,16 @@ function ActivityLogDrawer({
                 <Text>{activityLog.actor_role ?? 'N/A'}</Text>
                 <Text fontWeight="semibold">Subject</Text>
                 <Text>{activityLog.subject_name ?? 'N/A'}</Text>
+                <Text fontWeight="semibold">Category</Text>
+                <Text>{activityLog.category}</Text>
+                <Text fontWeight="semibold">Event</Text>
+                <Text>{activityLog.event}</Text>
+                <Text fontWeight="semibold">Severity</Text>
+                <Text>
+                  <Badge colorScheme={severityColor(activityLog.severity)}>
+                    {activityLog.severity}
+                  </Badge>
+                </Text>
                 <Text fontWeight="semibold">Description</Text>
                 <Text>{activityLog.description ?? 'N/A'}</Text>
                 <Text fontWeight="semibold">Request</Text>
@@ -327,6 +341,23 @@ function ActivityLogDrawer({
       </DrawerContent>
     </Drawer>
   );
+}
+
+function severityColor(severity: string) {
+  switch (severity) {
+    case 'critical':
+      return 'red';
+    case 'warning':
+      return 'orange';
+    case 'security':
+      return 'purple';
+    case 'error':
+      return 'pink';
+    case 'notice':
+      return 'blue';
+    default:
+      return 'gray';
+  }
 }
 
 function JsonBlock({ title, value }: { title: string; value?: any }) {

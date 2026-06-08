@@ -105,6 +105,33 @@ it('redacts sensitive keys in payloads and diffs', function () {
         ]);
 });
 
+it('normalizes unencodable values before storing json payloads', function () {
+    $stream = fopen('php://temp', 'r');
+
+    $log = app(ActivityLogger::class)
+        ->event('audit.json_safe_test')
+        ->category('system')
+        ->action('created')
+        ->properties([
+            'resource' => $stream,
+            'object' => new stdClass,
+            'nan' => NAN,
+        ])
+        ->newValues([
+            'invalid_utf8' => "bad\xB1value",
+        ])
+        ->log();
+
+    fclose($stream);
+
+    expect($log->properties->toArray())->toMatchArray([
+        'resource' => '[resource]',
+        'object' => '[object stdClass]',
+        'nan' => 'NAN',
+    ])
+        ->and($log->new_values['invalid_utf8'])->toContain('bad');
+});
+
 it('allows admin managers to view global audit logs', function () {
     $adminManager = User::factory()
         ->adminManager()

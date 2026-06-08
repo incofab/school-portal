@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Institutions\Users;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\User;
+use App\Support\Audit\SecurityActivityLogger;
 use Hash;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,13 @@ class ResetUserPasswordController extends Controller
 
     $newPassword = config('app.user_default_password', 'password');
     $user->fill(['password' => Hash::make($newPassword)])->save();
+
+    app(SecurityActivityLogger::class)->passwordResetByAdmin(
+      $currentUser,
+      $user,
+      $institution
+    );
+
     return $this->message(
       "{$user->first_name}'s password has been reset to default: ({$newPassword})"
     );

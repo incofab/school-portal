@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Impersonate;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
+use App\Support\Audit\SecurityActivityLogger;
 
 class ImpersonateInstitutionController extends Controller
 {
@@ -25,6 +26,13 @@ class ImpersonateInstitutionController extends Controller
     }
 
     abort_unless($loginUser, 403, 'Admin user not found');
+
+    app(SecurityActivityLogger::class)->impersonationStarted(
+      $user,
+      $loginUser,
+      $institution,
+      'manager_institution'
+    );
 
     session([
       'impersonator_id' => $user->id,

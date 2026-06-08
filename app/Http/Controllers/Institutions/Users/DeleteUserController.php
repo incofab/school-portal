@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Institutions\Users;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\User;
+use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Http\Request;
 
 class DeleteUserController extends Controller
@@ -21,6 +22,14 @@ class DeleteUserController extends Controller
       ->first();
 
     abort_unless($institutionUser, 403);
+    $role = $institutionUser->role?->value;
+
+    app(SecurityActivityLogger::class)->userDeleted(
+      currentUser(),
+      $user,
+      $institution,
+      $role
+    );
 
     $user->courseTeachers()->delete();
     $user->delete();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -23,10 +24,15 @@ class StudentAuthController extends Controller
     ]);
 
     $student = Student::where('code', $data['student_code'])
-      ->with('user')
+      ->with('user', 'institutionUser.institution')
       ->first();
 
-    abort_unless($student, 403, 'Invalid credentials');
+    if (!$student) {
+      app(SecurityActivityLogger::class)->studentLoginFailed(
+        $data['student_code']
+      );
+      abort(403, 'Invalid credentials');
+    }
 
     $credentials = [
       'email' => $student->user->email,
@@ -34,8 +40,18 @@ class StudentAuthController extends Controller
     ];
 
     if (!Auth::attempt($credentials)) {
+      app(SecurityActivityLogger::class)->studentLoginFailed(
+        $data['student_code'],
+        $student
+      );
+
       return response()->json(['should_enter_password' => true]);
     }
+
+    app(SecurityActivityLogger::class)->studentLoginSucceeded(
+      $student,
+      $student->institutionUser->institution
+    );
 
     return response()->json(['should_enter_password' => false]);
   }

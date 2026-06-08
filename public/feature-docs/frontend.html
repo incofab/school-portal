@@ -38,13 +38,13 @@ code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
 <body>
 <header>
   <h1>Frontend Architecture</h1>
-  <p>Last reviewed 2026-04-27</p>
+  <p>Last reviewed 2026-06-08</p>
   <nav><a href="index.html">Overview</a><a href="backend.html">Backend</a><a href="frontend.html">Frontend</a><a href="data.html">Data</a><a href="features.html">Features</a><a href="product-recommendations.html">Recommendations</a><a href="proposal.html">Proposal</a></nav>
 </header>
 <main>
 <section><h2>Audit Log Pages</h2><ul class="detail-list"><li><div><strong>manager activity logs</strong> <span class="path"><code>resources/js/pages/managers/activity-logs/list-activity-logs.tsx</code></span></div><div class="desc">Global manager activity log list with date, category, event, actor, subject, severity, and institution filters plus a detail drawer for context and JSON payloads.</div></li>
 <li><div><strong>institution activity logs</strong> <span class="path"><code>resources/js/pages/institutions/activity-logs/list-activity-logs.tsx</code></span></div><div class="desc">Institution admin activity log list scoped to the current institution, reusing the shared audit table and detail drawer without the manager institution filter.</div></li>
-<li><div><strong>shared activity log list</strong> <span class="path"><code>resources/js/components/activity-logs/activity-log-list.tsx</code></span></div><div class="desc">Shared Chakra/Inertia component for paginated audit tables, filter controls, and the detail drawer that shows actor, subject, request context, properties, old values, and new values.</div></li></ul></section>
+<li><div><strong>shared activity log list</strong> <span class="path"><code>resources/js/components/activity-logs/activity-log-list.tsx</code></span></div><div class="desc">Shared Chakra/Inertia component for paginated audit tables, filter controls, and the detail drawer that shows actor, subject, category, event, severity, request context, properties, old values, and new values. Security, warning, critical, and error severities render with distinct badge colors.</div></li></ul></section>
 <section><h2>Pages</h2><h3>auth</h3><ul class="detail-list"><li><div><strong>activate-student-term-result</strong> <span class="path"><code>resources/js/pages/auth/activate-student-term-result.tsx</code></span></div><div class="desc">Activation screen for Student Term Result records and access.</div></li>
 <li><div><strong>admissions-exam-login</strong> <span class="path"><code>resources/js/pages/auth/admissions-exam-login.tsx</code></span></div><div class="desc">Login screen for Admissions Exam access and verification.</div></li>
 <li><div><strong>forgot-password</strong> <span class="path"><code>resources/js/pages/auth/forgot-password.tsx</code></span></div><div class="desc">Password recovery request screen.</div></li>

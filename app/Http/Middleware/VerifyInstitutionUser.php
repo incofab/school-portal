@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Enums\InstitutionStatus;
-use App\Enums\InstitutionUserStatus;
+use App\Support\Audit\SecurityActivityLogger;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -15,8 +15,6 @@ class VerifyInstitutionUser
   /**
    * Handle an incoming request.
    *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  \Closure  $next
    * @return mixed
    */
   public function handle(Request $request, Closure $next)
@@ -29,11 +27,13 @@ class VerifyInstitutionUser
 
     if ($institution->status !== InstitutionStatus::Active) {
       $message = 'This institution is not active. Please contact support.';
+
       return $this->eject($request, $message);
     }
 
     if ($user->id !== $institutionUser?->user_id) {
       $message = 'You are not authorized to access this page.';
+
       return $this->eject($request, $message);
     }
 
@@ -41,11 +41,13 @@ class VerifyInstitutionUser
       $message =
         'This account is suspended. ' .
         ($institutionUser->status_message ?? 'Please contact your admin');
+
       return $this->eject($request, $message);
     } elseif (!$institutionUser->isActive()) {
       $message =
         'This account is not active. ' .
         ($institutionUser->status_message ?? 'Please contact your admin');
+
       return $this->eject($request, $message);
     }
 
@@ -58,6 +60,12 @@ class VerifyInstitutionUser
 
   private function eject(Request $request, string $message)
   {
+    app(SecurityActivityLogger::class)->unauthorizedAccess(
+      currentUser(),
+      $message,
+      $request->route()?->parameter('institution')
+    );
+
     return $request->expectsJson()
       ? abort(403, $message)
       : redirect(route('home.error'))->with('message', $message);
