@@ -109,7 +109,15 @@ it('allows admin managers to view global audit logs', function () {
     $adminManager = User::factory()
         ->adminManager()
         ->create();
-    ActivityLog::factory()->create(['event' => 'audit.manager_visible']);
+    ActivityLog::query()->delete();
+
+    ActivityLog::query()->create([
+        'action' => 'created',
+        'category' => 'system',
+        'event' => 'audit.manager_visible',
+        'severity' => 'info',
+        'properties' => [],
+    ]);
 
     actingAs($adminManager)
         ->getJson(route('managers.activity-logs.index'))
@@ -135,6 +143,8 @@ it('prevents partner managers from viewing global audit logs', function () {
 it('allows institution admins to view only their institution logs', function () {
     $institution = Institution::factory()->create();
     $otherInstitution = Institution::factory()->create();
+    ActivityLog::query()->delete();
+
     ActivityLog::factory()
         ->forInstitution($institution)
         ->create(['event' => 'audit.own_log']);

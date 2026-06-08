@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Observers\ModelAuditObserver;
+use App\Support\Audit\ModelAuditRegistry;
 use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
   public function boot()
   {
     Relation::enforceMorphMap(MorphMap::MAP);
+
+    foreach (ModelAuditRegistry::models() as $model) {
+      $model::observe(ModelAuditObserver::class);
+    }
 
     $this->allowMultiDomain();
   }

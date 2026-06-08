@@ -46,7 +46,9 @@ class ResultPublicationsController extends Controller
     ]);
 
     $submittedClassIds = $request->classifications;
-    $settingHandler = SettingsHandler::makeFromRoute();
+    $settingHandler = SettingsHandler::makeFromInstitution(
+      $institution->fresh('institutionSettings') ?? $institution
+    );
     $institutionGroup = $institution->institutionGroup;
     $instGroupPriceList = $institutionGroup
       ->priceLists()

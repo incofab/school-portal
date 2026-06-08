@@ -15,6 +15,8 @@ class ActivityLogger
 {
     private array $payload = [];
 
+    private bool $useDefaultContext = true;
+
     public function event(string $event): static
     {
         $this->payload['event'] = $event;
@@ -126,13 +128,20 @@ class ActivityLogger
         return $this;
     }
 
+    public function withoutDefaultContext(): static
+    {
+        $this->useDefaultContext = false;
+
+        return $this;
+    }
+
     public function log(): ActivityLog
     {
-        if (empty($this->payload['actor_id'])) {
+        if ($this->useDefaultContext && empty($this->payload['actor_id'])) {
             $this->by(Auth::user());
         }
 
-        if (empty($this->payload['institution_id'])) {
+        if ($this->useDefaultContext && empty($this->payload['institution_id'])) {
             $this->inInstitution(currentInstitution());
         }
 
