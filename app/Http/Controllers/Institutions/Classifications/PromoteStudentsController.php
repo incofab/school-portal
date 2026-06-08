@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Actions\StudentMigration;
@@ -8,6 +9,7 @@ use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\Institution;
 use App\Models\SessionResult;
+use App\Support\Audit\AcademicActivityLogger;
 use App\Support\SettingsHandler;
 use DB;
 
@@ -62,6 +64,8 @@ class PromoteStudentsController extends Controller
     $currentAcademicSessionId = SettingsHandler::makeFromRoute()->getCurrentAcademicSession();
 
     DB::beginTransaction();
+    $promotedCount = 0;
+    $batches = [];
     foreach ($safeRequest->promotions as $key => $promotion) {
       $promotion = (object) $promotion;
       $destinationClass = Classification::query()->find(
@@ -93,6 +97,7 @@ class PromoteStudentsController extends Controller
       }
       // dd('Blocked');
       $batchNo = $studentMigration->generateBatchNo();
+      $rangeCount = 0;
       foreach ($sessionResults as $key => $sessionResult) {
         $student = $sessionResult->student;
         if (!$student->classification) {
@@ -104,8 +109,35 @@ class PromoteStudentsController extends Controller
           $destinationClass,
           $batchNo
         );
+        $rangeCount++;
+        $promotedCount++;
       }
+      $batches[] = [
+        'batch_no' => $batchNo,
+        'student_count' => $rangeCount,
+        'from_average' => $promotion->from,
+        'to_average' => $promotion->to,
+        'destination_classification_id' => $destinationClass?->id,
+        'destination_classification_title' => $destinationClass?->title
+      ];
     }
     DB::commit();
+
+    if ($promotedCount > 0) {
+      app(AcademicActivityLogger::class)->studentMovementSummary(
+        $institution,
+        'student.promoted',
+        'promoted',
+        'Students promoted from session results.',
+        [
+          'student_count' => $promotedCount,
+          'classification_group_id' => $classificationGroup->id,
+          'classification_group_title' => $classificationGroup->title,
+          'academic_session_id' => $currentAcademicSessionId,
+          'batches' => $batches
+        ],
+        $classificationGroup
+      );
+    }
   }
 }

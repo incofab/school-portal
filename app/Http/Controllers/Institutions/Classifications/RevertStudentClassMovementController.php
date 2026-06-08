@@ -1,13 +1,14 @@
 <?php
+
 namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Actions\StudentMigration;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Classification;
-use Illuminate\Http\Request;
 use App\Models\Institution;
 use App\Models\StudentClassMovement;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class RevertStudentClassMovementController extends Controller
@@ -17,7 +18,7 @@ class RevertStudentClassMovementController extends Controller
     $this->allowedRoles([InstitutionUserType::Admin]);
   }
 
-  function revertSingleStudentClassMovement(
+  public function revertSingleStudentClassMovement(
     Request $request,
     Institution $institution,
     StudentClassMovement $studentClassMovement
@@ -30,7 +31,7 @@ class RevertStudentClassMovementController extends Controller
     return $this->ok();
   }
 
-  function revertBatchStudentClassMovement(
+  public function revertBatchStudentClassMovement(
     Request $request,
     Institution $institution
   ) {
@@ -45,7 +46,10 @@ class RevertStudentClassMovementController extends Controller
       'move_to_alumni' => ['nullable', 'boolean']
     ]);
 
-    $studentClassMovements = StudentClassMovement::where('batch_no', $data)
+    $studentClassMovements = StudentClassMovement::where(
+      'batch_no',
+      $data['batch_no']
+    )
       ->with(['destinationClass', 'sourceClass', 'student.classification'])
       ->get();
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions;
 
 use App\Enums\InstitutionUserType;
@@ -6,13 +7,15 @@ use App\Models\Classification;
 use App\Models\Student;
 use App\Models\StudentClassMovement;
 use App\Models\User;
+use App\Support\Audit\AcademicActivityLogger;
 use App\Support\SettingsHandler;
 use Illuminate\Database\Eloquent\Collection;
 
 class StudentMigration
 {
   private SettingsHandler $settingsHandler;
-  function __construct(private User $staffUser)
+
+  public function __construct(private User $staffUser)
   {
     $this->settingsHandler = SettingsHandler::makeFromRoute();
   }
@@ -22,7 +25,7 @@ class StudentMigration
     return new self($staffUser);
   }
 
-  function generateBatchNo(): string
+  public function generateBatchNo(): string
   {
     return uniqid();
   }
@@ -56,7 +59,7 @@ class StudentMigration
         ->save();
     }
 
-    $student->classMovement()->create([
+    $movement = $student->classMovement()->create([
       'institution_id' => $student->institutionUser->institution_id,
       'source_classification_id' => $sourceClass?->id,
       'destination_classification_id' => $destinationClass?->id,
@@ -66,6 +69,12 @@ class StudentMigration
       'term' => $this->settingsHandler->getCurrentTerm(),
       ...$extras
     ]);
+
+    if (!$batchNo && empty($extras['revert_reference_id'])) {
+      app(AcademicActivityLogger::class)->studentClassChanged($movement);
+    }
+
+    return $movement;
   }
 
   /** If $destinationClass is null, students will be moved to Alumni */
@@ -78,6 +87,7 @@ class StudentMigration
       ->with('institutionUser')
       ->get();
     $batchNo = uniqid();
+    $count = 0;
     /** @var Student $student */
     foreach ($students as $key => $student) {
       $this->migrateStudent(
@@ -86,19 +96,39 @@ class StudentMigration
         $destinationClass,
         $batchNo
       );
+      $count++;
     }
+
+    app(AcademicActivityLogger::class)->studentMovementSummary(
+      $sourceClass->institution,
+      'student.migrated',
+      'migrated',
+      'Class students migrated.',
+      [
+        'batch_no' => $batchNo,
+        'student_count' => $count,
+        'source_classification_id' => $sourceClass->id,
+        'source_classification_title' => $sourceClass->title,
+        'destination_classification_id' => $destinationClass?->id,
+        'destination_classification_title' => $destinationClass?->title
+      ],
+      $sourceClass
+    );
   }
 
   /**
-   * @param StudentClassMovement[] $studentClassMovement
-   *
+   * @param  StudentClassMovement[]  $studentClassMovement
    */
   public function revertStudentClassMovements(
     Collection|array $studentClassMovements
   ) {
-    $batchNo = $batchNo ?? uniqid();
+    $batchNo = uniqid();
+    $count = 0;
+    $institution = null;
     /** @var StudentClassMovement $studentClassMovement */
     foreach ($studentClassMovements as $key => $studentClassMovement) {
+      $studentClassMovement->loadMissing('institution');
+      $institution ??= $studentClassMovement->institution;
       $student = $studentClassMovement->student;
       $sourceClass = $studentClassMovement->destinationClass;
       $destinationClass = $studentClassMovement->sourceClass;
@@ -108,6 +138,24 @@ class StudentMigration
         $destinationClass,
         $batchNo,
         ['revert_reference_id' => $studentClassMovement->id]
+      );
+      $count++;
+    }
+
+    if ($institution && $count > 0) {
+      app(AcademicActivityLogger::class)->studentMovementSummary(
+        $institution,
+        'student.movement_reverted',
+        'reverted_movement',
+        'Student class movement reverted.',
+        [
+          'batch_no' => $batchNo,
+          'student_count' => $count,
+          'reverted_movement_ids' => collect($studentClassMovements)
+            ->pluck('id')
+            ->values()
+            ->all()
+        ]
       );
     }
   }

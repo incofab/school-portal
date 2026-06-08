@@ -1,13 +1,16 @@
 <?php
+
 namespace App\Actions;
 
 use App\Enums\InstitutionUserType;
+use App\Models\GuardianStudent;
 use App\Models\User;
+use App\Support\Audit\AcademicActivityLogger;
 use Illuminate\Support\Facades\DB;
 
 class RecordGuardian
 {
-  function __construct(private array $userData)
+  public function __construct(private array $userData)
   {
   }
 
@@ -38,26 +41,37 @@ class RecordGuardian
     //     ->only('relationship')
     //     ->toArray()
     // );
-    self::attachStudent($user, $studentId, $this->userData['relationship']);
+    $guardianStudent = self::attachStudent(
+      $user,
+      $studentId,
+      $this->userData['relationship']
+    );
+    app(AcademicActivityLogger::class)->guardianRecorded($guardianStudent);
 
     DB::commit();
   }
 
-  static function attachStudent(
+  public static function attachStudent(
     User $guardianUser,
     int $studentId,
     string $relationship
-  ) {
-    $guardianUser->guardianStudents()->firstOrCreate(
+  ): GuardianStudent {
+    $guardianStudent = $guardianUser->guardianStudents()->firstOrCreate(
       [
         'institution_id' => currentInstitution()->id,
         'student_id' => $studentId
       ],
       ['relationship' => $relationship]
     );
+
+    if ($guardianStudent->wasRecentlyCreated) {
+      app(AcademicActivityLogger::class)->guardianAssigned($guardianStudent);
+    }
+
+    return $guardianStudent;
   }
 
-  function update(User $user)
+  public function update(User $user)
   {
     DB::beginTransaction();
     $user
@@ -70,7 +84,7 @@ class RecordGuardian
     DB::commit();
   }
 
-  function syncRole(User $user)
+  public function syncRole(User $user)
   {
     $user
       ->institutions()

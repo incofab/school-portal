@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Curriculums;
 
+use App\Enums\Audit\ActivityLogCategory;
 use App\Enums\InstitutionUserType;
 use App\Enums\Media\MediaVisibility;
 use App\Enums\S3Folder;
@@ -11,6 +12,7 @@ use App\Models\Institution;
 use App\Models\LessonPlan;
 use App\Models\Media;
 use App\Models\SchemeOfWork;
+use App\Support\Audit\AcademicActivityLogger;
 use App\Support\Media\MediaManager;
 use App\Support\UITableFilters\LessonPlanUITableFilters;
 use Illuminate\Http\Request;
@@ -177,6 +179,23 @@ class LessonPlanController extends Controller
       visibility: MediaVisibility::Public
     );
 
+    app(AcademicActivityLogger::class)->workflowEvent(
+      $institution,
+      'curriculum.lesson_plan_attachment_uploaded',
+      ActivityLogCategory::Curriculum,
+      'uploaded_attachment',
+      'Lesson plan attachment uploaded.',
+      [
+        'lesson_plan_id' => $lessonPlan->id,
+        'media_id' => $res->media->id,
+        'original_name' => $res->media->original_name,
+        'collection_name' => $res->media->collection_name,
+        'mime_type' => $res->media->mime_type,
+        'size' => $res->media->size
+      ],
+      $lessonPlan
+    );
+
     return $this->ok(['media' => $res->media]);
   }
 
@@ -192,8 +211,27 @@ class LessonPlanController extends Controller
       404
     );
 
+    $properties = [
+      'lesson_plan_id' => $lessonPlan->id,
+      'media_id' => $media->id,
+      'original_name' => $media->original_name,
+      'collection_name' => $media->collection_name,
+      'mime_type' => $media->mime_type,
+      'size' => $media->size
+    ];
+
     Storage::disk($media->disk)->delete($media->path);
     $media->delete();
+
+    app(AcademicActivityLogger::class)->workflowEvent(
+      $institution,
+      'curriculum.lesson_plan_attachment_deleted',
+      ActivityLogCategory::Curriculum,
+      'deleted_attachment',
+      'Lesson plan attachment deleted.',
+      $properties,
+      $lessonPlan
+    );
 
     return $this->ok();
   }

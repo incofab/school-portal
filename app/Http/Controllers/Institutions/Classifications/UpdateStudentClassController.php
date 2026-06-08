@@ -1,17 +1,19 @@
 <?php
+
 namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Actions\StudentMigration;
 use App\Http\Controllers\Controller;
-use App\Models\Student;
-use Illuminate\Http\Request;
 use App\Models\Classification;
 use App\Models\Institution;
+use App\Models\Student;
+use App\Support\Audit\AcademicActivityLogger;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class UpdateStudentClassController extends Controller
 {
-  function migrateClassStudents(
+  public function migrateClassStudents(
     Request $request,
     Institution $institution,
     Classification $classification
@@ -121,6 +123,7 @@ class UpdateStudentClassController extends Controller
     }
 
     $batchNo = $studentMigration->generateBatchNo();
+    $count = 0;
     /** @var Student $student */
     foreach ($students as $key => $student) {
       $studentMigration->migrateStudent(
@@ -129,7 +132,26 @@ class UpdateStudentClassController extends Controller
         $destinationClassification,
         $batchNo
       );
+      $count++;
     }
+
+    app(AcademicActivityLogger::class)->studentMovementSummary(
+      $institution,
+      'student.multiple_class_changed',
+      'changed_multiple_classes',
+      'Multiple student classes changed.',
+      [
+        'batch_no' => $batchNo,
+        'student_count' => $count,
+        'student_ids' => $students
+          ->pluck('id')
+          ->values()
+          ->all(),
+        'destination_classification_id' => $destinationClassification?->id,
+        'destination_classification_title' => $destinationClassification?->title
+      ],
+      $destinationClassification
+    );
 
     return $this->ok();
   }

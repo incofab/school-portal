@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\GuardianStudent;
 use App\Models\Institution;
 use App\Models\Student;
+use App\Support\Audit\AcademicActivityLogger;
 use Illuminate\Http\Request;
 
 class RemoveDependentController extends Controller
@@ -23,10 +24,16 @@ class RemoveDependentController extends Controller
       403
     );
 
-    GuardianStudent::query()
+    $guardianStudent = GuardianStudent::query()
       ->where('guardian_user_id', currentUser()->id)
       ->where('student_id', $student->id)
-      ->delete();
+      ->firstOrFail();
+
+    app(AcademicActivityLogger::class)->guardianDependentRemoved(
+      $guardianStudent
+    );
+
+    $guardianStudent->delete();
 
     return $this->ok();
   }

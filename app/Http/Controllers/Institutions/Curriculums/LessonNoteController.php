@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Curriculums;
 
+use App\Enums\Audit\ActivityLogCategory;
 use App\Enums\InstitutionUserType;
 use App\Enums\Media\MediaVisibility;
 use App\Enums\NoteStatusType;
@@ -14,6 +15,7 @@ use App\Models\LessonNote;
 use App\Models\LessonPlan;
 use App\Models\Media;
 use App\Models\Topic;
+use App\Support\Audit\AcademicActivityLogger;
 use App\Support\Media\MediaManager;
 use App\Support\UITableFilters\LessonNoteUITableFilters;
 use Illuminate\Http\Request;
@@ -189,6 +191,23 @@ class LessonNoteController extends Controller
       visibility: MediaVisibility::Public
     );
 
+    app(AcademicActivityLogger::class)->workflowEvent(
+      $institution,
+      'curriculum.lesson_note_attachment_uploaded',
+      ActivityLogCategory::Curriculum,
+      'uploaded_attachment',
+      'Lesson note attachment uploaded.',
+      [
+        'lesson_note_id' => $lessonNote->id,
+        'media_id' => $res->media->id,
+        'original_name' => $res->media->original_name,
+        'collection_name' => $res->media->collection_name,
+        'mime_type' => $res->media->mime_type,
+        'size' => $res->media->size
+      ],
+      $lessonNote
+    );
+
     return $this->ok(['media' => $res->media]);
   }
 
@@ -204,8 +223,27 @@ class LessonNoteController extends Controller
       404
     );
 
+    $properties = [
+      'lesson_note_id' => $lessonNote->id,
+      'media_id' => $media->id,
+      'original_name' => $media->original_name,
+      'collection_name' => $media->collection_name,
+      'mime_type' => $media->mime_type,
+      'size' => $media->size
+    ];
+
     Storage::disk($media->disk)->delete($media->path);
     $media->delete();
+
+    app(AcademicActivityLogger::class)->workflowEvent(
+      $institution,
+      'curriculum.lesson_note_attachment_deleted',
+      ActivityLogCategory::Curriculum,
+      'deleted_attachment',
+      'Lesson note attachment deleted.',
+      $properties,
+      $lessonNote
+    );
 
     return $this->ok();
   }
@@ -297,6 +335,23 @@ class LessonNoteController extends Controller
       ->withPrompt($question)
       ->asText();
     $fullNote = trimAiResponse($aiRes->text);
+
+    app(AcademicActivityLogger::class)->workflowEvent(
+      $institution,
+      'curriculum.lesson_note_generated',
+      ActivityLogCategory::Curriculum,
+      'generated_lesson_note',
+      'AI lesson note generated.',
+      [
+        'topic_id' => $getTopic?->id,
+        'topic_title' => $getTopic?->title,
+        'classification_group_id' => $getTopic?->classification_group_id,
+        'classification_group_title' => $getTopic?->classificationGroup?->title,
+        'requested_title' => $request->title,
+        'generated_length' => strlen($fullNote)
+      ],
+      $getTopic
+    );
 
     return $this->ok(['result' => $fullNote]);
 

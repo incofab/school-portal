@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions\Users;
 
 use App\Actions\RecordStudent;
@@ -9,20 +10,21 @@ use App\Models\Institution;
 use App\Models\Student;
 use App\Models\User;
 use App\Rules\ValidateUniqueRule;
+use DB;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Illuminate\Support\Str;
 use Validator;
-use DB;
 
 class InsertStudentFromRecordingSheet
 {
   private Spreadsheet $spreadsheet;
+
   private Worksheet $sheetData;
 
-  function __construct(
+  public function __construct(
     private Institution $institution,
     private UploadedFile $file,
     private Classification $classification
@@ -37,6 +39,7 @@ class InsertStudentFromRecordingSheet
     Classification $classification
   ) {
     $obj = new self($institution, $file, $classification);
+
     return $obj->execute();
   }
 
@@ -93,11 +96,15 @@ class InsertStudentFromRecordingSheet
     $data = $this->validate($data);
 
     DB::beginTransaction();
+    $createdCount = 0;
     foreach ($data as $studentData) {
       $studentData['classification_id'] = $this->classification->id;
       RecordStudent::make($this->institution, $studentData)->create();
+      $createdCount++;
     }
     DB::commit();
+
+    return $createdCount;
   }
 
   private function getValue(string $column)
@@ -114,6 +121,7 @@ class InsertStudentFromRecordingSheet
     } elseif ($gender === 'f') {
       return Gender::Female;
     }
+
     return Gender::tryFrom($gender ?? '');
   }
 

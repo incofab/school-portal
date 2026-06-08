@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions;
 
+use App\Enums\Audit\ActivityLogCategory;
 use App\Enums\InstitutionUserType;
 use App\Enums\NoteStatusType;
 use App\Helpers\GoogleAiHelper;
@@ -11,6 +12,7 @@ use App\Models\CourseSession;
 use App\Models\Institution;
 use App\Models\LessonNote;
 use App\Models\Question;
+use App\Support\Audit\AcademicActivityLogger;
 use App\Support\UITableFilters\CoursesUITableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -143,14 +145,14 @@ class CoursesController extends Controller
       );
     }
 
-    $question = "You are a class teacher $className in a Nigerian Basic Education School. 
-    Analyze the following Lesson Notes and generate 20 objective questions aimed at helping the student prepare for 
-    upcoming class assessment test. Each question should have 4 options (option_a, option_b, option_c, option_d) 
-    where only one option is the correct answer. 
-    Return the response as valid JSON array of objects, where each object contains the following keys: 'question', 'option_a', 'option_b', 'option_c', 'option_d', 'answer'. 
-    The value of the 'answer' should indicate the correct option (a,b,c,d - NOT 'option_a', 'option_b', 'option_c', 'option_d'). 
-    Do not include comments, side comments, stylings, meta tags, etc. 
-    The response should look like this: 
+    $question = "You are a class teacher $className in a Nigerian Basic Education School.
+    Analyze the following Lesson Notes and generate 20 objective questions aimed at helping the student prepare for
+    upcoming class assessment test. Each question should have 4 options (option_a, option_b, option_c, option_d)
+    where only one option is the correct answer.
+    Return the response as valid JSON array of objects, where each object contains the following keys: 'question', 'option_a', 'option_b', 'option_c', 'option_d', 'answer'.
+    The value of the 'answer' should indicate the correct option (a,b,c,d - NOT 'option_a', 'option_b', 'option_c', 'option_d').
+    Do not include comments, side comments, stylings, meta tags, etc.
+    The response should look like this:
     [
       {
         'question' => 'What is the capital of France?',
@@ -177,18 +179,18 @@ class CoursesController extends Controller
       ->asText();
     $practiceQuestions = trimAiResponse($aiRes->text);
     /*
-            $res = GoogleAiHelper::ask($question);
+                $res = GoogleAiHelper::ask($question);
 
-            $res_parts = $res['candidates'][0]['content']['parts'] ?? [];
-            $resQuestions = '';
+                $res_parts = $res['candidates'][0]['content']['parts'] ?? [];
+                $resQuestions = '';
 
-            foreach ($res_parts as $res_part) {
-              $resQuestions .= $res_part['text'];
-            }
+                foreach ($res_parts as $res_part) {
+                  $resQuestions .= $res_part['text'];
+                }
 
-            $practiceQuestions = str_replace('```json', '', $resQuestions);
-            $practiceQuestions = str_replace('```', '', $practiceQuestions);
-            */
+                $practiceQuestions = str_replace('```json', '', $resQuestions);
+                $practiceQuestions = str_replace('```', '', $practiceQuestions);
+                */
     $practiceQuestions = json_decode($practiceQuestions, true) ?? [];
 
     $practiceData = [
@@ -198,6 +200,23 @@ class CoursesController extends Controller
 
     // Set a session variable
     Session::put('practiceData', $practiceData);
+
+    app(AcademicActivityLogger::class)->workflowEvent(
+      $institution,
+      'question_bank.generated',
+      ActivityLogCategory::Course,
+      'generated_question_bank',
+      'Practice questions generated.',
+      [
+        'topic_ids' => $request->topic_ids,
+        'topic_count' => count($request->topic_ids),
+        'generated_count' => count($practiceQuestions),
+        'for_role' =>
+          $institutionUser->role instanceof \BackedEnum
+            ? $institutionUser->role->value
+            : $institutionUser->role
+      ]
+    );
 
     return $this->ok();
     // return $this->ok(['practice_questions' => $practiceQuestions]);
@@ -245,6 +264,23 @@ class CoursesController extends Controller
     }
 
     Question::multiInsert($courseSession, $questions);
+
+    $courseSession->loadMissing('course');
+    app(AcademicActivityLogger::class)->workflowEvent(
+      $institution,
+      'question_bank.generated',
+      ActivityLogCategory::Course,
+      'inserted_generated_questions',
+      'Generated questions inserted into question bank.',
+      [
+        'course_session_id' => $courseSession->id,
+        'course_id' => $courseSession->course_id,
+        'course_title' => $courseSession->course?->title,
+        'session' => $courseSession->session,
+        'question_count' => count($questions)
+      ],
+      $courseSession->course
+    );
 
     return $this->ok();
   }

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Institutions\Assignments;
 
-use Inertia\Inertia;
-use App\Models\Assignment;
-use App\Models\Institution;
-use Illuminate\Http\Request;
-use App\Models\CourseTeacher;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
+use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
+use App\Models\CourseTeacher;
+use App\Models\Institution;
+use App\Support\Audit\AcademicActivityLogger;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AssignmentSubmissionController extends Controller
 {
@@ -22,7 +23,7 @@ class AssignmentSubmissionController extends Controller
     ])->except('index', 'show', 'store');
   }
 
-  function index(Request $request, Institution $institution)
+  public function index(Request $request, Institution $institution)
   {
     $user = currentInstitutionUser();
 
@@ -52,7 +53,7 @@ class AssignmentSubmissionController extends Controller
   /**
    * This function shows a list of all assignmentSubmissions for a particular/given Assignment
    */
-  function list(Institution $institution, Assignment $assignment)
+  public function list(Institution $institution, Assignment $assignment)
   {
     $user = currentUser();
     $institutionUser = currentInstitutionUser();
@@ -82,7 +83,7 @@ class AssignmentSubmissionController extends Controller
     );
   }
 
-  function show(
+  public function show(
     Institution $institution,
     AssignmentSubmission $assignmentSubmission
   ) {
@@ -117,7 +118,7 @@ class AssignmentSubmissionController extends Controller
     );
   }
 
-  function store(Institution $institution, Request $request)
+  public function store(Institution $institution, Request $request)
   {
     $user = currentInstitutionUser();
     if (!$user->isStudent()) {
@@ -131,11 +132,19 @@ class AssignmentSubmissionController extends Controller
 
     $student = $user->student;
 
-    AssignmentSubmission::create([...$data, 'student_id' => $student->id]);
+    $submission = AssignmentSubmission::create([
+      ...$data,
+      'student_id' => $student->id
+    ]);
+    app(AcademicActivityLogger::class)->assignmentSubmitted(
+      $institution,
+      $submission
+    );
+
     return $this->ok();
   }
 
-  function score(
+  public function score(
     Institution $institution,
     AssignmentSubmission $assignmentSubmission,
     Request $request
@@ -161,19 +170,35 @@ class AssignmentSubmissionController extends Controller
       'remark' => 'nullable|string'
     ]);
 
+    $oldScore = $assignmentSubmission->score;
     $assignmentSubmission->update([
       'score' => $request->score,
       'remark' => $request->remark
     ]);
+    app(AcademicActivityLogger::class)->assignmentScored(
+      $institution,
+      $assignmentSubmission,
+      $oldScore,
+      $request->score
+    );
 
     return $this->ok();
   }
 
-  function isAssignmentCourseTeacher($user, $assignment)
+  public function isAssignmentCourseTeacher($user, $assignment)
   {
+    $classificationIds = $assignment->classification_ids;
+
+    if (empty($classificationIds)) {
+      $classificationIds = $assignment
+        ->classifications()
+        ->pluck('classifications.id')
+        ->all();
+    }
+
     $courseTeacher = CourseTeacher::where('user_id', $user->id)
       ->where('course_id', $assignment->course_id)
-      ->whereIn('classification_id', $assignment->classification_ids ?? [])
+      ->whereIn('classification_id', $classificationIds)
       ->first();
 
     if (!$courseTeacher) {

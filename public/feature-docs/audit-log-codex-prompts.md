@@ -209,7 +209,7 @@ Verification:
 - Report changed files and test results.
 ```
 
-## Stage 3: Authentication, Access, Roles, And Impersonation Audit Events
+## Stage 3: Authentication, Access, Roles, And Impersonation Audit Events [DONE]
 
 Use this prompt to cover security-sensitive activity. This stage should be able to run independently if the audit foundation exists.
 
@@ -305,7 +305,7 @@ Verification:
 - Report changed files and test results.
 ```
 
-## Stage 4: Student, Guardian, Class, Course, Curriculum, Assignment, And Attendance Events
+## Stage 4: Student, Guardian, Class, Course, Curriculum, Assignment, And Attendance Events [DONE]
 
 Use this prompt to cover academic and classroom operations. It should log meaningful workflow events in addition to automatic model auditing.
 
@@ -445,39 +445,10 @@ Required event areas:
 - Result PIN generated/activated/used where applicable.
 - Transcript/session result generated or viewed where appropriate.
 - Exam/event created/updated/deleted.
-- CBT exam started.
-- CBT answer saved/submitted.
-- CBT score/result generated.
-- External exam result lookup.
-- Offline mock API sync/import/export events where present.
 - Admission form created/updated/deleted.
 - Admission form purchased.
 - Admission application submitted.
 - Admission application reviewed/approved/rejected.
-- Admission letter generated/downloaded where present.
-
-Suggested event names:
-
-- `assessment.created`
-- `assessment.updated`
-- `result.score_recorded`
-- `result.score_updated`
-- `result.processed`
-- `result.locked`
-- `result.unlocked`
-- `result.published`
-- `result.unpublished`
-- `result_pin.generated`
-- `result_pin.used`
-- `exam.created`
-- `exam.started`
-- `exam.submitted`
-- `exam.scored`
-- `external_exam.result_lookup`
-- `admission.form_purchased`
-- `admission.application_submitted`
-- `admission.application_approved`
-- `admission.application_rejected`
 
 Design requirements:
 

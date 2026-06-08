@@ -2,25 +2,27 @@
 
 namespace App\Http\Controllers\Institutions\Staff;
 
-use DB;
-use App\Models\Student;
-use App\Rules\ExcelRule;
-use App\Models\Institution;
-use Illuminate\Http\Request;
 use App\Actions\RecordStudent;
-use App\Models\Classification;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\CreateStudentRequest;
 use App\Actions\Users\DownloadStudentRecordingSheet;
-use App\Support\UITableFilters\StudentUITableFilters;
 use App\Actions\Users\InsertStudentFromRecordingSheet;
 use App\Enums\InstitutionUserType;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateStudentRequest;
+use App\Models\Classification;
+use App\Models\Institution;
+use App\Models\Student;
+use App\Rules\ExcelRule;
+use App\Support\Audit\AcademicActivityLogger;
+use App\Support\UITableFilters\StudentUITableFilters;
+use DB;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Throwable;
 
 class StudentManagementController extends Controller
 {
-  function index(Request $request, Institution $institution)
+  public function index(Request $request, Institution $institution)
   {
     $query = Student::query()->select('students.*');
     StudentUITableFilters::make($request->all(), $query)
@@ -35,6 +37,7 @@ class StudentManagementController extends Controller
     $alumniCount = (clone $countQuery)
       ->where('institution_users.role', InstitutionUserType::Alumni)
       ->count();
+
     return inertia('institutions/students/list-students', [
       'students' => paginateFromRequest(
         $query
@@ -46,7 +49,7 @@ class StudentManagementController extends Controller
     ]);
   }
 
-  function classStudentsTiles(
+  public function classStudentsTiles(
     Request $request,
     Institution $institution,
     Classification $classification
@@ -59,7 +62,7 @@ class StudentManagementController extends Controller
     ]);
   }
 
-  function classStudentsIdCards(
+  public function classStudentsIdCards(
     Request $request,
     Institution $institution,
     Classification $classification
@@ -86,7 +89,7 @@ class StudentManagementController extends Controller
     return $this->ok();
   }
 
-  function edit(Institution $institution, Student $student)
+  public function edit(Institution $institution, Student $student)
   {
     return inertia('institutions/students/create-edit-student', [
       'student' => $student->load('user.institutionUser', 'classification')
@@ -120,11 +123,38 @@ class StudentManagementController extends Controller
     $request->validate([
       'file' => ['required', 'file', new ExcelRule($request->file('file'))]
     ]);
-    InsertStudentFromRecordingSheet::run(
+
+    $fileName = $request->file('file')->getClientOriginalName();
+    app(AcademicActivityLogger::class)->studentBulkUploadStarted(
       $institution,
-      $request->file,
-      $classification
+      $classification,
+      $fileName
     );
+
+    try {
+      $createdCount = InsertStudentFromRecordingSheet::run(
+        $institution,
+        $request->file,
+        $classification
+      );
+    } catch (Throwable $throwable) {
+      app(AcademicActivityLogger::class)->studentBulkUploadFailed(
+        $institution,
+        $classification,
+        $fileName,
+        $throwable
+      );
+
+      throw $throwable;
+    }
+
+    app(AcademicActivityLogger::class)->studentBulkUploadCompleted(
+      $institution,
+      $classification,
+      $fileName,
+      $createdCount
+    );
+
     return $this->ok();
   }
 
@@ -166,7 +196,7 @@ class StudentManagementController extends Controller
     return $this->ok();
   }
 
-  function updateCode(
+  public function updateCode(
     Request $request,
     Institution $institution,
     Student $student
@@ -177,7 +207,15 @@ class StudentManagementController extends Controller
         Rule::unique('students', 'code')->ignore($student->id, 'id')
       ]
     ]);
+    $oldCode = $student->code;
     $student->fill($data)->save();
+
+    app(AcademicActivityLogger::class)->studentCodeChanged(
+      $institution,
+      $student,
+      $oldCode,
+      $data['code']
+    );
 
     return $this->ok();
   }

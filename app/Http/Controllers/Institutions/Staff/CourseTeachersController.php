@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\User;
+use App\Support\Audit\AcademicActivityLogger;
 use App\Support\UITableFilters\CourseTeachersUITableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -25,8 +26,11 @@ class CourseTeachersController extends Controller
     ]);
   }
 
-  function index(Request $request, Institution $institution, ?User $user = null)
-  {
+  public function index(
+    Request $request,
+    Institution $institution,
+    ?User $user = null
+  ) {
     $query = ($user
       ? $user->courseTeachers()->getQuery()
       : CourseTeacher::query()
@@ -41,7 +45,7 @@ class CourseTeachersController extends Controller
     ]);
   }
 
-  function search(Institution $institution, Request $request)
+  public function search(Institution $institution, Request $request)
   {
     $query = CourseTeacher::query()->select('course_teachers.*');
     CourseTeachersUITableFilters::make($request->all(), $query)->filterQuery();
@@ -54,7 +58,7 @@ class CourseTeachersController extends Controller
     ]);
   }
 
-  function create(Institution $institution, ?User $user = null)
+  public function create(Institution $institution, ?User $user = null)
   {
     return Inertia::render('institutions/staff/register-course-teacher', [
       'courses' => Course::all(),
@@ -72,13 +76,17 @@ class CourseTeachersController extends Controller
   //   ]);
   // }
 
-  function destroy(Institution $institution, CourseTeacher $courseTeacher)
-  {
+  public function destroy(
+    Institution $institution,
+    CourseTeacher $courseTeacher
+  ) {
+    app(AcademicActivityLogger::class)->courseTeacherRemoved($courseTeacher);
     $courseTeacher->delete();
+
     return $this->ok();
   }
 
-  function store(Request $request, Institution $institution, User $user)
+  public function store(Request $request, Institution $institution, User $user)
   {
     abort_unless(
       $user->isInstitutionTeacher() || $user->isInstitutionAdmin(),
@@ -110,11 +118,17 @@ class CourseTeachersController extends Controller
     $classificationIds = $data['classification_ids'];
     foreach ($courseIds as $key => $courseId) {
       foreach ($classificationIds as $key => $classificationId) {
-        $user->courseTeachers()->firstOrCreate([
+        $courseTeacher = $user->courseTeachers()->firstOrCreate([
           'institution_id' => $institution->id,
           'course_id' => $courseId,
           'classification_id' => $classificationId
         ]);
+
+        if ($courseTeacher->wasRecentlyCreated) {
+          app(AcademicActivityLogger::class)->courseTeacherAssigned(
+            $courseTeacher
+          );
+        }
       }
     }
 
