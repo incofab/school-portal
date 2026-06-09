@@ -12,6 +12,7 @@ use App\Enums\UserFullNameFormat;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\InstitutionSetting;
+use App\Support\Audit\FinancialActivityLogger;
 use App\Support\Media\MediaManager;
 use App\Support\SettingsHandler;
 use Illuminate\Http\Request;
@@ -82,6 +83,11 @@ class InstitutionSettingController extends Controller
         $this->validateSettingValue($data);
 
         $rawValue = $data['value'] ?? null;
+        $existingSetting = InstitutionSetting::query()
+            ->where('institution_id', $institution->id)
+            ->where('key', $data['key'])
+            ->first();
+
         $data['value'] =
           Arr::get($data, 'type') === 'array' ? json_encode($rawValue) : $rawValue;
 
@@ -119,6 +125,29 @@ class InstitutionSettingController extends Controller
                 ->except('photo')
                 ->toArray()
         );
+
+        if ($data['key'] === InstitutionSettingType::PaymentKeys->value) {
+            app(FinancialActivityLogger::class)->paymentCredentialsChanged(
+                $institution,
+                $this->arraySettingValue($existingSetting?->value),
+                is_array($rawValue) ? $rawValue : $this->arraySettingValue($rawValue)
+            );
+        }
+    }
+
+    private function arraySettingValue(mixed $value): array
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+
+        if (! is_string($value) || $value === '') {
+            return [];
+        }
+
+        $decoded = json_decode($value, true);
+
+        return is_array($decoded) ? $decoded : [];
     }
 
     private function validateSettingValue(array $data): void

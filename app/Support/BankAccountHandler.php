@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Support;
 
 use App\Core\MonnifyHelper;
@@ -6,22 +7,25 @@ use App\Models\BankAccount;
 use App\Models\InstitutionGroup;
 use App\Models\InstitutionUser;
 use App\Models\Partner;
+use App\Support\Audit\FinancialActivityLogger;
 use Illuminate\Database\Eloquent\Model;
 
 class BankAccountHandler
 {
-  function __construct(
+  public function __construct(
     private Model|InstitutionGroup|InstitutionUser|Partner $accountable
   ) {
   }
 
-  static function make(Model $accountable)
+  public static function make(Model $accountable)
   {
     return new self($accountable);
   }
 
   public function update(BankAccount $bankAccount, array $post)
   {
+    $oldValues = $this->safeSnapshot($bankAccount);
+
     abort_if(
       $bankAccount->withdrawals()->exists(),
       403,
@@ -36,6 +40,13 @@ class BankAccountHandler
         ->update(['is_primary' => false]);
     }
     $bankAccount->update($post);
+
+    app(FinancialActivityLogger::class)->bankAccountChanged(
+      $bankAccount->refresh(),
+      'updated',
+      $this->accountable,
+      $oldValues
+    );
   }
 
   /**
@@ -45,7 +56,7 @@ class BankAccountHandler
    *  is_primary?: bool,
    * }
    */
-  function store(array $post)
+  public function store(array $post)
   {
     $res = MonnifyHelper::make()->validateBankAccount(
       $post['bank_code'],
@@ -58,16 +69,24 @@ class BankAccountHandler
         ->where('is_primary', true)
         ->update(['is_primary' => false]);
     }
-    BankAccount::create([
+    $bankAccount = BankAccount::create([
       ...$post,
       'accountable_type' => $this->accountable->getMorphClass(),
       'accountable_id' => $this->accountable->id,
       'account_name' => $res->account_name
     ]);
+
+    app(FinancialActivityLogger::class)->bankAccountChanged(
+      $bankAccount,
+      'created',
+      $this->accountable
+    );
   }
 
-  function destroy(BankAccount $bankAccount)
+  public function destroy(BankAccount $bankAccount)
   {
+    $oldValues = $this->safeSnapshot($bankAccount);
+
     abort_if(
       $bankAccount->validWithdrawals()->exists(),
       403,
@@ -82,5 +101,26 @@ class BankAccountHandler
       'Access denied'
     );
     $bankAccount->delete();
+
+    app(FinancialActivityLogger::class)->bankAccountChanged(
+      $bankAccount,
+      'deleted',
+      $this->accountable,
+      $oldValues
+    );
+  }
+
+  private function safeSnapshot(BankAccount $bankAccount): array
+  {
+    return [
+      'id' => $bankAccount->id,
+      'bank_name' => $bankAccount->bank_name,
+      'bank_code' => $bankAccount->bank_code,
+      'account_name' => $bankAccount->account_name,
+      'account_number_last4' => $bankAccount->account_number
+        ? substr((string) $bankAccount->account_number, -4)
+        : null,
+      'is_primary' => (bool) $bankAccount->is_primary
+    ];
   }
 }

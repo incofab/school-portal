@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Support;
 
 use App\Enums\TransactionType;
@@ -6,21 +7,22 @@ use App\Models\Commission;
 use App\Models\InstitutionGroup;
 use App\Models\Partner;
 use App\Models\Withdrawal;
+use App\Support\Audit\FinancialActivityLogger;
 use Illuminate\Database\Eloquent\Model;
 
 class CommissionHandler
 {
-  function __construct(private string $reference)
+  public function __construct(private string $reference)
   {
   }
 
-  static function make(string $reference)
+  public static function make(string $reference)
   {
     return new self($reference);
   }
 
-  //= Credit multiple Partners :: Partner and Partner's Referral
-  function creditPartners(
+  // = Credit multiple Partners :: Partner and Partner's Referral
+  public function creditPartners(
     InstitutionGroup $institutionGroup,
     float $amountSpent,
     ?Model $commissionable
@@ -40,6 +42,7 @@ class CommissionHandler
       'commissionable_type' => $commissionable?->getMorphClass(),
       'amount' => $commission
     ]);
+    app(FinancialActivityLogger::class)->commissionUpdated($transactionable);
     $this->topupWallet($commission, $partner, $transactionable);
 
     $refPartner = $partner->referral;
@@ -57,12 +60,17 @@ class CommissionHandler
       'amount' => $refCommission
     ]);
 
+    app(FinancialActivityLogger::class)->commissionUpdated($transactionable);
+
     $this->topupWallet($refCommission, $refPartner, $transactionable);
   }
 
-  //= Debit a Partner's Wallet ::: When he/she request for withdrawal
-  function debitPartner(Partner $partner, float $amount, Model $transactionable)
-  {
+  // = Debit a Partner's Wallet ::: When he/she request for withdrawal
+  public function debitPartner(
+    Partner $partner,
+    float $amount,
+    Model $transactionable
+  ) {
     $this->recordTransaction(
       $amount,
       $partner,
@@ -71,8 +79,8 @@ class CommissionHandler
     );
   }
 
-  //= Refund a Partner's Wallet ::: When his/her withdrawal request is DECLINED
-  function refundPartner(
+  // = Refund a Partner's Wallet ::: When his/her withdrawal request is DECLINED
+  public function refundPartner(
     Partner $partner,
     Withdrawal $withdrawal,
     ?string $remark = null
@@ -80,7 +88,7 @@ class CommissionHandler
     $this->topupWallet($withdrawal->amount, $partner, $withdrawal, $remark);
   }
 
-  function topupWallet(
+  public function topupWallet(
     $amount,
     Partner $partner,
     Model $transactionable,

@@ -332,6 +332,9 @@ function ActivityLogDrawer({
                   {activityLog.user_agent ?? 'N/A'}
                 </Text>
               </Grid>
+              {isFinancialLog(activityLog) && (
+                <FinancialSummary activityLog={activityLog} />
+              )}
               <JsonBlock title="Properties" value={activityLog.properties} />
               <JsonBlock title="Old Values" value={activityLog.old_values} />
               <JsonBlock title="New Values" value={activityLog.new_values} />
@@ -340,6 +343,76 @@ function ActivityLogDrawer({
         </DrawerBody>
       </DrawerContent>
     </Drawer>
+  );
+}
+
+function isFinancialLog(activityLog: ActivityLog) {
+  return [
+    'fee',
+    'payment',
+    'wallet',
+    'payroll',
+    'expense',
+    'integration',
+    'notification',
+  ].includes(activityLog.category);
+}
+
+function FinancialSummary({ activityLog }: { activityLog: ActivityLog }) {
+  const props = activityLog.properties ?? {};
+  const bankAccount = props.bank_account ?? props.metadata?.bank_account;
+  const approvalActor = props.approval_actor;
+  const fee = props.fee;
+  const metadata = props.metadata ?? {};
+  const values: Array<[string, unknown]> = [
+    ['Amount', props.amount ?? metadata.amount ?? metadata.amount_paid],
+    ['Currency', props.currency ?? metadata.currency],
+    ['Reference', props.reference ?? metadata.reference],
+    [
+      'Transaction',
+      props.transaction_reference ??
+        metadata.transaction_reference ??
+        metadata.transaction_id,
+    ],
+    ['Provider', props.payment_provider ?? props.provider],
+    ['Status', props.status ?? metadata.status ?? metadata.payment_status],
+    ['Method', props.payment_method],
+    ['Purpose', props.purpose],
+    ['Bank', bankAccount?.bank_name ?? metadata.receiver_bank],
+    [
+      'Account Last 4',
+      bankAccount?.account_number_last4 ??
+        metadata.receiver_account_last4 ??
+        metadata.destination_account_last4,
+    ],
+    ['Payer', props.payer?.name],
+    ['Payee', props.payee?.name],
+    ['Approval Actor', approvalActor?.name],
+    ['Fee', fee?.title ?? props.title],
+  ].filter(
+    ([, value]) => value !== undefined && value !== null && value !== ''
+  );
+
+  if (!values.length) {
+    return null;
+  }
+
+  return (
+    <Box borderWidth={1} borderRadius={8} p={3}>
+      <Text fontWeight="semibold" mb={2}>
+        Financial Summary
+      </Text>
+      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2}>
+        {values.map(([label, value]) => (
+          <Box key={label}>
+            <Text color="gray.500" fontSize="sm">
+              {label}
+            </Text>
+            <Text wordBreak="break-word">{String(value)}</Text>
+          </Box>
+        ))}
+      </SimpleGrid>
+    </Box>
   );
 }
 

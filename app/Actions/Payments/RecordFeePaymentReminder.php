@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions\Payments;
 
 use App\Actions\Fees\FeeMembersHandler;
@@ -13,6 +14,7 @@ use App\Models\Institution;
 use App\Models\Message;
 use App\Models\SchoolNotification;
 use App\Models\User;
+use App\Support\Audit\FinancialActivityLogger;
 use App\Support\MorphMap;
 use App\Support\Res;
 use Exception;
@@ -22,9 +24,10 @@ use Mail;
 class RecordFeePaymentReminder
 {
   private string $reference;
+
   private string $notificationChannel;
+
   /**
-   * @param Institution $institution
    * @param array{
    *     reference: string,
    *     channel: string,
@@ -87,6 +90,14 @@ class RecordFeePaymentReminder
       $guardian = $user->student->guardian;
       $this->dispatchMessage($guardian, $user, $messageModel);
     }
+
+    app(FinancialActivityLogger::class)->paymentNotificationSent(
+      $schoolNotification,
+      $this->fee,
+      $this->notificationChannel,
+      count($receiverIds)
+    );
+
     return successRes();
   }
 
@@ -154,6 +165,7 @@ class RecordFeePaymentReminder
         ->forMultiple($contacts->toArray())
         ->save($schoolNotification);
     }
+
     return $messageModel;
   }
 }

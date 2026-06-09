@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Institutions\Payrolls;
 
 use App\Actions\Payrolls\SalaryHandler;
-use App\Models\Institution;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SalaryRequest;
+use App\Models\Institution;
 use App\Models\Salary;
+use App\Support\Audit\FinancialActivityLogger;
 
 class SalariesController extends Controller
 {
@@ -35,6 +36,7 @@ class SalariesController extends Controller
   {
     $validatedData = $request->validated();
     (new SalaryHandler($institution))->create($validatedData);
+
     return $this->ok();
   }
 
@@ -46,12 +48,28 @@ class SalariesController extends Controller
     $validatedData = $request->validated();
     $salary->load('salaryType');
     (new SalaryHandler($institution))->update($salary, $validatedData);
+
     return $this->ok();
   }
 
   public function destroy(Institution $institution, Salary $salary)
   {
+    $salary->loadMissing('institution', 'salaryType', 'institutionUser.user');
+    $oldValues = $salary->only([
+      'institution_user_id',
+      'salary_type_id',
+      'description',
+      'amount'
+    ]);
+
     $salary->delete();
+
+    app(FinancialActivityLogger::class)->payrollItemChanged(
+      $salary,
+      'deleted',
+      $oldValues
+    );
+
     return $this->ok();
   }
 }

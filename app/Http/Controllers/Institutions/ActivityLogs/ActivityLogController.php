@@ -19,7 +19,18 @@ class ActivityLogController extends Controller
 
     $query = ActivityLog::query()
       ->select('activity_logs.*')
-      ->where('activity_logs.institution_id', $institution->id)
+      ->where(function ($query) use ($institution) {
+        $query
+          ->where('activity_logs.institution_id', $institution->id)
+          ->orWhere(function ($query) use ($institution) {
+            $query
+              ->whereNull('activity_logs.institution_id')
+              ->where(
+                'activity_logs.institution_group_id',
+                $institution->institution_group_id
+              );
+          });
+      })
       ->with('institution:id,uuid,name', 'institutionGroup:id,name');
 
     ActivityLogUITableFilters::make(

@@ -1,13 +1,15 @@
 <?php
+
 namespace App\Actions\Payrolls;
 
 use App\Models\Institution;
-use App\Models\SalaryType;
 use App\Models\Salary;
+use App\Models\SalaryType;
+use App\Support\Audit\FinancialActivityLogger;
 
 class SalaryHandler
 {
-  function __construct(private Institution $institution)
+  public function __construct(private Institution $institution)
   {
   }
 
@@ -19,7 +21,7 @@ class SalaryHandler
    *  institution_user_id: int,
    * } $data
    */
-  function create($data)
+  public function create($data)
   {
     $salaryType = SalaryType::query()
       ->with('parent')
@@ -33,13 +35,20 @@ class SalaryHandler
     );
 
     abort_unless($amount > 0, 403, 'Please enter a valid amount');
-    $this->institution->salaries()->firstOrCreate(
+    $salary = $this->institution->salaries()->firstOrCreate(
       [
         'institution_user_id' => $data['institution_user_id'],
         'salary_type_id' => $data['salary_type_id']
       ],
       [...$data, 'amount' => $amount]
     );
+
+    if ($salary->wasRecentlyCreated) {
+      app(FinancialActivityLogger::class)->payrollItemChanged(
+        $salary,
+        'created'
+      );
+    }
   }
 
   /**
@@ -48,8 +57,9 @@ class SalaryHandler
    *  amount?: float,
    * } $data
    */
-  function update(Salary $salary, $data, $canAbort = true)
+  public function update(Salary $salary, $data, $canAbort = true)
   {
+    $oldValues = $salary->only(['description', 'amount']);
     $salaryType = $salary->salaryType;
 
     $suppliedAmount = $data['amount'] ?? 0;
@@ -66,6 +76,12 @@ class SalaryHandler
         'amount' => $amount
       ])
       ->save();
+
+    app(FinancialActivityLogger::class)->payrollItemChanged(
+      $salary->refresh(),
+      'updated',
+      $oldValues
+    );
   }
 
   private function getAmount(
@@ -89,8 +105,10 @@ class SalaryHandler
         401,
         "You have record {$parentSalaryType->title} for this user first"
       );
+
       return $suppliedAmount;
     }
+
     return ($salaryType->percentage / 100) * $parentSalary->amount;
   }
 }

@@ -140,18 +140,13 @@ class ModelAuditRegistry
     EventCourseable::class => ['category' => ActivityLogCategory::Exam],
     Exam::class => ['category' => ActivityLogCategory::Exam],
     ExamCourseable::class => ['category' => ActivityLogCategory::Exam],
-    Fee::class => ['category' => ActivityLogCategory::Fee],
     FeePayment::class => ['category' => ActivityLogCategory::Payment],
-    ManualPayment::class => ['category' => ActivityLogCategory::Payment],
     Receipt::class => ['category' => ActivityLogCategory::Payment],
     PaymentReference::class => ['category' => ActivityLogCategory::Payment],
     Funding::class => ['category' => ActivityLogCategory::Wallet],
     Transaction::class => ['category' => ActivityLogCategory::Wallet],
     UserTransaction::class => ['category' => ActivityLogCategory::Wallet],
-    Withdrawal::class => ['category' => ActivityLogCategory::Wallet],
-    BankAccount::class => ['category' => ActivityLogCategory::Wallet],
     ReservedAccount::class => ['category' => ActivityLogCategory::Wallet],
-    Commission::class => ['category' => ActivityLogCategory::Wallet],
     AdmissionForm::class => ['category' => ActivityLogCategory::Admission],
     AdmissionApplication::class => [
       'category' => ActivityLogCategory::Admission

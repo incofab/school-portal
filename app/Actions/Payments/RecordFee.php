@@ -1,14 +1,15 @@
 <?php
+
 namespace App\Actions\Payments;
 
 use App\Models\Fee;
 use App\Models\Institution;
+use App\Support\Audit\FinancialActivityLogger;
 use Illuminate\Support\Facades\DB;
 
 class RecordFee
 {
   /**
-   * @param Institution $institution
    * @param array{
    *     title: string,
    *     amount: float,
@@ -36,6 +37,20 @@ class RecordFee
 
   private function execute()
   {
+    $action = $this->fee ? 'updated' : 'created';
+    $oldValues = $this->fee
+      ? $this->fee
+        ->loadMissing('feeCategories.feeable')
+        ->only([
+          'title',
+          'amount',
+          'payment_interval',
+          'academic_session_id',
+          'term',
+          'fee_items'
+        ])
+      : [];
+
     $feeData = collect($this->data)
       ->except('fee_categories')
       ->toArray();
@@ -80,6 +95,12 @@ class RecordFee
     }
 
     DB::commit();
+
+    app(FinancialActivityLogger::class)->feeRecorded(
+      $this->fee->refresh(),
+      $action,
+      $oldValues
+    );
 
     return $this->fee;
   }

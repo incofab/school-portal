@@ -27,8 +27,9 @@
 
 ## Coding Style & Naming Conventions
 
-- PHP: follow PSR-12; format with `./vendor/bin/pint`. Use StudlyCaps for classes, camelCase for methods/properties, and typed properties/returns where possible.
-- React/TypeScript: components in PascalCase, hooks prefixed with `use*`, props/interfaces in `UpperCamelCase`. ESLint forbids `console` and enforces strict equality; Prettier uses single quotes and 2-space tabs.
+- PHP: Use StudlyCaps for classes, camelCase for methods/properties, and typed properties/returns where possible.
+- Format the files by running `npx prettier --write` on all the files you worked on.
+- React/TypeScript: components in PascalCase, hooks prefixed with `use*`, props/interfaces in `UpperCamelCase`.
 - Prefer DTO/Action patterns already in `app/Actions` and reuse shared helpers (`app/helpers.php`) before adding new globals.
 
 ## Testing Guidelines

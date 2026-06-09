@@ -6,12 +6,13 @@ use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\ReservedAccount;
+use App\Support\Audit\FinancialActivityLogger;
 use App\Support\UserTransactionHandler;
 use Illuminate\Http\Request;
 
 class PaymentPointController extends Controller
 {
-  function webhook(Request $request)
+  public function webhook(Request $request)
   {
     if (!config('app.debug')) {
       $secretKey = config('services.payment-point.secret');
@@ -62,6 +63,25 @@ class PaymentPointController extends Controller
       ->firstOrFail();
 
     abort_if(!$bankAccount, 200, 'Account not found');
+
+    app(FinancialActivityLogger::class)->providerWebhookReceived(
+      'payment_point',
+      [
+        'transaction_id' => $transactionId,
+        'transaction_status' => $status,
+        'amount_paid' => $amountPaid,
+        'settlement_amount' => $settlementAmount,
+        'receiver_bank' => $webhookData['receiver']['bank'] ?? null,
+        'receiver_account_last4' => isset(
+          $webhookData['receiver']['account_number']
+        )
+          ? substr((string) $webhookData['receiver']['account_number'], -4)
+          : null,
+        'reserved_account_id' => $bankAccount->id
+      ],
+      null,
+      $bankAccount
+    );
 
     $entity = $bankAccount->reservable;
     UserTransactionHandler::recordTransaction(

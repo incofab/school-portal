@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Home;
 
-use Illuminate\Support\Arr;
-use Illuminate\Http\Request;
-use App\Models\PaymentReference;
-use App\Support\SettingsHandler;
-use App\Http\Controllers\Controller;
 use App\Enums\Payments\PaymentStatus;
+use App\Http\Controllers\Controller;
+use App\Models\PaymentReference;
+use App\Support\Audit\FinancialActivityLogger;
 use App\Support\Payments\Processors\PaymentProcessor;
+use App\Support\SettingsHandler;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class PaystackController extends Controller
 {
@@ -21,16 +22,17 @@ class PaystackController extends Controller
     return $this->handleReference($request->reference);
   }
 
-  function verifyReference(Request $request)
+  public function verifyReference(Request $request)
   {
     $reference = $request->reference;
     if (empty($reference)) {
-      die('Reference not supplied');
+      exit('Reference not supplied');
     }
+
     return $this->handleReference($reference);
   }
 
-  function webhook()
+  public function webhook()
   {
     if (
       strtoupper($_SERVER['REQUEST_METHOD']) != 'POST' ||
@@ -76,6 +78,19 @@ class PaystackController extends Controller
     )->getPaystackKeys();
 
     $this->validateSignatureKey($input, $paystackKeys->getPrivateKey());
+
+    app(FinancialActivityLogger::class)->providerWebhookReceived(
+      'paystack',
+      [
+        'event' => Arr::get($event, 'event'),
+        'status' => Arr::get($data, 'status'),
+        'reference' => $reference,
+        'amount' => Arr::get($data, 'amount'),
+        'currency' => Arr::get($data, 'currency')
+      ],
+      $paymentReference->institution,
+      $paymentReference
+    );
 
     return $this->handleReference($reference);
   }

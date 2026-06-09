@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Institutions\Payments;
 
 use App\Actions\Payments\RecordFee;
@@ -9,12 +10,13 @@ use App\Models\AcademicSession;
 use App\Models\Association;
 use App\Models\Fee;
 use App\Models\Institution;
+use App\Support\Audit\FinancialActivityLogger;
 use App\Support\UITableFilters\FeeUITableFilters;
 use Illuminate\Http\Request;
 
 class FeeController extends Controller
 {
-  function __construct()
+  public function __construct()
   {
     $this->allowedRoles([
       InstitutionUserType::Admin,
@@ -22,13 +24,14 @@ class FeeController extends Controller
     ])->except(['index', 'search']);
   }
 
-  function index(Request $request, Institution $institution)
+  public function index(Request $request, Institution $institution)
   {
     $filter = FeeUITableFilters::make(
       $request->all(),
       Fee::query()
     )->filterQuery();
     $query = $filter->getQuery()->with('feeCategories.feeable');
+
     return inertia('institutions/payments/list-fees', [
       'fees' => paginateFromRequest($query),
       'term' => $filter->getTerm(),
@@ -36,7 +39,7 @@ class FeeController extends Controller
     ]);
   }
 
-  function search(Institution $institution)
+  public function search(Institution $institution)
   {
     return response()->json([
       'result' => Fee::query()
@@ -51,39 +54,62 @@ class FeeController extends Controller
     ]);
   }
 
-  function create(Institution $institution)
+  public function create(Institution $institution)
   {
     return inertia('institutions/payments/create-edit-fee', [
       'associations' => Association::all()
     ]);
   }
 
-  function store(CreateFeeRequest $request, Institution $institution)
+  public function store(CreateFeeRequest $request, Institution $institution)
   {
     $data = $request->validated();
     $fee = RecordFee::run($data, $institution);
+
     return $this->ok(['fee' => $fee]);
   }
 
-  function edit(Institution $institution, Fee $fee)
+  public function edit(Institution $institution, Fee $fee)
   {
     $fee->load('feeCategories.feeable');
+
     return inertia('institutions/payments/create-edit-fee', [
       'associations' => Association::all(),
       'fee' => $fee
     ]);
   }
 
-  function update(Institution $institution, Fee $fee, CreateFeeRequest $request)
-  {
+  public function update(
+    Institution $institution,
+    Fee $fee,
+    CreateFeeRequest $request
+  ) {
     RecordFee::run($request->validated(), $institution, $fee);
+
     return $this->ok();
   }
 
-  function destroy(Institution $institution, Fee $fee)
+  public function destroy(Institution $institution, Fee $fee)
   {
     abort_if($fee->feePayments()->first(), 403, 'Fee has payments');
+    $fee->loadMissing('feeCategories.feeable');
+    $oldValues = $fee->only([
+      'title',
+      'amount',
+      'payment_interval',
+      'academic_session_id',
+      'term',
+      'fee_items'
+    ]);
+
     $fee->delete();
+
+    app(FinancialActivityLogger::class)->feeRecorded(
+      $fee,
+      'deleted',
+      $oldValues
+    );
+
     return $this->ok();
   }
 }

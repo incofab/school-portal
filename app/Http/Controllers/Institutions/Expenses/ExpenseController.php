@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Institutions\Expenses;
 
-use App\Http\Requests\StoreExpenseRequest;
-use App\Http\Controllers\Controller;
 use App\Enums\InstitutionUserType;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreExpenseRequest;
 use App\Models\Expense;
 use App\Models\Institution;
+use App\Support\Audit\FinancialActivityLogger;
 use App\Support\UITableFilters\ExpenseUITableFilters;
 use Inertia\Inertia;
 
@@ -17,7 +18,7 @@ class ExpenseController extends Controller
     $this->allowedRoles([InstitutionUserType::Admin]);
   }
 
-  function index(Institution $institution)
+  public function index(Institution $institution)
   {
     $query = ExpenseUITableFilters::make(
       request()->all(),
@@ -32,6 +33,7 @@ class ExpenseController extends Controller
       'academicSession',
       'expenseCategory'
     ]);
+
     return Inertia::render('institutions/expenses/list-expenses', [
       'expenses' => paginateFromRequest($query->latest('expenses.id')),
       'expense_total' => $amountSum,
@@ -50,15 +52,41 @@ class ExpenseController extends Controller
   {
     $validatedData = $request->validated();
     $createdBy = currentInstitutionUser()->id;
-    $institution
+    $expense = $institution
       ->expenses()
       ->create([...$validatedData, 'created_by' => $createdBy]);
+
+    app(FinancialActivityLogger::class)->expenseDecision($expense, 'approved');
+
     return $this->ok();
   }
 
-  function destroy(Institution $institution, Expense $expense)
+  public function destroy(Institution $institution, Expense $expense)
   {
+    $expense->loadMissing(
+      'institution',
+      'expenseCategory',
+      'institutionUser.user'
+    );
+    $oldValues = $expense->only([
+      'title',
+      'description',
+      'amount',
+      'academic_session_id',
+      'term',
+      'expense_date',
+      'expense_category_id',
+      'created_by'
+    ]);
+
     $expense->delete();
+
+    app(FinancialActivityLogger::class)->expenseDecision(
+      $expense,
+      'deleted',
+      $oldValues
+    );
+
     return $this->ok();
   }
 }

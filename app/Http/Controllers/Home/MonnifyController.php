@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Home;
 
 use App\Core\MonnifyHelper;
 use App\Enums\Payments\PaymentMerchantType;
-use Illuminate\Http\Request;
-use App\Models\PaymentReference;
-use App\Http\Controllers\Controller;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\TransactionType;
+use App\Http\Controllers\Controller;
+use App\Models\PaymentReference;
 use App\Models\ReservedAccount;
+use App\Support\Audit\FinancialActivityLogger;
 use App\Support\Payments\Processors\PaymentProcessor;
 use App\Support\UserTransactionHandler;
+use Illuminate\Http\Request;
 
 class MonnifyController extends Controller
 {
@@ -34,18 +35,20 @@ class MonnifyController extends Controller
       ->where('merchant', PaymentMerchantType::Monnify)
       ->with('user', 'institution', 'payable', 'paymentable')
       ->firstOrFail();
+
     return view('home.monnify-checkout', [
       'paymentReference' => $paymentReference
     ]);
   }
 
-  function verifyReference(Request $request)
+  public function verifyReference(Request $request)
   {
     $request->validate(['reference' => 'required']);
+
     return $this->handleReference($request->reference);
   }
 
-  function webhook(Request $request)
+  public function webhook(Request $request)
   {
     $allowedIp = '35.242.133.146';
     $clientIp = $request->ip();
@@ -93,6 +96,27 @@ class MonnifyController extends Controller
     // }
 
     if ($productType !== 'RESERVED_ACCOUNT') {
+      $paymentReference = PaymentReference::query()
+        ->where('reference', $reference)
+        ->with('institution')
+        ->first();
+
+      app(FinancialActivityLogger::class)->providerWebhookReceived(
+        'monnify',
+        [
+          'product_type' => $productType,
+          'payment_status' => $paymentStatus,
+          'reference' => $reference,
+          'transaction_reference' => $transactionReference,
+          'settlement_amount' => $settlementAmount,
+          'amount_paid' => $amountPaid,
+          'total_payable' => $totalPayable,
+          'paid_on' => $paidOn
+        ],
+        $paymentReference?->institution,
+        $paymentReference
+      );
+
       return $this->verifyReference($reference);
     }
 
@@ -110,6 +134,30 @@ class MonnifyController extends Controller
       ->first();
 
     abort_if(!$reservedAccount, 200, 'Account not found');
+
+    app(FinancialActivityLogger::class)->providerWebhookReceived(
+      'monnify',
+      [
+        'product_type' => $productType,
+        'payment_status' => $paymentStatus,
+        'reference' => $reference,
+        'transaction_reference' => $transactionReference,
+        'settlement_amount' => $settlementAmount,
+        'amount_paid' => $amountPaid,
+        'total_payable' => $totalPayable,
+        'paid_on' => $paidOn,
+        'reserved_account_id' => $reservedAccount->id,
+        'destination_bank_code' =>
+          $destinationAccountInformation['bankCode'] ?? null,
+        'destination_account_last4' => isset(
+          $destinationAccountInformation['accountNumber']
+        )
+          ? substr((string) $destinationAccountInformation['accountNumber'], -4)
+          : null
+      ],
+      null,
+      $reservedAccount
+    );
 
     $entity = $reservedAccount->reservable;
     UserTransactionHandler::recordTransaction(
