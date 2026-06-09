@@ -7,6 +7,7 @@ use App\Models\AdmissionApplication;
 use App\Models\AdmissionForm;
 use App\Models\AdmissionFormPurchase;
 use App\Models\ApplicationGuardian;
+use App\Models\Association;
 use App\Models\Assessment;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
@@ -34,25 +35,39 @@ use App\Models\GuardianStudent;
 use App\Models\Institution;
 use App\Models\InstitutionGroup;
 use App\Models\InstitutionUser;
+use App\Models\Library;
+use App\Models\LibraryClassification;
 use App\Models\LearningEvaluation;
 use App\Models\LearningEvaluationDomain;
 use App\Models\LessonNote;
 use App\Models\LessonPlan;
+use App\Models\LiveClass;
 use App\Models\ManualPayment;
 use App\Models\Media;
+use App\Models\Partner;
+use App\Models\PartnerRegistrationRequest;
+use App\Models\PayrollAdjustment;
+use App\Models\PayrollAdjustmentType;
 use App\Models\PaymentReference;
 use App\Models\PinGenerator;
 use App\Models\Receipt;
+use App\Models\RegistrationRequest;
 use App\Models\ReservedAccount;
 use App\Models\ResultCommentTemplate;
 use App\Models\ResultPublication;
+use App\Models\SchemeOfWork;
+use App\Models\SchoolActivity;
 use App\Models\SessionResult;
 use App\Models\Student;
 use App\Models\TermDetail;
 use App\Models\TermResult;
+use App\Models\Timetable;
+use App\Models\TimetableCoordinator;
 use App\Models\Topic;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\UserAssociation;
+use App\Models\VacancyPost;
 use App\Models\UserTransaction;
 use App\Models\Withdrawal;
 use Illuminate\Database\Eloquent\Model;
@@ -77,9 +92,15 @@ class ModelAuditRegistry
     'comment',
     'comments',
     'content',
+    'data',
     'description',
     'document',
+    'external_url',
+    'file_path',
+    'file_url',
     'html',
+    'learning_objectives',
+    'meet_url',
     'message',
     'note',
     'notes',
@@ -88,6 +109,11 @@ class ModelAuditRegistry
     'raw',
     'remark',
     'remarks',
+    'requirements',
+    'responsibilities',
+    'resources',
+    'salary_range',
+    'summary',
     'text',
     'theory_question_scores'
   ];
@@ -97,6 +123,13 @@ class ModelAuditRegistry
     InstitutionGroup::class => [
       'category' => ActivityLogCategory::InstitutionGroup
     ],
+    RegistrationRequest::class => [
+      'category' => ActivityLogCategory::Institution
+    ],
+    PartnerRegistrationRequest::class => [
+      'category' => ActivityLogCategory::Manager
+    ],
+    Partner::class => ['category' => ActivityLogCategory::Manager],
     User::class => ['category' => ActivityLogCategory::User],
     InstitutionUser::class => ['category' => ActivityLogCategory::User],
     Student::class => ['category' => ActivityLogCategory::Student],
@@ -112,8 +145,13 @@ class ModelAuditRegistry
     CourseTeacher::class => ['category' => ActivityLogCategory::Course],
     CourseSession::class => ['category' => ActivityLogCategory::Course],
     Topic::class => ['category' => ActivityLogCategory::Curriculum],
+    SchemeOfWork::class => ['category' => ActivityLogCategory::Curriculum],
     LessonPlan::class => ['category' => ActivityLogCategory::Curriculum],
     LessonNote::class => ['category' => ActivityLogCategory::Curriculum],
+    Library::class => ['category' => ActivityLogCategory::Curriculum],
+    LibraryClassification::class => [
+      'category' => ActivityLogCategory::Curriculum
+    ],
     Assignment::class => ['category' => ActivityLogCategory::Assignment],
     AssignmentSubmission::class => [
       'category' => ActivityLogCategory::Assignment
@@ -147,6 +185,12 @@ class ModelAuditRegistry
     Transaction::class => ['category' => ActivityLogCategory::Wallet],
     UserTransaction::class => ['category' => ActivityLogCategory::Wallet],
     ReservedAccount::class => ['category' => ActivityLogCategory::Wallet],
+    PayrollAdjustment::class => [
+      'category' => ActivityLogCategory::Payroll
+    ],
+    PayrollAdjustmentType::class => [
+      'category' => ActivityLogCategory::Payroll
+    ],
     AdmissionForm::class => ['category' => ActivityLogCategory::Admission],
     AdmissionApplication::class => [
       'category' => ActivityLogCategory::Admission
@@ -157,6 +201,15 @@ class ModelAuditRegistry
     ApplicationGuardian::class => [
       'category' => ActivityLogCategory::Admission
     ],
+    VacancyPost::class => ['category' => ActivityLogCategory::Staff],
+    Timetable::class => ['category' => ActivityLogCategory::Timetable],
+    TimetableCoordinator::class => [
+      'category' => ActivityLogCategory::Timetable
+    ],
+    SchoolActivity::class => ['category' => ActivityLogCategory::Timetable],
+    LiveClass::class => ['category' => ActivityLogCategory::LiveClass],
+    UserAssociation::class => ['category' => ActivityLogCategory::Association],
+    Association::class => ['category' => ActivityLogCategory::Association],
     Media::class => ['category' => ActivityLogCategory::Media]
   ];
 

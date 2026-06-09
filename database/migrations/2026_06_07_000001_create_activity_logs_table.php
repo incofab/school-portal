@@ -41,6 +41,10 @@ return new class extends Migration {
       $table->string('request_id')->nullable();
       $table->nullableMorphs('impersonator');
       $table->string('severity')->default('info');
+      $table->string('retention_category')->default('normal');
+      $table->string('previous_hash')->nullable();
+      $table->string('row_hash')->nullable();
+      $table->timestamp('integrity_verified_at')->nullable();
       $table->timestamps();
 
       $table->index(['institution_id', 'created_at']);
@@ -48,6 +52,8 @@ return new class extends Migration {
       $table->index(['category', 'event']);
       $table->index(['action', 'severity']);
       $table->index('request_id');
+      $table->index(['retention_category', 'created_at']);
+      $table->index('row_hash');
     });
   }
 

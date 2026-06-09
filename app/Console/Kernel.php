@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\AssignRoleToUser;
+use App\Console\Commands\PruneActivityLogs;
 use App\Console\Commands\PublishPendingResult;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -14,7 +15,11 @@ class Kernel extends ConsoleKernel
    *
    * @var array
    */
-  protected $commands = [AssignRoleToUser::class, PublishPendingResult::class];
+  protected $commands = [
+    AssignRoleToUser::class,
+    PublishPendingResult::class,
+    PruneActivityLogs::class
+  ];
 
   /**
    * Define the application's command schedule.
@@ -26,6 +31,7 @@ class Kernel extends ConsoleKernel
   {
     // $schedule->command('inspire')->hourly();
     $schedule->command('telescope:prune --hours=48')->daily();
+    $schedule->command('audit:prune')->dailyAt('02:30');
   }
 
   /**

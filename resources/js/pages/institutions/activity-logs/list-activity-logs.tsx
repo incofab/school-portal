@@ -10,12 +10,15 @@ interface Props {
   filterOptions: {
     categories: string[];
     severities: string[];
+    retentionCategories: string[];
   };
+  canExport: boolean;
 }
 
 export default function ListActivityLogs({
   activityLogs,
   filterOptions,
+  canExport,
 }: Props) {
   return (
     <DashboardLayout>
@@ -25,6 +28,8 @@ export default function ListActivityLogs({
           <ActivityLogList
             activityLogs={activityLogs}
             filterOptions={filterOptions}
+            canExport={canExport}
+            exportUrl={instRoute('activity-logs.export')}
           />
         </SlabBody>
       </Slab>

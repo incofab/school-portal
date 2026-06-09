@@ -97,6 +97,10 @@ export interface ActivityLog extends Row {
   request_id?: string;
   impersonator_type?: string;
   impersonator_id?: number;
+  retention_category: string;
+  previous_hash?: string;
+  row_hash?: string;
+  integrity_verified_at?: string;
   severity: string;
   institution?: Institution;
   institution_group?: InstitutionGroup;

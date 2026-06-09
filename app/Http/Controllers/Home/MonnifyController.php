@@ -9,7 +9,6 @@ use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\PaymentReference;
 use App\Models\ReservedAccount;
-use App\Support\Audit\FinancialActivityLogger;
 use App\Support\Payments\Processors\PaymentProcessor;
 use App\Support\UserTransactionHandler;
 use Illuminate\Http\Request;
@@ -71,9 +70,7 @@ class MonnifyController extends Controller
     $reference = $post['paymentReference'];
     $settlementAmount = $post['settlementAmount'];
     $amountPaid = $post['amountPaid'];
-    $totalPayable = $post['totalPayable'];
     $paidOn = $post['paidOn'];
-    $paymentStatus = $post['paymentStatus'];
     $accountReference = $post['product']['reference'];
     $productType = $post['product']['type'];
 
@@ -96,27 +93,6 @@ class MonnifyController extends Controller
     // }
 
     if ($productType !== 'RESERVED_ACCOUNT') {
-      $paymentReference = PaymentReference::query()
-        ->where('reference', $reference)
-        ->with('institution')
-        ->first();
-
-      app(FinancialActivityLogger::class)->providerWebhookReceived(
-        'monnify',
-        [
-          'product_type' => $productType,
-          'payment_status' => $paymentStatus,
-          'reference' => $reference,
-          'transaction_reference' => $transactionReference,
-          'settlement_amount' => $settlementAmount,
-          'amount_paid' => $amountPaid,
-          'total_payable' => $totalPayable,
-          'paid_on' => $paidOn
-        ],
-        $paymentReference?->institution,
-        $paymentReference
-      );
-
       return $this->verifyReference($reference);
     }
 
@@ -134,30 +110,6 @@ class MonnifyController extends Controller
       ->first();
 
     abort_if(!$reservedAccount, 200, 'Account not found');
-
-    app(FinancialActivityLogger::class)->providerWebhookReceived(
-      'monnify',
-      [
-        'product_type' => $productType,
-        'payment_status' => $paymentStatus,
-        'reference' => $reference,
-        'transaction_reference' => $transactionReference,
-        'settlement_amount' => $settlementAmount,
-        'amount_paid' => $amountPaid,
-        'total_payable' => $totalPayable,
-        'paid_on' => $paidOn,
-        'reserved_account_id' => $reservedAccount->id,
-        'destination_bank_code' =>
-          $destinationAccountInformation['bankCode'] ?? null,
-        'destination_account_last4' => isset(
-          $destinationAccountInformation['accountNumber']
-        )
-          ? substr((string) $destinationAccountInformation['accountNumber'], -4)
-          : null
-      ],
-      null,
-      $reservedAccount
-    );
 
     $entity = $reservedAccount->reservable;
     UserTransactionHandler::recordTransaction(

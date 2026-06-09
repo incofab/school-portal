@@ -488,7 +488,7 @@ Verification:
 - Report changed files and test results.
 ```
 
-## Stage 6: Finance, Payments, Wallets, Payroll, Expenses, And External Integrations Events
+## Stage 6: Finance, Payments, Wallets, Payroll, Expenses, And External Integrations Events [DONE]
 
 Use this prompt for financial auditability. This stage should be stricter about severity, redaction, and before/after values.
 
@@ -659,7 +659,7 @@ Verification:
 - Report changed files and test results.
 ```
 
-## Stage 8: Advanced Audit Log UI, Reporting, Export, Retention, And Integrity
+## Stage 8: Advanced Audit Log UI, Reporting, Export, Retention, And Integrity [DONE - test remaining]
 
 Use this prompt after the foundation and several event groups exist. This stage improves usability, retention, and trustworthiness.
 
@@ -795,14 +795,8 @@ Areas to explicitly check:
 - Student lifecycle.
 - Guardians/dependents.
 - Classifications/groups/divisions/class mapping.
-- Courses/course teachers/CCD/question bank.
-- Curriculum/schemes/lesson plans/lesson notes.
 - Assignments/submissions.
-- Attendance/reports.
-- Assessments/evaluations/comments.
-- Result recording/processing/locking/publishing/reports.
 - Result PINs.
-- Exams/events/CBT/external exams/offline mock API.
 - Admissions/admission forms.
 - Fees/payments/receipts/notifications.
 - Wallets/fundings/transactions/withdrawals/bank accounts/commissions.

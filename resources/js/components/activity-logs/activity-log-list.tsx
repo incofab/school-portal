@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Code,
+  Divider,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -19,15 +20,16 @@ import {
   Input,
   Select,
   SimpleGrid,
+  Switch,
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { EyeIcon } from '@heroicons/react/24/outline';
+import { ArrowDownTrayIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
-import { ActivityLog, Institution } from '@/types/models';
+import { ActivityLog, Institution, InstitutionGroup } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
 import { dateTimeFormat, formatAsDate } from '@/util/util';
 
@@ -36,18 +38,31 @@ interface Props {
   filterOptions: {
     categories: string[];
     severities: string[];
+    retentionCategories: string[];
   };
   institutions?: Institution[];
+  institutionGroups?: InstitutionGroup[];
   showInstitutionFilter?: boolean;
+  showInstitutionGroupFilter?: boolean;
+  canExport?: boolean;
+  exportUrl?: string;
 }
 
 type Filters = {
   category: string;
   event: string;
   actor: string;
+  actor_role: string;
   subject: string;
+  subject_type: string;
+  subject_search: string;
   severity: string;
   institution_id: string;
+  institution_group_id: string;
+  ip_address: string;
+  request_id: string;
+  impersonated_only: string;
+  retention_category: string;
   'created_at[date_from]': string;
   'created_at[date_to]': string;
 };
@@ -56,7 +71,11 @@ export default function ActivityLogList({
   activityLogs,
   filterOptions,
   institutions = [],
+  institutionGroups = [],
   showInstitutionFilter = false,
+  showInstitutionGroupFilter = false,
+  canExport = false,
+  exportUrl,
 }: Props) {
   const [selected, setSelected] = useState<ActivityLog | null>(null);
   const [filters, setFilters] = useState<Filters>(() => currentFilters());
@@ -68,9 +87,17 @@ export default function ActivityLogList({
       category: params.get('category') ?? '',
       event: params.get('event') ?? '',
       actor: params.get('actor') ?? '',
+      actor_role: params.get('actor_role') ?? '',
       subject: params.get('subject') ?? '',
+      subject_type: params.get('subject_type') ?? '',
+      subject_search: params.get('subject_search') ?? '',
       severity: params.get('severity') ?? '',
       institution_id: params.get('institution_id') ?? '',
+      institution_group_id: params.get('institution_group_id') ?? '',
+      ip_address: params.get('ip_address') ?? '',
+      request_id: params.get('request_id') ?? '',
+      impersonated_only: params.get('impersonated_only') ?? '',
+      retention_category: params.get('retention_category') ?? '',
       'created_at[date_from]': params.get('created_at[date_from]') ?? '',
       'created_at[date_to]': params.get('created_at[date_to]') ?? '',
     };
@@ -100,6 +127,20 @@ export default function ActivityLogList({
     Inertia.visit(url.toString(), { preserveState: true });
   }
 
+  function exportLogs() {
+    if (!exportUrl) {
+      return;
+    }
+
+    const url = new URL(exportUrl, window.location.origin);
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        url.searchParams.set(key, value);
+      }
+    });
+    window.location.href = url.toString();
+  }
+
   const headers: ServerPaginatedTableHeader<ActivityLog>[] = useMemo(
     () => [
       {
@@ -109,8 +150,8 @@ export default function ActivityLogList({
       },
       {
         label: 'Category',
-        value: 'category',
         sortKey: 'category',
+        render: (row) => <Text whiteSpace="nowrap">{row.category}</Text>,
       },
       {
         label: 'Event',
@@ -141,11 +182,7 @@ export default function ActivityLogList({
       {
         label: 'Severity',
         sortKey: 'severity',
-        render: (row) => (
-          <Badge colorScheme={severityColor(row.severity)}>
-            {row.severity}
-          </Badge>
-        ),
+        render: (row) => <SeverityBadge severity={row.severity} />,
       },
       {
         label: 'Action',
@@ -202,6 +239,22 @@ export default function ActivityLogList({
             </Select>
           </FormControl>
           <FormControl>
+            <FormLabel>Retention</FormLabel>
+            <Select
+              value={filters.retention_category}
+              onChange={(e) =>
+                updateFilter('retention_category', e.target.value)
+              }
+            >
+              <option value="">All</option>
+              {filterOptions.retentionCategories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl>
             <FormLabel>Severity</FormLabel>
             <Select
               value={filters.severity}
@@ -230,10 +283,45 @@ export default function ActivityLogList({
             />
           </FormControl>
           <FormControl>
-            <FormLabel>Subject</FormLabel>
+            <FormLabel>Actor Role</FormLabel>
+            <Input
+              value={filters.actor_role}
+              onChange={(e) => updateFilter('actor_role', e.target.value)}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Subject Name</FormLabel>
             <Input
               value={filters.subject}
               onChange={(e) => updateFilter('subject', e.target.value)}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Subject Type</FormLabel>
+            <Input
+              value={filters.subject_type}
+              onChange={(e) => updateFilter('subject_type', e.target.value)}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Subject Search</FormLabel>
+            <Input
+              value={filters.subject_search}
+              onChange={(e) => updateFilter('subject_search', e.target.value)}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>IP Address</FormLabel>
+            <Input
+              value={filters.ip_address}
+              onChange={(e) => updateFilter('ip_address', e.target.value)}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Request ID</FormLabel>
+            <Input
+              value={filters.request_id}
+              onChange={(e) => updateFilter('request_id', e.target.value)}
             />
           </FormControl>
           {showInstitutionFilter && (
@@ -252,14 +340,50 @@ export default function ActivityLogList({
               </Select>
             </FormControl>
           )}
+          {showInstitutionGroupFilter && (
+            <FormControl>
+              <FormLabel>Institution Group</FormLabel>
+              <Select
+                value={filters.institution_group_id}
+                onChange={(e) =>
+                  updateFilter('institution_group_id', e.target.value)
+                }
+              >
+                <option value="">All</option>
+                {institutionGroups.map((institutionGroup) => (
+                  <option key={institutionGroup.id} value={institutionGroup.id}>
+                    {institutionGroup.name}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+          <FormControl display="flex" alignItems="center" gap={3} pt={7}>
+            <Switch
+              isChecked={filters.impersonated_only === '1'}
+              onChange={(e) =>
+                updateFilter('impersonated_only', e.target.checked ? '1' : '')
+              }
+            />
+            <FormLabel m={0}>Impersonated only</FormLabel>
+          </FormControl>
         </SimpleGrid>
-        <HStack mt={4}>
+        <HStack mt={4} flexWrap="wrap">
           <Button colorScheme="brand" onClick={applyFilters}>
             Filter
           </Button>
           <Button variant="outline" onClick={clearFilters}>
             Clear
           </Button>
+          {canExport && (
+            <Button
+              leftIcon={<Icon as={ArrowDownTrayIcon} />}
+              variant="outline"
+              onClick={exportLogs}
+            >
+              Export CSV
+            </Button>
+          )}
         </HStack>
       </Box>
       <ServerPaginatedTable
@@ -303,18 +427,30 @@ function ActivityLogDrawer({
                 <Text>{activityLog.actor_name ?? 'System'}</Text>
                 <Text fontWeight="semibold">Actor Role</Text>
                 <Text>{activityLog.actor_role ?? 'N/A'}</Text>
+                <Text fontWeight="semibold">Actor Type</Text>
+                <Text wordBreak="break-all">
+                  {formatClassName(activityLog.actor_type)}
+                </Text>
                 <Text fontWeight="semibold">Subject</Text>
                 <Text>{activityLog.subject_name ?? 'N/A'}</Text>
+                <Text fontWeight="semibold">Subject Type</Text>
+                <Text wordBreak="break-all">
+                  {formatClassName(activityLog.subject_type)}
+                </Text>
+                <Text fontWeight="semibold">Institution</Text>
+                <Text>{activityLog.institution?.name ?? 'Global'}</Text>
+                <Text fontWeight="semibold">Institution Group</Text>
+                <Text>{activityLog.institution_group?.name ?? 'N/A'}</Text>
                 <Text fontWeight="semibold">Category</Text>
                 <Text>{activityLog.category}</Text>
                 <Text fontWeight="semibold">Event</Text>
                 <Text>{activityLog.event}</Text>
                 <Text fontWeight="semibold">Severity</Text>
                 <Text>
-                  <Badge colorScheme={severityColor(activityLog.severity)}>
-                    {activityLog.severity}
-                  </Badge>
+                  <SeverityBadge severity={activityLog.severity} />
                 </Text>
+                <Text fontWeight="semibold">Retention</Text>
+                <Text>{activityLog.retention_category ?? 'normal'}</Text>
                 <Text fontWeight="semibold">Description</Text>
                 <Text>{activityLog.description ?? 'N/A'}</Text>
                 <Text fontWeight="semibold">Request</Text>
@@ -331,10 +467,27 @@ function ActivityLogDrawer({
                 <Text wordBreak="break-all">
                   {activityLog.user_agent ?? 'N/A'}
                 </Text>
+                <Text fontWeight="semibold">Impersonator</Text>
+                <Text>
+                  {activityLog.impersonator_id
+                    ? `${formatClassName(activityLog.impersonator_type)} #${
+                        activityLog.impersonator_id
+                      }`
+                    : 'N/A'}
+                </Text>
+                <Text fontWeight="semibold">Integrity Hash</Text>
+                <Text wordBreak="break-all">
+                  {activityLog.row_hash ?? 'N/A'}
+                </Text>
               </Grid>
               {isFinancialLog(activityLog) && (
                 <FinancialSummary activityLog={activityLog} />
               )}
+              <ValueDiff
+                oldValues={activityLog.old_values}
+                newValues={activityLog.new_values}
+              />
+              <Divider />
               <JsonBlock title="Properties" value={activityLog.properties} />
               <JsonBlock title="Old Values" value={activityLog.old_values} />
               <JsonBlock title="New Values" value={activityLog.new_values} />
@@ -344,6 +497,82 @@ function ActivityLogDrawer({
       </DrawerContent>
     </Drawer>
   );
+}
+
+function SeverityBadge({ severity }: { severity: string }) {
+  return (
+    <HStack spacing={2}>
+      <Box
+        boxSize={2}
+        borderRadius="full"
+        bg={`${severityColor(severity)}.500`}
+      />
+      <Badge colorScheme={severityColor(severity)}>{severity}</Badge>
+    </HStack>
+  );
+}
+
+function ValueDiff({
+  oldValues,
+  newValues,
+}: {
+  oldValues?: { [key: string]: any };
+  newValues?: { [key: string]: any };
+}) {
+  const keys = Array.from(
+    new Set([...Object.keys(oldValues ?? {}), ...Object.keys(newValues ?? {})])
+  );
+
+  if (!keys.length) {
+    return null;
+  }
+
+  return (
+    <Box borderWidth={1} borderRadius={8} p={3}>
+      <Text fontWeight="semibold" mb={3}>
+        Value Diff
+      </Text>
+      <Stack spacing={3}>
+        {keys.map((key) => (
+          <SimpleGrid key={key} columns={{ base: 1, md: 3 }} spacing={2}>
+            <Text fontWeight="medium">{key}</Text>
+            <Box>
+              <Text color="gray.500" fontSize="sm">
+                Old
+              </Text>
+              <Code whiteSpace="pre-wrap" w="100%" p={2}>
+                {formatValue(oldValues?.[key])}
+              </Code>
+            </Box>
+            <Box>
+              <Text color="gray.500" fontSize="sm">
+                New
+              </Text>
+              <Code whiteSpace="pre-wrap" w="100%" p={2}>
+                {formatValue(newValues?.[key])}
+              </Code>
+            </Box>
+          </SimpleGrid>
+        ))}
+      </Stack>
+    </Box>
+  );
+}
+
+function formatValue(value: unknown) {
+  if (value === undefined || value === null) {
+    return 'N/A';
+  }
+
+  if (typeof value === 'object') {
+    return JSON.stringify(value, null, 2);
+  }
+
+  return String(value);
+}
+
+function formatClassName(value?: string) {
+  return value?.split('\\').pop() ?? 'N/A';
 }
 
 function isFinancialLog(activityLog: ActivityLog) {

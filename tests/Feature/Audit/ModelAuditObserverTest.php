@@ -1,146 +1,268 @@
 <?php
 
 use App\Models\ActivityLog;
+use App\Models\Association;
+use App\Models\Classification;
 use App\Models\Course;
 use App\Models\Institution;
+use App\Models\Library;
+use App\Models\LiveClass;
+use App\Models\RegistrationRequest;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\Audit\ActivityLogSanitizer;
+use App\Support\Audit\ModelAuditRegistry;
 use Illuminate\Support\Facades\Auth;
 
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
-    ActivityLog::query()->delete();
+  ActivityLog::query()->delete();
 });
 
 it('creates an audit log when an opted-in model is created', function () {
-    $institution = Institution::factory()->create();
-    ActivityLog::query()->delete();
+  $institution = Institution::factory()->create();
+  ActivityLog::query()->delete();
 
-    actingAs($institution->createdBy);
+  actingAs($institution->createdBy);
 
-    $course = Course::factory()
-        ->withInstitution($institution)
-        ->create(['title' => 'Biology', 'code' => 'BIO']);
+  $course = Course::factory()
+    ->withInstitution($institution)
+    ->create(['title' => 'Biology', 'code' => 'BIO']);
 
-    $log = ActivityLog::query()
-        ->where('event', 'model.course.created')
-        ->firstOrFail();
+  $log = ActivityLog::query()
+    ->where('event', 'model.course.created')
+    ->firstOrFail();
 
-    expect($log->action)->toBe('created')
-        ->and($log->subject_type)->toBe(Course::class)
-        ->and($log->subject_id)->toBe($course->id)
-        ->and($log->actor_id)->toBe($institution->createdBy->id)
-        ->and($log->new_values->toArray())->toMatchArray([
-            'title' => 'Biology',
-            'code' => 'BIO',
-            'institution_id' => $institution->id,
-        ]);
+  expect($log->action)
+    ->toBe('created')
+    ->and($log->subject_type)
+    ->toBe(Course::class)
+    ->and($log->subject_id)
+    ->toBe($course->id)
+    ->and($log->actor_id)
+    ->toBe($institution->createdBy->id)
+    ->and($log->new_values->toArray())
+    ->toMatchArray([
+      'title' => 'Biology',
+      'code' => 'BIO',
+      'institution_id' => $institution->id
+    ]);
 });
 
 it('records old and new values when an opted-in model is updated', function () {
-    $institution = Institution::factory()->create();
-    $course = Course::factory()
-        ->withInstitution($institution)
-        ->create(['title' => 'Chemistry', 'code' => 'CHEM']);
-    ActivityLog::query()->delete();
+  $institution = Institution::factory()->create();
+  $course = Course::factory()
+    ->withInstitution($institution)
+    ->create(['title' => 'Chemistry', 'code' => 'CHEM']);
+  ActivityLog::query()->delete();
 
-    $course->update(['title' => 'Advanced Chemistry']);
+  $course->update(['title' => 'Advanced Chemistry']);
 
-    $log = ActivityLog::query()
-        ->where('event', 'model.course.updated')
-        ->firstOrFail();
+  $log = ActivityLog::query()
+    ->where('event', 'model.course.updated')
+    ->firstOrFail();
 
-    expect($log->old_values->toArray())->toBe(['title' => 'Chemistry'])
-        ->and($log->new_values->toArray())->toBe(['title' => 'Advanced Chemistry']);
+  expect($log->old_values->toArray())
+    ->toBe(['title' => 'Chemistry'])
+    ->and($log->new_values->toArray())
+    ->toBe(['title' => 'Advanced Chemistry']);
 });
 
 it('creates an audit log when an opted-in model is deleted', function () {
-    $institution = Institution::factory()->create();
-    $course = Course::factory()
-        ->withInstitution($institution)
-        ->create(['title' => 'Physics', 'code' => 'PHY']);
-    ActivityLog::query()->delete();
+  $institution = Institution::factory()->create();
+  $course = Course::factory()
+    ->withInstitution($institution)
+    ->create(['title' => 'Physics', 'code' => 'PHY']);
+  ActivityLog::query()->delete();
 
-    $course->delete();
+  $course->delete();
 
-    $log = ActivityLog::query()
-        ->where('event', 'model.course.deleted')
-        ->firstOrFail();
+  $log = ActivityLog::query()
+    ->where('event', 'model.course.deleted')
+    ->firstOrFail();
 
-    expect($log->action)->toBe('deleted')
-        ->and($log->subject_type)->toBe(Course::class)
-        ->and($log->subject_id)->toBe($course->id)
-        ->and($log->old_values->toArray())->toMatchArray([
-            'title' => 'Physics',
-            'code' => 'PHY',
-        ]);
+  expect($log->action)
+    ->toBe('deleted')
+    ->and($log->subject_type)
+    ->toBe(Course::class)
+    ->and($log->subject_id)
+    ->toBe($course->id)
+    ->and($log->old_values->toArray())
+    ->toMatchArray([
+      'title' => 'Physics',
+      'code' => 'PHY'
+    ]);
 });
 
 it('redacts sensitive fields in automatic model audit diffs', function () {
-    $user = User::factory()->create();
-    ActivityLog::query()->delete();
+  $user = User::factory()->create();
+  ActivityLog::query()->delete();
 
-    $user->update([
-        'password' => 'new-secret-password',
-        'remember_token' => 'new-token',
-        'first_name' => 'Visible',
-    ]);
+  $user->update([
+    'password' => 'new-secret-password',
+    'remember_token' => 'new-token',
+    'first_name' => 'Visible'
+  ]);
 
-    $log = ActivityLog::query()
-        ->where('event', 'model.user.updated')
-        ->firstOrFail();
+  $log = ActivityLog::query()
+    ->where('event', 'model.user.updated')
+    ->firstOrFail();
 
-    expect($log->new_values->toArray())->toBe([
-        'password' => ActivityLogSanitizer::REDACTED,
-        'first_name' => 'Visible',
-    ]);
+  expect($log->new_values->toArray())->toBe([
+    'password' => ActivityLogSanitizer::REDACTED,
+    'first_name' => 'Visible'
+  ]);
 });
 
 it('ignores timestamp-only automatic model updates', function () {
-    $institution = Institution::factory()->create();
-    $course = Course::factory()
-        ->withInstitution($institution)
-        ->create();
-    ActivityLog::query()->delete();
+  $institution = Institution::factory()->create();
+  $course = Course::factory()
+    ->withInstitution($institution)
+    ->create();
+  ActivityLog::query()->delete();
 
-    $course->touch();
+  $course->touch();
 
-    expect(ActivityLog::query()->where('event', 'model.course.updated')->count())->toBe(0);
+  expect(
+    ActivityLog::query()
+      ->where('event', 'model.course.updated')
+      ->count()
+  )->toBe(0);
 });
 
-it('sets institution scope for institution-owned models and related models', function () {
+it(
+  'sets institution scope for institution-owned models and related models',
+  function () {
     $institution = Institution::factory()->create();
     $student = Student::factory()
-        ->withInstitution($institution)
-        ->create();
+      ->withInstitution($institution)
+      ->create();
     ActivityLog::query()->delete();
 
     $student->update(['guardian_phone' => '08030000000']);
 
     $log = ActivityLog::query()
-        ->where('event', 'model.student.updated')
-        ->firstOrFail();
+      ->where('event', 'model.student.updated')
+      ->firstOrFail();
 
-    expect($log->institution_id)->toBe($institution->id)
-        ->and($log->institution_group_id)->toBe($institution->institution_group_id);
-});
+    expect($log->institution_id)
+      ->toBe($institution->id)
+      ->and($log->institution_group_id)
+      ->toBe($institution->institution_group_id);
+  }
+);
 
-it('records automatic model audits from console context without an actor', function () {
+it(
+  'records automatic model audits from console context without an actor',
+  function () {
     $institution = Institution::factory()->create();
     ActivityLog::query()->delete();
     Auth::logout();
 
     Course::factory()
-        ->withInstitution($institution)
-        ->create(['title' => 'CLI Course', 'code' => 'CLI']);
+      ->withInstitution($institution)
+      ->create(['title' => 'CLI Course', 'code' => 'CLI']);
 
     $log = ActivityLog::query()
-        ->where('event', 'model.course.created')
-        ->firstOrFail();
+      ->where('event', 'model.course.created')
+      ->firstOrFail();
 
-    expect($log->actor_id)->toBeNull()
-        ->and($log->institution_id)->toBe($institution->id)
-        ->and($log->new_values->toArray())->toMatchArray(['title' => 'CLI Course']);
-});
+    expect($log->actor_id)
+      ->toBeNull()
+      ->and($log->institution_id)
+      ->toBe($institution->id)
+      ->and($log->new_values->toArray())
+      ->toMatchArray(['title' => 'CLI Course']);
+  }
+);
+
+it(
+  'audits newly covered operational models with institution scope',
+  function () {
+    $institution = Institution::factory()->create();
+    $classification = Classification::factory()
+      ->withInstitution($institution)
+      ->create();
+    ActivityLog::query()->delete();
+
+    $association = Association::factory()
+      ->institution($institution)
+      ->create(['title' => 'Science Club']);
+
+    LiveClass::query()->create([
+      'institution_id' => $institution->id,
+      'teacher_user_id' => $institution->createdBy->id,
+      'title' => 'Algebra Revision',
+      'meet_url' => 'https://meet.example.test/private-room?token=secret',
+      'liveable_type' => Classification::class,
+      'liveable_id' => $classification->id,
+      'starts_at' => now()->addDay(),
+      'ends_at' => now()
+        ->addDay()
+        ->addHour(),
+      'is_active' => true
+    ]);
+
+    $associationLog = ActivityLog::query()
+      ->where('event', 'model.association.created')
+      ->firstOrFail();
+    $liveClassLog = ActivityLog::query()
+      ->where('event', 'model.live-class.created')
+      ->firstOrFail();
+
+    expect($associationLog->category)
+      ->toBe('association')
+      ->and($associationLog->subject_id)
+      ->toBe($association->id)
+      ->and($associationLog->institution_id)
+      ->toBe($institution->id)
+      ->and($liveClassLog->category)
+      ->toBe('live_class')
+      ->and($liveClassLog->institution_id)
+      ->toBe($institution->id)
+      ->and($liveClassLog->new_values->toArray())
+      ->toMatchArray([
+        'title' => 'Algebra Revision',
+        'meet_url' => ModelAuditRegistry::OMITTED
+      ]);
+  }
+);
+
+it(
+  'omits large and sensitive payload fields for newly covered audit models',
+  function () {
+    ActivityLog::query()->delete();
+
+    $registrationRequest = RegistrationRequest::factory()->create();
+
+    $library = Library::factory()->create([
+      'title' => 'Teacher Guide',
+      'external_url' => 'https://files.example.test/private/teacher-guide',
+      'description' =>
+        'Detailed private notes should not be copied into audit payloads.'
+    ]);
+
+    $registrationLog = ActivityLog::query()
+      ->where('event', 'model.registration-request.created')
+      ->firstOrFail();
+    $libraryLog = ActivityLog::query()
+      ->where('event', 'model.library.created')
+      ->firstOrFail();
+
+    expect($registrationLog->subject_id)
+      ->toBe($registrationRequest->id)
+      ->and($registrationLog->new_values->toArray())
+      ->toMatchArray([
+        'data' => ModelAuditRegistry::OMITTED
+      ])
+      ->and($libraryLog->institution_id)
+      ->toBe($library->institution_id)
+      ->and($libraryLog->new_values->toArray())
+      ->toMatchArray([
+        'title' => 'Teacher Guide',
+        'external_url' => ModelAuditRegistry::OMITTED,
+        'description' => ModelAuditRegistry::OMITTED
+      ]);
+  }
+);

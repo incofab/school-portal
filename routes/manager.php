@@ -11,6 +11,8 @@ Route::get('/', [Web\ManagerController::class, 'dashboard'])
     ->name('dashboard');
 Route::get('/notifications', [Web\Notifications\NotificationController::class, 'index'])
     ->name('notifications.index');
+Route::get('/activity-logs/export', [Web\ActivityLogs\ActivityLogController::class, 'export'])
+    ->name('activity-logs.export');
 Route::get('/activity-logs', Web\ActivityLogs\ActivityLogController::class)
     ->name('activity-logs.index');
 Route::get('/notifications/create', [Web\Notifications\NotificationController::class, 'create'])

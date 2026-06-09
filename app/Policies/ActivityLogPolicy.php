@@ -18,6 +18,16 @@ class ActivityLogPolicy
       $user->can('activity-logs.view-institution');
   }
 
+  public function exportManager(User $user): bool
+  {
+    return $this->viewAnyManager($user);
+  }
+
+  public function exportInstitution(User $user): bool
+  {
+    return $this->viewAnyInstitution($user);
+  }
+
   public function viewInstitution(User $user, ActivityLog $activityLog): bool
   {
     $institution = currentInstitution();

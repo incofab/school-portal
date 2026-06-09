@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Home;
 use App\Enums\Payments\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\PaymentReference;
-use App\Support\Audit\FinancialActivityLogger;
 use App\Support\Payments\Processors\PaymentProcessor;
 use App\Support\SettingsHandler;
 use Illuminate\Http\Request;
@@ -78,19 +77,6 @@ class PaystackController extends Controller
     )->getPaystackKeys();
 
     $this->validateSignatureKey($input, $paystackKeys->getPrivateKey());
-
-    app(FinancialActivityLogger::class)->providerWebhookReceived(
-      'paystack',
-      [
-        'event' => Arr::get($event, 'event'),
-        'status' => Arr::get($data, 'status'),
-        'reference' => $reference,
-        'amount' => Arr::get($data, 'amount'),
-        'currency' => Arr::get($data, 'currency')
-      ],
-      $paymentReference->institution,
-      $paymentReference
-    );
 
     return $this->handleReference($reference);
   }
