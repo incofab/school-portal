@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Actions\CourseResult;
 
 use App\Enums\TermType;
 use App\Models\Classification;
-use App\Models\CourseResult;
 use App\Models\ClassResultInfo;
+use App\Models\CourseResult;
+use App\Support\Audit\AcademicIntegrityActivityLogger;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -84,25 +86,46 @@ class ClassResultInfoAction
       'is_locked' => true
     ];
 
-    DB::beginTransaction();
-    $classResultInfo = ClassResultInfo::query()->updateOrCreate(
-      $bindingData,
-      $data
-    );
-    ClassResultInfo::clearResultLockCache();
-
-    ProcessTermResult::run(
+    $logger = app(AcademicIntegrityActivityLogger::class);
+    $logger->resultProcessingStarted(
       $classification->institution,
-      $classResultInfo,
-      $forceCalculateTermResult
+      $classification,
+      $bindingData
     );
-    DB::commit();
+
+    DB::beginTransaction();
+    try {
+      $classResultInfo = ClassResultInfo::query()->updateOrCreate(
+        $bindingData,
+        $data
+      );
+      ClassResultInfo::clearResultLockCache();
+
+      ProcessTermResult::run(
+        $classification->institution,
+        $classResultInfo,
+        $forceCalculateTermResult
+      );
+      DB::commit();
+    } catch (\Throwable $throwable) {
+      DB::rollBack();
+      $logger->resultProcessingFailed(
+        $classification->institution,
+        $classification,
+        $bindingData,
+        $throwable
+      );
+
+      throw $throwable;
+    }
+
+    $logger->resultProcessingCompleted($classResultInfo);
 
     return $classResultInfo;
   }
 
   /**
-   * @param Collection<int, CourseResult> $courseResults
+   * @param  Collection<int, CourseResult>  $courseResults
    */
   private function getTotalScore(Collection $courseResults)
   {
@@ -119,9 +142,11 @@ class ClassResultInfoAction
       }
       $overallTotal += $result;
     }
+
     return [$overallTotal, $minScore, $maxScore];
   }
-  function delete(
+
+  public function delete(
     ClassResultInfo $classResultInfo,
     bool $recalculateAble = false
   ) {

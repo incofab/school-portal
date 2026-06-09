@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\Pin;
 use App\Models\PinGenerator;
+use App\Support\Audit\AcademicIntegrityActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Storage;
@@ -22,12 +23,12 @@ class PinGeneratorController extends Controller
     ]);
   }
 
-  function create(Institution $institution)
+  public function create(Institution $institution)
   {
     return inertia('institutions/pins/generate-pin', []);
   }
 
-  function store(Institution $institution, Request $request)
+  public function store(Institution $institution, Request $request)
   {
     $data = $request->validate([
       'num_of_pins' => ['required', 'integer'],
@@ -46,12 +47,18 @@ class PinGeneratorController extends Controller
       ]);
     }
 
+    app(AcademicIntegrityActivityLogger::class)->resultPinGenerated(
+      $institution,
+      $pinGenerator
+    );
+
     return $this->ok(['pinGenerator' => $pinGenerator]);
   }
 
   public function show(Institution $institution, PinGenerator $pinGenerator)
   {
     $pins = $pinGenerator->pins()->get();
+
     return inertia('institutions/pins/display-pins', [
       'pins' => $pins,
       'resultCheckerUrl' => $institution->website

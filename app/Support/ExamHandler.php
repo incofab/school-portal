@@ -7,6 +7,7 @@ use App\Enums\ExamStatus;
 use App\Helpers\ExamAttemptFileHandler;
 use App\Models\Exam;
 use App\Models\ExamCourseable;
+use App\Support\Audit\AcademicIntegrityActivityLogger;
 use DB;
 
 class ExamHandler
@@ -85,6 +86,8 @@ class ExamHandler
         'num_of_questions'
       ])
     )->syncExamFile();
+
+    app(AcademicIntegrityActivityLogger::class)->examStarted($this->exam);
 
     return $this;
   }
@@ -180,6 +183,11 @@ class ExamHandler
       ->save();
     // $examAttemptFileHandler->deleteExamFile();
     DB::commit();
+
+    app(AcademicIntegrityActivityLogger::class)->examSubmitted(
+      $this->exam,
+      $reEvaluate
+    );
   }
 
   public function endAndAbort($reason = null)

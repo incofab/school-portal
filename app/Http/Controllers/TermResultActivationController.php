@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\Pin;
 use App\Models\Student;
 use App\Models\TermResult;
+use App\Support\Audit\AcademicIntegrityActivityLogger;
 use App\Support\SettingsHandler;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -19,6 +19,7 @@ class TermResultActivationController extends Controller
     if (!$this->isActivationPinNeeded()) {
       return redirect()->route('student-login');
     }
+
     return inertia('auth/activate-student-term-result');
   }
 
@@ -36,6 +37,7 @@ class TermResultActivationController extends Controller
         return true;
       }
     }
+
     return false;
   }
 
@@ -102,11 +104,13 @@ class TermResultActivationController extends Controller
       $latestTermResult = $this->getLatestResult($student);
       if ($latestTermResult) {
         $this->checkForPublication($latestTermResult);
+
         return $this->successRes(
           $latestTermResult->institution,
           $latestTermResult
         );
       }
+
       return $this->errorRes(
         'Seems results have already been activate, Login to access them',
         route('student-login')
@@ -115,6 +119,7 @@ class TermResultActivationController extends Controller
 
     if ($count === 1) {
       $this->checkForPublication($termResults->first());
+
       return $this->activateResult($termResults->first(), $pin, $student);
     }
 
@@ -167,6 +172,7 @@ class TermResultActivationController extends Controller
         $termResult->for_mid_term ? 1 : 0
       ]
     );
+
     return response()->json(['redirect_url' => $route, 'activated' => true]);
   }
 
@@ -200,10 +206,18 @@ class TermResultActivationController extends Controller
         ])
         ->save();
     }
+
+    app(AcademicIntegrityActivityLogger::class)->resultPinUsed(
+      $pin->institution,
+      $pin,
+      $termResult,
+      $student
+    );
+
     return $this->successRes($pin->institution, $termResult);
   }
 
-  function canActivate(Pin $pin, TermResult $termResult)
+  public function canActivate(Pin $pin, TermResult $termResult)
   {
     if (!$pin->term_result_id) {
       return true;

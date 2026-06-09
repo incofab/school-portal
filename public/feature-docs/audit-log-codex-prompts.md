@@ -412,7 +412,7 @@ Verification:
 - Report changed files and test results.
 ```
 
-## Stage 5: Results, Assessments, Exams, CBT, And Admissions Events
+## Stage 5: Results, Assessments, Exams, CBT, And Admissions Events [DONE]
 
 Use this prompt for high-risk academic records and public-facing application/exam workflows.
 
@@ -512,51 +512,15 @@ Required event areas:
 
 - Fee created/updated/deleted.
 - Fee assigned to class/student/group.
-- Payment initiated.
-- Payment completed.
-- Payment failed.
-- Manual payment proof uploaded.
 - Manual payment approved.
 - Manual payment rejected.
-- Receipt generated/viewed/downloaded where appropriate.
 - Payment notification sent/received.
-- Wallet funded.
-- Wallet debited/credited.
-- Wallet transaction created/updated/reversed where supported.
-- Withdrawal requested.
 - Withdrawal approved.
 - Withdrawal rejected.
 - Bank account created/updated/deleted.
-- Commission created/updated/paid.
+- Commission updated.
 - Payroll item created/updated/deleted.
-- Salary generated/paid.
-- Expense recorded/approved/rejected/deleted.
-- Payment webhook received/processed/failed.
-- External integration credential/settings changed, with secrets redacted.
-
-Suggested event names:
-
-- `finance.fee_created`
-- `finance.fee_assigned`
-- `payment.initiated`
-- `payment.completed`
-- `payment.failed`
-- `payment.manual_proof_uploaded`
-- `payment.manual_approved`
-- `payment.manual_rejected`
-- `wallet.funded`
-- `wallet.credited`
-- `wallet.debited`
-- `withdrawal.requested`
-- `withdrawal.approved`
-- `withdrawal.rejected`
-- `bank_account.created`
-- `bank_account.updated`
-- `commission.paid`
-- `payroll.salary_paid`
-- `expense.approved`
-- `integration.webhook_received`
-- `integration.webhook_failed`
+- Expense approved/rejected/deleted.
 
 Design requirements:
 

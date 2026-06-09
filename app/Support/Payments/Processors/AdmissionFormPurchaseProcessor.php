@@ -5,6 +5,7 @@ namespace App\Support\Payments\Processors;
 use App\Enums\Payments\PaymentStatus;
 use App\Models\AdmissionApplication;
 use App\Models\AdmissionFormPurchase;
+use App\Support\Audit\AcademicIntegrityActivityLogger;
 use App\Support\Res;
 use App\Support\TransactionHandler;
 use DB;
@@ -63,6 +64,17 @@ class AdmissionFormPurchaseProcessor extends PaymentProcessor
     }
 
     DB::commit();
+
+    app(AcademicIntegrityActivityLogger::class)->admissionFormPurchased(
+      $admissionFormPurchase,
+      $admissionApplication,
+      $admissionForm,
+      [
+        'amount' => $this->paymentReference->getAmount(),
+        'merchant' => $this->paymentReference->getPaymentMerchant(),
+        'reference' => $this->paymentReference->getReference()
+      ]
+    );
 
     return successRes('Admission form purchased successfully');
   }

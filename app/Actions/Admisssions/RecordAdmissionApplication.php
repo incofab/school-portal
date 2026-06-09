@@ -6,6 +6,7 @@ use App\Models\AdmissionApplication;
 use App\Models\AdmissionForm;
 use App\Models\ApplicationGuardian;
 use App\Models\Institution;
+use App\Support\Audit\AcademicIntegrityActivityLogger;
 use App\Support\Media\MediaManager;
 use DB;
 use Illuminate\Http\UploadedFile;
@@ -67,6 +68,10 @@ class RecordAdmissionApplication
     }
 
     DB::commit();
+
+    app(AcademicIntegrityActivityLogger::class)->admissionApplicationSubmitted(
+      $admissionApplication
+    );
 
     return $admissionApplication;
   }

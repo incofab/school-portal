@@ -13,6 +13,7 @@ use App\Models\Question;
 use App\Models\Student;
 use App\Models\TheoryQuestion;
 use App\Rules\ValidateMorphRule;
+use App\Support\Audit\AcademicIntegrityActivityLogger;
 use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
@@ -153,6 +154,7 @@ class ExamCourseableController extends Controller
       'scores' => ['required', 'array']
     ]);
     $scores = [];
+    $oldTheoryScore = $examCourseable->theory_score ?? 0;
 
     foreach ($theoryQuestions as $question) {
       $rawScore = data_get($data['scores'], (string) $question->id);
@@ -207,6 +209,16 @@ class ExamCourseableController extends Controller
         ])
         ->save();
     });
+
+    $examCourseable->refresh();
+    $exam->refresh();
+    app(AcademicIntegrityActivityLogger::class)->examTheoryScored(
+      $exam,
+      $examCourseable,
+      $oldTheoryScore,
+      $examCourseable->theory_score ?? 0,
+      $theoryQuestions->count()
+    );
 
     return $this->ok();
   }

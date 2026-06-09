@@ -10,11 +10,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RecordCourseResultRequest;
 use App\Http\Requests\UploadClassSheetRequest;
 use App\Models\Assessment;
-use App\Models\ClassResultInfo;
 use App\Models\Classification;
-use App\Models\CourseTeacher;
+use App\Models\ClassResultInfo;
 use App\Models\CourseResult;
+use App\Models\CourseTeacher;
 use App\Models\Institution;
+use App\Support\Audit\AcademicIntegrityActivityLogger;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use DB;
 use Illuminate\Http\Request;
@@ -206,6 +207,9 @@ class CourseResultsController extends Controller
       $forMidTerm
     );
 
+    app(AcademicIntegrityActivityLogger::class)->resultScoreDeleted(
+      $courseResult
+    );
     $courseResult->delete();
 
     if ($classification) {

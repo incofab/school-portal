@@ -20,6 +20,7 @@ use App\Models\Institution;
 use App\Models\ManualPayment;
 use App\Models\Student;
 use App\Rules\ValidateExistsRule;
+use App\Support\Audit\AcademicIntegrityActivityLogger;
 use App\Support\Payments\Merchants\PaymentMerchant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
@@ -128,6 +129,8 @@ class AdmissionApplicationController extends Controller
         new ValidateExistsRule(Classification::class)
       ]
     ]);
+    $oldStatus = $admissionApplication->admission_status;
+    $classification = Classification::query()->find($data['classification']);
 
     // == If Admitted, fill the necessary DB Tables with the needed information
     if ($data['admission_status'] === AdmissionStatusType::Admitted->value) {
@@ -138,6 +141,16 @@ class AdmissionApplicationController extends Controller
     $admissionApplication
       ->fill(['admission_status' => $data['admission_status']])
       ->save();
+
+    app(
+      AcademicIntegrityActivityLogger::class
+    )->admissionApplicationStatusChanged(
+      $institution,
+      $admissionApplication->fresh('admissionForm.academicSession'),
+      $oldStatus,
+      $data['admission_status'],
+      $classification
+    );
 
     return $this->ok();
   }

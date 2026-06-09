@@ -23,6 +23,10 @@ use App\Models\CourseResult;
 use App\Models\CourseResultInfo;
 use App\Models\CourseSession;
 use App\Models\CourseTeacher;
+use App\Models\Event;
+use App\Models\EventCourseable;
+use App\Models\Exam;
+use App\Models\ExamCourseable;
 use App\Models\Fee;
 use App\Models\FeePayment;
 use App\Models\Funding;
@@ -30,12 +34,13 @@ use App\Models\GuardianStudent;
 use App\Models\Institution;
 use App\Models\InstitutionGroup;
 use App\Models\InstitutionUser;
+use App\Models\LearningEvaluation;
+use App\Models\LearningEvaluationDomain;
 use App\Models\LessonNote;
 use App\Models\LessonPlan;
 use App\Models\ManualPayment;
 use App\Models\Media;
 use App\Models\PaymentReference;
-use App\Models\Pin;
 use App\Models\PinGenerator;
 use App\Models\Receipt;
 use App\Models\ReservedAccount;
@@ -67,6 +72,7 @@ class ModelAuditRegistry
   public const LARGE_ATTRIBUTES = [
     'answer',
     'answers',
+    'attempts',
     'body',
     'comment',
     'comments',
@@ -77,10 +83,13 @@ class ModelAuditRegistry
     'message',
     'note',
     'notes',
+    'photo',
+    'pin',
     'raw',
     'remark',
     'remarks',
-    'text'
+    'text',
+    'theory_question_scores'
   ];
 
   public const MODELS = [
@@ -111,6 +120,12 @@ class ModelAuditRegistry
     ],
     Attendance::class => ['category' => ActivityLogCategory::Attendance],
     Assessment::class => ['category' => ActivityLogCategory::Assessment],
+    LearningEvaluation::class => [
+      'category' => ActivityLogCategory::Assessment
+    ],
+    LearningEvaluationDomain::class => [
+      'category' => ActivityLogCategory::Assessment
+    ],
     CourseResult::class => ['category' => ActivityLogCategory::Result],
     CourseResultInfo::class => ['category' => ActivityLogCategory::Result],
     ClassResultInfo::class => ['category' => ActivityLogCategory::Result],
@@ -121,7 +136,10 @@ class ModelAuditRegistry
     TermDetail::class => ['category' => ActivityLogCategory::Result],
     ResultCommentTemplate::class => ['category' => ActivityLogCategory::Result],
     PinGenerator::class => ['category' => ActivityLogCategory::Result],
-    Pin::class => ['category' => ActivityLogCategory::Result],
+    Event::class => ['category' => ActivityLogCategory::Exam],
+    EventCourseable::class => ['category' => ActivityLogCategory::Exam],
+    Exam::class => ['category' => ActivityLogCategory::Exam],
+    ExamCourseable::class => ['category' => ActivityLogCategory::Exam],
     Fee::class => ['category' => ActivityLogCategory::Fee],
     FeePayment::class => ['category' => ActivityLogCategory::Payment],
     ManualPayment::class => ['category' => ActivityLogCategory::Payment],
