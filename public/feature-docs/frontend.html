@@ -125,11 +125,10 @@
               >
             </div>
             <div class="desc">
-              Global manager activity log list with date, institution,
+              Global admin-manager activity log list with date, institution,
               institution group, category, event, actor, actor role, subject
               type/name/search, severity, IP address, request id, retention
-              category, and impersonated-only filters plus an
-              authorization-gated CSV export action.
+              category, and impersonated-only filters plus a CSV export action.
             </div>
           </li>
           <li>
@@ -145,7 +144,9 @@
               Institution admin activity log list scoped to the current
               institution, reusing the shared audit table and detail drawer
               while excluding manager-only cross-institution filter controls and
-              exposing only the scoped export action when authorized.
+              exposing only the scoped export action. Manager users access this
+              page through institution impersonation rather than direct
+              activity-log permissions.
             </div>
           </li>
           <li>
@@ -159,15 +160,16 @@
             </div>
             <div class="desc">
               Shared Chakra/Inertia component for paginated audit tables,
-              advanced filter controls, compact severity indicators, export
-              button rendering, and the detail drawer that shows actor, subject,
-              institution/group, category, event, severity, retention category,
-              request context, impersonator context, integrity hash, properties,
-              old values, new values, and a side-by-side old/new value diff.
-              Financial categories additionally show a compact summary of
-              amount, currency, reference, transaction, provider, status,
-              method, bank account last four, payer/payee, approval actor, and
-              fee title before the JSON blocks.
+              collapsed-by-default advanced filter controls with an active
+              filter count and expand/collapse toggle, compact severity
+              indicators, export button rendering, and the detail drawer that
+              shows actor, subject, institution/group, category, event,
+              severity, retention category, request context, impersonator
+              context, integrity hash, properties, old values, new values, and a
+              side-by-side old/new value diff. Financial categories additionally
+              show a compact summary of amount, currency, reference,
+              transaction, provider, status, method, bank account last four,
+              payer/payee, approval actor, and fee title before the JSON blocks.
             </div>
           </li>
         </ul>
@@ -1798,7 +1800,9 @@
             </div>
             <div class="desc">
               Form screen to create or edit Fee, with validation and save
-              actions.
+              actions. The create flow includes a reusable previous-fee
+              structure picker that previews source period, line items, and
+              categories before copying the structure into the new fee draft.
             </div>
           </li>
           <li>

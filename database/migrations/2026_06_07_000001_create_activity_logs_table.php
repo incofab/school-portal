@@ -4,6 +4,10 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migration for creating the activity_logs table.
+ * This table stores immutable audit trails with integrity verification support.
+ */
 return new class extends Migration {
   public function up(): void
   {
@@ -42,9 +46,9 @@ return new class extends Migration {
       $table->nullableMorphs('impersonator');
       $table->string('severity')->default('info');
       $table->string('retention_category')->default('normal');
-      $table->string('previous_hash')->nullable();
-      $table->string('row_hash')->nullable();
-      $table->timestamp('integrity_verified_at')->nullable();
+      $table->string('previous_hash')->nullable(); // Hash of the preceding record for chain verification
+      $table->string('row_hash')->nullable();      // HMAC-SHA256 hash of the current record's data
+      $table->timestamp('integrity_verified_at')->nullable(); // Last manual verification timestamp
       $table->timestamps();
 
       $table->index(['institution_id', 'created_at']);

@@ -235,3 +235,10 @@ export function anchorDownload(url: string, name?: string) {
   a.click();
   a.remove();
 }
+
+export function ellipizeString(str?: string, length: number = 10) {
+  if (!str) {
+    return '';
+  }
+  return str.length > length ? str.substring(0, length) + '...' : str;
+}

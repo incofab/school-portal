@@ -16,6 +16,7 @@ use App\Models\CourseResult;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Support\Audit\AcademicIntegrityActivityLogger;
+use App\Support\Audit\ModelAudit;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use DB;
 use Illuminate\Http\Request;
@@ -210,7 +211,11 @@ class CourseResultsController extends Controller
     app(AcademicIntegrityActivityLogger::class)->resultScoreDeleted(
       $courseResult
     );
-    $courseResult->delete();
+    ModelAudit::withoutAuditingFor(CourseResult::class, function () use (
+      $courseResult
+    ) {
+      $courseResult->delete();
+    });
 
     if ($classification) {
       EvaluateCourseResultForClass::run(

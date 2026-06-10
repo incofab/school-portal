@@ -25,6 +25,13 @@ class VerifyInstitutionUser
     $institution = $request->route()->institution;
     $institutionUser = $institution->institutionUsers->first();
 
+    if ($user->isManager()) {
+      $message =
+        'Managers must impersonate an institution admin to access institution pages.';
+
+      return $this->eject($request, $message);
+    }
+
     if ($institution->status !== InstitutionStatus::Active) {
       $message = 'This institution is not active. Please contact support.';
 

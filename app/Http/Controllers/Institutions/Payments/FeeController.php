@@ -10,6 +10,7 @@ use App\Models\AcademicSession;
 use App\Models\Association;
 use App\Models\Fee;
 use App\Models\Institution;
+use App\Support\Audit\ModelAudit;
 use App\Support\Audit\FinancialActivityLogger;
 use App\Support\UITableFilters\FeeUITableFilters;
 use Illuminate\Http\Request;
@@ -57,7 +58,12 @@ class FeeController extends Controller
   public function create(Institution $institution)
   {
     return inertia('institutions/payments/create-edit-fee', [
-      'associations' => Association::all()
+      'associations' => Association::all(),
+      'feeTemplates' => Fee::query()
+        ->with(['academicSession', 'feeCategories.feeable'])
+        ->latest()
+        ->take(30)
+        ->get()
     ]);
   }
 
@@ -102,7 +108,9 @@ class FeeController extends Controller
       'fee_items'
     ]);
 
-    $fee->delete();
+    ModelAudit::withoutAuditingFor(Fee::class, function () use ($fee) {
+      $fee->delete();
+    });
 
     app(FinancialActivityLogger::class)->feeRecorded(
       $fee,

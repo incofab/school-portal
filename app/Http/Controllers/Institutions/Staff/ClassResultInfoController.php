@@ -18,6 +18,7 @@ use App\Models\ResultCommentTemplate;
 use App\Models\TermResult;
 use App\Rules\ValidateExistsRule;
 use App\Support\Audit\AcademicIntegrityActivityLogger;
+use App\Support\Audit\ModelAudit;
 use App\Support\SettingsHandler;
 use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use Illuminate\Http\Request;
@@ -108,9 +109,14 @@ class ClassResultInfoController extends Controller
     );
 
     $oldValue = (bool) $classResultInfo->is_locked;
-    $classResultInfo->update([
-      'is_locked' => $data['is_locked']
-    ]);
+    ModelAudit::withoutAuditingFor(ClassResultInfo::class, function () use (
+      $classResultInfo,
+      $data
+    ) {
+      $classResultInfo->update([
+        'is_locked' => $data['is_locked']
+      ]);
+    });
     ClassResultInfo::clearResultLockCache();
     app(AcademicIntegrityActivityLogger::class)->resultLockChanged(
       $classResultInfo->fresh(['classification', 'academicSession']),

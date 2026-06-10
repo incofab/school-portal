@@ -131,6 +131,19 @@
           </li>
           <li>
             <div>
+              <strong>ModelAudit</strong>
+              <span class="path"
+                ><code>app/Support/Audit/ModelAudit.php</code></span
+              >
+            </div>
+            <div class="desc">
+              Scoped automatic-model-audit suppression helper used when a
+              controller/action emits a richer domain-specific activity log for
+              the same create, update, or delete.
+            </div>
+          </li>
+          <li>
+            <div>
               <strong>activity_logs</strong>
               <span class="path"
                 ><code
@@ -2095,7 +2108,15 @@
             </div>
             <div class="desc">
               Creates the permission/role tables used by the authorization
-              system.
+              system. The
+              <code
+                >2026_06_10_000001_remove_activity_log_direct_access_permissions</code
+              >
+              cleanup migration removes legacy
+              <code>activity-logs.view-any</code> and
+              <code>activity-logs.view-institution</code> rows and assignments
+              so activity-log access follows admin-manager and institution-admin
+              session checks instead of direct permission grants.
             </div>
           </li>
           <li>
@@ -3371,7 +3392,8 @@
               >
             </div>
             <div class="desc">
-              Seeds baseline Role data used in local/dev/testing.
+              Seeds baseline Role data used in local/dev/testing; it does not
+              seed activity-log direct-access permissions.
             </div>
           </li>
           <li>

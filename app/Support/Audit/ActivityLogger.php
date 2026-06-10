@@ -11,6 +11,10 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * A fluent builder for creating ActivityLog entries.
+ * Handles context capturing and data sanitization before persistence.
+ */
 class ActivityLogger
 {
     private array $payload = [];
@@ -135,6 +139,9 @@ class ActivityLogger
         return $this;
     }
 
+    /**
+     * Finalize the payload and persist the activity log entry.
+     */
     public function log(): ActivityLog
     {
         if ($this->useDefaultContext && empty($this->payload['actor_id'])) {

@@ -9,6 +9,7 @@ use App\Models\AssignmentSubmission;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Support\Audit\AcademicActivityLogger;
+use App\Support\Audit\ModelAudit;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -132,10 +133,13 @@ class AssignmentSubmissionController extends Controller
 
     $student = $user->student;
 
-    $submission = AssignmentSubmission::create([
-      ...$data,
-      'student_id' => $student->id
-    ]);
+    $submission = ModelAudit::withoutAuditingFor(
+      AssignmentSubmission::class,
+      fn() => AssignmentSubmission::create([
+        ...$data,
+        'student_id' => $student->id
+      ])
+    );
     app(AcademicActivityLogger::class)->assignmentSubmitted(
       $institution,
       $submission
@@ -171,10 +175,15 @@ class AssignmentSubmissionController extends Controller
     ]);
 
     $oldScore = $assignmentSubmission->score;
-    $assignmentSubmission->update([
-      'score' => $request->score,
-      'remark' => $request->remark
-    ]);
+    ModelAudit::withoutAuditingFor(
+      AssignmentSubmission::class,
+      function () use ($assignmentSubmission, $request) {
+        $assignmentSubmission->update([
+          'score' => $request->score,
+          'remark' => $request->remark
+        ]);
+      }
+    );
     app(AcademicActivityLogger::class)->assignmentScored(
       $institution,
       $assignmentSubmission,

@@ -4,6 +4,7 @@ import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { ActivityLog } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
+import useInstitutionRoute from '@/hooks/use-institution-route';
 
 interface Props {
   activityLogs: PaginationResponse<ActivityLog>;
@@ -20,6 +21,7 @@ export default function ListActivityLogs({
   filterOptions,
   canExport,
 }: Props) {
+  const { instRoute } = useInstitutionRoute();
   return (
     <DashboardLayout>
       <Slab>

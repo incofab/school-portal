@@ -628,8 +628,9 @@
                 <li>
                   Middleware: <code>Authenticate</code>,
                   <code>VerifyManager</code>,
-                  <code>VerifyInstitutionUser</code>, <code>VerifyAdmin</code>,
-                  <code>StudentAccess</code>.
+                  <code>VerifyInstitutionUser</code> blocks direct
+                  manager-account access to institution pages,
+                  <code>VerifyAdmin</code>, <code>StudentAccess</code>.
                 </li>
                 <li>
                   Data: <code>User</code>, <code>Admin</code>,
@@ -1465,14 +1466,17 @@
             purchases, manual payment review/confirmation/rejection, fee payment
             summary retrieval, receipt listing/showing, universal receipt
             printing, payment notifications, admission form payments, payment
-            references, and provider webhook processing. Fee
-            create/update/delete, fee assignment snapshots, manual payment
-            approvals/rejections, outgoing payment notifications, and payment
-            credential changes now emit explicit finance audit events with
-            compact sanitized amount, reference, provider, payer/payee, actor,
-            and account metadata. Manual payment proof uploads are now tracked
-            through the shared media subsystem while continuing to synchronize
-            the legacy proof path and URL columns.
+            references, and provider webhook processing. Fee creation can reuse
+            previous term/session fee structures so staff can copy line items,
+            amounts, intervals, and category assignments into a new period
+            without rebuilding the fee manually. Fee create/update/delete, fee
+            assignment snapshots, manual payment approvals/rejections, outgoing
+            payment notifications, and payment credential changes now emit
+            explicit finance audit events with compact sanitized amount,
+            reference, provider, payer/payee, actor, and account metadata.
+            Manual payment proof uploads are now tracked through the shared
+            media subsystem while continuing to synchronize the legacy proof
+            path and URL columns.
           </p>
           <ul>
             <li>
@@ -1829,19 +1833,24 @@
             snapshots, and optional row-hash integrity metadata. The logger is
             safe for HTTP requests, jobs, commands, tests, and guest/system
             events, and centrally redacts sensitive keys before persistence.
-            Manager and institution admin list pages expose paginated,
+            Admin-manager and institution admin list pages expose paginated,
             searchable, filterable activity logs with advanced filters for date
             range, institution, institution group, actor, actor role, category,
             event, subject type/name, severity, IP address, request id,
-            retention category, and impersonated-only activity. Authorized users
-            can export the current filtered scope as streamed CSV. The detail
+            retention category, and impersonated-only activity. Admin managers
+            can export the global filtered scope, while institution admins can
+            export only the current institution scope. Manager users must enter
+            institution pages through impersonation; legacy activity-log
+            permissions do not grant direct institution-page access. The detail
             drawer shows actor, subject, institution/group,
             event/category/severity, request and impersonator context,
             properties, old/new values, a compact diff, integrity hash, and
             financial summary fields for
             amount/reference/status/provider/account metadata. Automatic model
             auditing now records opted-in high-value create, update, delete,
-            restore, and force-delete events without controller changes, while
+            restore, and force-delete events without controller changes. Domain
+            workflows suppress same-write automatic model rows when a richer
+            explicit event is emitted, avoiding duplicate activity log entries.
             <code>SecurityActivityLogger</code> records explicit authentication,
             authorization, account, role, and impersonation domain events,
             <code>AcademicActivityLogger</code> records explicit student,
@@ -1872,12 +1881,12 @@
             </li>
             <li>
               Routes: <code>managers.activity-logs.index</code> and
-              <code>managers.activity-logs.export</code> for global manager
+              <code>managers.activity-logs.export</code> for admin-manager
               viewing/export, plus
               <code>institutions.activity-logs.index</code> and
               <code>institutions.activity-logs.export</code> for
-              current-institution viewing/export, including group-scoped logs
-              for the institution's own institution group only.
+              current-institution admin viewing/export, including group-scoped
+              logs for the institution's own institution group only.
             </li>
             <li>
               Frontend: shared

@@ -9,6 +9,7 @@ use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\User;
 use App\Support\Audit\AcademicActivityLogger;
+use App\Support\Audit\ModelAudit;
 use App\Support\UITableFilters\CourseTeachersUITableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -81,7 +82,11 @@ class CourseTeachersController extends Controller
     CourseTeacher $courseTeacher
   ) {
     app(AcademicActivityLogger::class)->courseTeacherRemoved($courseTeacher);
-    $courseTeacher->delete();
+    ModelAudit::withoutAuditingFor(CourseTeacher::class, function () use (
+      $courseTeacher
+    ) {
+      $courseTeacher->delete();
+    });
 
     return $this->ok();
   }
@@ -118,11 +123,14 @@ class CourseTeachersController extends Controller
     $classificationIds = $data['classification_ids'];
     foreach ($courseIds as $key => $courseId) {
       foreach ($classificationIds as $key => $classificationId) {
-        $courseTeacher = $user->courseTeachers()->firstOrCreate([
-          'institution_id' => $institution->id,
-          'course_id' => $courseId,
-          'classification_id' => $classificationId
-        ]);
+        $courseTeacher = ModelAudit::withoutAuditingFor(
+          CourseTeacher::class,
+          fn() => $user->courseTeachers()->firstOrCreate([
+            'institution_id' => $institution->id,
+            'course_id' => $courseId,
+            'classification_id' => $classificationId
+          ])
+        );
 
         if ($courseTeacher->wasRecentlyCreated) {
           app(AcademicActivityLogger::class)->courseTeacherAssigned(

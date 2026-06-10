@@ -8,6 +8,7 @@ use App\Helpers\ExamAttemptFileHandler;
 use App\Models\Exam;
 use App\Models\ExamCourseable;
 use App\Support\Audit\AcademicIntegrityActivityLogger;
+use App\Support\Audit\ModelAudit;
 use DB;
 
 class ExamHandler
@@ -63,15 +64,17 @@ class ExamHandler
       ? $this->exam->time_remaining
       : $this->exam->event->getDurationInSeconds(); // gets the duration in seconds
 
-    $this->exam
-      ->fill([
-        'start_time' => $this->exam->start_time ?? now(), // Maintain original start_time
-        'pause_time' => null,
-        'end_time' => now()->addSeconds(floatval($duration)),
-        'time_remaining' => null,
-        'status' => ExamStatus::Active
-      ])
-      ->save();
+    ModelAudit::withoutAuditingFor(Exam::class, function () use ($duration) {
+      $this->exam
+        ->fill([
+          'start_time' => $this->exam->start_time ?? now(), // Maintain original start_time
+          'pause_time' => null,
+          'end_time' => now()->addSeconds(floatval($duration)),
+          'time_remaining' => null,
+          'status' => ExamStatus::Active
+        ])
+        ->save();
+    });
 
     ExamAttemptFileHandler::make(
       $this->exam->only([
@@ -142,19 +145,28 @@ class ExamHandler
           ? $examCourseable->theory_score
           : 0;
 
-      $examCourseable
-        ->fill([
-          'score' => $score,
-          'num_of_questions' => $numOfQuestions,
-          'theory_score' => $theoryScore,
-          'theory_max_score' => $theoryMaxScore,
-          'theory_num_of_questions' => $theoryNumOfQuestions,
-          'theory_evaluated' =>
-            $theoryNumOfQuestions === 0
-              ? true
-              : $examCourseable->theory_evaluated
-        ])
-        ->save();
+      ModelAudit::withoutAuditingFor(ExamCourseable::class, function () use (
+        $examCourseable,
+        $score,
+        $numOfQuestions,
+        $theoryScore,
+        $theoryMaxScore,
+        $theoryNumOfQuestions
+      ) {
+        $examCourseable
+          ->fill([
+            'score' => $score,
+            'num_of_questions' => $numOfQuestions,
+            'theory_score' => $theoryScore,
+            'theory_max_score' => $theoryMaxScore,
+            'theory_num_of_questions' => $theoryNumOfQuestions,
+            'theory_evaluated' =>
+              $theoryNumOfQuestions === 0
+                ? true
+                : $examCourseable->theory_evaluated
+          ])
+          ->save();
+      });
       $totalScore += $score;
       $totalTheoryScore += $theoryScore;
       $totalTheoryMaxScore += $theoryMaxScore;
@@ -162,25 +174,33 @@ class ExamHandler
     }
 
     $this->exam->load('examCourseables');
-    $this->exam
-      ->fill([
-        'pause_time' => null,
-        'end_time' => null,
-        'time_remaining' => 0,
-        'status' => ExamStatus::Ended,
-        'score' => $totalScore,
-        'theory_score' => $totalTheoryScore,
-        'theory_max_score' => $totalTheoryMaxScore,
-        'num_of_questions' => $totalNumOfQuestions,
-        'theory_evaluated' => !$this->exam->examCourseables->contains(
-          fn(
-            ExamCourseable $courseable
-          ) => $courseable->theory_num_of_questions > 0 &&
-            !$courseable->theory_evaluated
-        ),
-        'attempts' => $examAttemptFileHandler->getQuestionAttempts()
-      ])
-      ->save();
+    ModelAudit::withoutAuditingFor(Exam::class, function () use (
+      $totalScore,
+      $totalTheoryScore,
+      $totalTheoryMaxScore,
+      $totalNumOfQuestions,
+      $examAttemptFileHandler
+    ) {
+      $this->exam
+        ->fill([
+          'pause_time' => null,
+          'end_time' => null,
+          'time_remaining' => 0,
+          'status' => ExamStatus::Ended,
+          'score' => $totalScore,
+          'theory_score' => $totalTheoryScore,
+          'theory_max_score' => $totalTheoryMaxScore,
+          'num_of_questions' => $totalNumOfQuestions,
+          'theory_evaluated' => !$this->exam->examCourseables->contains(
+            fn(
+              ExamCourseable $courseable
+            ) => $courseable->theory_num_of_questions > 0 &&
+              !$courseable->theory_evaluated
+          ),
+          'attempts' => $examAttemptFileHandler->getQuestionAttempts()
+        ])
+        ->save();
+    });
     // $examAttemptFileHandler->deleteExamFile();
     DB::commit();
 

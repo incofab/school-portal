@@ -11,6 +11,8 @@ use App\Http\Requests\CreateStaffRequest;
 use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
+use App\Models\User;
+use App\Support\Audit\ModelAudit;
 use App\Rules\ExcelRule;
 use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Http\Request;
@@ -27,7 +29,10 @@ class InstitutionUserController extends Controller
   public function store(Institution $institution, CreateStaffRequest $request)
   {
     $data = $request->validated();
-    $user = RecordStaff::make($institution, $data)->create();
+    $user = ModelAudit::withoutAuditingFor(
+      [User::class, InstitutionUser::class],
+      fn() => RecordStaff::make($institution, $data)->create()
+    );
 
     app(SecurityActivityLogger::class)->userCreated(
       currentUser(),

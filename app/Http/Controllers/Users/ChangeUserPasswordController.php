@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Support\Audit\ModelAudit;
 use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -31,8 +33,10 @@ class ChangeUserPasswordController extends Controller
       'new_password' => ['required', 'string', 'confirmed', 'min:4']
     ]);
 
-    $user->password = Hash::make($data['new_password']);
-    $user->save();
+    ModelAudit::withoutAuditingFor(User::class, function () use ($user, $data) {
+      $user->password = Hash::make($data['new_password']);
+      $user->save();
+    });
 
     app(SecurityActivityLogger::class)->passwordChanged(
       $user,

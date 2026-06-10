@@ -6,6 +6,7 @@ use App\Enums\Payments\PaymentStatus;
 use App\Models\AdmissionApplication;
 use App\Models\AdmissionFormPurchase;
 use App\Support\Audit\AcademicIntegrityActivityLogger;
+use App\Support\Audit\ModelAudit;
 use App\Support\Res;
 use App\Support\TransactionHandler;
 use DB;
@@ -37,20 +38,28 @@ class AdmissionFormPurchaseProcessor extends PaymentProcessor
       $this->confirmingUser
     );
 
-    $admissionFormPurchase = AdmissionFormPurchase::query()->firstOrCreate(
-      ['reference' => $this->paymentReference->getReference()],
-      [
-        'institution_id' => $admissionForm->institution_id,
-        'admission_form_id' => $admissionForm->id
-      ]
+    $admissionFormPurchase = ModelAudit::withoutAuditingFor(
+      AdmissionFormPurchase::class,
+      fn() => AdmissionFormPurchase::query()->firstOrCreate(
+        ['reference' => $this->paymentReference->getReference()],
+        [
+          'institution_id' => $admissionForm->institution_id,
+          'admission_form_id' => $admissionForm->id
+        ]
+      )
     );
 
     $admissionApplication = AdmissionApplication::query()->find(
       $admissionApplicationId
     );
-    $admissionApplication?->update([
-      'admission_form_purchase_id' => $admissionFormPurchase->id
-    ]);
+    ModelAudit::withoutAuditingFor(
+      AdmissionApplication::class,
+      function () use ($admissionApplication, $admissionFormPurchase) {
+        $admissionApplication?->update([
+          'admission_form_purchase_id' => $admissionFormPurchase->id
+        ]);
+      }
+    );
 
     if (!$this->paymentMerchant->isManualPayment()) {
       TransactionHandler::make(

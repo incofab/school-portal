@@ -70,6 +70,47 @@ test('index displays list of fees', function () {
 
   getJson(route('institutions.fees.search', $this->institution))->assertOk();
 });
+
+test('create includes previous fees as reusable templates', function () {
+  $academicSession = AcademicSession::factory()->create([
+    'title' => '2024/2025'
+  ]);
+  $fee = Fee::factory()
+    ->for($this->institution)
+    ->has(
+      FeeCategory::factory()
+        ->for($this->institution)
+        ->state(function (array $attributes, Fee $fee) {
+          return [
+            'fee_id' => $fee->id,
+            'feeable_type' => MorphMap::key(Institution::class),
+            'feeable_id' => $fee->institution_id
+          ];
+        }),
+      'feeCategories'
+    )
+    ->create([
+      'title' => 'First Term Tuition',
+      'academic_session_id' => $academicSession->id,
+      'term' => TermType::First->value,
+      'fee_items' => [['title' => 'Tuition', 'amount' => 5000]]
+    ]);
+
+  getJson(route('institutions.fees.create', $this->institution))
+    ->assertOk()
+    ->assertInertia(
+      fn(AssertableInertia $page) => $page
+        ->component('institutions/payments/create-edit-fee')
+        ->where('feeTemplates.0.id', $fee->id)
+        ->where('feeTemplates.0.academic_session.title', '2024/2025')
+        ->where(
+          'feeTemplates.0.fee_categories.0.feeable_id',
+          $this->institution->id
+        )
+        ->where('feeTemplates.0.fee_items.0.title', 'Tuition')
+        ->missing('fee')
+    );
+});
 return;
 test('create displays the fee creation form', function () {
   Association::factory(2)

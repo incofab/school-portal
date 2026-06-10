@@ -36,6 +36,48 @@ afterEach(function () {
   Carbon::setTestNow();
 });
 
+it(
+  'logs student code changes without duplicate model update logs',
+  function () {
+    $student = Student::factory()
+      ->withInstitution($this->institution)
+      ->create(['code' => 'OLD-CODE']);
+
+    actingAs($this->admin)
+      ->postJson(
+        route('institutions.students.update-code', [
+          $this->institution->uuid,
+          $student
+        ]),
+        ['code' => 'NEW-CODE']
+      )
+      ->assertOk();
+
+    $log = ActivityLog::query()
+      ->where('event', 'student.code_changed')
+      ->firstOrFail();
+
+    expect($log->actor_id)
+      ->toBe($this->admin->id)
+      ->and($log->institution_id)
+      ->toBe($this->institution->id)
+      ->and($log->subject_type)
+      ->toBe(Student::class)
+      ->and($log->subject_id)
+      ->toBe($student->id)
+      ->and($log->old_values['code'])
+      ->toBe('OLD-CODE')
+      ->and($log->new_values['code'])
+      ->toBe('NEW-CODE')
+      ->and(
+        ActivityLog::query()
+          ->where('event', 'model.student.updated')
+          ->exists()
+      )
+      ->toBeFalse();
+  }
+);
+
 it('logs student class changes with movement metadata', function () {
   $sourceClass = Classification::factory()
     ->withInstitution($this->institution)

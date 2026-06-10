@@ -1,10 +1,16 @@
 import React from 'react';
 import {
+  Badge,
+  Box,
+  Button,
+  Divider,
   FormControl,
   HStack,
   Icon,
   IconButton,
   Input,
+  Select,
+  SimpleGrid,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -25,6 +31,7 @@ import { FeeItem, FeePaymentInterval, TermType } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import {
+  ArrowPathIcon,
   CheckCircleIcon,
   PlusIcon,
   TrashIcon,
@@ -32,6 +39,7 @@ import {
 import SelectFeeCategoryModal from '@/components/modals/select-fee-category-modal';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import feeableUtil from '@/util/feeable-util';
+import { formatAsCurrency } from '@/util/util';
 
 interface FeeCategoryMorph {
   feeable_id: number;
@@ -42,13 +50,19 @@ interface FeeCategoryMorph {
 interface Props {
   fee?: Fee;
   associations: Association[];
+  feeTemplates?: Fee[];
 }
 
-export default function CreateOrUpdateFee({ fee, associations }: Props) {
+export default function CreateOrUpdateFee({
+  fee,
+  associations,
+  feeTemplates = [],
+}: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const selectFeeCategoryModalToggle = useModalToggle();
   const { currentAcademicSessionId, currentTerm } = useSharedProps();
+  const [selectedTemplateId, setSelectedTemplateId] = React.useState('');
   const webForm = useWebForm({
     title: fee?.title ?? '',
     amount: fee?.amount ?? '',
@@ -65,6 +79,49 @@ export default function CreateOrUpdateFee({ fee, associations }: Props) {
         value: item.feeable_id,
       })) ?? ([] as FeeCategoryMorph[]),
   });
+  const selectedTemplate = React.useMemo(
+    () =>
+      feeTemplates.find(
+        (template) => template.id.toString() === selectedTemplateId
+      ),
+    [feeTemplates, selectedTemplateId]
+  );
+
+  const applyTemplate = (template: Fee) => {
+    const paymentInterval =
+      template.payment_interval ?? FeePaymentInterval.Termly;
+    const isTermly = paymentInterval === FeePaymentInterval.Termly;
+    const isOneTime = paymentInterval === FeePaymentInterval.OneTime;
+
+    webForm.setData({
+      ...webForm.data,
+      title: template.title,
+      amount: template.amount,
+      payment_interval: paymentInterval,
+      academic_session_id: isOneTime
+        ? ''
+        : webForm.data.academic_session_id ||
+          currentAcademicSessionId ||
+          template.academic_session_id ||
+          '',
+      term: isTermly
+        ? webForm.data.term || currentTerm || template.term || ''
+        : '',
+      fee_items:
+        template.fee_items && template.fee_items.length > 0
+          ? template.fee_items.map((item) => ({
+              title: item.title,
+              amount: item.amount,
+            }))
+          : [{ title: '', amount: 0 }],
+      fee_categories: template.fee_categories.map((item) => ({
+        feeable_id: item.feeable_id,
+        feeable_type: item.feeable_type,
+        label: item.feeable ? feeableUtil(item.feeable).getName() : '',
+        value: item.feeable_id,
+      })),
+    });
+  };
 
   const submit = async () => {
     const res = await webForm.submit((data, web) =>
@@ -87,6 +144,15 @@ export default function CreateOrUpdateFee({ fee, associations }: Props) {
               as={'form'}
               onSubmit={preventNativeSubmit(submit)}
             >
+              {!fee && feeTemplates.length > 0 && (
+                <FeeTemplatePicker
+                  feeTemplates={feeTemplates}
+                  selectedTemplateId={selectedTemplateId}
+                  selectedTemplate={selectedTemplate}
+                  onSelect={setSelectedTemplateId}
+                  onApply={applyTemplate}
+                />
+              )}
               <InputForm
                 form={webForm as any}
                 formKey="title"
@@ -113,18 +179,18 @@ export default function CreateOrUpdateFee({ fee, associations }: Props) {
                       ...webForm.data,
                       payment_interval: interval,
                       academic_session_id:
-                        interval == FeePaymentInterval.OneTime
+                        interval === FeePaymentInterval.OneTime
                           ? ''
                           : webForm.data.academic_session_id,
                       term:
-                        interval == FeePaymentInterval.Termly
+                        interval === FeePaymentInterval.Termly
                           ? webForm.data.term
                           : '',
                     });
                   }}
                 />
               </FormControlBox>
-              {webForm.data.payment_interval == FeePaymentInterval.Termly && (
+              {webForm.data.payment_interval === FeePaymentInterval.Termly && (
                 <FormControlBox
                   form={webForm as any}
                   formKey="term"
@@ -137,7 +203,7 @@ export default function CreateOrUpdateFee({ fee, associations }: Props) {
                   />
                 </FormControlBox>
               )}
-              {webForm.data.payment_interval != FeePaymentInterval.OneTime && (
+              {webForm.data.payment_interval !== FeePaymentInterval.OneTime && (
                 <FormControlBox
                   form={webForm as any}
                   formKey="academic_session_id"
@@ -196,6 +262,125 @@ export default function CreateOrUpdateFee({ fee, associations }: Props) {
         }}
       />
     </DashboardLayout>
+  );
+}
+
+function FeeTemplatePicker({
+  feeTemplates,
+  selectedTemplateId,
+  selectedTemplate,
+  onSelect,
+  onApply,
+}: {
+  feeTemplates: Fee[];
+  selectedTemplateId: string;
+  selectedTemplate?: Fee;
+  onSelect: (id: string) => void;
+  onApply: (fee: Fee) => void;
+}) {
+  return (
+    <VStack
+      border={'1px solid'}
+      borderColor={'gray.200'}
+      borderRadius={'7px'}
+      p={4}
+      spacing={3}
+      align={'stretch'}
+      w={'100%'}
+    >
+      <HStack justify={'space-between'} align={'start'} spacing={3}>
+        <Box>
+          <Text fontWeight={'semibold'}>Reuse previous fee structure</Text>
+          <Text color={'gray.600'} fontSize={'sm'}>
+            Copy line items, amount, interval, and student categories.
+          </Text>
+        </Box>
+        <Icon as={ArrowPathIcon} boxSize={5} color={'brand.500'} />
+      </HStack>
+
+      <HStack align={'end'} spacing={3}>
+        <FormControl>
+          <Select
+            placeholder={'Select a previous fee'}
+            value={selectedTemplateId}
+            onChange={(e) => onSelect(e.currentTarget.value)}
+          >
+            {feeTemplates.map((template) => (
+              <option key={template.id} value={template.id}>
+                {template.title} - {formatAsCurrency(template.amount)}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+        <Button
+          colorScheme={'brand'}
+          leftIcon={<Icon as={ArrowPathIcon} />}
+          isDisabled={!selectedTemplate}
+          onClick={() => selectedTemplate && onApply(selectedTemplate)}
+          flexShrink={0}
+        >
+          Use structure
+        </Button>
+      </HStack>
+
+      {selectedTemplate && (
+        <>
+          <Divider />
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={3}>
+            <TemplatePreviewItem
+              label={'Source period'}
+              value={
+                selectedTemplate.payment_interval === FeePaymentInterval.OneTime
+                  ? 'One-time'
+                  : [
+                      selectedTemplate.academic_session?.title,
+                      selectedTemplate.term,
+                    ]
+                      .filter(Boolean)
+                      .join(' / ') || 'Not set'
+              }
+            />
+            <TemplatePreviewItem
+              label={'Line items'}
+              value={`${selectedTemplate.fee_items?.length ?? 0}`}
+            />
+            <TemplatePreviewItem
+              label={'Categories'}
+              value={`${selectedTemplate.fee_categories.length}`}
+            />
+          </SimpleGrid>
+          <HStack spacing={2} wrap={'wrap'}>
+            {selectedTemplate.fee_items?.slice(0, 4).map((item, index) => (
+              <Badge key={`${item.title}-${index}`} colorScheme={'gray'}>
+                {item.title}: {formatAsCurrency(item.amount)}
+              </Badge>
+            ))}
+            {(selectedTemplate.fee_items?.length ?? 0) > 4 && (
+              <Badge colorScheme={'gray'}>
+                +{(selectedTemplate.fee_items?.length ?? 0) - 4} more
+              </Badge>
+            )}
+          </HStack>
+        </>
+      )}
+    </VStack>
+  );
+}
+
+function TemplatePreviewItem({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <Box>
+      <Text color={'gray.500'} fontSize={'xs'} textTransform={'uppercase'}>
+        {label}
+      </Text>
+      <Text fontWeight={'semibold'}>{value}</Text>
+    </Box>
   );
 }
 

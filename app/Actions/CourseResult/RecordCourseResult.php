@@ -8,6 +8,7 @@ use App\Models\ClassResultInfo;
 use App\Models\CourseResult;
 use App\Models\CourseTeacher;
 use App\Support\Audit\AcademicIntegrityActivityLogger;
+use App\Support\Audit\ModelAudit;
 
 class RecordCourseResult
 {
@@ -73,18 +74,21 @@ class RecordCourseResult
 
     [$result, $assessmentValues] = $this->getResultScore($courseResult);
     $forMidTerm = $this->data['for_mid_term'] ?? false;
-    $courseResult = CourseResult::query()->updateOrCreate($this->bindingData, [
-      ...collect($this->data)
-        ->except('ass')
-        ->toArray(),
-      'result' => $result,
-      'assessment_values' => $assessmentValues,
-      'grade' => GetGrade::run(
-        $result,
-        $this->courseTeacher->classification_id,
-        $forMidTerm
-      )
-    ]);
+    $courseResult = ModelAudit::withoutAuditingFor(
+      CourseResult::class,
+      fn() => CourseResult::query()->updateOrCreate($this->bindingData, [
+        ...collect($this->data)
+          ->except('ass')
+          ->toArray(),
+        'result' => $result,
+        'assessment_values' => $assessmentValues,
+        'grade' => GetGrade::run(
+          $result,
+          $this->courseTeacher->classification_id,
+          $forMidTerm
+        )
+      ])
+    );
     app(AcademicIntegrityActivityLogger::class)->resultScoreRecorded(
       $courseResult,
       $previousResult

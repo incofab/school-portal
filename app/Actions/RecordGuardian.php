@@ -6,6 +6,7 @@ use App\Enums\InstitutionUserType;
 use App\Models\GuardianStudent;
 use App\Models\User;
 use App\Support\Audit\AcademicActivityLogger;
+use App\Support\Audit\ModelAudit;
 use Illuminate\Support\Facades\DB;
 
 class RecordGuardian
@@ -56,12 +57,15 @@ class RecordGuardian
     int $studentId,
     string $relationship
   ): GuardianStudent {
-    $guardianStudent = $guardianUser->guardianStudents()->firstOrCreate(
-      [
-        'institution_id' => currentInstitution()->id,
-        'student_id' => $studentId
-      ],
-      ['relationship' => $relationship]
+    $guardianStudent = ModelAudit::withoutAuditingFor(
+      GuardianStudent::class,
+      fn() => $guardianUser->guardianStudents()->firstOrCreate(
+        [
+          'institution_id' => currentInstitution()->id,
+          'student_id' => $studentId
+        ],
+        ['relationship' => $relationship]
+      )
     );
 
     if ($guardianStudent->wasRecentlyCreated) {

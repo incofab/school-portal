@@ -6,6 +6,7 @@ use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
+use App\Support\Audit\ModelAudit;
 use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
@@ -27,7 +28,12 @@ class ChangeUserRoleController extends Controller
     $prevRole = $suppliedInstitutionUser->role->value;
     $this->canChangeRole($prevRole, $role);
 
-    $suppliedInstitutionUser->fill(['role' => $role])->update();
+    ModelAudit::withoutAuditingFor(InstitutionUser::class, function () use (
+      $suppliedInstitutionUser,
+      $role
+    ) {
+      $suppliedInstitutionUser->fill(['role' => $role])->update();
+    });
     $suppliedInstitutionUser->loadMissing('user');
 
     app(SecurityActivityLogger::class)->roleChanged(

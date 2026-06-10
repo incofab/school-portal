@@ -5,6 +5,7 @@ namespace App\Actions\Payments;
 use App\Enums\Payments\PaymentStatus;
 use App\Models\ManualPayment;
 use App\Models\User;
+use App\Support\Audit\ModelAudit;
 use App\Support\Audit\FinancialActivityLogger;
 use App\Support\Payments\Processors\PaymentProcessor;
 use App\Support\Res;
@@ -17,11 +18,14 @@ class ManualPaymentHandler
       return failRes('Payment already resolved');
     }
 
-    $res = PaymentProcessor::make(
-      $manualPayment->load('institution', 'user', 'payable', 'paymentable')
-    )
-      ->confirmedBy($staff)
-      ->processPayment();
+    $res = ModelAudit::withoutAuditingFor(
+      ManualPayment::class,
+      fn() => PaymentProcessor::make(
+        $manualPayment->load('institution', 'user', 'payable', 'paymentable')
+      )
+        ->confirmedBy($staff)
+        ->processPayment()
+    );
 
     if ($res->isSuccessful()) {
       app(FinancialActivityLogger::class)->manualPaymentReviewed(
@@ -43,7 +47,13 @@ class ManualPaymentHandler
       return failRes('Payment already resolved');
     }
 
-    $manualPayment->cancelPayment($staff, $reviewNote);
+    ModelAudit::withoutAuditingFor(ManualPayment::class, function () use (
+      $manualPayment,
+      $staff,
+      $reviewNote
+    ) {
+      $manualPayment->cancelPayment($staff, $reviewNote);
+    });
 
     app(FinancialActivityLogger::class)->manualPaymentReviewed(
       $manualPayment->refresh(),

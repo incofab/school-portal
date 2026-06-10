@@ -13,6 +13,7 @@ use App\Models\Institution;
 use App\Models\Student;
 use App\Rules\ExcelRule;
 use App\Support\Audit\AcademicActivityLogger;
+use App\Support\Audit\ModelAudit;
 use App\Support\UITableFilters\StudentUITableFilters;
 use DB;
 use Illuminate\Http\Request;
@@ -208,7 +209,12 @@ class StudentManagementController extends Controller
       ]
     ]);
     $oldCode = $student->code;
-    $student->fill($data)->save();
+    ModelAudit::withoutAuditingFor(Student::class, function () use (
+      $student,
+      $data
+    ) {
+      $student->fill($data)->save();
+    });
 
     app(AcademicActivityLogger::class)->studentCodeChanged(
       $institution,

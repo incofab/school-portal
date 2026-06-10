@@ -4,6 +4,7 @@ namespace App\Actions\Payments;
 
 use App\Models\Fee;
 use App\Models\Institution;
+use App\Support\Audit\ModelAudit;
 use App\Support\Audit\FinancialActivityLogger;
 use Illuminate\Support\Facades\DB;
 
@@ -57,14 +58,16 @@ class RecordFee
 
     DB::beginTransaction();
 
-    if ($this->fee) {
-      $this->fee->fill($feeData)->save();
-    } else {
-      $this->fee = Fee::query()->create([
-        ...$feeData,
-        'institution_id' => $this->institution->id
-      ]);
-    }
+    ModelAudit::withoutAuditingFor(Fee::class, function () use ($feeData) {
+      if ($this->fee) {
+        $this->fee->fill($feeData)->save();
+      } else {
+        $this->fee = Fee::query()->create([
+          ...$feeData,
+          'institution_id' => $this->institution->id
+        ]);
+      }
+    });
 
     $suppliedFeeCategories = collect($this->data['fee_categories']);
 

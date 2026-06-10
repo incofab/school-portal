@@ -9,13 +9,12 @@ class ActivityLogPolicy
 {
   public function viewAnyManager(User $user): bool
   {
-    return $user->isAdmin() || $user->can('activity-logs.view-any');
+    return $user->isAdmin();
   }
 
   public function viewAnyInstitution(User $user): bool
   {
-    return $user->isInstitutionAdmin() ||
-      $user->can('activity-logs.view-institution');
+    return $user->isInstitutionAdmin();
   }
 
   public function exportManager(User $user): bool

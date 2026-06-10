@@ -513,6 +513,11 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin],
         },
         {
+          label: 'Activity Logs',
+          route: instRoute('activity-logs.index'),
+          roles: [InstitutionUserType.Admin],
+        },
+        {
           label: 'Current Term Detail',
           route: instRoute('term-details.index'),
           roles: teachers,

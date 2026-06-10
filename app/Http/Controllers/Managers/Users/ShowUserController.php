@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Managers\Users;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\Audit\ModelAudit;
 use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -33,7 +34,12 @@ class ShowUserController extends Controller
     );
 
     $newPassword = config('app.user_default_password', 'password');
-    $user->fill(['password' => Hash::make($newPassword)])->save();
+    ModelAudit::withoutAuditingFor(User::class, function () use (
+      $user,
+      $newPassword
+    ) {
+      $user->fill(['password' => Hash::make($newPassword)])->save();
+    });
 
     app(SecurityActivityLogger::class)->passwordResetByAdmin(
       $currentUser,

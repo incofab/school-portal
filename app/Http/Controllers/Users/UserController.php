@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Users;
 
 use App\Core\MonnifyHelper;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Support\Audit\ModelAudit;
 use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -43,15 +45,27 @@ class UserController extends Controller
     $hasBvnNin = $user->hasBvn || $user->hasNin;
     $wasPreviouslySet =
       $request->type === 'bvn' ? $user->hasBvn : $user->hasNin;
-    $user->fill([$request->type => $request->value])->save();
+    $res = ModelAudit::withoutAuditingFor(User::class, function () use (
+      $user,
+      $request,
+      $hasBvnNin
+    ) {
+      $user->fill([$request->type => $request->value])->save();
 
-    if (!$hasBvnNin) {
-      $res = MonnifyHelper::make()->reserveAccount($user);
-      if ($res->isNotSuccessful()) {
-        $user->fill([$request->type => null])->save();
+      if (!$hasBvnNin) {
+        $res = MonnifyHelper::make()->reserveAccount($user);
+        if ($res->isNotSuccessful()) {
+          $user->fill([$request->type => null])->save();
 
-        return $this->message($res->message, 403);
+          return $res;
+        }
       }
+
+      return null;
+    });
+
+    if ($res?->isNotSuccessful()) {
+      return $this->message($res->message, 403);
     }
 
     app(SecurityActivityLogger::class)->identityUpdated(

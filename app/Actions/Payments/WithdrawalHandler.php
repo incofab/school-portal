@@ -10,6 +10,7 @@ use App\Models\Partner;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Support\Audit\FinancialActivityLogger;
+use App\Support\Audit\ModelAudit;
 use App\Support\CommissionHandler;
 use App\Support\Fundings\RecordFunding;
 use App\Support\Res;
@@ -28,7 +29,13 @@ class WithdrawalHandler
     ?User $user,
     $remark = ''
   ) {
-    $withdrawal->markAsProcessed($user, WithdrawalStatus::Paid, $remark);
+    ModelAudit::withoutAuditingFor(Withdrawal::class, function () use (
+      $withdrawal,
+      $user,
+      $remark
+    ) {
+      $withdrawal->markAsProcessed($user, WithdrawalStatus::Paid, $remark);
+    });
 
     if ($user) {
       app(FinancialActivityLogger::class)->withdrawalProcessed(
@@ -65,7 +72,13 @@ class WithdrawalHandler
         $remark
       );
     }
-    $withdrawal->markAsProcessed($user, WithdrawalStatus::Declined, $remark);
+    ModelAudit::withoutAuditingFor(Withdrawal::class, function () use (
+      $withdrawal,
+      $user,
+      $remark
+    ) {
+      $withdrawal->markAsProcessed($user, WithdrawalStatus::Declined, $remark);
+    });
 
     if ($user) {
       app(FinancialActivityLogger::class)->withdrawalProcessed(

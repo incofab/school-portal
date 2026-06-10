@@ -2,6 +2,7 @@
 
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\InstitutionUserType;
 use App\Models\BankAccount;
 use App\Models\Fee;
 use App\Models\Institution;
@@ -26,8 +27,10 @@ beforeEach(function () {
     ->create();
 });
 
-function makeDashboardManualPayment($test, array $attributes = []): ManualPayment
-{
+function makeDashboardManualPayment(
+  $test,
+  array $attributes = []
+): ManualPayment {
   return ManualPayment::factory()
     ->institution($test->institution)
     ->payable($test->student)
@@ -57,6 +60,23 @@ it('shows dashboard attention summary for institution admins', function () {
         ->where('attentionSummary.canManageBankAccounts', true);
     });
 });
+
+it(
+  'blocks manager accounts from accessing institution pages directly',
+  function () {
+    $manager = User::factory()
+      ->adminManager()
+      ->create();
+    $manager->institutionUsers()->create([
+      'institution_id' => $this->institution->id,
+      'role' => InstitutionUserType::Admin
+    ]);
+
+    actingAs($manager)
+      ->getJson(route('institutions.dashboard', $this->institution))
+      ->assertForbidden();
+  }
+);
 
 it('shows dashboard attention summary for accountants', function () {
   BankAccount::factory()

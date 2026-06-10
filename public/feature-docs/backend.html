@@ -201,7 +201,9 @@
               payroll adjustments/types, vacancy posts, timetables, school
               activities, live classes, and association mappings in addition to
               the original academic, finance, result, admission, and media
-              models.
+              models. <code>ModelAudit</code> provides scoped suppression so
+              explicit domain audit events do not also create generic
+              <code>model.*</code> rows for the same write.
             </div>
           </li>
           <li>
@@ -222,12 +224,15 @@
               <code>managers.activity-logs.export</code>,
               <code>institutions.activity-logs.index</code>, and
               <code>institutions.activity-logs.export</code>. Manager logs are
-              global and authorized through
+              global for admin managers and authorized through
               <code>ActivityLogPolicy::viewAnyManager</code
               >/<code>exportManager</code>; institution logs and exports are
-              scoped to the current institution plus same-group group-level logs
-              and authorized through
+              scoped to institution-admin sessions for the current institution
+              plus same-group group-level logs and authorized through
               <code>viewAnyInstitution</code>/<code>exportInstitution</code>.
+              Manager users reach institution activity logs only by
+              impersonating the institution admin; activity-log permission rows
+              are not used for direct institution-page access.
             </div>
           </li>
           <li>
@@ -4263,7 +4268,8 @@
             </div>
             <div class="desc">
               HTTP controller for Fee, handling requests, authorization,
-              responses, and critical explicit fee deletion audit events.
+              responses, create-page reusable fee template data, and critical
+              explicit fee deletion audit events.
             </div>
           </li>
           <li>
@@ -8449,7 +8455,9 @@
               >
             </div>
             <div class="desc">
-              Middleware enforcing Verify Institution User checks for requests.
+              Middleware enforcing institution-user checks for requests. Manager
+              role accounts are rejected from direct institution routes and must
+              enter those pages by impersonating an institution admin account.
             </div>
           </li>
           <li>

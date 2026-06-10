@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Institutions\Users;
 
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
+use App\Models\InstitutionUser;
+use App\Models\Student;
 use App\Models\User;
+use App\Support\Audit\ModelAudit;
 use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Http\Request;
 
@@ -31,10 +34,15 @@ class DeleteUserController extends Controller
       $role
     );
 
-    $user->courseTeachers()->delete();
-    $user->delete();
-    $institutionUser->student?->delete();
-    $institutionUser->delete();
+    ModelAudit::withoutAuditingFor(
+      [User::class, InstitutionUser::class, Student::class],
+      function () use ($user, $institutionUser) {
+        $user->courseTeachers()->delete();
+        $user->delete();
+        $institutionUser->student?->delete();
+        $institutionUser->delete();
+      }
+    );
 
     return $this->ok();
   }

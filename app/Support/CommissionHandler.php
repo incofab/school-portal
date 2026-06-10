@@ -7,6 +7,7 @@ use App\Models\Commission;
 use App\Models\InstitutionGroup;
 use App\Models\Partner;
 use App\Models\Withdrawal;
+use App\Support\Audit\ModelAudit;
 use App\Support\Audit\FinancialActivityLogger;
 use Illuminate\Database\Eloquent\Model;
 
@@ -35,13 +36,16 @@ class CommissionHandler
 
     $commission = $amountSpent * ($partner->commission / 100);
 
-    $transactionable = Commission::create([
-      'institution_group_id' => $institutionGroup->id,
-      'partner_id' => $partner->id,
-      'commissionable_id' => $commissionable?->id,
-      'commissionable_type' => $commissionable?->getMorphClass(),
-      'amount' => $commission
-    ]);
+    $transactionable = ModelAudit::withoutAuditingFor(
+      Commission::class,
+      fn() => Commission::create([
+        'institution_group_id' => $institutionGroup->id,
+        'partner_id' => $partner->id,
+        'commissionable_id' => $commissionable?->id,
+        'commissionable_type' => $commissionable?->getMorphClass(),
+        'amount' => $commission
+      ])
+    );
     app(FinancialActivityLogger::class)->commissionUpdated($transactionable);
     $this->topupWallet($commission, $partner, $transactionable);
 
@@ -52,13 +56,16 @@ class CommissionHandler
 
     $refCommission = $amountSpent * ($partner->referral_commission / 100);
 
-    $transactionable = Commission::create([
-      'institution_group_id' => $institutionGroup->id,
-      'partner_id' => $refPartner->id,
-      'commissionable_id' => $commissionable?->id,
-      'commissionable_type' => $commissionable?->getMorphClass(),
-      'amount' => $refCommission
-    ]);
+    $transactionable = ModelAudit::withoutAuditingFor(
+      Commission::class,
+      fn() => Commission::create([
+        'institution_group_id' => $institutionGroup->id,
+        'partner_id' => $refPartner->id,
+        'commissionable_id' => $commissionable?->id,
+        'commissionable_type' => $commissionable?->getMorphClass(),
+        'amount' => $refCommission
+      ])
+    );
 
     app(FinancialActivityLogger::class)->commissionUpdated($transactionable);
 

@@ -8,6 +8,7 @@ use App\Models\InstitutionGroup;
 use App\Models\InstitutionUser;
 use App\Models\Partner;
 use App\Support\Audit\FinancialActivityLogger;
+use App\Support\Audit\ModelAudit;
 use Illuminate\Database\Eloquent\Model;
 
 class BankAccountHandler
@@ -39,7 +40,12 @@ class BankAccountHandler
         ->where('id', '!=', $bankAccount->id)
         ->update(['is_primary' => false]);
     }
-    $bankAccount->update($post);
+    ModelAudit::withoutAuditingFor(BankAccount::class, function () use (
+      $bankAccount,
+      $post
+    ) {
+      $bankAccount->update($post);
+    });
 
     app(FinancialActivityLogger::class)->bankAccountChanged(
       $bankAccount->refresh(),
@@ -69,12 +75,15 @@ class BankAccountHandler
         ->where('is_primary', true)
         ->update(['is_primary' => false]);
     }
-    $bankAccount = BankAccount::create([
-      ...$post,
-      'accountable_type' => $this->accountable->getMorphClass(),
-      'accountable_id' => $this->accountable->id,
-      'account_name' => $res->account_name
-    ]);
+    $bankAccount = ModelAudit::withoutAuditingFor(
+      BankAccount::class,
+      fn() => BankAccount::create([
+        ...$post,
+        'accountable_type' => $this->accountable->getMorphClass(),
+        'accountable_id' => $this->accountable->id,
+        'account_name' => $res->account_name
+      ])
+    );
 
     app(FinancialActivityLogger::class)->bankAccountChanged(
       $bankAccount,
@@ -100,7 +109,11 @@ class BankAccountHandler
       403,
       'Access denied'
     );
-    $bankAccount->delete();
+    ModelAudit::withoutAuditingFor(BankAccount::class, function () use (
+      $bankAccount
+    ) {
+      $bankAccount->delete();
+    });
 
     app(FinancialActivityLogger::class)->bankAccountChanged(
       $bankAccount,

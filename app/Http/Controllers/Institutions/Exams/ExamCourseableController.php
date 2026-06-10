@@ -14,6 +14,7 @@ use App\Models\Student;
 use App\Models\TheoryQuestion;
 use App\Rules\ValidateMorphRule;
 use App\Support\Audit\AcademicIntegrityActivityLogger;
+use App\Support\Audit\ModelAudit;
 use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
@@ -184,15 +185,22 @@ class ExamCourseableController extends Controller
       $scores
     ) {
       $theoryScore = array_sum($scores);
-      $examCourseable
-        ->fill([
-          'theory_score' => $theoryScore,
-          'theory_max_score' => $theoryQuestions->sum('marks'),
-          'theory_num_of_questions' => $theoryQuestions->count(),
-          'theory_question_scores' => $scores,
-          'theory_evaluated' => true
-        ])
-        ->save();
+      ModelAudit::withoutAuditingFor(ExamCourseable::class, function () use (
+        $examCourseable,
+        $theoryScore,
+        $theoryQuestions,
+        $scores
+      ) {
+        $examCourseable
+          ->fill([
+            'theory_score' => $theoryScore,
+            'theory_max_score' => $theoryQuestions->sum('marks'),
+            'theory_num_of_questions' => $theoryQuestions->count(),
+            'theory_question_scores' => $scores,
+            'theory_evaluated' => true
+          ])
+          ->save();
+      });
 
       $exam->load('examCourseables');
       $examCourseables = $exam->examCourseables;
@@ -201,13 +209,19 @@ class ExamCourseableController extends Controller
           0 && !$courseable->theory_evaluated
       );
 
-      $exam
-        ->fill([
-          'theory_score' => $examCourseables->sum('theory_score'),
-          'theory_max_score' => $examCourseables->sum('theory_max_score'),
-          'theory_evaluated' => !$hasUnevaluatedTheory
-        ])
-        ->save();
+      ModelAudit::withoutAuditingFor(Exam::class, function () use (
+        $exam,
+        $examCourseables,
+        $hasUnevaluatedTheory
+      ) {
+        $exam
+          ->fill([
+            'theory_score' => $examCourseables->sum('theory_score'),
+            'theory_max_score' => $examCourseables->sum('theory_max_score'),
+            'theory_evaluated' => !$hasUnevaluatedTheory
+          ])
+          ->save();
+      });
     });
 
     $examCourseable->refresh();

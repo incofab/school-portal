@@ -11,6 +11,7 @@ use App\Http\Requests\CreateStaffRequest;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\User;
+use App\Support\Audit\ModelAudit;
 use App\Support\Audit\SecurityActivityLogger;
 use App\Support\Media\MediaManager;
 use Illuminate\Http\Request;
@@ -140,12 +141,18 @@ class UpdateInstitutionUserController extends Controller
       'You cannot suspend yourself'
     );
 
-    $institutionUser
-      ->fill([
-        'status' => $status,
-        'status_message' => $request->status_message
-      ])
-      ->save();
+    ModelAudit::withoutAuditingFor(InstitutionUser::class, function () use (
+      $institutionUser,
+      $status,
+      $request
+    ) {
+      $institutionUser
+        ->fill([
+          'status' => $status,
+          'status_message' => $request->status_message
+        ])
+        ->save();
+    });
 
     $institutionUser->loadMissing('user');
 

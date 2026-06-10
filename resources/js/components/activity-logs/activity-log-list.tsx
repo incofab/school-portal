@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Code,
+  Collapse,
   Divider,
   Drawer,
   DrawerBody,
@@ -24,14 +25,20 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { ArrowDownTrayIcon, EyeIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowDownTrayIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  EyeIcon,
+  FunnelIcon,
+} from '@heroicons/react/24/outline';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
 import { ActivityLog, Institution, InstitutionGroup } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
-import { dateTimeFormat, formatAsDate } from '@/util/util';
+import { dateTimeFormat, ellipizeString, formatAsDate } from '@/util/util';
 
 interface Props {
   activityLogs: PaginationResponse<ActivityLog>;
@@ -79,6 +86,7 @@ export default function ActivityLogList({
 }: Props) {
   const [selected, setSelected] = useState<ActivityLog | null>(null);
   const [filters, setFilters] = useState<Filters>(() => currentFilters());
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   function currentFilters(): Filters {
     const params = new URL(window.location.href).searchParams;
@@ -154,15 +162,21 @@ export default function ActivityLogList({
         render: (row) => <Text whiteSpace="nowrap">{row.category}</Text>,
       },
       {
-        label: 'Event',
-        value: 'event',
-        sortKey: 'event',
+        label: 'Description',
+        value: 'description',
+        sortKey: 'description',
+        render: (row) => ellipizeString(row.description, 50),
       },
-      {
-        label: 'Action',
-        value: 'action',
-        sortKey: 'action',
-      },
+      // {
+      //   label: 'Event',
+      //   value: 'event',
+      //   sortKey: 'event',
+      // },
+      // {
+      //   label: 'Action',
+      //   value: 'action',
+      //   sortKey: 'action',
+      // },
       {
         label: 'Actor',
         render: (row) => row.actor_name ?? 'System',
@@ -199,192 +213,226 @@ export default function ActivityLogList({
     ],
     [showInstitutionFilter]
   );
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
   return (
     <Stack spacing={4}>
       <Box borderWidth={1} borderRadius={8} p={4}>
-        <SimpleGrid columns={{ base: 1, md: 3, xl: 4 }} spacing={3}>
-          <FormControl>
-            <FormLabel>From</FormLabel>
-            <Input
-              type="date"
-              value={filters['created_at[date_from]']}
-              onChange={(e) =>
-                updateFilter('created_at[date_from]', e.target.value)
-              }
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>To</FormLabel>
-            <Input
-              type="date"
-              value={filters['created_at[date_to]']}
-              onChange={(e) =>
-                updateFilter('created_at[date_to]', e.target.value)
-              }
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Category</FormLabel>
-            <Select
-              value={filters.category}
-              onChange={(e) => updateFilter('category', e.target.value)}
-            >
-              <option value="">All</option>
-              {filterOptions.categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl>
-            <FormLabel>Retention</FormLabel>
-            <Select
-              value={filters.retention_category}
-              onChange={(e) =>
-                updateFilter('retention_category', e.target.value)
-              }
-            >
-              <option value="">All</option>
-              {filterOptions.retentionCategories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl>
-            <FormLabel>Severity</FormLabel>
-            <Select
-              value={filters.severity}
-              onChange={(e) => updateFilter('severity', e.target.value)}
-            >
-              <option value="">All</option>
-              {filterOptions.severities.map((severity) => (
-                <option key={severity} value={severity}>
-                  {severity}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl>
-            <FormLabel>Event</FormLabel>
-            <Input
-              value={filters.event}
-              onChange={(e) => updateFilter('event', e.target.value)}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Actor</FormLabel>
-            <Input
-              value={filters.actor}
-              onChange={(e) => updateFilter('actor', e.target.value)}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Actor Role</FormLabel>
-            <Input
-              value={filters.actor_role}
-              onChange={(e) => updateFilter('actor_role', e.target.value)}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Subject Name</FormLabel>
-            <Input
-              value={filters.subject}
-              onChange={(e) => updateFilter('subject', e.target.value)}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Subject Type</FormLabel>
-            <Input
-              value={filters.subject_type}
-              onChange={(e) => updateFilter('subject_type', e.target.value)}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Subject Search</FormLabel>
-            <Input
-              value={filters.subject_search}
-              onChange={(e) => updateFilter('subject_search', e.target.value)}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>IP Address</FormLabel>
-            <Input
-              value={filters.ip_address}
-              onChange={(e) => updateFilter('ip_address', e.target.value)}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Request ID</FormLabel>
-            <Input
-              value={filters.request_id}
-              onChange={(e) => updateFilter('request_id', e.target.value)}
-            />
-          </FormControl>
-          {showInstitutionFilter && (
-            <FormControl>
-              <FormLabel>Institution</FormLabel>
-              <Select
-                value={filters.institution_id}
-                onChange={(e) => updateFilter('institution_id', e.target.value)}
-              >
-                <option value="">All</option>
-                {institutions.map((institution) => (
-                  <option key={institution.id} value={institution.id}>
-                    {institution.name}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-          {showInstitutionGroupFilter && (
-            <FormControl>
-              <FormLabel>Institution Group</FormLabel>
-              <Select
-                value={filters.institution_group_id}
-                onChange={(e) =>
-                  updateFilter('institution_group_id', e.target.value)
-                }
-              >
-                <option value="">All</option>
-                {institutionGroups.map((institutionGroup) => (
-                  <option key={institutionGroup.id} value={institutionGroup.id}>
-                    {institutionGroup.name}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-          <FormControl display="flex" alignItems="center" gap={3} pt={7}>
-            <Switch
-              isChecked={filters.impersonated_only === '1'}
-              onChange={(e) =>
-                updateFilter('impersonated_only', e.target.checked ? '1' : '')
-              }
-            />
-            <FormLabel m={0}>Impersonated only</FormLabel>
-          </FormControl>
-        </SimpleGrid>
-        <HStack mt={4} flexWrap="wrap">
-          <Button colorScheme="brand" onClick={applyFilters}>
-            Filter
+        <HStack justify="space-between" align="center" spacing={3}>
+          <HStack spacing={2}>
+            <Icon as={FunnelIcon} />
+            <Text fontWeight="semibold">Filters</Text>
+            {activeFilterCount > 0 && (
+              <Badge colorScheme="brand">{activeFilterCount} active</Badge>
+            )}
+          </HStack>
+          <Button
+            size="sm"
+            variant="outline"
+            leftIcon={
+              <Icon as={isFilterOpen ? ChevronUpIcon : ChevronDownIcon} />
+            }
+            onClick={() => setIsFilterOpen((value) => !value)}
+          >
+            {isFilterOpen ? 'Collapse' : 'Expand'}
           </Button>
-          <Button variant="outline" onClick={clearFilters}>
-            Clear
-          </Button>
-          {canExport && (
-            <Button
-              leftIcon={<Icon as={ArrowDownTrayIcon} />}
-              variant="outline"
-              onClick={exportLogs}
-            >
-              Export CSV
-            </Button>
-          )}
         </HStack>
+        <Collapse in={isFilterOpen} animateOpacity>
+          <Box pt={4}>
+            <SimpleGrid columns={{ base: 1, md: 3, xl: 4 }} spacing={3}>
+              <FormControl>
+                <FormLabel>From</FormLabel>
+                <Input
+                  type="date"
+                  value={filters['created_at[date_from]']}
+                  onChange={(e) =>
+                    updateFilter('created_at[date_from]', e.target.value)
+                  }
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>To</FormLabel>
+                <Input
+                  type="date"
+                  value={filters['created_at[date_to]']}
+                  onChange={(e) =>
+                    updateFilter('created_at[date_to]', e.target.value)
+                  }
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Category</FormLabel>
+                <Select
+                  value={filters.category}
+                  onChange={(e) => updateFilter('category', e.target.value)}
+                >
+                  <option value="">All</option>
+                  {filterOptions.categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Retention</FormLabel>
+                <Select
+                  value={filters.retention_category}
+                  onChange={(e) =>
+                    updateFilter('retention_category', e.target.value)
+                  }
+                >
+                  <option value="">All</option>
+                  {filterOptions.retentionCategories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Severity</FormLabel>
+                <Select
+                  value={filters.severity}
+                  onChange={(e) => updateFilter('severity', e.target.value)}
+                >
+                  <option value="">All</option>
+                  {filterOptions.severities.map((severity) => (
+                    <option key={severity} value={severity}>
+                      {severity}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Event</FormLabel>
+                <Input
+                  value={filters.event}
+                  onChange={(e) => updateFilter('event', e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Actor</FormLabel>
+                <Input
+                  value={filters.actor}
+                  onChange={(e) => updateFilter('actor', e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Actor Role</FormLabel>
+                <Input
+                  value={filters.actor_role}
+                  onChange={(e) => updateFilter('actor_role', e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Subject Name</FormLabel>
+                <Input
+                  value={filters.subject}
+                  onChange={(e) => updateFilter('subject', e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Subject Type</FormLabel>
+                <Input
+                  value={filters.subject_type}
+                  onChange={(e) => updateFilter('subject_type', e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Subject Search</FormLabel>
+                <Input
+                  value={filters.subject_search}
+                  onChange={(e) =>
+                    updateFilter('subject_search', e.target.value)
+                  }
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>IP Address</FormLabel>
+                <Input
+                  value={filters.ip_address}
+                  onChange={(e) => updateFilter('ip_address', e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Request ID</FormLabel>
+                <Input
+                  value={filters.request_id}
+                  onChange={(e) => updateFilter('request_id', e.target.value)}
+                />
+              </FormControl>
+              {showInstitutionFilter && (
+                <FormControl>
+                  <FormLabel>Institution</FormLabel>
+                  <Select
+                    value={filters.institution_id}
+                    onChange={(e) =>
+                      updateFilter('institution_id', e.target.value)
+                    }
+                  >
+                    <option value="">All</option>
+                    {institutions.map((institution) => (
+                      <option key={institution.id} value={institution.id}>
+                        {institution.name}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+              {showInstitutionGroupFilter && (
+                <FormControl>
+                  <FormLabel>Institution Group</FormLabel>
+                  <Select
+                    value={filters.institution_group_id}
+                    onChange={(e) =>
+                      updateFilter('institution_group_id', e.target.value)
+                    }
+                  >
+                    <option value="">All</option>
+                    {institutionGroups.map((institutionGroup) => (
+                      <option
+                        key={institutionGroup.id}
+                        value={institutionGroup.id}
+                      >
+                        {institutionGroup.name}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+              <FormControl display="flex" alignItems="center" gap={3} pt={7}>
+                <Switch
+                  isChecked={filters.impersonated_only === '1'}
+                  onChange={(e) =>
+                    updateFilter(
+                      'impersonated_only',
+                      e.target.checked ? '1' : ''
+                    )
+                  }
+                />
+                <FormLabel m={0}>Impersonated only</FormLabel>
+              </FormControl>
+            </SimpleGrid>
+            <HStack mt={4} flexWrap="wrap">
+              <Button colorScheme="brand" onClick={applyFilters}>
+                Filter
+              </Button>
+              <Button variant="outline" onClick={clearFilters}>
+                Clear
+              </Button>
+              {canExport && (
+                <Button
+                  leftIcon={<Icon as={ArrowDownTrayIcon} />}
+                  variant="outline"
+                  onClick={exportLogs}
+                >
+                  Export CSV
+                </Button>
+              )}
+            </HStack>
+          </Box>
+        </Collapse>
       </Box>
       <ServerPaginatedTable
         scroll={true}
@@ -593,7 +641,7 @@ function FinancialSummary({ activityLog }: { activityLog: ActivityLog }) {
   const approvalActor = props.approval_actor;
   const fee = props.fee;
   const metadata = props.metadata ?? {};
-  const values: Array<[string, unknown]> = [
+  const values = [
     ['Amount', props.amount ?? metadata.amount ?? metadata.amount_paid],
     ['Currency', props.currency ?? metadata.currency],
     ['Reference', props.reference ?? metadata.reference],

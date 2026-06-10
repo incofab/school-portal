@@ -7,6 +7,7 @@ use App\Models\Classification;
 use App\Models\ClassResultInfo;
 use App\Models\CourseResult;
 use App\Support\Audit\AcademicIntegrityActivityLogger;
+use App\Support\Audit\ModelAudit;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -95,9 +96,9 @@ class ClassResultInfoAction
 
     DB::beginTransaction();
     try {
-      $classResultInfo = ClassResultInfo::query()->updateOrCreate(
-        $bindingData,
-        $data
+      $classResultInfo = ModelAudit::withoutAuditingFor(
+        ClassResultInfo::class,
+        fn() => ClassResultInfo::query()->updateOrCreate($bindingData, $data)
       );
       ClassResultInfo::clearResultLockCache();
 

@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\Institution;
 use App\Models\InstitutionGroup;
 use App\Support\Audit\ActivityLogger;
+use App\Support\Audit\ModelAudit;
 use App\Support\Audit\ModelAuditRegistry;
 use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Model;
@@ -100,7 +101,10 @@ class ModelAuditObserver
     array $oldValues = [],
     array $newValues = []
   ): void {
-    if (!ModelAuditRegistry::shouldAudit($model)) {
+    if (
+      ModelAudit::isSuppressed($model) ||
+      !ModelAuditRegistry::shouldAudit($model)
+    ) {
       return;
     }
 

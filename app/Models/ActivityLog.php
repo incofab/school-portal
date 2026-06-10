@@ -11,6 +11,10 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
+/**
+ * Represents an entry in the system's audit trail.
+ * Designed to be append-only with cryptographic integrity verification (HMAC chain).
+ */
 class ActivityLog extends Model
 {
   use HasFactory;
@@ -69,10 +73,12 @@ class ActivityLog extends Model
     });
 
     static::updating(function () {
+      // Prevent updates to existing logs to maintain audit trail integrity
       return self::$appendOnlyBypass;
     });
 
     static::deleting(function () {
+      // Prevent deletion of existing logs to maintain audit trail integrity
       return self::$appendOnlyBypass;
     });
   }
@@ -120,6 +126,9 @@ class ActivityLog extends Model
     return 'normal';
   }
 
+  /**
+   * Generates a unique HMAC-SHA256 hash for the record based on its data and the previous record's hash.
+   */
   public function calculateRowHash(): string
   {
     $payload = collect([
