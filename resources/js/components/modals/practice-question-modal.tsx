@@ -9,7 +9,6 @@ import route from '@/util/route';
 import EnumSelect from '../dropdown-select/enum-select';
 import { Gender, Nullable, SelectOptionType } from '@/types/types';
 import TopicSelect from '../selectors/topic-select';
-import { MultiValue } from 'react-select';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Inertia } from '@inertiajs/inertia';
 
@@ -31,14 +30,14 @@ export default function PracticeQuestionModal({
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
     course: course,
-    topic_ids: null as Nullable<MultiValue<SelectOptionType<number>>>,
+    topic_id: null as Nullable<SelectOptionType<number>>,
   });
 
   const onSubmit = async () => {
     const res = await webForm.submit((data, web) =>
       web.post(instRoute('courses.practice-questions'), {
         ...data,
-        topic_ids: data.topic_ids?.map((item) => item.value),
+        topic_ids: data.topic_id ? [data.topic_id.value] : [],
       })
     );
 
@@ -59,14 +58,14 @@ export default function PracticeQuestionModal({
         <VStack spacing={3}>
           <FormControlBox
             form={webForm as any}
-            title="Select Topics"
-            formKey="topic_ids"
+            title="Select Topic"
+            formKey="topic_id"
           >
             <TopicSelect
               topics={course.topics}
-              onChange={(e: any) => webForm.setValue('topic_ids', e)}
-              value={webForm.data.topic_ids}
-              isMulti={true}
+              onChange={(e: any) => webForm.setValue('topic_id', e)}
+              selectValue={webForm.data.topic_id}
+              isMulti={false}
               isClearable={true}
             />
           </FormControlBox>

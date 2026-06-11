@@ -121,8 +121,8 @@ class CoursesController extends Controller
     Institution $institution
   ) {
     $request->validate([
-      'topic_ids' => ['required', 'array', 'min:1'],
-      'topics.*' => ['required', 'integer']
+      'topic_ids' => ['required', 'array', 'size:1'],
+      'topic_ids.*' => ['required', 'integer']
     ]);
     $institutionUser = currentInstitutionUser();
 
