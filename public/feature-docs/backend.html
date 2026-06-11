@@ -102,7 +102,7 @@
   <body>
     <header>
       <h1>Backend Architecture</h1>
-      <p>Last reviewed 2026-06-09</p>
+      <p>Last reviewed 2026-06-11</p>
       <nav>
         <a href="index.html">Overview</a><a href="backend.html">Backend</a
         ><a href="frontend.html">Frontend</a><a href="data.html">Data</a
@@ -1246,6 +1246,16 @@
             Route::post(&#x27;/courses/practice-questions&#x27;,
             [Web\CoursesController::class,
             &#x27;generatePracticeQuestions&#x27;])
+          </li>
+          <li>
+            <code>routes/institution.php</code> —
+            Route::post(&#x27;/courses/practice-questions/submit&#x27;,
+            [Web\CoursesController::class, &#x27;submitPracticeQuestions&#x27;])
+          </li>
+          <li>
+            <code>routes/institution.php</code> —
+            Route::get(&#x27;/courses/practice-progress&#x27;,
+            [Web\CoursesController::class, &#x27;practiceProgress&#x27;])
           </li>
           <li>
             <code>routes/institution.php</code> —
@@ -3728,7 +3738,10 @@
             <div class="desc">
               HTTP controller for courses, handling requests, authorization,
               responses, and conditional soft/permanent deletion based on
-              dependent references.
+              dependent references. Delegates AI practice-question generation,
+              student answer submission, topic-practice summary updates, attempt
+              history, and teacher/student practice-progress query assembly to
+              <code>app/Actions/CoursePractice/*</code>.
             </div>
           </li>
           <li>

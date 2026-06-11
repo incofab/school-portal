@@ -160,7 +160,7 @@
     <header>
       <h1>EduManager Feature Inventory</h1>
       <p>
-        Last reviewed 2026-06-09. Technical map for AI CLI agents and
+        Last reviewed 2026-06-11. Technical map for AI CLI agents and
         maintainers.
       </p>
       <nav>
@@ -954,20 +954,22 @@
             passages, instructions, objective questions, theory questions, bulk
             objective question upload/download, TinyMCE image upload, practice
             question generation, inserting generated objective questions into
-            the question bank, and row shortcuts to filtered lesson plans and
-            topics from subject and subject-teacher lists. Course-teacher
-            assignment/removal and question-bank import/export/generation
-            workflows now emit explicit audit events with course, teacher,
-            class, session, and count metadata. Course and course-session
-            deletes now permanently remove unreferenced records but soft-delete
-            records that still have dependent references such as teachers,
-            results, topics, assignments, question-bank content, event mappings,
-            or exam mappings. CCD course-session and objective-question routes
-            now enforce course-policy access so admins and assigned course
-            teachers can manage a course question bank while unrelated teachers
-            are blocked. TinyMCE images and imported course-content image assets
-            are now tracked in the shared media subsystem before they are
-            written to S3.
+            the question bank, student topic-practice score tracking, practice
+            attempt history, best-score summaries, teacher class progress views
+            for attempted and missing students, and row shortcuts to filtered
+            lesson plans and topics from subject and subject-teacher lists.
+            Course-teacher assignment/removal and question-bank
+            import/export/generation workflows now emit explicit audit events
+            with course, teacher, class, session, and count metadata. Course and
+            course-session deletes now permanently remove unreferenced records
+            but soft-delete records that still have dependent references such as
+            teachers, results, topics, assignments, question-bank content, event
+            mappings, or exam mappings. CCD course-session and
+            objective-question routes now enforce course-policy access so admins
+            and assigned course teachers can manage a course question bank while
+            unrelated teachers are blocked. TinyMCE images and imported
+            course-content image assets are now tracked in the shared media
+            subsystem before they are written to S3.
           </p>
           <ul>
             <li>
@@ -980,19 +982,24 @@
               <code>ExportCourse</code>,
               <code>Questions/ExtractDocumentContent</code>,
               <code>Questions/ConvertDocumentToQuestions</code>,
-              <code>GoogleAiHelper</code>.
+              <code>CoursePractice/GenerateTopicPracticeQuestions</code>,
+              <code>CoursePractice/SubmitTopicPracticeAttempt</code>,
+              <code>CoursePractice/GetStudentTopicPracticeProgress</code>,
+              <code>CoursePractice/GetTeacherTopicPracticeProgress</code>.
             </li>
             <li>
               Frontend: <code>institutions/courses/*</code>,
               <code>topics/*</code>, question-bank modals, practice question
-              pages.
+              pages, and topic-practice progress pages.
             </li>
             <li>
               Data/tests: <code>Course</code>, <code>CourseTeacher</code>,
               <code>CourseSession</code>, <code>Topic</code>,
               <code>Instruction</code>, <code>Passage</code>,
               <code>Question</code>, courseable-backed
-              <code>TheoryQuestion</code>, CCD controller tests.
+              <code>TheoryQuestion</code>, <code>TopicPracticeSummary</code>,
+              <code>TopicPracticeAttempt</code>, CCD controller tests, and
+              course practice controller tests.
             </li>
           </ul>
         </div>

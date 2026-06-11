@@ -102,7 +102,7 @@
   <body>
     <header>
       <h1>Data Model &amp; Database</h1>
-      <p>Last reviewed 2026-06-09</p>
+      <p>Last reviewed 2026-06-11</p>
       <nav>
         <a href="index.html">Overview</a><a href="backend.html">Backend</a
         ><a href="frontend.html">Frontend</a><a href="data.html">Data</a
@@ -509,7 +509,35 @@
             <div class="desc">
               Represents soft-deletable course records and relationships used
               for courses, teaching, curriculum, results, assignments,
-              libraries, and delete reference checks.
+              libraries, topic-practice summaries/attempts, and delete reference
+              checks.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>TopicPracticeSummary</strong>
+              <span class="path"
+                ><code>app/Models/TopicPracticeSummary.php</code></span
+              >
+            </div>
+            <div class="desc">
+              Represents the current per-student/per-topic practice summary:
+              generated attempt count, latest score, latest generated question
+              count, latest percentage, best score, best question count, best
+              percentage, and last generated/submitted timestamps.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>TopicPracticeAttempt</strong>
+              <span class="path"
+                ><code>app/Models/TopicPracticeAttempt.php</code></span
+              >
+            </div>
+            <div class="desc">
+              Represents an individual generated topic-practice attempt,
+              including generated questions, submitted answers, score, number of
+              questions, answered count, percentage, and submission timestamp.
             </div>
           </li>
           <li>
@@ -4334,6 +4362,22 @@
       <section>
         <h2>Current Feature Notes</h2>
         <ul class="detail-list">
+          <li>
+            <div><strong>Topic practice tracking schema</strong></div>
+            <div class="desc">
+              <code
+                >database/migrations/2026_06_11_000001_create_topic_practice_tables.php</code
+              >
+              creates the tightly coupled topic-practice summary and attempt
+              tables. Summary rows store per-student/per-topic class, course,
+              generated-at/submitted-at timestamps, attempt count, latest score,
+              latest question count, latest percentage, best score, best
+              question count, and best percentage. Attempt rows store every
+              generated practice attempt separately with generated questions,
+              submitted answers, score, question count, answered count,
+              percentage, attempt number, and submission timestamp.
+            </div>
+          </li>
           <li>
             <div><strong>Class result locking schema</strong></div>
             <div class="desc">

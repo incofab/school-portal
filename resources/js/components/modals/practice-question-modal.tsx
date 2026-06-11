@@ -44,7 +44,7 @@ export default function PracticeQuestionModal({
     if (!handleResponseToast(res)) {
       return;
     }
-    
+
     onClose();
     // onSuccess(res.data.practice_questions);
     onSuccess();
@@ -64,7 +64,7 @@ export default function PracticeQuestionModal({
             <TopicSelect
               topics={course.topics}
               onChange={(e: any) => webForm.setValue('topic_id', e)}
-              selectValue={webForm.data.topic_id}
+              selectValue={webForm.data.topic_id?.value}
               isMulti={false}
               isClearable={true}
             />

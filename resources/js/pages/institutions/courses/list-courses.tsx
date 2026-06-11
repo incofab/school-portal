@@ -68,7 +68,7 @@ export default function ListCourse({ courses }: Props) {
                   course: row.id,
                 })}
                 variant={'link'}
-                colorScheme={'brand'}
+                colorScheme={'green'}
               >
                 Lesson Plans
               </Button>
@@ -78,7 +78,7 @@ export default function ListCourse({ courses }: Props) {
                   course: row.id,
                 })}
                 variant={'link'}
-                colorScheme={'brand'}
+                colorScheme={'orange'}
               >
                 List Topics
               </Button>
@@ -86,7 +86,7 @@ export default function ListCourse({ courses }: Props) {
                 as={'a'}
                 href={instRoute('course-sessions.index', [row.id])}
                 variant={'link'}
-                colorScheme={'brand'}
+                colorScheme={'purple'}
               >
                 Question Bank
               </Button>
@@ -142,17 +142,27 @@ export default function ListCourse({ courses }: Props) {
         <SlabHeading
           title="List Subjects"
           rightElement={
-            isAdmin ? (
-              <HStack spacing={2}>
-                <LinkButton href={instRoute('courses.create')} title={'New'} />
-                <LinkButton
-                  href={instRoute('courses.multi-create')}
-                  title={'Multi Create'}
-                />
-              </HStack>
-            ) : (
-              <></>
-            )
+            <HStack spacing={2}>
+              <LinkButton
+                href={instRoute('courses.practice-progress')}
+                title={'Practice Progress'}
+                colorScheme="green"
+              />
+              {isAdmin ? (
+                <>
+                  <LinkButton
+                    href={instRoute('courses.create')}
+                    title={'New'}
+                    colorScheme="brand"
+                  />
+                  <LinkButton
+                    href={instRoute('courses.multi-create')}
+                    title={'Multi Create'}
+                    colorScheme="orange"
+                  />
+                </>
+              ) : null}
+            </HStack>
           }
         />
         <SlabBody>

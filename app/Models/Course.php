@@ -127,6 +127,16 @@ class Course extends Model
     return $this->hasMany(LessonNote::class);
   }
 
+  public function topicPracticeSummaries()
+  {
+    return $this->hasMany(TopicPracticeSummary::class);
+  }
+
+  public function topicPracticeAttempts()
+  {
+    return $this->hasMany(TopicPracticeAttempt::class);
+  }
+
   public function libraries()
   {
     return $this->hasMany(Library::class);

@@ -102,7 +102,7 @@
   <body>
     <header>
       <h1>Frontend Architecture</h1>
-      <p>Last reviewed 2026-06-09</p>
+      <p>Last reviewed 2026-06-11</p>
       <nav>
         <a href="index.html">Overview</a><a href="backend.html">Backend</a
         ><a href="frontend.html">Frontend</a><a href="data.html">Data</a
@@ -931,8 +931,38 @@
             </div>
             <div class="desc">
               Listing screen for Courses/Subjects, with search, filters,
-              management actions, and row shortcuts to filtered lesson plans and
-              topics.
+              management actions, a practice-progress shortcut, and row
+              shortcuts to filtered lesson plans and topics.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>practice-progress-student</strong>
+              <span class="path"
+                ><code
+                  >resources/js/pages/institutions/courses/practice-progress-student.tsx</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Student topic-practice dashboard grouped by course, showing
+              assigned topics, practiced/not-attempted status, attempts, latest
+              score, and best percentage.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>practice-progress-teacher</strong>
+              <span class="path"
+                ><code
+                  >resources/js/pages/institutions/courses/practice-progress-teacher.tsx</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Teacher topic-practice dashboard for selecting a topic and class,
+              reviewing attempted and missing students, latest/best scores, and
+              recent attempt history.
             </div>
           </li>
           <li>
@@ -945,8 +975,9 @@
               >
             </div>
             <div class="desc">
-              Inertia page for Practice Questions Student workflows and UI
-              interactions.
+              Student practice-question page that submits answers to the
+              backend, records generated attempt results, and displays latest
+              and best topic-practice metrics.
             </div>
           </li>
           <li>

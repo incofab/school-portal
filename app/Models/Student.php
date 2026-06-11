@@ -74,7 +74,7 @@ class Student extends Model
   {
     return $this->belongsTo(Classification::class);
   }
- 
+
   function course()
   {
     return $this->hasMany(Course::class);
@@ -125,5 +125,15 @@ class Student extends Model
   function assignmentSubmissions()
   {
     return $this->hasMany(AssignmentSubmission::class);
+  }
+
+  function topicPracticeSummaries()
+  {
+    return $this->hasMany(TopicPracticeSummary::class);
+  }
+
+  function topicPracticeAttempts()
+  {
+    return $this->hasMany(TopicPracticeAttempt::class);
   }
 }

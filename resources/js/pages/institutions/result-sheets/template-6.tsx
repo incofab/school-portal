@@ -298,12 +298,7 @@ export default function Template6(props: ResultProps) {
           </Div>
           <Div className="cell" my={2}>
             <HStack>
-              <LabelText
-                label={'Total'}
-                text={`${termResult.total_score} out of ${getMaxObtainableScore(
-                  props
-                )}`}
-              />
+              <LabelText label={'Total'} text={`${termResult.total_score}`} />
               <Spacer />
               <LabelText
                 label={'Student Average'}

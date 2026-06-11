@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers\Institutions;
 
+use App\Actions\CoursePractice\GenerateTopicPracticeQuestions;
+use App\Actions\CoursePractice\GetStudentTopicPracticeProgress;
+use App\Actions\CoursePractice\GetTeacherTopicPracticeProgress;
+use App\Actions\CoursePractice\SubmitTopicPracticeAttempt;
 use App\Enums\Audit\ActivityLogCategory;
 use App\Enums\InstitutionUserType;
-use App\Enums\NoteStatusType;
-use App\Helpers\GoogleAiHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseSession;
 use App\Models\Institution;
-use App\Models\LessonNote;
 use App\Models\Question;
+use App\Models\Topic;
+use App\Models\TopicPracticeAttempt;
 use App\Support\Audit\AcademicActivityLogger;
 use App\Support\UITableFilters\CoursesUITableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class CoursesController extends Controller
@@ -115,111 +119,61 @@ class CoursesController extends Controller
     return $this->ok();
   }
 
-  // = using A.I
   public function generatePracticeQuestions(
     Request $request,
     Institution $institution
   ) {
-    $request->validate([
+    $data = $request->validate([
       'topic_ids' => ['required', 'array', 'size:1'],
       'topic_ids.*' => ['required', 'integer']
     ]);
     $institutionUser = currentInstitutionUser();
+    $topic = Topic::query()
+      ->with('course')
+      ->whereKey($data['topic_ids'][0])
+      ->firstOrFail();
 
-    if ($institutionUser->isStudent()) {
-      $className =
-        $institutionUser->student->classification->classificationGroup->title;
-      $className = 'of ' . $className;
-    } else {
-      $className = '';
-    }
-
-    $lessonNotes = LessonNote::whereIn('topic_id', $request->topic_ids)
-      ->where('status', NoteStatusType::Published->value)
-      ->get();
-
-    if (count($lessonNotes) < 1) {
-      return $this->message(
-        'You have to set Lesson Notes for this topic first',
-        401
-      );
-    }
-
-    $question = "You are a class teacher $className in a Nigerian Basic Education School.
-    Analyze the following Lesson Notes and generate 20 objective questions aimed at helping the student prepare for
-    upcoming class assessment test. Each question should have 4 options (option_a, option_b, option_c, option_d)
-    where only one option is the correct answer.
-    Return the response as valid JSON array of objects, where each object contains the following keys: 'question', 'option_a', 'option_b', 'option_c', 'option_d', 'answer'.
-    The value of the 'answer' should indicate the correct option (a,b,c,d - NOT 'option_a', 'option_b', 'option_c', 'option_d').
-    Do not include comments, side comments, stylings, meta tags, etc.
-    The response should look like this:
-    [
-      {
-        'question' => 'What is the capital of France?',
-        'option_b' => 'Paris',
-        'option_a' => 'London',
-        'option_c' => 'Berlin',
-        'option_d' => 'Madrid',
-        'answer' => 'B'
-      },
-      {
-        'question' => 'What is the currency of Japan?',
-        'option_a' => 'Yen',
-        'option_b' => 'Dollar',
-        'option_c' => 'Euro',
-        'option_d' => 'Pound',
-        'answer' => 'A'
-      }
-      ...
-    ]
-    Here are the lesson Notes :: $lessonNotes";
-
-    $aiRes = initPrism()
-      ->withPrompt($question)
-      ->asText();
-    $practiceQuestions = trimAiResponse($aiRes->text);
-    /*
-                $res = GoogleAiHelper::ask($question);
-
-                $res_parts = $res['candidates'][0]['content']['parts'] ?? [];
-                $resQuestions = '';
-
-                foreach ($res_parts as $res_part) {
-                  $resQuestions .= $res_part['text'];
-                }
-
-                $practiceQuestions = str_replace('```json', '', $resQuestions);
-                $practiceQuestions = str_replace('```', '', $practiceQuestions);
-                */
-    $practiceQuestions = json_decode($practiceQuestions, true) ?? [];
-
-    $practiceData = [
-      'course' => $request->course,
-      'practiceQuestions' => $practiceQuestions
-    ];
-
-    // Set a session variable
-    Session::put('practiceData', $practiceData);
-
-    app(AcademicActivityLogger::class)->workflowEvent(
-      $institution,
-      'question_bank.generated',
-      ActivityLogCategory::Course,
-      'generated_question_bank',
-      'Practice questions generated.',
-      [
-        'topic_ids' => $request->topic_ids,
-        'topic_count' => count($request->topic_ids),
-        'generated_count' => count($practiceQuestions),
-        'for_role' =>
-          $institutionUser->role instanceof \BackedEnum
-            ? $institutionUser->role->value
-            : $institutionUser->role
-      ]
+    Session::put(
+      'practiceData',
+      GenerateTopicPracticeQuestions::run(
+        $institution,
+        $institutionUser,
+        $topic,
+        $request->course
+      )
     );
 
     return $this->ok();
-    // return $this->ok(['practice_questions' => $practiceQuestions]);
+  }
+
+  public function submitPracticeQuestions(
+    Request $request,
+    Institution $institution
+  ) {
+    $data = $request->validate([
+      'attempt_id' => [
+        'required',
+        'integer',
+        Rule::exists('topic_practice_attempts', 'id')->where(
+          'institution_id',
+          $institution->id
+        )
+      ],
+      'answers' => ['required', 'array'],
+      'answers.*' => ['nullable', 'string']
+    ]);
+
+    $attempt = TopicPracticeAttempt::query()
+      ->whereKey($data['attempt_id'])
+      ->firstOrFail();
+
+    return $this->ok(
+      SubmitTopicPracticeAttempt::run(
+        currentInstitutionUser(),
+        $attempt,
+        $data['answers']
+      )
+    );
   }
 
   public function viewPracticeQuestions(Institution $institution)
@@ -241,8 +195,33 @@ class CoursesController extends Controller
         : 'institutions/courses/practice-questions-student',
       [
         'course' => $course,
+        'topic' => $practiceData['topic'] ?? null,
+        'attemptId' => $practiceData['attemptId'] ?? null,
+        'practiceSummary' => $practiceData['practiceSummary'] ?? null,
         'practiceQuestions' => $practiceQuestions
       ]
+    );
+  }
+
+  public function practiceProgress(Institution $institution, Request $request)
+  {
+    $institutionUser = currentInstitutionUser();
+
+    if ($institutionUser->isStudent()) {
+      return Inertia::render(
+        'institutions/courses/practice-progress-student',
+        GetStudentTopicPracticeProgress::run($institutionUser->student)
+      );
+    }
+
+    abort_unless($institutionUser->isStaff(), 403);
+
+    return Inertia::render(
+      'institutions/courses/practice-progress-teacher',
+      GetTeacherTopicPracticeProgress::run(
+        $request->integer('topic_id') ?: null,
+        $request->integer('classification_id') ?: null
+      )
     );
   }
 

@@ -89,6 +89,11 @@ class Topic extends Model
     return $this->belongsTo(Course::class);
   }
 
+  public function lessonNotes()
+  {
+    return $this->hasMany(LessonNote::class);
+  }
+
   public function schemeOfWorks()
   {
     return $this->hasMany(SchemeOfWork::class);
@@ -97,5 +102,15 @@ class Topic extends Model
   public function parentTopic()
   {
     return $this->belongsTo(Topic::class, 'parent_topic_id');
+  }
+
+  public function practiceSummaries()
+  {
+    return $this->hasMany(TopicPracticeSummary::class);
+  }
+
+  public function practiceAttempts()
+  {
+    return $this->hasMany(TopicPracticeAttempt::class);
   }
 }

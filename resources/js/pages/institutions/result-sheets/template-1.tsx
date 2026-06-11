@@ -191,9 +191,11 @@ export default function Template1(props: ResultProps) {
                   <th>
                     <VerticalText text="Grade" />
                   </th>
-                  <th>
-                    <VerticalText text="Position" />
-                  </th>
+                  {!hidePosition && (
+                    <th>
+                      <VerticalText text="Position" />
+                    </th>
+                  )}
                   <th>
                     <VerticalText text="Class Average" />
                   </th>
@@ -220,7 +222,7 @@ export default function Template1(props: ResultProps) {
                       <td>{courseResult.result}</td>
                       {/* <td>{courseResult.grade}</td> */}
                       <td>{grade}</td>
-                      <td>{courseResult.position}</td>
+                      {!hidePosition && <td>{courseResult.position}</td>}
                       <td>
                         {courseResultInfoData[courseResult.course_id]?.average}
                       </td>

@@ -158,6 +158,10 @@ Route::get('/courses/practice-questions', [Web\CoursesController::class, 'viewPr
     ->name('courses.view-practice-questions');
 Route::post('/courses/practice-questions', [Web\CoursesController::class, 'generatePracticeQuestions'])
     ->name('courses.practice-questions');
+Route::post('/courses/practice-questions/submit', [Web\CoursesController::class, 'submitPracticeQuestions'])
+    ->name('courses.practice-questions.submit');
+Route::get('/courses/practice-progress', [Web\CoursesController::class, 'practiceProgress'])
+    ->name('courses.practice-progress');
 Route::post('/courses/insert-questions/{courseSession}', [Web\CoursesController::class, 'insertQuestionsToQuestionbank'])
     ->name('courses.insert-questions');
 Route::get('/courses/multi-create', [Web\CoursesController::class, 'multiCreate'])

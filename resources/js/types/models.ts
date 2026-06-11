@@ -425,6 +425,45 @@ export interface PracticeQuestion {
   // [OptionLetter]: string;
 }
 
+export interface TopicPracticeSummary extends InstitutionRow {
+  student_id: number;
+  classification_id: number;
+  course_id: number;
+  topic_id: number;
+  attempts_count: number;
+  latest_score: number;
+  latest_questions_count: number;
+  latest_percentage: number;
+  best_score: number;
+  best_questions_count: number;
+  best_percentage: number;
+  last_generated_at?: string;
+  last_submitted_at?: string;
+  student?: Student;
+  classification?: Classification;
+  course?: Course;
+  topic?: Topic;
+  attempts?: TopicPracticeAttempt[];
+}
+
+export interface TopicPracticeAttempt extends InstitutionRow {
+  topic_practice_summary_id: number;
+  student_id: number;
+  classification_id: number;
+  course_id: number;
+  topic_id: number;
+  attempt_number: number;
+  questions: PracticeQuestion[];
+  answers?: Record<number, string>;
+  score: number;
+  questions_count: number;
+  answered_questions_count: number;
+  percentage: number;
+  submitted_at?: string;
+  course?: Course;
+  topic?: Topic;
+}
+
 export interface Course extends InstitutionRow {
   title: string;
   code: string;
@@ -447,6 +486,7 @@ export interface Student extends Row {
   institution_user?: InstitutionUser;
   course_results?: CourseResult[];
   guardian?: User;
+  practice_summary?: TopicPracticeSummary;
 }
 
 export interface CourseResult extends InstitutionRow {
@@ -1014,6 +1054,7 @@ export interface Topic extends InstitutionRow {
   course?: Course;
   classification_group?: ClassificationGroup;
   parent_topic?: Topic;
+  practice_summary?: TopicPracticeSummary;
 
   scheme_of_works?: SchemeOfWork[];
 }
