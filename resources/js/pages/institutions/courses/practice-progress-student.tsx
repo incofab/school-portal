@@ -28,6 +28,14 @@ interface Props {
   attempts: TopicPracticeAttempt[];
 }
 
+function getScoreColor(percentage: number, attempted: boolean) {
+  if (!attempted) {
+    return 'gray';
+  }
+
+  return percentage >= 60 ? 'green' : 'red';
+}
+
 export default function PracticeProgressStudent({ courses, attempts }: Props) {
   const practiceQuestionModalToggle = useModalValueToggle<Course>();
   const { instRoute } = useInstitutionRoute();
@@ -111,6 +119,7 @@ export default function PracticeProgressStudent({ courses, attempts }: Props) {
                     <Tr>
                       <Th>Topic</Th>
                       <Th>Status</Th>
+                      <Th isNumeric>Percent Score</Th>
                       <Th isNumeric>Attempts</Th>
                       <Th isNumeric>Best</Th>
                       <Th isNumeric>Latest</Th>
@@ -120,6 +129,12 @@ export default function PracticeProgressStudent({ courses, attempts }: Props) {
                     {course.topics?.map((topic) => {
                       const summary = topic.practice_summary;
                       const practiced = !!summary?.attempts_count;
+                      const bestPercentage = summary?.best_percentage ?? 0;
+                      const latestPercentage = summary?.latest_percentage ?? 0;
+                      const scoreColor = getScoreColor(
+                        bestPercentage,
+                        practiced
+                      );
 
                       return (
                         <Tr key={topic.id}>
@@ -129,9 +144,39 @@ export default function PracticeProgressStudent({ courses, attempts }: Props) {
                               {practiced ? 'Practiced' : 'Not attempted'}
                             </Badge>
                           </Td>
+                          <Td isNumeric>
+                            <Badge colorScheme={scoreColor}>
+                              {practiced ? `${bestPercentage}%` : 'No score'}
+                            </Badge>
+                          </Td>
                           <Td isNumeric>{summary?.attempts_count ?? 0}</Td>
-                          <Td isNumeric>{summary?.best_percentage ?? 0}%</Td>
-                          <Td isNumeric>{summary?.latest_percentage ?? 0}%</Td>
+                          <Td isNumeric>
+                            <Text
+                              as="span"
+                              color={
+                                practiced ? `${scoreColor}.600` : 'gray.500'
+                              }
+                              fontWeight="semibold"
+                            >
+                              {bestPercentage}%
+                            </Text>
+                          </Td>
+                          <Td isNumeric>
+                            <Text
+                              as="span"
+                              color={
+                                practiced
+                                  ? `${getScoreColor(
+                                      latestPercentage,
+                                      practiced
+                                    )}.600`
+                                  : 'gray.500'
+                              }
+                              fontWeight="semibold"
+                            >
+                              {latestPercentage}%
+                            </Text>
+                          </Td>
                         </Tr>
                       );
                     })}
