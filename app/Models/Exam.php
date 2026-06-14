@@ -70,6 +70,10 @@ class Exam extends Model
       return $this->examable->user->full_name;
     } elseif ($this->examable instanceof TokenUser) {
       return $this->examable->name;
+    } elseif ($this->examable instanceof AdmissionApplication) {
+      return $this->examable->name;
+    } elseif ($this->examable instanceof RecruitmentApplication) {
+      return $this->examable->name;
     } else {
       return 'Unknown';
     }
@@ -80,7 +84,7 @@ class Exam extends Model
     return $this->hasMany(ExamCourseable::class);
   }
 
-  // TokenUser|User|Student|AdmissionApplication
+  // TokenUser|User|Student|AdmissionApplication|RecruitmentApplication
   public function examable()
   {
     return $this->morphTo();

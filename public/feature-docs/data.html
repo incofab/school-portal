@@ -4447,7 +4447,11 @@
               cover-letter/portfolio URL fields, typed cover letter,
               availability date, status, and review note. Factories are
               <code>VacancyPostFactory</code> and
-              <code>RecruitmentApplicationFactory</code>.
+              <code>RecruitmentApplicationFactory</code>. Recruitment
+              applications are registered in
+              <code>App\Support\MorphMap</code> as
+              <code>recruitment-application</code> so <code>exams</code>
+              can reference them through the existing examable morph columns.
             </div>
           </li>
         </ul>

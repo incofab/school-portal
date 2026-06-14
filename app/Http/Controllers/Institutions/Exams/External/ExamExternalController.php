@@ -8,6 +8,7 @@ use App\Http\Requests\StoreExamRequest;
 use App\Models\AdmissionApplication;
 use App\Models\Event;
 use App\Models\Institution;
+use App\Models\RecruitmentApplication;
 use App\Models\Student;
 use App\Models\TokenUser;
 use App\Support\MorphMap;
@@ -126,6 +127,55 @@ class ExamExternalController extends Controller
     $exam = CreateExam::make(
       $event,
       $admissionApplication,
+      $event->eventCourseables,
+      ['start_now' => true]
+    )->execute();
+
+    if ($request->expectsJson()) {
+      return $this->ok(['exam' => $exam, 'institution' => $event->institution]);
+    }
+
+    return redirect(
+      route('institutions.display-exam-page', [
+        $event->institution->uuid,
+        $exam->exam_no
+      ])
+    );
+  }
+
+  function recruitmentExamLoginCreate()
+  {
+    return Inertia::render('auth/recruitment-exam-login');
+  }
+
+  function recruitmentExamLoginStore(Request $request)
+  {
+    $data = $request->validate([
+      'event_code' => ['required', 'string'],
+      'application_no' => ['required', 'string']
+    ]);
+
+    $event = Event::query()
+      ->where('code', $data['event_code'])
+      ->with('institution')
+      ->firstOrFail();
+
+    $recruitmentApplication = RecruitmentApplication::query()
+      ->where('application_no', $data['application_no'])
+      ->firstOrFail();
+
+    abort_unless(
+      $event->institution_id === $recruitmentApplication->institution_id,
+      403,
+      'Institution mismatch'
+    );
+
+    [$status, $message] = $event->canCreateExamCheck();
+    abort_unless($status, 400, $message);
+
+    $exam = CreateExam::make(
+      $event,
+      $recruitmentApplication,
       $event->eventCourseables,
       ['start_now' => true]
     )->execute();

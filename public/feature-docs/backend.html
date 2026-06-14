@@ -2984,6 +2984,18 @@
             &#x27;admissionExamLoginStore&#x27;])-&gt;name(&#x27;admissions.exam.login.store&#x27;);
           </li>
           <li>
+            <code>routes/web.php</code> —
+            Route::get(&#x27;/recruitment/exam-login&#x27;,
+            [External\ExamExternalController::class,
+            &#x27;recruitmentExamLoginCreate&#x27;])-&gt;name(&#x27;recruitment.exam.login.create&#x27;);
+          </li>
+          <li>
+            <code>routes/web.php</code> —
+            Route::post(&#x27;/recruitment/exam-login&#x27;,
+            [External\ExamExternalController::class,
+            &#x27;recruitmentExamLoginStore&#x27;])-&gt;name(&#x27;recruitment.exam.login.store&#x27;);
+          </li>
+          <li>
             <code>routes/web.php</code> — Route::group([&#x27;prefix&#x27; =&gt;
             &#x27;external/{institution}/&#x27;], function () {
           </li>
@@ -3965,8 +3977,11 @@
               >
             </div>
             <div class="desc">
-              HTTP controller for Exam External, handling requests,
-              authorization, and responses.
+              HTTP controller for external CBT access. It creates token-user
+              exams and handles public student, admission application, and
+              recruitment application exam login by validating event/applicant
+              codes, checking institution ownership, and creating or resuming
+              started exams.
             </div>
           </li>
           <li>
@@ -8594,6 +8609,9 @@
               >,
               <code>app/Http/Requests/RecruitmentApplicationRequest.php</code>,
               and <code>app/Enums/RecruitmentApplicationStatus.php</code>.
+              Recruitment applications are also supported as CBT examable
+              records through <code>ExamExternalController</code> public
+              recruitment exam login endpoints.
             </div>
           </li>
         </ul>

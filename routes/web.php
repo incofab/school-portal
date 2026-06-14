@@ -221,6 +221,9 @@ Route::post('/student/exam-login', [External\ExamExternalController::class, 'stu
 Route::get('/admissions/exam-login', [External\ExamExternalController::class, 'admissionExamLoginCreate'])->name('admissions.exam.login.create');
 Route::post('/admissions/exam-login', [External\ExamExternalController::class, 'admissionExamLoginStore'])->name('admissions.exam.login.store');
 
+Route::get('/recruitment/exam-login', [External\ExamExternalController::class, 'recruitmentExamLoginCreate'])->name('recruitment.exam.login.create');
+Route::post('/recruitment/exam-login', [External\ExamExternalController::class, 'recruitmentExamLoginStore'])->name('recruitment.exam.login.store');
+
 Route::group(['prefix' => 'external/{institution}/'], function () {
     Route::post('/get-user-token', External\GetUserTokenController::class);
     Route::get('/home', External\HomeExternalController::class)

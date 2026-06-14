@@ -90,6 +90,7 @@ class MorphMap
     'question' => Models\Question::class,
     'receipt' => Models\Receipt::class,
     'registration-request' => Models\RegistrationRequest::class,
+    'recruitment-application' => Models\RecruitmentApplication::class,
     'reserved-account' => Models\ReservedAccount::class,
     'result-comment-template' => Models\ResultCommentTemplate::class,
     'result-publication' => Models\ResultPublication::class,

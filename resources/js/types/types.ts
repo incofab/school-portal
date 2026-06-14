@@ -5,6 +5,7 @@ import {
   Classification,
   ClassificationGroup,
   Institution,
+  RecruitmentApplication,
   Student,
   TokenUser,
   User,
@@ -12,7 +13,12 @@ import {
 
 export type Nullable<T> = T | null;
 export type KeyValue<T = string> = { [key: string]: T };
-export type GenericUser = TokenUser | User | Student | AdmissionApplication;
+export type GenericUser =
+  | TokenUser
+  | User
+  | Student
+  | AdmissionApplication
+  | RecruitmentApplication;
 export type Feeable = Classification | ClassificationGroup | Institution;
 export type Examable = GenericUser;
 export type SelectValue =

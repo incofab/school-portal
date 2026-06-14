@@ -1327,10 +1327,11 @@
           <p>
             Exam features include events, event courseables, exams, exam
             courseables, event content download, result transfer from events
-            into term/course results, multi-transfer, student/admission external
-            exam login, token-user profile update, event display, external exam
-            creation, objective/theory question switching within each exam
-            subject, manual theory answer evaluation by authorized staff, exam
+            into term/course results, multi-transfer,
+            student/admission/recruitment external exam login, token-user
+            profile update, event display, external exam creation,
+            objective/theory question switching within each exam subject, manual
+            theory answer evaluation by authorized staff, exam
             display/pause/end/result pages, leaderboards, public exam result
             lookup, an institution-facing offline CBT setup guide with app
             download and tutorial links, and offline mock API endpoints for
@@ -1364,6 +1365,7 @@
               <code>public/examiner</code>,
               <code>auth/student-exam-login.tsx</code>,
               <code>auth/admissions-exam-login.tsx</code>,
+              <code>auth/recruitment-exam-login.tsx</code>,
               <code>auth/exam-result-login.tsx</code>.
             </li>
             <li>
@@ -1427,7 +1429,10 @@
             The application model is intentionally institution-scoped and
             candidate-centered so it can later be attached to CBT screening
             flows in the same way admission applications are used for admissions
-            exams.
+            exams. Recruitment applicants can now enter an event code and their
+            recruitment application number on the public recruitment exam login
+            page to create or resume a started CBT exam tied directly to the
+            recruitment application record.
           </p>
           <ul>
             <li>
@@ -1437,7 +1442,8 @@
                 >recruitment-applications/{recruitmentApplication}/update-status</code
               >; public <code>{institution}/recruitment</code>,
               <code>{institution}/recruitment/{vacancyPost}</code>, and
-              <code>{institution}/recruitment/{vacancyPost}/apply</code>.
+              <code>{institution}/recruitment/{vacancyPost}/apply</code>; public
+              CBT login <code>recruitment/exam-login</code>.
             </li>
             <li>
               Controllers/actions:
@@ -1449,14 +1455,16 @@
             <li>
               Frontend:
               <code>resources/js/pages/institutions/recruitment/*</code> plus
-              the institution sidebar recruitment section.
+              the institution sidebar recruitment section and
+              <code>resources/js/pages/auth/recruitment-exam-login.tsx</code>.
             </li>
             <li>
               Data/tests: <code>VacancyPost</code>,
               <code>RecruitmentApplication</code>,
               <code>RecruitmentApplicationStatus</code>, vacancy/application
-              migrations and factories, and
-              <code>RecruitmentControllerTest</code>.
+              migrations and factories, recruitment application examable morph
+              support, <code>RecruitmentControllerTest</code>, and external exam
+              login coverage.
             </li>
           </ul>
         </div>

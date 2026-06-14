@@ -180,10 +180,10 @@ export default function Login({
               </MenuItem>
               <MenuItem
                 as={InertiaLink}
-                href={route('student.exam.login.create')}
+                href={route('recruitment.exam.login.create')}
                 py={2}
               >
-                Recruitment Text
+                Recruitment Exam
               </MenuItem>
               <MenuItem
                 as={InertiaLink}
