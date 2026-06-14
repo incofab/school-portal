@@ -29,7 +29,7 @@ class CourseResultInfoUITableFilters extends BaseUITableFilter
       ->joinClassification()
       ->baseQuery->where(function ($q) use ($search) {
         $q->where('courses.title', 'like', "%{$search}%")->orWhere(
-          'classifications.name',
+          'classifications.title',
           'like',
           "%{$search}%"
         );

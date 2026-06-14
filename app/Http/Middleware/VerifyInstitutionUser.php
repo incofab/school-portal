@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Enums\InstitutionStatus;
+use App\Models\Institution;
 use App\Support\Audit\SecurityActivityLogger;
 use Closure;
 use Illuminate\Http\Request;
@@ -23,6 +24,13 @@ class VerifyInstitutionUser
 
     /** @var \App\Models\Institution $institution */
     $institution = $request->route()->institution;
+    if (!($institution instanceof Institution)) {
+      return $this->eject(
+        $request,
+        'Institution not found or user is not an institution user.'
+      );
+    }
+
     $institutionUser = $institution->institutionUsers->first();
 
     if ($user->isManager()) {
