@@ -1,9 +1,13 @@
 <?php
 namespace App\Actions;
 
+use App\Enums\InstitutionSettingType;
 use App\Enums\PriceLists\PaymentStructure;
 use App\Enums\PriceLists\PriceType;
+use App\Enums\TermType;
+use App\Models\AcademicSession;
 use App\Models\Institution;
+use App\Models\InstitutionSetting;
 use App\Models\PriceList;
 
 class SeedSetupData
@@ -17,6 +21,7 @@ class SeedSetupData
     $obj = new self($institution);
     $obj->seedAssessment();
     $obj->seedPriceList();
+    $obj->seedAcademicSettings();
   }
 
   static function seedAllInstitutions()
@@ -80,5 +85,45 @@ class SeedSetupData
         ]
       );
     }
+  }
+
+  private function seedAcademicSettings()
+  {
+    $this->saveSetting(
+      InstitutionSettingType::CurrentTerm,
+      TermType::First->value
+    );
+
+    $academicSession = AcademicSession::query()
+      ->orderByDesc('is_active')
+      ->latest('order_index')
+      ->latest('id')
+      ->first();
+
+    if (!$academicSession) {
+      return;
+    }
+
+    $this->saveSetting(
+      InstitutionSettingType::CurrentAcademicSession,
+      $academicSession->id
+    );
+  }
+
+  private function saveSetting(InstitutionSettingType $key, mixed $value): void
+  {
+    $exists = InstitutionSetting::query()
+      ->where('institution_id', $this->institution->id)
+      ->where('key', $key->value)
+      ->exists();
+
+    if ($exists) {
+      return;
+    }
+
+    SaveInstitutionSetting::run($this->institution, [
+      'key' => $key->value,
+      'value' => $value
+    ]);
   }
 }

@@ -740,7 +740,10 @@
             <div class="desc">
               Represents Institution Setting records and relationships used for
               institution profiles and settings, including institution-scoped
-              user full-name display-order overrides.
+              user full-name display-order overrides. Institution setup now
+              creates explicit current-term and current-academic-session
+              records, defaulting to first term and the active or latest
+              academic session.
             </div>
           </li>
           <li>
@@ -4416,7 +4419,8 @@
               <code>AcademicSession</code> remains the canonical model for
               school sessions and is now managed through the manager admin
               resource. It includes <code>is_active</code> for the single active
-              platform session used as the default current academic session.
+              platform session used as the default current academic session and
+              as the preferred session persisted into new institution settings.
               Tests use
               <code>database/factories/AcademicSessionFactory.php</code> and
               cover the manager controller in

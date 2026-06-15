@@ -720,7 +720,9 @@
             flag; admin managers can activate one from the list or while
             creating/editing, and institution settings fall back to that active
             session when the institution has not selected its own current
-            session.
+            session. New institutions now receive explicit current academic
+            session and first-term settings during setup, using the active
+            session or latest available session.
           </p>
           <ul>
             <li>
@@ -777,13 +779,17 @@
             bank accounts yet. Shared props expose current institution, session,
             term, and role context to the React app. Institution photos and
             setting images are now tracked in the shared media table before the
-            S3 upload completes.
+            S3 upload completes. Setting persistence is centralized in
+            <code>SaveInstitutionSetting</code> so controllers and setup flows
+            use the same validation, media handling, array serialization, and
+            payment-key audit behavior.
           </p>
           <ul>
             <li>
               Routes/controllers: <code>InstitutionController</code>,
               <code>InstitutionSettingController</code>,
-              <code>SettingsHandler</code>, <code>SetupChecklistHandler</code>,
+              <code>SaveInstitutionSetting</code>, <code>SettingsHandler</code>,
+              <code>SetupChecklistHandler</code>,
               <code>InstitutionDashboardStat</code>.
             </li>
             <li>

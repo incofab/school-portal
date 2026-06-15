@@ -369,7 +369,7 @@
           <li>
             <div>
               <code>InstitutionController::uploadPhoto</code>,
-              <code>InstitutionSettingController::saveRecord</code>,
+              <code>SaveInstitutionSetting</code>,
               <code>UpdateInstitutionUserController::uploadPhoto</code>,
               <code>InstitutionGroupsController::uploadBanner</code>,
               <code>RecordAdmissionApplication</code>,
@@ -4223,10 +4223,11 @@
             </div>
             <div class="desc">
               HTTP controller for Institution Setting, handling requests,
-              authorization, persistence, and validation for settings such as
-              result options, payment keys, and institution-scoped user
-              full-name display order. Payment-key changes emit security audit
-              events with provider/key-presence summaries only.
+              authorization, and validation for settings such as result options,
+              payment keys, and institution-scoped user full-name display order.
+              Persistence delegates to
+              <code>SaveInstitutionSetting</code>. Payment-key changes emit
+              security audit events with provider/key-presence summaries only.
             </div>
           </li>
           <li>
@@ -6095,6 +6096,21 @@
           </li>
           <li>
             <div>
+              <strong>SaveInstitutionSetting</strong>
+              <span class="path"
+                ><code>app/Actions/SaveInstitutionSetting.php</code></span
+              >
+            </div>
+            <div class="desc">
+              Shared action for creating or updating institution settings from
+              controllers, setup seeders, and other backend workflows. It
+              centralizes setting-specific validation, array value
+              serialization, setting image media handling, and payment-key audit
+              logging.
+            </div>
+          </li>
+          <li>
+            <div>
               <strong>SeedSetupData</strong>
               <span class="path"
                 ><code>app/Actions/SeedSetupData.php</code></span
@@ -6102,7 +6118,10 @@
             </div>
             <div class="desc">
               Action class that runs the Seed Setup Data workflow and
-              coordinates domain logic.
+              coordinates domain logic. It seeds default assessments, baseline
+              price-list records, and institution current academic settings:
+              first term plus the active academic session, falling back to the
+              latest available session.
             </div>
           </li>
           <li>
@@ -8538,7 +8557,8 @@
               <code>AcademicSession</code>. Store, update, and activate flows
               enforce that only one academic session is active; settings
               fallback now prefers the active session before falling back to
-              latest id.
+              latest id, and new institution setup persists the selected session
+              as the institution's current academic session.
             </div>
           </li>
           <li>
