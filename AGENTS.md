@@ -21,7 +21,6 @@
 - Install deps: `composer install` and `npm install` (or `./vendor/bin/sail npm install` when using Sail).
 - Run app: `./vendor/bin/sail artisan serve` for PHP + `npm run dev` for Vite; Sail alternative: `./vendor/bin/sail up` then `./vendor/bin/sail npm run dev`.
 - Production build: `npm run build`.
-- Lint frontend/TS: `npm run lint` (eslint + tsc).
 - Backend tests: `./vendor/bin/pest`; use `.env.testing` with a dedicated database.
 - Database setup: `./vendor/bin/sail artisan migrate --seed` (or `./vendor/bin/sail artisan migrate --seed`) to load baseline data such as roles.
 

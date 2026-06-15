@@ -100,6 +100,10 @@ Route::group(['middleware' => 'admin'], function () {
     Route::delete('/destroy/{user}', [Web\ManagerController::class, 'destroy'])
         ->name('destroy');
 
+    Route::post('academic-sessions/{academicSession}/activate', [
+        Web\AcademicSessions\AcademicSessionController::class,
+        'activate',
+    ])->name('academic-sessions.activate');
     Route::resource('academic-sessions', Web\AcademicSessions\AcademicSessionController::class)
         ->except(['show']);
 });

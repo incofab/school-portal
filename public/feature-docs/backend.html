@@ -8522,6 +8522,11 @@
             <div class="desc">
               Manager-admin routes now expose
               <code
+                >POST
+                /manager/academic-sessions/{academicSession}/activate</code
+              >
+              named <code>managers.academic-sessions.activate</code> plus
+              <code
                 >Route::resource('academic-sessions',
                 Web\AcademicSessions\AcademicSessionController::class)->except(['show'])</code
               >
@@ -8530,7 +8535,10 @@
                 >app/Http/Controllers/Managers/AcademicSessions/AcademicSessionController.php</code
               >
               and uses <code>CreateOrUpdateAcademicSessionRequest</code> with
-              <code>AcademicSession</code>.
+              <code>AcademicSession</code>. Store, update, and activate flows
+              enforce that only one academic session is active; settings
+              fallback now prefers the active session before falling back to
+              latest id.
             </div>
           </li>
           <li>

@@ -265,7 +265,10 @@
             </div>
             <div class="desc">
               Represents Academic Session records and relationships used for
-              academic sessions and summaries.
+              academic sessions and summaries. The model casts
+              <code>is_active</code> as a boolean and exposes
+              <code>activate()</code> to mark one platform session active while
+              deactivating all others.
             </div>
           </li>
           <li>
@@ -2098,6 +2101,23 @@
           <li>
             <div>
               <strong
+                >2026_06_15_000001_add_is_active_to_academic_sessions_table</strong
+              >
+              <span class="path"
+                ><code
+                  >database/migrations/2026_06_15_000001_add_is_active_to_academic_sessions_table.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Adds the indexed <code>is_active</code> boolean to academic
+              sessions and marks the latest existing session active during the
+              migration.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong
                 >2023_12_09_093160_create_result_comment_templates_table</strong
               >
               <span class="path"
@@ -3304,7 +3324,7 @@
             </div>
             <div class="desc">
               Seeds baseline Academic Session data for academic sessions and
-              summaries flows.
+              summaries flows, then marks the latest baseline session active.
             </div>
           </li>
           <li>
@@ -4395,7 +4415,9 @@
             <div class="desc">
               <code>AcademicSession</code> remains the canonical model for
               school sessions and is now managed through the manager admin
-              resource. Tests use
+              resource. It includes <code>is_active</code> for the single active
+              platform session used as the default current academic session.
+              Tests use
               <code>database/factories/AcademicSessionFactory.php</code> and
               cover the manager controller in
               <code

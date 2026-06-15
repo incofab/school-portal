@@ -3,7 +3,14 @@ import { AcademicSession } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
 import ManagerDashboardLayout from '@/layout/managers/manager-dashboard-layout';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
-import { Button, HStack, Icon, IconButton, Text } from '@chakra-ui/react';
+import {
+  Badge,
+  Button,
+  HStack,
+  Icon,
+  IconButton,
+  Text,
+} from '@chakra-ui/react';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
@@ -21,6 +28,7 @@ interface Props {
 
 export default function ListAcademicSessions({ academicSessions }: Props) {
   const deleteForm = useWebForm({});
+  const activationForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
 
   async function deleteAcademicSession(academicSession: AcademicSession) {
@@ -30,6 +38,18 @@ export default function ListAcademicSessions({ academicSessions }: Props) {
 
     const res = await deleteForm.submit((data, web) =>
       web.delete(route('managers.academic-sessions.destroy', [academicSession]))
+    );
+
+    if (!handleResponseToast(res)) {
+      return;
+    }
+
+    Inertia.reload();
+  }
+
+  async function activateAcademicSession(academicSession: AcademicSession) {
+    const res = await activationForm.submit((data, web) =>
+      web.post(route('managers.academic-sessions.activate', [academicSession]))
     );
 
     if (!handleResponseToast(res)) {
@@ -49,6 +69,16 @@ export default function ListAcademicSessions({ academicSessions }: Props) {
       value: 'order_index',
     },
     {
+      label: 'Status',
+      value: 'is_active',
+      render: (row) =>
+        row.is_active ? (
+          <Badge colorScheme="green">Active</Badge>
+        ) : (
+          <Badge colorScheme="gray">Inactive</Badge>
+        ),
+    },
+    {
       label: 'Created',
       value: 'created_at',
       render: (row) => formatAsDate(row.created_at),
@@ -65,6 +95,16 @@ export default function ListAcademicSessions({ academicSessions }: Props) {
             as={InertiaLink}
             href={route('managers.academic-sessions.edit', [row])}
           />
+          {!row.is_active && (
+            <Button
+              colorScheme="green"
+              size="sm"
+              onClick={() => activateAcademicSession(row)}
+              isLoading={activationForm.processing}
+            >
+              Activate
+            </Button>
+          )}
           <IconButton
             aria-label="Delete Academic Session"
             colorScheme="red"

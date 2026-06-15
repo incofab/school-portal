@@ -7,7 +7,7 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
 import route from '@/util/route';
-import { FormControl, VStack } from '@chakra-ui/react';
+import { FormControl, FormLabel, Switch, VStack } from '@chakra-ui/react';
 import { preventNativeSubmit } from '@/util/util';
 import InputForm from '@/components/forms/input-form';
 import { FormButton } from '@/components/buttons';
@@ -21,6 +21,7 @@ export default function CreateEditAcademicSession({ academicSession }: Props) {
   const webForm = useWebForm({
     title: academicSession?.title ?? '',
     order_index: String(academicSession?.order_index ?? 100),
+    is_active: academicSession?.is_active ?? false,
   });
 
   const submit = async () => {
@@ -67,6 +68,16 @@ export default function CreateEditAcademicSession({ academicSession }: Props) {
                 title="Order Index"
                 type="number"
               />
+              <FormControl>
+                <FormLabel>Active</FormLabel>
+                <Switch
+                  isChecked={webForm.data.is_active}
+                  onChange={(e) =>
+                    webForm.setValue('is_active', e.currentTarget.checked)
+                  }
+                  colorScheme="brand"
+                />
+              </FormControl>
               <FormControl>
                 <FormButton isLoading={webForm.processing} />
               </FormControl>

@@ -23,6 +23,7 @@ export interface Row {
 export interface AcademicSession extends Row {
   title: string;
   order_index: number;
+  is_active: boolean;
 }
 
 export interface Role extends Row {

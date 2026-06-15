@@ -22,5 +22,10 @@ class AcademicSessionSeeder extends Seeder
     foreach ($arr as $key => $item) {
       AcademicSession::query()->firstOrCreate($item);
     }
+
+    AcademicSession::query()
+      ->where('title', '2025/2026')
+      ->first()
+      ?->activate();
   }
 }

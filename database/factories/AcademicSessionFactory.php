@@ -19,8 +19,18 @@ class AcademicSessionFactory extends Factory
     return [
       'title' => fake()
         ->unique()
-        ->sentence()
+        ->sentence(),
+      'is_active' => false
     ];
+  }
+
+  public function active(): static
+  {
+    return $this->state(
+      fn(array $attributes) => [
+        'is_active' => true
+      ]
+    );
   }
 
   public function deleted(): static

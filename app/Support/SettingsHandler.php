@@ -125,6 +125,7 @@ class SettingsHandler
     ) ??
       ($default === 'fetch'
         ? AcademicSession::query()
+          ->orderByDesc('is_active')
           ->latest('id')
           ->first()?->id
         : $default);
