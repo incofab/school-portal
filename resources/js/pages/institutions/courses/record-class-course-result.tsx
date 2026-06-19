@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import {
+  Badge,
+  Box,
   Card,
   CardBody,
-  Checkbox,
   FormControl,
   FormLabel,
   HStack,
   Input,
+  Radio,
+  RadioGroup,
   Spacer,
-  Spinner,
   Text,
   Wrap,
   WrapItem,
@@ -35,6 +37,8 @@ import startCase from 'lodash/startCase';
 import FormControlBox from '@/components/forms/form-control-box';
 import SwitchCourseTeacher from './switch-course-teacher-component';
 
+type ResultMode = 'full-term' | 'mid-term' | '';
+
 interface ResultEntry {
   [studentId: string]: {
     ass: { [key: string]: string | number };
@@ -46,7 +50,14 @@ interface ResultEntry {
 interface Props {
   courseTeacher: CourseTeacher;
   students: Student[];
-  assessments: Assessment[];
+  assessmentGroups: {
+    fullTerm: Assessment[];
+    midTerm: Assessment[];
+  };
+  showExamInput?: {
+    fullTerm: boolean;
+    midTerm: boolean;
+  };
   teachersCourses: { [id: number]: CourseTeacher };
   forMidTerm: boolean;
 }
@@ -54,15 +65,20 @@ interface Props {
 export default function RecordClassCourseResult({
   courseTeacher,
   students,
-  assessments,
+  assessmentGroups,
+  showExamInput = { fullTerm: true, midTerm: true },
   teachersCourses,
   forMidTerm,
 }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
   const { currentAcademicSession, currentTerm, usesMidTermResult } =
     useSharedProps();
+  const [selectedResultMode, setSelectedResultMode] = useState<ResultMode>(
+    usesMidTermResult ? '' : forMidTerm ? 'mid-term' : 'full-term'
+  );
   const selectedCourseTeacherState = useState<CourseTeacher>(courseTeacher);
   const { instRoute } = useInstitutionRoute();
+  const hasSelectedResultMode = !usesMidTermResult || selectedResultMode !== '';
 
   const webForm = useWebForm({
     academic_session_id: currentAcademicSession.id,
@@ -70,16 +86,54 @@ export default function RecordClassCourseResult({
     for_mid_term: forMidTerm,
     result: {} as ResultEntry,
   });
+  const isMidTermSelected = Boolean(webForm.data.for_mid_term);
+  const selectedAssessments = isMidTermSelected
+    ? assessmentGroups.midTerm
+    : assessmentGroups.fullTerm;
+  const shouldShowExamInput = isMidTermSelected
+    ? showExamInput.midTerm
+    : showExamInput.fullTerm;
+  const resultModeLabel = isMidTermSelected
+    ? 'Mid-Term Result'
+    : 'Full Term Result';
+  const visibleResultModeLabel = hasSelectedResultMode
+    ? resultModeLabel
+    : 'Select Result Type';
+  const resultModeScheme = isMidTermSelected ? 'yellow' : 'blue';
+  const resultModeBg = !hasSelectedResultMode
+    ? 'brand.50'
+    : isMidTermSelected
+    ? 'yellow.50'
+    : 'blue.50';
+  const resultModeBorder = !hasSelectedResultMode
+    ? 'brand.200'
+    : isMidTermSelected
+    ? 'yellow.200'
+    : 'blue.200';
 
   const submit = async () => {
+    if (!hasSelectedResultMode) {
+      toastError('Select full term or mid-term recording before continuing.');
+      return;
+    }
+
     if (Object.keys(webForm.data.result).length < 1) {
       Inertia.visit(instRoute('course-results.index'));
       return;
     }
+    const result = Object.values(webForm.data.result).map((item) => {
+      if (shouldShowExamInput) {
+        return item;
+      }
+
+      const data: Partial<ResultEntry[string]> = { ...item };
+      delete data.exam;
+      return data;
+    });
     const res = await webForm.submit((data, web) => {
       return web.post(
         instRoute('record-class-results.store', [courseTeacher]),
-        data
+        { ...data, result }
       );
     });
 
@@ -100,22 +154,29 @@ export default function RecordClassCourseResult({
       ? [
           {
             label: 'For Mid Term',
-            value: forMidTerm ? 'Yes' : 'No',
+            value: hasSelectedResultMode
+              ? isMidTermSelected
+                ? 'Yes'
+                : 'No'
+              : 'Not selected',
           },
         ]
       : []),
   ];
 
-  function getStudentTotal(result: {
-    ass: { [key: string]: string | number };
-    exam: string;
-    student_id: number;
-  }) {
+  function getStudentTotal(
+    result: {
+      ass: { [key: string]: string | number };
+      exam: string;
+      student_id: number;
+    },
+    includeExam: boolean
+  ) {
     let score = 0;
     Object.entries(result.ass).forEach(([, assScore]) => {
       score += Number(assScore);
     });
-    const totalScore = score + Number(result.exam);
+    const totalScore = score + (includeExam ? Number(result.exam) : 0);
     return isNaN(totalScore) ? '' : totalScore;
   }
 
@@ -125,7 +186,7 @@ export default function RecordClassCourseResult({
       toastError(`Score invalid. It must be a number`);
       return false;
     }
-    if (!maxScore || maxScore == 0) {
+    if (!maxScore || maxScore === 0) {
       return true;
     }
     if (score > maxScore) {
@@ -156,44 +217,80 @@ export default function RecordClassCourseResult({
           <Spacer height={3} />
 
           {usesMidTermResult && (
-            <FormControlBox
-              form={webForm as any}
-              formKey="for_mid_term"
-              title=""
+            <Box
+              bg={resultModeBg}
+              borderColor={resultModeBorder}
+              borderWidth={1}
+              borderRadius={'md'}
+              p={3}
             >
-              <Checkbox
-                isChecked={webForm.data.for_mid_term}
-                px={1}
-                onChange={(e) => {
-                  Inertia.visit(
-                    instRoute('record-class-results.create', [
-                      courseTeacher,
-                      { for_mid_term: e.currentTarget.checked },
-                    ])
-                  );
-                  webForm.setProcessing(true);
-                }}
-                disabled={webForm.processing}
+              <HStack justify={'space-between'} align={'center'} mb={2}>
+                <Text fontWeight={'semibold'} color={'gray.700'}>
+                  Recording {visibleResultModeLabel}
+                </Text>
+                <Badge
+                  colorScheme={
+                    hasSelectedResultMode ? resultModeScheme : 'brand'
+                  }
+                >
+                  {hasSelectedResultMode ? resultModeLabel : 'Required'}
+                </Badge>
+              </HStack>
+              <FormControlBox
+                form={webForm as any}
+                formKey="for_mid_term"
+                title="Result Type"
               >
-                {webForm.processing && <Spinner size="xs" color="brand.500" />}{' '}
-                For Mid-Term Result
-              </Checkbox>
-            </FormControlBox>
+                <RadioGroup
+                  value={selectedResultMode}
+                  onChange={(value) => {
+                    const nextMode = value as ResultMode;
+                    const nextForMidTerm = nextMode === 'mid-term';
+                    setSelectedResultMode(nextMode);
+                    webForm.setValue('for_mid_term', nextForMidTerm);
+                    webForm.setValue('result', {});
+                  }}
+                  isDisabled={webForm.processing}
+                >
+                  <HStack spacing={6}>
+                    <Radio value="full-term">Full term</Radio>
+                    <Radio value="mid-term">Mid-term</Radio>
+                  </HStack>
+                </RadioGroup>
+                <Box color={'gray.600'} fontSize={'sm'} mt={1}>
+                  {hasSelectedResultMode
+                    ? isMidTermSelected
+                      ? 'You are recording only mid-term assessments for this class.'
+                      : 'You are recording only full-term assessments for this class.'
+                    : 'Choose the result type first. Student score fields will appear after this selection.'}
+                </Box>
+              </FormControlBox>
+            </Box>
           )}
           <Spacer height={3} />
 
           {selectedCourseTeacherState[0].id === courseTeacher.id &&
+            hasSelectedResultMode &&
             students.map((student) => {
               const existingResult =
-                student['course_results']?.[0] ?? ({} as CourseResult);
+                student.course_results?.find(
+                  (item) => Boolean(item.for_mid_term) === isMidTermSelected
+                ) ?? ({} as CourseResult);
               const result = webForm.data.result[student.id] ?? {
                 ...existingResult,
                 ass: existingResult?.assessment_values ?? {},
               };
               result.student_id = student.id;
-              const studentTotalScore = getStudentTotal(result);
+              const studentTotalScore = getStudentTotal(
+                result,
+                shouldShowExamInput
+              );
               return (
-                <Card key={student.id + 'exam' + webForm.data.term} mt={2}>
+                <Card
+                  key={student.id + 'exam' + webForm.data.term}
+                  mt={2}
+                  bg={'white'}
+                >
                   <CardBody>
                     <HStack align={'stretch'}>
                       <Text display={'block'} fontWeight={'semibold'} mb={3}>
@@ -210,13 +307,7 @@ export default function RecordClassCourseResult({
                       </Text>
                     </HStack>
                     <Wrap spacing={3}>
-                      {assessments.map((assessment) => {
-                        if (
-                          assessment.term &&
-                          assessment.term !== webForm.data.term
-                        ) {
-                          return null;
-                        }
+                      {selectedAssessments.map((assessment) => {
                         return (
                           <WrapItem
                             mt={2}
@@ -239,9 +330,7 @@ export default function RecordClassCourseResult({
                                 {startCase(assessment.raw_title)}
                               </FormLabel>
                               <Input
-                                value={
-                                  result['ass'][assessment.raw_title] ?? ''
-                                }
+                                value={result.ass[assessment.raw_title] ?? ''}
                                 type="number"
                                 onChange={(e) => {
                                   if (
@@ -269,57 +358,61 @@ export default function RecordClassCourseResult({
                           </WrapItem>
                         );
                       })}
-                      <WrapItem mt={2} width={'120px'}>
-                        <FormControl>
-                          <FormLabel
-                            fontWeight={'normal'}
-                            m={0}
-                            whiteSpace={'nowrap'}
-                            textOverflow={'ellipsis'}
-                            overflow={'hidden'}
-                            fontSize={'sm'}
-                          >
-                            Exam
-                          </FormLabel>
-                          <Input
-                            value={result.exam}
-                            type="number"
-                            onChange={(e) => {
-                              if (
-                                !isValidScore(
-                                  e.currentTarget.value,
-                                  100 -
-                                    (Number(studentTotalScore) -
-                                      Number(result.exam))
-                                )
-                              ) {
-                                return;
-                              }
-                              webForm.setValue('result', {
-                                ...webForm.data.result,
-                                [student.id]: {
-                                  ...result,
-                                  exam: e.currentTarget.value,
-                                },
-                              });
-                            }}
-                          />
-                        </FormControl>
-                      </WrapItem>
+                      {shouldShowExamInput && (
+                        <WrapItem mt={2} width={'120px'}>
+                          <FormControl>
+                            <FormLabel
+                              fontWeight={'normal'}
+                              m={0}
+                              whiteSpace={'nowrap'}
+                              textOverflow={'ellipsis'}
+                              overflow={'hidden'}
+                              fontSize={'sm'}
+                            >
+                              Exam
+                            </FormLabel>
+                            <Input
+                              value={result.exam}
+                              type="number"
+                              onChange={(e) => {
+                                if (
+                                  !isValidScore(
+                                    e.currentTarget.value,
+                                    100 -
+                                      (Number(studentTotalScore) -
+                                        Number(result.exam))
+                                  )
+                                ) {
+                                  return;
+                                }
+                                webForm.setValue('result', {
+                                  ...webForm.data.result,
+                                  [student.id]: {
+                                    ...result,
+                                    exam: e.currentTarget.value,
+                                  },
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </WrapItem>
+                      )}
                     </Wrap>
                   </CardBody>
                 </Card>
               );
             })}
-          <FormControl mt={3}>
-            <FormButton
-              isLoading={
-                selectedCourseTeacherState[0].id != courseTeacher.id ||
-                webForm.processing
-              }
-              onClick={submit}
-            />
-          </FormControl>
+          {hasSelectedResultMode && (
+            <FormControl mt={3}>
+              <FormButton
+                isLoading={
+                  selectedCourseTeacherState[0].id !== courseTeacher.id ||
+                  webForm.processing
+                }
+                onClick={submit}
+              />
+            </FormControl>
+          )}
         </CenteredBox>
       </Div>
     </DashboardLayout>

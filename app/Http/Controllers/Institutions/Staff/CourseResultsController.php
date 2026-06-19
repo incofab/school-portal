@@ -15,12 +15,15 @@ use App\Models\ClassResultInfo;
 use App\Models\CourseResult;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
+use App\Models\Student;
 use App\Support\Audit\AcademicIntegrityActivityLogger;
 use App\Support\Audit\ModelAudit;
+use App\Support\SettingsHandler;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Inertia\Inertia;
 
 class CourseResultsController extends Controller
@@ -70,23 +73,37 @@ class CourseResultsController extends Controller
     ]);
   }
 
-  public function create(Institution $institution, CourseTeacher $courseTeacher)
-  {
+  public function create(
+    Institution $institution,
+    CourseTeacher $courseTeacher,
+    Request $request
+  ) {
     $courseTeacher->load(['course', 'user', 'classification']);
     $this->validateUser($courseTeacher);
-    $courseResultQuery = $courseTeacher
-      ->courseResultQuery()
-      ->with('academicSession', 'course', 'student.user')
-      ->latest('updated_at');
+
+    $settings = SettingsHandler::makeFromRoute(true);
+    $selection = $this->getCreatePageSelection($request, $settings);
+    [$student, $courseResult] = $this->getSelectedStudentAndResult(
+      $request,
+      $courseTeacher,
+      $selection
+    );
 
     return Inertia::render('institutions/courses/record-course-result', [
       'courseTeacher' => $courseTeacher,
-      'courseResults' => paginateFromRequest($courseResultQuery),
-      'assessments' => Assessment::getAssessments(
-        null,
-        null,
+      'courseResult' => $courseResult,
+      'selectedStudent' => $student,
+      'academic_session_id' => $selection['academic_session_id'],
+      'term' => $selection['term'],
+      'for_mid_term' => $selection['for_mid_term'],
+      'courseResults' => paginateFromRequest(
+        $this->getCourseResultListQuery($courseTeacher, $selection)
+      ),
+      'assessmentGroups' => Assessment::getAssessmentGroups(
+        $selection['term'],
         $courseTeacher->classification_id
       ),
+      'showExamInput' => $this->getShowExamInput($settings),
       'teachersCourses' => $courseTeacher->otherTeacherCourses()
     ]);
   }
@@ -94,28 +111,117 @@ class CourseResultsController extends Controller
   public function edit(Institution $institution, CourseResult $courseResult)
   {
     $courseResult->load('academicSession', 'student.user');
-    $courseTeacher = CourseTeacher::where('course_id', $courseResult->course_id)
-      ->where('user_id', $courseResult->teacher_user_id)
+    $courseTeacher = $courseResult
+      ->courseTeacherQuery()
       ->with('user', 'course', 'classification')
       ->first();
 
     $this->validateUser($courseTeacher);
-    $courseResultQuery = $courseTeacher
-      ->courseResultQuery()
-      ->with('academicSession', 'course', 'student.user')
-      ->latest('updated_at');
 
+    $settings = SettingsHandler::makeFromRoute(true);
+    $assessmentGroups = Assessment::getAssessmentGroups(
+      $courseResult->term,
+      $courseTeacher->classification_id
+    );
     return Inertia::render('institutions/courses/record-course-result', [
       'courseTeacher' => $courseTeacher,
       'courseResult' => $courseResult,
-      'courseResults' => paginateFromRequest($courseResultQuery),
-      'assessments' => Assessment::getAssessments(
-        $courseResult->term,
-        $courseResult->for_mid_term,
-        $courseResult->classification_id
+      'courseResults' => paginateFromRequest(
+        $this->getCourseResultListQuery($courseTeacher, $courseResult)
       ),
+      'assessmentGroups' => $assessmentGroups,
+      'showExamInput' => $this->getShowExamInput($settings),
       'teachersCourses' => $courseTeacher->otherTeacherCourses()
     ]);
+  }
+
+  private function getCourseResultListQuery(
+    CourseTeacher $courseTeacher,
+    array|CourseResult $selection
+  ) {
+    if ($selection['for_mid_term'] === null) {
+      return CourseResult::where('id', 0);
+    }
+    return $courseTeacher
+      ->courseResultQuery()
+      ->where(
+        collect($selection)
+          ->only(['academic_session_id', 'term', 'for_mid_term'])
+          ->toArray()
+      )
+      ->with('academicSession', 'course', 'student.user', 'classification')
+      ->latest('updated_at');
+  }
+
+  private function getCreatePageSelection(
+    Request $request,
+    SettingsHandler $settings
+  ): array {
+    return [
+      'academic_session_id' => $request->integer(
+        'academic_session_id',
+        $settings->getCurrentAcademicSession()
+      ),
+      'term' => $request->input('term', $settings->getCurrentTerm()),
+      'for_mid_term' => $this->getNullableBoolean($request, 'for_mid_term')
+    ];
+  }
+
+  private function getNullableBoolean(Request $request, string $key): ?bool
+  {
+    if (!$request->has($key)) {
+      return null;
+    }
+
+    return $request->boolean($key);
+  }
+
+  private function getSelectedStudentAndResult(
+    Request $request,
+    CourseTeacher $courseTeacher,
+    array $selection
+  ): array {
+    if (!$request->filled('student_id')) {
+      return [null, null];
+    }
+
+    $student = Student::query()
+      ->with('user', 'classification')
+      ->where('classification_id', $courseTeacher->classification_id)
+      ->find($request->integer('student_id'));
+
+    if (!$student || $selection['for_mid_term'] === null) {
+      return [$student, null];
+    }
+
+    return [
+      $student,
+      $this->getSelectedCourseResult($courseTeacher, $student, $selection)
+    ];
+  }
+
+  private function getSelectedCourseResult(
+    CourseTeacher $courseTeacher,
+    Student $student,
+    array $selection
+  ): ?CourseResult {
+    return CourseResult::query()
+      ->with('academicSession', 'student.user')
+      ->where('course_id', $courseTeacher->course_id)
+      ->where('classification_id', $courseTeacher->classification_id)
+      ->where('student_id', $student->id)
+      ->where('academic_session_id', $selection['academic_session_id'])
+      ->where('term', $selection['term'])
+      ->where('for_mid_term', $selection['for_mid_term'])
+      ->first();
+  }
+
+  private function getShowExamInput(SettingsHandler $settings): array
+  {
+    return [
+      'fullTerm' => $settings->shouldDisplayExamResults(null, false),
+      'midTerm' => $settings->shouldDisplayExamResults(null, true)
+    ];
   }
 
   public function store(

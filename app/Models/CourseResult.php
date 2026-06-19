@@ -52,13 +52,17 @@ class CourseResult extends Model
     );
   }
 
-  public function courseTeacher()
+  public function courseTeacherQuery()
   {
     return CourseTeacher::query()
       ->where('user_id', $this->teacher_user_id)
       ->where('course_id', $this->course_id)
-      ->where('classification_id', $this->classification_id)
-      ->first();
+      ->where('classification_id', $this->classification_id);
+  }
+
+  public function courseTeacher()
+  {
+    return $this->courseTeacherQuery()->first();
   }
 
   public function student()

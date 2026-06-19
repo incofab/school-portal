@@ -42,29 +42,38 @@ class RecordClassResultController extends Controller
     $this->validateUser($courseTeacher);
     $forMidTerm = request()->boolean('for_mid_term', false);
 
-    $setting = SettingsHandler::makeFromRoute();
+    $setting = SettingsHandler::makeFromRoute(true);
     $students = Student::query()
       ->select('students.*')
       ->join('users', 'users.id', 'students.user_id')
       ->where('classification_id', $courseTeacher->classification_id)
       ->with(
         'courseResults',
-        fn($q) => $q->where([
-          ...$setting->academicQueryData(),
-          'classification_id' => $courseTeacher->classification_id,
-          'course_id' => $courseTeacher->course_id
-        ])
+        fn($q) => $q
+          ->where([
+            'academic_session_id' => $setting->getCurrentAcademicSession(),
+            'term' => $setting->getCurrentTerm(),
+            'classification_id' => $courseTeacher->classification_id,
+            'course_id' => $courseTeacher->course_id
+          ])
+          ->whereIn('for_mid_term', [false, true])
+          ->orderBy('for_mid_term')
       )
       ->with('user')
       ->latest('users.first_name')
       ->get();
+    $assessmentGroups = Assessment::getAssessmentGroups(
+      $setting->getCurrentTerm(),
+      $courseTeacher->classification_id
+    );
+
     return Inertia::render('institutions/courses/record-class-course-result', [
       'courseTeacher' => $courseTeacher,
-      'assessments' => Assessment::getAssessments(
-        null,
-        $forMidTerm,
-        $courseTeacher->classification_id
-      ),
+      'assessmentGroups' => $assessmentGroups,
+      'showExamInput' => [
+        'fullTerm' => $setting->shouldDisplayExamResults(null, false),
+        'midTerm' => $setting->shouldDisplayExamResults(null, true)
+      ],
       'students' => $students,
       'teachersCourses' => $courseTeacher->otherTeacherCourses(),
       'forMidTerm' => $forMidTerm

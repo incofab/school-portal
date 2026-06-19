@@ -95,6 +95,7 @@ Route::get('download-offline-cbt-app', [Home\HomeController::class, 'downloadOff
     ->name('download-offline-cbt-app');
 
 Route::get('error', [Home\HomeController::class, 'error'])->name('home.error');
+Route::view('proposal', 'home.proposal')->name('proposal');
 
 Route::get('/institutions/{institution}/admission-forms/search', [Admissions\AdmissionFormController::class, 'search'])->name('institutions.admission-forms.search');
 

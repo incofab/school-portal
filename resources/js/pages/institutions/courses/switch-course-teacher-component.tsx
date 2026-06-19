@@ -2,7 +2,6 @@ import React from 'react';
 import { HStack, Spinner, Text } from '@chakra-ui/react';
 import { Inertia } from '@inertiajs/inertia';
 import { CourseTeacher } from '@/types/models';
-import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Div } from '@/components/semantic';
 import MySelect from '@/components/dropdown-select/my-select';
 
@@ -11,16 +10,17 @@ export default function SwitchCourseTeacher({
   teachersCourses,
   selectedCourseTeacherState,
   getUrl,
+  isDisabled = false,
 }: {
   teachersCourses: { [id: number]: CourseTeacher };
   courseTeacher: CourseTeacher;
   getUrl: (courseTeacherId: number) => string;
+  isDisabled?: boolean;
   selectedCourseTeacherState: [
     CourseTeacher,
     React.Dispatch<React.SetStateAction<CourseTeacher>>
   ];
 }) {
-  const { instRoute } = useInstitutionRoute();
   const [selectedCourseTeacher, setSelectedCourseTeacher] =
     selectedCourseTeacherState;
   function getValue(ct: CourseTeacher) {
@@ -41,13 +41,15 @@ export default function SwitchCourseTeacher({
               Object.values(teachersCourses).map((ct) => getValue(ct))
             }
             onChange={(e: any) => {
-              if (!e || e.value == selectedCourseTeacher.id) return;
+              if (isDisabled) return;
+              if (!e || e.value === selectedCourseTeacher.id) return;
               setSelectedCourseTeacher(teachersCourses[e.value]);
               Inertia.visit(getUrl(e.value));
             }}
+            isDisabled={isDisabled}
           />
         </Div>
-        {selectedCourseTeacher.id != courseTeacher.id && (
+        {selectedCourseTeacher.id !== courseTeacher.id && (
           <Spinner size="md" color="brand.500" />
         )}
       </HStack>

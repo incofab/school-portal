@@ -3,6 +3,8 @@ import {
   Divider,
   FormControl,
   FormLabel,
+  Grid,
+  GridItem,
   HStack,
   Spacer,
   Text,
@@ -57,37 +59,44 @@ export default function ResultSettings() {
     <VStack align={'stretch'}>
       <Divider my={2} />
       <Text fontWeight={'bold'}>Result Setting</Text>
-      <HStack align={'stretch'} spacing={2}>
-        <FormControl>
-          <FormLabel>Display Position</FormLabel>
-          <EnumSelect
-            enumData={PositionDisplayType}
-            selectValue={webForm.data[ResultSettingType.PositionDisplayType]}
-            onChange={(e: any) =>
-              webForm.setValue(ResultSettingType.PositionDisplayType, e.value)
-            }
-          />
-        </FormControl>
-        <FormControl>
-          <FormLabel>Template</FormLabel>
-          <EnumSelect
-            enumData={ResultTemplate}
-            selectValue={webForm.data[ResultSettingType.Template]}
-            onChange={(e: any) =>
-              webForm.setValue(ResultSettingType.Template, e.value)
-            }
-          />
-        </FormControl>
-        <FormControl>
-          <FormLabel>Show Exam Result</FormLabel>
-          <EnumSelect
-            enumData={ResultExamMode}
-            selectValue={webForm.data[ResultSettingType.ExamMode]}
-            onChange={(e: any) =>
-              webForm.setValue(ResultSettingType.ExamMode, e.value)
-            }
-          />
-        </FormControl>
+      <Grid templateColumns={{ lg: 'repeat(3, 1fr)' }} gap={4}>
+        {/* <HStack align={'stretch'} spacing={2}> */}
+        <GridItem>
+          <FormControl>
+            <FormLabel>Display Position</FormLabel>
+            <EnumSelect
+              enumData={PositionDisplayType}
+              selectValue={webForm.data[ResultSettingType.PositionDisplayType]}
+              onChange={(e: any) =>
+                webForm.setValue(ResultSettingType.PositionDisplayType, e.value)
+              }
+            />
+          </FormControl>
+        </GridItem>
+        <GridItem>
+          <FormControl>
+            <FormLabel>Template</FormLabel>
+            <EnumSelect
+              enumData={ResultTemplate}
+              selectValue={webForm.data[ResultSettingType.Template]}
+              onChange={(e: any) =>
+                webForm.setValue(ResultSettingType.Template, e.value)
+              }
+            />
+          </FormControl>
+        </GridItem>
+        <GridItem>
+          <FormControl>
+            <FormLabel>Show Exam Result</FormLabel>
+            <EnumSelect
+              enumData={ResultExamMode}
+              selectValue={webForm.data[ResultSettingType.ExamMode]}
+              onChange={(e: any) =>
+                webForm.setValue(ResultSettingType.ExamMode, e.value)
+              }
+            />
+          </FormControl>
+        </GridItem>
         <Div>
           <BrandButton
             title="Update"
@@ -97,7 +106,7 @@ export default function ResultSettings() {
             mt={'30px'}
           />
         </Div>
-      </HStack>
+      </Grid>
       <Divider my={2} />
       <Spacer height={5} />
     </VStack>

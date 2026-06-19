@@ -6,6 +6,7 @@ use App\Enums\FullTermType;
 use App\Enums\TermType;
 use App\Rules\ValidateExistsRule;
 use App\Support\Queries\AssessmentQueryBuilder;
+use App\Support\SettingsHandler;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -81,6 +82,18 @@ class Assessment extends Model
         return $item->classifications->contains('id', $id);
       })
       ->values();
+  }
+
+  static function getAssessmentGroups(
+    string|TermType|null $term,
+    Classification|int|null $classification = null
+  ): array {
+    $term ??= SettingsHandler::makeFromRoute()->getCurrentTerm();
+
+    return [
+      'fullTerm' => self::getAssessments($term, false, $classification),
+      'midTerm' => self::getAssessments($term, true, $classification)
+    ];
   }
 
   protected function title(): Attribute

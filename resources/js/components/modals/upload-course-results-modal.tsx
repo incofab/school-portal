@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AxiosInstance } from 'axios';
 import {
+  Badge,
+  Box,
   FormControl,
   Button,
   FormErrorMessage,
   HStack,
   VStack,
   FormLabel,
-  Checkbox,
+  Radio,
+  RadioGroup,
+  Text,
 } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
@@ -32,6 +36,8 @@ interface Props {
   courseTeacher?: CourseTeacher;
 }
 
+type ResultMode = 'full-term' | 'mid-term' | '';
+
 export default function UploadCourseResultsModal({
   isOpen,
   onSuccess,
@@ -39,7 +45,7 @@ export default function UploadCourseResultsModal({
   courseTeacher,
 }: Props) {
   const isAdmin = useIsAdmin();
-  const { handleResponseToast } = useMyToast();
+  const { handleResponseToast, toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const {
     currentAcademicSessionId,
@@ -47,6 +53,9 @@ export default function UploadCourseResultsModal({
     usesMidTermResult,
     lockTermSession,
   } = useSharedProps();
+  const [selectedResultMode, setSelectedResultMode] = useState<ResultMode>(
+    usesMidTermResult ? '' : 'full-term'
+  );
   const webForm = useWebForm({
     academic_session_id: currentAcademicSessionId,
     term: currentTerm,
@@ -57,8 +66,42 @@ export default function UploadCourseResultsModal({
       value: courseTeacher?.id,
     } as Nullable<SelectOptionType<number>>,
   });
+  const hasSelectedResultMode = !usesMidTermResult || selectedResultMode !== '';
+  const isMidTermSelected = Boolean(webForm.data.for_mid_term);
+  const resultModeLabel = isMidTermSelected
+    ? 'Mid-Term Result'
+    : 'Full Term Result';
+  const visibleResultModeLabel = hasSelectedResultMode
+    ? resultModeLabel
+    : 'Select Result Type';
+  const resultModeScheme = isMidTermSelected ? 'yellow' : 'blue';
+  const resultModeBg = !hasSelectedResultMode
+    ? 'brand.50'
+    : isMidTermSelected
+    ? 'yellow.50'
+    : 'blue.50';
+  const resultModeBorder = !hasSelectedResultMode
+    ? 'brand.200'
+    : isMidTermSelected
+    ? 'yellow.200'
+    : 'blue.200';
+
+  function resetResultMode() {
+    setSelectedResultMode(usesMidTermResult ? '' : 'full-term');
+    webForm.setValue('for_mid_term', false);
+  }
+
+  function handleClose() {
+    resetResultMode();
+    onClose();
+  }
 
   const onSubmit = async () => {
+    if (!hasSelectedResultMode) {
+      toastError('Select full term or mid-term upload before continuing.');
+      return;
+    }
+
     const res = await webForm.submit((data, web: AxiosInstance) => {
       const formData = new FormData();
       const file = data.files[0] ?? null;
@@ -76,14 +119,14 @@ export default function UploadCourseResultsModal({
 
     if (!handleResponseToast(res)) return;
 
-    onClose();
+    handleClose();
     webForm.reset();
     onSuccess();
   };
 
   return (
     <GenericModal
-      props={{ isOpen, onClose }}
+      props={{ isOpen, onClose: handleClose }}
       headerContent={'Upload course results'}
       bodyContent={
         <VStack>
@@ -132,44 +175,84 @@ export default function UploadCourseResultsModal({
             />
           </FormControlBox>
           {usesMidTermResult && (
-            <FormControlBox
-              form={webForm as any}
-              formKey="for_mid_term"
-              title=""
+            <Box
+              bg={resultModeBg}
+              borderColor={resultModeBorder}
+              borderWidth={1}
+              borderRadius={'md'}
+              p={3}
+              w={'full'}
             >
-              <Checkbox
-                isChecked={webForm.data.for_mid_term}
-                onChange={(e) =>
-                  webForm.setValue('for_mid_term', e.currentTarget.checked)
-                }
+              <HStack justify={'space-between'} align={'center'} mb={2}>
+                <Text fontWeight={'semibold'} color={'gray.700'}>
+                  Uploading {visibleResultModeLabel}
+                </Text>
+                <Badge
+                  colorScheme={
+                    hasSelectedResultMode ? resultModeScheme : 'brand'
+                  }
+                >
+                  {hasSelectedResultMode ? resultModeLabel : 'Required'}
+                </Badge>
+              </HStack>
+              <FormControlBox
+                form={webForm as any}
+                formKey="for_mid_term"
+                title="Result Type"
               >
-                For Mid-Term Result
-              </Checkbox>
-            </FormControlBox>
+                <RadioGroup
+                  value={selectedResultMode}
+                  onChange={(value) => {
+                    const nextMode = value as ResultMode;
+                    const nextForMidTerm = nextMode === 'mid-term';
+                    setSelectedResultMode(nextMode);
+                    webForm.setValue('for_mid_term', nextForMidTerm);
+                    webForm.setValue('files', []);
+                  }}
+                  isDisabled={webForm.processing}
+                >
+                  <HStack spacing={6}>
+                    <Radio value="full-term">Full term</Radio>
+                    <Radio value="mid-term">Mid-term</Radio>
+                  </HStack>
+                </RadioGroup>
+                <Box color={'gray.600'} fontSize={'sm'} mt={1}>
+                  {hasSelectedResultMode
+                    ? isMidTermSelected
+                      ? 'You are uploading only mid-term result scores.'
+                      : 'You are uploading only full-term result scores.'
+                    : 'Choose the result type first. The upload field will appear after this selection.'}
+                </Box>
+              </FormControlBox>
+            </Box>
           )}
-          <FormControl isInvalid={!!webForm.errors.files}>
-            <FileDropper
-              files={webForm.data.files}
-              onChange={(files) => webForm.setValue('files', files)}
-              multiple={false}
-              accept={[FileDropperType.Excel]}
-            />
-            <FormErrorMessage>{webForm.errors.files}</FormErrorMessage>
-          </FormControl>
+          {hasSelectedResultMode && (
+            <FormControl isInvalid={!!webForm.errors.files}>
+              <FileDropper
+                files={webForm.data.files}
+                onChange={(files) => webForm.setValue('files', files)}
+                multiple={false}
+                accept={[FileDropperType.Excel]}
+              />
+              <FormErrorMessage>{webForm.errors.files}</FormErrorMessage>
+            </FormControl>
+          )}
         </VStack>
       }
       footerContent={
         <HStack spacing={2}>
-          <Button variant={'ghost'} onClick={onClose}>
+          <Button variant={'ghost'} onClick={handleClose}>
             Close
           </Button>
-          <Button
-            colorScheme={'brand'}
-            onClick={onSubmit}
-            isLoading={webForm.processing}
-          >
-            Save
-          </Button>
+          {hasSelectedResultMode && (
+            <Button
+              colorScheme={'brand'}
+              onClick={onSubmit}
+              isLoading={webForm.processing}
+            >
+              Save
+            </Button>
+          )}
         </HStack>
       }
     />

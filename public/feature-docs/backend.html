@@ -108,7 +108,7 @@
         ><a href="frontend.html">Frontend</a><a href="data.html">Data</a
         ><a href="features.html">Features</a
         ><a href="product-recommendations.html">Recommendations</a
-        ><a href="proposal.html">Proposal</a>
+        ><a href="/proposal">Proposal</a>
       </nav>
     </header>
     <main>
@@ -2902,6 +2902,11 @@
             &#x27;index&#x27;])-&gt;name(&#x27;home&#x27;);
           </li>
           <li>
+            <code>routes/web.php</code> — Route::view(&#x27;proposal&#x27;,
+            &#x27;home.proposal&#x27;)-&gt;name(&#x27;proposal&#x27;); public
+            buyer-facing EduManager proposal page.
+          </li>
+          <li>
             <code>routes/web.php</code> —
             Route::any(&#x27;/privacy-policy&#x27;, [Home\HomeController::class,
             &#x27;privacyPolicy&#x27;])-&gt;name(&#x27;privacy-policy&#x27;);
@@ -4569,7 +4574,14 @@
             </div>
             <div class="desc">
               HTTP controller for Course Results, handling requests,
-              authorization, and responses.
+              authorization, responses, and result recording page props. The
+              create/edit screens receive one term-specific assessment group
+              payload containing full-term and mid-term lists plus exam-input
+              visibility resolved from the institution result exam mode setting.
+              The create screen also resolves URL-provided session, term, result
+              type, and student values to preload the matching existing course
+              result while preserving the selected student when no result row
+              exists yet.
             </div>
           </li>
           <li>
@@ -4737,7 +4749,9 @@
             </div>
             <div class="desc">
               HTTP controller for Record Class Result, handling requests,
-              authorization, and responses.
+              authorization, responses, one term-specific assessment group
+              payload, mode-specific exam-input visibility, and both full-term
+              and mid-term current result rows for frontend switching.
             </div>
           </li>
           <li>

@@ -108,7 +108,7 @@
         ><a href="frontend.html">Frontend</a><a href="data.html">Data</a
         ><a href="features.html">Features</a
         ><a href="product-recommendations.html">Recommendations</a
-        ><a href="proposal.html">Proposal</a>
+        ><a href="/proposal">Proposal</a>
       </nav>
     </header>
     <main>
@@ -1019,8 +1019,14 @@
               >
             </div>
             <div class="desc">
-              Data entry page for recording Class Course Result results or
-              transactions.
+              Data entry page for recording Class Course Result scores. It
+              switches between the backend-provided term-specific full-term and
+              mid-term assessment groups, requires staff to choose full-term or
+              mid-term recording before student score fields are shown when
+              mid-term results are enabled, highlights the active result mode,
+              uses the matching existing student result row, and hides the exam
+              input when institution result settings disable exams for that
+              mode.
             </div>
           </li>
           <li>
@@ -1033,8 +1039,16 @@
               >
             </div>
             <div class="desc">
-              Data entry page for recording Course Result results or
-              transactions.
+              Data entry page for recording Course Result scores. It switches
+              between the backend-provided term-specific full-term and mid-term
+              assessment groups, requires a result type selection when mid-term
+              results are enabled, keeps session/term/result-type/student
+              choices in the URL, reloads the selected student's matching
+              existing result into the form, highlights the active result mode,
+              hides the exam input when institution result settings disable
+              exams for that mode, and locks the entry controls/actions with a
+              visible loading notice while selection-triggered page reloads are
+              in progress.
             </div>
           </li>
           <li>
@@ -4609,8 +4623,10 @@
               >
             </div>
             <div class="desc">
-              Reusable UI component for Upload Course Results Modal, used across
-              pages and forms.
+              Reusable UI component for Upload Course Results Modal. When
+              mid-term results are enabled, staff must choose full-term or
+              mid-term upload before the Excel file dropper and save action are
+              shown.
             </div>
           </li>
           <li>
@@ -5977,6 +5993,18 @@
                 >resources/views/ccd/theory-questions/create-theory-question.blade.php</code
               >, linked from the course-session list through morphable
               courseable ids.
+            </div>
+          </li>
+          <li>
+            <div><strong>EduManager proposal page</strong></div>
+            <div class="desc">
+              Public buyer-facing proposal view at
+              <code>resources/views/home/proposal.blade.php</code>, exposed by
+              <code>/proposal</code>. It uses Bootstrap 5 and Font Awesome CDNs,
+              the local EduManager logo, responsive Bootstrap spacing/grid
+              classes, and summarizes school operations, academics, finance,
+              communication, security, admissions, recruitment, imports/exports,
+              and AI-assisted workflows with restrained brand-color accents.
             </div>
           </li>
           <li>
