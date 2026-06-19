@@ -669,7 +669,7 @@ $testimonials = [
         <div class="text-center mb-5">
           <h2 class="fw-bold">Affordable Pricing</h2>
           <p class="text-muted">
-            Edumanager is designed to be simple and affordable. Schools only pay <strong>₦400 per student per term</strong>, this is highly negotiable depending on the size of your school. THERE ARE NOT HIDDEN FEES.
+            Edumanager is designed to be simple and affordable. Schools only pay <strong>₦1,000 per student per term</strong>, this is highly negotiable depending on the size of your school. THERE ARE NOT HIDDEN FEES.
           </p>
         </div>
 
@@ -678,7 +678,7 @@ $testimonials = [
             <div class="card shadow-sm border-0 rounded-4">
               <div class="card-body text-center p-4">
                 <h5 class="card-title fw-bold mb-3">Per Student</h5>
-                <h2 class="fw-bold display-5 mb-3">₦400</h2>
+                <h2 class="fw-bold display-5 mb-3">₦1,000</h2>
                 <p class="text-muted">per student, per term</p>
                 <hr>
                 <ul class="list-unstyled mb-4">
