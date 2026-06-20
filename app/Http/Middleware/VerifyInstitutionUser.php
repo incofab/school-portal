@@ -7,8 +7,6 @@ use App\Models\Institution;
 use App\Support\Audit\SecurityActivityLogger;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 
 class VerifyInstitutionUser
@@ -37,19 +35,19 @@ class VerifyInstitutionUser
       $message =
         'Managers must impersonate an institution admin to access institution pages.';
 
-      return $this->eject($request, $message);
+      return $this->eject($request, $message, $institution);
     }
 
     if ($institution->status !== InstitutionStatus::Active) {
       $message = 'This institution is not active. Please contact support.';
 
-      return $this->eject($request, $message);
+      return $this->eject($request, $message, $institution);
     }
 
     if ($user->id !== $institutionUser?->user_id) {
       $message = 'You are not authorized to access this page.';
 
-      return $this->eject($request, $message);
+      return $this->eject($request, $message, $institution);
     }
 
     if ($institutionUser->isSuspended()) {
@@ -57,13 +55,13 @@ class VerifyInstitutionUser
         'This account is suspended. ' .
         ($institutionUser->status_message ?? 'Please contact your admin');
 
-      return $this->eject($request, $message);
+      return $this->eject($request, $message, $institution);
     } elseif (!$institutionUser->isActive()) {
       $message =
         'This account is not active. ' .
         ($institutionUser->status_message ?? 'Please contact your admin');
 
-      return $this->eject($request, $message);
+      return $this->eject($request, $message, $institution);
     }
 
     View::share('institution', $institution);
@@ -73,12 +71,15 @@ class VerifyInstitutionUser
     return $next($request);
   }
 
-  private function eject(Request $request, string $message)
-  {
+  private function eject(
+    Request $request,
+    string $message,
+    ?Institution $institution = null
+  ) {
     app(SecurityActivityLogger::class)->unauthorizedAccess(
       currentUser(),
       $message,
-      $request->route()?->parameter('institution')
+      $institution
     );
 
     return $request->expectsJson()

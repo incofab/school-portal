@@ -9,6 +9,26 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('dummy1', function () {
 
+    $data = [
+      'body' => 'This is a yummy testing message',
+      'from' => 'EduManager',
+      'to' => '07036098561',
+    //   'api_token' => config('services.bulksms_nigeria.api-token'),
+      'gateway' => 'direct-refund'
+    ];
+
+    // dd($data);
+
+    $res = Http::withToken(
+      config('services.bulksms_nigeria.api-token')
+    )->withHeaders([
+      'Content-Type' => 'application/json',
+      'Accept' => 'application/json'
+    ])
+    ->post('https://www.bulksmsnigeria.com/api/v2/sms', $data);
+
+    dd($res->json());
+
     exit('Dummy page');
 });
 

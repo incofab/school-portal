@@ -42,9 +42,12 @@ class SendBulksms implements ShouldQueue
       'gateway' => 'direct-refund'
     ];
 
-    Http::post('https://www.bulksmsnigeria.com/api/v2/sms', [
-      'form_params' => $data
-    ]);
+    $res = Http::withToken(config('services.bulksms_nigeria.api-token'))
+      ->withHeaders([
+        'Content-Type' => 'application/json',
+        'Accept' => 'application/json'
+      ])
+      ->post('https://www.bulksmsnigeria.com/api/v2/sms', $data);
 
     $this->messageModel
       ?->fill([

@@ -7,8 +7,6 @@ use App\Enums\InstitutionUserType;
 use App\Enums\NotificationChannelsType;
 use App\Http\Controllers\Controller;
 use App\Models\Association;
-use App\Models\Classification;
-use App\Models\ClassificationGroup;
 use App\Models\Institution;
 use App\Models\Message;
 use App\Models\SchoolNotification;
@@ -56,13 +54,39 @@ class MessageController extends Controller
     $maxLength = $forEmail ? 1000 : ($forSms ? 145 : 500);
     $data = $request->validate([
       'message' => ['required', 'string', 'max:' . $maxLength],
-      'subject' => [Rule::requiredIf($forEmail), 'string'],
+      ...$forEmail ? ['subject' => ['required', 'string']] : [],
       'reference' => [
         'required',
         new ValidateUniqueRule(SchoolNotification::class)
       ],
       'channel' => ['required', new Enum(NotificationChannelsType::class)],
-      'receivers' => ['nullable', 'string'],
+      'receivers' => [
+        'nullable',
+        'string',
+        function ($attribute, $value, $fail) use ($forEmail, $forSms) {
+          if (empty($value)) {
+            return;
+          }
+          $receivers = collect(explode(',', $value));
+
+          $receivers->each(function ($receiver) use (
+            $fail,
+            $forSms,
+            $forEmail
+          ) {
+            $receiver = trim($receiver);
+            if ($forSms) {
+              if (!preg_match("/^0[0-9]{10}$/", $receiver)) {
+                $fail('Invalid phone number');
+              }
+            } elseif ($forEmail) {
+              if (!filter_var($receiver, FILTER_VALIDATE_EMAIL)) {
+                $fail('Invalid email address');
+              }
+            }
+          });
+        }
+      ],
       'to_guardians' => ['required', 'boolean'],
       ...$request->receivers
         ? []
@@ -76,7 +100,6 @@ class MessageController extends Controller
 
     if (empty($request->receivers) && empty($model)) {
       return ValidationException::withMessages([
-        'receivers' => 'You need to supply a receiver',
         'receivers' => 'You need to supply a receiver'
       ]);
     }
