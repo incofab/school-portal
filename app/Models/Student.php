@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentInterval;
+use App\Enums\TermType;
 use App\Support\Queries\StudentQueryBuilder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,12 +32,50 @@ class Student extends Model
     return new StudentQueryBuilder($query);
   }
 
-  function studentFees($allFees = null)
-  {
-    $allFees = $allFees ?? Fee::all();
+  function studentFees(
+    string|TermType|null $term = null,
+    int|AcademicSession|null $academicSessionId = null,
+    bool $allFees = false
+  ) {
+    // info([
+    //   'term' => $term,
+    //   'academicSessionId' => $academicSessionId
+    // ]);
+    // dd('dlsd');
+    $fees = $allFees
+      ? Fee::all()
+      : Fee::query()
+        ->where(function ($query) use ($term, $academicSessionId) {
+          $query
+            ->where(function ($q) use ($term, $academicSessionId) {
+              $q->when(
+                $term && $academicSessionId,
+                fn($qq) => $qq
+                  ->where('payment_interval', PaymentInterval::Termly)
+                  ->where('term', $term)
+                  ->where('academic_session_id', $academicSessionId)
+              );
+            })
+            ->orWhere(function ($q) use ($academicSessionId) {
+              $q->when(
+                $academicSessionId,
+                fn($qq) => $qq
+                  ->where('payment_interval', PaymentInterval::Sessional)
+                  ->where('academic_session_id', $academicSessionId)
+                  ->whereNull('term')
+              );
+            })
+            ->orWhere(function ($q) {
+              $q->where('payment_interval', PaymentInterval::OneTime)
+                ->whereNull('term')
+                ->whereNull('academic_session_id');
+            });
+        })
+        ->get();
+
     $studentFees = [];
     /** @var Fee $fee */
-    foreach ($allFees as $key => $fee) {
+    foreach ($fees as $key => $fee) {
       if ($fee->forStudent($this, $this->classification)) {
         $studentFees[] = $fee;
       }

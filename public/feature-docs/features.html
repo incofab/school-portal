@@ -1228,7 +1228,11 @@
             requests in the same process use the latest settings. Term details
             can override the institution default for whether exam scores appear
             on result templates; when unset, the institution result setting
-            controls templates 1 through 8.
+            controls templates 1 through 8. Institutions can preview their
+            selected result template from result settings; the preview renders a
+            non-persisted dummy result sheet with 10 to 14 subjects, using
+            existing institution courses where available and fallback subjects
+            when needed.
           </p>
           <p>
             Course result upserts are protected by lookup constraints on
@@ -1252,7 +1256,13 @@
             for that key so teachers edit the current row instead of recording
             blindly, and while those selections are reloading the page it locks
             the entry controls and action buttons with a visible loading notice
-            so unsaved edits are not changed during the refresh.
+            so unsaved edits are not changed during the refresh. A student-wide
+            subject recording page lets staff select one student, then record
+            that student's results across all eligible class subject mappings in
+            one submission while reusing the same assessment, exam visibility,
+            lock, grading, audit, and course-summary processing rules. The
+            student-wide and class recording pages submit only new or changed
+            score rows, avoiding unchanged prefilled results in the payload.
           </p>
           <p>
             Class result info records now have an <code>is_locked</code> state.
@@ -1268,11 +1278,13 @@
               <code>routes/institution.php</code>,
               <code>CourseResultsController</code>,
               <code>RecordClassResultController</code>,
+              <code>RecordStudentSubjectsResultController</code>,
               <code>ClassResultInfoController</code>,
               <code>ListCourseResultInfoController</code>,
               <code>TransferCourseResultInfoController</code>,
               <code>ListTermResultController</code>,
               <code>DeleteTermResultController</code>,
+              <code>DummyResultSheetController</code>,
               <code>ResultPublicationsController</code>,
               <code>SubjectReportController</code>,
               <code>GradeReportController</code>, student result controllers.
@@ -1298,6 +1310,7 @@
               <code>institutions/courses/list-course-results.tsx</code>,
               <code>record-course-result.tsx</code>,
               <code>record-class-course-result.tsx</code>,
+              <code>record-student-subject-results.tsx</code>,
               <code>list-class-result-info.tsx</code>,
               <code>list-course-result-info.tsx</code>,
               <code>upload-class-sheet.tsx</code>, <code>result-sheets/*</code>,

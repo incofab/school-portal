@@ -635,6 +635,7 @@ export interface CourseTeacher extends Row {
   course?: Course;
   user?: User;
   classification?: Classification;
+  course_results?: CourseResult[];
 }
 
 export interface Fee extends InstitutionRow {

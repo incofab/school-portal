@@ -1026,7 +1026,8 @@
               mid-term results are enabled, highlights the active result mode,
               uses the matching existing student result row, and hides the exam
               input when institution result settings disable exams for that
-              mode.
+              mode. It uses shared result-recording score helpers and only
+              submits student rows with new or changed scores.
             </div>
           </li>
           <li>
@@ -1049,6 +1050,24 @@
               exams for that mode, and locks the entry controls/actions with a
               visible loading notice while selection-triggered page reloads are
               in progress.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>record-student-subject-results</strong>
+              <span class="path"
+                ><code
+                  >resources/js/pages/institutions/courses/record-student-subject-results.tsx</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Data entry page for selecting one student and recording that
+              student's results across all eligible class subjects in one
+              submission, with full-term/mid-term assessment switching, existing
+              result prefill, shared result-recording score helpers, exam
+              visibility controlled by result settings, and payload filtering
+              that submits only new or changed subject rows.
             </div>
           </li>
           <li>
@@ -2547,7 +2566,9 @@
             </div>
             <div class="desc">
               Settings screen for result preferences, including template,
-              position display, and default exam-score display mode.
+              position display, default exam-score display mode, and a preview
+              button that opens a dummy result sheet using the institution's
+              saved template setting.
             </div>
           </li>
           <li>

@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import { Inertia } from '@inertiajs/inertia';
-import { BrandButton } from '@/components/buttons';
+import { BrandButton, LinkButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import EnumSelect from '@/components/dropdown-select/enum-select';
@@ -98,13 +98,19 @@ export default function ResultSettings() {
           </FormControl>
         </GridItem>
         <Div>
-          <BrandButton
-            title="Update"
-            onClick={() => submit()}
-            isLoading={webForm.processing}
-            size={'md'}
-            mt={'30px'}
-          />
+          <HStack mt={'30px'}>
+            <BrandButton
+              title="Update"
+              onClick={() => submit()}
+              isLoading={webForm.processing}
+              size={'md'}
+            />
+            <LinkButton
+              title="Preview Template"
+              href={instRoute('result-sheets.dummy')}
+              variant={'outline'}
+            />
+          </HStack>
         </Div>
       </Grid>
       <Divider my={2} />

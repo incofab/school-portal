@@ -130,6 +130,15 @@ function ListLecturerCourses({ courseTeachers }: Props) {
                         >
                           All Class Students
                         </MenuItem>
+                        <MenuItem
+                          as={InertiaLink}
+                          href={instRoute(
+                            'record-student-subject-results.create'
+                          )}
+                          py={2}
+                        >
+                          Single Student All Subjects
+                        </MenuItem>
                       </MenuList>
                     </Menu>
                     {isAdmin && (

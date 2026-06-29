@@ -186,6 +186,15 @@ export default function ListCourseResults({
                     title={'Upload Results'}
                   />
                   <Button
+                    as={InertiaLink}
+                    href={instRoute('record-student-subject-results.create')}
+                    colorScheme={'brand'}
+                    variant={'outline'}
+                    size={'sm'}
+                  >
+                    Record Student Subjects
+                  </Button>
+                  <Button
                     as={'a'}
                     href={instRoute('course-results.download', [params])}
                     colorScheme={'brand'}

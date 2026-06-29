@@ -92,12 +92,15 @@ class StudentFeePaymentController extends Controller
   public function feePaymentView(Institution $institution, Student $student)
   {
     $student->load('classification');
+    $settingshandler = SettingsHandler::makeFromRoute();
+    $academicSession = $settingshandler->getCurrentAcademicSession();
+    $term = $settingshandler->getCurrentTerm();
 
     return inertia(
       'institutions/students/payments/record-student-fee-payment',
       [
         'student' => $student,
-        'fees' => $student->studentFees(),
+        'fees' => $student->studentFees($term, $academicSession),
         'bankAccounts' => $institution->institutionGroup->bankAccounts()->get()
       ]
     );
@@ -127,35 +130,11 @@ class StudentFeePaymentController extends Controller
     $settingshandler = SettingsHandler::makeFromRoute();
 
     $merchant = $request->merchant ?? PaymentMerchantType::Monnify->value;
-    if ($merchant === PaymentMerchantType::Manual->value) {
-      $reference = ManualPayment::generateReference();
-      $paymentReferenceDto = new PaymentReferenceDto(
-        institution_id: $institution->id,
-        merchant: $merchant,
-        payable: $student->user,
-        paymentable: $fee,
-        amount: $amount,
-        purpose: PaymentPurpose::Fee,
-        user_id: $user->id,
-        reference: $reference,
-        redirect_url: route('institutions.manual-payments.show', [
-          $institution,
-          $reference
-        ]),
-        meta: [
-          ...$data,
-          'academic_session_id' =>
-            $data['academic_session_id'] ??
-            $settingshandler->getCurrentAcademicSession(),
-          'term' => $data['term'] ?? $settingshandler->getCurrentTerm()
-        ]
-      );
-
-      [$res] = PaymentMerchant::make($merchant)->init($paymentReferenceDto);
-      abort_unless($res->isSuccessful(), 403, $res->getMessage());
-
-      return $this->ok($res->toArray());
-    }
+    $reference = ManualPayment::generateReference();
+    $redirectUrl =
+      $merchant === PaymentMerchantType::Manual->value
+        ? route('institutions.manual-payments.show', [$institution, $reference])
+        : instRoute('students.receipts.index', $student->id);
 
     $paymentReferenceDto = new PaymentReferenceDto(
       institution_id: $institution->id,
@@ -165,8 +144,8 @@ class StudentFeePaymentController extends Controller
       amount: $amount,
       purpose: PaymentPurpose::Fee,
       user_id: $user->id,
-      reference: PaymentReference::generateReference(),
-      redirect_url: instRoute('students.receipts.index', $student->id),
+      reference: $reference,
+      redirect_url: $redirectUrl,
       meta: [
         ...$data,
         'academic_session_id' =>
@@ -175,6 +154,15 @@ class StudentFeePaymentController extends Controller
         'term' => $data['term'] ?? $settingshandler->getCurrentTerm()
       ]
     );
+
+    if ($merchant === PaymentMerchantType::Manual->value) {
+      [$res] = PaymentMerchant::make($merchant)->init($paymentReferenceDto);
+      // info(json_encode($res->toArray()));
+      // dd($res);
+      abort_unless($res->isSuccessful(), 403, $res->getMessage());
+
+      return $this->ok($res->toArray());
+    }
 
     [$res, $paymentReference] = PaymentMerchant::make($merchant)->init(
       $paymentReferenceDto

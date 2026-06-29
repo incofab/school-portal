@@ -237,6 +237,10 @@ Route::get('/record-class-results/{courseTeacher}', [Web\Staff\RecordClassResult
     ->name('record-class-results.create');
 Route::post('/record-class-results/{courseTeacher}', [Web\Staff\RecordClassResultController::class, 'store'])
     ->name('record-class-results.store');
+Route::get('/record-student-subject-results', [Web\Staff\RecordStudentSubjectsResultController::class, 'create'])
+    ->name('record-student-subject-results.create');
+Route::post('/record-student-subject-results', [Web\Staff\RecordStudentSubjectsResultController::class, 'store'])
+    ->name('record-student-subject-results.store');
 
 Route::get('/course-result-info/index', [Web\Staff\CourseResultInfoController::class, 'index'])
     ->name('course-result-info.index');
@@ -292,6 +296,8 @@ Route::get('/term-results/{classResultInfo}/index', [Web\Results\ListTermResultC
     ->name('term-results.class-result-info.index');
 Route::delete('/term-results/delete/{termResult?}', Web\Results\DeleteTermResultController::class)
     ->name('term-results.destroy');
+Route::get('/result-sheets/dummy', Web\Results\DummyResultSheetController::class)
+    ->name('result-sheets.dummy');
 Route::get('/cummulative-result/index', Web\Staff\CummulativeResultController::class)
     ->name('cummulative-result.index');
 

@@ -36,13 +36,19 @@ import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
 import FormControlBox from '@/components/forms/form-control-box';
 import SwitchCourseTeacher from './switch-course-teacher-component';
+import {
+  getResultTotalScore,
+  hasResultScoreChanged,
+  removeExamFromResultEntry,
+  validateResultScore,
+} from '@/util/result-recording-util';
 
 type ResultMode = 'full-term' | 'mid-term' | '';
 
 interface ResultEntry {
   [studentId: string]: {
     ass: { [key: string]: string | number };
-    exam: string;
+    exam: string | number;
     student_id: number;
   };
 }
@@ -93,6 +99,7 @@ export default function RecordClassCourseResult({
   const shouldShowExamInput = isMidTermSelected
     ? showExamInput.midTerm
     : showExamInput.fullTerm;
+  const initialResults = buildInitialResults(students, isMidTermSelected);
   const resultModeLabel = isMidTermSelected
     ? 'Mid-Term Result'
     : 'Full Term Result';
@@ -117,19 +124,23 @@ export default function RecordClassCourseResult({
       return;
     }
 
-    if (Object.keys(webForm.data.result).length < 1) {
+    const result = Object.entries(webForm.data.result)
+      .filter(([studentId, item]) =>
+        hasResultScoreChanged(
+          item,
+          initialResults[Number(studentId)],
+          shouldShowExamInput
+        )
+      )
+      .map(([, item]) =>
+        shouldShowExamInput ? item : removeExamFromResultEntry(item)
+      );
+
+    if (result.length < 1) {
       Inertia.visit(instRoute('course-results.index'));
       return;
     }
-    const result = Object.values(webForm.data.result).map((item) => {
-      if (shouldShowExamInput) {
-        return item;
-      }
 
-      const data: Partial<ResultEntry[string]> = { ...item };
-      delete data.exam;
-      return data;
-    });
     const res = await webForm.submit((data, web) => {
       return web.post(
         instRoute('record-class-results.store', [courseTeacher]),
@@ -164,35 +175,14 @@ export default function RecordClassCourseResult({
       : []),
   ];
 
-  function getStudentTotal(
-    result: {
-      ass: { [key: string]: string | number };
-      exam: string;
-      student_id: number;
-    },
-    includeExam: boolean
-  ) {
-    let score = 0;
-    Object.entries(result.ass).forEach(([, assScore]) => {
-      score += Number(assScore);
-    });
-    const totalScore = score + (includeExam ? Number(result.exam) : 0);
-    return isNaN(totalScore) ? '' : totalScore;
-  }
-
   function isValidScore(score: number | string, maxScore?: number) {
-    score = Number(score);
-    if (isNaN(score)) {
-      toastError(`Score invalid. It must be a number`);
+    const validation = validateResultScore(score, maxScore);
+
+    if (!validation.ok) {
+      toastError(validation.message);
       return false;
     }
-    if (!maxScore || maxScore === 0) {
-      return true;
-    }
-    if (score > maxScore) {
-      toastError(`Score cannot be greater than ${maxScore}`);
-      return false;
-    }
+
     return true;
   }
 
@@ -272,16 +262,11 @@ export default function RecordClassCourseResult({
           {selectedCourseTeacherState[0].id === courseTeacher.id &&
             hasSelectedResultMode &&
             students.map((student) => {
-              const existingResult =
-                student.course_results?.find(
-                  (item) => Boolean(item.for_mid_term) === isMidTermSelected
-                ) ?? ({} as CourseResult);
               const result = webForm.data.result[student.id] ?? {
-                ...existingResult,
-                ass: existingResult?.assessment_values ?? {},
+                ...initialResults[student.id],
               };
               result.student_id = student.id;
-              const studentTotalScore = getStudentTotal(
+              const studentTotalScore = getResultTotalScore(
                 result,
                 shouldShowExamInput
               );
@@ -467,3 +452,20 @@ export default function RecordClassCourseResult({
 //     </Div>
 //   );
 // }
+
+function buildInitialResults(students: Student[], isMidTermSelected: boolean) {
+  return students.reduce((result, student) => {
+    const existingResult =
+      student.course_results?.find(
+        (item) => Boolean(item.for_mid_term) === isMidTermSelected
+      ) ?? ({} as CourseResult);
+
+    result[student.id] = {
+      ass: existingResult?.assessment_values ?? {},
+      exam: existingResult?.exam ?? '',
+      student_id: student.id,
+    };
+
+    return result;
+  }, {} as ResultEntry);
+}

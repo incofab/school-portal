@@ -1444,6 +1444,18 @@
           </li>
           <li>
             <code>routes/institution.php</code> —
+            Route::get(&#x27;/record-student-subject-results&#x27;,
+            [Web\Staff\RecordStudentSubjectsResultController::class,
+            &#x27;create&#x27;])
+          </li>
+          <li>
+            <code>routes/institution.php</code> —
+            Route::post(&#x27;/record-student-subject-results&#x27;,
+            [Web\Staff\RecordStudentSubjectsResultController::class,
+            &#x27;store&#x27;])
+          </li>
+          <li>
+            <code>routes/institution.php</code> —
             Route::get(&#x27;/course-result-info/index&#x27;,
             Web\Staff\ListCourseResultInfoController::class)
           </li>
@@ -1518,6 +1530,11 @@
             Route::get(&#x27;/class-result-info/result-sheets&#x27;,
             [Web\Staff\ClassResultInfoController::class,
             &#x27;fetchClassResultSheets&#x27;])
+          </li>
+          <li>
+            <code>routes/institution.php</code> —
+            Route::get(&#x27;/result-sheets/dummy&#x27;,
+            Web\Results\DummyResultSheetController::class)-&gt;name(&#x27;result-sheets.dummy&#x27;);
           </li>
           <li>
             <code>routes/institution.php</code> —
@@ -4756,6 +4773,22 @@
           </li>
           <li>
             <div>
+              <strong>RecordStudentSubjectsResultController</strong>
+              <span class="path"
+                ><code
+                  >app/Http/Controllers/Institutions/Staff/RecordStudentSubjectsResultController.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              HTTP controller for recording one student's results across all
+              eligible class subject mappings in one request, including selected
+              student loading, existing result prefill, per-subject recording,
+              and course result summary recalculation.
+            </div>
+          </li>
+          <li>
+            <div>
               <strong>ResultCommentTemplateController</strong>
               <span class="path"
                 ><code
@@ -4921,6 +4954,21 @@
             <div class="desc">
               HTTP controller for View Result Sheet, handling requests,
               authorization, and responses.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>DummyResultSheetController</strong>
+              <span class="path"
+                ><code
+                  >app/Http/Controllers/Institutions/Results/DummyResultSheetController.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              HTTP controller for previewing the institution-selected result
+              sheet template with non-persisted dummy student, subject, score,
+              summary, and comment data.
             </div>
           </li>
           <li>
