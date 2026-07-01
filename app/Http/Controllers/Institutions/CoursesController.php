@@ -180,11 +180,18 @@ class CoursesController extends Controller
   {
     $practiceData = Session::get('practiceData', []);
 
-    $course = $practiceData['course'];
+    $course = $practiceData['course'] ?? null;
     $practiceQuestions = $practiceData['practiceQuestions'] ?? [];
 
-    if (!is_array($practiceQuestions) || count($practiceQuestions) < 1) {
-      abort('404', 'No Receipt Found');
+    if (
+      !$course ||
+      !is_array($practiceQuestions) ||
+      count($practiceQuestions) < 1
+    ) {
+      return redirect(instRoute('courses.index'))->with(
+        'error',
+        'Practice question not found'
+      );
     }
 
     $institutionUser = currentInstitutionUser();

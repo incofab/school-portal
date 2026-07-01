@@ -1,12 +1,10 @@
-import React, { StrictMode, useEffect, useState } from 'react';
+import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/inertia-react';
 import { InertiaProgress } from '@inertiajs/progress';
 import {
   ChakraProvider,
   ColorModeScript,
-  Flex,
-  Spinner,
   ThemeConfig,
   extendTheme,
 } from '@chakra-ui/react';
@@ -57,29 +55,13 @@ function resolvePageComponent(name: string) {
   throw new Error(`Page not found: ${name}`);
 }
 
-const AppMain = ({ el, App, props }: any) => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setIsLoading(false); // Simulate loading time
-    // const timer = setTimeout(() => {
-    //   setIsLoading(false); // Simulate loading time
-    // }, 2000);
-    // return () => clearTimeout(timer); // Clean up timer
-  }, []);
-
+const AppMain = ({ App, props }: any) => {
   return (
     <StrictMode>
       <ColorModeScript initialColorMode={theme.config.initialColorMode} />
       <ChakraProvider theme={theme}>
         <ProSidebarProvider>
-          {isLoading ? (
-            <Flex align="center" justify="center" h="100vh">
-              <Spinner size="xl" color="blue.500" />
-            </Flex>
-          ) : (
-            <App {...props} />
-          )}
+          <App {...props} />
         </ProSidebarProvider>
       </ChakraProvider>
     </StrictMode>
@@ -90,7 +72,7 @@ createInertiaApp({
   resolve: (name) => resolvePageComponent(name),
   setup({ el, App, props }) {
     const root = createRoot(el);
-    root.render(<AppMain App={App} el={el} props={props} />);
+    root.render(<AppMain App={App} props={props} />);
     /*
     root.render(
       <StrictMode>

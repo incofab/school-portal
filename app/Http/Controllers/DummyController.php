@@ -57,7 +57,7 @@ class DummyController extends Controller
     }
     return response()->json([
       'status' => 'success',
-      'message' => $courseResult->count() . ' Grades updated successfully',
+      'message' => $courseResults->count() . ' Grades updated successfully',
       'data' => null
     ]);
   }

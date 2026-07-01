@@ -403,6 +403,16 @@
           </li>
           <li>
             <code>routes/api.php</code> —
+            Route::get(&#x27;/whatsapp/webhook&#x27;,
+            [WhatsappWebhookController::class, &#x27;verify&#x27;])
+          </li>
+          <li>
+            <code>routes/api.php</code> —
+            Route::post(&#x27;/whatsapp/webhook&#x27;,
+            [WhatsappWebhookController::class, &#x27;receive&#x27;])
+          </li>
+          <li>
+            <code>routes/api.php</code> —
             Route::middleware(&#x27;auth:sanctum&#x27;)-&gt;any(&#x27;/user&#x27;,
             function (Request $request) {
           </li>
@@ -3138,6 +3148,20 @@
             <div class="desc">
               HTTP controller for Institution, handling requests, authorization,
               and responses.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>WhatsappWebhookController</strong>
+              <span class="path"
+                ><code
+                  >app/Http/Controllers/API/WhatsappWebhookController.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              API controller for Meta WhatsApp Cloud webhook verification and
+              inbound message event handling.
             </div>
           </li>
           <li>
@@ -6977,6 +7001,105 @@
             </div>
             <div class="desc">
               Service class providing reusable Whatsapp Client logic.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>WhatsappCloudApiService</strong>
+              <span class="path"
+                ><code
+                  >app/Services/Messaging/Whatsapp/WhatsappCloudApiService.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Sends plain text WhatsApp Cloud API messages with configured Meta
+              credentials and safe failure logging.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>WhatsappWebhookHandler</strong>
+              <span class="path"
+                ><code
+                  >app/Services/Messaging/Whatsapp/WhatsappWebhookHandler.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Handles inbound WhatsApp webhook messages, duplicate message
+              suppression, menus, check-result intent routing, student
+              selection, and result responses.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>WhatsappIntentResolver</strong>
+              <span class="path"
+                ><code
+                  >app/Services/Messaging/Whatsapp/WhatsappIntentResolver.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Rule-based resolver for WhatsApp menu/reset/check-result messages.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>WhatsappConversationStateService</strong>
+              <span class="path"
+                ><code
+                  >app/Services/Messaging/Whatsapp/WhatsappConversationStateService.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Cache-backed WhatsApp conversation state for multi-student
+              check-result selection.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>WhatsappStudentResolver</strong>
+              <span class="path"
+                ><code
+                  >app/Services/Messaging/Whatsapp/WhatsappStudentResolver.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Resolves students linked to a sender through student user phone,
+              guardian user phone, or student guardian phone fields.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>WhatsappResultService</strong>
+              <span class="path"
+                ><code
+                  >app/Services/Messaging/Whatsapp/WhatsappResultService.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Builds WhatsApp result-status messages and signed result links
+              using current institution settings, publication checks, and
+              activation checks.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>PhoneNumberNormalizer</strong>
+              <span class="path"
+                ><code
+                  >app/Services/Messaging/Whatsapp/PhoneNumberNormalizer.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Normalizes WhatsApp/student/guardian phone numbers and generates
+              Nigerian lookup variants.
             </div>
           </li>
         </ul>

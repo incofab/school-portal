@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\CCD\QuestionController;
 use App\Http\Controllers\API\OfflineMock;
 use App\Http\Controllers\API\Institutions as Inst;
+use App\Http\Controllers\API\WhatsappWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,11 @@ Route::group(['middleware' => ['auth:sanctum', 'institution.user']], function ()
 });
 
 Route::post('/login', [AuthController::class, 'login']); // Login route for API
+
+Route::get('/whatsapp/webhook', [WhatsappWebhookController::class, 'verify'])
+    ->name('api.whatsapp.webhook.verify');
+Route::post('/whatsapp/webhook', [WhatsappWebhookController::class, 'receive'])
+    ->name('api.whatsapp.webhook.receive');
 
 Route::middleware('auth:sanctum')->any('/user', function (Request $request) {
     return $request->user();

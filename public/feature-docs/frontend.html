@@ -102,7 +102,7 @@
   <body>
     <header>
       <h1>Frontend Architecture</h1>
-      <p>Last reviewed 2026-06-11</p>
+      <p>Last reviewed 2026-06-30</p>
       <nav>
         <a href="index.html">Overview</a><a href="backend.html">Backend</a
         ><a href="frontend.html">Frontend</a><a href="data.html">Data</a
@@ -112,6 +112,26 @@
       </nav>
     </header>
     <main>
+      <section>
+        <h2>Application Shell</h2>
+        <ul class="detail-list">
+          <li>
+            <div>
+              <strong>Inertia React bootstrap</strong>
+              <span class="path"><code>resources/js/app.tsx</code></span>
+            </div>
+            <div class="desc">
+              Resolves Inertia page components from
+              <code>resources/js/pages/**/*.tsx</code>, mounts the React 18 root
+              once, and wraps pages with React StrictMode, ChakraProvider,
+              ColorModeScript, and ProSidebarProvider. Pages render directly
+              inside the provider tree; the shell does not add a synthetic
+              first-load spinner or delayed loading state before the active page
+              mounts.
+            </div>
+          </li>
+        </ul>
+      </section>
       <section>
         <h2>Audit Log Pages</h2>
         <ul class="detail-list">

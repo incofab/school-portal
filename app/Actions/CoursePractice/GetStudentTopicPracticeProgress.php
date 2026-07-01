@@ -9,6 +9,7 @@ use App\Models\Topic;
 use App\Models\TopicPracticeAttempt;
 use App\Models\TopicPracticeSummary;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class GetStudentTopicPracticeProgress
 {
@@ -68,9 +69,9 @@ class GetStudentTopicPracticeProgress
   }
 
   private function applyPracticeableTopicScope(
-    Builder $query,
+    Builder|Relation $query,
     ?int $classificationGroupId
-  ): Builder {
+  ): Builder|Relation {
     return $query
       ->where('classification_group_id', $classificationGroupId)
       ->whereHas(

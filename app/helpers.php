@@ -172,18 +172,9 @@ if (!function_exists('getInstitutionGroupFromDomain')) {
 if (!function_exists('formatWhatsappNumber')) {
   function formatWhatsappNumber(?string $phone): ?string
   {
-    $phone = str_replace([' ', '-', '(', ')', '+'], '', $phone ?? '');
-    $countryCode = '234';
-
-    if (str_starts_with($phone, '0')) {
-      return $countryCode . substr($phone, 1);
-    }
-
-    if (!str_starts_with($phone, $countryCode)) {
-      return $countryCode . $phone;
-    }
-
-    return $phone;
+    return app(
+      \App\Services\Messaging\Whatsapp\PhoneNumberNormalizer::class
+    )->normalize($phone);
   }
 }
 
@@ -211,8 +202,6 @@ if (!function_exists('trimDecimal')) {
   {
     $normalized = round((float) $value, 6);
 
-    return $normalized == (int) $normalized
-      ? (int) $normalized
-      : $normalized;
+    return $normalized == (int) $normalized ? (int) $normalized : $normalized;
   }
 }

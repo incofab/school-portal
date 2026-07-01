@@ -60,7 +60,7 @@ class RecordClassResultController extends Controller
           ->orderBy('for_mid_term')
       )
       ->with('user')
-      ->latest('users.first_name')
+      ->oldest('users.first_name')
       ->get();
     $assessmentGroups = Assessment::getAssessmentGroups(
       $setting->getCurrentTerm(),
