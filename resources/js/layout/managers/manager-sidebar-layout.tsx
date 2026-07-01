@@ -113,6 +113,10 @@ export default function ManagerSideBarLayout() {
     //   ],
     // },
     {
+      label: 'Knowledge Base',
+      route: route('knowledge-base'),
+    },
+    {
       label: 'Logout',
       route: route('logout'),
     },

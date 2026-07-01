@@ -1,7 +1,9 @@
 import {
+  Box,
   Button,
   Divider,
   HStack,
+  Icon,
   Spacer,
   Text,
   VStack,
@@ -19,6 +21,22 @@ import InputForm from '@/components/forms/input-form';
 import startCase from 'lodash/startCase';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
+import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+
+function whatsappLink(phoneNumber?: string | null) {
+  if (!phoneNumber) {
+    return null;
+  }
+
+  const normalizedPhone = phoneNumber.replace(/\D+/g, '');
+  if (!normalizedPhone) {
+    return null;
+  }
+
+  return `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(
+    'I want to check my results.'
+  )}`;
+}
 
 export default function StudentTermResultActivation() {
   const form = useWebForm({
@@ -28,6 +46,15 @@ export default function StudentTermResultActivation() {
   });
   const [termResults, setTermResults] = useState([] as TermResult[]);
   const { toastError, toastSuccess } = useMyToast();
+  const whatsappPhoneNumber = import.meta.env.VITE_WHATSAPP_PHONE_NUMBER as
+    | string
+    | undefined;
+  const whatsappHref = whatsappLink(whatsappPhoneNumber);
+  const whatsappCardBg = useColorModeValue('green.50', 'green.900');
+  const whatsappCardBorder = useColorModeValue('green.200', 'green.700');
+  const whatsappIconBg = useColorModeValue('green.500', 'green.300');
+  const whatsappIconColor = useColorModeValue('white', 'gray.900');
+  const mutedTextColor = useColorModeValue('gray.600', 'gray.300');
 
   async function submitForm(termResultId?: number, onClose?: () => void) {
     const res = await form.submit((data, web) => {
@@ -61,8 +88,61 @@ export default function StudentTermResultActivation() {
           as={'form'}
           spacing={4}
           align={'stretch'}
-          onSubmit={preventNativeSubmit((e: any) => submitForm())}
+          onSubmit={preventNativeSubmit(() => submitForm())}
         >
+          {whatsappPhoneNumber && (
+            <Box
+              borderWidth={1}
+              borderColor={whatsappCardBorder}
+              bg={whatsappCardBg}
+              rounded={'md'}
+              p={4}
+            >
+              <HStack align={'start'} spacing={3}>
+                <Box
+                  rounded={'full'}
+                  bg={whatsappIconBg}
+                  color={whatsappIconColor}
+                  p={2}
+                  flexShrink={0}
+                >
+                  <Icon as={ChatBubbleLeftRightIcon} boxSize={5} />
+                </Box>
+                <VStack align={'stretch'} spacing={2}>
+                  <Text fontWeight={'bold'}>Check your result on WhatsApp</Text>
+                  <Text fontSize={'sm'} color={mutedTextColor}>
+                    You can now check your result by chatting with us on
+                    WhatsApp, as long as your phone number is saved on the
+                    portal as the student's phone number or as the guardian's
+                    phone number.
+                  </Text>
+                  <Text fontSize={'sm'} color={mutedTextColor}>
+                    WhatsApp number:{' '}
+                    <Text
+                      as={'span'}
+                      fontWeight={'semibold'}
+                      color={'green.700'}
+                    >
+                      {whatsappPhoneNumber}
+                    </Text>
+                  </Text>
+                  {whatsappHref && (
+                    <Button
+                      as={'a'}
+                      href={whatsappHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      colorScheme={'green'}
+                      size={'sm'}
+                      alignSelf={'flex-start'}
+                    >
+                      Open WhatsApp to check result
+                    </Button>
+                  )}
+                </VStack>
+              </HStack>
+            </Box>
+          )}
           <InputForm
             form={form as any}
             formKey="student_code"

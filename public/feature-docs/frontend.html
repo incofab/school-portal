@@ -208,7 +208,12 @@
               >
             </div>
             <div class="desc">
-              Activation screen for Student Term Result records and access.
+              Activation screen for Student Term Result records and access. It
+              reads <code>VITE_WHATSAPP_PHONE_NUMBER</code> on the frontend and
+              shows a WhatsApp result-checking callout when configured, explains
+              that student or guardian phone numbers must be linked, displays
+              the number, and opens WhatsApp with the message "I want to check
+              my results."
             </div>
           </li>
           <li>
@@ -6046,6 +6051,21 @@
               classes, and summarizes school operations, academics, finance,
               communication, security, admissions, recruitment, imports/exports,
               and AI-assisted workflows with restrained brand-color accents.
+            </div>
+          </li>
+          <li>
+            <div><strong>EduManager Knowledge Base page</strong></div>
+            <div class="desc">
+              Public Inertia React FAQ and help center at
+              <code>resources/js/pages/knowledge-base.tsx</code>, exposed by
+              <code>/knowledge-base</code>. It stores all article data in a
+              frontend static array, groups articles by product area, supports
+              ranked client-side search over titles, categories, keywords, and
+              answer text, and lets users click search results to open and
+              scroll to the matching FAQ. Articles include beginner-oriented
+              sections for who uses the feature, where to find it, what to check
+              before starting, suggested steps, and troubleshooting. Institution
+              and manager sidebars link to this page for logged-in users.
             </div>
           </li>
           <li>

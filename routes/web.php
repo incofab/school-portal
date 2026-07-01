@@ -5,6 +5,7 @@ use App\Http\Controllers\Home;
 use App\Http\Controllers\Institutions\Admissions;
 use App\Http\Controllers\Institutions\Exams\External;
 use App\Http\Controllers\Institutions\Recruitment;
+use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 
 Route::get('dummy1', function () {
@@ -100,6 +101,8 @@ Route::get('download-offline-cbt-app', [Home\HomeController::class, 'downloadOff
     ->name('download-offline-cbt-app');
 
 Route::get('error', [Home\HomeController::class, 'error'])->name('home.error');
+Route::get('knowledge-base', fn () => Inertia::render('knowledge-base'))
+    ->name('knowledge-base');
 Route::view('proposal', 'home.proposal')->name('proposal');
 
 Route::get('/institutions/{institution}/admission-forms/search', [Admissions\AdmissionFormController::class, 'search'])->name('institutions.admission-forms.search');

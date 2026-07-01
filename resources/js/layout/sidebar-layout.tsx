@@ -20,6 +20,7 @@ import GenericSelectorModal, {
   GenericSelectorModalConfig,
 } from '@/components/modals/generic-selector-modal';
 import { Inertia } from '@inertiajs/inertia';
+import route from '@/util/route';
 
 interface MenuType {
   label: string;
@@ -707,6 +708,11 @@ export default function SideBarLayout() {
         //   roles: [InstitutionUserType.Admin],
         // },
       ],
+    },
+    {
+      label: 'FAQ / Knowledge Base',
+      route: route('knowledge-base'),
+      roles: null,
     },
     // {
     //   label: 'Profile',

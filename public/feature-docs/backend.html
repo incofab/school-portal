@@ -2934,6 +2934,13 @@
             buyer-facing EduManager proposal page.
           </li>
           <li>
+            <code>routes/web.php</code> — Route::get(&#x27;knowledge-base&#x27;,
+            fn () =&gt;
+            Inertia::render(&#x27;knowledge-base&#x27;))-&gt;name(&#x27;knowledge-base&#x27;);
+            public static EduManager Knowledge Base page with no API or
+            database-backed search.
+          </li>
+          <li>
             <code>routes/web.php</code> —
             Route::any(&#x27;/privacy-policy&#x27;, [Home\HomeController::class,
             &#x27;privacyPolicy&#x27;])-&gt;name(&#x27;privacy-policy&#x27;);
@@ -5374,7 +5381,10 @@
             <div class="desc">
               HTTP controller for public term result activation. It validates
               student/PIN input and delegates reusable publication, activation,
-              and PIN usage rules to <code>TermResultAccessService</code>.
+              and PIN usage rules to <code>TermResultAccessService</code>. The
+              WhatsApp result-checker display number is exposed to the frontend
+              through <code>VITE_WHATSAPP_PHONE_NUMBER</code>, not a controller
+              prop.
             </div>
           </li>
           <li>

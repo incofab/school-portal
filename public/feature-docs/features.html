@@ -213,11 +213,12 @@
             <h3>Public and Guest</h3>
             <p class="muted">
               Home, institution registration, partner registration, login,
-              buyer-facing proposal, password reset, student login, admission
-              application, admission form purchase, admission letters, public
-              vacancy board and recruitment application, public result
-              activation, public exam result lookup, and external exam entry
-              points. Start in <code>routes/web.php</code>.
+              buyer-facing proposal, public knowledge base, password reset,
+              student login, admission application, admission form purchase,
+              admission letters, public vacancy board and recruitment
+              application, public result activation, public exam result lookup,
+              and external exam entry points. Start in
+              <code>routes/web.php</code>.
             </p>
           </div>
           <div class="card">
@@ -1363,7 +1364,10 @@
             share <code>TermResultAccessService</code>. WhatsApp result links
             are only sent after the requested result is published and, when the
             institution requires result activation, activated through an in-chat
-            PIN prompt.
+            PIN prompt. The public result activation page also advertises
+            WhatsApp result checking when
+            <code>VITE_WHATSAPP_PHONE_NUMBER</code> is configured, showing the
+            chat number and a prefilled WhatsApp link.
           </p>
           <ul>
             <li>
@@ -2043,6 +2047,10 @@
           <li>
             Buyer-facing product narrative:
             <code>/proposal</code>.
+          </li>
+          <li>
+            Public user help and feature guide:
+            <code>/knowledge-base</code>.
           </li>
         </ul>
       </section>
