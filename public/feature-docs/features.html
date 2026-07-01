@@ -1232,24 +1232,26 @@
             comments from class result analysis, extra result data, class result
             sheet rendering, transcripts, signed result sheets, public result
             activation, result publications, and result delivery to guardians.
-            WhatsApp check-result requests now reuse current institution
-            settings, result publication, activation, and signed result URL
-            behavior before sending a result link back through the Meta WhatsApp
-            Cloud API webhook. The public signed result-sheet route enforces
-            Laravel signed URL validation. Score recording/updating/deletion,
-            result processing start/completion/failure, lock/unlock, and
-            publication workflows now emit explicit integrity audit events with
-            class, course, student, teacher, session, term, count, and old/new
-            score metadata. Result publication reads a fresh copy of the
-            institution's current session and term settings before
-            billing/publishing so repeated publish requests in the same process
-            use the latest settings. Term details can override the institution
-            default for whether exam scores appear on result templates; when
-            unset, the institution result setting controls templates 1 through
-            8. Institutions can preview their selected result template from
-            result settings; the preview renders a non-persisted dummy result
-            sheet with 10 to 14 subjects, using existing institution courses
-            where available and fallback subjects when needed.
+            WhatsApp check-result requests now reuse shared result access logic
+            for current institution settings, result publication, PIN
+            activation, recent-result fallback selection, and signed result URL
+            behavior before sending one or more result links back through the
+            Meta WhatsApp Cloud API webhook. The public signed result-sheet
+            route enforces Laravel signed URL validation. Score
+            recording/updating/deletion, result processing
+            start/completion/failure, lock/unlock, and publication workflows now
+            emit explicit integrity audit events with class, course, student,
+            teacher, session, term, count, and old/new score metadata. Result
+            publication reads a fresh copy of the institution's current session
+            and term settings before billing/publishing so repeated publish
+            requests in the same process use the latest settings. Term details
+            can override the institution default for whether exam scores appear
+            on result templates; when unset, the institution result setting
+            controls templates 1 through 8. Institutions can preview their
+            selected result template from result settings; the preview renders a
+            non-persisted dummy result sheet with 10 to 14 subjects, using
+            existing institution courses where available and fallback subjects
+            when needed.
           </p>
           <p>
             Course result upserts are protected by lookup constraints on
@@ -1319,6 +1321,7 @@
               <code>DownloadResultRecordingSheet</code>,
               <code>DownloadCourseResult</code>,
               <code>SendTermResultToGuardians</code>,
+              <code>TermResultAccessService</code>,
               <code>WhatsappResultService</code>. <code>GetGrade</code> now
               powers both class-level grade summaries and per-subject grade
               distribution matrices for the grade report page.
@@ -1356,9 +1359,11 @@
             download, showing generated pins, class and student PIN assignment,
             student PIN tile views, and activation of student term results. PIN
             generation and public PIN usage now emit explicit audit events
-            without storing raw PIN values. WhatsApp result links are only sent
-            after the requested current-term result is published and, when the
-            institution requires result activation, activated.
+            without storing raw PIN values. Web and WhatsApp result activation
+            share <code>TermResultAccessService</code>. WhatsApp result links
+            are only sent after the requested result is published and, when the
+            institution requires result activation, activated through an in-chat
+            PIN prompt.
           </p>
           <ul>
             <li>
@@ -1716,9 +1721,11 @@
             viewers when a conversation maps to a specific person. Inbound Meta
             WhatsApp Cloud API webhooks verify subscription challenges,
             normalize sender phone numbers, resolve check-result intents, use
-            cache-backed student-selection state when a number maps to multiple
-            students, and send either a menu, a result-status message, or a
-            secure signed result link.
+            cache-backed state for student selection, recent-result fallback
+            selection, and activation PIN prompts, and send either a menu, a
+            result-status message, or secure signed result links. Result replies
+            greet the sender by WhatsApp profile name when Meta includes it in
+            the webhook payload.
           </p>
           <ul>
             <li>
@@ -1739,6 +1746,7 @@
               <code>WhatsappConversationStateService</code>,
               <code>WhatsappStudentResolver</code>,
               <code>WhatsappResultService</code>,
+              <code>TermResultAccessService</code>,
               <code>PhoneNumberNormalizer</code>,
               <code>SendWhatsappMessage</code>, <code>SendBulksms</code>.
             </li>

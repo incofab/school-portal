@@ -6,7 +6,7 @@ use App\Models\Institution;
 use App\Models\Pin;
 use App\Models\Student;
 use App\Models\TermResult;
-use App\Support\Audit\AcademicIntegrityActivityLogger;
+use App\Services\Results\TermResultAccessService;
 use App\Support\SettingsHandler;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -14,6 +14,10 @@ use URL;
 
 class TermResultActivationController extends Controller
 {
+  public function __construct(private TermResultAccessService $resultAccess)
+  {
+  }
+
   public function create()
   {
     if (!$this->isActivationPinNeeded()) {
@@ -49,61 +53,28 @@ class TermResultActivationController extends Controller
       'term_result_id' => ['nullable']
     ]);
 
-    $pin = Pin::query()
-      ->where('pin', $data['pin'])
-      ->with('institution', 'termResult')
-      ->first();
+    $pin = $this->resultAccess->findPin($data['pin']);
 
     if (!$pin) {
       throw ValidationException::withMessages(['pin' => 'Invalid pin']);
     }
     $institution = $pin->institution;
 
-    $student = Student::query()
-      ->select('students.*')
-      // ->forInstitution($pin->institution_id)
-      ->where('students.code', $data['student_code'])
-      ->with('user', 'institutionUser.institution')
-      ->firstOrFail();
+    $student = $this->resultAccess->findStudentForPin(
+      $pin,
+      $data['student_code']
+    );
 
-    if ($student->institutionUser->isSuspended()) {
-      throw ValidationException::withMessages([
-        'student_code' => 'Access denied. Please contact school authorities'
-      ]);
-    }
-
-    if (
-      $institution->institution_group_id !==
-      $student->institutionUser->institution->institution_group_id
-    ) {
-      throw ValidationException::withMessages([
-        'student_code' => 'Student not found'
-      ]);
-    }
-
-    if ($pin->student_id && $pin->student_id !== $student->id) {
-      throw ValidationException::withMessages([
-        'pin' => 'This Pin is not for you'
-      ]);
-    }
-
-    $termResults = TermResult::query()
-      ->where('institution_id', $student->institutionUser->institution_id)
-      ->where('student_id', $student->id)
-      ->where('for_mid_term', false)
-      ->when(
-        $request->term_result_id,
-        fn($q, $value) => $q->where('id', $value)
-      )
-      ->activated(false)
-      ->with('classification', 'academicSession')
-      ->get();
+    $termResults = $this->resultAccess->unactivatedFullTermResults(
+      $student,
+      $request->term_result_id ? (int) $request->term_result_id : null
+    );
 
     $count = $termResults->count();
     if ($count === 0) {
-      $latestTermResult = $this->getLatestResult($student);
+      $latestTermResult = $this->resultAccess->latestFullTermResult($student);
       if ($latestTermResult) {
-        $this->checkForPublication($latestTermResult);
+        $this->resultAccess->checkForPublication($latestTermResult);
 
         return $this->successRes(
           $latestTermResult->institution,
@@ -118,8 +89,6 @@ class TermResultActivationController extends Controller
     }
 
     if ($count === 1) {
-      $this->checkForPublication($termResults->first());
-
       return $this->activateResult($termResults->first(), $pin, $student);
     }
 
@@ -127,27 +96,6 @@ class TermResultActivationController extends Controller
       'has_multiple_results' => true,
       'term_results' => $termResults
     ]);
-  }
-
-  private function checkForPublication(TermResult $termResult)
-  {
-    if ($termResult->isPublished()) {
-      return;
-    }
-    throw ValidationException::withMessages([
-      'pin' => 'Result has not been published yet, contact school admin'
-    ]);
-  }
-
-  private function getLatestResult(Student $student): ?TermResult
-  {
-    return TermResult::query()
-      ->where('institution_id', $student->institutionUser->institution_id)
-      ->where('student_id', $student->id)
-      ->where('for_mid_term', false)
-      ->with('classification', 'academicSession')
-      ->latest('id')
-      ->first();
   }
 
   private function successRes(Institution $institution, TermResult $termResult)
@@ -189,46 +137,8 @@ class TermResultActivationController extends Controller
     Pin $pin,
     Student $student
   ) {
-    if (!$this->canActivate($pin, $termResult)) {
-      throw ValidationException::withMessages([
-        'pin' => 'Invalid pin combination'
-      ]);
-    }
-    $termResult->fill(['is_activated' => true])->save();
-    if (!$pin->term_result_id) {
-      $pin
-        ->fill([
-          'term_result_id' => $termResult->id,
-          'student_id' => $student->id,
-          'used_at' => now(),
-          'academic_session_id' => $termResult->academic_session_id,
-          'term' => $termResult->term
-        ])
-        ->save();
-    }
-
-    app(AcademicIntegrityActivityLogger::class)->resultPinUsed(
-      $pin->institution,
-      $pin,
-      $termResult,
-      $student
-    );
+    $termResult = $this->resultAccess->activate($termResult, $pin, $student);
 
     return $this->successRes($pin->institution, $termResult);
-  }
-
-  public function canActivate(Pin $pin, TermResult $termResult)
-  {
-    if (!$pin->term_result_id) {
-      return true;
-    }
-    $settingHandler = SettingsHandler::makeFromInstitution($pin->institution);
-    if ($settingHandler->getPinUsageCount() == 1) {
-      return false;
-    }
-
-    return ($pin->academic_session_id ??
-      $pin->termResult->academic_session_id) ===
-      $termResult->academic_session_id;
   }
 }

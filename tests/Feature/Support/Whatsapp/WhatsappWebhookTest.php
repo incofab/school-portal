@@ -5,6 +5,7 @@ use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Institution;
 use App\Models\InstitutionSetting;
+use App\Models\Pin;
 use App\Models\Student;
 use App\Models\TermResult;
 use App\Services\Messaging\Whatsapp\PhoneNumberNormalizer;
@@ -79,10 +80,11 @@ it('sends a signed result link for one linked student', function () {
     activated: true
   );
 
-  postWhatsappText('2348012345678', 'check result');
+  postWhatsappText('2348012345678', 'check result', senderName: 'John');
 
   Http::assertSent(
     fn($request) => $request['to'] === '2348012345678' &&
+      str_contains($request['text']['body'], 'Hi John,') &&
       str_contains($request['text']['body'], $student->user->full_name) &&
       str_contains($request['text']['body'], 'signed-result-sheet')
   );
@@ -191,17 +193,178 @@ it('reports activation required results', function () {
   postWhatsappText('2348012345678', 'check result');
 
   Http::assertSent(
-    fn($request) => str_contains(
-      $request['text']['body'],
-      'needs to be activated'
-    )
+    fn($request) => str_contains($request['text']['body'], 'activation pin')
   );
 });
+
+it(
+  'offers recent available results when current term result is missing',
+  function () {
+    $institution = Institution::factory()->create();
+    $currentSession = AcademicSession::factory()->create([
+      'title' => '2024/2025'
+    ]);
+    InstitutionSetting::factory()->create([
+      'institution_id' => $institution->id,
+      'key' => InstitutionSettingType::CurrentAcademicSession->value,
+      'value' => $currentSession->id
+    ]);
+    InstitutionSetting::factory()->create([
+      'institution_id' => $institution->id,
+      'key' => InstitutionSettingType::CurrentTerm->value,
+      'value' => TermType::First->value
+    ]);
+
+    $student = Student::factory()
+      ->withInstitution($institution)
+      ->create(['guardian_phone' => '08012345678']);
+
+    $availableResult = TermResult::factory()
+      ->forStudent($student)
+      ->published()
+      ->create([
+        'academic_session_id' => AcademicSession::factory()->create([
+          'title' => '2023/2024'
+        ])->id,
+        'term' => TermType::Third->value,
+        'for_mid_term' => false,
+        'is_activated' => true
+      ]);
+
+    postWhatsappText('2348012345678', 'check result', 'wamid.missing.current');
+
+    $state = app(WhatsappConversationStateService::class)->get('2348012345678');
+
+    expect($state['step'])->toBe(
+      WhatsappConversationStateService::STEP_SELECT_RESULT
+    );
+    expect($state['term_result_ids'])->toBe([$availableResult->id]);
+    Http::assertSent(
+      fn($request) => str_contains(
+        $request['text']['body'],
+        'We could not find a result for the First term 2024/2025 session yet.'
+      ) &&
+        str_contains($request['text']['body'], 'Available recent results:') &&
+        str_contains($request['text']['body'], 'Third term - 2023/2024 session')
+    );
+  }
+);
+
+it(
+  'continues result checking after selecting an available past result',
+  function () {
+    $institution = Institution::factory()->create();
+    $currentSession = AcademicSession::factory()->create([
+      'title' => '2024/2025'
+    ]);
+    InstitutionSetting::factory()->create([
+      'institution_id' => $institution->id,
+      'key' => InstitutionSettingType::CurrentAcademicSession->value,
+      'value' => $currentSession->id
+    ]);
+    InstitutionSetting::factory()->create([
+      'institution_id' => $institution->id,
+      'key' => InstitutionSettingType::CurrentTerm->value,
+      'value' => TermType::First->value
+    ]);
+
+    $student = Student::factory()
+      ->withInstitution($institution)
+      ->create(['guardian_phone' => '08012345678']);
+
+    TermResult::factory()
+      ->forStudent($student)
+      ->published()
+      ->create([
+        'academic_session_id' => AcademicSession::factory()->create([
+          'title' => '2023/2024'
+        ])->id,
+        'term' => TermType::Third->value,
+        'for_mid_term' => false,
+        'is_activated' => true
+      ]);
+
+    postWhatsappText('2348012345678', 'check result', 'wamid.past.start');
+    postWhatsappText('2348012345678', '1', 'wamid.past.pick');
+
+    expect(
+      app(WhatsappConversationStateService::class)->get('2348012345678')
+    )->toBeNull();
+    Http::assertSent(
+      fn($request) => str_contains(
+        $request['text']['body'],
+        'signed-result-sheet'
+      )
+    );
+  }
+);
+
+it(
+  'sends both full-term and mid-term current result links when both exist',
+  function () {
+    [$student, $fullTermResult] = createStudentWithCurrentResult(
+      phone: '08012345678',
+      published: true,
+      activated: true
+    );
+
+    TermResult::factory()
+      ->forStudent($student)
+      ->create([
+        'academic_session_id' => $fullTermResult->academic_session_id,
+        'term' => $fullTermResult->term,
+        'for_mid_term' => true,
+        'is_activated' => false
+      ]);
+
+    postWhatsappText('2348012345678', 'check result');
+
+    Http::assertSent(
+      fn($request) => str_contains(
+        $request['text']['body'],
+        'Full-term result:'
+      ) &&
+        str_contains($request['text']['body'], 'Mid-term result:') &&
+        substr_count($request['text']['body'], 'signed-result-sheet') === 2
+    );
+  }
+);
+
+it(
+  'activates an inactive result with a pin through whatsapp chat',
+  function () {
+    [$student] = createStudentWithCurrentResult(
+      phone: '08012345678',
+      published: true,
+      activated: false
+    );
+    $pin = Pin::factory()
+      ->withInstitution($student->institutionUser->institution)
+      ->create(['pin' => '1234567890']);
+
+    postWhatsappText('2348012345678', 'check result', 'wamid.activate.start');
+    postWhatsappText('2348012345678', $pin->pin, 'wamid.activate.pin');
+
+    expect($pin->fresh())
+      ->used_at->not()
+      ->toBeNull();
+    expect(
+      app(WhatsappConversationStateService::class)->get('2348012345678')
+    )->toBeNull();
+    Http::assertSent(
+      fn($request) => str_contains(
+        $request['text']['body'],
+        'signed-result-sheet'
+      )
+    );
+  }
+);
 
 function postWhatsappText(
   string $from,
   string $text,
-  ?string $messageId = null
+  ?string $messageId = null,
+  ?string $senderName = null
 ): void {
   $messageId ??=
     'wamid.' .
@@ -216,6 +379,16 @@ function postWhatsappText(
         'changes' => [
           [
             'value' => [
+              ...$senderName
+                ? [
+                  'contacts' => [
+                    [
+                      'wa_id' => $from,
+                      'profile' => ['name' => $senderName]
+                    ]
+                  ]
+                ]
+                : [],
               'messages' => [
                 [
                   'from' => $from,

@@ -5372,8 +5372,9 @@
               >
             </div>
             <div class="desc">
-              HTTP controller for Term Result Activation, handling requests,
-              authorization, and responses.
+              HTTP controller for public term result activation. It validates
+              student/PIN input and delegates reusable publication, activation,
+              and PIN usage rules to <code>TermResultAccessService</code>.
             </div>
           </li>
           <li>
@@ -7029,7 +7030,8 @@
             <div class="desc">
               Handles inbound WhatsApp webhook messages, duplicate message
               suppression, menus, check-result intent routing, student
-              selection, and result responses.
+              selection, recent-result selection, activation PIN prompts, and
+              result responses.
             </div>
           </li>
           <li>
@@ -7055,8 +7057,9 @@
               >
             </div>
             <div class="desc">
-              Cache-backed WhatsApp conversation state for multi-student
-              check-result selection.
+              Cache-backed WhatsApp conversation state for multi-step
+              check-result flows, including student selection, result selection,
+              and activation PIN entry.
             </div>
           </li>
           <li>
@@ -7083,9 +7086,24 @@
               >
             </div>
             <div class="desc">
-              Builds WhatsApp result-status messages and signed result links
-              using current institution settings, publication checks, and
-              activation checks.
+              Builds WhatsApp result-status messages, missing-current-result
+              fallback prompts, activation PIN prompts, and signed result links
+              using current institution settings and shared result access
+              checks.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>TermResultAccessService</strong>
+              <span class="path"
+                ><code>app/Services/Results/TermResultAccessService.php</code>
+              </span>
+            </div>
+            <div class="desc">
+              Centralizes term-result lookup, publication checks, activation
+              checks, PIN validation, PIN usage recording, and signed-result
+              access support for both public web activation and WhatsApp result
+              chat flows.
             </div>
           </li>
           <li>
