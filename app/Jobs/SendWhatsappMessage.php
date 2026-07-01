@@ -31,7 +31,7 @@ class SendWhatsappMessage implements ShouldQueue
 
   public function handle(): void
   {
-    (new WhatsappClient($this->multiplePayload))->send();
+    (new WhatsappClient())->send($this->multiplePayload);
 
     $this->markSent();
   }

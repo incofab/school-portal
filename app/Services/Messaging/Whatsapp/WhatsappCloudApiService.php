@@ -10,11 +10,8 @@ class WhatsappCloudApiService
   public function sendTextMessage(string $to, string $message): bool
   {
     $token = config('services.facebook.whatsapp-access-token');
-    $phoneNumberId = config(
-      'services.facebook.whatsapp-phone-number-id',
-      '819996257873340'
-    );
-    $apiVersion = config('services.facebook.whatsapp-api-version', 'v22.0');
+    $phoneNumberId = config('services.facebook.whatsapp-phone-number-id');
+    $apiVersion = config('services.facebook.whatsapp-api-version');
 
     if (!$token || !$phoneNumberId) {
       Log::warning('WhatsApp Cloud API credentials are not configured.');

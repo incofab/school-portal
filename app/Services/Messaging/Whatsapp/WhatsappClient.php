@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Log;
 
 class WhatsappClient
 {
+  public function __construct()
+  {
+  }
+
   /**
    * @param array{
    *   messaging_product: string,
@@ -16,23 +20,16 @@ class WhatsappClient
    *   ...mixed
    * }[] $multiplePayload
    */
-  public function __construct(private array $multiplePayload)
-  {
-  }
-
-  function send()
+  function send(array $multiplePayload)
   {
     $token = config('services.facebook.whatsapp-access-token');
-    $phoneNumberId = config(
-      'services.facebook.whatsapp-phone-number-id',
-      '819996257873340'
-    );
-    $apiVersion = config('services.facebook.whatsapp-api-version', 'v22.0');
+    $phoneNumberId = config('services.facebook.whatsapp-phone-number-id');
+    $apiVersion = config('services.facebook.whatsapp-api-version');
     if (!$token || !$phoneNumberId) {
       Log::warning('WhatsApp Cloud API credentials are not configured.');
       return;
     }
-    foreach ($this->multiplePayload as $key => $payload) {
+    foreach ($multiplePayload as $key => $payload) {
       $response = Http::withToken($token)
         ->withHeaders(['Content-Type' => 'application/json'])
         ->post(
@@ -50,12 +47,8 @@ class WhatsappClient
     string|null $receiverName = ''
   ): Res {
     $token = config('services.facebook.whatsapp-access-token');
-    $phoneNumberId = config(
-      'services.facebook.whatsapp-phone-number-id',
-      '819996257873340'
-    );
-    $apiVersion = config('services.facebook.whatsapp-api-version', 'v22.0');
-
+    $phoneNumberId = config('services.facebook.whatsapp-phone-number-id');
+    $apiVersion = config('services.facebook.whatsapp-api-version');
     $payload = [
       'messaging_product' => 'whatsapp',
       'to' => (new PhoneNumberNormalizer())->normalize($receiverPhoneNumber), //'2347036098561', // recipient phone number in international format
@@ -84,6 +77,34 @@ class WhatsappClient
             ]
           ]
         ]
+      ]
+    ];
+    $response = Http::withToken($token)
+      ->withHeaders(['Content-Type' => 'application/json'])
+      ->post(
+        "https://graph.facebook.com/{$apiVersion}/{$phoneNumberId}/messages",
+        $payload
+      );
+
+    if ($response->successful()) {
+      return successRes('Message sent successfully', $response->json());
+    }
+    return failRes('Failed to send message', $response->json());
+  }
+
+  function sendHelloMessage(string $receiverPhoneNumber): Res
+  {
+    $token = config('services.facebook.whatsapp-access-token');
+    $phoneNumberId = config('services.facebook.whatsapp-phone-number-id');
+    $apiVersion = config('services.facebook.whatsapp-api-version');
+    $payload = [
+      'messaging_product' => 'whatsapp',
+      'to' => (new PhoneNumberNormalizer())->normalize($receiverPhoneNumber),
+      'type' => 'template',
+      'template' => [
+        'name' => 'hello_world', // your template name
+        'language' => ['code' => 'en_US'],
+        'components' => []
       ]
     ];
     $response = Http::withToken($token)

@@ -72,10 +72,10 @@ return [
     'business-id' => env('PAYMENT_POINT_BUSINESS_ID')
   ],
   'facebook' => [
-    'whatsapp-access-token' => env('EXAMSCHOLARS_PAGE_ACCESS_TOKEN'),
+    'whatsapp-access-token' => env('WHATSAPP_ACCESS_TOKEN'),
     'whatsapp-phone-number-id' => env('WHATSAPP_PHONE_NUMBER_ID'),
     'whatsapp-webhook-verify-token' => env('WHATSAPP_WEBHOOK_VERIFY_TOKEN'),
-    'whatsapp-api-version' => env('WHATSAPP_API_VERSION', 'v22.0'),
+    'whatsapp-api-version' => env('WHATSAPP_API_VERSION', 'v25.0'),
     'whatsapp-app-secret' => env('WHATSAPP_APP_SECRET')
     // 'whatsapp-business-account-id' => env('WHATSAPP_BUSINESS_ACCOUNT_ID')
   ]
