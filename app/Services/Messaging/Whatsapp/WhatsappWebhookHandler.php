@@ -331,9 +331,9 @@ class WhatsappWebhookHandler
   private function schoolContactFooter($institutions): string
   {
     $lines = [];
-
+    $forSingle = $institutions->count() === 1;
     foreach ($institutions as $institution) {
-      $contactLine = $this->institutionContactLine($institution);
+      $contactLine = $this->institutionContactLine($institution, $forSingle);
       if ($contactLine) {
         $lines[] = $contactLine;
       }
@@ -349,8 +349,10 @@ class WhatsappWebhookHandler
       implode("\n", $lines);
   }
 
-  private function institutionContactLine(Institution $institution): string
-  {
+  private function institutionContactLine(
+    Institution $institution,
+    $forSingle = false
+  ): string {
     $contacts = [];
 
     if (filled($institution->phone)) {
@@ -363,6 +365,10 @@ class WhatsappWebhookHandler
 
     if (empty($contacts)) {
       return '';
+    }
+
+    if ($forSingle) {
+      return implode("\n", $contacts);
     }
 
     return "- {$institution->name}: " . implode(' | ', $contacts);
