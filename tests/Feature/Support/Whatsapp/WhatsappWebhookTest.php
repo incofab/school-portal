@@ -73,6 +73,77 @@ it('returns the menu for unknown messages', function () {
   );
 });
 
+it(
+  'adds linked school identity and contact details to menu messages',
+  function () {
+    $institution = Institution::factory()->create([
+      'name' => 'Bright Future Academy',
+      'phone' => '08030000000',
+      'email' => 'info@brightfuture.test'
+    ]);
+
+    Student::factory()
+      ->withInstitution($institution)
+      ->create(['guardian_phone' => '08012345678']);
+
+    postWhatsappText('2348012345678', 'help', senderName: 'John');
+
+    Http::assertSent(
+      fn($request) => $request['to'] === '2348012345678' &&
+        str_contains(
+          $request['text']['body'],
+          'Welcome John. This is Bright Future Academy.'
+        ) &&
+        str_contains(
+          $request['text']['body'],
+          'For more inquiries, please contact your school:'
+        ) &&
+        str_contains(
+          $request['text']['body'],
+          '- Bright Future Academy: Phone: 08030000000 | Email: info@brightfuture.test'
+        )
+    );
+  }
+);
+
+it('lists every linked school in reset menu messages', function () {
+  $firstInstitution = Institution::factory()->create([
+    'name' => 'Alpha School',
+    'phone' => '08030000001',
+    'email' => 'hello@alpha.test'
+  ]);
+  $secondInstitution = Institution::factory()->create([
+    'name' => 'Beta School',
+    'phone' => '08030000002',
+    'email' => 'hello@beta.test'
+  ]);
+
+  Student::factory()
+    ->withInstitution($firstInstitution)
+    ->create(['guardian_phone' => '08012345678']);
+  Student::factory()
+    ->withInstitution($secondInstitution)
+    ->create(['guardian_phone' => '2348012345678']);
+
+  postWhatsappText('2348012345678', 'menu', senderName: 'Jane');
+
+  Http::assertSent(
+    fn($request) => $request['to'] === '2348012345678' &&
+      str_contains(
+        $request['text']['body'],
+        'Welcome Jane. This is Alpha School and Beta School.'
+      ) &&
+      str_contains(
+        $request['text']['body'],
+        '- Alpha School: Phone: 08030000001 | Email: hello@alpha.test'
+      ) &&
+      str_contains(
+        $request['text']['body'],
+        '- Beta School: Phone: 08030000002 | Email: hello@beta.test'
+      )
+  );
+});
+
 it('sends a signed result link for one linked student', function () {
   [$student] = createStudentWithCurrentResult(
     phone: '08012345678',

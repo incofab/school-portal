@@ -29,6 +29,7 @@ import route from '@/util/route';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import DashboardExplanationGuide from '@/components/explanations/dashboard-explanation-guide';
 
 export default function DashboardHeader() {
   const { currentUser, currentInstitution, unreadNotificationCount } =
@@ -61,6 +62,7 @@ export default function DashboardHeader() {
         <Input type="text" placeholder="Search..." />
       </InputGroup> */}
       <Spacer />
+      {currentInstitution && <DashboardExplanationGuide />}
       <IconButton
         aria-label={'Toggle light and dark moon'}
         icon={<Icon as={colorMode === 'dark' ? SunIcon : MoonIcon} />}

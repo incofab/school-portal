@@ -2,6 +2,7 @@
 
 namespace App\Services\Messaging\Whatsapp;
 
+use App\Models\Institution;
 use App\Models\Student;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -45,7 +46,10 @@ class WhatsappWebhookHandler
       $senderName = $contactNames[$from] ?? null;
       $text = $this->messageText($message);
       if (!$text) {
-        $this->sender->sendTextMessage($from, $this->menuMessage($senderName));
+        $this->sender->sendTextMessage(
+          $from,
+          $this->menuMessage($from, $senderName)
+        );
         continue;
       }
 
@@ -62,7 +66,10 @@ class WhatsappWebhookHandler
 
     if ($intent === WhatsappIntentResolver::RESET) {
       $this->state->clear($from);
-      $this->sender->sendTextMessage($from, $this->menuMessage($senderName));
+      $this->sender->sendTextMessage(
+        $from,
+        $this->menuMessage($from, $senderName)
+      );
       return;
     }
 
@@ -85,7 +92,10 @@ class WhatsappWebhookHandler
       return;
     }
 
-    $this->sender->sendTextMessage($from, $this->menuMessage($senderName));
+    $this->sender->sendTextMessage(
+      $from,
+      $this->menuMessage($from, $senderName)
+    );
   }
 
   private function handleStudentSelection(
@@ -278,13 +288,102 @@ class WhatsappWebhookHandler
       ->find($studentId);
   }
 
-  private function menuMessage(?string $senderName = null): string
+  private function menuMessage(string $from, ?string $senderName = null): string
   {
-    $message =
-      "Welcome. Please choose an option:\n\n1. Check Result\n\nReply with 1 or type 'Check Result'.";
-    $name = trim((string) $senderName);
+    $institutions = $this->institutionsLinkedToPhone($from);
+    $schoolNames = $institutions
+      ->pluck('name')
+      ->filter()
+      ->unique()
+      ->values()
+      ->all();
+    $salutation = $this->menuSalutation($senderName, $schoolNames);
+    $message = "{$salutation}\n\nPlease choose an option:\n\n1. Check Result\n\nReply with 1 or type 'Check Result'.";
+    $footer = $this->schoolContactFooter($institutions);
 
-    return $name === '' ? $message : "Hi {$name}, " . $message;
+    return $footer ? "{$message}\n\n{$footer}" : $message;
+  }
+
+  private function menuSalutation(
+    ?string $senderName,
+    array $schoolNames
+  ): string {
+    $name = trim((string) $senderName);
+    $greeting = $name === '' ? 'Welcome.' : "Welcome {$name}.";
+
+    if (empty($schoolNames)) {
+      return $greeting;
+    }
+
+    return "{$greeting} This is " . $this->humanList($schoolNames) . '.';
+  }
+
+  private function institutionsLinkedToPhone(string $phone)
+  {
+    return $this->studentResolver
+      ->resolve($phone)
+      ->pluck('institutionUser.institution')
+      ->filter()
+      ->unique('id')
+      ->values();
+  }
+
+  private function schoolContactFooter($institutions): string
+  {
+    $lines = [];
+
+    foreach ($institutions as $institution) {
+      $contactLine = $this->institutionContactLine($institution);
+      if ($contactLine) {
+        $lines[] = $contactLine;
+      }
+    }
+
+    if (empty($lines)) {
+      return '';
+    }
+
+    $schoolLabel = count($lines) === 1 ? 'school' : 'schools';
+
+    return "For more inquiries, please contact your {$schoolLabel}:\n" .
+      implode("\n", $lines);
+  }
+
+  private function institutionContactLine(Institution $institution): string
+  {
+    $contacts = [];
+
+    if (filled($institution->phone)) {
+      $contacts[] = "Phone: {$institution->phone}";
+    }
+
+    if (filled($institution->email)) {
+      $contacts[] = "Email: {$institution->email}";
+    }
+
+    if (empty($contacts)) {
+      return '';
+    }
+
+    return "- {$institution->name}: " . implode(' | ', $contacts);
+  }
+
+  private function humanList(array $items): string
+  {
+    $items = array_values(array_filter($items));
+    $count = count($items);
+
+    if ($count <= 1) {
+      return $items[0] ?? '';
+    }
+
+    if ($count === 2) {
+      return "{$items[0]} and {$items[1]}";
+    }
+
+    $last = array_pop($items);
+
+    return implode(', ', $items) . ", and {$last}";
   }
 
   private function studentSelectionMessage($students): string

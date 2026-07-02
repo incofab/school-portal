@@ -102,7 +102,7 @@
   <body>
     <header>
       <h1>Frontend Architecture</h1>
-      <p>Last reviewed 2026-06-30</p>
+      <p>Last reviewed 2026-07-02</p>
       <nav>
         <a href="index.html">Overview</a><a href="backend.html">Backend</a
         ><a href="frontend.html">Frontend</a><a href="data.html">Data</a
@@ -3477,7 +3477,10 @@
             </div>
             <div class="desc">
               Layout wrapper for Dashboard Header screens, providing shared
-              structure and navigation.
+              structure and navigation. For institution pages it mounts the
+              route-aware dashboard explanation guide button beside the header
+              actions so users can open contextual help for critical feature
+              areas.
             </div>
           </li>
           <li>
@@ -3636,6 +3639,41 @@
             <div class="desc">
               Reusable UI component for Create Edit Bank Account Form, used
               across pages and forms.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>dashboard-explanation-guide</strong>
+              <span class="path"
+                ><code
+                  >resources/js/components/explanations/dashboard-explanation-guide.tsx</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Shared Chakra modal trigger for institution dashboard pages. It
+              reads the current Inertia URL, finds the matching guide entry, and
+              renders a compact Guide button that opens a detailed explanation
+              with purpose, use cases, recommended workflow, important notes,
+              and related feature areas.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>dashboard-explanations</strong>
+              <span class="path"
+                ><code
+                  >resources/js/components/explanations/dashboard-explanations.ts</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Route-aware registry of detailed institution feature guides for
+              critical areas such as dashboard, users, students, guardians,
+              classes, subjects, curriculum, attendance, assessments, results,
+              PINs, exams, admissions, payments, wallet, payroll, expenses,
+              messaging, schedules, recruitment, associations, settings,
+              reports, and activity logs.
             </div>
           </li>
           <li>

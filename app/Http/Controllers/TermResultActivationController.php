@@ -24,7 +24,9 @@ class TermResultActivationController extends Controller
       return redirect()->route('student-login');
     }
 
-    return inertia('auth/activate-student-term-result');
+    return inertia('auth/activate-student-term-result', [
+      'institutionGroup' => getInstitutionGroupFromDomain()
+    ]);
   }
 
   private function isActivationPinNeeded(): bool

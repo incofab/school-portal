@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import {
   Badge,
   Box,
+  Button,
   Card,
   CardBody,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   HStack,
+  Icon,
   Input,
-  Radio,
-  RadioGroup,
+  SimpleGrid,
   Spacer,
+  Stack,
   Text,
+  useColorModeValue,
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
@@ -34,7 +38,6 @@ import Dt from '@/components/dt';
 import useSharedProps from '@/hooks/use-shared-props';
 import { Div } from '@/components/semantic';
 import startCase from 'lodash/startCase';
-import FormControlBox from '@/components/forms/form-control-box';
 import SwitchCourseTeacher from './switch-course-teacher-component';
 import {
   getResultTotalScore,
@@ -42,6 +45,11 @@ import {
   removeExamFromResultEntry,
   validateResultScore,
 } from '@/util/result-recording-util';
+import {
+  AcademicCapIcon,
+  CheckCircleIcon,
+  ClipboardDocumentCheckIcon,
+} from '@heroicons/react/24/outline';
 
 type ResultMode = 'full-term' | 'mid-term' | '';
 
@@ -103,20 +111,18 @@ export default function RecordClassCourseResult({
   const resultModeLabel = isMidTermSelected
     ? 'Mid-Term Result'
     : 'Full Term Result';
-  const visibleResultModeLabel = hasSelectedResultMode
-    ? resultModeLabel
-    : 'Select Result Type';
   const resultModeScheme = isMidTermSelected ? 'yellow' : 'blue';
-  const resultModeBg = !hasSelectedResultMode
-    ? 'brand.50'
-    : isMidTermSelected
-    ? 'yellow.50'
-    : 'blue.50';
-  const resultModeBorder = !hasSelectedResultMode
-    ? 'brand.200'
-    : isMidTermSelected
-    ? 'yellow.200'
-    : 'blue.200';
+  const selectionPanelBg = useColorModeValue('white', 'gray.800');
+  const selectionPanelMuted = useColorModeValue('gray.600', 'gray.300');
+  const selectionPanelBorder = useColorModeValue('brand.100', 'gray.700');
+  const optionBg = useColorModeValue('gray.50', 'gray.700');
+  const optionSelectedBg = useColorModeValue('brand.50', 'whiteAlpha.100');
+  const optionBorder = useColorModeValue('gray.200', 'gray.600');
+  const optionSelectedBorder = useColorModeValue('brand.500', 'brand.300');
+  const optionShadow = useColorModeValue(
+    '0 12px 30px rgba(0, 0, 0, 0.08)',
+    '0 12px 30px rgba(0, 0, 0, 0.28)'
+  );
 
   const submit = async () => {
     if (!hasSelectedResultMode) {
@@ -190,74 +196,111 @@ export default function RecordClassCourseResult({
     <DashboardLayout>
       <Div>
         <CenteredBox>
-          <Slab>
-            <SlabHeading title={`Record Class Result`} />
-            <SlabBody>
-              <SwitchCourseTeacher
-                courseTeacher={courseTeacher}
-                teachersCourses={teachersCourses}
-                selectedCourseTeacherState={selectedCourseTeacherState}
-                getUrl={(courseTeacherId) =>
-                  instRoute('record-class-results.create', [courseTeacherId])
-                }
-              />
-              <Dt contentData={details} />
-            </SlabBody>
-          </Slab>
-          <Spacer height={3} />
-
           {usesMidTermResult && (
             <Box
-              bg={resultModeBg}
-              borderColor={resultModeBorder}
+              bg={selectionPanelBg}
+              borderColor={selectionPanelBorder}
               borderWidth={1}
-              borderRadius={'md'}
-              p={3}
+              borderRadius={'lg'}
+              boxShadow={'0px 2px 6px rgba(0, 0, 0, 0.1)'}
+              p={{ base: 4, md: 6 }}
             >
-              <HStack justify={'space-between'} align={'center'} mb={2}>
-                <Text fontWeight={'semibold'} color={'gray.700'}>
-                  Recording {visibleResultModeLabel}
-                </Text>
-                <Badge
-                  colorScheme={
-                    hasSelectedResultMode ? resultModeScheme : 'brand'
-                  }
-                >
-                  {hasSelectedResultMode ? resultModeLabel : 'Required'}
-                </Badge>
-              </HStack>
-              <FormControlBox
-                form={webForm as any}
-                formKey="for_mid_term"
-                title="Result Type"
-              >
-                <RadioGroup
-                  value={selectedResultMode}
-                  onChange={(value) => {
-                    const nextMode = value as ResultMode;
-                    const nextForMidTerm = nextMode === 'mid-term';
-                    setSelectedResultMode(nextMode);
-                    webForm.setValue('for_mid_term', nextForMidTerm);
-                    webForm.setValue('result', {});
-                  }}
-                  isDisabled={webForm.processing}
-                >
-                  <HStack spacing={6}>
-                    <Radio value="full-term">Full term</Radio>
-                    <Radio value="mid-term">Mid-term</Radio>
-                  </HStack>
-                </RadioGroup>
-                <Box color={'gray.600'} fontSize={'sm'} mt={1}>
-                  {hasSelectedResultMode
-                    ? isMidTermSelected
-                      ? 'You are recording only mid-term assessments for this class.'
-                      : 'You are recording only full-term assessments for this class.'
-                    : 'Choose the result type first. Student score fields will appear after this selection.'}
-                </Box>
-              </FormControlBox>
+              <Stack spacing={5}>
+                <HStack justify={'space-between'} align={'start'} spacing={4}>
+                  <Box>
+                    <Badge colorScheme={'brand'} mb={2}>
+                      Required First Step
+                    </Badge>
+                    <Text
+                      fontSize={{ base: 'lg', md: 'xl' }}
+                      fontWeight={'bold'}
+                    >
+                      Select result recording type
+                    </Text>
+                    <Text color={selectionPanelMuted} fontSize={'sm'} mt={1}>
+                      Choose full term or mid-term to start recording.
+                    </Text>
+                  </Box>
+                  <Badge
+                    colorScheme={
+                      hasSelectedResultMode ? resultModeScheme : 'red'
+                    }
+                    variant={hasSelectedResultMode ? 'subtle' : 'solid'}
+                    flexShrink={0}
+                  >
+                    {hasSelectedResultMode
+                      ? resultModeLabel
+                      : 'Selection required'}
+                  </Badge>
+                </HStack>
+
+                <FormControl isInvalid={!!webForm.errors.for_mid_term}>
+                  <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                    <ResultModeOption
+                      title="Full Term"
+                      description="Record for full term"
+                      icon={ClipboardDocumentCheckIcon}
+                      isSelected={selectedResultMode === 'full-term'}
+                      isDisabled={webForm.processing}
+                      bg={optionBg}
+                      selectedBg={optionSelectedBg}
+                      borderColor={optionBorder}
+                      selectedBorderColor={optionSelectedBorder}
+                      selectedShadow={optionShadow}
+                      onClick={() => {
+                        setSelectedResultMode('full-term');
+                        webForm.setValue('for_mid_term', false);
+                        webForm.setValue('result', {});
+                      }}
+                    />
+                    <ResultModeOption
+                      title="Mid-Term"
+                      description="Record for mid term"
+                      icon={AcademicCapIcon}
+                      isSelected={selectedResultMode === 'mid-term'}
+                      isDisabled={webForm.processing}
+                      bg={optionBg}
+                      selectedBg={optionSelectedBg}
+                      borderColor={optionBorder}
+                      selectedBorderColor={optionSelectedBorder}
+                      selectedShadow={optionShadow}
+                      onClick={() => {
+                        setSelectedResultMode('mid-term');
+                        webForm.setValue('for_mid_term', true);
+                        webForm.setValue('result', {});
+                      }}
+                    />
+                  </SimpleGrid>
+                  <FormErrorMessage>
+                    {webForm.errors.for_mid_term}
+                  </FormErrorMessage>
+                </FormControl>
+              </Stack>
             </Box>
           )}
           <Spacer height={3} />
+
+          {hasSelectedResultMode && (
+            <>
+              <Slab>
+                <SlabHeading title={`Record Class Result`} />
+                <SlabBody>
+                  <SwitchCourseTeacher
+                    courseTeacher={courseTeacher}
+                    teachersCourses={teachersCourses}
+                    selectedCourseTeacherState={selectedCourseTeacherState}
+                    getUrl={(courseTeacherId) =>
+                      instRoute('record-class-results.create', [
+                        courseTeacherId,
+                      ])
+                    }
+                  />
+                  <Dt contentData={details} />
+                </SlabBody>
+              </Slab>
+              <Spacer height={3} />
+            </>
+          )}
 
           {selectedCourseTeacherState[0].id === courseTeacher.id &&
             hasSelectedResultMode &&
@@ -401,6 +444,83 @@ export default function RecordClassCourseResult({
         </CenteredBox>
       </Div>
     </DashboardLayout>
+  );
+}
+
+interface ResultModeOptionProps {
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  isSelected: boolean;
+  isDisabled: boolean;
+  bg: string;
+  selectedBg: string;
+  borderColor: string;
+  selectedBorderColor: string;
+  selectedShadow: string;
+  onClick: () => void;
+}
+
+function ResultModeOption({
+  title,
+  description,
+  icon,
+  isSelected,
+  isDisabled,
+  bg,
+  selectedBg,
+  borderColor,
+  selectedBorderColor,
+  selectedShadow,
+  onClick,
+}: ResultModeOptionProps) {
+  return (
+    <Button
+      type="button"
+      onClick={onClick}
+      isDisabled={isDisabled}
+      variant={'outline'}
+      h={'auto'}
+      minH={'132px'}
+      whiteSpace={'normal'}
+      justifyContent={'stretch'}
+      textAlign={'left'}
+      p={4}
+      borderWidth={2}
+      borderRadius={'lg'}
+      borderColor={isSelected ? selectedBorderColor : borderColor}
+      bg={isSelected ? selectedBg : bg}
+      boxShadow={isSelected ? selectedShadow : undefined}
+      _hover={{
+        borderColor: selectedBorderColor,
+        bg: selectedBg,
+      }}
+      _active={{
+        bg: selectedBg,
+      }}
+    >
+      <HStack align={'start'} spacing={3} w={'full'}>
+        <Box
+          h={10}
+          minW={10}
+          borderRadius={'full'}
+          display={'grid'}
+          placeItems={'center'}
+          bg={isSelected ? 'brand.500' : 'brand.50'}
+          color={isSelected ? 'white' : 'brand.600'}
+        >
+          <Icon as={isSelected ? CheckCircleIcon : icon} fontSize={'xl'} />
+        </Box>
+        <Box>
+          <Text fontWeight={'bold'} mb={1}>
+            {title}
+          </Text>
+          <Text fontSize={'sm'} fontWeight={'normal'} lineHeight={'1.55'}>
+            {description}
+          </Text>
+        </Box>
+      </HStack>
+    </Button>
   );
 }
 

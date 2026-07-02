@@ -13,7 +13,7 @@ import React, { useState } from 'react';
 import { Div } from '@/components/semantic';
 import route from '@/util/route';
 import { Inertia } from '@inertiajs/inertia';
-import { TermResult } from '@/types/models';
+import { InstitutionGroup, TermResult } from '@/types/models';
 import { preventNativeSubmit, stripInitials } from '@/util/util';
 import useWebForm from '@/hooks/use-web-form';
 import CenteredLayout from '@/components/centered-layout';
@@ -38,7 +38,11 @@ function whatsappLink(phoneNumber?: string | null) {
   )}`;
 }
 
-export default function StudentTermResultActivation() {
+export default function StudentTermResultActivation({
+  institutionGroup,
+}: {
+  institutionGroup?: InstitutionGroup;
+}) {
   const form = useWebForm({
     pin: '',
     student_code: '',
@@ -82,7 +86,7 @@ export default function StudentTermResultActivation() {
   }
 
   return (
-    <CenteredLayout title="Activate result">
+    <CenteredLayout title="Activate result" bgImage={institutionGroup?.banner}>
       {termResults.length === 0 ? (
         <VStack
           as={'form'}

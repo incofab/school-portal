@@ -160,7 +160,7 @@
     <header>
       <h1>EduManager Feature Inventory</h1>
       <p>
-        Last reviewed 2026-06-30. Technical map for AI CLI agents and
+        Last reviewed 2026-07-02. Technical map for AI CLI agents and
         maintainers.
       </p>
       <nav>
@@ -202,7 +202,17 @@
           root, and wraps page output with React StrictMode, ChakraProvider,
           ColorModeScript, and ProSidebarProvider. The shell renders pages
           directly inside those providers without an artificial first-load
-          spinner or delayed loading state.
+          spinner or delayed loading state. Institution dashboard pages also
+          expose a route-aware <strong>Guide</strong> button in the shared
+          dashboard header; it opens a modal explanation for the current
+          critical feature area using
+          <code
+            >resources/js/components/explanations/dashboard-explanations.ts</code
+          >
+          and
+          <code
+            >resources/js/components/explanations/dashboard-explanation-guide.tsx</code
+          >.
         </p>
       </section>
 
@@ -780,20 +790,21 @@
             Institution users get a dashboard, setup checklist, profile editing,
             photo upload, payment key settings, result settings, current
             academic session and term settings, configurable institution-scoped
-            user full-name display order, and institution-level search
-            endpoints. Result settings include the default result template,
-            position display behavior, and whether exam scores appear on result
-            sheets for no terms, mid-term only, full-term only, or both result
-            periods. Payment credential changes now emit security audit events
-            that record provider/key presence summaries without storing key
-            values. Admin and accountant dashboards now include a top attention
-            section showing unread chats, the current pending manual-payment
-            count with a quick link to review requests, plus a bank-account
-            configuration prompt when the institution group has not added any
-            bank accounts yet. Shared props expose current institution, session,
-            term, and role context to the React app. Institution photos and
-            setting images are now tracked in the shared media table before the
-            S3 upload completes. Setting persistence is centralized in
+            user full-name display order, institution-level search endpoints,
+            and contextual dashboard guide explanations for critical institution
+            pages. Result settings include the default result template, position
+            display behavior, and whether exam scores appear on result sheets
+            for no terms, mid-term only, full-term only, or both result periods.
+            Payment credential changes now emit security audit events that
+            record provider/key presence summaries without storing key values.
+            Admin and accountant dashboards now include a top attention section
+            showing unread chats, the current pending manual-payment count with
+            a quick link to review requests, plus a bank-account configuration
+            prompt when the institution group has not added any bank accounts
+            yet. Shared props expose current institution, session, term, and
+            role context to the React app. Institution photos and setting images
+            are now tracked in the shared media table before the S3 upload
+            completes. Setting persistence is centralized in
             <code>SaveInstitutionSetting</code> so controllers and setup flows
             use the same validation, media handling, array serialization, and
             payment-key audit behavior.
@@ -811,7 +822,10 @@
               <code>institution-profile.tsx</code>,
               <code>settings/create-edit-institution-settings.tsx</code>,
               <code>settings/result-settings.tsx</code>,
-              <code>settings/payment-keys-settings.tsx</code>.
+              <code>settings/payment-keys-settings.tsx</code>,
+              <code
+                >components/explanations/dashboard-explanation-guide.tsx</code
+              >, <code>components/explanations/dashboard-explanations.ts</code>.
             </li>
             <li>
               Data: <code>Institution</code>, <code>InstitutionSetting</code>,
@@ -1729,7 +1743,10 @@
             selection, and activation PIN prompts, and send either a menu, a
             result-status message, or secure signed result links. Result replies
             greet the sender by WhatsApp profile name when Meta includes it in
-            the webhook payload.
+            the webhook payload. Reset/menu replies now resolve the schools
+            linked to the sender phone number, greet the sender with the linked
+            school name or names, and append each available institution phone
+            number and email address for further inquiries.
           </p>
           <ul>
             <li>
