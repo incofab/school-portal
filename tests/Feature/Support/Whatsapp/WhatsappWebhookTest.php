@@ -100,7 +100,7 @@ it(
         ) &&
         str_contains(
           $request['text']['body'],
-          '- Bright Future Academy: Phone: 08030000000 | Email: info@brightfuture.test'
+          "Phone: 08030000000\nEmail: info@brightfuture.test"
         )
     );
   }

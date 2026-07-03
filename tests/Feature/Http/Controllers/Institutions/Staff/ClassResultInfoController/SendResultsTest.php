@@ -10,6 +10,11 @@ use App\Models\TermResult;
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
+  config()->set('services.facebook.whatsapp-access-token', 'test-token');
+  config()->set(
+    'services.facebook.whatsapp-phone-number-id',
+    'test-phone-number-id'
+  );
   $this->institution = Institution::factory()->create();
   $this->instAdmin = $this->institution->createdBy;
   $this->academicSession = AcademicSession::factory()->create();

@@ -19,7 +19,7 @@ class AcademicSessionFactory extends Factory
     return [
       'title' => fake()
         ->unique()
-        ->sentence(),
+        ->numerify('####/####'),
       'is_active' => false
     ];
   }

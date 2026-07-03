@@ -102,7 +102,7 @@
   <body>
     <header>
       <h1>Backend Architecture</h1>
-      <p>Last reviewed 2026-06-11</p>
+      <p>Last reviewed 2026-07-03</p>
       <nav>
         <a href="index.html">Overview</a><a href="backend.html">Backend</a
         ><a href="frontend.html">Frontend</a><a href="data.html">Data</a
@@ -6391,14 +6391,15 @@
           </li>
           <li>
             <div>
-              <strong>SendWhatsappMessage</strong>
+              <strong>SendWhatsappTemplateMessage</strong>
               <span class="path"
-                ><code>app/Jobs/SendWhatsappMessage.php</code></span
+                ><code>app/Jobs/SendWhatsappTemplateMessage.php</code></span
               >
             </div>
             <div class="desc">
-              Queued job that performs Send Whatsapp Message work
-              asynchronously.
+              Queued job that sends a WhatsApp template payload through the
+              template object and marks the related message record as sent only
+              when the Cloud API response succeeds.
             </div>
           </li>
         </ul>
@@ -7003,19 +7004,6 @@
           </li>
           <li>
             <div>
-              <strong>WhatsappClient</strong>
-              <span class="path"
-                ><code
-                  >app/Services/Messaging/Whatsapp/WhatsappClient.php</code
-                ></span
-              >
-            </div>
-            <div class="desc">
-              Service class providing reusable Whatsapp Client logic.
-            </div>
-          </li>
-          <li>
-            <div>
               <strong>WhatsappCloudApiService</strong>
               <span class="path"
                 ><code
@@ -7103,6 +7091,58 @@
               fallback prompts, activation PIN prompts, and signed result links
               using current institution settings and shared result access
               checks.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>WhatsappTemplate</strong>
+              <span class="path"
+                ><code
+                  >app/Services/Messaging/Whatsapp/Templates/WhatsappTemplate.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Base class for Meta WhatsApp Cloud template messages. It stores
+              the configured template name and receiver phone number, builds the
+              subclass payload, sends it to the configured Cloud API endpoint,
+              and returns a success or failure response from the API result.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>WhatsappTemplateUtility</strong>
+              <span class="path"
+                ><code
+                  >app/Services/Messaging/Whatsapp/Templates/WhatsappTemplateUtility.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Utility notification template for ordinary WhatsApp messages. It
+              normalizes the recipient number and sends school name, receiver
+              name/subject text, and message body as template body parameters.
+              <code>MessageDispatcher</code> uses this template for WhatsApp
+              channel dispatches.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>WhatsappTemplateResult</strong>
+              <span class="path"
+                ><code
+                  >app/Services/Messaging/Whatsapp/Templates/WhatsappTemplateResult.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Student-result WhatsApp template used by
+              <code>SendTermResultToGuardians</code>. It builds a template from
+              a ready <code>TermResult</code>, prefers the student guardian
+              phone, falls back to the linked guardian or student phone,
+              includes guardian/student names, term type, academic session, and
+              the signed result-sheet link, and returns no template when no
+              receiver phone is available.
             </div>
           </li>
           <li>

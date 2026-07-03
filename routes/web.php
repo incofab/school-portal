@@ -9,6 +9,14 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 
 Route::get('dummy1', function () {
+    // $res = (new \App\Services\Messaging\Whatsapp\Templates\WhatsappTemplateUtility(
+    //     schoolName: 'Udoka Group of Schools',
+    //     receiverName: 'Chukwudi Ikedi',
+    //     receiverPhoneNumber: '08140579028',
+    //     message: 'Try and come to school Earlu tomorrow',
+    // ))->send();
+    // info($res->toArray());
+    // dd($res->toArray());
 // dd('dksds');
     // $res = (new \App\Services\Messaging\Whatsapp\WhatsappClient())->sendHelloMessage('07036098561');
     // dd($res->toArray());

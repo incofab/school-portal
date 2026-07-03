@@ -160,7 +160,7 @@
     <header>
       <h1>EduManager Feature Inventory</h1>
       <p>
-        Last reviewed 2026-07-02. Technical map for AI CLI agents and
+        Last reviewed 2026-07-03. Technical map for AI CLI agents and
         maintainers.
       </p>
       <nav>
@@ -1746,7 +1746,13 @@
             the webhook payload. Reset/menu replies now resolve the schools
             linked to the sender phone number, greet the sender with the linked
             school name or names, and append each available institution phone
-            number and email address for further inquiries.
+            number and email address for further inquiries. Outbound WhatsApp
+            notifications now use Meta template payload classes: utility
+            messages go through <code>WhatsappTemplateUtility</code>, term
+            result guardian notifications go through
+            <code>WhatsappTemplateResult</code>, and
+            <code>SendWhatsappTemplateMessage</code> marks the recorded message
+            as sent only after a successful Cloud API response.
           </p>
           <ul>
             <li>
@@ -1760,7 +1766,10 @@
               <code>RecordMessage</code>, <code>GenericMessageHandler</code>,
               <code>ApplyMessageCharges</code>,
               <code>SendTermResultToGuardians</code>,
-              <code>MessageDispatcher</code>, <code>WhatsappClient</code>,
+              <code>MessageDispatcher</code>, <code>WhatsappTemplate</code>,
+              <code>WhatsappTemplateUtility</code>,
+              <code>WhatsappTemplateResult</code>,
+              <code>SendWhatsappTemplateMessage</code>,
               <code>WhatsappWebhookHandler</code>,
               <code>WhatsappCloudApiService</code>,
               <code>WhatsappIntentResolver</code>,
@@ -1768,8 +1777,7 @@
               <code>WhatsappStudentResolver</code>,
               <code>WhatsappResultService</code>,
               <code>TermResultAccessService</code>,
-              <code>PhoneNumberNormalizer</code>,
-              <code>SendWhatsappMessage</code>, <code>SendBulksms</code>.
+              <code>PhoneNumberNormalizer</code>, <code>SendBulksms</code>.
             </li>
             <li>
               Frontend: <code>institutions/chats/index.tsx</code>,

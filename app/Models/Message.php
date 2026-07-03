@@ -23,6 +23,11 @@ class Message extends Model
   ];
   protected $guarded = [];
 
+  function isSent(): bool
+  {
+    return $this->status === MessageStatus::Sent;
+  }
+
   function institution()
   {
     return $this->belongsTo(Institution::class);

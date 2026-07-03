@@ -3,10 +3,12 @@ namespace App\Actions\Messages;
 
 use App\Enums\MessageStatus;
 use App\Enums\NotificationChannelsType;
+use App\Jobs\SendWhatsappTemplateMessage;
 use App\Models\Institution;
 use App\Models\TermResult;
 use App\Models\User;
-use App\Services\Messaging\MessageDispatcher;
+use App\Services\Messaging\Whatsapp\Templates\WhatsappTemplate;
+use App\Services\Messaging\Whatsapp\Templates\WhatsappTemplateResult;
 use Illuminate\Support\Collection;
 
 class SendTermResultToGuardians
@@ -22,7 +24,7 @@ class SendTermResultToGuardians
    */
   function multiSend($termResults)
   {
-    $contentData = [];
+    $templates = [];
     $contacts = [];
     foreach ($termResults as $termResult) {
       $termResult->loadMissing(
@@ -33,18 +35,29 @@ class SendTermResultToGuardians
       if (!$termResult->isActivated() || !$termResult->isPublished()) {
         return failRes('Result is not ready to be shared');
       }
-      $content = $this->buildTemplateComponents($termResult);
-      if (!$content) {
+
+      $template = WhatsappTemplateResult::fromTermResult($termResult);
+      if (!$template) {
         continue;
       }
-      $contentData[] = $content;
-      $contacts[] = $content['to'];
+      $templates[] = $template;
+      $contacts[] = $template->getReceiverPhoneNumber();
     }
-    return $this->send($contentData, $contacts);
+    return $this->send($templates, $contacts);
   }
 
-  function send(array $contentData, array $contacts)
+  /**
+   * @param WhatsappTemplate[] $templates
+   * @param array $contacts
+   */
+  function send(array $templates, array $contacts)
   {
+    if (empty($templates) || empty($contacts)) {
+      return failRes(
+        'No guardian WhatsApp contact found for the selected results'
+      );
+    }
+
     $record = new RecordMessage($this->institution, $this->senderUser, [
       'subject' => 'Term Result',
       'body' => 'Students term results.',
@@ -67,93 +80,11 @@ class SendTermResultToGuardians
     //   return $res;
     // }
 
-    // return (new \App\Services\Messaging\Whatsapp\WhatsappClient(
-    //   $contentData
-    // ))->send();
-    $dispatcher = new MessageDispatcher($this->institution);
-    $dispatcher->dispatch(
-      receivers: collect($contacts),
-      channel: NotificationChannelsType::Whatsapp,
-      message: 'Students term results.',
-      subject: 'Term Result',
-      messageModel: $messageModel,
-      context: $contentData
-    );
-    return successRes('Results sent successfully');
-  }
-
-  private function buildTemplateComponents(TermResult $termResult): array|null
-  {
-    $student = $termResult->student;
-    $user = $student?->user;
-    $session = $termResult->academicSession?->title ?? '';
-    $term = $termResult->for_mid_term
-      ? 'Mid-'
-      : '' . ucfirst($termResult->term->value ?? '');
-    // $url = $termResult->signedUrl();
-    $phone = $student->guardian_phone ?? $student->guardian?->phone;
-    // $phone = '07036098561';
-    if (!$phone) {
-      return null;
+    foreach ($templates as $key => $template) {
+      SendWhatsappTemplateMessage::dispatch($template, $messageModel);
     }
 
-    $body = [
-      'messaging_product' => 'whatsapp',
-      'to' => formatWhatsappNumber($phone),
-      'type' => 'template',
-      'template' => [
-        'name' => 'result_published', // your template name
-        'language' => [
-          'code' => 'en'
-        ],
-        'components' => [
-          [
-            'type' => 'header',
-            'parameters' => [
-              [
-                'type' => 'text',
-                'parameter_name' => 'school_name',
-                'text' => $this->institution->name
-              ]
-            ]
-          ],
-          [
-            'type' => 'body',
-            'parameters' => [
-              [
-                'type' => 'text',
-                'parameter_name' => 'student_name',
-                'text' => $user?->full_name ?? 'Student'
-              ],
-              [
-                'type' => 'text',
-                'parameter_name' => 'result_title',
-                'text' => "{$session} {$term} Term Result"
-              ],
-              [
-                'type' => 'text',
-                'parameter_name' => 'result_link',
-                'text' => $termResult->signedUrl()
-              ]
-            ]
-          ],
-          [
-            'type' => 'button',
-            'sub_type' => 'url',
-            'index' => '0',
-            'parameters' => [
-              [
-                'type' => 'text',
-                'parameter_name' => '1',
-                'text' => trim($termResult->signedUrl(false), '/')
-              ]
-            ]
-          ]
-        ]
-      ]
-    ];
-
-    return $body;
+    return successRes('Results sent successfully');
   }
 
   static function test()

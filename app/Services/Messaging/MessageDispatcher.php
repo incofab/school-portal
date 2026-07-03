@@ -4,10 +4,11 @@ namespace App\Services\Messaging;
 
 use App\Enums\NotificationChannelsType;
 use App\Jobs\SendBulksms;
-use App\Jobs\SendWhatsappMessage;
+use App\Jobs\SendWhatsappTemplateMessage;
 use App\Mail\InstitutionMessageMail;
 use App\Models\Institution;
 use App\Models\Message;
+use App\Services\Messaging\Whatsapp\Templates\WhatsappTemplateUtility;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
 
@@ -37,8 +38,10 @@ class MessageDispatcher
         $messageModel
       ),
       NotificationChannelsType::Whatsapp => $this->dispatchWhatsapp(
-        $messageModel,
-        $context
+        $receivers,
+        $subject ?? '',
+        $message,
+        $messageModel
       ),
       default => $this->dispatchEmail(
         $receivers,
@@ -79,12 +82,21 @@ class MessageDispatcher
   }
 
   private function dispatchWhatsapp(
-    ?Message $messageModel,
-    array $multiplePayload
+    Collection $receivers,
+    string $subject,
+    string $message,
+    ?Message $messageModel
   ): void {
-    SendWhatsappMessage::dispatch(
-      multiplePayload: $multiplePayload,
-      messageModel: $messageModel
-    );
+    foreach ($receivers as $receiver) {
+      SendWhatsappTemplateMessage::dispatch(
+        whatsappTemplate: new WhatsappTemplateUtility(
+          $receiver,
+          $this->institution->name,
+          "|$subject|",
+          $message
+        ),
+        messageModel: $messageModel
+      );
+    }
   }
 }
