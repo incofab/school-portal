@@ -146,7 +146,8 @@ class RecordStudentSubjectsResultController extends Controller
       ->select('course_teachers.*')
       ->join('courses', 'courses.id', 'course_teachers.course_id')
       ->where('course_teachers.classification_id', $student->classification_id)
-      ->oldest('courses.title');
+      ->orderBy('courses.order')
+      ->orderBy('courses.title');
 
     if (!currentInstitutionUser()->isAdmin()) {
       $query->where('course_teachers.user_id', currentUser()->id);

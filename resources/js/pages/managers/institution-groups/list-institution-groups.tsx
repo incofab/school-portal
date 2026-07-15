@@ -2,7 +2,9 @@ import React from 'react';
 import {
   Institution,
   InstitutionGroup,
+  Partner,
   ResultPublication,
+  User,
 } from '@/types/models';
 import {
   Button,
@@ -26,6 +28,7 @@ import {
   PlusIcon,
   TrashIcon,
   DocumentChartBarIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import ButtonSwitch from '@/components/button-switch';
@@ -34,6 +37,7 @@ import useIsAdminManager from '@/hooks/use-is-admin-manager';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import GenerateInvoiceModal from './generate-invoice-modal';
 import { dateTimeFormat, formatAsDate } from '@/util/util';
+import ChangeInstitutionGroupPartnerModal from '@/components/modals/change-institution-group-partner-modal';
 
 interface InstitutionGroupWithMeta extends InstitutionGroup {
   institutions_count: number;
@@ -47,6 +51,9 @@ interface Props {
     active_count: number;
     suspended_count: number;
     total: number;
+  };
+  partner: User & {
+    partner: Partner;
   };
 }
 
@@ -63,6 +70,8 @@ export default function ListInstitutionGropus({
   const suspensionForm = useWebForm({});
   const isAdminManager = useIsAdminManager();
   const invoiceModalToggle = useModalValueToggle<InstitutionGroupWithMeta>();
+  const changePartnerModalToggle =
+    useModalValueToggle<InstitutionGroupWithMeta>();
 
   async function deleteInstitution(institutionGroup: InstitutionGroup) {
     if (!window.confirm('Do you want to delete this group?')) {
@@ -102,6 +111,11 @@ export default function ListInstitutionGropus({
     {
       label: 'Partner',
       value: 'partner.full_name',
+      render: (row) => {
+        if (!row.partner) return '';
+        if (!row.partner?.partner) return row.partner?.full_name;
+        return `${row.partner?.full_name} (${row.partner?.partner?.name})`;
+      },
     },
     {
       label: 'Name',
@@ -186,6 +200,17 @@ export default function ListInstitutionGropus({
             as={InertiaLink}
             href={route('managers.institution-groups.edit', [row])}
           />
+          {isAdminManager && (
+            <Tooltip label="Change Partner">
+              <IconButton
+                aria-label="Change Partner"
+                colorScheme="brand"
+                size="sm"
+                icon={<Icon as={UserGroupIcon} />}
+                onClick={() => changePartnerModalToggle.open(row)}
+              />
+            </Tooltip>
+          )}
           <IconButton
             aria-label="Delete Group"
             colorScheme={'red'}
@@ -241,7 +266,7 @@ export default function ListInstitutionGropus({
             paginator={institutionGroups}
             tableRowProps={(row) => ({
               backgroundColor:
-                row.status == InstitutionStatus.Suspended
+                row.status === InstitutionStatus.Suspended
                   ? 'red.100'
                   : undefined,
             })}
@@ -252,6 +277,13 @@ export default function ListInstitutionGropus({
         <GenerateInvoiceModal
           {...invoiceModalToggle.props}
           institutionGroup={invoiceModalToggle.state}
+        />
+      )}
+      {changePartnerModalToggle.state && (
+        <ChangeInstitutionGroupPartnerModal
+          {...changePartnerModalToggle.props}
+          institutionGroup={changePartnerModalToggle.state}
+          onSuccess={() => Inertia.reload({ only: ['institutionGroups'] })}
         />
       )}
     </ManagerDashboardLayout>

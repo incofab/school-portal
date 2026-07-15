@@ -191,7 +191,7 @@ class DummyResultSheetController extends Controller
   {
     $courses = Course::query()
       ->where('institution_id', $institution->id)
-      ->oldest('title')
+      ->orderedByCourseOrder()
       ->limit(14)
       ->get();
 

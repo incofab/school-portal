@@ -20,6 +20,30 @@ beforeEach(function () {
   $this->admin = $this->institution->createdBy;
 });
 
+it('lists courses by order and then title', function () {
+  Course::factory()
+    ->withInstitution($this->institution)
+    ->create(['title' => 'Zoology', 'code' => 'ZOO', 'order' => 2]);
+  Course::factory()
+    ->withInstitution($this->institution)
+    ->create(['title' => 'Biology', 'code' => 'BIO', 'order' => 1]);
+  Course::factory()
+    ->withInstitution($this->institution)
+    ->create(['title' => 'Algebra', 'code' => 'ALG', 'order' => 1]);
+
+  actingAs($this->admin)
+    ->get(route('institutions.courses.index', $this->institution))
+    ->assertOk()
+    ->assertInertia(
+      fn(Assert $page) => $page
+        ->component('institutions/courses/list-courses')
+        ->where('courses.data.0.title', 'Algebra')
+        ->where('courses.data.1.title', 'Biology')
+        ->where('courses.data.2.title', 'Zoology')
+        ->where('courses.data.0.order', 1)
+    );
+});
+
 it(
   'permanently deletes a course with no protected existing references',
   function () {

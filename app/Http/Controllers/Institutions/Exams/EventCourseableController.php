@@ -39,6 +39,7 @@ class EventCourseableController extends Controller
       'courses' => $institution
         ->courses()
         ->with('sessions')
+        ->orderedByCourseOrder()
         ->get()
     ]);
   }

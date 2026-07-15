@@ -16,9 +16,13 @@ import DataTable, { TableHeader } from '@/components/data-table';
 
 interface Props {
   bankAccounts: BankAccount[];
+  canManageBankAccounts: boolean;
 }
 
-export default function ListBankAccounts({ bankAccounts }: Props) {
+export default function ListBankAccounts({
+  bankAccounts,
+  canManageBankAccounts,
+}: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
 
@@ -46,7 +50,7 @@ export default function ListBankAccounts({ bankAccounts }: Props) {
     {
       label: 'Action',
       render: (row) =>
-        row.valid_withdrawals_count < 1 ? (
+        canManageBankAccounts && row.valid_withdrawals_count < 1 ? (
           <HStack>
             <IconButton
               as={InertiaLink}
@@ -83,12 +87,14 @@ export default function ListBankAccounts({ bankAccounts }: Props) {
         <SlabHeading
           title="Bank Accounts"
           rightElement={
-            <HStack>
-              <LinkButton
-                href={route('managers.bank-accounts.create')}
-                title={'New'}
-              />
-            </HStack>
+            canManageBankAccounts ? (
+              <HStack>
+                <LinkButton
+                  href={route('managers.bank-accounts.create')}
+                  title={'New'}
+                />
+              </HStack>
+            ) : null
           }
         />
         <SlabBody>

@@ -20,9 +20,14 @@ import { Div } from '@/components/semantic';
 interface Props {
   bankAccounts: BankAccount[];
   withdrawals: PaginationResponse<Withdrawal>;
+  canRequestWithdrawal: boolean;
 }
 
-export default function ListWithdrawals({ bankAccounts, withdrawals }: Props) {
+export default function ListWithdrawals({
+  bankAccounts,
+  withdrawals,
+  canRequestWithdrawal,
+}: Props) {
   const withdrawFundModalToggle = useModalToggle();
   const withdrawStatusUpdateToggle = useModalToggle();
   const withdrawalOverviewModalToggle = useModalToggle();
@@ -145,7 +150,7 @@ export default function ListWithdrawals({ bankAccounts, withdrawals }: Props) {
         <SlabHeading
           title="Withdrawal Requests"
           rightElement={
-            !isAdminManager && (
+            canRequestWithdrawal && (
               <HStack>
                 <BrandButton
                   title="New Request"

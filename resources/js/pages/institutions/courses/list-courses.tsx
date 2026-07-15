@@ -46,6 +46,10 @@ export default function ListCourse({ courses }: Props) {
 
   const headers: ServerPaginatedTableHeader<Course>[] = [
     {
+      label: 'Order',
+      value: 'order',
+    },
+    {
       label: 'Title',
       value: 'title',
     },

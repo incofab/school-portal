@@ -26,6 +26,7 @@ interface Props {}
 
 const newCourse = () => ({
   title: '',
+  order: 0,
   description: '',
 });
 
@@ -98,11 +99,24 @@ export default function CreateMultiCourses({}: Props) {
                   <HStack align={'start'}>
                     <SimpleGrid
                       flex={1}
-                      columns={{ base: 1, md: 2, lg: 2 }}
+                      columns={{ base: 1, md: 3, lg: 3 }}
                       key={index}
                       spacing={3}
                       justifyContent={'space-between'}
                     >
+                      <FormControlBox
+                        title="Order"
+                        form={webForm as any}
+                        formKey={`courses.${index}.order`}
+                      >
+                        <Input
+                          type="number"
+                          value={course.order}
+                          onChange={(e) =>
+                            handleCourseChange(index, 'order', e.target.value)
+                          }
+                        />
+                      </FormControlBox>
                       <FormControlBox
                         title="Subject Title"
                         form={webForm as any}

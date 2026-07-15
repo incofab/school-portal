@@ -4,6 +4,7 @@ namespace App\Actions\CourseResult;
 
 use App\Models\ClassResultInfo;
 use App\Models\CourseResult;
+use App\Models\CourseResultInfo;
 use App\Models\TermResult;
 
 class TermResultDeleteHandler
@@ -45,6 +46,16 @@ class TermResultDeleteHandler
 
     if ($existingTermResult) {
       $this->reProcessResult();
+    } else {
+      CourseResultInfo::query()
+        ->where([
+          'course_id' => $this->termResult->course_id,
+          'academic_session_id' => $this->termResult->academic_session_id,
+          'term' => $this->termResult->term,
+          'for_mid_term' => $this->termResult->for_mid_term,
+          'classification_id' => $this->termResult->classification_id
+        ])
+        ->delete();
     }
   }
 

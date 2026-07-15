@@ -24,9 +24,9 @@ class WithdrawalController extends Controller
       'withdrawable' => function (MorphTo $morphTo) {
         $morphTo->morphWith([
           Partner::class => ['user'],
-          InstitutionGroup::class => [],
+          InstitutionGroup::class => []
         ]);
-      },
+      }
     ];
 
     if ($user->isAdmin()) {
@@ -39,12 +39,15 @@ class WithdrawalController extends Controller
 
     return Inertia::render('managers/withdrawals/list-withdrawals', [
       'bankAccounts' => $bankAccounts,
-      'withdrawals' => paginateFromRequest($withdrawals)
+      'withdrawals' => paginateFromRequest($withdrawals),
+      'canRequestWithdrawal' => $user->isPartnerAdmin()
     ]);
   }
 
   public function store(Request $request)
   {
+    abort_unless(currentUser()->isPartnerAdmin(), 403);
+
     $validated = $request->validate([
       'bank_account_id' => 'required|exists:bank_accounts,id',
       'amount' => 'required|numeric',

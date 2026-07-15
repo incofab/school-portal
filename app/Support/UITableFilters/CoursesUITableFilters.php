@@ -5,6 +5,8 @@ namespace App\Support\UITableFilters;
 class CoursesUITableFilters extends BaseUITableFilter
 {
   protected array $sortableColumns = [
+    'order' => 'courses.order',
+    'title' => 'courses.title',
     'createdAt' => 'created_at'
   ];
 
@@ -12,7 +14,8 @@ class CoursesUITableFilters extends BaseUITableFilter
   {
     return [
       'title' => ['sometimes', 'string'],
-      'code' => ['sometimes', 'string']
+      'code' => ['sometimes', 'string'],
+      'order' => ['sometimes', 'integer']
     ];
   }
 
@@ -39,6 +42,10 @@ class CoursesUITableFilters extends BaseUITableFilter
       ->when(
         $this->requestGet('code'),
         fn($q, $value) => $q->where('courses.code', $value)
+      )
+      ->when(
+        $this->requestGet('order') !== null,
+        fn($q) => $q->where('courses.order', $this->requestGet('order'))
       );
 
     return $this;

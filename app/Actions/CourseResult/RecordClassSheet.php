@@ -65,7 +65,10 @@ class RecordClassSheet
       }
     }
 
-    $courses = $this->institution->courses()->get();
+    $courses = $this->institution
+      ->courses()
+      ->orderedByCourseOrder()
+      ->get();
     foreach ($courses as $course) {
       EvaluateCourseResultForClass::run(
         $this->classification,

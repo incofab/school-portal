@@ -35,7 +35,7 @@ class StudentMigration
     ?Classification $sourceClass = null,
     ?Classification $destinationClass = null,
     ?string $batchNo = null,
-    array $extras = []
+    ?StudentClassMovement $revertedStudentClassMovement = null
   ) {
     abort_if(
       empty($sourceClass) && empty($destinationClass),
@@ -67,10 +67,14 @@ class StudentMigration
       'batch_no' => $batchNo ?? uniqid(),
       'academic_session_id' => $this->settingsHandler->getCurrentAcademicSession(),
       'term' => $this->settingsHandler->getCurrentTerm(),
-      ...$extras
+      ...$revertedStudentClassMovement
+        ? ['revert_reference_id' => $revertedStudentClassMovement->id]
+        : []
     ]);
 
-    if (!$batchNo && empty($extras['revert_reference_id'])) {
+    $revertedStudentClassMovement?->fill(['reverted_at' => now()])->save();
+
+    if (!$batchNo && empty($revertedStudentClassMovement)) {
       app(AcademicActivityLogger::class)->studentClassChanged($movement);
     }
 
@@ -137,7 +141,7 @@ class StudentMigration
         $sourceClass,
         $destinationClass,
         $batchNo,
-        ['revert_reference_id' => $studentClassMovement->id]
+        $studentClassMovement
       );
       $count++;
     }

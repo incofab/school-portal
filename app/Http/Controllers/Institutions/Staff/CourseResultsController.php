@@ -55,6 +55,7 @@ class CourseResultsController extends Controller
     CourseResultsUITableFilters::make($request->all(), $query)
       ->joinStudent()
       ->filterQuery()
+      ->orderByCourseOrder()
       ->getQuery()
       ->oldest('users.last_name');
 

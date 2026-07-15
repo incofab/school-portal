@@ -30,7 +30,7 @@ class CourseResultsUITableFilters extends BaseUITableFilter
   {
   }
 
-  private function joinCourse(): static
+  public function joinCourse(): static
   {
     $this->callOnce(
       'joinCourse',
@@ -40,6 +40,18 @@ class CourseResultsUITableFilters extends BaseUITableFilter
         'course_results.course_id'
       )
     );
+    return $this;
+  }
+
+  public function orderByCourseOrder(): static
+  {
+    if (is_null($this->baseQuery->getQuery()->columns)) {
+      $this->baseQuery->select('course_results.*');
+    }
+
+    $this->joinCourse();
+    $this->baseQuery->orderBy('courses.order')->orderBy('courses.title');
+
     return $this;
   }
 

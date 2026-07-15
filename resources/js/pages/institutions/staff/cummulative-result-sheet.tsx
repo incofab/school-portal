@@ -33,24 +33,16 @@ import EnumSelect from '@/components/dropdown-select/enum-select';
 import useDownloadHtml from '@/util/download-html';
 import ImagePaths from '@/util/images';
 
-interface HasTermDataProp {
-  hasFirstTermRecords: boolean;
-  hasSecondTermRecords: boolean;
-  hasThirdTermRecords: boolean;
-}
-
 interface SessionResultLog {
   student: Student;
-  firstTermResult: TermResult;
-  secondTermResult: TermResult;
-  thirdTermResult: TermResult;
-  firstTermCourseResult: { [courseId: number]: CourseResult };
-  secondTermCourseResult: { [courseId: number]: CourseResult };
-  thirdTermCourseResult: { [courseId: number]: CourseResult };
+  termResults: Partial<Record<TermType, TermResult | null>>;
+  courseResults: Partial<Record<TermType, Record<number, CourseResult>>>;
 }
 
 interface Props {
   sessionResults: SessionResultLog[];
+  terms?: TermType[];
+  coursesByTerm?: Partial<Record<TermType, Course[]>>;
   courses: {
     firstTermCourses: Course[];
     secondTermCourses: Course[];
@@ -63,6 +55,8 @@ interface Props {
 
 export default function CummulativeResultSheet({
   sessionResults,
+  terms,
+  coursesByTerm,
   courses,
   classification,
   academicSession,
@@ -74,78 +68,89 @@ export default function CummulativeResultSheet({
   function VerticalText({ text }: { text: string }) {
     return <Text className="vertical-header">{text}</Text>;
   }
-  function getStudentColumnData(
-    sessionResultLog: SessionResultLog,
-    hasTermData: HasTermDataProp
-  ) {
-    const termData1 = getTermColumnData(TermType.First, sessionResultLog);
-    const termData2 = getTermColumnData(TermType.Second, sessionResultLog);
-    const termData3 = getTermColumnData(TermType.Third, sessionResultLog);
 
-    if (termData1.length > 0) {
-      hasTermData.hasFirstTermRecords = true;
-    }
-    if (termData2.length > 0) {
-      hasTermData.hasSecondTermRecords = true;
-    }
-    if (termData3.length > 0) {
-      hasTermData.hasThirdTermRecords = true;
-    }
-    return [
-      { label: 'Name', value: sessionResultLog.student.user!.full_name },
-      ...termData1,
-      ...termData2,
-      ...termData3,
-    ];
+  function termTitle(term: TermType) {
+    return `${ucFirst(term)} Term`;
   }
 
-  function getTermColumnData(term: string, sessionResultLog: SessionResultLog) {
-    // @ts-ignore
-    const courseResult = sessionResultLog[term + 'TermCourseResult'] as {
-      [courseId: number]: CourseResult;
-    };
-    // @ts-ignore
-    const termResult = sessionResultLog[term + 'TermResult'] as TermResult;
-    // @ts-ignore
-    const termCourses = courses[term + 'TermCourses'] as Course[];
-    // console.log('Term courses', termCourses);
+  const normalizedCoursesByTerm: Record<TermType, Course[]> = useMemo(
+    () => ({
+      [TermType.First]:
+        coursesByTerm?.[TermType.First] ?? courses?.firstTermCourses ?? [],
+      [TermType.Second]:
+        coursesByTerm?.[TermType.Second] ?? courses?.secondTermCourses ?? [],
+      [TermType.Third]:
+        coursesByTerm?.[TermType.Third] ?? courses?.thirdTermCourses ?? [],
+    }),
+    [coursesByTerm, courses]
+  );
 
-    if (!termCourses || !termResult) return [];
+  const selectedTerms = useMemo(
+    () =>
+      terms?.length
+        ? terms
+        : ([TermType.First, TermType.Second, TermType.Third] as TermType[]),
+    [terms]
+  );
+
+  const displayedTerms = useMemo(
+    () =>
+      selectedTerms.filter((term) => {
+        if (normalizedCoursesByTerm[term]?.length > 0) {
+          return true;
+        }
+
+        return (sessionResults ?? []).some(
+          (sessionResult) => sessionResult.termResults?.[term]
+        );
+      }),
+    [selectedTerms, normalizedCoursesByTerm, sessionResults]
+  );
+
+  function getTermColumnData(
+    term: TermType,
+    sessionResultLog: SessionResultLog
+  ): SelectOptionType<string | number>[] {
+    const courseResults = sessionResultLog.courseResults?.[term] ?? {};
+    const termResult = sessionResultLog.termResults?.[term] ?? null;
+    const termCourses = normalizedCoursesByTerm[term] ?? [];
 
     return [
       ...termCourses.map((course) => ({
         label: course.title,
-        value: courseResult[course.id]?.result,
+        value: courseResults[course.id]?.result ?? '',
       })),
-      { label: 'Total', value: termResult.total_score },
-      { label: 'Average', value: roundNumber(termResult.average, 2) },
+      { label: 'Total', value: termResult?.total_score ?? '' },
+      {
+        label: 'Average',
+        value:
+          termResult?.average === undefined || termResult?.average === null
+            ? ''
+            : roundNumber(termResult.average, 2),
+      },
       {
         label: 'Position',
         value:
-          termResult.position +
-          ResultUtil.getPositionSuffix(termResult.position),
+          termResult?.position === undefined || termResult?.position === null
+            ? ''
+            : termResult.position +
+              ResultUtil.getPositionSuffix(termResult.position),
       },
     ];
   }
 
-  const resultData: {
-    result: SelectOptionType<string | number>[][];
-    hasTermData: HasTermDataProp;
-  } = useMemo(() => {
-    const hasTermData = {} as HasTermDataProp;
-    if (!sessionResults) {
-      return {
-        result: [],
-        hasTermData: hasTermData,
-      };
+  const resultData: SelectOptionType<string | number>[][] = useMemo(() => {
+    if (!sessionResults || displayedTerms.length === 0) {
+      return [];
     }
-    const formated: SelectOptionType<string | number>[][] = sessionResults.map(
-      (sessionResultLog) => {
-        return getStudentColumnData(sessionResultLog, hasTermData);
-      }
-    );
-    return { result: formated, hasTermData: hasTermData };
-  }, []);
+
+    return sessionResults.map((sessionResultLog) => [
+      { label: 'Name', value: sessionResultLog.student.user!.full_name },
+      ...displayedTerms.flatMap((term) =>
+        getTermColumnData(term, sessionResultLog)
+      ),
+    ]);
+  }, [sessionResults, displayedTerms, normalizedCoursesByTerm]);
 
   const svgCode = `<svg xmlns='http://www.w3.org/2000/svg' width='140' height='100' opacity='0.08' viewBox='0 0 100 100' transform='rotate(45)'><text x='0' y='50' font-size='18' fill='%23000'>${currentInstitution.name}</text></svg>`;
   const backgroundStyle = {
@@ -157,14 +162,7 @@ export default function CummulativeResultSheet({
   };
 
   function hasResultData() {
-    if (resultData.result.length === 0) {
-      return false;
-    }
-    return (
-      resultData.hasTermData.hasFirstTermRecords ||
-      resultData.hasTermData.hasSecondTermRecords ||
-      resultData.hasTermData.hasThirdTermRecords
-    );
+    return resultData.length > 0 && displayedTerms.length > 0;
   }
   const canShow = Boolean(classification) && Boolean(academicSession);
 
@@ -226,27 +224,17 @@ export default function CummulativeResultSheet({
                 <thead>
                   <tr>
                     <th></th>
-                    {resultData.hasTermData.hasFirstTermRecords &&
-                      courses.firstTermCourses.length > 0 && (
-                        <th colSpan={courses.firstTermCourses.length + 3}>
-                          <Text>First Term</Text>
-                        </th>
-                      )}
-                    {resultData.hasTermData.hasSecondTermRecords &&
-                      courses.secondTermCourses.length > 0 && (
-                        <th colSpan={courses.secondTermCourses.length + 3}>
-                          <Text>Second Term</Text>
-                        </th>
-                      )}
-                    {resultData.hasTermData.hasThirdTermRecords &&
-                      courses.thirdTermCourses && (
-                        <th colSpan={courses.thirdTermCourses.length + 3}>
-                          <Text>Third Term</Text>
-                        </th>
-                      )}
+                    {displayedTerms.map((term) => (
+                      <th
+                        key={`term-header-${term}`}
+                        colSpan={normalizedCoursesByTerm[term].length + 3}
+                      >
+                        <Text>{termTitle(term)}</Text>
+                      </th>
+                    ))}
                   </tr>
                   <tr>
-                    {resultData.result[0].map((item, i) => (
+                    {resultData[0].map((item, i) => (
                       <th key={'header-' + i + item.label}>
                         {item.label === 'Name' ? (
                           <>{item.label}</>
@@ -258,7 +246,7 @@ export default function CummulativeResultSheet({
                   </tr>
                 </thead>
                 <tbody>
-                  {resultData.result.map((result, i) => (
+                  {resultData.map((result, i) => (
                     <tr key={'t-row-' + i}>
                       {result.map((item, j) => (
                         <td key={`row-item-${i}-${j}-${item.label}`}>

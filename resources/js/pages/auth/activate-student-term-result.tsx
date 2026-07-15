@@ -22,18 +22,13 @@ import startCase from 'lodash/startCase';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import PhoneNumberNormalizer from '@/util/phone-normalize';
 
 function whatsappLink(phoneNumber?: string | null) {
   if (!phoneNumber) {
     return null;
   }
-
-  const normalizedPhone = phoneNumber.replace(/\D+/g, '');
-  if (!normalizedPhone) {
-    return null;
-  }
-
-  return `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(
+  return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
     'I want to check my results.'
   )}`;
 }
@@ -50,9 +45,9 @@ export default function StudentTermResultActivation({
   });
   const [termResults, setTermResults] = useState([] as TermResult[]);
   const { toastError, toastSuccess } = useMyToast();
-  const whatsappPhoneNumber = import.meta.env.VITE_WHATSAPP_PHONE_NUMBER as
-    | string
-    | undefined;
+  const whatsappPhoneNumber = PhoneNumberNormalizer.normalize(
+    import.meta.env.VITE_WHATSAPP_PHONE_NUMBER as string | null | undefined
+  );
   const whatsappHref = whatsappLink(whatsappPhoneNumber);
   const whatsappCardBg = useColorModeValue('green.50', 'green.900');
   const whatsappCardBorder = useColorModeValue('green.200', 'green.700');

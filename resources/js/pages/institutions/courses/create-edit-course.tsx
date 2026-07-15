@@ -21,6 +21,7 @@ export default function CreateOrUpdateCourse({ course }: Props) {
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
     title: course?.title ?? '',
+    order: course?.order ?? 0,
     description: course?.description ?? '',
   });
 
@@ -58,6 +59,12 @@ export default function CreateOrUpdateCourse({ course }: Props) {
                 form={webForm as any}
                 formKey="title"
                 title="Subject title"
+              />
+              <InputForm
+                form={webForm as any}
+                formKey="order"
+                title="Order"
+                type="number"
               />
               <InputForm
                 form={webForm as any}

@@ -60,6 +60,7 @@ class GetViewResultSheetData
       $student->courseResults()->getQuery()
     )
       ->filterQuery()
+      ->orderByCourseOrder()
       ->getQuery()
       ->with('course', 'teacher')
       ->get();

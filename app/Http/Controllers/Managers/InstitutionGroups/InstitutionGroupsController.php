@@ -14,6 +14,7 @@ use App\Models\InstitutionGroup;
 use App\Models\User;
 use App\Support\Media\MediaManager;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules\Enum;
 use Inertia\Inertia;
 
@@ -36,7 +37,10 @@ class InstitutionGroupsController extends Controller
         'institutionGroups' => paginateFromRequest(
           InstitutionGroup::getQueryForManager($user)
             ->withCount('institutions')
-            ->with('partner', 'institutions:id,institution_group_id,uuid')
+            ->with(
+              'partner.partner',
+              'institutions:id,institution_group_id,uuid'
+            )
             ->with('latestResultPublication')
             ->orderByRaw(
               "institution_groups.status IS NOT NULL, FIELD(institution_groups.status, 'active', 'suspended')"
@@ -165,6 +169,36 @@ class InstitutionGroupsController extends Controller
       'brand_color' => ['nullable', 'string', 'max:50']
     ]);
     $institutionGroup->update($data);
+
+    return $this->ok();
+  }
+
+  public function updatePartnerUser(
+    Request $request,
+    InstitutionGroup $institutionGroup
+  ) {
+    abort_unless(
+      currentUser()->isAdmin(),
+      403,
+      'Only admins can change partner users'
+    );
+
+    $data = $request->validate([
+      'email' => ['required', 'email', 'exists:users,email']
+    ]);
+
+    $partnerUser = User::query()
+      ->where('email', $data['email'])
+      ->whereHas('partnerUser')
+      ->first();
+
+    if (!$partnerUser) {
+      throw ValidationException::withMessages([
+        'email' => 'No partner user was found with this email address.'
+      ]);
+    }
+
+    $institutionGroup->update(['partner_user_id' => $partnerUser->id]);
 
     return $this->ok();
   }

@@ -13,20 +13,20 @@ class CummulativeResultController extends Controller
     Institution $institution,
     CummulativeResultRequest $request
   ) {
-    $formatedCummulativeResult = [];
+    $formattedCummulativeResult = FormatCummulativeResult::empty();
     $classification = $request->classificationObj;
     $academicSession = $request->academicSessionObj;
     $term = $request->term;
     if ($classification && $academicSession) {
-      $formatedCummulativeResult = FormatCummulativeResult::run(
+      $formattedCummulativeResult = FormatCummulativeResult::run(
         $academicSession,
         $classification,
         $term
       );
     }
-    // dd($formatedCummulativeResult);
+
     return inertia('institutions/staff/cummulative-result-sheet', [
-      ...$formatedCummulativeResult,
+      ...$formattedCummulativeResult,
       'classification' => $classification,
       'academicSession' => $academicSession,
       'term' => $term

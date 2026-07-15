@@ -4,7 +4,13 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
-import { Association, User } from '@/types/models';
+import {
+  Association,
+  Classification,
+  ClassificationGroup,
+  Institution,
+  User,
+} from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
@@ -16,9 +22,14 @@ import AssociationSelect from '@/components/selectors/association-select';
 interface Props {
   users: User[];
   associations: Association[];
+  morphable: Classification | ClassificationGroup | Institution;
 }
 
-export default function CreateUserAssociation({ users, associations }: Props) {
+export default function CreateUserAssociation({
+  users,
+  associations,
+  morphable,
+}: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
 
@@ -44,11 +55,17 @@ export default function CreateUserAssociation({ users, associations }: Props) {
     );
   };
 
+  function getMorphableLabel() {
+    if ('title' in morphable) return `${morphable.title} Students`;
+    if ('name' in morphable) return `Users`;
+    return 'Unknown';
+  }
+
   return (
     <DashboardLayout>
       <CenteredBox>
         <Slab>
-          <SlabHeading title={`Assign users to Divisions`} />
+          <SlabHeading title={`Assign ${getMorphableLabel()} to Divisions`} />
           <SlabBody>
             <VStack
               spacing={4}

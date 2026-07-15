@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Gender;
 use App\Enums\InstitutionUserType;
 use App\Enums\ManagerRole;
+use App\Enums\PartnerUserRole;
 use App\Enums\UserFullNameFormat;
 use App\Support\SettingsHandler;
 use App\Traits\HasMedia;
@@ -88,7 +89,7 @@ class User extends Authenticatable
         $default = collect([
           $this->first_name,
           $this->other_names,
-          $this->last_name,
+          $this->last_name
         ])
           ->filter(fn(?string $value) => filled($value))
           ->implode(' ');
@@ -229,6 +230,16 @@ class User extends Authenticatable
     return $this->hasRole(ManagerRole::Partner);
   }
 
+  public function isPartnerAdmin(): bool
+  {
+    $role = $this->partnerUser?->role;
+
+    return $this->isPartner() &&
+      ($role instanceof PartnerUserRole
+        ? $role === PartnerUserRole::Admin
+        : $role === PartnerUserRole::Admin->value);
+  }
+
   public function isManager()
   {
     return $this->hasRole([ManagerRole::Admin, ManagerRole::Partner]);
@@ -269,7 +280,24 @@ class User extends Authenticatable
 
   public function partner()
   {
+    return $this->hasOneThrough(
+      Partner::class,
+      PartnerUser::class,
+      'user_id',
+      'id',
+      'id',
+      'partner_id'
+    );
+  }
+
+  public function ownedPartner()
+  {
     return $this->hasOne(Partner::class);
+  }
+
+  public function partnerUser()
+  {
+    return $this->hasOne(PartnerUser::class);
   }
 
   public function receipts()

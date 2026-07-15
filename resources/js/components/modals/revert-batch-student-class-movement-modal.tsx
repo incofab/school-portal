@@ -14,7 +14,8 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Div } from '../semantic';
 import { StudentClassMovement } from '@/types/models';
 import FormControlBox from '../forms/form-control-box';
-import ClassificationSelect from '../selectors/classification-select'; 
+import ClassificationSelect from '../selectors/classification-select';
+import { PaginationResponse } from '@/types/types';
 
 interface Props {
   isOpen: boolean;
@@ -33,7 +34,7 @@ export default function RevertBatchStudentClassMovementModal({
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const [batchMovements, setBatchMovements] =
-    useState<StudentClassMovement[]>();
+    useState<PaginationResponse<StudentClassMovement> | null>(null);
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
     change_class: changeClass,
@@ -91,7 +92,7 @@ export default function RevertBatchStudentClassMovementModal({
                 color={'green.700'}
               >
                 {`${changeClass ? 'Change' : 'Revert'}`} all the{' '}
-                <b>{setBatchMovements.length} students'</b> class changes in
+                <b>{batchMovements.data.length} students'</b> class changes in
                 this class
               </Text>
             ) : (

@@ -434,9 +434,6 @@ function FeeItems({
             variant={'ghost'}
             colorScheme={'red'}
             onClick={() => {
-              if (feeItems.length === 1) {
-                return;
-              }
               feeItems.splice(i, 1);
               webForm.setData({ ...webForm.data, fee_items: feeItems });
             }}

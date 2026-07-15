@@ -32,6 +32,14 @@ class BankAccountHandler
       403,
       'This account has made withdrawals. Cannot be editted'
     );
+    abort_unless(
+      $this->accountable
+        ->bankAccounts()
+        ->where('id', $bankAccount->id)
+        ->exists(),
+      403,
+      'Access denied'
+    );
 
     if ($post['is_primary'] ?? false) {
       $this->accountable

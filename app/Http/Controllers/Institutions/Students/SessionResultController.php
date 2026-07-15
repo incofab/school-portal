@@ -111,8 +111,12 @@ class SessionResultController extends Controller
       $termResultDetails[$term->value] = [
         'termResult' => $termResult,
         'courseResults' => CourseResult::query()
+          ->select('course_results.*')
+          ->join('courses', 'courses.id', 'course_results.course_id')
           ->where($binding)
           ->with('course')
+          ->orderBy('courses.order')
+          ->orderBy('courses.title')
           ->get()
           ->keyBy('course_id'),
         'courseResultInfo' => CourseResultInfo::query()

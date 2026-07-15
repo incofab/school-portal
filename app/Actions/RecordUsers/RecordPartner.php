@@ -2,6 +2,7 @@
 namespace App\Actions\RecordUsers;
 
 use App\Enums\ManagerRole;
+use App\Enums\PartnerUserRole;
 use App\Models\Partner;
 use App\Models\PartnerRegistrationRequest;
 use App\Models\User;
@@ -40,7 +41,13 @@ class RecordPartner
 
     $user = User::query()->create([
       ...collect($userData)
-        ->except('role', 'commission', 'referral_email', 'referral_commission')
+        ->except(
+          'role',
+          'name',
+          'commission',
+          'referral_email',
+          'referral_commission'
+        )
         ->toArray(),
       'password' => Hash::make($userData['password'] ?? 'password')
     ]);
@@ -48,13 +55,21 @@ class RecordPartner
 
     //= Create Partner's Record
     if ($userData['role'] === ManagerRole::Partner->value) {
-      $refUser = User::where('email', $userData['referral_email'])->first();
+      $refUser = !empty($userData['referral_email'])
+        ? User::where('email', $userData['referral_email'])->first()
+        : null;
 
-      Partner::create([
+      $partner = Partner::create([
         'user_id' => $user->id,
+        'name' => $userData['name'] ?? $user->full_name,
         'commission' => $userData['commission'],
         'referral_id' => $refUser?->partner?->id,
         'referral_commission' => $userData['referral_commission'] ?? 0
+      ]);
+
+      $partner->partnerUsers()->create([
+        'user_id' => $user->id,
+        'role' => PartnerUserRole::Admin->value
       ]);
     }
 
@@ -66,26 +81,41 @@ class RecordPartner
     DB::beginTransaction();
     $user->update(
       collect($userData)
-        ->except('role', 'commission', 'referral_email', 'referral_commission')
+        ->except(
+          'role',
+          'name',
+          'commission',
+          'referral_email',
+          'referral_commission'
+        )
         ->toArray()
     );
     $user->syncRoles($userData['role']);
 
     if ($userData['role'] === ManagerRole::Partner->value) {
-      $refUser = $userData['referral_email']
-        ? User::where('email', $userData['referral_email'])->first()
-        : null;
+      $refUser =
+        $userData['referral_email'] ?? null
+          ? User::where('email', $userData['referral_email'])->first()
+          : null;
 
-      Partner::query()->updateOrCreate(
+      $partner = Partner::query()->updateOrCreate(
         [
           'user_id' => $user->id
         ],
         [
+          'name' => $userData['name'] ?? $user->full_name,
           'commission' => $userData['commission'],
           ...$user->partner ? [] : ['referral_id' => $refUser?->partner?->id],
           'referral_commission' => $userData['referral_commission'] ?? 0
         ]
       );
+
+      $partner
+        ->partnerUsers()
+        ->updateOrCreate(
+          ['user_id' => $user->id],
+          ['role' => PartnerUserRole::Admin->value]
+        );
     }
 
     DB::commit();

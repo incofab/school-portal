@@ -59,11 +59,15 @@ class StudentTermResultDetailController extends Controller
 
     $courseResults = $student
       ->courseResults()
+      ->select('course_results.*')
+      ->join('courses', 'courses.id', 'course_results.course_id')
       ->where('classification_id', $classification->id)
       ->where('academic_session_id', $academicSession->id)
       ->where('term', $term)
       ->where('for_mid_term', $termResult->for_mid_term)
       ->with('course', 'teacher')
+      ->orderBy('courses.order')
+      ->orderBy('courses.title')
       ->get();
 
     $assessments = Assessment::getAssessments(

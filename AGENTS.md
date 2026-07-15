@@ -57,4 +57,4 @@
 - If you have any questions or need clarifications, ask the questions at once before you start. Responses will be provided to all your questions.
 - Where possible, Make reasonable assumptions where necessary
 - Add wide covering tests for every feature you implement, following the style and structure of the existing tests.
-- When features are added or updated, the documentation should be updated to reflect the changes. The documentation should at all times contain the latest detailed information about the project.
+- When "Majot" features are added or updated, the documentation should be updated to reflect the changes. You only update the documentation when significant changes has been made, else you dont touch the documentation. I do not want frequent unnecessary updates to the documentation.

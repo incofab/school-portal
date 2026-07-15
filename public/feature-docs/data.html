@@ -513,7 +513,8 @@
               Represents soft-deletable course records and relationships used
               for courses, teaching, curriculum, results, assignments,
               libraries, topic-practice summaries/attempts, and delete reference
-              checks.
+              checks. Includes an integer <code>order</code> display column used
+              before title ordering across course and result displays.
             </div>
           </li>
           <li>
@@ -949,7 +950,19 @@
               <span class="path"><code>app/Models/Partner.php</code></span>
             </div>
             <div class="desc">
-              Represents Partner records and relationships in the system.
+              Represents Partner company/agent records, display name, commission
+              data, referral hierarchy, and partner user membership
+              relationships in the system.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>PartnerUser</strong>
+              <span class="path"><code>app/Models/PartnerUser.php</code></span>
+            </div>
+            <div class="desc">
+              Maps users to partners with a partner-level role of admin or
+              staff. Each user can belong to only one partner.
             </div>
           </li>
           <li>
@@ -1485,6 +1498,20 @@
             </div>
             <div class="desc">
               Creates the courses table and its columns/keys.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>2026_07_14_000001_add_order_to_courses_table</strong>
+              <span class="path"
+                ><code
+                  >database/migrations/2026_07_14_000001_add_order_to_courses_table.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Adds the integer <code>order</code> display-order column to the
+              courses table.
             </div>
           </li>
           <li>
@@ -2819,6 +2846,35 @@
             </div>
             <div class="desc">
               Creates the commissions table and its columns/keys.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>2026_07_15_000001_add_name_to_partners_table</strong>
+              <span class="path"
+                ><code
+                  >database/migrations/2026_07_15_000001_add_name_to_partners_table.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Adds the partner display/company name and backfills existing
+              partner records from their owning user names.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>2026_07_14_100303_create_partner_users_table</strong>
+              <span class="path"
+                ><code
+                  >database/migrations/2026_07_14_100303_create_partner_users_table.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Creates partner user memberships, enforces one partner per user,
+              stores admin/staff membership roles, and backfills existing
+              <code>partners.user_id</code> owners as admin memberships.
             </div>
           </li>
           <li>

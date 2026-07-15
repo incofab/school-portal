@@ -77,12 +77,17 @@ class HandleInertiaRequests extends Middleware
           'impersonator' => $impersonator
         ];
       },
-      'shared__currentUser' => currentUser()?->load('roles'),
+      'shared__currentUser' => currentUser()?->load(
+        'roles',
+        'partnerUser.partner'
+      ),
       'shared__currentInstitution' => fn() => $institution,
       'shared__currentInstitutionUser' => fn() => currentInstitutionUser(),
       'shared__unreadNotificationCount' => function () {
         $viewer = NotificationViewer::fromRequest();
-        return $viewer ? InternalNotification::unreadCountForViewer($viewer) : 0;
+        return $viewer
+          ? InternalNotification::unreadCountForViewer($viewer)
+          : 0;
       },
       'shared__currentTerm' => $settingHandler->getCurrentTerm(),
       'shared__currentAcademicSessionId' => $academicSessionId,

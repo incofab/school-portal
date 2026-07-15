@@ -61,6 +61,11 @@ export enum ManagerRole {
   Partner = 'partner',
 }
 
+export enum PartnerUserRole {
+  Admin = 'admin',
+  Staff = 'staff',
+}
+
 export enum NotificationChannelsType {
   Email = 'email',
   Sms = 'sms',

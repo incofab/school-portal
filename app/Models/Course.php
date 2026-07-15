@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Rules\ValidateUniqueRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -13,11 +14,13 @@ class Course extends Model
   use HasFactory, InstitutionScope, SoftDeletes;
 
   protected $casts = [
-    'institution_id' => 'integer'
+    'institution_id' => 'integer',
+    'order' => 'integer'
   ];
 
   protected $fillable = [
     'code',
+    'order',
     'category',
     'title',
     'description',
@@ -43,9 +46,15 @@ class Course extends Model
         )
       ],
       $prefix . 'institution_id' => ['nullable'],
+      $prefix . 'order' => ['sometimes', 'integer'],
       $prefix . 'category' => ['nullable', 'string'],
       $prefix . 'description' => ['nullable', 'string']
     ];
+  }
+
+  public function scopeOrderedByCourseOrder(Builder $query): Builder
+  {
+    return $query->orderBy('courses.order')->orderBy('courses.title');
   }
 
   public function canDelete()

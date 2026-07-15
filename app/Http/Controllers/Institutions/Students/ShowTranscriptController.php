@@ -20,7 +20,11 @@ class ShowTranscriptController extends Controller
     $student->load('user', 'classification');
     $courseResults = $student
       ->courseResults()
+      ->select('course_results.*')
+      ->join('courses', 'courses.id', 'course_results.course_id')
       ->with('course')
+      ->orderBy('courses.order')
+      ->orderBy('courses.title')
       ->get();
     $termResults = $student
       ->termResults()

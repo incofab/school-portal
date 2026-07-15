@@ -35,7 +35,7 @@ class RevertStudentClassMovementController extends Controller
     Request $request,
     Institution $institution
   ) {
-    $data = request()->validate([
+    $data = $request->validate([
       'batch_no' => ['required'],
       'change_class' => ['nullable', 'boolean'],
       'destination_classification_id' => [

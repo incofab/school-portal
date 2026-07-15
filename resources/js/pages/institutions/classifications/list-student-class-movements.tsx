@@ -10,6 +10,7 @@ import {
   Text,
   Icon,
   Badge,
+  background,
 } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
@@ -28,6 +29,7 @@ import RevertBatchStudentClassMovementModal from '@/components/modals/revert-bat
 import { ArrowPathIcon, ArrowUturnRightIcon } from '@heroicons/react/24/solid';
 import startCase from 'lodash/startCase';
 import ColorUtil from '@/util/color-util';
+import DateTimeDisplay from '@/components/date-time-display';
 
 interface Props {
   studentClassMovements: PaginationResponse<StudentClassMovement>;
@@ -72,6 +74,10 @@ export default function ListStudentClassMovements({
       value: 'student.user.full_name',
     },
     {
+      label: 'Date',
+      render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
+    },
+    {
       label: 'From',
       render: (row) => row.source_class?.title ?? 'Alumni',
     },
@@ -91,6 +97,11 @@ export default function ListStudentClassMovements({
     {
       label: 'Reason',
       value: 'reason',
+    },
+    {
+      label: 'Reverted Date',
+      render: (row) =>
+        row.reverted_at ? <DateTimeDisplay dateTime={row.reverted_at} /> : '',
     },
     {
       label: 'Staff',
@@ -210,6 +221,9 @@ export default function ListStudentClassMovements({
               'destinationClass',
             ]}
             onFilterButtonClick={studentClassFilterToggle.open}
+            tableRowProps={(row) => ({
+              backgroundColor: row.reverted_at ? 'red.50' : undefined,
+            })}
           />
         </SlabBody>
       </Slab>

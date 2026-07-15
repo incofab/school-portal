@@ -899,7 +899,7 @@
             </div>
             <div class="desc">
               Form screen to create or edit Course, with validation and save
-              actions.
+              actions, including the integer display order.
             </div>
           </li>
           <li>
@@ -912,7 +912,8 @@
               >
             </div>
             <div class="desc">
-              Bulk create screen for Courses, optimized for fast onboarding.
+              Bulk create screen for Courses, optimized for fast onboarding,
+              including per-course display order entry.
             </div>
           </li>
           <li>
@@ -969,9 +970,9 @@
               >
             </div>
             <div class="desc">
-              Listing screen for Courses/Subjects, with search, filters,
-              management actions, a practice-progress shortcut, and row
-              shortcuts to filtered lesson plans and topics.
+              Listing screen for Courses/Subjects, with search, filters, display
+              order column, management actions, a practice-progress shortcut,
+              and row shortcuts to filtered lesson plans and topics.
             </div>
           </li>
           <li>
@@ -3082,7 +3083,9 @@
             <div class="desc">
               Manager dashboard summarizing key metrics and quick actions,
               including an admin attention notice for pending withdrawals and a
-              partner commission-balance card.
+              distinct partner dashboard panel with editable partner/company
+              name for partner admins, onboarding link, commission balance, and
+              school/request/user/bank/withdrawal analytics.
             </div>
           </li>
           <li>
@@ -3194,7 +3197,22 @@
             </div>
             <div class="desc">
               Listing screen for Institution Groups, with search, filters, and
-              management actions.
+              management actions, including an admin-only partner reassignment
+              modal.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>change-institution-group-partner-modal</strong>
+              <span class="path"
+                ><code
+                  >resources/js/components/modals/change-institution-group-partner-modal.tsx</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Admin modal for reassigning an institution group to another
+              partner user by email.
             </div>
           </li>
           <li>
@@ -3321,6 +3339,20 @@
             <div class="desc">
               Listing screen for Pins, with search, filters, and management
               actions.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>list-partner-users</strong>
+              <span class="path"
+                ><code
+                  >resources/js/pages/managers/partner-users/list-partner-users.tsx</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Partner-admin screen for registering partner users and updating
+              their partner-level admin/staff role.
             </div>
           </li>
           <li>

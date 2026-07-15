@@ -47,7 +47,7 @@ class GetStudentTopicPracticeProgress
           $classificationGroupId
         )->oldest('title')
       ])
-      ->oldest('title')
+      ->orderedByCourseOrder()
       ->get()
       ->map(function (Course $course) use ($summaries) {
         $course->topics->each(function (Topic $topic) use ($summaries) {

@@ -43,7 +43,7 @@ class CoursesController extends Controller
     CoursesUITableFilters::make($request->all(), $query)->filterQuery();
 
     return Inertia::render('institutions/courses/list-courses', [
-      'courses' => paginateFromRequest($query->oldest('title'))
+      'courses' => paginateFromRequest($query->orderedByCourseOrder())
     ]);
   }
 
@@ -55,7 +55,7 @@ class CoursesController extends Controller
     );
 
     return response()->json([
-      'result' => $query->latest('courses.id')->get()
+      'result' => $query->orderedByCourseOrder()->get()
     ]);
   }
 

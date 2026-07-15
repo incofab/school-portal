@@ -62,7 +62,9 @@ class CourseTeachersController extends Controller
   public function create(Institution $institution, ?User $user = null)
   {
     return Inertia::render('institutions/staff/register-course-teacher', [
-      'courses' => Course::all(),
+      'courses' => Course::query()
+        ->orderedByCourseOrder()
+        ->get(),
       'user' => $user
     ]);
   }

@@ -10,7 +10,7 @@ import {
 } from 'react-pro-sidebar';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import route from '@/util/route';
-import { Nullable, ManagerRole } from '@/types/types';
+import { Nullable, ManagerRole, PartnerUserRole } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
 import ManagerSidebarHeader from './manager-sidebar-header';
 
@@ -18,6 +18,7 @@ interface MenuType {
   label: string;
   icon?: string;
   roles?: Nullable<ManagerRole[]>;
+  partnerUserRoles?: Nullable<PartnerUserRole[]>;
   route?: string;
 }
 
@@ -60,6 +61,12 @@ export default function ManagerSideBarLayout() {
       label: 'Partnership Requests',
       roles: [ManagerRole.Admin],
       route: route('managers.partner-registration-requests.index'),
+    },
+    {
+      label: 'Partner Users',
+      roles: [ManagerRole.Partner],
+      partnerUserRoles: [PartnerUserRole.Admin],
+      route: route('managers.partner-users.index'),
     },
     {
       label: 'Fundings',
@@ -167,6 +174,12 @@ export default function ManagerSideBarLayout() {
       <Menu menuItemStyles={menuItemStyles}>
         {menus.map(function (menu: MenuListType, i: number) {
           if (menu.roles && !menu.roles.includes(managerRole)) {
+            return;
+          }
+          if (
+            menu.partnerUserRoles &&
+            !menu.partnerUserRoles.includes(currentUser.partner_user?.role)
+          ) {
             return;
           }
           if (!menu.sub_items) {

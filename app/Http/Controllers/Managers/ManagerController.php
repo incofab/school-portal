@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Managers;
 use App\Actions\RecordUsers\RecordPartner;
 use App\Enums\WithdrawalStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Institution;
+use App\Models\InstitutionGroup;
 use App\Models\Partner;
+use App\Models\RegistrationRequest;
 use App\Models\User;
 use App\Models\Withdrawal;
 use Illuminate\Http\Request;
@@ -14,7 +17,12 @@ class ManagerController extends Controller
   function dashboard(Request $request)
   {
     $user = currentUser();
-    $commissionBalance = $user->isPartner() ? $user->partner?->wallet ?? 0 : 0;
+    $partner = $user->isPartner() ? $user->partner : null;
+    $partnerUserIds = $partner
+      ? $partner->partnerUsers()->pluck('user_id')
+      : collect();
+
+    $commissionBalance = $partner?->wallet ?? 0;
     $attentionSummary = $user->isAdmin()
       ? [
         'pendingWithdrawalsCount' => Withdrawal::query()
@@ -22,11 +30,60 @@ class ManagerController extends Controller
           ->count()
       ]
       : null;
+    $partnerAnalytics = $partner
+      ? [
+        'institutionGroupsCount' => InstitutionGroup::query()
+          ->whereIn('partner_user_id', $partnerUserIds)
+          ->count(),
+        'institutionsCount' => Institution::query()
+          ->whereHas(
+            'institutionGroup',
+            fn($query) => $query->whereIn('partner_user_id', $partnerUserIds)
+          )
+          ->count(),
+        'registrationRequestsCount' => RegistrationRequest::query()
+          ->whereIn('partner_user_id', $partnerUserIds)
+          ->count(),
+        'partnerUsersCount' => $partnerUserIds->count(),
+        'bankAccountsCount' => $partner->bankAccounts()->count(),
+        'pendingWithdrawalsCount' => $partner
+          ->withdrawals()
+          ->where('status', WithdrawalStatus::Pending->value)
+          ->count(),
+        'totalWithdrawalsCount' => $partner->withdrawals()->count()
+      ]
+      : null;
 
     return inertia('managers/dashboard', [
       'commissionBalance' => $commissionBalance,
-      'attentionSummary' => $attentionSummary
+      'attentionSummary' => $attentionSummary,
+      'partnerProfile' => $partner
+        ? [
+          'id' => $partner->id,
+          'name' => $partner->name,
+          'canUpdate' => $user->isPartnerAdmin()
+        ]
+        : null,
+      'partnerAnalytics' => $partnerAnalytics
     ]);
+  }
+
+  function updatePartnerProfile(Request $request)
+  {
+    $user = currentUser();
+
+    abort_unless($user->isPartnerAdmin(), 403);
+
+    $data = $request->validate([
+      'name' => ['required', 'string', 'max:255']
+    ]);
+
+    $user
+      ->partner()
+      ->firstOrFail()
+      ->update($data);
+
+    return $this->ok();
   }
 
   function index(Request $request)

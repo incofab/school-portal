@@ -2391,6 +2391,12 @@
           </li>
           <li>
             <code>routes/manager.php</code> —
+            Route::post(&#x27;/institution-groups/{institutionGroup}/partner-user&#x27;,
+            [Web\InstitutionGroups\InstitutionGroupsController::class,
+            &#x27;updatePartnerUser&#x27;])
+          </li>
+          <li>
+            <code>routes/manager.php</code> —
             Route::get(&#x27;/registration-requests/search&#x27;,
             [Web\RegistrationRequests\RegistrationRequestsController::class,
             &#x27;search&#x27;])
@@ -2436,6 +2442,24 @@
             Route::delete(&#x27;/partner-registrations/{partnerRegistrationRequest}&#x27;,
             [Web\PartnerRequests\PartnerRegistrationRequestsController::class,
             &#x27;destroy&#x27;])
+          </li>
+          <li>
+            <code>routes/manager.php</code> —
+            Route::get(&#x27;partner-users&#x27;,
+            [Web\PartnerUsers\PartnerUserController::class,
+            &#x27;index&#x27;])-&gt;name(&#x27;partner-users.index&#x27;);
+          </li>
+          <li>
+            <code>routes/manager.php</code> —
+            Route::post(&#x27;partner-users&#x27;,
+            [Web\PartnerUsers\PartnerUserController::class,
+            &#x27;store&#x27;])-&gt;name(&#x27;partner-users.store&#x27;);
+          </li>
+          <li>
+            <code>routes/manager.php</code> —
+            Route::post(&#x27;partner-users/{partnerUser}&#x27;,
+            [Web\PartnerUsers\PartnerUserController::class,
+            &#x27;update&#x27;])-&gt;name(&#x27;partner-users.update&#x27;);
           </li>
           <li>
             <code>routes/manager.php</code> —
@@ -2514,6 +2538,12 @@
             <code>routes/manager.php</code> —
             Route::resource(&#x27;billings&#x27;,
             Web\Billings\BillingsController::class);
+          </li>
+          <li>
+            <code>routes/manager.php</code> —
+            Route::post(&#x27;/partner-profile&#x27;,
+            [Web\ManagerController::class,
+            &#x27;updatePartnerProfile&#x27;])-&gt;name(&#x27;partner-profile.update&#x27;);
           </li>
           <li>
             <code>routes/manager.php</code> —
@@ -3803,9 +3833,11 @@
             <div class="desc">
               HTTP controller for courses, handling requests, authorization,
               responses, and conditional soft/permanent deletion based on
-              dependent references. Delegates AI practice-question generation,
-              student answer submission, topic-practice summary updates, attempt
-              history, and teacher/student practice-progress query assembly to
+              dependent references. Course list and search responses are ordered
+              by <code>courses.order</code> then <code>courses.title</code>.
+              Delegates AI practice-question generation, student answer
+              submission, topic-practice summary updates, attempt history, and
+              teacher/student practice-progress query assembly to
               <code>app/Actions/CoursePractice/*</code>.
             </div>
           </li>
@@ -5195,7 +5227,7 @@
             </div>
             <div class="desc">
               HTTP controller for Institution Groups, handling requests,
-              authorization, and responses.
+              authorization, partner reassignment, and responses.
             </div>
           </li>
           <li>
@@ -5251,8 +5283,9 @@
             </div>
             <div class="desc">
               Manager dashboard and manager-list controller that now exposes
-              admin pending-withdrawal attention data and manager partner wallet
-              balances to the frontend.
+              admin pending-withdrawal attention data, manager partner wallet
+              balances, partner dashboard analytics, and partner-admin profile
+              name updates to the frontend.
             </div>
           </li>
           <li>
@@ -5314,6 +5347,21 @@
           </li>
           <li>
             <div>
+              <strong>PartnerUserController</strong>
+              <span class="path"
+                ><code
+                  >app/Http/Controllers/Managers/PartnerUsers/PartnerUserController.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Partner-admin controller for listing partner users, registering a
+              new user into the current partner account, and changing partner
+              user admin/staff roles.
+            </div>
+          </li>
+          <li>
+            <div>
               <strong>WithdrawalController</strong>
               <span class="path"
                 ><code
@@ -5324,7 +5372,8 @@
             <div class="desc">
               Manager withdrawal controller that lists admin or partner
               withdrawals with bank-account data plus accountable morph details
-              for partner and institution-group requesters.
+              for partner and institution-group requesters. Partner withdrawal
+              requests are restricted to partner admins.
             </div>
           </li>
           <li>
@@ -6140,7 +6189,8 @@
             </div>
             <div class="desc">
               Action class that runs the Record Partner workflow and coordinates
-              domain logic.
+              domain logic, including creation of the partner admin membership
+              for newly recorded partner users.
             </div>
           </li>
           <li>
@@ -7767,7 +7817,7 @@
             </div>
             <div class="desc">
               Support/helper class for Courses U I Table Filters utilities and
-              shared operations.
+              shared operations, including sortable course display order.
             </div>
           </li>
           <li>

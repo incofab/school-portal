@@ -680,14 +680,18 @@
             partner opportunity and commission message, and managers can convert
             approved requests into institution groups, institutions, and partner
             records. Public admission routes also support institution-scoped
-            form search and purchase flows.
+            form search and purchase flows. Partner records now support multiple
+            assigned users through partner user memberships, with each user
+            limited to one partner and membership roles of admin or staff.
+            Partner admins can maintain the partner/company name shown on their
+            partner dashboard.
           </p>
           <ul>
             <li>
               Routes: public <code>register/{partner?}</code>,
               <code>partner-registration</code>, manager
               <code>registration-requests</code>,
-              <code>partner-registrations</code>,
+              <code>partner-registrations</code>, <code>partner-users</code>,
               <code>institutions/create</code>.
             </li>
             <li>
@@ -699,7 +703,7 @@
               >,
               <code
                 >Managers/PartnerRequests/PartnerRegistrationRequestsController</code
-              >,
+              >, <code>Managers/PartnerUsers/PartnerUserController</code>,
               <code
                 >Managers/Institutions/InstitutionRegistrationController</code
               >.
@@ -708,13 +712,15 @@
               Actions and models: <code>RegisterInstitution</code>,
               <code>RegisterInstitutionGroup</code>, <code>RecordPartner</code>,
               <code>RegistrationRequest</code>,
-              <code>PartnerRegistrationRequest</code>, <code>Partner</code>.
+              <code>PartnerRegistrationRequest</code>, <code>Partner</code>,
+              <code>PartnerUser</code>.
             </li>
             <li>
               Frontend: <code>auth/register.tsx</code>,
               <code>auth/register-partner.tsx</code>,
-              <code>auth/registration-form.tsx</code>, manager registration
-              request pages.
+              <code>auth/registration-form.tsx</code>,
+              <code>managers/partner-users/list-partner-users.tsx</code>,
+              manager registration request pages.
             </li>
             <li>
               Tests: institution and partner registration request controller
@@ -737,11 +743,16 @@
             then impersonate any user from the list. The manager dashboard now
             surfaces pending withdrawal requests in its attention notice section
             for admins, and the manager withdrawals list shows the accountable
-            requester name for each withdrawal. Institution groups include
+            requester name for each withdrawal. Partner users see a distinct
+            partner dashboard with company name, onboarding link, commission
+            balance, school/request/user/bank/withdrawal analytics, and
+            partner-admin-only controls for partner naming, bank-account
+            mutations, and withdrawal requests. Institution groups include
             branding, banner/background, domain, wallet balance, loan limit,
-            status, brand color, and invoice generation by academic session and
-            term. Academic sessions include a single platform active-session
-            flag; admin managers can activate one from the list or while
+            status, brand color, invoice generation by academic session and
+            term, and admin-only partner reassignment by partner user email.
+            Academic sessions include a single platform active-session flag;
+            admin managers can activate one from the list or while
             creating/editing, and institution settings fall back to that active
             session when the institution has not selected its own current
             session. New institutions now receive explicit current academic
@@ -752,9 +763,11 @@
             <li>
               Routes: <code>routes/manager.php</code>, especially
               <code>users</code>, <code>institution-groups</code>,
+              <code>institution-groups/{institutionGroup}/partner-user</code>,
               <code>institutions</code>, <code>academic-sessions</code>,
               <code>funding</code>, <code>billings</code>,
-              <code>commissions</code>, <code>withdrawals</code>.
+              <code>commissions</code>, <code>withdrawals</code>,
+              <code>partner-profile</code>.
             </li>
             <li>
               Controllers: <code>Managers/Users/ListUsersController</code>,
@@ -996,6 +1009,9 @@
             attempt history, best-score summaries, teacher class progress views
             for attempted and missing students, and row shortcuts to filtered
             lesson plans and topics from subject and subject-teacher lists.
+            Courses now include an integer display order used before title
+            ordering across course lists, selectors, practice views, exam setup,
+            transcripts, term result sheets, and course-result lists.
             Course-teacher assignment/removal and question-bank
             import/export/generation workflows now emit explicit audit events
             with course, teacher, class, session, and count metadata. Course and
@@ -1031,7 +1047,8 @@
               pages, and topic-practice progress pages.
             </li>
             <li>
-              Data/tests: <code>Course</code>, <code>CourseTeacher</code>,
+              Data/tests: <code>Course</code> including its
+              <code>order</code> display column, <code>CourseTeacher</code>,
               <code>CourseSession</code>, <code>Topic</code>,
               <code>Instruction</code>, <code>Passage</code>,
               <code>Question</code>, courseable-backed

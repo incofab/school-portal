@@ -47,7 +47,7 @@ class EventController extends Controller
   {
     return Inertia::render('institutions/exams/offline-cbt-setup-guide', [
       'videoUrl' => 'https://www.youtube.com/watch?v=RpbM29SH9Q0',
-      'downloadUrl' => route('download-offline-cbt-app'),
+      'downloadUrl' => route('download-offline-cbt-app')
     ]);
   }
 
@@ -58,6 +58,7 @@ class EventController extends Controller
       'courses' => $institution
         ->courses()
         ->with('sessions')
+        ->orderedByCourseOrder()
         ->get()
     ]);
   }

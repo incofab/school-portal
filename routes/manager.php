@@ -9,6 +9,8 @@ Route::get('/dummy', function () {
 
 Route::get('/', [Web\ManagerController::class, 'dashboard'])
     ->name('dashboard');
+Route::post('/partner-profile', [Web\ManagerController::class, 'updatePartnerProfile'])
+    ->name('partner-profile.update');
 Route::get('/notifications', [Web\Notifications\NotificationController::class, 'index'])
     ->name('notifications.index');
 Route::get('/activity-logs/export', [Web\ActivityLogs\ActivityLogController::class, 'export'])
@@ -68,6 +70,13 @@ Route::post('/partner-registrations/{partnerRegistrationRequest}/onboard', [Web\
 Route::delete('/partner-registrations/{partnerRegistrationRequest}', [Web\PartnerRequests\PartnerRegistrationRequestsController::class, 'destroy'])
     ->name('partner-registration-requests.destroy');
 
+Route::get('partner-users', [Web\PartnerUsers\PartnerUserController::class, 'index'])
+    ->name('partner-users.index');
+Route::post('partner-users', [Web\PartnerUsers\PartnerUserController::class, 'store'])
+    ->name('partner-users.store');
+Route::post('partner-users/{partnerUser}', [Web\PartnerUsers\PartnerUserController::class, 'update'])
+    ->name('partner-users.update');
+
 // Admin section
 Route::group(['middleware' => 'admin'], function () {
     /*
@@ -99,6 +108,12 @@ Route::group(['middleware' => 'admin'], function () {
         ->name('update');
     Route::delete('/destroy/{user}', [Web\ManagerController::class, 'destroy'])
         ->name('destroy');
+
+    Route::post('/institution-groups/{institutionGroup}/partner-user', [
+        Web\InstitutionGroups\InstitutionGroupsController::class,
+        'updatePartnerUser',
+    ])
+        ->name('institution-groups.update-partner-user');
 
     Route::post('academic-sessions/{academicSession}/activate', [
         Web\AcademicSessions\AcademicSessionController::class,

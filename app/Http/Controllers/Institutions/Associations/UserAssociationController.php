@@ -56,14 +56,17 @@ class UserAssociationController extends Controller
       ->select('users.*')
       ->join('institution_users', 'users.id', 'institution_users.user_id')
       ->where('institution_users.institution_id', $institution->id);
+    $morphable = null;
     if ($morphableType && $morphableId) {
       switch ($morphableType) {
         case MorphMap::key(Classification::class):
+          $morphable = Classification::query()->findOrFail($morphableId);
           $usersQuery = User::query()
             ->join('students', 'users.id', 'students.user_id')
             ->where('students.classification_id', $morphableId);
           break;
         case MorphMap::key(ClassificationGroup::class):
+          $morphable = ClassificationGroup::query()->findOrFail($morphableId);
           $usersQuery = User::query()
             ->join('students', 'users.id', 'students.user_id')
             ->join(
@@ -75,18 +78,23 @@ class UserAssociationController extends Controller
           break;
         case MorphMap::key(Institution::class):
         default:
-          // $usersQuery = $usersQuery;
+          $morphable = $institution;
+          $usersQuery = $usersQuery;
           break;
       }
     }
+
     return Inertia::render(
       'institutions/associations/create-user-association',
       [
         'associations' => Association::all(),
         'users' => $usersQuery
           ->with('institutionUser')
+          ->limit(2000)
           ->get()
           ->filter(fn($item) => !empty($item->institutionUser))
+          ->values(),
+        'morphable' => $morphable
       ]
     );
   }

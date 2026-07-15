@@ -17,6 +17,7 @@ class CourseFactory extends Factory
       'institution_id' => Institution::factory(),
       'title' => $course,
       'code' => $course,
+      'order' => 0,
       'category' => $this->faker->word,
       'description' => $this->faker->sentence,
       'is_file_content_uploaded' => false

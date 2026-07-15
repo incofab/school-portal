@@ -8,6 +8,7 @@ import {
   InstitutionUserStatus,
   InstitutionUserType,
   ManagerRole,
+  PartnerUserRole,
   ResultTemplate,
   TermType,
   TransactionType,
@@ -47,6 +48,7 @@ export interface User extends Row {
   has_nin: boolean;
   roles?: Role[];
   partner?: Partner;
+  partner_user?: PartnerUser;
   institution_user?: InstitutionUser;
   student?: Student;
 }
@@ -124,6 +126,7 @@ export interface TokenUser extends Row {
 }
 
 export interface InstitutionGroup extends Row {
+  partner_user_id?: number;
   name: string;
   credit_wallet: number;
   debt_wallet: number;
@@ -224,12 +227,23 @@ export interface Withdrawal extends InstitutionRow {
 
 export interface Partner extends InstitutionRow {
   user_id: number;
+  name: string;
   user?: User;
+  users?: User[];
+  partner_users?: PartnerUser[];
   commission: number;
   referral_id: number;
   referral?: Partner;
   referral_commission: number;
   wallet: number;
+}
+
+export interface PartnerUser extends InstitutionRow {
+  partner_id: number;
+  user_id: number;
+  role: PartnerUserRole;
+  partner?: Partner;
+  user?: User;
 }
 
 export interface Commission extends InstitutionRow {
@@ -396,7 +410,8 @@ export interface StudentClassMovement extends InstitutionRow {
   destination_classification_id: number;
   academic_session_id: number;
   student_id: number;
-  revert_reference_id: number;
+  reverted_at?: string;
+  revert_reference_id?: number;
   term: string;
   batch_no: string;
   reason: string;
@@ -468,6 +483,7 @@ export interface TopicPracticeAttempt extends InstitutionRow {
 export interface Course extends InstitutionRow {
   title: string;
   code: string;
+  order: number;
   category: string;
   description: string;
   sessions: CourseSession[];

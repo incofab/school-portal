@@ -26,17 +26,22 @@ class BankAccountController extends Controller
         ->get();
 
     return Inertia::render('managers/bank-accounts/list-bank-accounts', [
-      'bankAccounts' => $bankAccounts ?? []
+      'bankAccounts' => $bankAccounts ?? [],
+      'canManageBankAccounts' => $user->isPartnerAdmin()
     ]);
   }
 
   public function create()
   {
+    abort_unless(currentUser()->isPartnerAdmin(), 403);
+
     return Inertia::render('managers/bank-accounts/create-edit-bank-account');
   }
 
   public function edit(BankAccount $bankAccount)
   {
+    abort_unless(currentUser()->isPartnerAdmin(), 403);
+
     return Inertia::render('managers/bank-accounts/create-edit-bank-account', [
       'bankAccount' => $bankAccount
     ]);
@@ -46,6 +51,8 @@ class BankAccountController extends Controller
     BankAccount $bankAccount,
     StoreBankAccountRequest $request
   ) {
+    abort_unless(currentUser()->isPartnerAdmin(), 403);
+
     $validated = $request->validated();
     BankAccountHandler::make(currentUser()->partner)->update(
       $bankAccount,
@@ -56,6 +63,8 @@ class BankAccountController extends Controller
 
   public function store(StoreBankAccountRequest $request)
   {
+    abort_unless(currentUser()->isPartnerAdmin(), 403);
+
     $validated = $request->validated();
     BankAccountHandler::make(currentUser()->partner)->store($validated);
 
@@ -64,6 +73,8 @@ class BankAccountController extends Controller
 
   public function destroy(BankAccount $bankAccount)
   {
+    abort_unless(currentUser()->isPartnerAdmin(), 403);
+
     BankAccountHandler::make(currentUser()->partner)->destroy($bankAccount);
     return $this->ok();
   }

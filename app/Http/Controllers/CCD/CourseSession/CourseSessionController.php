@@ -21,7 +21,9 @@ class CourseSessionController extends Controller
         ->withCount(['questions', 'theoryQuestions'])
         ->paginate(100),
       'course' => $course,
-      'courses' => Course::all()
+      'courses' => Course::query()
+        ->orderedByCourseOrder()
+        ->get()
     ]);
   }
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\TrimDecimal;
 use App\Enums\ManagerRole;
+use App\Enums\PartnerUserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rules\Enum;
@@ -51,6 +52,7 @@ class Partner extends Model
   static function partnerOnlyRule(?User $user = null)
   {
     return [
+      'name' => ['nullable', 'string', 'max:255'],
       'commission' => ['nullable', 'numeric', 'min:0'],
       ...$user?->partner
         ? []
@@ -62,6 +64,28 @@ class Partner extends Model
   public function user()
   {
     return $this->belongsTo(User::class);
+  }
+
+  public function partnerUsers()
+  {
+    return $this->hasMany(PartnerUser::class);
+  }
+
+  public function users()
+  {
+    return $this->belongsToMany(User::class, 'partner_users')
+      ->withPivot('role')
+      ->withTimestamps();
+  }
+
+  public function adminUsers()
+  {
+    return $this->users()->wherePivot('role', PartnerUserRole::Admin->value);
+  }
+
+  public function staffUsers()
+  {
+    return $this->users()->wherePivot('role', PartnerUserRole::Staff->value);
   }
 
   /**

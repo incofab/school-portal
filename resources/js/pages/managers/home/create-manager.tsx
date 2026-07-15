@@ -36,6 +36,7 @@ export default function CreateManager({ manager }: Props) {
     password: '',
     password_confirmation: '',
     role: manager?.roles?.[0]?.name,
+    name: manager?.partner?.name ?? '',
     commission: manager?.partner?.commission ?? '',
     referral_email: '',
     referral_commission: manager?.partner?.referral_commission ?? '',
@@ -189,6 +190,19 @@ export default function CreateManager({ manager }: Props) {
                 {/* Extra fields for 'Partner' role */}
                 {isPartner && (
                   <>
+                    <FormControlBox
+                      form={form}
+                      title="Partner Name"
+                      formKey="name"
+                    >
+                      <Input
+                        type="text"
+                        onChange={(e) =>
+                          form.setValue('name', e.currentTarget.value)
+                        }
+                        value={form.data.name}
+                      />
+                    </FormControlBox>
                     <FormControlBox
                       form={form}
                       title="Commission"

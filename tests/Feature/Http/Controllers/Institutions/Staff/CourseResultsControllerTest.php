@@ -7,6 +7,7 @@ use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Assessment;
 use App\Models\ClassResultInfo;
+use App\Models\Course;
 use App\Models\CourseResult;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
@@ -46,6 +47,53 @@ beforeEach(function () {
     'term' => $this->term,
     'for_mid_term' => false
   ];
+});
+
+it('lists course results by course order and then course title', function () {
+  $student = Student::factory()
+    ->withInstitution($this->institution, $this->classification)
+    ->create();
+
+  $zoology = Course::factory()
+    ->withInstitution($this->institution)
+    ->create(['title' => 'Zoology', 'code' => 'ZOO', 'order' => 2]);
+  $biology = Course::factory()
+    ->withInstitution($this->institution)
+    ->create(['title' => 'Biology', 'code' => 'BIO', 'order' => 1]);
+  $algebra = Course::factory()
+    ->withInstitution($this->institution)
+    ->create(['title' => 'Algebra', 'code' => 'ALG', 'order' => 1]);
+
+  foreach ([$zoology, $biology, $algebra] as $course) {
+    CourseResult::factory()->create([
+      'institution_id' => $this->institution->id,
+      'student_id' => $student->id,
+      'teacher_user_id' => $this->instAdmin->id,
+      'course_id' => $course->id,
+      'classification_id' => $this->classification->id,
+      'academic_session_id' => $this->academicSession->id,
+      'term' => $this->term,
+      'for_mid_term' => false
+    ]);
+  }
+
+  actingAs($this->instAdmin)
+    ->get(
+      route('institutions.course-results.index', [
+        $this->institution->uuid,
+        'academicSession' => $this->academicSession->id,
+        'term' => $this->term,
+        'forMidTerm' => 0
+      ])
+    )
+    ->assertOk()
+    ->assertInertia(
+      fn(Assert $page) => $page
+        ->component('institutions/courses/list-course-results')
+        ->where('courseResults.data.0.course.title', 'Algebra')
+        ->where('courseResults.data.1.course.title', 'Biology')
+        ->where('courseResults.data.2.course.title', 'Zoology')
+    );
 });
 
 it(

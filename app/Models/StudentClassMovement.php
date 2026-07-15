@@ -16,7 +16,8 @@ class StudentClassMovement extends Model
     'institution_id' => 'integer',
     'student_id' => 'integer',
     'source_classification_id' => 'integer',
-    'destination_classification_id' => 'integer'
+    'destination_classification_id' => 'integer',
+    'reverted_at' => 'datetime'
   ];
 
   public function sourceClass()
