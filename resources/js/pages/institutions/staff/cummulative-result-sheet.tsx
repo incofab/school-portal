@@ -15,7 +15,7 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Div } from '@/components/semantic';
 import useSharedProps from '@/hooks/use-shared-props';
@@ -37,6 +37,10 @@ interface SessionResultLog {
   student: Student;
   termResults: Partial<Record<TermType, TermResult | null>>;
   courseResults: Partial<Record<TermType, Record<number, CourseResult>>>;
+  summary?: {
+    average?: number | null;
+    position?: number | null;
+  };
 }
 
 interface Props {
@@ -139,6 +143,30 @@ export default function CummulativeResultSheet({
     ];
   }
 
+  function getSummaryColumnData(
+    sessionResultLog: SessionResultLog
+  ): SelectOptionType<string | number>[] {
+    const average = sessionResultLog.summary?.average;
+    const position = sessionResultLog.summary?.position;
+
+    return [
+      {
+        label: 'Overall Average',
+        value:
+          average === undefined || average === null
+            ? ''
+            : roundNumber(average, 2),
+      },
+      {
+        label: 'Overall Position',
+        value:
+          position === undefined || position === null
+            ? ''
+            : position + ResultUtil.getPositionSuffix(position),
+      },
+    ];
+  }
+
   const resultData: SelectOptionType<string | number>[][] = useMemo(() => {
     if (!sessionResults || displayedTerms.length === 0) {
       return [];
@@ -149,6 +177,7 @@ export default function CummulativeResultSheet({
       ...displayedTerms.flatMap((term) =>
         getTermColumnData(term, sessionResultLog)
       ),
+      ...getSummaryColumnData(sessionResultLog),
     ]);
   }, [sessionResults, displayedTerms, normalizedCoursesByTerm]);
 
@@ -232,6 +261,9 @@ export default function CummulativeResultSheet({
                         <Text>{termTitle(term)}</Text>
                       </th>
                     ))}
+                    <th colSpan={2}>
+                      <Text>Summary</Text>
+                    </th>
                   </tr>
                   <tr>
                     {resultData[0].map((item, i) => (
@@ -275,6 +307,7 @@ function ClassAndSessionSelector({
   term?: string;
 }) {
   const { instRoute } = useInstitutionRoute();
+  const [isLoading, setIsLoading] = useState(false);
   const webForm = useWebForm({
     term: term ?? 'all',
     academicSession: academicSession?.id ?? '',
@@ -282,12 +315,16 @@ function ClassAndSessionSelector({
   });
 
   const submit = () => {
+    setIsLoading(true);
     Inertia.visit(
       instRoute('cummulative-result.index', {
         classification: webForm.data.classification,
         academicSession: webForm.data.academicSession,
         term: webForm.data.term === 'all' ? '' : webForm.data.term,
-      })
+      }),
+      {
+        onFinish: () => setIsLoading(false),
+      }
     );
   };
 
@@ -348,7 +385,7 @@ function ClassAndSessionSelector({
       <WrapItem>
         <FormControl>
           <FormButton
-            isLoading={webForm.processing}
+            isLoading={isLoading || webForm.processing}
             marginTop={'35px'}
             variant={'outline'}
             className="hidden-on-print"

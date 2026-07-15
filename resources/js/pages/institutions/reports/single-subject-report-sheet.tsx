@@ -1,144 +1,90 @@
 import React, { useState } from 'react';
-import { AcademicSession, Classification, Course } from '@/types/models';
+import {
+  AcademicSession,
+  Classification,
+  Course,
+  Student,
+} from '@/types/models';
 import { Div } from '@/components/semantic';
 import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
-import { Avatar, FormControl, HStack, Text, VStack } from '@chakra-ui/react';
+import {
+  Avatar,
+  FormControl,
+  HStack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  VStack,
+} from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import ClassificationSelect from '@/components/selectors/classification-select';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
-import { preventNativeSubmit, ucFirst } from '@/util/util';
+import CourseSelect from '@/components/selectors/course-select';
+import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
 import { FormButton } from '@/components/buttons';
 import FormControlBox from '@/components/forms/form-control-box';
-import EnumSelect from '@/components/dropdown-select/enum-select';
-import { TermType } from '@/types/types';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import DataTable, { TableHeader } from '@/components/data-table';
 import PagePrintLayout from '@/domain/institutions/page-print-layout';
 import ImagePaths from '@/util/images';
+import ResultUtil from '@/util/result-util';
 
-const ALL_TERMS = 'all-terms';
-type TermSelection = TermType | typeof ALL_TERMS;
+type TermKey = 'first' | 'second' | 'third';
 
-interface SubjectReportRow {
-  course: Course;
-  course_id: number;
-  num_of_students: number;
-  total_score: number;
-  max_obtainable_score: number;
-  max_score: number;
-  min_score: number;
-  average: number;
-  // pass_count: number;
-  highest_score: number | null;
-  highest_student: string | null;
-  lowest_score: number | null;
-  lowest_student: string | null;
-  teachers: string[];
+interface ReportScore {
+  score: number | null;
+  position: number | null;
 }
 
-interface SubjectReportSection {
-  key: string;
-  title: string;
-  subjectReport: SubjectReportRow[];
+interface SingleSubjectReportRow {
+  student: Student;
+  student_id: number;
+  term_results: Record<TermKey, ReportScore>;
+  overall: ReportScore;
 }
 
 interface Props {
   classification?: Classification;
   academicSession?: AcademicSession;
-  term?: TermSelection;
-  subjectReport: SubjectReportRow[];
-  subjectReportSections?: SubjectReportSection[];
+  course?: Course;
+  singleSubjectReport: SingleSubjectReportRow[];
 }
 
-export default function SubjectReportSheet({
+const TERMS: { key: TermKey; label: string }[] = [
+  { key: 'first', label: 'First Term' },
+  { key: 'second', label: 'Second Term' },
+  { key: 'third', label: 'Third Term' },
+];
+
+export default function SingleSubjectReportSheet({
   classification,
   academicSession,
-  term,
-  subjectReport,
-  subjectReportSections,
+  course,
+  singleSubjectReport,
 }: Props) {
   const { currentInstitution } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
-  const isAllTerms = term === ALL_TERMS;
-  const reportSections =
-    subjectReportSections && subjectReportSections.length > 0
-      ? subjectReportSections
-      : [
-          {
-            key: term ?? 'selected-term',
-            title: term && !isAllTerms ? `${ucFirst(term)} Term` : 'Summary',
-            subjectReport,
-          },
-        ];
+  const canShow = Boolean(classification && academicSession && course);
 
-  const headers: TableHeader<SubjectReportRow>[] = [
-    {
-      label: 'Subject',
-      value: 'course.title',
-    },
-    {
-      label: 'Teacher(s)',
-      render: (row) => row.teachers.join(', '),
-    },
-    {
-      label: 'Students',
-      value: 'num_of_students',
-    },
-    {
-      label: 'Total Score',
-      value: 'total_score',
-    },
-    {
-      label: 'Max Obtainable',
-      value: 'max_obtainable_score',
-    },
-    {
-      label: 'Max Score',
-      value: 'max_score',
-    },
-    {
-      label: 'Min Score',
-      value: 'min_score',
-    },
-    {
-      label: 'Average',
-      value: 'average',
-    },
-    // {
-    //   label: 'Pass',
-    //   value: 'pass_count',
-    // },
-    {
-      label: 'Highest',
-      render: (row) =>
-        row.highest_student
-          ? `${row.highest_student} (${row.highest_score ?? '-'})`
-          : '-',
-    },
-    {
-      label: 'Lowest',
-      render: (row) =>
-        row.lowest_student
-          ? `${row.lowest_student} (${row.lowest_score ?? '-'})`
-          : '-',
-    },
-  ];
-  const canShow = Boolean(classification);
   return (
     <PagePrintLayout
-      filename={`subject-report-${classification?.id ?? ''}-${
+      filename={`single-subject-report-${classification?.id ?? ''}-${
         academicSession?.id ?? ''
-      }-${term ?? ''}.pdf`}
-      contentId={'subject-report-sheet'}
+      }-${course?.id ?? ''}.pdf`}
+      contentId={'single-subject-report-sheet'}
     >
       <Div
         mx={'auto'}
         px={3}
         py={2}
         maxWidth={'1200px'}
-        id={'subject-report-sheet'}
+        id={'single-subject-report-sheet'}
       >
         <VStack align={'stretch'} spacing={2}>
           <Div className="result-sheet-header">
@@ -169,58 +115,79 @@ export default function SubjectReportSheet({
                     <>
                       {classification?.title}
                       {' - '}
-                      {academicSession?.title
-                        ? `${academicSession.title}`
-                        : ''}{' '}
-                      {term
-                        ? isAllTerms
-                          ? 'All Terms '
-                          : `${ucFirst(term)} Term `
-                        : ''}
+                      {academicSession?.title} - {course?.title}{' '}
                     </>
                   ) : (
                     ''
                   )}
-                  Subject Report
+                  Single Subject Report
                 </Text>
               </VStack>
             </HStack>
           </Div>
-          <ClassAndSessionSelector
+          <ClassSessionAndSubjectSelector
             classification={classification}
             academicSession={academicSession}
-            term={term}
+            course={course}
             onSubmit={(data, onFinish) =>
-              Inertia.visit(instRoute('reports.subject-report', data), {
+              Inertia.visit(instRoute('reports.single-subject-report', data), {
                 onFinish,
               })
             }
           />
           {canShow && (
-            <VStack align={'stretch'} spacing={8} mt={2}>
-              {reportSections.map((section) => (
-                <Div key={section.key}>
-                  {isAllTerms && (
-                    <Text
-                      fontSize={'lg'}
-                      fontWeight={'semibold'}
-                      mb={2}
-                      textAlign={'center'}
-                    >
-                      {section.title}
-                    </Text>
-                  )}
-                  <DataTable
-                    scroll={true}
-                    headers={headers}
-                    data={section.subjectReport}
-                    keyExtractor={(row) => row.course_id}
-                    hideSearchField={true}
-                    tableProps={{ className: 'result-table' }}
-                  />
-                </Div>
-              ))}
-            </VStack>
+            <TableContainer mt={2} overflowX={'auto'}>
+              <Table className="result-table" size={'sm'}>
+                <Thead>
+                  <Tr>
+                    <Th rowSpan={2}>Student</Th>
+                    {TERMS.map((term) => (
+                      <Th key={term.key} colSpan={2} textAlign={'center'}>
+                        {term.label}
+                      </Th>
+                    ))}
+                    <Th colSpan={2} textAlign={'center'}>
+                      Overall
+                    </Th>
+                  </Tr>
+                  <Tr>
+                    {TERMS.map((term) => (
+                      <React.Fragment key={term.key}>
+                        <Th isNumeric>Score</Th>
+                        <Th isNumeric>Position</Th>
+                      </React.Fragment>
+                    ))}
+                    <Th isNumeric>Average</Th>
+                    <Th isNumeric>Position</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {singleSubjectReport.map((row) => (
+                    <Tr key={row.student_id}>
+                      <Td>
+                        {row.student.user?.full_name ??
+                          row.student.full_code ??
+                          row.student.code}
+                      </Td>
+                      {TERMS.map((term) => (
+                        <React.Fragment key={term.key}>
+                          <Td isNumeric>
+                            {formatScore(row.term_results[term.key]?.score)}
+                          </Td>
+                          <Td isNumeric>
+                            {formatPosition(
+                              row.term_results[term.key]?.position
+                            )}
+                          </Td>
+                        </React.Fragment>
+                      ))}
+                      <Td isNumeric>{formatScore(row.overall.score)}</Td>
+                      <Td isNumeric>{formatPosition(row.overall.position)}</Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </TableContainer>
           )}
         </VStack>
       </Div>
@@ -228,30 +195,30 @@ export default function SubjectReportSheet({
   );
 }
 
-function ClassAndSessionSelector({
+function ClassSessionAndSubjectSelector({
   classification,
   academicSession,
-  term,
+  course,
   onSubmit,
 }: {
   classification?: Classification;
   academicSession?: AcademicSession;
-  term?: TermSelection;
+  course?: Course;
   onSubmit: (
     data: {
       classification: string | number;
       academicSession: string | number;
-      term: string;
+      course: string | number;
     },
     onFinish: () => void
   ) => void;
 }) {
-  const { currentAcademicSession, currentTerm } = useSharedProps();
+  const { currentAcademicSession } = useSharedProps();
   const [isLoading, setIsLoading] = useState(false);
   const webForm = useWebForm({
-    term: term ?? currentTerm,
     academicSession: academicSession?.id ?? currentAcademicSession.id,
     classification: classification?.id ?? '',
+    course: course?.id ?? '',
   });
 
   const submit = () => {
@@ -260,7 +227,7 @@ function ClassAndSessionSelector({
       {
         classification: webForm.data.classification,
         academicSession: webForm.data.academicSession,
-        term: webForm.data.term,
+        course: webForm.data.course,
       },
       () => setIsLoading(false)
     );
@@ -301,15 +268,13 @@ function ClassAndSessionSelector({
       </FormControlBox>
       <FormControlBox
         form={webForm as any}
-        formKey={'term'}
-        title="Term"
+        formKey={'course'}
+        title="Subject"
         isRequired
       >
-        <EnumSelect
-          enumData={TermType}
-          additionalEnumData={{ AllTerms: ALL_TERMS }}
-          selectValue={webForm.data.term}
-          onChange={(e: any) => webForm.setValue('term', e.value)}
+        <CourseSelect
+          selectValue={webForm.data.course}
+          onChange={(e: any) => webForm.setValue('course', e.value)}
           required
         />
       </FormControlBox>
@@ -322,4 +287,14 @@ function ClassAndSessionSelector({
       </FormControl>
     </HStack>
   );
+}
+
+function formatScore(score?: number | null) {
+  return score === undefined || score === null ? '-' : score;
+}
+
+function formatPosition(position?: number | null) {
+  return position === undefined || position === null
+    ? '-'
+    : ResultUtil.formatPosition(position);
 }

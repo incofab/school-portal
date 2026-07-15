@@ -48,10 +48,13 @@ class ProcessTermResult
     $studentsResultDetails = $this->prepareStudentResult($courseResults);
 
     $this->persistTermResult($studentsResultDetails);
-    ProcessSessionResult::run(
-      $this->classResultInfo->academicSession,
-      $this->classResultInfo->classification
-    );
+
+    if (!$this->classResultInfo->for_mid_term) {
+      ProcessSessionResult::run(
+        $this->classResultInfo->academicSession,
+        $this->classResultInfo->classification
+      );
+    }
 
     ProcessClassGroupInfo::makeFromClassResultInfo(
       $this->classResultInfo,

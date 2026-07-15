@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Institutions\Reports;
 
-use App\Actions\CourseResult\GenerateSubjectReport;
+use App\Actions\CourseResult\GenerateSingleSubjectReport;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SubjectReportRequest;
+use App\Http\Requests\SingleSubjectReportRequest;
 use App\Models\Institution;
 
-class SubjectReportController extends Controller
+class SingleSubjectReportController extends Controller
 {
   public function __construct()
   {
@@ -20,30 +20,27 @@ class SubjectReportController extends Controller
 
   public function __invoke(
     Institution $institution,
-    SubjectReportRequest $request
+    SingleSubjectReportRequest $request
   ) {
     $classification = $request->classificationObj;
     $academicSession = $request->academicSessionObj;
-    $term = $request->term;
+    $course = $request->courseObj;
 
-    $reportRows = [];
-    $reportSections = [];
-    if ($classification && $academicSession && $term) {
-      $reportSections = GenerateSubjectReport::runSections(
+    $singleSubjectReport = [];
+    if ($classification && $academicSession && $course) {
+      $singleSubjectReport = GenerateSingleSubjectReport::run(
         $classification,
         $academicSession,
-        $term,
+        $course,
         false
       );
-      $reportRows = $reportSections[0]['subjectReport'] ?? [];
     }
 
-    return inertia('institutions/reports/subject-report-sheet', [
+    return inertia('institutions/reports/single-subject-report-sheet', [
       'classification' => $classification,
       'academicSession' => $academicSession,
-      'term' => $term,
-      'subjectReport' => $reportRows,
-      'subjectReportSections' => $reportSections
+      'course' => $course,
+      'singleSubjectReport' => $singleSubjectReport
     ]);
   }
 }

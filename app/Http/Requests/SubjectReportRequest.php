@@ -6,7 +6,7 @@ use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Classification;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class SubjectReportRequest extends FormRequest
@@ -49,7 +49,13 @@ class SubjectReportRequest extends FormRequest
     return [
       'classification' => ['nullable', 'integer'],
       'academicSession' => ['nullable', 'integer'],
-      'term' => ['nullable', new Enum(TermType::class)]
+      'term' => [
+        'nullable',
+        Rule::in([
+          ...array_map(fn(TermType $term) => $term->value, TermType::cases()),
+          'all-terms'
+        ])
+      ]
     ];
   }
 }

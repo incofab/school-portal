@@ -264,6 +264,8 @@ Route::resource('/live-classes', Web\LiveClasses\LiveClassController::class)
 
 Route::get('/reports/subject-report', Web\Reports\SubjectReportController::class)
     ->name('reports.subject-report');
+Route::get('/reports/single-subject-report', Web\Reports\SingleSubjectReportController::class)
+    ->name('reports.single-subject-report');
 Route::get('/reports/grade-report', Web\Reports\GradeReportController::class)
     ->name('reports.grade-report');
 

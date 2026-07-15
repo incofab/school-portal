@@ -265,6 +265,11 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
+          label: 'Single Subject Report',
+          route: instRoute('reports.single-subject-report'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
           label: 'Student Result',
           onClick: () =>
             reportModalToggle.open({

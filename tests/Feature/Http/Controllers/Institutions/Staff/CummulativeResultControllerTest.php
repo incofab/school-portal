@@ -122,8 +122,12 @@ it(
           ->has('sessionResults', 2)
           ->where('sessionResults.0.termResults.first.total_score', 80)
           ->where('sessionResults.0.termResults.second', null)
+          ->where('sessionResults.0.summary.average', 80)
+          ->where('sessionResults.0.summary.position', 1)
           ->where('sessionResults.1.termResults.first', null)
-          ->where('sessionResults.1.termResults.second.total_score', 70);
+          ->where('sessionResults.1.termResults.second.total_score', 70)
+          ->where('sessionResults.1.summary.average', 70)
+          ->where('sessionResults.1.summary.position', 2);
       });
   }
 );

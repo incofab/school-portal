@@ -2,6 +2,7 @@
 
 namespace App\Actions\CourseResult;
 
+use App\Actions\ResultUtil;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Classification;
@@ -65,28 +66,35 @@ class FormatCummulativeResult
         'student.termResults' => fn($query) => $query
           ->where('academic_session_id', $this->academicSession->id)
           ->where('classification_id', $this->classification->id)
+          ->where('for_mid_term', false)
           ->whereIn('term', $terms),
         'student.courseResults' => fn($query) => $query
           ->where('academic_session_id', $this->academicSession->id)
           ->where('classification_id', $this->classification->id)
+          ->where('for_mid_term', false)
           ->whereIn('term', $terms)
       ])
       ->orderBy('id')
       ->get();
 
+    $formattedSessionResults = $sessionResults
+      ->filter(fn(SessionResult $sessionResult) => $sessionResult->student)
+      ->map(
+        fn(SessionResult $sessionResult) => StudentSessionResultFormat::run(
+          $sessionResult,
+          $terms
+        )
+      )
+      ->values();
+
+    $formattedSessionResults = CummulativeResultSummary::apply(
+      $formattedSessionResults
+    );
+
     return [
       'terms' => $terms,
       'coursesByTerm' => $coursesByTerm,
-      'sessionResults' => $sessionResults
-        ->filter(fn(SessionResult $sessionResult) => $sessionResult->student)
-        ->map(
-          fn(SessionResult $sessionResult) => StudentSessionResultFormat::run(
-            $sessionResult,
-            $terms
-          )
-        )
-        ->values()
-        ->all(),
+      'sessionResults' => $formattedSessionResults->all(),
       'courses' => [
         'firstTermCourses' => $coursesByTerm[TermType::First->value] ?? [],
         'secondTermCourses' => $coursesByTerm[TermType::Second->value] ?? [],
@@ -111,6 +119,7 @@ class FormatCummulativeResult
       ->join('course_results', 'courses.id', 'course_results.course_id')
       ->where('course_results.academic_session_id', $this->academicSession->id)
       ->where('course_results.classification_id', $this->classification->id)
+      ->where('course_results.for_mid_term', false)
       ->whereIn('course_results.term', $terms)
       ->orderedByCourseOrder()
       ->orderBy('courses.title')
@@ -126,6 +135,66 @@ class FormatCummulativeResult
             ->all()
         ]
       )
+      ->all();
+  }
+}
+
+class CummulativeResultSummary
+{
+  /**
+   * @param Collection<int, array{
+   *   student: Student,
+   *   termResults: array<string, TermResult|null>,
+   *   courseResults: array<string, array<int, CourseResult>>
+   * }> $sessionResults
+   */
+  public static function apply(Collection $sessionResults): Collection
+  {
+    $averagesByStudent = self::averagesByStudent($sessionResults);
+    $positionsByStudent = collect(
+      ResultUtil::assignPositions($averagesByStudent)
+    )->mapWithKeys(
+      fn($assignedPosition) => [
+        $assignedPosition->getId() => $assignedPosition->getPosition()
+      ]
+    );
+
+    return $sessionResults->map(function (array $sessionResult) use (
+      $averagesByStudent,
+      $positionsByStudent
+    ) {
+      $studentId = $sessionResult['student']->id;
+
+      return [
+        ...$sessionResult,
+        'summary' => [
+          'average' => $averagesByStudent[$studentId] ?? null,
+          'position' => $positionsByStudent[$studentId] ?? null
+        ]
+      ];
+    });
+  }
+
+  private static function averagesByStudent(Collection $sessionResults): array
+  {
+    return $sessionResults
+      ->mapWithKeys(function (array $sessionResult) {
+        $termAverages = collect($sessionResult['termResults'])
+          ->filter(
+            fn(?TermResult $termResult) => $termResult?->average !== null
+          )
+          ->map(fn(TermResult $termResult) => $termResult->average)
+          ->values();
+
+        if ($termAverages->isEmpty()) {
+          return [];
+        }
+
+        return [
+          $sessionResult['student']->id =>
+            $termAverages->sum() / $termAverages->count()
+        ];
+      })
       ->all();
   }
 }
