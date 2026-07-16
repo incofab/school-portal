@@ -87,7 +87,7 @@ it(
       ->create(['amount' => 400]);
 
     actingAs($admin)
-      ->post(
+      ->postJson(
         route('managers.billings.store'),
         billingPayload($priceList->institutionGroup, [
           'amount' => 100,

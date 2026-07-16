@@ -43,7 +43,13 @@ beforeEach(function () {
 it('renders the term details page with expected data', function () {
     actingAs($this->instAdmin)
         ->get($this->getRoute)
-        ->assertStatus(401);
+        ->assertOk()
+        ->assertInertia(
+            fn ($page) => $page
+                ->component('institutions/term-details/list-term-details')
+                ->has('termDetails')
+                ->missing('termDetail')
+        );
     ($this->seedSetting)();
     $studentUser = User::factory()
         ->student($this->institution)
@@ -63,6 +69,10 @@ it('renders the term details page with expected data', function () {
 });
 
 it('opens a create page for the current term detail with saturday and sunday inactive by default', function () {
+    actingAs($this->instAdmin)
+        ->get($this->createRoute)
+        ->assertStatus(401);
+
     ($this->seedSetting)();
 
     actingAs($this->instAdmin)
