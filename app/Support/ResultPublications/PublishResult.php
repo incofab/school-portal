@@ -124,7 +124,8 @@ abstract class PublishResult
       CommissionHandler::make($reference)->creditPartners(
         $this->institutionGroup,
         $amountToPay,
-        $dTransaction
+        $dTransaction,
+        $this->getPartnerCommissionAmount($amountToPay)
       );
     }
     DB::commit();
@@ -142,6 +143,20 @@ abstract class PublishResult
     }
 
     return successRes('Result published successfully');
+  }
+
+  private function getPartnerCommissionAmount(float $amountToPay): ?float
+  {
+    if ($this->priceList->partner_commission <= 0) {
+      return null;
+    }
+
+    if ($this->priceList->amount <= 0) {
+      return null;
+    }
+
+    return ($amountToPay / $this->priceList->amount) *
+      $this->priceList->partner_commission;
   }
 
   public function sendResultsToGuardians()

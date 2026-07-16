@@ -34,6 +34,7 @@ import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
 import { useResultSetting } from '@/util/result-util';
 import { roundNumber } from '@/util/util';
+import DateTimeDisplay from '@/components/date-time-display';
 
 interface GradeReportItem {
   grade: string;
@@ -116,6 +117,10 @@ export default function ListTermResults({
     {
       label: 'Remark',
       value: 'remark',
+    },
+    {
+      label: 'Date',
+      render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
     },
     {
       label: 'Action',

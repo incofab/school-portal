@@ -68,7 +68,8 @@ class SeedSetupData
       [
         'type' => PriceType::ResultChecking->value,
         'payment_structure' => PaymentStructure::PerStudentPerTerm->value,
-        'amount' => 400
+        'amount' => 400,
+        'partner_commission' => 0
       ]
     ];
 
@@ -81,7 +82,8 @@ class SeedSetupData
         ],
         [
           'payment_structure' => $priceList['payment_structure'],
-          'amount' => $priceList['amount']
+          'amount' => $priceList['amount'],
+          'partner_commission' => $priceList['partner_commission']
         ]
       );
     }

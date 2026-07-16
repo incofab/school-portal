@@ -24,6 +24,7 @@ import DestructivePopover from '@/components/destructive-popover';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import { InertiaLink } from '@inertiajs/inertia-react';
+import DateTimeDisplay from '@/components/date-time-display';
 
 interface Props {
   courseTeacher?: CourseTeacher;
@@ -130,6 +131,10 @@ export default function ListCourseResults({
     {
       label: 'Teacher',
       value: 'teacher.full_name',
+    },
+    {
+      label: 'Date',
+      render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
     },
     ...(isStaff
       ? [

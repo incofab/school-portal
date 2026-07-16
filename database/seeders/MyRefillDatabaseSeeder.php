@@ -128,7 +128,8 @@ class MyRefillDatabaseSeeder extends Seeder
         PaymentStructure::PerStudentPerTerm->value,
         PaymentStructure::PerStudentPerSession->value
       ]),
-      'amount' => rand(300, 20000)
+      'amount' => rand(300, 20000),
+      'partner_commission' => 0
     ];
 
     PriceList::query()->updateOrCreate(

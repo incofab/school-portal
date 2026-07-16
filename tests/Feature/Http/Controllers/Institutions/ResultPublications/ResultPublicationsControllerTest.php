@@ -8,7 +8,6 @@ use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\InstitutionSetting;
-use App\Models\PriceList;
 use App\Models\ResultPublication;
 use App\Models\TermResult;
 use App\Support\SettingsHandler;
@@ -542,3 +541,56 @@ it('credits partners after successful result publication', function () {
     'amount' => $expectedCommission
   ]);
 });
+
+it(
+  'credits fixed price-list partner commission and referral commission from the fixed amount',
+  function () {
+    $this->priceList
+      ->fill([
+        'payment_structure' => PaymentStructure::PerStudentPerTerm,
+        'amount' => 400,
+        'partner_commission' => 100
+      ])
+      ->save();
+    $this->institutionGroup->fill(['credit_wallet' => 2000])->save();
+    $referringPartner = Partner::factory()
+      ->withReferral($this->institutionGroup)
+      ->create();
+    $partner = $referringPartner->referrals()->first();
+
+    TermResult::factory(5)
+      ->withInstitution($this->institution)
+      ->for($this->academicSession, 'academicSession')
+      ->create([
+        'classification_id' => $this->classes->first()->id,
+        'term' => $this->term->value
+      ]);
+
+    postJson(
+      route('institutions.result-publications.store', $this->institution),
+      ['classifications' => [$this->classes->first()->id]]
+    )->assertOk();
+
+    $publication = ResultPublication::latest()->first();
+    $transaction = $publication->transaction;
+    $expectedPartnerCommission = ($transaction->amount / 400) * 100;
+    $expectedReferralCommission =
+      $expectedPartnerCommission * ($partner->referral_commission / 100);
+
+    expect($expectedPartnerCommission)->toBe(500.0);
+    expect($expectedReferralCommission)->toBe(50.0);
+
+    $this->assertDatabaseHas('commissions', [
+      'partner_id' => $partner->id,
+      'commissionable_id' => $transaction->id,
+      'commissionable_type' => $transaction->getMorphClass(),
+      'amount' => $expectedPartnerCommission
+    ]);
+    $this->assertDatabaseHas('commissions', [
+      'partner_id' => $referringPartner->id,
+      'commissionable_id' => $transaction->id,
+      'commissionable_type' => $transaction->getMorphClass(),
+      'amount' => $expectedReferralCommission
+    ]);
+  }
+);

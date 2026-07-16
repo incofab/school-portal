@@ -34,6 +34,7 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
+import DateTimeDisplay from '@/components/date-time-display';
 
 interface Props {
   courseResultInfo: PaginationResponse<CourseResultInfo>;
@@ -103,6 +104,10 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
     {
       label: 'Average',
       value: 'average',
+    },
+    {
+      label: 'Date',
+      render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
     },
     {
       label: 'Action',

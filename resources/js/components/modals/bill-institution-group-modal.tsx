@@ -33,15 +33,12 @@ export default function BillInstitutionGroupModal({
     billable: priceList?.type ?? '',
     payment_structure: priceList?.payment_structure ?? '',
     amount: priceList?.amount ?? '',
+    partner_commission: priceList?.partner_commission ?? '',
   });
 
   const onSubmit = async () => {
     const res = await webForm.submit((data, web) =>
-      web.post(
-        route('managers.billings.store', {
-          ...data,
-        })
-      )
+      web.post(route('managers.billings.store'), data)
     );
 
     if (!handleResponseToast(res)) {
@@ -111,8 +108,19 @@ export default function BillInstitutionGroupModal({
             form={webForm as any}
             formKey="amount"
             title="Amount"
+            type="number"
             isRequired
           />
+
+          {priceList && (
+            <InputForm
+              form={webForm as any}
+              formKey="partner_commission"
+              title="Partner Commission"
+              type="number"
+              isRequired
+            />
+          )}
         </VStack>
       }
       footerContent={

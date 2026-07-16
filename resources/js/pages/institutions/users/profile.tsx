@@ -1,5 +1,6 @@
 import { Div } from '@/components/semantic';
 import {
+  Box,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -14,6 +15,9 @@ import {
   Tooltip,
   Icon,
   Spinner,
+  VStack,
+  SimpleGrid,
+  Badge,
 } from '@chakra-ui/react';
 import React, { ChangeEvent } from 'react';
 import {
@@ -154,15 +158,7 @@ export default function Profile({ user, institutionUser }: Props) {
   ];
 
   return (
-    <div>
-      <HStack align={'stretch'} my={2}>
-        {isStaff && (
-          <BrandButton
-            title="Download Result Recording Sheet"
-            onClick={downloadRecordingSheetModalToggle.open}
-          />
-        )}
-      </HStack>
+    <Box>
       <Slab>
         <SlabHeading
           title={
@@ -172,106 +168,190 @@ export default function Profile({ user, institutionUser }: Props) {
           }
         />
         <SlabBody>
-          <Grid templateColumns={{ lg: 'repeat(3, 1fr)' }} gap={4}>
-            <GridItem colSpan={{ lg: 2 }}>
-              <Dt contentData={profileData} spacing={4} labelWidth={'150px'} />
-              <SuspensionToggleButton
-                institutionUser={institutionUser}
-                showLabel={true}
-              />
-            </GridItem>
-            <GridItem colSpan={{ lg: 1 }}>
-              <HStack>
-                {currentUser.id !== user.id && isAdmin && (
-                  <>
-                    <BrandButton
-                      title="Change Role"
-                      onClick={changeRoleModalToggle.open}
-                    />
-                    <DestructivePopover
-                      label={`Reset user's password to default?`}
-                      onConfirm={(onClose) => resetPassword(onClose)}
-                      isLoading={form.processing}
-                      positiveButtonLabel="Reset"
-                    >
-                      <Button colorScheme="brand" variant={'solid'} size={'sm'}>
-                        Reset Password
-                      </Button>
-                    </DestructivePopover>
-                  </>
-                )}
-                {isStaff && student && (
-                  <>
-                    <Button
-                      as={InertiaLink}
-                      href={instRoute('students.transcript', [student])}
-                      variant={'outline'}
-                      colorScheme="brand"
-                      size={'sm'}
-                    >
-                      Transcript
-                    </Button>
-                    <BrandButton
-                      title="Generate Result Pin"
-                      onClick={() => generateResultPin(student)}
-                    />
-                  </>
-                )}
-              </HStack>
-              <FormControl isInvalid={!!form.errors.photo}>
-                <Div
-                  mt={{ lg: 4 }}
-                  display={'flex'}
-                  alignItems={'center'}
-                  flexDirection={{ base: 'column' }}
+          <Grid templateColumns={{ lg: 'minmax(0, 1fr) 320px' }} gap={5}>
+            <GridItem>
+              <VStack align="stretch" spacing={5}>
+                <Box
+                  borderWidth="1px"
+                  borderColor="gray.200"
+                  borderRadius="8px"
+                  p={{ base: 4, md: 5 }}
                 >
+                  <HStack spacing={4} align="start" flexWrap="wrap">
+                    <Avatar size="lg" src={form.data.photo || user.photo} />
+                    <Box>
+                      <Text fontSize="xl" fontWeight="bold">
+                        {user.full_name}
+                      </Text>
+                      <HStack spacing={2} mt={1} flexWrap="wrap">
+                        <Badge colorScheme="brand">
+                          {startCase(institutionUser.role)}
+                        </Badge>
+                        {student && (
+                          <Badge colorScheme="purple">
+                            {student.classification?.title ?? 'Student'}
+                          </Badge>
+                        )}
+                      </HStack>
+                      <Text fontSize="sm" color="gray.600" mt={2}>
+                        {user.email || user.phone || 'No contact detail'}
+                      </Text>
+                    </Box>
+                  </HStack>
+                </Box>
+
+                <Box
+                  borderWidth="1px"
+                  borderColor="gray.200"
+                  borderRadius="8px"
+                  p={{ base: 4, md: 5 }}
+                >
+                  <VStack align="stretch" spacing={4}>
+                    <Box>
+                      <Text fontWeight="semibold">Profile Details</Text>
+                      <Text fontSize="sm" color="gray.600">
+                        Personal, account, and school-assignment information.
+                      </Text>
+                    </Box>
+                    <Dt
+                      contentData={profileData}
+                      spacing={4}
+                      labelWidth={'150px'}
+                    />
+                    <SuspensionToggleButton
+                      institutionUser={institutionUser}
+                      showLabel={true}
+                    />
+                  </VStack>
+                </Box>
+              </VStack>
+            </GridItem>
+
+            <GridItem>
+              <VStack align="stretch" spacing={4}>
+                <Box
+                  borderWidth="1px"
+                  borderColor="gray.200"
+                  borderRadius="8px"
+                  p={5}
+                >
+                  <VStack align="stretch" spacing={3}>
+                    <Text fontWeight="semibold">Quick Actions</Text>
+                    <SimpleGrid columns={1} spacing={2}>
+                      {isStaff && (
+                        <BrandButton
+                          title="Download Result Recording Sheet"
+                          onClick={downloadRecordingSheetModalToggle.open}
+                        />
+                      )}
+                      {currentUser.id !== user.id && isAdmin && (
+                        <>
+                          <BrandButton
+                            title="Change Role"
+                            onClick={changeRoleModalToggle.open}
+                          />
+                          <DestructivePopover
+                            label={`Reset user's password to default?`}
+                            onConfirm={(onClose) => resetPassword(onClose)}
+                            isLoading={form.processing}
+                            positiveButtonLabel="Reset"
+                          >
+                            <Button
+                              colorScheme="brand"
+                              variant="outline"
+                              size="sm"
+                              w="100%"
+                            >
+                              Reset Password
+                            </Button>
+                          </DestructivePopover>
+                        </>
+                      )}
+                      {isStaff && student && (
+                        <>
+                          <Button
+                            as={InertiaLink}
+                            href={instRoute('students.transcript', [student])}
+                            variant="outline"
+                            colorScheme="brand"
+                            size="sm"
+                          >
+                            Transcript
+                          </Button>
+                          <BrandButton
+                            title="Generate Result Pin"
+                            onClick={() => generateResultPin(student)}
+                          />
+                        </>
+                      )}
+                    </SimpleGrid>
+                  </VStack>
+                </Box>
+
+                <FormControl isInvalid={!!form.errors.photo}>
                   <Div
                     display={'flex'}
                     alignItems={'center'}
-                    justifyContent={'center'}
-                    w={200}
-                    h={200}
-                    borderWidth={1}
-                    borderColor={'gray.200'}
+                    flexDirection={{ base: 'column' }}
+                    borderWidth="1px"
+                    borderColor="gray.200"
+                    borderRadius="8px"
+                    p={5}
                   >
-                    {form.processing ? (
-                      <Spinner size="xl" color="brand.500" />
-                    ) : (
-                      <Avatar
-                        size={'2xl'}
-                        src={form.data.photo || user.photo}
-                      />
-                    )}
-                  </Div>
-                  <Div mt={4} textAlign={'center'}>
-                    <FormLabel
-                      htmlFor="photo"
-                      textColor={'brand.500'}
-                      display={'inline-block'}
-                      cursor={'pointer'}
-                      m={0}
-                      p={0}
+                    <Text fontWeight="semibold" mb={4}>
+                      Profile Photo
+                    </Text>
+                    <Div
+                      display={'flex'}
+                      alignItems={'center'}
+                      justifyContent={'center'}
+                      w={200}
+                      h={200}
+                      borderWidth={1}
+                      borderColor={'gray.200'}
+                      borderRadius="8px"
+                      bg="gray.50"
                     >
-                      <Input
-                        type={'file'}
-                        id="photo"
-                        hidden
-                        accept={'image/jpeg,image/png,image/jpg'}
-                        onChange={(e) => uploadImage(e)}
-                      />
-                      Change profile photo
-                    </FormLabel>
-                    <Text fontSize={'sm'} color={'blackAlpha.700'}>
-                      Allowed extensions {extensions.join(', ')}
-                    </Text>
-                    <Text fontSize={'sm'} color={'blackAlpha.700'}>
-                      Maximum size {Math.floor(bytesToMb(MAX_FILE_SIZE_BYTES))}
-                      MB
-                    </Text>
-                    <FormErrorMessage>{form.errors.photo}</FormErrorMessage>
+                      {form.processing ? (
+                        <Spinner size="xl" color="brand.500" />
+                      ) : (
+                        <Avatar
+                          size={'2xl'}
+                          src={form.data.photo || user.photo}
+                        />
+                      )}
+                    </Div>
+                    <Div mt={4} textAlign={'center'}>
+                      <FormLabel
+                        htmlFor="photo"
+                        textColor={'brand.500'}
+                        display={'inline-block'}
+                        cursor={'pointer'}
+                        m={0}
+                        p={0}
+                      >
+                        <Input
+                          type={'file'}
+                          id="photo"
+                          hidden
+                          accept={'image/jpeg,image/png,image/jpg'}
+                          onChange={(e) => uploadImage(e)}
+                        />
+                        Change profile photo
+                      </FormLabel>
+                      <Text fontSize={'sm'} color={'blackAlpha.700'}>
+                        Allowed extensions {extensions.join(', ')}
+                      </Text>
+                      <Text fontSize={'sm'} color={'blackAlpha.700'}>
+                        Maximum size{' '}
+                        {Math.floor(bytesToMb(MAX_FILE_SIZE_BYTES))}
+                        MB
+                      </Text>
+                      <FormErrorMessage>{form.errors.photo}</FormErrorMessage>
+                    </Div>
                   </Div>
-                </Div>
-              </FormControl>
+                </FormControl>
+              </VStack>
             </GridItem>
           </Grid>
           <ChangeRoleModal
@@ -292,7 +372,7 @@ export default function Profile({ user, institutionUser }: Props) {
         {...downloadRecordingSheetModalToggle.props}
         onSuccess={() => {}}
       />
-    </div>
+    </Box>
   );
 }
 

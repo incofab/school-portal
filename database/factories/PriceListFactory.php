@@ -20,7 +20,8 @@ class PriceListFactory extends Factory
       'institution_group_id' => InstitutionGroup::factory(),
       'payment_structure' => fake()->randomElement(PaymentStructure::cases())->value,
       'type' => fake()->randomElement(PriceType::cases())->value,
-      'amount' => fake()->numberBetween(600, 3600)
+      'amount' => fake()->numberBetween(600, 3600),
+      'partner_commission' => 0
     ];
   }
   function type($type = PriceType::ResultChecking)

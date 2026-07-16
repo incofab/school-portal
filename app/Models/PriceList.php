@@ -18,6 +18,7 @@ class PriceList extends Model
     'institution_group_id' => 'integer',
     'payment_structure' => PaymentStructure::class,
     'amount' => 'float',
+    'partner_commission' => 'float',
     'type' => PriceType::class
   ];
 

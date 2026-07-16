@@ -1070,7 +1070,9 @@
               <span class="path"><code>app/Models/PriceList.php</code></span>
             </div>
             <div class="desc">
-              Represents Price List records and relationships in the system.
+              Represents Price List records, billing amount, payment structure,
+              optional fixed partner commission, and institution-group
+              relationship in the system.
             </div>
           </li>
           <li>
@@ -1282,8 +1284,9 @@
             </div>
             <div class="desc">
               Represents term-specific data, attendance dates, resumption dates,
-              active/inactive days, and the optional exam-score display override
-              for result templates.
+              active/inactive days, default inactive weekend weekdays for newly
+              created current term details, and the optional exam-score display
+              override for result templates.
             </div>
           </li>
           <li>
@@ -2465,6 +2468,22 @@
             </div>
             <div class="desc">
               Creates the price list table and its columns/keys.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong
+                >2026_07_16_000001_add_partner_commission_to_price_lists_table</strong
+              >
+              <span class="path"
+                ><code
+                  >database/migrations/2026_07_16_000001_add_partner_commission_to_price_lists_table.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Adds the fixed partner commission amount to price lists,
+              defaulting to zero for existing and newly created billing rows.
             </div>
           </li>
           <li>
@@ -4192,7 +4211,8 @@
               >
             </div>
             <div class="desc">
-              Factory for Price List model data used in tests and seed runs.
+              Factory for Price List model data used in tests and seed runs,
+              including the default zero partner commission.
             </div>
           </li>
           <li>

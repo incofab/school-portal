@@ -1167,8 +1167,18 @@
           </li>
           <li>
             <code>routes/institution.php</code> —
-            Route::get(&#x27;/term-details/{termDetail?}&#x27;,
+            Route::get(&#x27;/term-details&#x27;,
             [Web\Staff\TermDetailController::class, &#x27;index&#x27;])
+          </li>
+          <li>
+            <code>routes/institution.php</code> —
+            Route::get(&#x27;/term-details/create&#x27;,
+            [Web\Staff\TermDetailController::class, &#x27;create&#x27;])
+          </li>
+          <li>
+            <code>routes/institution.php</code> —
+            Route::get(&#x27;/term-details/{termDetail}/edit&#x27;,
+            [Web\Staff\TermDetailController::class, &#x27;edit&#x27;])
           </li>
           <li>
             <code>routes/institution.php</code> —
@@ -5200,8 +5210,9 @@
               >
             </div>
             <div class="desc">
-              HTTP controller for Billings, handling requests, authorization,
-              and responses.
+              HTTP controller for Billings, handling admin-only price-list
+              create/update requests, full-price validation, and optional fixed
+              partner commission edits.
             </div>
           </li>
           <li>
@@ -7281,7 +7292,9 @@
             </div>
             <div class="desc">
               Support/helper class for partner commission credit/debit/refund
-              wallet operations and commission audit events.
+              wallet operations, including default percentage commissions, fixed
+              price-list partner commissions, referral percentages, and
+              commission audit events.
             </div>
           </li>
           <li>
@@ -7614,8 +7627,9 @@
               >
             </div>
             <div class="desc">
-              Support/helper class for Publish Result utilities and shared
-              operations.
+              Support/helper class for Publish Result utilities, billing,
+              transaction deduction, and price-list partner commission
+              calculation.
             </div>
           </li>
           <li>

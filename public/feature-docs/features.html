@@ -809,19 +809,25 @@
             academic session and term settings, configurable institution-scoped
             user full-name display order, institution-level search endpoints,
             and contextual dashboard guide explanations for critical institution
-            pages. Result settings include the default result template, position
-            display behavior, and whether exam scores appear on result sheets
-            for no terms, mid-term only, full-term only, or both result periods.
-            Payment credential changes now emit security audit events that
-            record provider/key presence summaries without storing key values.
-            Admin and accountant dashboards now include a top attention section
-            showing unread chats, the current pending manual-payment count with
-            a quick link to review requests, plus a bank-account configuration
-            prompt when the institution group has not added any bank accounts
-            yet. Shared props expose current institution, session, term, and
-            role context to the React app. Institution photos and setting images
-            are now tracked in the shared media table before the S3 upload
-            completes. Setting persistence is centralized in
+            pages. Institution and user profile pages use grouped, modernized
+            profile panels. Term-detail listing is separate from a dedicated
+            create/update page organized into calendar, attendance/result,
+            weekly closure, and exception-date sections, and newly created
+            current term details default Saturdays and Sundays as inactive
+            weekdays. Result settings include the default result
+            template, position display behavior, and whether exam scores appear
+            on result sheets for no terms, mid-term only, full-term only, or
+            both result periods. Payment credential changes now emit security
+            audit events that record provider/key presence summaries without
+            storing key values. Admin and accountant dashboards now include a
+            top attention section showing unread chats, the current pending
+            manual-payment count with a quick link to review requests, plus a
+            bank-account configuration prompt when the institution group has not
+            added any bank accounts yet. Shared props expose current
+            institution, session, term, and role context to the React app.
+            Institution photos and setting images are now tracked in the shared
+            media table before the S3 upload completes. Setting persistence is
+            centralized in
             <code>SaveInstitutionSetting</code> so controllers and setup flows
             use the same validation, media handling, array serialization, and
             payment-key audit behavior.
@@ -1280,14 +1286,17 @@
             teacher, session, term, count, and old/new score metadata. Result
             publication reads a fresh copy of the institution's current session
             and term settings before billing/publishing so repeated publish
-            requests in the same process use the latest settings. Term details
-            can override the institution default for whether exam scores appear
-            on result templates; when unset, the institution result setting
-            controls templates 1 through 8. Institutions can preview their
-            selected result template from result settings; the preview renders a
-            non-persisted dummy result sheet with 10 to 14 subjects, using
-            existing institution courses where available and fallback subjects
-            when needed.
+            requests in the same process use the latest settings. Platform
+            admins can set a fixed partner commission on result-checking price
+            lists; result publication uses it instead of the partner percentage
+            and credits any referring partner as a percentage of that fixed
+            partner commission. Term details can override the institution
+            default for whether exam scores appear on result templates; when
+            unset, the institution result setting controls templates 1 through
+            8. Institutions can preview their selected result template from
+            result settings; the preview renders a non-persisted dummy result
+            sheet with 10 to 14 subjects, using existing institution courses
+            where available and fallback subjects when needed.
           </p>
           <p>
             Course result upserts are protected by lookup constraints on

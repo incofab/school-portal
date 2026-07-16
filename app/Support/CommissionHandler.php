@@ -26,7 +26,8 @@ class CommissionHandler
   public function creditPartners(
     InstitutionGroup $institutionGroup,
     float $amountSpent,
-    ?Model $commissionable
+    ?Model $commissionable,
+    ?float $partnerCommissionAmount = null
   ) {
     $partner = $institutionGroup->partner?->partner;
 
@@ -34,7 +35,10 @@ class CommissionHandler
       return;
     }
 
-    $commission = $amountSpent * ($partner->commission / 100);
+    $commission =
+      $partnerCommissionAmount && $partnerCommissionAmount > 0
+        ? $partnerCommissionAmount
+        : $amountSpent * ($partner->commission / 100);
 
     $transactionable = ModelAudit::withoutAuditingFor(
       Commission::class,
@@ -54,7 +58,11 @@ class CommissionHandler
       return;
     }
 
-    $refCommission = $amountSpent * ($partner->referral_commission / 100);
+    $refCommissionBase =
+      $partnerCommissionAmount && $partnerCommissionAmount > 0
+        ? $commission
+        : $amountSpent;
+    $refCommission = $refCommissionBase * ($partner->referral_commission / 100);
 
     $transactionable = ModelAudit::withoutAuditingFor(
       Commission::class,

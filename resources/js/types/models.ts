@@ -1213,6 +1213,7 @@ export interface Billing extends Row {
   institution_group_id: string;
   payment_structure: string;
   amount: number;
+  partner_commission: number;
   institution_group: InstitutionGroup;
 }
 

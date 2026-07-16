@@ -17,6 +17,7 @@ class PriceListSeeder extends Seeder
             'institution_group_id' => 29,
             'payment_structure' => PaymentStructure::PerStudentPerTerm->value,
             'amount' => 500,
+            'partner_commission' => 0,
         ]);
     }
 }

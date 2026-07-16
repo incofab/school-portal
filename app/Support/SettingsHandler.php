@@ -218,6 +218,8 @@ class SettingsHandler
         'academic_session_id' => $academicSessionId,
         'term' => $term,
         'for_mid_term' => $this->isOnMidTerm()
+      ], [
+        'inactive_weekdays' => [5, 6]
       ]);
   }
 

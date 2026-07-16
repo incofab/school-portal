@@ -1,5 +1,6 @@
 import { Div } from '@/components/semantic';
 import {
+  Box,
   Button,
   FormControl,
   FormErrorMessage,
@@ -12,6 +13,8 @@ import {
   Text,
   Avatar,
   Spinner,
+  HStack,
+  SimpleGrid,
 } from '@chakra-ui/react';
 import React, { ChangeEvent } from 'react';
 import {
@@ -82,84 +85,145 @@ export default function InstitutionProfile({ institution }: Props) {
   }
 
   return (
-    <div>
+    <Box>
       <Slab>
-        <SlabHeading title={`${institution.name}'s Profile`} />
+        <SlabHeading title="Institution Profile" />
         <SlabBody>
           <form onSubmit={preventNativeSubmit(onSubmit)}>
-            <Grid templateColumns={{ lg: 'repeat(3, 1fr)' }} gap={4}>
-              <GridItem colSpan={{ lg: 2 }}>
-                <VStack spacing={4}>
-                  <FormControlBox form={form} formKey="name" title="Name">
-                    <Input
-                      id="name"
-                      value={form.data.name}
-                      onChange={(e) =>
-                        form.setValue('name', e.currentTarget.value)
-                      }
-                    />
-                  </FormControlBox>
-                  <InputForm
-                    form={form as any}
-                    formKey="subtitle"
-                    title="Sub Title [optional]"
-                    onChange={(e) =>
-                      form.setValue('subtitle', e.currentTarget.value)
-                    }
-                  />
-                  <InputForm
-                    form={form as any}
-                    formKey="caption"
-                    title="Caption [optional]"
-                    onChange={(e) =>
-                      form.setValue('caption', e.currentTarget.value)
-                    }
-                  />
-                  <FormControlBox form={form} formKey="phone" title="Phone">
-                    <Input
-                      id="phone"
-                      value={form.data.phone}
-                      onChange={(e) =>
-                        form.setValue('phone', e.currentTarget.value)
-                      }
-                    />
-                  </FormControlBox>
-                  <FormControlBox form={form} formKey="email" title="Email">
-                    <Input
-                      id="email"
-                      value={form.data.email}
-                      onChange={(e) =>
-                        form.setValue('email', e.currentTarget.value)
-                      }
-                    />
-                  </FormControlBox>
-                  <FormControlBox form={form} formKey="address" title="Address">
-                    <Input
-                      id="address"
-                      value={form.data.address}
-                      onChange={(e) =>
-                        form.setValue('address', e.currentTarget.value)
-                      }
-                    />
-                  </FormControlBox>
-                  <InputForm
-                    form={form as any}
-                    formKey="website"
-                    title="Website URL [optional]"
-                    onChange={(e) =>
-                      form.setValue('website', e.currentTarget.value)
-                    }
-                  />
+            <Grid templateColumns={{ lg: 'minmax(0, 1fr) 300px' }} gap={5}>
+              <GridItem>
+                <VStack spacing={5} align="stretch">
+                  <Box
+                    borderWidth="1px"
+                    borderColor="gray.200"
+                    borderRadius="8px"
+                    p={{ base: 4, md: 5 }}
+                  >
+                    <VStack align="stretch" spacing={4}>
+                      <Box>
+                        <Text fontWeight="semibold">School Identity</Text>
+                        <Text fontSize="sm" color="gray.600">
+                          These details appear across the dashboard, documents,
+                          and printable outputs.
+                        </Text>
+                      </Box>
+                      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                        <FormControlBox form={form} formKey="name" title="Name">
+                          <Input
+                            id="name"
+                            value={form.data.name}
+                            onChange={(e) =>
+                              form.setValue('name', e.currentTarget.value)
+                            }
+                          />
+                        </FormControlBox>
+                        <InputForm
+                          form={form as any}
+                          formKey="subtitle"
+                          title="Sub Title"
+                          onChange={(e) =>
+                            form.setValue('subtitle', e.currentTarget.value)
+                          }
+                        />
+                        <Box gridColumn={{ md: '1 / -1' }}>
+                          <InputForm
+                            form={form as any}
+                            formKey="caption"
+                            title="Caption"
+                            onChange={(e) =>
+                              form.setValue('caption', e.currentTarget.value)
+                            }
+                          />
+                        </Box>
+                      </SimpleGrid>
+                    </VStack>
+                  </Box>
+
+                  <Box
+                    borderWidth="1px"
+                    borderColor="gray.200"
+                    borderRadius="8px"
+                    p={{ base: 4, md: 5 }}
+                  >
+                    <VStack align="stretch" spacing={4}>
+                      <Box>
+                        <Text fontWeight="semibold">Contact Information</Text>
+                        <Text fontSize="sm" color="gray.600">
+                          Keep contact channels current for staff, guardians,
+                          and public-facing records.
+                        </Text>
+                      </Box>
+                      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                        <FormControlBox
+                          form={form}
+                          formKey="phone"
+                          title="Phone"
+                        >
+                          <Input
+                            id="phone"
+                            value={form.data.phone}
+                            onChange={(e) =>
+                              form.setValue('phone', e.currentTarget.value)
+                            }
+                          />
+                        </FormControlBox>
+                        <FormControlBox
+                          form={form}
+                          formKey="email"
+                          title="Email"
+                        >
+                          <Input
+                            id="email"
+                            value={form.data.email}
+                            onChange={(e) =>
+                              form.setValue('email', e.currentTarget.value)
+                            }
+                          />
+                        </FormControlBox>
+                        <Box gridColumn={{ md: '1 / -1' }}>
+                          <FormControlBox
+                            form={form}
+                            formKey="address"
+                            title="Address"
+                          >
+                            <Input
+                              id="address"
+                              value={form.data.address}
+                              onChange={(e) =>
+                                form.setValue('address', e.currentTarget.value)
+                              }
+                            />
+                          </FormControlBox>
+                        </Box>
+                        <Box gridColumn={{ md: '1 / -1' }}>
+                          <InputForm
+                            form={form as any}
+                            formKey="website"
+                            title="Website URL"
+                            onChange={(e) =>
+                              form.setValue('website', e.currentTarget.value)
+                            }
+                          />
+                        </Box>
+                      </SimpleGrid>
+                    </VStack>
+                  </Box>
                 </VStack>
               </GridItem>
-              <GridItem colSpan={{ lg: 1 }}>
+              <GridItem>
                 <FormControl isInvalid={!!form.errors.photo}>
                   <Div
-                    mt={{ lg: 4 }}
                     display={'flex'}
                     alignItems={'center'}
                     flexDirection={{ base: 'column' }}
+                    borderWidth="1px"
+                    borderColor="gray.200"
+                    borderRadius="8px"
+                    p={5}
                   >
+                    <Text fontWeight="semibold" mb={4}>
+                      Brand Photo
+                    </Text>
                     <Div
                       display={'flex'}
                       alignItems={'center'}
@@ -168,6 +232,8 @@ export default function InstitutionProfile({ institution }: Props) {
                       h={200}
                       borderWidth={1}
                       borderColor={'gray.200'}
+                      borderRadius="8px"
+                      bg="gray.50"
                     >
                       {form.processing ? (
                         <Spinner size="xl" color="brand.500" />
@@ -206,7 +272,7 @@ export default function InstitutionProfile({ institution }: Props) {
                 </FormControl>
               </GridItem>
             </Grid>
-            <Div mt={4} alignSelf={'start'}>
+            <HStack mt={5} justify="end">
               <Button
                 type="submit"
                 isLoading={form.processing}
@@ -215,11 +281,11 @@ export default function InstitutionProfile({ institution }: Props) {
               >
                 Save
               </Button>
-            </Div>
+            </HStack>
           </form>
         </SlabBody>
       </Slab>
-    </div>
+    </Box>
   );
 }
 

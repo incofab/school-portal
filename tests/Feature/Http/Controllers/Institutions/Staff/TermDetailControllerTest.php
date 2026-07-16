@@ -17,6 +17,9 @@ beforeEach(function () {
     $this->getRoute = route('institutions.term-details.index', [
         'institution' => $this->institution->uuid,
     ]);
+    $this->createRoute = route('institutions.term-details.create', [
+        'institution' => $this->institution->uuid,
+    ]);
     SettingsHandler::clear();
     $this->seedSetting = function () {
         InstitutionSetting::factory()
@@ -55,8 +58,51 @@ it('renders the term details page with expected data', function () {
         ->assertInertia(
             fn ($page) => $page
                 ->component('institutions/term-details/list-term-details')
-                ->has('termDetail')
                 ->has('termDetails')
+        );
+});
+
+it('opens a create page for the current term detail with saturday and sunday inactive by default', function () {
+    ($this->seedSetting)();
+
+    actingAs($this->instAdmin)
+        ->get($this->createRoute)
+        ->assertOk()
+        ->assertInertia(
+            fn ($page) => $page
+                ->component('institutions/term-details/create-edit-term-detail')
+                ->where('termDetail.inactive_weekdays', [5, 6])
+                ->where('mode', 'create')
+        );
+
+    SettingsHandler::clear();
+
+    actingAs($this->instAdmin)
+        ->get($this->getRoute)
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->missing('termDetail'));
+
+    $this->assertDatabaseHas('term_details', [
+        'institution_id' => $this->institution->id,
+    ]);
+});
+
+it('opens the term detail edit page for an existing record', function () {
+    ($this->createTermDetail)();
+
+    $editRoute = route('institutions.term-details.edit', [
+        $this->institution->uuid,
+        $this->termDetail->id,
+    ]);
+
+    actingAs($this->instAdmin)
+        ->get($editRoute)
+        ->assertOk()
+        ->assertInertia(
+            fn ($page) => $page
+                ->component('institutions/term-details/create-edit-term-detail')
+                ->where('termDetail.id', $this->termDetail->id)
+                ->where('mode', 'edit')
         );
 });
 

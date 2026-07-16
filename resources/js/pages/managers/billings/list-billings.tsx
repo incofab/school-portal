@@ -43,6 +43,11 @@ export default function ListBillings({ billings, institutionGroups }: Props) {
       render: (row) => '₦ ' + NumberFormatter(row.amount),
     },
     {
+      label: 'Partner Commission',
+      value: 'partner_commission',
+      render: (row) => '₦ ' + NumberFormatter(row.partner_commission ?? 0),
+    },
+    {
       label: 'Payment Structure',
       value: 'payment_structure',
       render: (row) => row.payment_structure,
