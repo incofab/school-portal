@@ -2500,6 +2500,17 @@
             Web\Users\ListUsersController::class)-&gt;name(&#x27;users.index&#x27;);
           </li>
           <li>
+            <code>routes/manager.php</code> — Route::get(&#x27;/partners&#x27;,
+            [Web\Partners\PartnerController::class,
+            &#x27;index&#x27;])-&gt;name(&#x27;partners.index&#x27;);
+          </li>
+          <li>
+            <code>routes/manager.php</code> —
+            Route::post(&#x27;/partners/{partner}&#x27;,
+            [Web\Partners\PartnerController::class,
+            &#x27;update&#x27;])-&gt;name(&#x27;partners.update&#x27;);
+          </li>
+          <li>
             <code>routes/manager.php</code> — Route::get(&#x27;/create&#x27;,
             [Web\ManagerController::class, &#x27;create&#x27;])
           </li>
@@ -5334,6 +5345,21 @@
             <div class="desc">
               HTTP controller for Partner Registration Requests, handling
               requests, authorization, and responses.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>PartnerController</strong>
+              <span class="path"
+                ><code
+                  >app/Http/Controllers/Managers/Partners/PartnerController.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Admin manager controller for listing partner accounts with their
+              admins and updating partner account metadata, referrals, and
+              commission rates.
             </div>
           </li>
           <li>

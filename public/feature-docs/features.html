@@ -682,17 +682,19 @@
             records. Public admission routes also support institution-scoped
             form search and purchase flows. Partner records now support multiple
             assigned users through partner user memberships, with each user
-            limited to one partner and membership roles of admin or staff.
-            Partner admins can maintain the partner/company name shown on their
-            partner dashboard.
+            limited to one partner and membership roles of admin or staff. Admin
+            managers can list partner accounts, see their partner admins, and
+            update partner account metadata and commission rates. Partner admins
+            can maintain the partner/company name shown on their partner
+            dashboard.
           </p>
           <ul>
             <li>
               Routes: public <code>register/{partner?}</code>,
               <code>partner-registration</code>, manager
               <code>registration-requests</code>,
-              <code>partner-registrations</code>, <code>partner-users</code>,
-              <code>institutions/create</code>.
+              <code>partner-registrations</code>, <code>partners</code>,
+              <code>partner-users</code>, <code>institutions/create</code>.
             </li>
             <li>
               Controllers:
@@ -703,7 +705,8 @@
               >,
               <code
                 >Managers/PartnerRequests/PartnerRegistrationRequestsController</code
-              >, <code>Managers/PartnerUsers/PartnerUserController</code>,
+              >, <code>Managers/Partners/PartnerController</code>,
+              <code>Managers/PartnerUsers/PartnerUserController</code>,
               <code
                 >Managers/Institutions/InstitutionRegistrationController</code
               >.
@@ -719,6 +722,7 @@
               Frontend: <code>auth/register.tsx</code>,
               <code>auth/register-partner.tsx</code>,
               <code>auth/registration-form.tsx</code>,
+              <code>managers/partners/list-partners.tsx</code>,
               <code>managers/partner-users/list-partner-users.tsx</code>,
               manager registration request pages.
             </li>

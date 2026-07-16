@@ -230,7 +230,9 @@ export interface Partner extends InstitutionRow {
   name: string;
   user?: User;
   users?: User[];
+  admin_users?: User[];
   partner_users?: PartnerUser[];
+  partner_users_count?: number;
   commission: number;
   referral_id: number;
   referral?: Partner;

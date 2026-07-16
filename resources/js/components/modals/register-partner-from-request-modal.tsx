@@ -22,6 +22,7 @@ export default function RegisterPartnerFromRequestModal({
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const webForm = useWebForm({
+    name: `${partnerRegistrationRequest.first_name} ${partnerRegistrationRequest.last_name}`,
     commission: '',
     referral_email: partnerRegistrationRequest.referral?.user?.email ?? '',
     referral_commission: '0',
@@ -51,6 +52,17 @@ export default function RegisterPartnerFromRequestModal({
       headerContent={'Register Partner'}
       bodyContent={
         <VStack spacing={2}>
+          <FormControlBox
+            form={webForm}
+            title="Partner Account Name"
+            formKey="name"
+          >
+            <Input
+              onChange={(e) => webForm.setValue('name', e.currentTarget.value)}
+              value={webForm.data.name}
+            />
+          </FormControlBox>
+
           <FormControlBox
             form={webForm}
             title="Commission"

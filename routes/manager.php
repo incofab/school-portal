@@ -98,6 +98,10 @@ Route::group(['middleware' => 'admin'], function () {
         ->name('users.show');
     Route::post('/users/{user}/reset-password', [Web\Users\ShowUserController::class, 'resetPassword'])
         ->name('users.reset-password');
+    Route::get('/partners', [Web\Partners\PartnerController::class, 'index'])
+        ->name('partners.index');
+    Route::post('/partners/{partner}', [Web\Partners\PartnerController::class, 'update'])
+        ->name('partners.update');
     Route::get('/create', [Web\ManagerController::class, 'create'])
         ->name('create');
     Route::post('/store', [Web\ManagerController::class, 'store'])
