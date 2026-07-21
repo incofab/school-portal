@@ -814,20 +814,19 @@
             create/update page organized into calendar, attendance/result,
             weekly closure, and exception-date sections, and newly created
             current term details default Saturdays and Sundays as inactive
-            weekdays. Result settings include the default result
-            template, position display behavior, and whether exam scores appear
-            on result sheets for no terms, mid-term only, full-term only, or
-            both result periods. Payment credential changes now emit security
-            audit events that record provider/key presence summaries without
-            storing key values. Admin and accountant dashboards now include a
-            top attention section showing unread chats, the current pending
-            manual-payment count with a quick link to review requests, plus a
-            bank-account configuration prompt when the institution group has not
-            added any bank accounts yet. Shared props expose current
-            institution, session, term, and role context to the React app.
-            Institution photos and setting images are now tracked in the shared
-            media table before the S3 upload completes. Setting persistence is
-            centralized in
+            weekdays. Result settings include the default result template,
+            position display behavior, and whether exam scores appear on result
+            sheets for no terms, mid-term only, full-term only, or both result
+            periods. Payment credential changes now emit security audit events
+            that record provider/key presence summaries without storing key
+            values. Admin and accountant dashboards now include a top attention
+            section showing unread chats, the current pending manual-payment
+            count with a quick link to review requests, plus a bank-account
+            configuration prompt when the institution group has not added any
+            bank accounts yet. Shared props expose current institution, session,
+            term, and role context to the React app. Institution photos and
+            setting images are now tracked in the shared media table before the
+            S3 upload completes. Setting persistence is centralized in
             <code>SaveInstitutionSetting</code> so controllers and setup flows
             use the same validation, media handling, array serialization, and
             payment-key audit behavior.
@@ -1268,19 +1267,20 @@
             result info summaries, calculates class result info, recalculates
             aggregate results, generates term results, generates session
             results, computes grades and positions, supports subject reports,
-            dedicated grade report sheets with overall term-result distribution
-            plus subject-by-grade matrices, cumulative result sheets, term
-            details, teacher/principal comments, AI-generated teacher/principal
-            comments from class result analysis, extra result data, class result
-            sheet rendering, transcripts, signed result sheets, public result
-            activation, result publications, and result delivery to guardians.
-            WhatsApp check-result requests now reuse shared result access logic
-            for current institution settings, result publication, PIN
-            activation, recent-result fallback selection, and signed result URL
-            behavior before sending one or more result links back through the
-            Meta WhatsApp Cloud API webhook. The public signed result-sheet
-            route enforces Laravel signed URL validation. Score
-            recording/updating/deletion, result processing
+            full class subject-result matrices with T1/T2/T3/total/average/
+            position columns per subject, dedicated grade report sheets with
+            overall term-result distribution plus subject-by-grade matrices,
+            cumulative result sheets, term details, teacher/principal comments,
+            AI-generated teacher/principal comments from class result analysis,
+            extra result data, class result sheet rendering, transcripts, signed
+            result sheets, public result activation, result publications, and
+            result delivery to guardians. WhatsApp check-result requests now
+            reuse shared result access logic for current institution settings,
+            result publication, PIN activation, recent-result fallback
+            selection, and signed result URL behavior before sending one or more
+            result links back through the Meta WhatsApp Cloud API webhook. The
+            public signed result-sheet route enforces Laravel signed URL
+            validation. Score recording/updating/deletion, result processing
             start/completion/failure, lock/unlock, and publication workflows now
             emit explicit integrity audit events with class, course, student,
             teacher, session, term, count, and old/new score metadata. Result
@@ -1352,6 +1352,7 @@
               <code>ResultPublicationsController</code>,
               <code>SubjectReportController</code>,
               <code>SingleSubjectReportController</code>,
+              <code>ClassSubjectResultReportController</code>,
               <code>GradeReportController</code>, student result controllers.
             </li>
             <li>
@@ -1363,6 +1364,7 @@
               <code>GenerateAiTermResultComments</code>, <code>GetGrade</code>,
               <code>GenerateSubjectReport</code>,
               <code>GenerateSingleSubjectReport</code>,
+              <code>GenerateClassSubjectResultReport</code>,
               <code>GenerateCourseSessionResult</code>,
               <code>TermResultDeleteHandler</code>,
               <code>DownloadResultRecordingSheet</code>,
@@ -1386,6 +1388,7 @@
               <code>results/list-term-results.tsx</code>,
               <code>reports/subject-report-sheet.tsx</code>,
               <code>reports/single-subject-report-sheet.tsx</code>,
+              <code>reports/class-subject-result-report-sheet.tsx</code>,
               <code>reports/grade-report-sheet.tsx</code>,
               <code>result-publications/*</code>, transcript pages.
             </li>

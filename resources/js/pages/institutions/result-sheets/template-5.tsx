@@ -24,6 +24,7 @@ import ResultSheetLayout, {
   StudentPassport,
 } from './result-sheet-layout';
 import { formatAsDate } from '@/util/util';
+import { TermType } from '@/types/types';
 
 const PDF_URL = import.meta.env.VITE_PDF_URL;
 export default function Template5(props: ResultProps) {
@@ -37,6 +38,7 @@ export default function Template5(props: ResultProps) {
     assessments,
     resultCommentTemplate,
     courseResultInfoData,
+    subjectCumulativeAverages,
     signed_url,
     learningEvaluations,
     termDetail,
@@ -165,6 +167,17 @@ export default function Template5(props: ResultProps) {
       render: (courseResult) =>
         String(courseResultInfoData[courseResult.course_id]?.average),
     },
+    ...(classResultInfo.term == TermType.Third
+      ? [
+          {
+            label: 'Cumulative Avg',
+            render: (courseResult: CourseResult) =>
+              subjectCumulativeAverages[courseResult.course_id] === undefined
+                ? ''
+                : String(subjectCumulativeAverages[courseResult.course_id]),
+          },
+        ]
+      : []),
     {
       label: 'Highest',
       render: (courseResult) =>

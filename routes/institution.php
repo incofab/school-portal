@@ -270,6 +270,8 @@ Route::get('/reports/subject-report', Web\Reports\SubjectReportController::class
     ->name('reports.subject-report');
 Route::get('/reports/single-subject-report', Web\Reports\SingleSubjectReportController::class)
     ->name('reports.single-subject-report');
+Route::get('/reports/class-subject-result-report', Web\Reports\ClassSubjectResultReportController::class)
+    ->name('reports.class-subject-result-report');
 Route::get('/reports/grade-report', Web\Reports\GradeReportController::class)
     ->name('reports.grade-report');
 

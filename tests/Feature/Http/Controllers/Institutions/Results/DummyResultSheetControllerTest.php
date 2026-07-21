@@ -40,6 +40,7 @@ it(
           ->component('institutions/result-sheets/template-6')
           ->has('courseResults', 14)
           ->has('courseResultInfoData', 14)
+          ->has('subjectCumulativeAverages', 14)
           ->where('termResult.average', fn($average) => is_numeric($average))
       );
   }

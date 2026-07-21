@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   Icon,
+  IconButton,
   HStack,
   Input,
   SimpleGrid,
@@ -25,6 +26,7 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 import { PageTitle } from '@/components/page-header';
 import { formatAsCurrency } from '@/util/util';
 import { CurrencyDollarIcon } from '@heroicons/react/24/solid';
+import { PencilIcon } from '@heroicons/react/24/outline';
 import { LinkButton } from '@/components/buttons';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
@@ -145,9 +147,15 @@ function ManagerDashboard({
   const { currentUser } = useSharedProps();
   const { handleResponseToast } = useMyToast();
   const onboardingUrl = route('registration-requests.create', [currentUser]);
-  const partnerName = partnerProfile?.name || currentUser.full_name || '';
+  const hasPartnerName = !!partnerProfile?.name?.trim();
+  const partnerName = hasPartnerName
+    ? partnerProfile?.name ?? ''
+    : currentUser.full_name || '';
+  const [isEditingPartnerName, setIsEditingPartnerName] = React.useState(false);
+  const shouldShowPartnerNameForm =
+    partnerProfile?.canUpdate && (!hasPartnerName || isEditingPartnerName);
   const partnerProfileForm = useWebForm({
-    name: partnerName,
+    name: partnerProfile?.name ?? '',
   });
 
   async function updatePartnerProfile() {
@@ -157,6 +165,7 @@ function ManagerDashboard({
     if (!handleResponseToast(res)) {
       return;
     }
+    setIsEditingPartnerName(false);
     Inertia.reload({ only: ['partnerProfile', 'shared__currentUser'] });
   }
 
@@ -233,9 +242,27 @@ function ManagerDashboard({
                   <Text fontSize="sm" color="teal.700" fontWeight="semibold">
                     Partner Account
                   </Text>
-                  <Text fontSize="2xl" fontWeight="bold">
-                    {partnerName}
-                  </Text>
+                  <HStack spacing={2} alignItems="center">
+                    <Text fontSize="2xl" fontWeight="bold">
+                      {partnerName}
+                    </Text>
+                    {partnerProfile?.canUpdate && hasPartnerName && (
+                      <IconButton
+                        aria-label="Edit partner name"
+                        icon={<Icon as={PencilIcon} />}
+                        size="xs"
+                        variant="ghost"
+                        colorScheme="teal"
+                        onClick={() => {
+                          partnerProfileForm.setValue(
+                            'name',
+                            partnerProfile?.name ?? ''
+                          );
+                          setIsEditingPartnerName(true);
+                        }}
+                      />
+                    )}
+                  </HStack>
                 </Box>
                 <Text
                   as={'a'}
@@ -248,7 +275,7 @@ function ManagerDashboard({
                 </Text>
               </HStack>
 
-              {partnerProfile?.canUpdate && (
+              {shouldShowPartnerNameForm && (
                 <HStack spacing={3} alignItems="flex-start">
                   <Input
                     value={partnerProfileForm.data.name}

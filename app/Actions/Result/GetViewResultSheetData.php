@@ -6,6 +6,7 @@ use App\Models\AcademicSession;
 use App\Models\Assessment;
 use App\Models\Classification;
 use App\Models\ClassResultInfo;
+use App\Models\CourseResult;
 use App\Models\CourseResultInfo;
 use App\Models\Institution;
 use App\Models\ResultCommentTemplate;
@@ -110,6 +111,14 @@ class GetViewResultSheetData
       'termResult' => $termResult,
       'classResultInfo' => $classResultInfo,
       'courseResultInfoData' => $courseResultInfoData,
+      'subjectCumulativeAverages' => self::getSubjectCumulativeAverages(
+        $institution,
+        $student,
+        $classification,
+        $academicSession,
+        $termResult->for_mid_term,
+        $courseResults->pluck('course_id')->all()
+      ),
       'resultDetails' => self::getResultDetails($classResultInfo, $termResult),
       'assessments' => $assessments,
       'resultCommentTemplate' => $resultCommentTemplate,
@@ -141,5 +150,36 @@ class GetViewResultSheetData
       ['label' => "Student's Average Score", 'value' => $termResult->average],
       ['label' => 'Class Average Score', 'value' => $classResultInfo->average]
     ];
+  }
+
+  /**
+   * @param array<int, int> $courseIds
+   * @return array<int, float>
+   */
+  private static function getSubjectCumulativeAverages(
+    Institution $institution,
+    Student $student,
+    Classification $classification,
+    AcademicSession $academicSession,
+    bool $forMidTerm,
+    array $courseIds
+  ): array {
+    if (empty($courseIds)) {
+      return [];
+    }
+
+    return CourseResult::query()
+      ->where('institution_id', $institution->id)
+      ->where('student_id', $student->id)
+      ->where('classification_id', $classification->id)
+      ->where('academic_session_id', $academicSession->id)
+      ->where('for_mid_term', $forMidTerm)
+      ->whereIn('course_id', $courseIds)
+      ->whereIn('term', ['first', 'second', 'third'])
+      ->selectRaw('course_id, ROUND(AVG(result), 2) as cumulative_average')
+      ->groupBy('course_id')
+      ->pluck('cumulative_average', 'course_id')
+      ->map(fn($average) => (float) $average)
+      ->all();
   }
 }

@@ -88,6 +88,9 @@ class DummyResultSheetController extends Controller
         $forMidTerm,
         $courseResults
       ),
+      'subjectCumulativeAverages' => $this->subjectCumulativeAverages(
+        $courseResults
+      ),
       'resultDetails' => [
         ['label' => "Student's Total Score", 'value' => $totalScore],
         [
@@ -440,6 +443,21 @@ class DummyResultSheetController extends Controller
         'max_score' => min(100, $courseResult->result + rand(4, 13)),
         'max_obtainable_score' => 100
       ]);
+    }
+
+    return $data;
+  }
+
+  /**
+   * @param Collection<int, CourseResult> $courseResults
+   * @return array<int, float>
+   */
+  private function subjectCumulativeAverages(Collection $courseResults): array
+  {
+    $data = [];
+
+    foreach ($courseResults as $courseResult) {
+      $data[$courseResult->course_id] = round($courseResult->result, 2);
     }
 
     return $data;

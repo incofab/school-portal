@@ -303,6 +303,7 @@ export interface ResultProps {
   courseResults: CourseResult[];
   classResultInfo: ClassResultInfo;
   courseResultInfoData: { [course_id: string | number]: CourseResultInfo };
+  subjectCumulativeAverages: { [course_id: string | number]: number };
   academicSession: AcademicSession;
   classification: Classification;
   student: Student;

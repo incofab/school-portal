@@ -41,3 +41,5 @@ _ide_helper.php
 
 error_log
 public/error_log
+
+/conversations
