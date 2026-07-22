@@ -21,7 +21,9 @@ return new class extends Migration {
     }
 
     Schema::table('user_transactions', function (Blueprint $table) {
-      $table->dropIndex(['reference']);
+      if (Schema::hasIndex('user_transactions', ['reference'], 'index')) {
+        $table->dropIndex(['reference']);
+      }
       $table->unique('reference');
     });
   }
