@@ -7,10 +7,9 @@ use App\Rules\ValidateExistsRule;
 use App\Rules\ValidateUniqueRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-class Classification extends Model
+class Classification extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

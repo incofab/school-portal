@@ -6,10 +6,9 @@ use App\Enums\ReceiptStatus;
 use App\Enums\TermType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Receipt extends Model
+class Receipt extends BaseModel
 {
   use HasFactory, InstitutionScope, SoftDeletes;
 

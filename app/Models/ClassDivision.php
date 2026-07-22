@@ -7,12 +7,11 @@ use App\Rules\ValidateExistsRule;
 use App\Rules\ValidateUniqueRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Validation\Rules\Enum;
 
-class ClassDivision extends Model
+class ClassDivision extends BaseModel
 {
   use HasFactory, InstitutionScope, SoftDeletes;
 

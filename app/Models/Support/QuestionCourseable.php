@@ -2,6 +2,7 @@
 
 namespace App\Models\Support;
 
+use App\Models\BaseModel;
 use App\Models\Course;
 use App\Models\CourseSession;
 use App\Models\EventCourseable;
@@ -12,9 +13,8 @@ use App\Models\TheoryQuestion;
 use App\Support\MorphableHandler;
 use App\Traits\HasMedia;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 
-abstract class QuestionCourseable extends Model
+abstract class QuestionCourseable extends BaseModel
 {
   use HasMedia;
 

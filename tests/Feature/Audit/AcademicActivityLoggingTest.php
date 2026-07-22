@@ -373,7 +373,7 @@ it('logs attendance record and update events', function () {
       route('institutions.attendances.store', $this->institution->uuid),
       [
         'institution_user_id' => $staff->id,
-        'reference' => (string) Str::orderedUuid(),
+        'reference' => Str::orderedUuid()->toString(),
         'type' => AttendanceType::In->value,
         'remark' => 'Morning'
       ]

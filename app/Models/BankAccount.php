@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use App\Enums\WithdrawalStatus;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class BankAccount extends Model
+class BankAccount extends BaseModel
 {
   use HasFactory, SoftDeletes;
 

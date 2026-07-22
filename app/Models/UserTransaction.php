@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class UserTransaction extends Model
+class UserTransaction extends BaseModel
 {
   protected $table = 'user_transactions';
 

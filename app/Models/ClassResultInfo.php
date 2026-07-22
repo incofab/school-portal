@@ -6,9 +6,8 @@ use App\Enums\TermType;
 use App\Support\UITableFilters\TermResultUITableFilters;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class ClassResultInfo extends Model
+class ClassResultInfo extends BaseModel
 {
   use HasFactory, InstitutionScope;
   public $table = 'class_result_info';

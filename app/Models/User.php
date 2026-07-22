@@ -49,6 +49,18 @@ class User extends Authenticatable
     'wallet' => 'float'
   ];
 
+  public function freshWithLockForUpdate($with = [])
+  {
+    $relations = is_string($with)
+      ? array_filter(func_get_args(), 'is_string')
+      : $with;
+    return $this->newQuery()
+      ->whereKey($this->getKey())
+      ->lockForUpdate()
+      ->with($relations)
+      ->firstOrFail();
+  }
+
   public static function generalRule($userId = null, $prefix = '')
   {
     return [

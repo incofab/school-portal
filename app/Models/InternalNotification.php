@@ -6,12 +6,11 @@ use App\Support\Notifications\NotificationViewer;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class InternalNotification extends Model
+class InternalNotification extends BaseModel
 {
   use HasFactory;
 
@@ -73,26 +72,32 @@ class InternalNotification extends Model
 
   static function unreadCountForViewer(NotificationViewer $viewer): int
   {
-    return self::query()->unreadForViewer($viewer)->count();
+    return self::query()
+      ->unreadForViewer($viewer)
+      ->count();
   }
 
   static function markAllAsRead(NotificationViewer $viewer): int
   {
-    $ids = self::query()->unreadForViewer($viewer)->pluck('id');
+    $ids = self::query()
+      ->unreadForViewer($viewer)
+      ->pluck('id');
     if ($ids->isEmpty()) {
       return 0;
     }
 
     $now = now();
     $rows = $ids
-      ->map(fn($id) => [
-        'internal_notification_id' => $id,
-        'reader_type' => $viewer->readerType,
-        'reader_id' => $viewer->readerId,
-        'read_at' => $now,
-        'created_at' => $now,
-        'updated_at' => $now
-      ])
+      ->map(
+        fn($id) => [
+          'internal_notification_id' => $id,
+          'reader_type' => $viewer->readerType,
+          'reader_id' => $viewer->readerId,
+          'read_at' => $now,
+          'created_at' => $now,
+          'updated_at' => $now
+        ]
+      )
       ->all();
 
     InternalNotificationRead::query()->upsert(
@@ -113,8 +118,8 @@ class InternalNotification extends Model
           return null;
         }
 
-        $name = $sender->getAttribute('full_name') ??
-          $sender->getAttribute('name');
+        $name =
+          $sender->getAttribute('full_name') ?? $sender->getAttribute('name');
 
         if (!$name && method_exists($sender, 'user')) {
           $sender->loadMissing('user');

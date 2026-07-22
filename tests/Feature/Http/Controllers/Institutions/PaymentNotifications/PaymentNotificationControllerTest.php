@@ -76,7 +76,7 @@ it('can store a payment notification for all owing students', function () {
   //== Data
   $data = [
     'fee_id' => $this->fee->id,
-    'reference' => Str::orderedUuid(),
+    'reference' => Str::orderedUuid()->toString(),
     'channel' => NotificationChannelsType::Email->value
   ];
 

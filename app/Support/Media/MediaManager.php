@@ -254,8 +254,8 @@ class MediaManager
     $prefix = blank($sanitized) ? 'file' : $sanitized;
 
     return $extension
-      ? "{$prefix}-" . Str::orderedUuid() . ".{$extension}"
-      : "{$prefix}-" . Str::orderedUuid();
+      ? "{$prefix}-" . Str::orderedUuid()->toString() . ".{$extension}"
+      : "{$prefix}-" . Str::orderedUuid()->toString();
   }
 
   private function getChecksum(File|UploadedFile $file): ?string

@@ -6,11 +6,10 @@ use App\Enums\AttendanceType;
 use App\Rules\ValidateExistsRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Validation\Rule;
 
-class Attendance extends Model
+class Attendance extends BaseModel
 {
   use HasFactory, SoftDeletes, InstitutionScope;
 

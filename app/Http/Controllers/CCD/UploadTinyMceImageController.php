@@ -22,7 +22,7 @@ class UploadTinyMceImageController extends Controller
     $request->validate(['file' => ['required', 'file']]);
 
     $file = $request->file('file');
-    $filename = Str::orderedUuid() . '.' . $file->clientExtension();
+    $filename = Str::orderedUuid()->toString() . '.' . $file->clientExtension();
     ImageOptimizer::optimize($file);
 
     $res = app(MediaManager::class)->storeUploadedFile(

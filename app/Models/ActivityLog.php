@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
@@ -15,7 +14,7 @@ use Illuminate\Support\Str;
  * Represents an entry in the system's audit trail.
  * Designed to be append-only with cryptographic integrity verification (HMAC chain).
  */
-class ActivityLog extends Model
+class ActivityLog extends BaseModel
 {
   use HasFactory;
 
@@ -36,7 +35,7 @@ class ActivityLog extends Model
   {
     static::creating(function (self $activityLog) {
       if (blank($activityLog->uuid)) {
-        $activityLog->uuid = (string) Str::orderedUuid();
+        $activityLog->uuid = (string) Str::orderedUuid()->toString();
       }
 
       if ($activityLog->usesTimestamps()) {

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Home;
 
 use App\Core\MonnifyHelper;
 use App\Enums\Payments\PaymentMerchantType;
-use App\Enums\Payments\PaymentStatus;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\PaymentReference;
@@ -82,18 +81,21 @@ class MonnifyController extends Controller
         "|$reference|$amountPaid|$paidOn|$transactionReference"
     );
 
-    // if ($transactionHash !== $recreatedHash) {
-    //   info([
-    //     'Error' => 'Hash mismatch',
-    //     'Data' => $post,
-    //     'transactionHash' => $transactionHash,
-    //     'recreatedHash' => $recreatedHash
-    //   ]);
-    //   return failRes('Hash mismatch');
-    // }
+    if (
+      !is_string($transactionHash) ||
+      !hash_equals($recreatedHash, $transactionHash)
+    ) {
+      info([
+        'Error' => 'Hash mismatch',
+        'Data' => $post,
+        'transactionHash' => $transactionHash,
+        'recreatedHash' => $recreatedHash
+      ]);
+      return response()->json('Hash mismatch', 400);
+    }
 
     if ($productType !== 'RESERVED_ACCOUNT') {
-      return $this->verifyReference($reference);
+      return $this->handleReference($reference);
     }
 
     $res = MonnifyHelper::make()->getTransactionStatus($reference);
@@ -131,15 +133,9 @@ class MonnifyController extends Controller
       ->with('user', 'institution')
       ->firstOrFail();
 
-    abort_unless(
-      $paymentRef->status === PaymentStatus::Pending,
-      403,
-      'Paymet already processed'
-    );
-
     $paymentProcessor = PaymentProcessor::make($paymentRef);
 
-    $res = $paymentProcessor->processPayment();
+    $res = $paymentProcessor->processPaymentWithTransaction();
 
     return redirect($paymentRef->redirect_url ?? route('home'))->with(
       $res->isSuccessful() ? 'message' : 'error',

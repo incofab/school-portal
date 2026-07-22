@@ -4,9 +4,8 @@ namespace App\Models;
 
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Instruction extends Model
+class Instruction extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

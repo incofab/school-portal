@@ -5,10 +5,9 @@ namespace App\Models;
 use App\Enums\ChatThreadType;
 use App\Enums\InstitutionUserType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class ChatThread extends Model
+class ChatThread extends BaseModel
 {
   use HasFactory;
 
@@ -137,7 +136,9 @@ class ChatThread extends Model
   {
     $this->fill([
       'last_message_at' => $message->created_at,
-      'last_message_preview' => str($message->body)->limit(160)->value()
+      'last_message_preview' => str($message->body)
+        ->limit(160)
+        ->value()
     ])->save();
   }
 

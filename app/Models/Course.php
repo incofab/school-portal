@@ -6,10 +6,9 @@ use App\Rules\ValidateUniqueRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Course extends Model
+class Course extends BaseModel
 {
   use HasFactory, InstitutionScope, SoftDeletes;
 

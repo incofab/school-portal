@@ -22,7 +22,7 @@ class RegisterInstitution
       ->create([
         ...$data,
         'code' => Institution::generateInstitutionCode(),
-        'uuid' => Str::orderedUuid(),
+        'uuid' => Str::orderedUuid()->toString(),
         'user_id' => $user->id,
         'institution_group_id' => $institutionGroup->id
       ]);

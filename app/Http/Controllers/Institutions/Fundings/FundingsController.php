@@ -34,9 +34,11 @@ class FundingsController extends Controller
     ]);
   }
 
-  function create(Institution $institution)
+  function create(Request $request, Institution $institution)
   {
-    return inertia('institutions/fundings/create-funding');
+    return inertia('institutions/fundings/create-funding', [
+      'amount' => $request->query('amount')
+    ]);
   }
 
   function store(Request $request, Institution $institution)

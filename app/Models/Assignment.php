@@ -7,9 +7,8 @@ use App\Enums\TermType;
 use App\Support\Queries\AssignmentQueryBuilder;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Assignment extends Model
+class Assignment extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

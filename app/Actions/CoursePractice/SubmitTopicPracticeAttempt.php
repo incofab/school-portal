@@ -31,10 +31,7 @@ class SubmitTopicPracticeAttempt
     abort_unless($this->attempt->student_id === $student->id, 404);
 
     return DB::transaction(function () {
-      $attempt = TopicPracticeAttempt::query()
-        ->whereKey($this->attempt->id)
-        ->lockForUpdate()
-        ->firstOrFail();
+      $attempt = $this->attempt->freshWithLockForUpdate();
 
       $summary = $attempt
         ->summary()

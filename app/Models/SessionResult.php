@@ -3,9 +3,8 @@ namespace App\Models;
 
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class SessionResult extends Model
+class SessionResult extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

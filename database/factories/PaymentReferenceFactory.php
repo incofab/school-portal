@@ -22,7 +22,7 @@ class PaymentReferenceFactory extends Factory
     return [
       'institution_id' => Institution::factory(),
       'user_id' => User::factory(),
-      'reference' => Str::orderedUuid(),
+      'reference' => Str::orderedUuid()->toString(),
       'amount' => fake()->numberBetween(600, 3600),
       'status' => PaymentStatus::Pending->value,
       'purpose' => fake()->randomElement(PaymentPurpose::cases())->value

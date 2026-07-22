@@ -4,10 +4,9 @@ namespace App\Models;
 use App\Core\PaymentPointHelper;
 use App\Enums\Payments\PaymentMerchantType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ReservedAccount extends Model
+class ReservedAccount extends BaseModel
 {
   use HasFactory, SoftDeletes;
 

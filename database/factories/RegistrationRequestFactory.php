@@ -18,7 +18,7 @@ class RegistrationRequestFactory extends Factory
   {
     return [
       'partner_user_id' => User::factory()->partnerManager(),
-      'reference' => Str::orderedUuid(),
+      'reference' => Str::orderedUuid()->toString(),
       'data' => [
         ...User::factory()
           ->make()

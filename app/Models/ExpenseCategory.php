@@ -5,12 +5,11 @@ namespace App\Models;
 use App\Rules\ValidateUniqueRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ExpenseCategory extends Model
+class ExpenseCategory extends BaseModel
 {
   use HasFactory, SoftDeletes, InstitutionScope;
 

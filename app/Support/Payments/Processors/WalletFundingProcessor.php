@@ -6,7 +6,6 @@ use App\Enums\Payments\PaymentMerchantType;
 use App\Models\PaymentReference;
 use App\Support\Fundings\FundingHandler;
 use App\Support\Res;
-use DB;
 
 class WalletFundingProcessor extends PaymentProcessor
 {
@@ -23,16 +22,12 @@ class WalletFundingProcessor extends PaymentProcessor
       return $res;
     }
 
-    DB::beginTransaction();
-
     $this->paymentMerchant->completePayment(
       $this->paymentReference,
       $this->confirmingUser
     );
 
     if (!($this->paymentReference instanceof PaymentReference)) {
-      DB::rollBack();
-
       return failRes('Manual wallet funding is not supported');
     }
 
@@ -40,8 +35,6 @@ class WalletFundingProcessor extends PaymentProcessor
       $this->paymentReference,
       'Wallet funding'
     )->processWalletPayment($this->paymentReference);
-
-    DB::commit();
 
     return successRes('Payment processed successfully');
   }

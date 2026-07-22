@@ -10,12 +10,11 @@ use App\Support\SettingsHandler;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Validation\Rules\Enum;
 
-class Assessment extends Model
+class Assessment extends BaseModel
 {
   use HasFactory, InstitutionScope, SoftDeletes;
 

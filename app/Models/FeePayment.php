@@ -4,10 +4,9 @@ namespace App\Models;
 
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FeePayment extends Model
+class FeePayment extends BaseModel
 {
   use HasFactory, InstitutionScope, SoftDeletes;
 

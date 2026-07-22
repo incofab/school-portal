@@ -5,9 +5,8 @@ namespace App\Models;
 use App\Enums\TermType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Pin extends Model
+class Pin extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

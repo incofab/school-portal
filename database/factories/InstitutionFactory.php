@@ -34,7 +34,7 @@ class InstitutionFactory extends Factory
   {
     return [
       'institution_group_id' => InstitutionGroup::factory(),
-      'uuid' => Str::orderedUuid(),
+      'uuid' => Str::orderedUuid()->toString(),
       'code' => Institution::generateInstitutionCode(),
       'user_id' => User::factory(),
       'email' => fake()->unique()->safeEmail,

@@ -6,7 +6,6 @@ use App\Enums\Payments\PaymentMerchantType;
 use App\Enums\TransactionType;
 use App\Support\Res;
 use App\Support\UserTransactionHandler;
-use DB;
 
 /** @deprecated Not in use at the moment */
 class UserWalletFundingProcessor extends PaymentProcessor
@@ -25,8 +24,6 @@ class UserWalletFundingProcessor extends PaymentProcessor
       return $res;
     }
 
-    DB::beginTransaction();
-
     $this->paymentMerchant->completePayment(
       $this->paymentReference,
       $this->confirmingUser
@@ -40,8 +37,6 @@ class UserWalletFundingProcessor extends PaymentProcessor
       reference: $this->paymentReference->getReference(),
       remark: 'Wallet funding'
     );
-
-    DB::commit();
 
     return successRes('Payment processed successfully');
   }

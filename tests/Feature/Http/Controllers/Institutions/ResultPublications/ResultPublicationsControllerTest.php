@@ -60,14 +60,35 @@ beforeEach(function () {
 it(
   'returns classifications for the institution in the index view',
   function () {
+    $this->priceList
+      ->fill([
+        'payment_structure' => PaymentStructure::PerTerm->value,
+        'amount' => 5000
+      ])
+      ->save();
+    $this->institutionGroup->update(['credit_wallet' => 2000]);
+    TermResult::factory(3)
+      ->withInstitution($this->institution)
+      ->create([
+        'classification_id' => $this->classes->first()->id,
+        'academic_session_id' => $this->academicSession->id,
+        'term' => $this->term->value,
+        'result_publication_id' => null
+      ]);
+
     $response = $this->get(
       route('institutions.result-publications.create', $this->institution)
     );
 
     $response->assertInertia(
-      fn($page) => $page->component(
-        'institutions/result-publications/create-result-publication'
-      )
+      fn($page) => $page
+        ->component(
+          'institutions/result-publications/create-result-publication'
+        )
+        ->where('publicationBilling.amount_to_pay', 5000)
+        ->where('publicationBilling.wallet_balance', 2000)
+        ->where('publicationBilling.amount_needed', 3000)
+        ->where('publicationBilling.has_insufficient_balance', true)
     );
   }
 );
@@ -127,7 +148,13 @@ it(
   'fails to publish results when there is insufficient credit balance',
   function () {
     // Reduce credit wallet to simulate insufficient balance
-    $this->institutionGroup->update(['credit_wallet' => 0]);
+    $this->institutionGroup->update(['credit_wallet' => 0, 'loan_limit' => 0]);
+    $this->priceList
+      ->fill([
+        'payment_structure' => PaymentStructure::PerTerm->value,
+        'amount' => 5000
+      ])
+      ->save();
 
     $termResults = TermResult::factory(3)
       ->withInstitution($this->institution)
@@ -145,7 +172,12 @@ it(
     postJson(
       route('institutions.result-publications.store', $this->institution),
       $payload
-    )->assertStatus(401);
+    )
+      ->assertStatus(401)
+      ->assertJsonPath('insufficient_balance', true)
+      ->assertJsonPath('billing.amount_to_pay', 5000)
+      ->assertJsonPath('billing.wallet_balance', 0)
+      ->assertJsonPath('billing.amount_needed', 5000);
 
     $this->assertDatabaseMissing('result_publications', [
       'institution_id' => $this->institution->id

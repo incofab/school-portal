@@ -5,9 +5,8 @@ namespace App\Models;
 use App\Enums\TermType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class ClassGroupResultInfo extends Model
+class ClassGroupResultInfo extends BaseModel
 {
   use HasFactory, InstitutionScope;
   public $table = 'class_group_result_info';

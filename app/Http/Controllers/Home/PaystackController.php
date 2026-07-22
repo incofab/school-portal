@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Home;
 
-use App\Enums\Payments\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\PaymentReference;
 use App\Support\Payments\Processors\PaymentProcessor;
@@ -100,15 +99,9 @@ class PaystackController extends Controller
       ->with('user', 'institution')
       ->firstOrFail();
 
-    abort_unless(
-      $paymentRef->status === PaymentStatus::Pending,
-      403,
-      'Paymet already processed'
-    );
-
     $paymentProcessor = PaymentProcessor::make($paymentRef);
 
-    $res = $paymentProcessor->processPayment();
+    $res = $paymentProcessor->processPaymentWithTransaction();
 
     return redirect($paymentRef->redirect_url ?? route('home'))->with(
       $res->isSuccessful() ? 'message' : 'error',

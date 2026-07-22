@@ -9,7 +9,6 @@ use App\Support\Audit\AcademicIntegrityActivityLogger;
 use App\Support\Audit\ModelAudit;
 use App\Support\Res;
 use App\Support\TransactionHandler;
-use DB;
 
 class AdmissionFormPurchaseProcessor extends PaymentProcessor
 {
@@ -32,7 +31,6 @@ class AdmissionFormPurchaseProcessor extends PaymentProcessor
       'admission_application_id'
     ];
 
-    DB::beginTransaction();
     $this->paymentMerchant->completePayment(
       $this->paymentReference,
       $this->confirmingUser
@@ -71,8 +69,6 @@ class AdmissionFormPurchaseProcessor extends PaymentProcessor
         "Purchased Admission Form: {$admissionForm->title}"
       );
     }
-
-    DB::commit();
 
     app(AcademicIntegrityActivityLogger::class)->admissionFormPurchased(
       $admissionFormPurchase,

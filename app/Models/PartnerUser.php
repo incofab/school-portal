@@ -4,9 +4,8 @@ namespace App\Models;
 
 use App\Enums\PartnerUserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class PartnerUser extends Model
+class PartnerUser extends BaseModel
 {
   use HasFactory;
 

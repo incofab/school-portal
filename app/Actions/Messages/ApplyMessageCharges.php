@@ -39,7 +39,7 @@ class ApplyMessageCharges
     if ($amountToPay > 0) {
       TransactionHandler::make(
         $this->institution,
-        Str::orderedUuid()
+        Str::orderedUuid()->toString()
       )->deductCreditWallet(
         $amountToPay,
         $messageModel,

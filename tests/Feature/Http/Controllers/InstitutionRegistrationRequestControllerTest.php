@@ -12,7 +12,7 @@ use function Pest\Laravel\seed;
 beforeEach(function () {
   seed(RoleSeeder::class);
   $this->requestData = [
-    'reference' => Str::orderedUuid(),
+    'reference' => Str::orderedUuid()->toString(),
     ...User::factory()
       ->make()
       ->only(['first_name', 'last_name', 'other_names', 'email', 'phone']),

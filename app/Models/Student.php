@@ -7,10 +7,9 @@ use App\Enums\TermType;
 use App\Support\Queries\StudentQueryBuilder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Student extends Model
+class Student extends BaseModel
 {
   use HasFactory, SoftDeletes;
 

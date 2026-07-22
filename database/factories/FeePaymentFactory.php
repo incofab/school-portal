@@ -25,7 +25,7 @@ class FeePaymentFactory extends Factory
       'receipt_id' => Receipt::factory(),
       'amount' => fake()->randomNumber(4, true),
       'method' => fake()->word(),
-      'reference' => Str::orderedUuid()
+      'reference' => Str::orderedUuid()->toString()
     ];
   }
 

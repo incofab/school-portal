@@ -18,7 +18,7 @@ class MigrateClassRequest extends FormRequest
     $institution = currentInstitution();
 
     if (!$this->email) {
-      $this->merge(['email' => Str::orderedUuid() . '@email.com']);
+      $this->merge(['email' => Str::orderedUuid()->toString() . '@email.com']);
     }
 
     // Class is only considered when we are creating a student not editing

@@ -17,115 +17,132 @@ use Illuminate\Support\Facades\DB;
 
 abstract class PaymentProcessor
 {
-    protected PaymentRecord $paymentReference;
+  protected PaymentRecord $paymentReference;
 
-    protected PaymentMerchant $paymentMerchant;
+  protected PaymentMerchant $paymentMerchant;
 
-    protected ?User $confirmingUser = null;
+  protected ?User $confirmingUser = null;
 
-    protected function __construct(PaymentRecord $paymentReference)
-    {
-        $this->paymentReference = $paymentReference;
-        $this->paymentMerchant = PaymentMerchant::make(
-            $paymentReference->getPaymentMerchant()->value
+  protected function __construct(PaymentRecord $paymentReference)
+  {
+    $this->paymentReference = $paymentReference;
+    $this->paymentMerchant = PaymentMerchant::make(
+      $paymentReference->getPaymentMerchant()->value
+    );
+  }
+
+  protected function verify($verifyAmount = true): Res
+  {
+    if ($this->paymentReference->getStatus() !== PaymentStatus::Pending) {
+      return failRes('Payment already resolved');
+    }
+
+    $res = $this->paymentMerchant->verify($this->paymentReference);
+
+    if ($res->isNotSuccessful()) {
+      if ($res->is_failed) {
+        $this->paymentReference->cancelPayment();
+      }
+
+      return $res;
+    }
+
+    if ($verifyAmount) {
+      $amount = $res->amount;
+      if ($amount < $this->paymentReference->getAmount()) {
+        return failRes(
+          "Amount paid ($amount) is not equal to the expected amount ({$this->paymentReference->getAmount()})"
         );
+      }
     }
 
-    protected function verify($verifyAmount = true): Res
-    {
-        if ($this->paymentReference->getStatus() !== PaymentStatus::Pending) {
-            return failRes('Payment already resolved');
-        }
+    return $res;
+  }
 
-        $res = $this->paymentMerchant->verify($this->paymentReference);
+  abstract public function processPayment(): Res;
 
-        if ($res->isNotSuccessful()) {
-            if ($res->is_failed) {
-                $this->paymentReference->cancelPayment();
-            }
+  public function confirmedBy(?User $user): static
+  {
+    $this->confirmingUser = $user;
 
-            return $res;
-        }
+    return $this;
+  }
 
-        if ($verifyAmount) {
-            $amount = $res->amount;
-            if ($amount < $this->paymentReference->getAmount()) {
-                return failRes(
-                    "Amount paid ($amount) is not equal to the expected amount ({$this->paymentReference->getAmount()})"
-                );
-            }
-        }
+  public function processPaymentWithTransaction(): Res
+  {
+    return DB::transaction(function () {
+      $this->paymentReference = $this->lockedFreshPaymentRecord();
+      $this->paymentMerchant = PaymentMerchant::make(
+        $this->paymentReference->getPaymentMerchant()->value
+      );
 
-        return $res;
+      if ($this->paymentReference->getStatus() !== PaymentStatus::Pending) {
+        return failRes('Payment already resolved');
+      }
+
+      return $this->processPayment();
+    });
+  }
+
+  private function lockedFreshPaymentRecord(): PaymentRecord
+  {
+    $model = $this->paymentReference->getModel();
+    $relations = [
+      'institution.institutionGroup',
+      'user',
+      'payable',
+      'paymentable'
+    ];
+
+    return $model->freshWithLockForUpdate(
+      $relations,
+      withoutGlobalScopes: true
+    );
+  }
+
+  public static function makeFromReference(string $reference)
+  {
+    $paymentRef =
+      PaymentReference::where('reference', $reference)
+        ->with('user')
+        ->first() ??
+      ManualPayment::where('reference', $reference)
+        ->with('user')
+        ->firstOrFail();
+
+    return self::make($paymentRef);
+  }
+
+  /** @return static */
+  public static function make(PaymentRecord $paymentReference)
+  {
+    $className = self::getProcessorClassName($paymentReference);
+
+    return new $className($paymentReference);
+  }
+
+  public static function getProcessorClassName(PaymentRecord $paymentReference)
+  {
+    if ($paymentReference->getPurpose() === PaymentPurpose::Fee) {
+      return FeePaymentProcessor::class;
+    } elseif (
+      $paymentReference->getPurpose() === PaymentPurpose::WalletFunding
+    ) {
+      return WalletFundingProcessor::class;
     }
 
-    abstract public function processPayment(): Res;
-
-    public function confirmedBy(?User $user): static
-    {
-        $this->confirmingUser = $user;
-
-        return $this;
+    $paymentable = $paymentReference->getPaymentable();
+    if ($paymentable instanceof AdmissionApplication) {
+      return AdmissionFormPurchaseProcessor::class;
     }
 
-    public function processPaymentWithTransaction()
-    {
-        DB::beginTransaction();
-
-        $ret = $this->processPayment();
-
-        if ($ret->isNotSuccessful()) {
-            DB::rollBack();
-        } else {
-            DB::commit();
-        }
-
-        return $ret;
+    $payable = $paymentReference->getPayable();
+    if ($payable instanceof AdmissionForm) {
+      return AdmissionFormPurchaseProcessor::class;
     }
 
-    public static function makeFromReference(string $reference)
-    {
-        $paymentRef =
-          PaymentReference::where('reference', $reference)
-              ->with('user')
-              ->first() ??
-          ManualPayment::where('reference', $reference)
-              ->with('user')
-              ->firstOrFail();
-
-        return self::make($paymentRef);
-    }
-
-    /** @return static */
-    public static function make(PaymentRecord $paymentReference)
-    {
-        $className = self::getProcessorClassName($paymentReference);
-
-        return new $className($paymentReference);
-    }
-
-    public static function getProcessorClassName(PaymentRecord $paymentReference)
-    {
-        if ($paymentReference->getPurpose() === PaymentPurpose::Fee) {
-            return FeePaymentProcessor::class;
-        } elseif (
-            $paymentReference->getPurpose() === PaymentPurpose::WalletFunding
-        ) {
-            return WalletFundingProcessor::class;
-        }
-
-        $paymentable = $paymentReference->getPaymentable();
-        if ($paymentable instanceof AdmissionApplication) {
-            return AdmissionFormPurchaseProcessor::class;
-        }
-
-        $payable = $paymentReference->getPayable();
-        if ($payable instanceof AdmissionForm) {
-            return AdmissionFormPurchaseProcessor::class;
-        }
-
-        throw new Exception(
-            'Unknown payment type '.$paymentReference->getPurpose()->value
-        );
-    }
+    throw new Exception(
+      'Unknown payment type ' . $paymentReference->getPurpose()->value
+    );
+  }
 }

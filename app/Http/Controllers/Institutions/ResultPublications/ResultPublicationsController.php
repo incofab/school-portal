@@ -28,9 +28,18 @@ class ResultPublicationsController extends Controller
 
   function create(Institution $institution)
   {
+    $classifications = Classification::all();
+    $publicationBilling = $this->publicationBilling(
+      $institution,
+      $classifications->pluck('id')->toArray()
+    );
+
     return inertia(
       'institutions/result-publications/create-result-publication',
-      ['classifications' => Classification::all()]
+      [
+        'classifications' => $classifications,
+        'publicationBilling' => $publicationBilling
+      ]
     );
   }
 
@@ -70,9 +79,68 @@ class ResultPublicationsController extends Controller
     $res = $obj->execute();
 
     if ($res->isNotSuccessful()) {
+      if ($res->insufficient_balance) {
+        return response()->json(
+          [
+            'message' => $res->message,
+            'insufficient_balance' => true,
+            'billing' => [
+              ...$res->billing,
+              'funding_url' => $this->fundingUrl(
+                $institution,
+                $res->billing['amount_needed'] ?? 0
+              )
+            ]
+          ],
+          401
+        );
+      }
+
       return $this->message($res->message, 401);
     }
 
     return $this->message($res->message);
+  }
+
+  private function publicationBilling(
+    Institution $institution,
+    array $submittedClassIds
+  ): ?array {
+    $settingHandler = SettingsHandler::makeFromInstitution(
+      $institution->fresh('institutionSettings') ?? $institution
+    );
+    $institutionGroup = $institution->institutionGroup;
+    $instGroupPriceList = $institutionGroup
+      ->priceLists()
+      ->where('type', PriceType::ResultChecking->value)
+      ->first();
+
+    if (!$instGroupPriceList) {
+      return null;
+    }
+
+    $billing = PublishResult::make(
+      currentUser(),
+      $institution,
+      $settingHandler,
+      $instGroupPriceList,
+      $submittedClassIds
+    )->getBillingSummary();
+
+    return [
+      ...$billing,
+      'funding_url' => $this->fundingUrl(
+        $institution,
+        $billing['amount_needed'] ?? 0
+      )
+    ];
+  }
+
+  private function fundingUrl(Institution $institution, float $amount): string
+  {
+    return route('institutions.fundings.create', [
+      $institution,
+      'amount' => $amount
+    ]);
   }
 }

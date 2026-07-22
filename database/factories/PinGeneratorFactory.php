@@ -23,7 +23,7 @@ class PinGeneratorFactory extends Factory
       'user_id' => User::factory(),
       'num_of_pins' => fake()->randomDigitNotZero(),
       'comment' => fake()->sentence(),
-      'reference' => Str::orderedUuid()
+      'reference' => Str::orderedUuid()->toString()
     ];
   }
   function withInstitution(Institution $institution)

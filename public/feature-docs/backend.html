@@ -4223,7 +4223,7 @@
             </div>
             <div class="desc">
               HTTP controller for Fundings, handling requests, authorization,
-              and responses.
+              responses, and optional create-page amount prefill.
             </div>
           </li>
           <li>
@@ -4615,7 +4615,9 @@
             <div class="desc">
               HTTP controller for Result Publications, validating publish
               requests and using freshly loaded institution session/term
-              settings before billing and publishing results.
+              settings before billing and publishing results. It also provides
+              publication billing summaries and structured insufficient-balance
+              responses with funding links.
             </div>
           </li>
           <li>

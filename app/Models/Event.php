@@ -9,11 +9,10 @@ use App\Rules\ValidateExistsRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
-class Event extends Model
+class Event extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

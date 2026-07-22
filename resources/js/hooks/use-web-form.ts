@@ -16,7 +16,7 @@ export interface WebForm<
     cb: (data: Data, web: AxiosInstance) => Promise<AxiosResponse>
   ): Promise<
     | { ok: true; data: any; errors: null; message: null }
-    | { ok: false; errors: Errors; data: null; message: string }
+    | { ok: false; errors: Errors | null; data: any; message: string }
   >;
 }
 
@@ -58,7 +58,7 @@ export default function useWebForm<Data = Record<string, any>>(
         }
         return {
           ok: false,
-          data: null,
+          data: e.response?.data ?? null,
           errors: e.response?.data?.errors ?? null,
           message: e.response?.data?.message,
         };

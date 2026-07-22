@@ -4,10 +4,9 @@ namespace App\Models;
 
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 
-class LiveClass extends Model
+class LiveClass extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

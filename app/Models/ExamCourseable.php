@@ -4,9 +4,8 @@ namespace App\Models;
 
 use App\Casts\TrimDecimal;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class ExamCourseable extends Model
+class ExamCourseable extends BaseModel
 {
   use HasFactory;
 

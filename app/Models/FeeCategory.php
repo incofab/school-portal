@@ -5,10 +5,9 @@ namespace App\Models;
 use App\Support\MorphMap;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FeeCategory extends Model
+class FeeCategory extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

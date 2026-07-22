@@ -34,7 +34,7 @@ class HandleAdmission
     DB::beginTransaction();
     $student = RecordStudent::make($this->institution, [
       'classification_id' => $data['classification'],
-      'email' => Str::orderedUuid() . '@email.com',
+      'email' => Str::orderedUuid()->toString() . '@email.com',
       'phone' => $guardians[0]['phone'],
       'guardian_phone' => $guardians[0]['phone'],
       'photo' => $destinationUrl,

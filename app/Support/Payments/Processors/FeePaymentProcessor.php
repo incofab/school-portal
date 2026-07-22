@@ -7,7 +7,6 @@ use App\Enums\Payments\PaymentStatus;
 use App\Models\Fee;
 use App\Support\Res;
 use App\Support\TransactionHandler;
-use DB;
 
 class FeePaymentProcessor extends PaymentProcessor
 {
@@ -28,7 +27,6 @@ class FeePaymentProcessor extends PaymentProcessor
       return failRes('Fee record not found');
     }
 
-    DB::beginTransaction();
     $this->paymentMerchant->completePayment(
       $this->paymentReference,
       $this->confirmingUser
@@ -58,8 +56,6 @@ class FeePaymentProcessor extends PaymentProcessor
         'Fee payment for: ' . $fee->title
       );
     }
-
-    DB::commit();
 
     return successRes('Fee Payment processed successfully');
   }

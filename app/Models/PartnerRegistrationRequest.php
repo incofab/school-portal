@@ -3,14 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PartnerRegistrationRequest extends Model
+class PartnerRegistrationRequest extends BaseModel
 {
   use HasFactory, SoftDeletes;
 
-  protected $guarded = []; 
+  protected $guarded = [];
 
   /**
    * Parent partner. Retrieves the partner that referred this applicant

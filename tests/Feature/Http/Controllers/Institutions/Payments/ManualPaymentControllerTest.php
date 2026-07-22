@@ -86,6 +86,7 @@ it('allows accountants to confirm manual fee payments', function () {
   $receipt = FeePaymentHandler::getReceipt($this->fee, $this->student);
 
   expect($manualPayment->fresh()->status)->toBe(PaymentStatus::Confirmed);
+  expect($manualPayment->fresh()->processed_at)->not->toBeNull();
   expect($receipt->fresh()->amount_paid)->toBe($this->fee->amount);
   expect($this->institutionGroup->fresh()->credit_wallet)->toBe(0.0);
 
@@ -122,7 +123,37 @@ it('allows admins to reject manual payments', function () {
     'rejected_by_user_id' => $this->admin->id,
     'review_note' => 'Could not find the transfer'
   ]);
+  expect($manualPayment->fresh()->processed_at)->not->toBeNull();
 });
+
+it(
+  'does not duplicate side effects when stale manual payment reviews race',
+  function () {
+    $manualPayment = makeManualPaymentForTest($this);
+
+    $confirmResponse = (new \App\Actions\Payments\ManualPaymentHandler())->confirm(
+      $manualPayment,
+      $this->accountant
+    );
+    $rejectResponse = (new \App\Actions\Payments\ManualPaymentHandler())->reject(
+      $manualPayment,
+      $this->admin,
+      'Too late'
+    );
+
+    $receipt = FeePaymentHandler::getReceipt($this->fee, $this->student);
+
+    expect($confirmResponse->isSuccessful())->toBeTrue();
+    expect($rejectResponse->isNotSuccessful())->toBeTrue();
+    expect($manualPayment->fresh()->status)->toBe(PaymentStatus::Confirmed);
+    expect($receipt->fresh()->amount_paid)->toBe($this->fee->amount);
+    expect(
+      \App\Models\FeePayment::query()
+        ->where('reference', $manualPayment->reference)
+        ->count()
+    )->toBe(1);
+  }
+);
 
 it('confirms manual admission form purchases', function () {
   $admissionForm = AdmissionForm::factory()->create([

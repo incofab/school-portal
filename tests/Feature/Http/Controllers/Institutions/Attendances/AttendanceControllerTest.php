@@ -73,7 +73,7 @@ it('allows authorized user to store a sign-in attendance record', function () {
 
   $payload = [
     'institution_user_id' => $this->institutionUser->id,
-    'reference' => Str::orderedUuid(),
+    'reference' => Str::orderedUuid()->toString(),
     'type' => AttendanceType::In->value,
     'remark' => 'Arrived on time'
   ];
@@ -109,9 +109,7 @@ it('allows authorized user to bulk sign in students in a class', function () {
     ->create();
 
   $payload = [
-    'institution_user_ids' => $students
-      ->pluck('institution_user_id')
-      ->all(),
+    'institution_user_ids' => $students->pluck('institution_user_id')->all(),
     'unmark_institution_user_ids' => [],
     'type' => AttendanceType::In->value,
     'remark' => 'Morning register'
@@ -302,134 +300,143 @@ it('allows authorized user to bulk sign out staff', function () {
   }
 });
 
-it('bulk sign in unchecks visible users by deleting open check-in records', function () {
-  Carbon::setTestNow(Carbon::parse('2024-06-04 09:00:00'));
-  $classification = Classification::factory()
-    ->withInstitution($this->institution)
-    ->create();
-  $students = Student::factory()
-    ->count(2)
-    ->withInstitution($this->institution, $classification)
-    ->create();
+it(
+  'bulk sign in unchecks visible users by deleting open check-in records',
+  function () {
+    Carbon::setTestNow(Carbon::parse('2024-06-04 09:00:00'));
+    $classification = Classification::factory()
+      ->withInstitution($this->institution)
+      ->create();
+    $students = Student::factory()
+      ->count(2)
+      ->withInstitution($this->institution, $classification)
+      ->create();
 
-  $attendanceToRemove = Attendance::factory()
-    ->signedInOnly()
-    ->institutionUser($students[0]->institutionUser)
-    ->create(['signed_in_at' => now()]);
-  $attendanceToKeep = Attendance::factory()
-    ->signedInOnly()
-    ->institutionUser($students[1]->institutionUser)
-    ->create(['signed_in_at' => now()]);
+    $attendanceToRemove = Attendance::factory()
+      ->signedInOnly()
+      ->institutionUser($students[0]->institutionUser)
+      ->create(['signed_in_at' => now()]);
+    $attendanceToKeep = Attendance::factory()
+      ->signedInOnly()
+      ->institutionUser($students[1]->institutionUser)
+      ->create(['signed_in_at' => now()]);
 
-  $payload = [
-    'institution_user_ids' => [],
-    'unmark_institution_user_ids' => [$students[0]->institution_user_id],
-    'type' => AttendanceType::In->value,
-    'remark' => 'Adjusted register'
-  ];
+    $payload = [
+      'institution_user_ids' => [],
+      'unmark_institution_user_ids' => [$students[0]->institution_user_id],
+      'type' => AttendanceType::In->value,
+      'remark' => 'Adjusted register'
+    ];
 
-  $route = route('institutions.attendances.bulk-store', [
-    'institution' => $this->institution
-  ]);
-
-  actingAs($this->admin)
-    ->postJson($route, $payload)
-    ->assertOk()
-    ->assertJson([
-      'recorded_count' => 0,
-      'unmarked_count' => 1
+    $route = route('institutions.attendances.bulk-store', [
+      'institution' => $this->institution
     ]);
 
-  assertSoftDeleted('attendances', ['id' => $attendanceToRemove->id]);
-  assertDatabaseHas('attendances', [
-    'id' => $attendanceToKeep->id,
-    'deleted_at' => null
-  ]);
-});
+    actingAs($this->admin)
+      ->postJson($route, $payload)
+      ->assertOk()
+      ->assertJson([
+        'recorded_count' => 0,
+        'unmarked_count' => 1
+      ]);
 
-it('bulk sign in does not delete checked-out records when unchecked', function () {
-  Carbon::setTestNow(Carbon::parse('2024-06-04 09:00:00'));
-  $classification = Classification::factory()
-    ->withInstitution($this->institution)
-    ->create();
-  $student = Student::factory()
-    ->withInstitution($this->institution, $classification)
-    ->create();
-  $attendance = Attendance::factory()
-    ->institutionUser($student->institutionUser)
-    ->create([
-      'signed_in_at' => now()->subHour(),
-      'signed_out_at' => now()
+    assertSoftDeleted('attendances', ['id' => $attendanceToRemove->id]);
+    assertDatabaseHas('attendances', [
+      'id' => $attendanceToKeep->id,
+      'deleted_at' => null
+    ]);
+  }
+);
+
+it(
+  'bulk sign in does not delete checked-out records when unchecked',
+  function () {
+    Carbon::setTestNow(Carbon::parse('2024-06-04 09:00:00'));
+    $classification = Classification::factory()
+      ->withInstitution($this->institution)
+      ->create();
+    $student = Student::factory()
+      ->withInstitution($this->institution, $classification)
+      ->create();
+    $attendance = Attendance::factory()
+      ->institutionUser($student->institutionUser)
+      ->create([
+        'signed_in_at' => now()->subHour(),
+        'signed_out_at' => now()
+      ]);
+
+    $payload = [
+      'institution_user_ids' => [],
+      'unmark_institution_user_ids' => [$student->institution_user_id],
+      'type' => AttendanceType::In->value,
+      'remark' => 'Adjusted register'
+    ];
+
+    $route = route('institutions.attendances.bulk-store', [
+      'institution' => $this->institution
     ]);
 
-  $payload = [
-    'institution_user_ids' => [],
-    'unmark_institution_user_ids' => [$student->institution_user_id],
-    'type' => AttendanceType::In->value,
-    'remark' => 'Adjusted register'
-  ];
+    actingAs($this->admin)
+      ->postJson($route, $payload)
+      ->assertOk()
+      ->assertJson([
+        'recorded_count' => 0,
+        'unmarked_count' => 0
+      ]);
 
-  $route = route('institutions.attendances.bulk-store', [
-    'institution' => $this->institution
-  ]);
+    assertDatabaseHas('attendances', [
+      'id' => $attendance->id,
+      'deleted_at' => null
+    ]);
+  }
+);
 
-  actingAs($this->admin)
-    ->postJson($route, $payload)
-    ->assertOk()
-    ->assertJson([
-      'recorded_count' => 0,
-      'unmarked_count' => 0
+it(
+  'bulk sign out unchecks visible users by clearing signed out time',
+  function () {
+    Carbon::setTestNow(Carbon::parse('2024-06-04 16:00:00'));
+    $staff = InstitutionUser::factory()
+      ->count(2)
+      ->withInstitution($this->institution)
+      ->teacher()
+      ->create();
+
+    $attendanceToReopen = Attendance::factory()
+      ->institutionUser($staff[0])
+      ->create([
+        'signed_in_at' => now()->subHours(7),
+        'signed_out_at' => now()
+      ]);
+    $attendanceToKeepClosed = Attendance::factory()
+      ->institutionUser($staff[1])
+      ->create([
+        'signed_in_at' => now()->subHours(7),
+        'signed_out_at' => now()
+      ]);
+
+    $payload = [
+      'institution_user_ids' => [],
+      'unmark_institution_user_ids' => [$staff[0]->id],
+      'type' => AttendanceType::Out->value,
+      'remark' => 'Adjusted closing register'
+    ];
+
+    $route = route('institutions.attendances.bulk-store', [
+      'institution' => $this->institution
     ]);
 
-  assertDatabaseHas('attendances', [
-    'id' => $attendance->id,
-    'deleted_at' => null
-  ]);
-});
+    actingAs($this->admin)
+      ->postJson($route, $payload)
+      ->assertOk()
+      ->assertJson([
+        'recorded_count' => 0,
+        'unmarked_count' => 1
+      ]);
 
-it('bulk sign out unchecks visible users by clearing signed out time', function () {
-  Carbon::setTestNow(Carbon::parse('2024-06-04 16:00:00'));
-  $staff = InstitutionUser::factory()
-    ->count(2)
-    ->withInstitution($this->institution)
-    ->teacher()
-    ->create();
-
-  $attendanceToReopen = Attendance::factory()
-    ->institutionUser($staff[0])
-    ->create([
-      'signed_in_at' => now()->subHours(7),
-      'signed_out_at' => now()
-    ]);
-  $attendanceToKeepClosed = Attendance::factory()
-    ->institutionUser($staff[1])
-    ->create([
-      'signed_in_at' => now()->subHours(7),
-      'signed_out_at' => now()
-    ]);
-
-  $payload = [
-    'institution_user_ids' => [],
-    'unmark_institution_user_ids' => [$staff[0]->id],
-    'type' => AttendanceType::Out->value,
-    'remark' => 'Adjusted closing register'
-  ];
-
-  $route = route('institutions.attendances.bulk-store', [
-    'institution' => $this->institution
-  ]);
-
-  actingAs($this->admin)
-    ->postJson($route, $payload)
-    ->assertOk()
-    ->assertJson([
-      'recorded_count' => 0,
-      'unmarked_count' => 1
-    ]);
-
-  expect($attendanceToReopen->refresh()->signed_out_at)->toBeNull();
-  expect($attendanceToKeepClosed->refresh()->signed_out_at)->not->toBeNull();
-});
+    expect($attendanceToReopen->refresh()->signed_out_at)->toBeNull();
+    expect($attendanceToKeepClosed->refresh()->signed_out_at)->not->toBeNull();
+  }
+);
 
 it('rejects attendance on inactive weekday', function () {
   Carbon::setTestNow(Carbon::parse('2024-06-03 09:00:00')); // Monday -> project weekday 0
@@ -437,7 +444,7 @@ it('rejects attendance on inactive weekday', function () {
 
   $payload = [
     'institution_user_id' => $this->institutionUser->id,
-    'reference' => Str::orderedUuid(),
+    'reference' => Str::orderedUuid()->toString(),
     'type' => AttendanceType::In->value,
     'remark' => 'Attempt on inactive day'
   ];
@@ -467,7 +474,7 @@ it(
 
     $payload = [
       'institution_user_id' => $this->institutionUser->id,
-      'reference' => Str::orderedUuid(),
+      'reference' => Str::orderedUuid()->toString(),
       'type' => AttendanceType::In->value,
       'remark' => 'Allowed special day'
     ];
@@ -493,7 +500,7 @@ it(
 
     $payload = [
       'institution_user_id' => $this->institutionUser->id,
-      'reference' => Str::orderedUuid(),
+      'reference' => Str::orderedUuid()->toString(),
       'type' => AttendanceType::In->value,
       'remark' => 'Attempt on inactive date'
     ];

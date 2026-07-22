@@ -1286,17 +1286,21 @@
             teacher, session, term, count, and old/new score metadata. Result
             publication reads a fresh copy of the institution's current session
             and term settings before billing/publishing so repeated publish
-            requests in the same process use the latest settings. Platform
-            admins can set a fixed partner commission on result-checking price
-            lists; result publication uses it instead of the partner percentage
-            and credits any referring partner as a percentage of that fixed
-            partner commission. Term details can override the institution
-            default for whether exam scores appear on result templates; when
-            unset, the institution result setting controls templates 1 through
-            8. Institutions can preview their selected result template from
-            result settings; the preview renders a non-persisted dummy result
-            sheet with 10 to 14 subjects, using existing institution courses
-            where available and fallback subjects when needed.
+            requests in the same process use the latest settings. The publish
+            page now receives a billing summary, warns institutions when their
+            wallet is short, and returns structured insufficient-balance data so
+            the UI can show the exact funding amount before sending admins to
+            wallet funding. Platform admins can set a fixed partner commission
+            on result-checking price lists; result publication uses it instead
+            of the partner percentage and credits any referring partner as a
+            percentage of that fixed partner commission. Term details can
+            override the institution default for whether exam scores appear on
+            result templates; when unset, the institution result setting
+            controls templates 1 through 8. Institutions can preview their
+            selected result template from result settings; the preview renders a
+            non-persisted dummy result sheet with 10 to 14 subjects, using
+            existing institution courses where available and fallback subjects
+            when needed.
           </p>
           <p>
             Course result upserts are protected by lookup constraints on
@@ -1662,10 +1666,13 @@
             validation and CRUD, institution user bank accounts, reserved
             accounts, withdrawal initiation/processing, auto-withdrawal
             commands, commissions, and manager-level financial oversight.
-            Withdrawal approvals/rejections, bank-account create/update/delete,
-            commission updates, and reserved-account webhook credits now emit
-            explicit security-conscious audit events with account identifiers
-            limited to non-sensitive summaries such as account-number last four.
+            Institution funding can be opened with a suggested amount so flows
+            such as result publication can prefill the wallet top-up while still
+            allowing the admin to edit before checkout. Withdrawal
+            approvals/rejections, bank-account create/update/delete, commission
+            updates, and reserved-account webhook credits now emit explicit
+            security-conscious audit events with account identifiers limited to
+            non-sensitive summaries such as account-number last four.
           </p>
           <ul>
             <li>

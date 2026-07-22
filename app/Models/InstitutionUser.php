@@ -6,10 +6,9 @@ use App\Enums\InstitutionUserStatus;
 use App\Enums\InstitutionUserType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class InstitutionUser extends Model
+class InstitutionUser extends BaseModel
 {
   use HasFactory, SoftDeletes, InstitutionScope;
 

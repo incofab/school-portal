@@ -5,11 +5,10 @@ namespace App\Models;
 use App\Rules\ValidateExistsRule;
 use App\Rules\ValidateUniqueRule;
 use App\Traits\InstitutionScope;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Topic extends Model
+class Topic extends BaseModel
 {
   use HasFactory, SoftDeletes, InstitutionScope;
   protected $table = 'topics';

@@ -74,7 +74,7 @@ class InsertStudentFromRecordingSheet
         ),
         'phone' => $this->getValue(StudentRecordingSheetColumn::Phone . $row),
         ...empty($code) ? [] : ['code' => $code],
-        'email' => Str::orderedUuid() . '@email.com',
+        'email' => Str::orderedUuid()->toString() . '@email.com',
         'password' => 'password',
         'password_confirmation' => 'password'
       ];

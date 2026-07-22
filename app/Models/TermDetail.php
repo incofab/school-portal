@@ -6,10 +6,9 @@ use App\Enums\ResultExamMode;
 use App\Enums\TermType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
-class TermDetail extends Model
+class TermDetail extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

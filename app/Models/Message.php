@@ -7,9 +7,8 @@ use App\Enums\MessageStatus;
 use App\Enums\NotificationChannelsType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Message extends Model
+class Message extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

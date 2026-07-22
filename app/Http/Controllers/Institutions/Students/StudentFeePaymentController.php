@@ -170,7 +170,9 @@ class StudentFeePaymentController extends Controller
 
     abort_unless($res->isSuccessful(), 403, $res->getMessage());
     if ($merchant === PaymentMerchantType::UserWallet->value) {
-      $res = PaymentProcessor::make($paymentReference)->processPayment();
+      $res = PaymentProcessor::make(
+        $paymentReference
+      )->processPaymentWithTransaction();
 
       return $this->apiRes($res, 402);
     }

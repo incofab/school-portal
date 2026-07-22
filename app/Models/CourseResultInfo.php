@@ -5,9 +5,8 @@ namespace App\Models;
 use App\Enums\TermType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class CourseResultInfo extends Model
+class CourseResultInfo extends BaseModel
 {
   use HasFactory, InstitutionScope;
   public $table = 'course_result_info';

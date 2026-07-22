@@ -6,10 +6,9 @@ use App\Enums\SchoolNotificationPurpose;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class SchoolNotification extends Model
+class SchoolNotification extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

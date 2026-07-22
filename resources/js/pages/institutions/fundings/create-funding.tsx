@@ -12,12 +12,16 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import { generateRandomString } from '@/util/util';
 import useSharedProps from '@/hooks/use-shared-props';
 
-export default function CreateFunding() {
+interface Props {
+  amount?: string | null;
+}
+
+export default function CreateFunding({ amount }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const { currentInstitution } = useSharedProps();
   const webForm = useWebForm({
-    amount: '',
+    amount: amount ?? '',
   });
 
   const submit = async () => {

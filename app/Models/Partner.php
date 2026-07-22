@@ -6,11 +6,10 @@ use App\Casts\TrimDecimal;
 use App\Enums\ManagerRole;
 use App\Enums\PartnerUserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rules\Enum;
 use Spatie\Permission\Traits\HasRoles;
 
-class Partner extends Model
+class Partner extends BaseModel
 {
   use HasFactory, HasRoles;
 

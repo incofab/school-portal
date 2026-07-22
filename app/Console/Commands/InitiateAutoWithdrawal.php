@@ -55,7 +55,7 @@ class InitiateAutoWithdrawal extends Command
         $bankAccount,
         $institution->createdBy,
         $amount,
-        Str::orderedUuid(),
+        Str::orderedUuid()->toString(),
         $institution
       );
 

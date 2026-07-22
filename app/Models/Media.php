@@ -7,13 +7,12 @@ use App\Enums\Media\MediaStatus;
 use App\Enums\Media\MediaVisibility;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class Media extends Model
+class Media extends BaseModel
 {
   use HasFactory;
 
@@ -37,7 +36,7 @@ class Media extends Model
   {
     static::creating(function (self $media) {
       if (blank($media->uuid)) {
-        $media->uuid = (string) Str::orderedUuid();
+        $media->uuid = (string) Str::orderedUuid()->toString();
       }
     });
   }

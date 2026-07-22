@@ -5,10 +5,9 @@ namespace App\Models;
 use App\Enums\ResultCommentTemplateType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-class ResultCommentTemplate extends Model
+class ResultCommentTemplate extends BaseModel
 {
   use HasFactory, InstitutionScope;
 

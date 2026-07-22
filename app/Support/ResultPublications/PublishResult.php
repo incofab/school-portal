@@ -83,6 +83,27 @@ abstract class PublishResult
 
   abstract public function getAmountToPay();
 
+  public function getBillingSummary(?float $amountToPay = null): array
+  {
+    $amountToPay = $amountToPay ?? $this->getAmountToPay();
+    $walletBalance = $this->institutionGroup->credit_wallet;
+    $amountNeeded = max($amountToPay - $walletBalance, 0);
+
+    return [
+      'amount_to_pay' => $amountToPay,
+      'wallet_balance' => $walletBalance,
+      'amount_needed' => $amountNeeded,
+      'has_insufficient_balance' => $amountNeeded > 0,
+      'can_get_loan' =>
+        $amountNeeded <= 0 ||
+        $this->institutionGroup->canGetLoan($amountNeeded),
+      'results_to_publish_count' => $this->resultsToPublish->count(),
+      'num_of_students' => $this->numOfStudents,
+      'payment_structure' => $this->priceList->payment_structure->value,
+      'unit_amount' => $this->priceList->amount
+    ];
+  }
+
   public function execute(): Res
   {
     $resultsToPublishCount = $this->resultsToPublish->count();
@@ -97,6 +118,7 @@ abstract class PublishResult
     if ($this->institutionGroup->credit_wallet < $amountToPay) {
       $loanRes = $this->processLoan($amountToPay);
       if ($loanRes->isNotSuccessful()) {
+        DB::rollBack();
         return $loanRes;
       }
     }
@@ -114,7 +136,7 @@ abstract class PublishResult
     ]);
 
     if ($amountToPay > 0) {
-      $reference = Str::orderedUuid();
+      $reference = Str::orderedUuid()->toString();
 
       $dTransaction = TransactionHandler::make(
         $this->institution,
@@ -210,13 +232,17 @@ abstract class PublishResult
       return failRes(
         'Insufficient Credit Balance. ₦' .
           number_format($amountToPay) .
-          ' Required.'
+          ' Required.',
+        [
+          'insufficient_balance' => true,
+          'billing' => $this->getBillingSummary($amountToPay)
+        ]
       );
     }
 
     $data = [
       'amount' => $loanAmountNeeded,
-      'reference' => Str::orderedUuid(),
+      'reference' => Str::orderedUuid()->toString(),
       'remark' => 'Loan for Result Publication'
     ];
 

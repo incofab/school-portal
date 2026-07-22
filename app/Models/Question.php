@@ -4,10 +4,9 @@ namespace App\Models;
 
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 
-class Question extends Model
+class Question extends BaseModel
 {
   use HasFactory, InstitutionScope;
 
@@ -36,7 +35,7 @@ class Question extends Model
         Rule::exists('topics', 'id')
       ]
     ];
-  } 
+  }
 
   static function multiInsert(CourseSession $courseSession, array $questions)
   {
