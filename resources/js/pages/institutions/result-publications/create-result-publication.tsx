@@ -68,12 +68,15 @@ export default function CreateResultPublications({
 
   const webForm = useWebForm({});
 
-  const fundingUrl = (billing?: PublicationBilling | null) =>
-    billing?.funding_url ??
-    `${instRoute('fundings.create')}?amount=${billing?.amount_needed ?? ''}`;
-
   const goToFunding = (billing?: PublicationBilling | null) => {
-    window.location.href = fundingUrl(billing);
+    if (billing?.funding_url) {
+      window.location.href = billing.funding_url;
+      return;
+    } else {
+      Inertia.visit(
+        `${instRoute('fundings.create')}?amount=${billing?.amount_needed ?? ''}`
+      );
+    }
   };
 
   //== Handle the checkbox change event
