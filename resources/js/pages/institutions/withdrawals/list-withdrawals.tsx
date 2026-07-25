@@ -71,11 +71,14 @@ export default function ListWithdrawals({ bankAccounts, withdrawals }: Props) {
             data={withdrawals.data}
             keyExtractor={(row) => row.id}
             paginator={withdrawals}
+            tableRowProps={(row: Withdrawal) => ({
+              backgroundColor: row.paid_at ? 'green.50' : '',
+            })}
           />
         </SlabBody>
       </Slab>
 
-      <WithdrawFundModal 
+      <WithdrawFundModal
         isInstAdmin={true}
         bankAccounts={bankAccounts}
         {...withdrawFundModalToggle.props}
@@ -83,4 +86,4 @@ export default function ListWithdrawals({ bankAccounts, withdrawals }: Props) {
       />
     </DashboardLayout>
   );
-} 
+}

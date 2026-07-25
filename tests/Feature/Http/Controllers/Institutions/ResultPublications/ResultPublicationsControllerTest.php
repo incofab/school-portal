@@ -242,6 +242,78 @@ it('tests for payment Structure: PerTerm', function () {
   );
 });
 
+it(
+  'charges each institution in a group for its own per-term publication',
+  function () {
+    $amount = 100000;
+    $this->institutionGroup->fill(['credit_wallet' => $amount])->save();
+    $this->priceList
+      ->fill([
+        'payment_structure' => PaymentStructure::PerTerm->value,
+        'amount' => 5000
+      ])
+      ->save();
+
+    $secondInstitution = Institution::factory()->create([
+      'institution_group_id' => $this->institutionGroup->id
+    ]);
+    InstitutionSetting::factory()
+      ->academicSession($secondInstitution, $this->academicSession)
+      ->create();
+    InstitutionSetting::factory()
+      ->term($secondInstitution, $this->term->value)
+      ->create();
+    $secondClass = Classification::factory()
+      ->withInstitution($secondInstitution)
+      ->create();
+
+    TermResult::factory(3)
+      ->withInstitution($this->institution)
+      ->create([
+        'classification_id' => $this->classes->first()->id,
+        'academic_session_id' => $this->academicSession->id,
+        'term' => $this->term->value
+      ]);
+    TermResult::factory(3)
+      ->withInstitution($secondInstitution)
+      ->create([
+        'classification_id' => $secondClass->id,
+        'academic_session_id' => $this->academicSession->id,
+        'term' => $this->term->value
+      ]);
+
+    postJson(
+      route('institutions.result-publications.store', $this->institution),
+      [
+        'classifications' => [$this->classes->first()->id]
+      ]
+    )->assertOk();
+    expect($this->institutionGroup->fresh())->credit_wallet->toBe(
+      $amount - $this->priceList->amount
+    );
+
+    $this->actingAs($secondInstitution->createdBy);
+    postJson(
+      route('institutions.result-publications.store', $secondInstitution),
+      ['classifications' => [$secondClass->id]]
+    )->assertOk();
+
+    expect($this->institutionGroup->fresh())->credit_wallet->toBe(
+      $amount - 2 * $this->priceList->amount
+    );
+    $this->assertDatabaseHas('result_publications', [
+      'institution_id' => $this->institution->id,
+      'institution_group_id' => $this->institutionGroup->id,
+      'num_of_results' => 3
+    ]);
+    $this->assertDatabaseHas('result_publications', [
+      'institution_id' => $secondInstitution->id,
+      'institution_group_id' => $this->institutionGroup->id,
+      'num_of_results' => 3
+    ]);
+  }
+);
+
 // Test store method failure case: insufficient credit
 it('tests for payment Structure: PerStudentPerTerm', function () {
   $termResultProp = [
@@ -309,6 +381,67 @@ it('tests for payment Structure: PerStudentPerTerm', function () {
     $newBalance - $numOfStudents * $this->priceList->amount
   );
 });
+
+it(
+  'charges only newly added students for later per-student-per-term publication',
+  function () {
+    $unitAmount = 5000;
+    $openingBalance = 100000;
+    $termResultProp = [
+      'classification_id' => $this->classes->first()->id,
+      'academic_session_id' => $this->academicSession->id,
+      'term' => $this->term->value
+    ];
+    $payload = ['classifications' => [$this->classes->first()->id]];
+
+    $this->institutionGroup->fill(['credit_wallet' => $openingBalance])->save();
+    $this->priceList
+      ->fill([
+        'payment_structure' => PaymentStructure::PerStudentPerTerm->value,
+        'amount' => $unitAmount
+      ])
+      ->save();
+
+    $initialResults = TermResult::factory(3)
+      ->withInstitution($this->institution)
+      ->create($termResultProp);
+
+    postJson(
+      route('institutions.result-publications.store', $this->institution),
+      $payload
+    )->assertOk();
+
+    $publication = ResultPublication::query()
+      ->where('institution_id', $this->institution->id)
+      ->where('academic_session_id', $this->academicSession->id)
+      ->where('term', $this->term->value)
+      ->firstOrFail();
+    expect($publication)
+      ->num_of_students->toBe($initialResults->count())
+      ->num_of_results->toBe($initialResults->count());
+    expect($this->institutionGroup->fresh())->credit_wallet->toBe(
+      (float) ($openingBalance - $initialResults->count() * $unitAmount)
+    );
+
+    $newResults = TermResult::factory(2)
+      ->withInstitution($this->institution)
+      ->create($termResultProp);
+
+    postJson(
+      route('institutions.result-publications.store', $this->institution),
+      $payload
+    )->assertOk();
+
+    $publication->refresh();
+    expect($publication)
+      ->num_of_students->toBe($initialResults->count() + $newResults->count())
+      ->num_of_results->toBe($initialResults->count() + $newResults->count());
+    expect($this->institutionGroup->fresh())->credit_wallet->toBe(
+      (float) ($openingBalance -
+        ($initialResults->count() + $newResults->count()) * $unitAmount)
+    );
+  }
+);
 
 it('tests for payment Structure: PerSession', function () {
   $paymentStructure = PaymentStructure::PerSession;

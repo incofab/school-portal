@@ -132,7 +132,7 @@ export default function Template5(props: ResultProps) {
     ...assessments.map((assessment) => ({
       label: assessment.title,
       render: (courseResult: CourseResult) =>
-        String(courseResult.assessment_values[assessment.raw_title] ?? ''),
+        String(ResultUtil.getAssessmentValue(courseResult, assessment, '')),
     })),
     ...(showExamResult
       ? [

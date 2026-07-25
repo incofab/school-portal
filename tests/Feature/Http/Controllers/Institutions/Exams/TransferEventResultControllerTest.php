@@ -102,9 +102,9 @@ it('transfers event result to course assessment score', function () {
   ])->first();
 
   assertModelExists($courseResult);
-  expect($courseResult->assessment_values[$this->assessment->raw_title])->toBe(
-    $this->examCourseable->score
-  );
+  expect(
+    $courseResult->assessment_values[$this->assessment->assessmentResultKey()]
+  )->toBe($this->examCourseable->score);
 });
 
 it(

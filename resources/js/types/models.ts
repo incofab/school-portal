@@ -848,6 +848,7 @@ export interface ApplicationGuardian extends Row {
 export interface Assessment extends InstitutionRow {
   title: string;
   raw_title: string;
+  result_key: string;
   description: number;
   max?: number;
   term: string;

@@ -1308,29 +1308,34 @@
             exam or assessment values during partial updates, honor assessment
             term/mid-term/class filters and dependency mappings, and
             class/course summary lookups use indexed keys to reduce lock
-            contention during result recording and exam result transfer. Course
-            and class recording pages now receive one term-specific assessment
-            group payload containing full-term and mid-term lists, switch the
-            visible fields based on the selected result mode, visually
-            distinguish mid-term from full-term entry, and hide the exam input
-            according to the institution result exam mode setting. When mid-term
-            results are enabled, the class recording page hides student score
-            fields until staff explicitly choose full-term or mid-term
-            recording, and the course result upload modal hides the Excel upload
-            field and save action until staff explicitly choose full-term or
-            mid-term upload. The single student course result recording page
-            keeps result type, session, term, and student selection in the URL;
-            when a student is selected it preloads the matching existing result
-            for that key so teachers edit the current row instead of recording
-            blindly, and while those selections are reloading the page it locks
-            the entry controls and action buttons with a visible loading notice
-            so unsaved edits are not changed during the refresh. A student-wide
-            subject recording page lets staff select one student, then record
-            that student's results across all eligible class subject mappings in
-            one submission while reusing the same assessment, exam visibility,
-            lock, grading, audit, and course-summary processing rules. The
-            student-wide and class recording pages submit only new or changed
-            score rows, avoiding unchanged prefilled results in the payload.
+            contention during result recording and exam result transfer.
+            Assessment scores in
+            <code>course_results.assessment_values</code> are keyed as
+            <code>raw_title|assessment_id</code>; readers prefer the assessment
+            ID segment and fall back to legacy title-only keys for older rows.
+            Course and class recording pages now receive one term-specific
+            assessment group payload containing full-term and mid-term lists,
+            switch the visible fields based on the selected result mode,
+            visually distinguish mid-term from full-term entry, and hide the
+            exam input according to the institution result exam mode setting.
+            When mid-term results are enabled, the class recording page hides
+            student score fields until staff explicitly choose full-term or
+            mid-term recording, and the course result upload modal hides the
+            Excel upload field and save action until staff explicitly choose
+            full-term or mid-term upload. The single student course result
+            recording page keeps result type, session, term, and student
+            selection in the URL; when a student is selected it preloads the
+            matching existing result for that key so teachers edit the current
+            row instead of recording blindly, and while those selections are
+            reloading the page it locks the entry controls and action buttons
+            with a visible loading notice so unsaved edits are not changed
+            during the refresh. A student-wide subject recording page lets staff
+            select one student, then record that student's results across all
+            eligible class subject mappings in one submission while reusing the
+            same assessment, exam visibility, lock, grading, audit, and
+            course-summary processing rules. The student-wide and class
+            recording pages submit only new or changed score rows, avoiding
+            unchanged prefilled results in the payload.
           </p>
           <p>
             Class result info records now have an <code>is_locked</code> state.

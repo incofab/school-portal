@@ -385,7 +385,11 @@ export default function RecordStudentSubjectResults({
                                 {startCase(assessment.raw_title)}
                               </FormLabel>
                               <Input
-                                value={result.ass[assessment.raw_title] ?? ''}
+                                value={
+                                  result.ass[assessment.result_key] ??
+                                  result.ass[assessment.raw_title] ??
+                                  ''
+                                }
                                 type="number"
                                 isDisabled={
                                   isSelectionLoading ||
@@ -404,7 +408,7 @@ export default function RecordStudentSubjectResults({
                                     ...result,
                                     ass: {
                                       ...result.ass,
-                                      [assessment.raw_title]:
+                                      [assessment.result_key]:
                                         e.currentTarget.value,
                                     },
                                   });

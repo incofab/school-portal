@@ -1053,7 +1053,9 @@
               uses the matching existing student result row, and hides the exam
               input when institution result settings disable exams for that
               mode. It uses shared result-recording score helpers and only
-              submits student rows with new or changed scores.
+              submits student rows with new or changed scores. Assessment inputs
+              submit stable <code>raw_title|assessment_id</code> keys while
+              still prefilling legacy title-keyed scores.
             </div>
           </li>
           <li>
@@ -1075,7 +1077,9 @@
               hides the exam input when institution result settings disable
               exams for that mode, and locks the entry controls/actions with a
               visible loading notice while selection-triggered page reloads are
-              in progress.
+              in progress. Assessment inputs submit stable
+              <code>raw_title|assessment_id</code> keys while still prefilling
+              legacy title-keyed scores.
             </div>
           </li>
           <li>
@@ -1093,7 +1097,9 @@
               submission, with full-term/mid-term assessment switching, existing
               result prefill, shared result-recording score helpers, exam
               visibility controlled by result settings, and payload filtering
-              that submits only new or changed subject rows.
+              that submits only new or changed subject rows. Assessment inputs
+              submit stable <code>raw_title|assessment_id</code> keys while
+              still prefilling legacy title-keyed scores.
             </div>
           </li>
           <li>
@@ -6076,7 +6082,9 @@
             </div>
             <div class="desc">
               Utility helpers for Result Util formatting, parsing, or shared
-              logic.
+              logic, including assessment score resolution that prefers
+              <code>raw_title|assessment_id</code> keys and falls back to legacy
+              title-only course-result assessment values.
             </div>
           </li>
           <li>

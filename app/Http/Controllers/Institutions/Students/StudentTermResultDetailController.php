@@ -73,7 +73,8 @@ class StudentTermResultDetailController extends Controller
     $assessments = Assessment::getAssessments(
       $term,
       $termResult->for_mid_term,
-      $classification
+      $classification,
+      true
     );
 
     return inertia('institutions/students/student-term-result-detail', [

@@ -167,6 +167,9 @@ export default function ListWithdrawals({
             data={withdrawals.data}
             keyExtractor={(row) => row.id}
             paginator={withdrawals}
+            tableRowProps={(row: Withdrawal) => ({
+              backgroundColor: row.paid_at ? 'green.50' : '',
+            })}
           />
         </SlabBody>
       </Slab>

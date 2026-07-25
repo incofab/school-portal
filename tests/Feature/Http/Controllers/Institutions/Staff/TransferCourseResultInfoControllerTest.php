@@ -26,7 +26,9 @@ beforeEach(function () {
   $this->course = Course::factory()
     ->withInstitution($this->institution)
     ->create();
-  $this->teacher = User::factory()->teacher($this->institution)->create();
+  $this->teacher = User::factory()
+    ->teacher($this->institution)
+    ->create();
   $this->courseTeacher = CourseTeacher::factory()->create([
     'institution_id' => $this->institution->id,
     'course_id' => $this->course->id,
@@ -41,9 +43,7 @@ beforeEach(function () {
     'title' => 'ca_1',
     'max' => 20
   ]);
-  $this->sourceAssessment->classifications()->sync([
-    $this->classification->id
-  ]);
+  $this->sourceAssessment->classifications()->sync([$this->classification->id]);
   $this->targetAssessment = Assessment::factory()->create([
     'institution_id' => $this->institution->id,
     'term' => TermType::Second->value,
@@ -51,9 +51,7 @@ beforeEach(function () {
     'title' => 'ca_1',
     'max' => 20
   ]);
-  $this->targetAssessment->classifications()->sync([
-    $this->classification->id
-  ]);
+  $this->targetAssessment->classifications()->sync([$this->classification->id]);
 
   $this->students = Student::factory()
     ->count(2)
@@ -71,12 +69,14 @@ beforeEach(function () {
       'term' => TermType::First,
       'for_mid_term' => false
     ]);
-    $courseResult->fill([
-      'exam' => 5,
-      'assessment_values' => [
-        $this->sourceAssessment->raw_title => 10
-      ]
-    ])->save();
+    $courseResult
+      ->fill([
+        'exam' => 5,
+        'assessment_values' => [
+          $this->sourceAssessment->raw_title => 10
+        ]
+      ])
+      ->save();
   }
 
   EvaluateCourseResultForClass::run(
@@ -90,65 +90,72 @@ beforeEach(function () {
   $this->courseResultInfo = CourseResultInfo::query()->firstOrFail();
 });
 
-test('admin can transfer course result info within the same session', function () {
-  $targetAssessments = Assessment::getAssessments(
-    TermType::Second->value,
-    true,
-    $this->classification->id
-  );
-  $assessmentMap = $targetAssessments
-    ->mapWithKeys(fn($assessment) => [(string) $assessment->id => []])
-    ->toArray();
-  $assessmentMap[(string) $this->targetAssessment->id] = [
-    $this->sourceAssessment->id
-  ];
-  $assessmentMap['exam'] = ['exam'];
+test(
+  'admin can transfer course result info within the same session',
+  function () {
+    $targetAssessments = Assessment::getAssessments(
+      TermType::Second->value,
+      true,
+      $this->classification->id
+    );
+    $assessmentMap = $targetAssessments
+      ->mapWithKeys(fn($assessment) => [(string) $assessment->id => []])
+      ->toArray();
+    $assessmentMap[(string) $this->targetAssessment->id] = [
+      $this->sourceAssessment->id
+    ];
+    $assessmentMap['exam'] = ['exam'];
 
-  $response = actingAs($this->admin)->post(
-    route('institutions.course-result-info.transfer.store', [
-      $this->institution,
-      $this->courseResultInfo
-    ]),
-    [
-      'term' => TermType::Second->value,
-      'for_mid_term' => true,
-      'assessment_map' => $assessmentMap
-    ]
-  );
+    $response = actingAs($this->admin)->post(
+      route('institutions.course-result-info.transfer.store', [
+        $this->institution,
+        $this->courseResultInfo
+      ]),
+      [
+        'term' => TermType::Second->value,
+        'for_mid_term' => true,
+        'assessment_map' => $assessmentMap
+      ]
+    );
 
-  $response->assertOk();
+    $response->assertOk();
 
-  expect(
-    CourseResult::query()
+    expect(
+      CourseResult::query()
+        ->where('course_id', $this->course->id)
+        ->where('classification_id', $this->classification->id)
+        ->where('academic_session_id', $this->academicSession->id)
+        ->where('term', TermType::Second->value)
+        ->where('for_mid_term', true)
+        ->count()
+    )->toBe(2);
+    $targetResult = CourseResult::query()
       ->where('course_id', $this->course->id)
       ->where('classification_id', $this->classification->id)
       ->where('academic_session_id', $this->academicSession->id)
       ->where('term', TermType::Second->value)
       ->where('for_mid_term', true)
-      ->count()
-  )->toBe(2);
-  $targetResult = CourseResult::query()
-    ->where('course_id', $this->course->id)
-    ->where('classification_id', $this->classification->id)
-    ->where('academic_session_id', $this->academicSession->id)
-    ->where('term', TermType::Second->value)
-    ->where('for_mid_term', true)
-    ->first();
-  expect($targetResult?->assessment_values[$this->targetAssessment->raw_title] ?? null)
-    ->toBe(10)
-    ->and($targetResult?->exam)
-    ->toBe(5.0);
+      ->first();
+    expect(
+      $targetResult?->assessment_values[
+        $this->targetAssessment->assessmentResultKey()
+      ] ?? null
+    )
+      ->toBe(10)
+      ->and($targetResult?->exam)
+      ->toBe(5.0);
 
-  expect(
-    CourseResultInfo::query()
-      ->where('course_id', $this->course->id)
-      ->where('classification_id', $this->classification->id)
-      ->where('academic_session_id', $this->academicSession->id)
-      ->where('term', TermType::Second->value)
-      ->where('for_mid_term', true)
-      ->exists()
-  )->toBeTrue();
-});
+    expect(
+      CourseResultInfo::query()
+        ->where('course_id', $this->course->id)
+        ->where('classification_id', $this->classification->id)
+        ->where('academic_session_id', $this->academicSession->id)
+        ->where('term', TermType::Second->value)
+        ->where('for_mid_term', true)
+        ->exists()
+    )->toBeTrue();
+  }
+);
 
 test('course teacher can transfer own course result info', function () {
   $targetAssessments = Assessment::getAssessments(
@@ -179,32 +186,37 @@ test('course teacher can transfer own course result info', function () {
   $response->assertOk();
 });
 
-test('teacher cannot transfer another teachers course result info', function () {
-  $otherTeacher = User::factory()->teacher($this->institution)->create();
-  $targetAssessments = Assessment::getAssessments(
-    TermType::Second->value,
-    true,
-    $this->classification->id
-  );
-  $assessmentMap = $targetAssessments
-    ->mapWithKeys(fn($assessment) => [(string) $assessment->id => []])
-    ->toArray();
-  $assessmentMap[(string) $this->targetAssessment->id] = [
-    $this->sourceAssessment->id
-  ];
-  $assessmentMap['exam'] = ['exam'];
+test(
+  'teacher cannot transfer another teachers course result info',
+  function () {
+    $otherTeacher = User::factory()
+      ->teacher($this->institution)
+      ->create();
+    $targetAssessments = Assessment::getAssessments(
+      TermType::Second->value,
+      true,
+      $this->classification->id
+    );
+    $assessmentMap = $targetAssessments
+      ->mapWithKeys(fn($assessment) => [(string) $assessment->id => []])
+      ->toArray();
+    $assessmentMap[(string) $this->targetAssessment->id] = [
+      $this->sourceAssessment->id
+    ];
+    $assessmentMap['exam'] = ['exam'];
 
-  $response = actingAs($otherTeacher)->post(
-    route('institutions.course-result-info.transfer.store', [
-      $this->institution,
-      $this->courseResultInfo
-    ]),
-    [
-      'term' => TermType::Second->value,
-      'for_mid_term' => true,
-      'assessment_map' => $assessmentMap
-    ]
-  );
+    $response = actingAs($otherTeacher)->post(
+      route('institutions.course-result-info.transfer.store', [
+        $this->institution,
+        $this->courseResultInfo
+      ]),
+      [
+        'term' => TermType::Second->value,
+        'for_mid_term' => true,
+        'assessment_map' => $assessmentMap
+      ]
+    );
 
-  $response->assertForbidden();
-});
+    $response->assertForbidden();
+  }
+);

@@ -20,7 +20,7 @@ class WithdrawalController extends Controller
 
     return Inertia::render('institutions/withdrawals/list-withdrawals', [
       'bankAccounts' => $bankAccounts,
-      'withdrawals' => paginateFromRequest($withdrawals)
+      'withdrawals' => paginateFromRequest($withdrawals->latest())
     ]);
   }
 

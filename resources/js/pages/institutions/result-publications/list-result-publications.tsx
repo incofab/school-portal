@@ -33,6 +33,10 @@ export default function ListResultPublications({ resultPublications }: Props) {
       render: (row) => startCase(row.term),
     },
     {
+      label: 'No Of Students',
+      value: 'num_of_students',
+    },
+    {
       label: 'No Of Results',
       value: 'num_of_results',
     },

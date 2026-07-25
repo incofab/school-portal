@@ -181,6 +181,31 @@ const ResultUtil = {
     return total;
   },
 
+  getAssessmentValue: function (
+    courseResult: CourseResult,
+    assessment: Assessment,
+    fallback: number | string = 0
+  ) {
+    const values = courseResult.assessment_values ?? {};
+    if (assessment.result_key && values[assessment.result_key] !== undefined) {
+      return values[assessment.result_key];
+    }
+
+    if (values[assessment.raw_title] !== undefined) {
+      return values[assessment.raw_title];
+    }
+
+    const keyedValue = Object.entries(values).find(([key]) => {
+      const separatorIndex = key.lastIndexOf('|');
+      return (
+        separatorIndex >= 0 &&
+        Number(key.slice(separatorIndex + 1)) === assessment.id
+      );
+    });
+
+    return keyedValue?.[1] ?? fallback;
+  },
+
   exportAsPdf: async function (
     id: string,
     filename: string | undefined = undefined

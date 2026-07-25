@@ -26,11 +26,22 @@ class WhatsappResultService
       'institutionUser.institution.institutionSettings'
     );
 
-    $institution = $student->institutionUser?->institution;
+    $institutionUser = $student->institutionUser;
+    $institution = $institutionUser?->institution;
     if (!$institution) {
       return new WhatsappResultResponse(
         $this->withGreeting(
           'We could not identify the school for this student. Please contact your school administrator.',
+          $senderName
+        )
+      );
+    }
+
+    if (!$institutionUser->isActive()) {
+      return new WhatsappResultResponse(
+        $this->withGreeting(
+          $institutionUser->status_message ??
+            'Your account is not active. Please contact your school administrator.',
           $senderName
         )
       );

@@ -183,14 +183,15 @@ class TransferCourseResultInfoController extends Controller
       $sourceAssessments,
       $targetAssessments
     ) {
-      $sourceRawById = $sourceAssessments->pluck('raw_title', 'id')->toArray();
-      $targetRawById = $targetAssessments->pluck('raw_title', 'id')->toArray();
+      $sourceById = $sourceAssessments->keyBy('id');
+      $targetById = $targetAssessments->keyBy('id');
+      $targetKeys = $targetAssessments
+        ->map(fn(Assessment $assessment) => $assessment->assessmentResultKey())
+        ->values()
+        ->toArray();
 
       foreach ($courseResults as $courseResult) {
-        $mappedAssessments = array_fill_keys(
-          [...array_values($targetRawById), 'exam'],
-          0
-        );
+        $mappedAssessments = array_fill_keys([...$targetKeys, 'exam'], 0);
         $sourceValues = (array) ($courseResult->assessment_values ?? []);
         $sourceValues['exam'] = $courseResult->exam ?? 0;
 
@@ -199,7 +200,7 @@ class TransferCourseResultInfoController extends Controller
           $targetKey =
             $targetIdValue === 'exam'
               ? 'exam'
-              : $targetRawById[(int) $targetIdValue] ?? null;
+              : $targetById->get((int) $targetIdValue)?->assessmentResultKey();
           if (!$targetKey) {
             continue;
           }
@@ -209,14 +210,21 @@ class TransferCourseResultInfoController extends Controller
               continue;
             }
             $sourceIdValue = (string) $sourceId;
-            $sourceKey =
-              $sourceIdValue === 'exam'
-                ? 'exam'
-                : $sourceRawById[(int) $sourceIdValue] ?? null;
-            if (!$sourceKey) {
+            if ($sourceIdValue === 'exam') {
+              $score = $sourceValues['exam'] ?? 0;
+              $mappedAssessments[$targetKey] =
+                ($mappedAssessments[$targetKey] ?? 0) + $score;
               continue;
             }
-            $score = $sourceValues[$sourceKey] ?? 0;
+
+            $sourceAssessment = $sourceById->get((int) $sourceIdValue);
+            if (!$sourceAssessment) {
+              continue;
+            }
+            $score = Assessment::assessmentScoreFromValues(
+              $sourceValues,
+              $sourceAssessment
+            );
             $mappedAssessments[$targetKey] =
               ($mappedAssessments[$targetKey] ?? 0) + $score;
           }

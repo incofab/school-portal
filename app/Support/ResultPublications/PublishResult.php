@@ -38,6 +38,7 @@ abstract class PublishResult
 
   /**
    * @var array{
+   *  'institution_id': int,
    *  'institution_group_id': int,
    *  'academic_session_id': int,
    *  'payment_structure': string
@@ -57,24 +58,11 @@ abstract class PublishResult
     $this->institutionGroup = $priceList->institutionGroup;
     $this->academicSessionId = $this->settingHandler->getCurrentAcademicSession();
     $this->term = $settingHandler->getCurrentTerm();
-
-    $this->resultsToPublish = TermResult::whereIn(
-      'classification_id',
-      $submittedClassIds
-    )
-      ->where('academic_session_id', $this->academicSessionId)
-      ->where('term', $this->term)
-      ->where('for_mid_term', false)
-      ->whereNull('result_publication_id')
-      ->with('student.user', 'student.guardian', 'academicSession')
-      ->get();
-
-    $this->numOfStudents = $institution
-      ->institutionUsers()
-      ->where('role', InstitutionUserType::Student)
-      ->count();
+    $this->resultsToPublish = $this->queryResultsToPublish()->get();
+    $this->numOfStudents = $this->countStudents();
 
     $this->resultPublicationBindingData = [
+      'institution_id' => $this->institution->id,
       'institution_group_id' => $this->institutionGroup->id,
       'academic_session_id' => $this->academicSessionId,
       'payment_structure' => $this->priceList->payment_structure
@@ -106,51 +94,67 @@ abstract class PublishResult
 
   public function execute(): Res
   {
-    $resultsToPublishCount = $this->resultsToPublish->count();
+    $publication = null;
+    $resultsToPublishCount = 0;
 
-    if ($resultsToPublishCount <= 0) {
-      return failRes('No unpublished result found');
-    }
+    $res = DB::transaction(function () use (
+      &$publication,
+      &$resultsToPublishCount
+    ) {
+      $this->institutionGroup = $this->institutionGroup->freshWithLockForUpdate();
+      $this->resultsToPublish = $this->queryResultsToPublish(true)->get();
+      $this->numOfStudents = $this->countStudents();
+      $resultsToPublishCount = $this->resultsToPublish->count();
 
-    $amountToPay = $this->getAmountToPay();
-
-    DB::beginTransaction();
-    if ($this->institutionGroup->credit_wallet < $amountToPay) {
-      $loanRes = $this->processLoan($amountToPay);
-      if ($loanRes->isNotSuccessful()) {
-        DB::rollBack();
-        return $loanRes;
+      if ($resultsToPublishCount <= 0) {
+        return failRes('No unpublished result found');
       }
-    }
 
-    $publication = ModelAudit::withoutAuditingFor(
-      ResultPublication::class,
-      fn() => $this->createResultPublication($resultsToPublishCount)
-    );
+      $amountToPay = $this->getAmountToPay();
 
-    TermResult::whereIn('id', $this->resultsToPublish->pluck('id'))->update([
-      'result_publication_id' => $publication->id,
-      ...$this->settingHandler->resultActivationRequired()
-        ? []
-        : ['is_activated' => true]
-    ]);
+      if ($this->institutionGroup->credit_wallet < $amountToPay) {
+        $loanRes = $this->processLoan($amountToPay);
+        if ($loanRes->isNotSuccessful()) {
+          return $loanRes;
+        }
 
-    if ($amountToPay > 0) {
-      $reference = Str::orderedUuid()->toString();
+        $this->institutionGroup = $this->institutionGroup->freshWithLockForUpdate();
+      }
 
-      $dTransaction = TransactionHandler::make(
-        $this->institution,
-        $reference
-      )->deductCreditWallet($amountToPay, $publication, 'Result Publication');
-
-      CommissionHandler::make($reference)->creditPartners(
-        $this->institutionGroup,
-        $amountToPay,
-        $dTransaction,
-        $this->getPartnerCommissionAmount($amountToPay)
+      $publication = ModelAudit::withoutAuditingFor(
+        ResultPublication::class,
+        fn() => $this->createResultPublication($resultsToPublishCount)
       );
+
+      TermResult::whereIn('id', $this->resultsToPublish->pluck('id'))->update([
+        'result_publication_id' => $publication->id,
+        ...$this->settingHandler->resultActivationRequired()
+          ? []
+          : ['is_activated' => true]
+      ]);
+
+      if ($amountToPay > 0) {
+        $reference = Str::orderedUuid()->toString();
+
+        $dTransaction = TransactionHandler::make(
+          $this->institution,
+          $reference
+        )->deductCreditWallet($amountToPay, $publication, 'Result Publication');
+
+        CommissionHandler::make($reference)->creditPartners(
+          $this->institutionGroup,
+          $amountToPay,
+          $dTransaction,
+          $this->getPartnerCommissionAmount($amountToPay)
+        );
+      }
+
+      return successRes('Result published successfully');
+    });
+
+    if ($res->isNotSuccessful()) {
+      return $res;
     }
-    DB::commit();
 
     app(AcademicIntegrityActivityLogger::class)->resultPublished(
       $this->institution,
@@ -164,7 +168,7 @@ abstract class PublishResult
       $this->sendResultsToGuardians();
     }
 
-    return successRes('Result published successfully');
+    return $res;
   }
 
   private function getPartnerCommissionAmount(float $amountToPay): ?float
@@ -204,7 +208,6 @@ abstract class PublishResult
     if (!$publication) {
       $publication = ResultPublication::create([
         ...$this->resultPublicationBindingData,
-        'institution_id' => $this->institution->id,
         'term' => $this->term,
         'num_of_results' => $resultsToPublishCount,
         'staff_user_id' => $this->staffUser->id,
@@ -250,6 +253,27 @@ abstract class PublishResult
     $res = $obj->requestDebt();
 
     return $res;
+  }
+
+  private function queryResultsToPublish(bool $lockForUpdate = false)
+  {
+    $query = TermResult::where('institution_id', $this->institution->id)
+      ->whereIn('classification_id', $this->submittedClassIds)
+      ->where('academic_session_id', $this->academicSessionId)
+      ->where('term', $this->term)
+      ->where('for_mid_term', false)
+      ->whereNull('result_publication_id')
+      ->with('student.user', 'student.guardian', 'academicSession');
+
+    return $lockForUpdate ? $query->lockForUpdate() : $query;
+  }
+
+  private function countStudents(): int
+  {
+    return $this->institution
+      ->institutionUsers()
+      ->where('role', InstitutionUserType::Student)
+      ->count();
   }
 
   public static function make(

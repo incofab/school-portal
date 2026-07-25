@@ -100,7 +100,7 @@ class RecordStudentSubjectsResultRequest extends FormRequest
     );
 
     foreach ($assessments as $assessment) {
-      $rules['ass.' . $assessment->raw_title] = [
+      $rule = [
         'nullable',
         'numeric',
         'min:0',
@@ -112,6 +112,8 @@ class RecordStudentSubjectsResultRequest extends FormRequest
           }
         }
       ];
+      $rules['ass.' . $assessment->raw_title] = $rule;
+      $rules['ass.' . $assessment->assessmentResultKey()] = $rule;
     }
 
     return $rules;

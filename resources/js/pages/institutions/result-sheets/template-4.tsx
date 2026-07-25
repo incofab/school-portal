@@ -263,9 +263,11 @@ export default function Template4(props: ResultProps) {
                         <td
                           key={`assessment-val-${courseResult.id}-${assessment.id}`}
                         >
-                          {courseResult.assessment_values[
-                            assessment.raw_title
-                          ] ?? '-'}
+                          {ResultUtil.getAssessmentValue(
+                            courseResult,
+                            assessment,
+                            '-'
+                          )}
                         </td>
                       ))}
                       {showExamResult && <td>{courseResult.exam}</td>}

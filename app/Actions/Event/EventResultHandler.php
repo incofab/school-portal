@@ -87,7 +87,9 @@ class EventResultHandler
         'ass' => [], // ass key is
         ...$this->assessment
           ? [
-            'ass' => [$this->assessment->raw_title => $examCourseable->score]
+            'ass' => [
+              $this->assessment->assessmentResultKey() => $examCourseable->score
+            ]
           ]
           : ['exam' => $examCourseable->score]
       ],

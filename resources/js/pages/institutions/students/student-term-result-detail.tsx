@@ -82,7 +82,7 @@ export default function StudentTermResultDetail({
       ? assessments.map((item) => ({
           label: startCase(item.title),
           render: (row: CourseResult) =>
-            String(row.assessment_values[item.raw_title] ?? 0),
+            String(ResultUtil.getAssessmentValue(row, item, 0)),
         }))
       : []),
     {

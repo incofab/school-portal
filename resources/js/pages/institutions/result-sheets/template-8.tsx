@@ -278,7 +278,7 @@ export default function Template8(props: ResultProps) {
                     <Td fontWeight="medium">{result.course?.title}</Td>
                     {assessments.map((a) => (
                       <Td key={a.id} isNumeric>
-                        {result.assessment_values[a.raw_title] ?? '-'}
+                        {ResultUtil.getAssessmentValue(result, a, '-')}
                       </Td>
                     ))}
                     {showExamResult && <Td isNumeric>{result.exam}</Td>}

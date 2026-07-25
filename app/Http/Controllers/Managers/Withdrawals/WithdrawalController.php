@@ -39,7 +39,7 @@ class WithdrawalController extends Controller
 
     return Inertia::render('managers/withdrawals/list-withdrawals', [
       'bankAccounts' => $bankAccounts,
-      'withdrawals' => paginateFromRequest($withdrawals),
+      'withdrawals' => paginateFromRequest($withdrawals->latest()),
       'canRequestWithdrawal' => $user->isPartnerAdmin()
     ]);
   }

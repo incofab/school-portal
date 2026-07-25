@@ -138,7 +138,11 @@ class DownloadCourseResult
       $title = $assessment->columnTitle();
       $this->workSheet->setCellValue(
         $this->columnIndex[$title]->index . $row,
-        $assessmentValues[$assessment->raw_title] ?? ''
+        Assessment::assessmentScoreFromValues(
+          $assessmentValues,
+          $assessment,
+          ''
+        )
       );
     }
 

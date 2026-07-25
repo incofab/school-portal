@@ -89,7 +89,8 @@ class GetViewResultSheetData
     $assessments = Assessment::getAssessments(
       $term,
       $termResult->for_mid_term,
-      $classification
+      $classification,
+      true
     );
     $resultCommentTemplate = ResultCommentTemplate::getTemplate(
       $classification,

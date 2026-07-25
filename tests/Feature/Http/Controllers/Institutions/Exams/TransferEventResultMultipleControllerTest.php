@@ -21,7 +21,9 @@ use function PHPUnit\Framework\assertNotNull;
 beforeEach(function () {
   $this->institution = Institution::factory()->create();
   $this->admin = $this->institution->createdBy;
-  $this->event = Event::factory()->institution($this->institution)->create();
+  $this->event = Event::factory()
+    ->institution($this->institution)
+    ->create();
   $this->academicSession = AcademicSession::factory()->create();
   $this->term = TermType::First->value;
   $this->assessment = Assessment::first();
@@ -130,8 +132,10 @@ it('transfers event results for multiple event courses', function () {
   expect($courseResultOne->exam)->toBe(
     floatval($this->examCourseableOne->score)
   );
-  expect($courseResultTwo->assessment_values[$this->assessment->raw_title])->toBe(
-    $this->examCourseableTwo->score
-  );
+  expect(
+    $courseResultTwo->assessment_values[
+      $this->assessment->assessmentResultKey()
+    ]
+  )->toBe($this->examCourseableTwo->score);
   assertNotNull($this->event->fresh()->transferred_at);
 });

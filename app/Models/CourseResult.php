@@ -47,7 +47,8 @@ class CourseResult extends BaseModel
     return Assessment::getAssessments(
       $this->term,
       $this->for_mid_term,
-      $this->classification_id
+      $this->classification_id,
+      true
     );
   }
 

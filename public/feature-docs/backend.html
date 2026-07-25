@@ -5819,7 +5819,9 @@
               Action class that runs the Record Course Result workflow, upserts
               student course scores, merges partial assessment updates, applies
               dependent assessment scores, checks result locks, and optionally
-              recalculates class course-result summaries.
+              recalculates class course-result summaries. Assessment JSON values
+              are stored with stable <code>raw_title|assessment_id</code>
+              keys while retaining legacy title-only fallback reads.
             </div>
           </li>
           <li>
@@ -8670,6 +8672,24 @@
       <section>
         <h2>Console Commands</h2>
         <ul class="detail-list">
+          <li>
+            <div>
+              <strong>BackfillCourseResultAssessmentKeys</strong>
+              <span class="path"
+                ><code
+                  >app/Console/Commands/BackfillCourseResultAssessmentKeys.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Artisan command
+              <code>course-results:backfill-assessment-keys</code> that chunks
+              historical course results and rewrites legacy assessment JSON keys
+              from <code>raw_title</code> to
+              <code>raw_title|assessment_id</code>, including soft-deleted
+              assessments, with a dry-run option.
+            </div>
+          </li>
           <li>
             <div>
               <strong>AssignRoleToUser</strong>

@@ -219,10 +219,10 @@ export default function RecordCourseResult({
     );
   }
 
-  function updateAssessmentValue(rawTitle: string, value: string) {
+  function updateAssessmentValue(resultKey: string, value: string) {
     setAssessmentValue((current) => ({
       ...current,
-      [rawTitle]: value,
+      [resultKey]: value,
     }));
   }
 
@@ -505,7 +505,7 @@ function ResultEntryFields({
   shouldShowExamInput: boolean;
   isDisabled: boolean;
   onStudentChange: (student: Nullable<SelectOptionType<number>>) => void;
-  onAssessmentChange: (rawTitle: string, value: string) => void;
+  onAssessmentChange: (resultKey: string, value: string) => void;
 }) {
   return (
     <>
@@ -525,13 +525,17 @@ function ResultEntryFields({
         />
       </FormControlBox>
       {assessments.map((assessment) => (
-        <FormControl key={assessment.raw_title + form.data.term}>
+        <FormControl key={assessment.result_key + form.data.term}>
           <FormLabel>{startCase(assessment.raw_title)}</FormLabel>
           <Input
             disabled={isDisabled || assessment.depends_on !== null}
-            value={assessmentValue[assessment.raw_title] ?? ''}
+            value={
+              assessmentValue[assessment.result_key] ??
+              assessmentValue[assessment.raw_title] ??
+              ''
+            }
             onChange={(e) =>
-              onAssessmentChange(assessment.raw_title, e.currentTarget.value)
+              onAssessmentChange(assessment.result_key, e.currentTarget.value)
             }
           />
         </FormControl>

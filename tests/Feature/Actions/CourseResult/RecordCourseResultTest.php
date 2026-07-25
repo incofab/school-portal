@@ -97,8 +97,8 @@ it(
       ->result->toBe(80.0)
       ->grade->toBe('A');
     expect($courseResult->assessment_values->toArray())->toBe([
-      'first_assessment' => 18,
-      'second_assessment' => 17
+      $firstAssessment->assessmentResultKey() => 18,
+      $secondAssessment->assessmentResultKey() => 17
     ]);
   }
 );
@@ -139,7 +139,7 @@ it(
       ->toBe(65.0)
       ->and($updatedRecord->assessment_values->toArray())
       ->toBe([
-        'project' => 15
+        $assessment->assessmentResultKey() => 15
       ]);
     expect(
       CourseResult::query()
@@ -192,8 +192,8 @@ it(
       ->result->toBe(70.0)
       ->grade->toBe('A');
     expect($courseResult->assessment_values->toArray())->toBe([
-      'first_assessment' => 12,
-      'second_assessment' => 18
+      $firstAssessment->assessmentResultKey() => 12,
+      $secondAssessment->assessmentResultKey() => 18
     ]);
   }
 );
@@ -201,7 +201,7 @@ it(
 it(
   'defaults missing configured assessments to zero and ignores unknown assessment keys',
   function () {
-    recordCourseResultTestAssessment([
+    $assessment = recordCourseResultTestAssessment([
       'title' => 'configured_assessment',
       'max' => 20
     ]);
@@ -224,7 +224,7 @@ it(
       ->result->toBe(55.0)
       ->grade->toBe('C');
     expect($courseResult->assessment_values->toArray())->toBe([
-      'configured_assessment' => 0
+      $assessment->assessmentResultKey() => 0
     ]);
   }
 );
@@ -295,7 +295,7 @@ it(
 
     expect($courseResult->result)->toBe(50.0);
     expect($courseResult->assessment_values->toArray())->toBe([
-      'matching_assessment' => 10
+      $matchingAssessment->assessmentResultKey() => 10
     ]);
   }
 );
@@ -348,7 +348,7 @@ it(
 
     expect($courseResult->result)->toBe(66.0);
     expect($courseResult->assessment_values->toArray())->toBe([
-      'first_term_average' => 16
+      $dependentAssessment->assessmentResultKey() => 16
     ]);
   }
 );
@@ -387,7 +387,40 @@ it(
 
     expect($courseResult->result)->toBe(57.0);
     expect($courseResult->assessment_values->toArray())->toBe([
-      'missing_dependency' => 7
+      $dependentAssessment->assessmentResultKey() => 7
+    ]);
+  }
+);
+
+it(
+  'preserves a migrated assessment score when the assessment title changes',
+  function () {
+    $assessment = recordCourseResultTestAssessment([
+      'title' => 'project',
+      'max' => 20
+    ]);
+
+    RecordCourseResult::run(
+      [
+        ...$this->baseData,
+        'exam' => 40,
+        'ass' => [$assessment->assessmentResultKey() => 12]
+      ],
+      $this->courseTeacher
+    );
+
+    $assessment->fill(['title' => 'renamed project'])->save();
+
+    RecordCourseResult::run(
+      [...$this->baseData, 'exam' => 45, 'ass' => []],
+      $this->courseTeacher
+    );
+
+    $courseResult = recordCourseResultTestResult();
+
+    expect($courseResult->result)->toBe(57.0);
+    expect($courseResult->assessment_values->toArray())->toBe([
+      $assessment->fresh()->assessmentResultKey() => 12
     ]);
   }
 );

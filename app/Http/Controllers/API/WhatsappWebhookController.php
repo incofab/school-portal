@@ -39,9 +39,9 @@ class WhatsappWebhookController extends Controller
   {
     $payload = $request->all();
 
-    Log::info('WhatsApp webhook received.', [
-      'entries' => count($payload['entry'] ?? [])
-    ]);
+    // Log::info('WhatsApp webhook received.', [
+    //   'entries' => count($payload['entry'] ?? [])
+    // ]);
 
     try {
       $handler->handle($payload);

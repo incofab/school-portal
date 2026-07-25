@@ -81,7 +81,7 @@ export default function Template7(props: ResultProps) {
     ...assessments.map((a: Assessment) => ({
       label: a.title,
       render: (cr: CourseResult) =>
-        String(cr.assessment_values[a.raw_title] ?? ''),
+        String(ResultUtil.getAssessmentValue(cr, a, '')),
     })),
     ...(showExamResult ? [{ label: 'Exam', value: 'exam' }] : []),
     { label: 'Total', value: 'result' },

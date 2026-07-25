@@ -358,7 +358,11 @@ export default function RecordClassCourseResult({
                                 {startCase(assessment.raw_title)}
                               </FormLabel>
                               <Input
-                                value={result.ass[assessment.raw_title] ?? ''}
+                                value={
+                                  result.ass[assessment.result_key] ??
+                                  result.ass[assessment.raw_title] ??
+                                  ''
+                                }
                                 type="number"
                                 onChange={(e) => {
                                   if (
@@ -375,7 +379,7 @@ export default function RecordClassCourseResult({
                                       ...result,
                                       ass: {
                                         ...result.ass,
-                                        [assessment.raw_title]:
+                                        [assessment.result_key]:
                                           e.currentTarget.value,
                                       },
                                     },

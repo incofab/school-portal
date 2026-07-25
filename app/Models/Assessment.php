@@ -28,7 +28,7 @@ class Assessment extends BaseModel
     'max' => 'integer'
   ];
 
-  protected $appends = ['raw_title'];
+  protected $appends = ['raw_title', 'result_key'];
 
   static function createRule(?Assessment $assement = null)
   {
@@ -62,9 +62,15 @@ class Assessment extends BaseModel
   static function getAssessments(
     string|TermType|null $term = null,
     ?bool $forMidTerm = false,
-    Classification|int|null $classification = null
+    Classification|int|null $classification = null,
+    bool $withTrashed = false
   ) {
-    $assements = Assessment::query()
+    $query = Assessment::query();
+    if ($withTrashed) {
+      $query->withTrashed();
+    }
+
+    $assements = $query
       ->forTerm($term)
       ->forMidTerm($forMidTerm)
       ->with('classifications')
@@ -117,6 +123,60 @@ class Assessment extends BaseModel
   protected function rawTitle(): Attribute
   {
     return Attribute::make(get: fn() => $this->getRawOriginal('title'));
+  }
+
+  protected function resultKey(): Attribute
+  {
+    return Attribute::make(get: fn() => $this->assessmentResultKey());
+  }
+
+  public function assessmentResultKey(): string
+  {
+    return self::makeResultKey($this->raw_title, $this->id);
+  }
+
+  public static function makeResultKey(string $title, int|string $id): string
+  {
+    return "{$title}|{$id}";
+  }
+
+  public static function resultKeyId(string $key): ?int
+  {
+    $separatorPosition = strrpos($key, '|');
+    if ($separatorPosition === false) {
+      return null;
+    }
+
+    $id = substr($key, $separatorPosition + 1);
+    return ctype_digit($id) ? (int) $id : null;
+  }
+
+  public static function assessmentScoreFromValues(
+    array|\ArrayAccess|null $values,
+    Assessment $assessment,
+    int|float|string|null $default = 0
+  ): int|float|string|null {
+    if (!$values) {
+      return $default;
+    }
+
+    $resultKey = $assessment->assessmentResultKey();
+    if (isset($values[$resultKey])) {
+      return $values[$resultKey];
+    }
+
+    $legacyKey = $assessment->raw_title;
+    if (isset($values[$legacyKey])) {
+      return $values[$legacyKey];
+    }
+
+    foreach ($values as $key => $value) {
+      if (is_string($key) && self::resultKeyId($key) === $assessment->id) {
+        return $value;
+      }
+    }
+
+    return $default;
   }
 
   function institution()

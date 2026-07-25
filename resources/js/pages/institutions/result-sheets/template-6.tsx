@@ -140,7 +140,7 @@ export default function Template6(props: ResultProps) {
       label: assessment.title,
       render: (courseResult: CourseResult) => (
         <Div className="cell">
-          {String(courseResult.assessment_values[assessment.raw_title] ?? '')}
+          {String(ResultUtil.getAssessmentValue(courseResult, assessment, ''))}
         </Div>
       ),
     })),

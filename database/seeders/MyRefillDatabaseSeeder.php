@@ -49,6 +49,34 @@ class MyRefillDatabaseSeeder extends Seeder
     $institutionGroup = InstitutionGroup::factory()->create(
       $forDefaultRecord ? ['name' => 'Success Academy Group'] : []
     );
+
+    $this->createInstitution($institutionGroup, $forDefaultRecord);
+    $this->createInstitution($institutionGroup, false);
+
+    // $institution = Institution::factory()
+    //   ->for($institutionGroup)
+    //   ->create($forDefaultRecord ? ['name' => 'Success Academy'] : []);
+    // $institutionAdmin = $institution->createdBy;
+    // if ($forDefaultRecord) {
+    //   $institutionAdmin->fill(['email' => 'success@email.com'])->save();
+    // }
+
+    // SeedSetupData::run($institution);
+
+    // $this->createInstitutionSetting($institution);
+
+    // $this->createClasses($institution);
+    // $this->recordSubjects($institution, $forDefaultRecord);
+    // $this->createStudents($institution, 10);
+    // $this->createExamResult($institution);
+
+    // $this->createPriceList($institutionGroup);
+  }
+
+  private function createInstitution(
+    InstitutionGroup $institutionGroup,
+    bool $forDefaultRecord
+  ) {
     $institution = Institution::factory()
       ->for($institutionGroup)
       ->create($forDefaultRecord ? ['name' => 'Success Academy'] : []);

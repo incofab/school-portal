@@ -135,16 +135,21 @@ class RecordCourseResult
 
     /** @var Assessment $assessment */
     foreach ($assessments as $key => $assessment) {
-      $title = $assessment->raw_title;
-      $assessmentScore = $allAssessmentValues[$title] ?? 0;
+      $assessmentScore = Assessment::assessmentScoreFromValues(
+        $allAssessmentValues,
+        $assessment
+      );
       if ($assessment->depends_on) {
         $assessmentScore = $this->getDependentScore($assessment);
         if ($assessmentScore == null) {
-          $assessmentScore = $allAssessmentValues[$title] ?? 0;
+          $assessmentScore = Assessment::assessmentScoreFromValues(
+            $allAssessmentValues,
+            $assessment
+          );
         }
       }
       $result += $assessmentScore;
-      $assessmentValues[$title] = $assessmentScore;
+      $assessmentValues[$assessment->assessmentResultKey()] = $assessmentScore;
     }
 
     return [$result, $assessmentValues];
