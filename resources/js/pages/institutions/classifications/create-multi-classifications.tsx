@@ -1,17 +1,14 @@
 import React from 'react';
 import {
-  Box,
   Button,
   Checkbox,
   Divider,
   FormControl,
-  Grid,
   HStack,
   Icon,
   IconButton,
   Input,
   SimpleGrid,
-  Stack,
   VStack,
 } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
@@ -28,8 +25,12 @@ import { InstitutionUserType } from '@/types/types';
 import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { Div } from '@/components/semantic';
+import { ClassificationGroup } from '@/types/models';
+import ResultUtil from '@/util/result-util';
 
-interface Props {}
+interface Props {
+  classificationGroups: ClassificationGroup[];
+}
 
 const newClassification = () => ({
   title: '',
@@ -38,7 +39,9 @@ const newClassification = () => ({
   classification_group_id: '',
 });
 
-export default function CreateMultiClassifications({}: Props) {
+export default function CreateMultiClassifications({
+  classificationGroups,
+}: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
 
@@ -75,6 +78,14 @@ export default function CreateMultiClassifications({}: Props) {
     webForm.setValue('classifications', newClassifications);
   };
 
+  const getTitles = (classification: ReturnType<typeof newClassification>) => {
+    const selectedGroup = classificationGroups.find(
+      (group) => `${group.id}` === `${classification.classification_group_id}`
+    );
+
+    return ResultUtil.getClassificationGroupTitles(selectedGroup);
+  };
+
   const submit = async () => {
     const res = await webForm.submit((data, web) => {
       const postData = {
@@ -103,109 +114,114 @@ export default function CreateMultiClassifications({}: Props) {
             onSubmit={preventNativeSubmit(submit)}
           >
             <VStack spacing={6} divider={<Divider />} width={'100%'}>
-              {webForm.data.classifications.map((classification, index) => (
-                <Div
-                  border={'1px solid'}
-                  borderColor={'brand.200'}
-                  borderRadius="md"
-                  px={4}
-                  py={3}
-                >
-                  <HStack>
-                    <SimpleGrid
-                      columns={{ base: 2, md: 3, lg: 3 }}
-                      key={index}
-                      spacing={3}
-                      justifyContent={'space-between'}
-                    >
-                      <FormControlBox
-                        title="Class Group"
-                        form={webForm as any}
-                        formKey={`classifications.${index}.classification_group_id`}
-                      >
-                        <ClassificationGroupSelect
-                          selectValue={classification.classification_group_id}
-                          isMulti={false}
-                          isClearable={true}
-                          onChange={(e: any) =>
-                            handleClassificationChange(
-                              index,
-                              'classification_group_id',
-                              e?.value
-                            )
-                          }
-                          required
-                        />
-                      </FormControlBox>
+              {webForm.data.classifications.map((classification, index) => {
+                const titles = getTitles(classification);
 
-                      <FormControlBox
-                        title="Class Title"
-                        form={webForm as any}
-                        formKey={`classifications.${index}.title`}
+                return (
+                  <Div
+                    key={index}
+                    border={'1px solid'}
+                    borderColor={'brand.200'}
+                    borderRadius="md"
+                    px={4}
+                    py={3}
+                  >
+                    <HStack>
+                      <SimpleGrid
+                        columns={{ base: 2, md: 3, lg: 3 }}
+                        spacing={3}
+                        justifyContent={'space-between'}
                       >
-                        <Input
-                          value={classification.title}
-                          onChange={(e) =>
-                            handleClassificationChange(
-                              index,
-                              'title',
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      </FormControlBox>
-
-                      <FormControlBox
-                        title="Form Teacher"
-                        form={webForm as any}
-                        formKey={`classifications.${index}.form_teacher_id`}
-                      >
-                        <StaffSelect
-                          value={classification.form_teacher_id}
-                          isClearable={true}
-                          rolesIn={[InstitutionUserType.Teacher]}
-                          onChange={(e) =>
-                            handleClassificationChange(
-                              index,
-                              'form_teacher_id',
-                              e
-                            )
-                          }
-                          isMulti={false}
-                        />
-                      </FormControlBox>
-
-                      <FormControl>
-                        <Checkbox
-                          isChecked={classification.has_equal_subjects}
-                          onChange={(e) =>
-                            handleClassificationChange(
-                              index,
-                              'has_equal_subjects',
-                              e.currentTarget.checked
-                            )
-                          }
-                          size={'md'}
-                          colorScheme="brand"
+                        <FormControlBox
+                          title="Class Group"
+                          form={webForm as any}
+                          formKey={`classifications.${index}.classification_group_id`}
                         >
-                          All students offer the same number of subjects
-                        </Checkbox>
-                      </FormControl>
-                    </SimpleGrid>
+                          <ClassificationGroupSelect
+                            selectValue={classification.classification_group_id}
+                            isMulti={false}
+                            isClearable={true}
+                            onChange={(e: any) =>
+                              handleClassificationChange(
+                                index,
+                                'classification_group_id',
+                                e?.value
+                              )
+                            }
+                            required
+                          />
+                        </FormControlBox>
 
-                    {webForm.data.classifications.length > 1 && (
-                      <IconButton
-                        aria-label={'Remove Class'}
-                        icon={<Icon as={TrashIcon} />}
-                        onClick={() => removeClassification(index)}
-                        variant={'ghost'}
-                        colorScheme={'red'}
-                      />
-                    )}
-                  </HStack>
-                </Div>
-              ))}
+                        <FormControlBox
+                          title="Class Title"
+                          form={webForm as any}
+                          formKey={`classifications.${index}.title`}
+                        >
+                          <Input
+                            value={classification.title}
+                            onChange={(e) =>
+                              handleClassificationChange(
+                                index,
+                                'title',
+                                e.target.value
+                              )
+                            }
+                            required
+                          />
+                        </FormControlBox>
+
+                        <FormControlBox
+                          title={titles.headOfClass}
+                          form={webForm as any}
+                          formKey={`classifications.${index}.form_teacher_id`}
+                        >
+                          <StaffSelect
+                            value={classification.form_teacher_id}
+                            isClearable={true}
+                            rolesIn={[InstitutionUserType.Teacher]}
+                            onChange={(e) =>
+                              handleClassificationChange(
+                                index,
+                                'form_teacher_id',
+                                e
+                              )
+                            }
+                            isMulti={false}
+                          />
+                        </FormControlBox>
+
+                        <FormControl>
+                          <Checkbox
+                            isChecked={classification.has_equal_subjects}
+                            onChange={(e) =>
+                              handleClassificationChange(
+                                index,
+                                'has_equal_subjects',
+                                e.currentTarget.checked
+                              )
+                            }
+                            size={'md'}
+                            colorScheme="brand"
+                          >
+                            All {titles.students.toLowerCase()} offer the same
+                            number of subjects
+                          </Checkbox>
+                        </FormControl>
+                      </SimpleGrid>
+
+                      {webForm.data.classifications.length > 1 && (
+                        <IconButton
+                          aria-label={'Remove Class'}
+                          icon={<Icon as={TrashIcon} />}
+                          onClick={() => removeClassification(index)}
+                          variant={'ghost'}
+                          colorScheme={'red'}
+                        />
+                      )}
+                    </HStack>
+                  </Div>
+                );
+              })}
             </VStack>
 
             <Button

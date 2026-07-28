@@ -62,3 +62,33 @@ it(
       );
   }
 );
+
+it(
+  'renders template 9 dummy result sheets with annual subject totals',
+  function () {
+    $institution = Institution::factory()->create();
+    InstitutionSetting::query()
+      ->where('institution_id', $institution->id)
+      ->where('key', InstitutionSettingType::Result->value)
+      ->delete();
+    InstitutionSetting::factory()->create([
+      'institution_id' => $institution->id,
+      'key' => InstitutionSettingType::Result->value,
+      'value' => json_encode([
+        ResultSettingType::Template->value =>
+          ResultTemplateType::Template9->value
+      ]),
+      'type' => 'array'
+    ]);
+
+    actingAs($institution->createdBy)
+      ->get(route('institutions.result-sheets.dummy', $institution))
+      ->assertOk()
+      ->assertInertia(
+        fn(Assert $page) => $page
+          ->component('institutions/result-sheets/template-9')
+          ->has('courseResults', 10)
+          ->has('subjectTermTotals', 10)
+      );
+  }
+);

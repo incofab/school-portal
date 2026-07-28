@@ -12,8 +12,10 @@ use App\Models\AcademicSession;
 use Illuminate\Database\Seeder;
 use App\Models\InstitutionGroup;
 use App\Enums\InstitutionSettingType;
+use App\Enums\LearningEvaluationDomainType;
 use App\Enums\PriceLists\PaymentStructure;
 use App\Enums\PriceLists\PriceType;
+use App\Enums\ResultCommentTemplateType;
 use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\Course;
@@ -21,8 +23,12 @@ use App\Models\CourseResult;
 use App\Models\CourseTeacher;
 use App\Models\InstitutionSetting;
 use App\Models\InstitutionUser;
+use App\Models\LearningEvaluation;
+use App\Models\LearningEvaluationDomain;
 use App\Models\PriceList;
+use App\Models\ResultCommentTemplate;
 use App\Models\Student;
+use App\Models\TermResult;
 use App\Support\SettingsHandler;
 
 class MyRefillDatabaseSeeder extends Seeder
@@ -52,25 +58,6 @@ class MyRefillDatabaseSeeder extends Seeder
 
     $this->createInstitution($institutionGroup, $forDefaultRecord);
     $this->createInstitution($institutionGroup, false);
-
-    // $institution = Institution::factory()
-    //   ->for($institutionGroup)
-    //   ->create($forDefaultRecord ? ['name' => 'Success Academy'] : []);
-    // $institutionAdmin = $institution->createdBy;
-    // if ($forDefaultRecord) {
-    //   $institutionAdmin->fill(['email' => 'success@email.com'])->save();
-    // }
-
-    // SeedSetupData::run($institution);
-
-    // $this->createInstitutionSetting($institution);
-
-    // $this->createClasses($institution);
-    // $this->recordSubjects($institution, $forDefaultRecord);
-    // $this->createStudents($institution, 10);
-    // $this->createExamResult($institution);
-
-    // $this->createPriceList($institutionGroup);
   }
 
   private function createInstitution(
@@ -87,40 +74,148 @@ class MyRefillDatabaseSeeder extends Seeder
 
     SeedSetupData::run($institution);
 
-    $this->createInstitutionSetting($institution);
+    $this->seedEvaluations($institution);
+    $this->seedResultComments($institution);
 
     $this->createClasses($institution);
     $this->recordSubjects($institution, $forDefaultRecord);
     $this->createStudents($institution, 10);
-    $this->createExamResult($institution);
+
+    $this->createExamResult($institution, TermType::First);
+    $this->createExamResult($institution, TermType::Second);
+    $this->createExamResult($institution, TermType::Third);
 
     $this->createPriceList($institutionGroup);
   }
 
-  function createInstitutionSetting(Institution $institution)
+  function seedEvaluations(Institution $institution)
   {
-    $acadSessions = AcademicSession::all()
-      ->pluck('id')
-      ->toArray();
-
-    $settingData = [
+    $domainsArr = [
       [
-        'key' => InstitutionSettingType::CurrentTerm->value,
-        'value' => Arr::random([
-          TermType::First,
-          TermType::Second,
-          TermType::Third
-        ]),
-        'institution_id' => $institution->id
+        'title' => 'Effective',
+        'type' => LearningEvaluationDomainType::Number->value,
+        'max' => 100
       ],
       [
-        'key' => InstitutionSettingType::CurrentAcademicSession->value,
-        'value' => Arr::random($acadSessions),
-        'institution_id' => $institution->id
+        'title' => 'Affective',
+        'type' => LearningEvaluationDomainType::Number->value,
+        'max' => 100
+      ],
+      [
+        'title' => 'Psychomotor',
+        'type' => LearningEvaluationDomainType::Number->value,
+        'max' => 100
       ]
     ];
 
-    InstitutionSetting::insert($settingData);
+    $learningEvaluationsArr = [
+      'Effective' => [
+        ['title' => 'Listening'],
+        ['title' => 'Speaking'],
+        ['title' => 'Reading'],
+        ['title' => 'Writing'],
+        ['title' => 'Literature'],
+        ['title' => 'Comprehension']
+      ],
+      'Affective' => [
+        ['title' => 'Effort'],
+        ['title' => 'Punctuality'],
+        ['title' => 'Participation'],
+        ['title' => 'Neatness'],
+        ['title' => 'Respect'],
+        ['title' => 'Teamwork']
+      ],
+      'Psychomotor' => [
+        ['title' => 'Drawing'],
+        ['title' => 'Painting'],
+        ['title' => 'Modeling'],
+        ['title' => 'Craftsmanship'],
+        ['title' => 'Use of Tools'],
+        ['title' => 'Presentation']
+      ]
+    ];
+
+    foreach ($domainsArr as $domain) {
+      $domainObj = $institution
+        ->learningEvaluationDomains()
+        ->firstOrCreate(['title' => $domain['title']], $domain);
+
+      $evaluations = $learningEvaluationsArr[$domain['title']];
+      foreach ($evaluations as $evaluation) {
+        $institution
+          ->learningEvaluations()
+          ->firstOrCreate(
+            ['title' => $evaluation['title']],
+            ['learning_evaluation_domain_id' => $domainObj->id]
+          );
+      }
+    }
+  }
+
+  function seedResultComments(Institution $institution)
+  {
+    $arr = [
+      [
+        'type' => ResultCommentTemplateType::FullTermResult->value,
+        'min' => 0,
+        'max' => 39,
+        'grade' => 'F',
+        'grade_label' => 'Fail',
+        'comment' => 'Needs improvement',
+        'comment_2' => 'Try harder next time'
+      ],
+      [
+        'type' => ResultCommentTemplateType::FullTermResult->value,
+        'min' => 40,
+        'max' => 44,
+        'grade' => 'E',
+        'grade_label' => 'Poor',
+        'comment' => 'Needs improvement',
+        'comment_2' => 'Slight improvement'
+      ],
+      [
+        'type' => ResultCommentTemplateType::FullTermResult->value,
+        'min' => 45,
+        'max' => 49,
+        'grade' => 'D',
+        'grade_label' => 'Fair',
+        'comment' => 'Improving, but not good enough',
+        'comment_2' => 'Improvement is needed to meet the required standard'
+      ],
+      [
+        'type' => ResultCommentTemplateType::FullTermResult->value,
+        'min' => 50,
+        'max' => 59,
+        'grade' => 'C',
+        'grade_label' => 'Good',
+        'comment' => 'Satisfactory',
+        'comment_2' => 'Could do better'
+      ],
+      [
+        'type' => ResultCommentTemplateType::FullTermResult->value,
+        'min' => 60,
+        'max' => 69,
+        'grade' => 'B',
+        'grade_label' => 'Very Good',
+        'comment' => 'Very good result',
+        'comment_2' => 'Keep it up'
+      ],
+      [
+        'type' => ResultCommentTemplateType::FullTermResult->value,
+        'min' => 70,
+        'max' => 100,
+        'grade' => 'A',
+        'grade_label' => 'Excellent',
+        'comment' => 'Excellent result',
+        'comment_2' => 'Outstanding performance'
+      ]
+    ];
+
+    foreach ($arr as $key => $value) {
+      $institution
+        ->resultCommentTemplates()
+        ->firstOrCreate(['grade' => $value['grade']], $value);
+    }
   }
 
   function createClasses(Institution $institution)
@@ -217,13 +312,13 @@ class MyRefillDatabaseSeeder extends Seeder
     }
   }
 
-  private function createExamResult(Institution $institution)
+  private function createExamResult(Institution $institution, TermType $term)
   {
     $courses = $institution->courses()->get();
     $settingsHandler = SettingsHandler::makeFromInstitution($institution);
     $classifications = $institution->classifications()->get();
     $academicSessionId = $settingsHandler->getCurrentAcademicSession();
-    $currentTerm = $settingsHandler->getCurrentTerm();
+    // $currentTerm = $settingsHandler->getCurrentTerm();
     $forMidTerm = false;
     foreach ($classifications as $key => $classification) {
       $students = $classification->students()->get();
@@ -240,7 +335,7 @@ class MyRefillDatabaseSeeder extends Seeder
             ->withInstitution($institution)
             ->create([
               'academic_session_id' => $academicSessionId,
-              'term' => $currentTerm,
+              'term' => $term->value,
               'for_mid_term' => $forMidTerm,
               'classification_id' => $classification->id,
               'course_id' => $course->id,
@@ -252,7 +347,7 @@ class MyRefillDatabaseSeeder extends Seeder
           classification: $classification,
           courseId: $course->id,
           academicSessionId: $academicSessionId,
-          term: $currentTerm,
+          term: $term->value,
           forMidTerm: $forMidTerm
         );
       }
@@ -260,10 +355,20 @@ class MyRefillDatabaseSeeder extends Seeder
       ClassResultInfoAction::make()->calculate(
         classification: $classification,
         academicSessionId: $academicSessionId,
-        term: $currentTerm,
+        term: $term->value,
         forMidTerm: $forMidTerm,
         forceCalculateTermResult: true
       );
+    }
+
+    $termResults = TermResult::all();
+
+    foreach ($termResults as $termResult) {
+      $formatted = [];
+      foreach ($institution->learningEvaluations as $evaluation) {
+        $formatted[$evaluation->id] = rand(1, 5);
+      }
+      $termResult->fill(['learning_evaluation' => $formatted])->save();
     }
   }
 

@@ -234,6 +234,7 @@ export enum ResultTemplate {
   Template6 = 'template-6',
   Template7 = 'template-7',
   Template8 = 'template-8',
+  Template9 = 'template-9',
 }
 
 export enum Religion {

@@ -47,6 +47,7 @@ export default function Template8(props: ResultProps) {
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition } = useResultSetting();
+  const titles = ResultUtil.getClassificationGroupTitles(classification);
   const nextTermResumptionDate =
     classResultInfo.next_term_resumption_date ??
     termDetail?.next_term_resumption_date;
@@ -170,7 +171,7 @@ export default function Template8(props: ResultProps) {
               </VStack>
               <Avatar
                 size="xl"
-                name="Student Photo"
+                name={`${titles.student} Photo`}
                 src={student.user?.photo ?? ''}
                 borderColor={themeColor}
                 borderWidth={2}
@@ -193,7 +194,7 @@ export default function Template8(props: ResultProps) {
             }
           />
           <SummaryCard
-            label="Class Size"
+            label={`${titles.students} in Class`}
             value={classResultInfo.num_of_students}
           />
           {termDetail?.end_date && (
@@ -321,7 +322,7 @@ export default function Template8(props: ResultProps) {
                 <>
                   <Box>
                     <Text fontWeight="bold" color={themeColor} mb={1}>
-                      Teacher's Remark
+                      {titles.headOfClassPossessive} Remark
                     </Text>
                     <Text fontSize="sm" fontStyle="italic" minH="40px">
                       {teacherComment}
@@ -333,7 +334,7 @@ export default function Template8(props: ResultProps) {
               {principalComment && (
                 <Box>
                   <Text fontWeight="bold" color={themeColor} mb={1}>
-                    Principal/Head Teacher Remark
+                    {titles.headOfSchoolPossessive} Remark
                   </Text>
                   <Text fontSize="sm" fontStyle="italic" minH="40px">
                     {principalComment}

@@ -39,6 +39,7 @@ export default function Template3(props: ResultProps) {
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const titles = ResultUtil.getClassificationGroupTitles(classification);
   const nextTermResumptionDate =
     classResultInfo.next_term_resumption_date ??
     termDetail?.next_term_resumption_date;
@@ -55,7 +56,10 @@ export default function Template3(props: ResultProps) {
 
   const resultSummary1 = [
     { label: 'Name', value: student.user?.full_name },
-    { label: 'No In Class', value: classResultInfo.num_of_students },
+    {
+      label: `No of ${titles.students} in Class`,
+      value: classResultInfo.num_of_students,
+    },
     {
       label: 'Total Marks Obtainable',
       value: getMaxObtainableScore(props),
@@ -344,7 +348,7 @@ export default function Template3(props: ResultProps) {
             <>
               <HStack align={'stretch'}>
                 <Text fontWeight={'semibold'} size={'xs'}>
-                  Teacher's comment:{' '}
+                  {titles.headOfClassPossessive} comment:{' '}
                 </Text>
                 <Text>{teacherComment}</Text>
               </HStack>
@@ -355,7 +359,7 @@ export default function Template3(props: ResultProps) {
             <>
               <HStack align={'stretch'}>
                 <Text fontWeight={'semibold'} size={'xs'}>
-                  Administrator's comment:{' '}
+                  {titles.headOfSchoolPossessive} comment:{' '}
                 </Text>
                 <Text>{principalComment}</Text>
               </HStack>

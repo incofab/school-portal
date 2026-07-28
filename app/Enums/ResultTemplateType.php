@@ -12,4 +12,5 @@ enum ResultTemplateType: string
   case Template6 = 'template-6';
   case Template7 = 'template-7';
   case Template8 = 'template-8';
+  case Template9 = 'template-9';
 }

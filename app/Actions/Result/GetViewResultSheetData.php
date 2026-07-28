@@ -2,9 +2,11 @@
 
 namespace App\Actions\Result;
 
+use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Assessment;
 use App\Models\Classification;
+use App\Models\ClassificationGroup;
 use App\Models\ClassResultInfo;
 use App\Models\CourseResult;
 use App\Models\CourseResultInfo;
@@ -43,7 +45,7 @@ class GetViewResultSheetData
     )
       ->filterQuery()
       ->getQuery()
-      ->with('classification')
+      ->with('classification.classificationGroup')
       ->first();
 
     abort_unless($termResult, 404, 'Result not found');
@@ -101,6 +103,7 @@ class GetViewResultSheetData
       ->forTermResult($termResult)
       ->first();
     $settingsHandler = SettingsHandler::makeFromInstitution($institution);
+    $classification->loadMissing('classificationGroup');
 
     $viewData = [
       'institution' => currentInstitution(),
@@ -118,6 +121,10 @@ class GetViewResultSheetData
         $classification,
         $academicSession,
         $termResult->for_mid_term,
+        $courseResults->pluck('course_id')->all()
+      ),
+      'subjectTermTotals' => self::getSubjectTermTotals(
+        $termResult,
         $courseResults->pluck('course_id')->all()
       ),
       'resultDetails' => self::getResultDetails($classResultInfo, $termResult),
@@ -142,13 +149,27 @@ class GetViewResultSheetData
     ClassResultInfo $classResultInfo,
     TermResult $termResult
   ) {
+    $studentTitle =
+      $termResult->classification?->classificationGroup?->studentPossessiveTitle() ??
+      ClassificationGroup::possessiveTitle(
+        ClassificationGroup::singularizeTitle(
+          ClassificationGroup::DEFAULT_STUDENT_TITLE
+        )
+      );
+
     return [
-      ['label' => "Student's Total Score", 'value' => $termResult->total_score],
+      [
+        'label' => "{$studentTitle} Total Score",
+        'value' => $termResult->total_score
+      ],
       [
         'label' => 'Maximum Total Score',
         'value' => $classResultInfo->max_obtainable_score
       ],
-      ['label' => "Student's Average Score", 'value' => $termResult->average],
+      [
+        'label' => "{$studentTitle} Average Score",
+        'value' => $termResult->average
+      ],
       ['label' => 'Class Average Score', 'value' => $classResultInfo->average]
     ];
   }
@@ -182,5 +203,42 @@ class GetViewResultSheetData
       ->pluck('cumulative_average', 'course_id')
       ->map(fn($average) => (float) $average)
       ->all();
+  }
+
+  /**
+   * @param array<int, int> $courseIds
+   * @return array<int, array{first?: float, second?: float, third?: float}>
+   */
+  private static function getSubjectTermTotals(
+    TermResult $termResult,
+    array $courseIds
+  ): array {
+    if (empty($courseIds)) {
+      return [];
+    }
+
+    $data = [];
+    CourseResult::query()
+      ->where('institution_id', $termResult->institution_id)
+      ->where('student_id', $termResult->student_id)
+      ->where('classification_id', $termResult->classification_id)
+      ->where('academic_session_id', $termResult->academic_session_id)
+      ->where('for_mid_term', $termResult->for_mid_term)
+      ->whereIn('course_id', $courseIds)
+      ->whereIn('term', [
+        TermType::First->value,
+        TermType::Second->value,
+        TermType::Third->value
+      ])
+      ->get(['course_id', 'term', 'result'])
+      ->each(function (CourseResult $courseResult) use (&$data) {
+        $term = is_string($courseResult->term)
+          ? $courseResult->term
+          : $courseResult->term->value;
+
+        $data[$courseResult->course_id][$term] = (float) $courseResult->result;
+      });
+
+    return $data;
   }
 }

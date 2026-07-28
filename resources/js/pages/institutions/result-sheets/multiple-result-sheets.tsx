@@ -45,6 +45,7 @@ const components = {
   template6: React.lazy(() => import('./template-6')),
   template7: React.lazy(() => import('./template-7')),
   template8: React.lazy(() => import('./template-8')),
+  template9: React.lazy(() => import('./template-9')),
 };
 
 type ComponentName = keyof typeof components;

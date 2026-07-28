@@ -81,8 +81,14 @@ export function SchoolLogo() {
   );
 }
 
-export function StudentPassport({ student }: { student: Student }) {
-  return <Avatar size="xl" name="Learner" src={student.user?.photo ?? ''} />;
+export function StudentPassport({
+  student,
+  title = 'Student',
+}: {
+  student: Student;
+  title?: string;
+}) {
+  return <Avatar size="xl" name={title} src={student.user?.photo ?? ''} />;
 }
 
 export function getWebsite(institution: Institution) {

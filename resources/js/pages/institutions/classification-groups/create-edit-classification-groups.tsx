@@ -1,5 +1,14 @@
 import React from 'react';
-import { FormControl, VStack } from '@chakra-ui/react';
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  FormControl,
+  VStack,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
@@ -23,6 +32,11 @@ export default function CreateOrUpdateClassification({
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
     title: classificationGroup?.title ?? '',
+    head_of_school_title:
+      classificationGroup?.head_of_school_title ?? 'Principal',
+    head_of_class_title:
+      classificationGroup?.head_of_class_title ?? 'Form Teacher',
+    student_title: classificationGroup?.student_title ?? 'Students',
   });
 
   const submit = async () => {
@@ -59,6 +73,35 @@ export default function CreateOrUpdateClassification({
                 formKey="title"
                 title="Class Group Title"
               />
+              <Accordion width="full" allowToggle>
+                <AccordionItem>
+                  <AccordionButton px={0}>
+                    <Box as="span" flex="1" textAlign="left" fontWeight="bold">
+                      More Options
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
+                  <AccordionPanel px={0} pb={0}>
+                    <VStack spacing={4}>
+                      <InputForm
+                        form={webForm as any}
+                        formKey="head_of_school_title"
+                        title="Head of School Title"
+                      />
+                      <InputForm
+                        form={webForm as any}
+                        formKey="head_of_class_title"
+                        title="Head of Class Title"
+                      />
+                      <InputForm
+                        form={webForm as any}
+                        formKey="student_title"
+                        title="Student Title"
+                      />
+                    </VStack>
+                  </AccordionPanel>
+                </AccordionItem>
+              </Accordion>
 
               <FormControl>
                 <FormButton isLoading={webForm.processing} />

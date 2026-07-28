@@ -3,7 +3,6 @@ namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
-use Illuminate\Validation\Rule;
 use App\Models\ClassificationGroup;
 
 class ClassificationGroupController extends Controller
@@ -28,17 +27,7 @@ class ClassificationGroupController extends Controller
 
   function store(Institution $institution)
   {
-    $data = request()->validate([
-      'title' => [
-        'required',
-        'string',
-        'max:100',
-        Rule::unique('classification_groups', 'title')->where(
-          'institution_id',
-          $institution->id
-        )
-      ]
-    ]);
+    $data = request()->validate(ClassificationGroup::createRule($institution));
 
     $institution->classificationGroups()->create($data);
     return $this->ok();
@@ -60,16 +49,9 @@ class ClassificationGroupController extends Controller
     Institution $institution,
     ClassificationGroup $classificationGroup
   ) {
-    $data = request()->validate([
-      'title' => [
-        'required',
-        'string',
-        'max:100',
-        Rule::unique('classification_groups', 'title')
-          ->where('institution_id', $institution->id)
-          ->ignore($classificationGroup->id, 'id')
-      ]
-    ]);
+    $data = request()->validate(
+      ClassificationGroup::createRule($institution, $classificationGroup)
+    );
 
     $classificationGroup->fill($data)->save();
     return $this->ok();

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
 use App\Models\Assessment;
 use App\Models\Classification;
+use App\Models\ClassificationGroup;
 use App\Models\ClassResultInfo;
 use App\Models\Course;
 use App\Models\CourseResult;
@@ -70,6 +71,13 @@ class DummyResultSheetController extends Controller
       $term,
       $forMidTerm
     );
+    $studentTitle =
+      $classification->classificationGroup?->studentPossessiveTitle() ??
+      ClassificationGroup::possessiveTitle(
+        ClassificationGroup::singularizeTitle(
+          ClassificationGroup::DEFAULT_STUDENT_TITLE
+        )
+      );
 
     $viewData = [
       'institution' => $institution,
@@ -91,13 +99,14 @@ class DummyResultSheetController extends Controller
       'subjectCumulativeAverages' => $this->subjectCumulativeAverages(
         $courseResults
       ),
+      'subjectTermTotals' => $this->subjectTermTotals($courseResults),
       'resultDetails' => [
-        ['label' => "Student's Total Score", 'value' => $totalScore],
+        ['label' => "{$studentTitle} Total Score", 'value' => $totalScore],
         [
           'label' => 'Maximum Total Score',
           'value' => $courseResults->count() * 100
         ],
-        ['label' => "Student's Average Score", 'value' => $average],
+        ['label' => "{$studentTitle} Average Score", 'value' => $average],
         ['label' => 'Class Average Score', 'value' => $average - 3]
       ],
       'assessments' => $assessments,
@@ -142,16 +151,28 @@ class DummyResultSheetController extends Controller
 
   private function classification(Institution $institution): Classification
   {
-    return Classification::query()
+    $classification = Classification::query()
       ->where('institution_id', $institution->id)
+      ->with('classificationGroup')
       ->oldest('id')
-      ->first() ??
-      new Classification([
-        'id' => 0,
-        'institution_id' => $institution->id,
-        'title' => 'Basic 5',
-        'has_equal_subjects' => true
-      ]);
+      ->first();
+
+    if ($classification) {
+      return $classification;
+    }
+
+    $classification = new Classification([
+      'id' => 0,
+      'institution_id' => $institution->id,
+      'title' => 'Basic 5',
+      'has_equal_subjects' => true
+    ]);
+    $classification->setRelation(
+      'classificationGroup',
+      new ClassificationGroup(ClassificationGroup::titleFallbacks())
+    );
+
+    return $classification;
   }
 
   /** @return Collection<int, Assessment> */
@@ -458,6 +479,26 @@ class DummyResultSheetController extends Controller
 
     foreach ($courseResults as $courseResult) {
       $data[$courseResult->course_id] = round($courseResult->result, 2);
+    }
+
+    return $data;
+  }
+
+  /**
+   * @param Collection<int, CourseResult> $courseResults
+   * @return array<int, array{first: float, second: float, third: float}>
+   */
+  private function subjectTermTotals(Collection $courseResults): array
+  {
+    $data = [];
+
+    foreach ($courseResults as $courseResult) {
+      $third = round($courseResult->result, 2);
+      $data[$courseResult->course_id] = [
+        'first' => max(35, $third - rand(8, 16)),
+        'second' => max(35, $third - rand(3, 10)),
+        'third' => $third
+      ];
     }
 
     return $data;

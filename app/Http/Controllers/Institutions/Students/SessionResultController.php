@@ -77,7 +77,7 @@ class SessionResultController extends Controller
           'student.user',
           'academicSession',
           'student',
-          'classification'
+          'classification.classificationGroup'
         ),
         'termResultDetails' => $this->getTermResultDetails($sessionResult),
         'resultCommentTemplate' => ResultCommentTemplate::getTemplate(
@@ -149,7 +149,11 @@ class SessionResultController extends Controller
         'academic_session_id',
         $academicSession?->id ?? $settingsHandler->getCurrentAcademicSession()
       )
-      ->with('student.user', 'academicSession', 'classification')
+      ->with(
+        'student.user',
+        'academicSession',
+        'classification.classificationGroup'
+      )
       ->take(100)
       ->get();
     return inertia('institutions/session-result-sheets/class-session-results', [
@@ -163,7 +167,7 @@ class SessionResultController extends Controller
         $classification,
         false
       ),
-      'classification' => $classification
+      'classification' => $classification->loadMissing('classificationGroup')
     ]);
   }
 

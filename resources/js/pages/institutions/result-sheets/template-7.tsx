@@ -44,6 +44,7 @@ export default function Template7(props: ResultProps) {
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const titles = ResultUtil.getClassificationGroupTitles(classification);
   const nextTermResumptionDate =
     classResultInfo.next_term_resumption_date ??
     termDetail?.next_term_resumption_date;
@@ -52,7 +53,10 @@ export default function Template7(props: ResultProps) {
     { label: 'Name', value: student.user?.full_name },
     { label: 'Class', value: termResult.classification?.title },
     { label: 'Portal ID', value: student.code },
-    { label: 'No in Class', value: classResultInfo.num_of_students },
+    {
+      label: `No of ${titles.students} in Class`,
+      value: classResultInfo.num_of_students,
+    },
     {
       label: 'Term',
       value: startCase(termResult.term),
@@ -157,7 +161,11 @@ export default function Template7(props: ResultProps) {
               {currentInstitution.phone} | {currentInstitution.email}
             </Text>
           </VStack>
-          <Avatar size="xl" name="Student" src={student.user?.photo ?? ''} />
+          <Avatar
+            size="xl"
+            name={titles.student}
+            src={student.user?.photo ?? ''}
+          />
         </Flex>
         <Text
           textAlign="center"
@@ -204,12 +212,14 @@ export default function Template7(props: ResultProps) {
           <VStack align="start" spacing={2}>
             {teacherComment && (
               <Text>
-                <strong>Teacher's Comment:</strong> {teacherComment}
+                <strong>{titles.headOfClassPossessive} Comment:</strong>{' '}
+                {teacherComment}
               </Text>
             )}
             {principalComment && (
               <Text>
-                <strong>Administrator's Comment:</strong> {principalComment}
+                <strong>{titles.headOfSchoolPossessive} Comment:</strong>{' '}
+                {principalComment}
               </Text>
             )}
             {stamp && <Img src={stamp} alt="Stamp" boxSize="100px" />}

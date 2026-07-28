@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
+/** @deprecated No longer in use and can be deleted from the date: 30/08/2026 */
 class BackfillCourseResultAssessmentKeys extends Command
 {
   protected $signature = 'course-results:backfill-assessment-keys {--chunk=1000 : Number of course results to process per chunk} {--dry-run : Count affected rows without updating them}';

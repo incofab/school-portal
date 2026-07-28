@@ -36,6 +36,7 @@ export default function Template4(props: ResultProps) {
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const titles = ResultUtil.getClassificationGroupTitles(classification);
   const nextTermResumptionDate =
     classResultInfo.next_term_resumption_date ??
     termDetail?.next_term_resumption_date;
@@ -64,7 +65,10 @@ export default function Template4(props: ResultProps) {
       label: 'Term',
       value: `${startCase(termResult.term)} Term, ${academicSession.title}`,
     },
-    { label: 'No in Class', value: classResultInfo.num_of_students },
+    {
+      label: `No of ${titles.students} in Class`,
+      value: classResultInfo.num_of_students,
+    },
     ...(nextTermResumptionDate
       ? [
           {
@@ -316,7 +320,7 @@ export default function Template4(props: ResultProps) {
             <>
               <HStack align={'stretch'}>
                 <Text fontWeight={'semibold'} size={'xs'}>
-                  Teacher's comment:{' '}
+                  {titles.headOfClassPossessive} comment:{' '}
                 </Text>
                 <Text>{teacherComment}</Text>
               </HStack>
@@ -327,7 +331,7 @@ export default function Template4(props: ResultProps) {
             <>
               <HStack align={'stretch'}>
                 <Text fontWeight={'semibold'} size={'xs'}>
-                  Administrator's comment:{' '}
+                  {titles.headOfSchoolPossessive} comment:{' '}
                 </Text>
                 <Text>{principalComment}</Text>
               </HStack>

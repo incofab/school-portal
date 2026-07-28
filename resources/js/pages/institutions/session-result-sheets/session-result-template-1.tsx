@@ -94,9 +94,10 @@ export default function SessionResultTemplate1({
   const student = sessionResult.student!;
   const classification = sessionResult.classification!;
   const academicSession = sessionResult.academic_session!;
+  const titles = ResultUtil.getClassificationGroupTitles(classification);
   const resultSummary1 = [
     { label: 'Name', value: student.user?.full_name },
-    { label: 'Student Id', value: student.code },
+    { label: `${titles.student} Id`, value: student.code },
   ];
   const resultSummary2 = [
     { label: 'Class', value: classification.title },
@@ -181,7 +182,7 @@ export default function SessionResultTemplate1({
             </VStack>
             <Avatar
               size={'2xl'}
-              name="Student logo"
+              name={`${titles.student} logo`}
               src={student.user?.photo_url}
               visibility={'hidden'}
             />

@@ -383,6 +383,9 @@ export interface Classification extends InstitutionRow {
 
 export interface ClassificationGroup extends InstitutionRow {
   title: string;
+  head_of_school_title: string;
+  head_of_class_title: string;
+  student_title: string;
   classifications_count?: number;
   show_class_group_position: boolean;
 }

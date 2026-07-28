@@ -39,6 +39,7 @@ export default function Template1(props: ResultProps) {
   } = props;
   const { currentInstitution } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const titles = ResultUtil.getClassificationGroupTitles(classification);
 
   const principalComment =
     termResult.principal_comment ??
@@ -128,7 +129,7 @@ export default function Template1(props: ResultProps) {
             </VStack>
             <Avatar
               size={'2xl'}
-              name="Student logo"
+              name={`${titles.student} logo`}
               src={student.user?.photo_url}
             />
           </HStack>
@@ -161,7 +162,7 @@ export default function Template1(props: ResultProps) {
             )}
             <Spacer />
             <LabelText
-              label="No in Class"
+              label={`No of ${titles.students} in Class`}
               text={classResultInfo.num_of_students}
             />
           </HStack>
@@ -242,7 +243,7 @@ export default function Template1(props: ResultProps) {
               <>
                 <HStack align={'stretch'}>
                   <Text fontWeight={'semibold'} size={'xs'}>
-                    Teacher's comment:{' '}
+                    {titles.headOfClassPossessive} comment:{' '}
                   </Text>
                   <Text>{teacherComment}</Text>
                 </HStack>
@@ -253,7 +254,7 @@ export default function Template1(props: ResultProps) {
               <>
                 <HStack align={'stretch'}>
                   <Text fontWeight={'semibold'} size={'xs'}>
-                    Principal/Head Teacher's comment:{' '}
+                    {titles.headOfSchoolPossessive} comment:{' '}
                   </Text>
                   <Text>{principalComment}</Text>
                 </HStack>

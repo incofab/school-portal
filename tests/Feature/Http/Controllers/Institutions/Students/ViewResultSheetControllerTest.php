@@ -86,6 +86,21 @@ it('exposes cumulative subject averages on result sheet data', function () {
     'average' => 80
   ]);
 
+  foreach ([TermType::First->value, TermType::Second->value] as $term) {
+    TermResult::query()->create([
+      'institution_id' => $institution->id,
+      'student_id' => $student->id,
+      'classification_id' => $classification->id,
+      'academic_session_id' => $academicSession->id,
+      'term' => $term,
+      'for_mid_term' => false,
+      'total_score' => 135,
+      'average' => 67.5,
+      'position' => 1,
+      'is_activated' => true
+    ]);
+  }
+
   foreach (
     [
       TermType::First->value => 60,
@@ -145,5 +160,11 @@ it('exposes cumulative subject averages on result sheet data', function () {
       fn(Assert $page) => $page
         ->where("subjectCumulativeAverages.{$course->id}", 75)
         ->where("subjectCumulativeAverages.{$otherCourse->id}", 65)
+        ->where("subjectTermTotals.{$course->id}.first", 60)
+        ->where("subjectTermTotals.{$course->id}.second", 75)
+        ->where("subjectTermTotals.{$course->id}.third", 90)
+        ->missing("subjectTermTotals.{$otherCourse->id}.first")
+        ->missing("subjectTermTotals.{$otherCourse->id}.second")
+        ->where("subjectTermTotals.{$otherCourse->id}.third", 65)
     );
 });

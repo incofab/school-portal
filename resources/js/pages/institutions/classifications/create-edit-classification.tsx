@@ -26,13 +26,16 @@ import useModalToggle from '@/hooks/use-modal-toggle';
 import CreateEditClassGroupModal from '@/components/modals/create-edit-class-group-modal';
 import { PlusIcon } from '@heroicons/react/24/solid';
 import { Div } from '@/components/semantic';
+import ResultUtil from '@/util/result-util';
 
 interface Props {
   classification?: Classification;
+  classificationGroups: ClassificationGroup[];
 }
 
 export default function CreateOrUpdateClassification({
   classification,
+  classificationGroups,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const createClassGroupModal = useModalToggle();
@@ -50,6 +53,12 @@ export default function CreateOrUpdateClassification({
       : null,
     classification_group_id: classification?.classification_group_id ?? '',
   });
+  const selectedClassificationGroup = classificationGroups.find(
+    (group) => `${group.id}` === `${webForm.data.classification_group_id}`
+  );
+  const titles = ResultUtil.getClassificationGroupTitles(
+    selectedClassificationGroup ?? classification?.classification_group
+  );
 
   const submit = async () => {
     const res = await webForm.submit((data, web) => {
@@ -128,7 +137,7 @@ export default function CreateOrUpdateClassification({
               />
 
               <FormControlBox
-                title="Form Teacher"
+                title={titles.headOfClass}
                 form={webForm as any}
                 formKey="form_teacher_id"
               >
@@ -153,7 +162,8 @@ export default function CreateOrUpdateClassification({
                   size={'md'}
                   colorScheme="brand"
                 >
-                  All students offer the same number of subjects
+                  All {titles.students.toLowerCase()} offer the same number of
+                  subjects
                 </Checkbox>
               </FormControl>
 

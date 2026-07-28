@@ -4,6 +4,7 @@ import {
   Assessment,
   ClassResultInfo,
   Classification,
+  ClassificationGroup,
   CourseResult,
   CourseResultInfo,
   LearningEvaluation,
@@ -20,6 +21,49 @@ import {
 import { Text } from '@chakra-ui/react';
 
 const ResultUtil = {
+  getClassificationGroupTitles: function (
+    classification?: Classification | ClassificationGroup | null
+  ) {
+    const group =
+      classification && 'classification_group' in classification
+        ? classification.classification_group
+        : classification;
+    const headOfSchool = group?.head_of_school_title || 'Principal';
+    const headOfClass = group?.head_of_class_title || 'Form Teacher';
+    const students = group?.student_title || 'Students';
+    const student = this.singularizeTitle(students);
+
+    return {
+      headOfSchool,
+      headOfClass,
+      student,
+      students,
+      headOfSchoolPossessive: this.possessiveTitle(headOfSchool),
+      headOfClassPossessive: this.possessiveTitle(headOfClass),
+      studentPossessive: this.possessiveTitle(student),
+      studentsPossessive: this.possessiveTitle(students),
+    };
+  },
+
+  singularizeTitle: function (title: string) {
+    const trimmed = title.trim();
+    const lower = trimmed.toLowerCase();
+
+    if (lower.endsWith('ies')) {
+      return trimmed.slice(0, -3) + 'y';
+    }
+
+    if (lower.endsWith('s') && !lower.endsWith('ss')) {
+      return trimmed.slice(0, -1);
+    }
+
+    return trimmed;
+  },
+
+  possessiveTitle: function (title: string) {
+    return title.endsWith('s') ? `${title}'` : `${title}'s`;
+  },
+
   getPositionSuffix: function (position: number) {
     const lastChar = position % 10;
     let suffix = '';
@@ -329,6 +373,13 @@ export interface ResultProps {
   classResultInfo: ClassResultInfo;
   courseResultInfoData: { [course_id: string | number]: CourseResultInfo };
   subjectCumulativeAverages: { [course_id: string | number]: number };
+  subjectTermTotals?: {
+    [course_id: string | number]: {
+      first?: number;
+      second?: number;
+      third?: number;
+    };
+  };
   academicSession: AcademicSession;
   classification: Classification;
   student: Student;

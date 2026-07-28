@@ -6,6 +6,7 @@ import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '../forms/form-control-box';
 import { TermResult } from '@/types/models';
+import ResultUtil from '@/util/result-util';
 
 interface Props {
   templateComment?: string;
@@ -24,6 +25,9 @@ export default function TermResultTeacherCommentModal({
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
+  const titles = ResultUtil.getClassificationGroupTitles(
+    termResult.classification
+  );
   const webForm = useWebForm({
     comment: termResult.teacher_comment ?? templateComment,
   });
@@ -43,7 +47,7 @@ export default function TermResultTeacherCommentModal({
   return (
     <GenericModal
       props={{ isOpen, onClose }}
-      headerContent={"Teacher's Comemnt"}
+      headerContent={`${titles.headOfClassPossessive} Comment`}
       bodyContent={
         <VStack spacing={2}>
           <FormControlBox

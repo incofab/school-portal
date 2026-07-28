@@ -35,6 +35,7 @@ import DisplayUserFullname from '@/domain/institutions/users/display-user-fullna
 import useSharedProps from '@/hooks/use-shared-props';
 import GenericModal from '@/components/generic-modal';
 import useIsTeacher from '@/hooks/use-is-teacher';
+import ResultUtil from '@/util/result-util';
 
 interface Props {
   classifications: PaginationResponse<Classification>;
@@ -98,7 +99,13 @@ export default function ListClassification({ classifications }: Props) {
   }
 
   function unsuspendStudents(classification: Classification) {
-    if (!window.confirm(`Unsuspend all students in ${classification.title}?`)) {
+    const titles = ResultUtil.getClassificationGroupTitles(classification);
+
+    if (
+      !window.confirm(
+        `Unsuspend all ${titles.students} in ${classification.title}?`
+      )
+    ) {
       return;
     }
 
@@ -120,7 +127,7 @@ export default function ListClassification({ classifications }: Props) {
       render: (row) => <Text whiteSpace={'nowrap'}>{row.title}</Text>,
     },
     {
-      label: 'Num of Students',
+      label: 'Class Size',
       value: 'students_count',
     },
     {
@@ -128,8 +135,15 @@ export default function ListClassification({ classifications }: Props) {
       render: (row) => (row.has_equal_subjects ? 'Yes' : 'No'),
     },
     {
-      label: 'Form Teacher',
-      render: (row) => <DisplayUserFullname user={row.form_teacher} />,
+      label: 'Class Lead',
+      render: (row) => (
+        <VStack align={'start'} spacing={0}>
+          <Text fontSize={'xs'} color={'gray.500'}>
+            {ResultUtil.getClassificationGroupTitles(row).headOfClass}
+          </Text>
+          <DisplayUserFullname user={row.form_teacher} />
+        </VStack>
+      ),
     },
     ...(isAdmin || isTeacher
       ? [
@@ -215,13 +229,15 @@ export default function ListClassification({ classifications }: Props) {
                         as={InertiaLink}
                         href={instRoute('classifications.students', [row])}
                       >
-                        Student Tiles
+                        {ResultUtil.getClassificationGroupTitles(row).student}{' '}
+                        Tiles
                       </MenuItem>
                       <MenuItem
                         as={InertiaLink}
                         href={instRoute('users.idcards', [row])}
                       >
-                        Students ID Cards
+                        {ResultUtil.getClassificationGroupTitles(row).students}{' '}
+                        ID Cards
                       </MenuItem>
 
                       <MenuItem
@@ -229,7 +245,8 @@ export default function ListClassification({ classifications }: Props) {
                           migrateClassStudentsModalToggle.open(row)
                         }
                       >
-                        Move Students
+                        Move{' '}
+                        {ResultUtil.getClassificationGroupTitles(row).students}
                       </MenuItem>
                       <MenuItem onClick={() => generateResultPin(row)}>
                         Generate Result Pins
@@ -237,10 +254,12 @@ export default function ListClassification({ classifications }: Props) {
                       <MenuItem
                         onClick={() => suspendStudentsModalToggle.open(row)}
                       >
-                        Suspend Students
+                        Suspend{' '}
+                        {ResultUtil.getClassificationGroupTitles(row).students}
                       </MenuItem>
                       <MenuItem onClick={() => unsuspendStudents(row)}>
-                        Unsuspend Students
+                        Unsuspend{' '}
+                        {ResultUtil.getClassificationGroupTitles(row).students}
                       </MenuItem>
                       <MenuItem
                         as={InertiaLink}
@@ -274,7 +293,8 @@ export default function ListClassification({ classifications }: Props) {
                           classification: row.id,
                         })}
                       >
-                        View Students
+                        View{' '}
+                        {ResultUtil.getClassificationGroupTitles(row).students}
                       </MenuItem>
                       <MenuItem
                         as={InertiaLink}
@@ -371,6 +391,7 @@ function BulkStudentSuspensionModal({
   onSuccess,
 }: BulkStudentSuspensionModalProps) {
   const [statusMessage, setStatusMessage] = React.useState('');
+  const titles = ResultUtil.getClassificationGroupTitles(classification);
 
   async function submit() {
     if (await onSuccess(statusMessage)) {
@@ -381,18 +402,19 @@ function BulkStudentSuspensionModal({
   return (
     <GenericModal
       props={{ isOpen, onClose }}
-      headerContent={`Suspend students in ${classification.title}`}
+      headerContent={`Suspend ${titles.students} in ${classification.title}`}
       bodyContent={
         <VStack align={'stretch'} spacing={3}>
           <Text>
-            This will suspend all students currently in {classification.title}.
-            They will not be able to access student-only areas until they are
+            This will suspend all {titles.students} currently in{' '}
+            {classification.title}. They will not be able to access{' '}
+            {titles.student.toLowerCase()}-only areas until they are
             unsuspended.
           </Text>
           <Textarea
             value={statusMessage}
             onChange={(e) => setStatusMessage(e.currentTarget.value)}
-            placeholder="Suspension message shown to affected students"
+            placeholder={`Suspension message shown to affected ${titles.students.toLowerCase()}`}
           />
         </VStack>
       }
@@ -402,7 +424,7 @@ function BulkStudentSuspensionModal({
             Close
           </Button>
           <Button colorScheme={'red'} onClick={submit} isLoading={isLoading}>
-            Suspend Students
+            Suspend {titles.students}
           </Button>
         </HStack>
       }

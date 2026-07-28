@@ -47,6 +47,7 @@ export default function Template6(props: ResultProps) {
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const titles = ResultUtil.getClassificationGroupTitles(classification);
   const nextTermResumptionDate =
     classResultInfo.next_term_resumption_date ??
     termDetail?.next_term_resumption_date;
@@ -54,7 +55,10 @@ export default function Template6(props: ResultProps) {
   const resultSummary1 = [
     { label: 'Name', value: student.user?.full_name },
     { label: 'Class', value: termResult.classification?.title },
-    { label: 'No in Class', value: classResultInfo.num_of_students },
+    {
+      label: `No of ${titles.students} in Class`,
+      value: classResultInfo.num_of_students,
+    },
     // { label: 'Average Score', value: termResult.average },
     ...(hidePosition
       ? []
@@ -250,7 +254,11 @@ export default function Template6(props: ResultProps) {
               {academicSession.title} Session
             </Text>
           </VStack>
-          <Avatar size={'2xl'} name="Student Logo" src={student.user?.photo} />
+          <Avatar
+            size={'2xl'}
+            name={`${titles.student} Logo`}
+            src={student.user?.photo}
+          />
         </HStack>
         {/* <Divider height={2} backgroundColor={'#550d98'} opacity={1} /> */}
         <Div>
@@ -301,7 +309,7 @@ export default function Template6(props: ResultProps) {
               <LabelText label={'Total'} text={`${termResult.total_score}`} />
               <Spacer />
               <LabelText
-                label={'Student Average'}
+                label={`${titles.student} Average`}
                 text={`${termResult.average}`}
               />
             </HStack>
@@ -384,7 +392,7 @@ export default function Template6(props: ResultProps) {
                       size={'xs'}
                       whiteSpace={'nowrap'}
                     >
-                      Teacher's comment:{' '}
+                      {titles.headOfClassPossessive} comment:{' '}
                     </Text>
                     <Text>{teacherComment}</Text>
                   </HStack>
@@ -399,7 +407,7 @@ export default function Template6(props: ResultProps) {
                       size={'xs'}
                       whiteSpace={'nowrap'}
                     >
-                      Administrator's comment:{' '}
+                      {titles.headOfSchoolPossessive} comment:{' '}
                     </Text>
                     <Text>{principalComment}</Text>
                   </HStack>

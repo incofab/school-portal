@@ -42,6 +42,7 @@ export default function Template2(props: ResultProps) {
   } = props;
   const { currentInstitution } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const titles = ResultUtil.getClassificationGroupTitles(classification);
   function VerticalText({ text }: { text: string }) {
     return <Text className="vertical-header">{text}</Text>;
   }
@@ -154,7 +155,7 @@ export default function Template2(props: ResultProps) {
                 </Text>
               </Div>
             </VStack>
-            <StudentPassport student={student} />
+            <StudentPassport student={student} title={titles.student} />
           </HStack>
           <Div>
             <Flex flexDirection={'row'} justifyContent={'space-between'}>
@@ -172,7 +173,7 @@ export default function Template2(props: ResultProps) {
             <Flex mt={1} flexDirection={'row'} justifyContent={'space-between'}>
               <LabelText
                 labelProps={{ fontWeight: 'semibold' }}
-                label="No in Class"
+                label={`No of ${titles.students} in Class`}
                 text={classResultInfo.num_of_students}
               />
               <LabelText
@@ -339,7 +340,7 @@ export default function Template2(props: ResultProps) {
             <>
               <HStack align={'stretch'}>
                 <Text fontWeight={'semibold'} size={'xs'}>
-                  Teacher's comment:{' '}
+                  {titles.headOfClassPossessive} comment:{' '}
                 </Text>
                 <Text>{teacherComment}</Text>
               </HStack>
@@ -350,7 +351,7 @@ export default function Template2(props: ResultProps) {
             <>
               <HStack align={'stretch'}>
                 <Text fontWeight={'semibold'} size={'xs'}>
-                  Principal/Head Teacher:{' '}
+                  {titles.headOfSchool}:{' '}
                 </Text>
                 <Text>{principalComment}</Text>
               </HStack>

@@ -976,7 +976,10 @@
             links. It supports search, bulk class creation, download/upload,
             student status updates per classification, class migration,
             promotion, division membership management, and per-class shortcuts
-            to filtered lesson plans and topics.
+            to filtered lesson plans and topics. Classification groups also
+            configure institution-facing title labels used by class and result
+            interfaces, including head of school, head of class, and student
+            wording.
           </p>
           <ul>
             <li>
@@ -1296,11 +1299,15 @@
             percentage of that fixed partner commission. Term details can
             override the institution default for whether exam scores appear on
             result templates; when unset, the institution result setting
-            controls templates 1 through 8. Institutions can preview their
+            controls templates 1 through 9. Institutions can preview their
             selected result template from result settings; the preview renders a
             non-persisted dummy result sheet with 10 to 14 subjects, using
             existing institution courses where available and fallback subjects
-            when needed.
+            when needed. Template 9 is an annual/third-term sheet that shows
+            first-, second-, and third-term subject totals, computes annual
+            averages from available terms, applies the institution grading
+            configuration, and uses the institution logo as a light background
+            watermark.
           </p>
           <p>
             Course result upserts are protected by lookup constraints on

@@ -32,6 +32,7 @@ import { PlusIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import useSharedProps from '@/hooks/use-shared-props';
 import { LabelText } from '@/components/result-helper-components';
 import DataTable, { TableHeader } from '@/components/data-table';
+import ResultUtil from '@/util/result-util';
 
 interface Promotion {
   destination_classification_id: number | string;
@@ -57,6 +58,7 @@ export default function PromoteStudents({
   const { handleResponseToast } = useMyToast();
   const { currentAcademicSession } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
+  const titles = ResultUtil.getClassificationGroupTitles(classificationGroup);
   const webForm = useWebForm({
     promotions: [emptyPromotion] as Promotion[],
   });
@@ -97,12 +99,12 @@ export default function PromoteStudents({
         <>
           <CenteredBox>
             <Slab>
-              <SlabHeading title={`Promote Students`} />
+              <SlabHeading title={`Promote ${titles.students}`} />
               <Alert status="info">
                 <AlertIcon />
                 <AlertDescription>
-                  Students in <b>{classificationGroup.title}</b> Class will be
-                  promoted based on their session result from{' '}
+                  {titles.students} in <b>{classificationGroup.title}</b> Class
+                  will be promoted based on their session result from{' '}
                   <b>{currentAcademicSession.title}</b> Session
                 </AlertDescription>
               </Alert>

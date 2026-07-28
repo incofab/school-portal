@@ -1,5 +1,15 @@
 import React from 'react';
-import { Button, HStack, VStack } from '@chakra-ui/react';
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Button,
+  HStack,
+  VStack,
+} from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import GenericModal from '@/components/generic-modal';
 import useMyToast from '@/hooks/use-my-toast';
@@ -24,6 +34,11 @@ export default function CreateEditClassGroupModal({
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
     title: classificationGroup?.title ?? '',
+    head_of_school_title:
+      classificationGroup?.head_of_school_title ?? 'Principal',
+    head_of_class_title:
+      classificationGroup?.head_of_class_title ?? 'Form Teacher',
+    student_title: classificationGroup?.student_title ?? 'Students',
   });
 
   const onSubmit = async () => {
@@ -56,6 +71,35 @@ export default function CreateEditClassGroupModal({
             formKey="title"
             title="Class Group Title"
           />
+          <Accordion width="full" allowToggle>
+            <AccordionItem>
+              <AccordionButton px={0}>
+                <Box as="span" flex="1" textAlign="left" fontWeight="bold">
+                  More Options
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+              <AccordionPanel px={0} pb={0}>
+                <VStack spacing={2}>
+                  <InputForm
+                    form={webForm as any}
+                    formKey="head_of_school_title"
+                    title="Head of School Title"
+                  />
+                  <InputForm
+                    form={webForm as any}
+                    formKey="head_of_class_title"
+                    title="Head of Class Title"
+                  />
+                  <InputForm
+                    form={webForm as any}
+                    formKey="student_title"
+                    title="Student Title"
+                  />
+                </VStack>
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
         </VStack>
       }
       footerContent={

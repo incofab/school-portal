@@ -19,6 +19,7 @@ import useIsAdmin from '@/hooks/use-is-admin';
 import SelectClassGroupModal from '@/components/modals/select-class-group-modal';
 import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import SetResumptionDateModal from '@/components/modals/set-resumption-date-modal';
+import ResultUtil from '@/util/result-util';
 
 interface Props {
   classificationgroups: PaginationResponse<ClassificationGroup>;
@@ -102,7 +103,8 @@ export default function ListClassificationGroup({
                     ])
                   }
                 >
-                  Promote Student
+                  Promote{' '}
+                  {ResultUtil.getClassificationGroupTitles(row).students}
                 </Button>
               </HStack>
             ),

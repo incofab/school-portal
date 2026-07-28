@@ -69,6 +69,8 @@ class StudentTermResultDetailController extends Controller
       ->orderBy('courses.order')
       ->orderBy('courses.title')
       ->get();
+    $classification->loadMissing('classificationGroup');
+    $termResult->loadMissing('classification.classificationGroup');
 
     $assessments = Assessment::getAssessments(
       $term,

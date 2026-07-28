@@ -46,6 +46,7 @@ export default function Template5(props: ResultProps) {
   } = props;
   const { currentInstitution, stamp } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
+  const titles = ResultUtil.getClassificationGroupTitles(classification);
   const nextTermResumptionDate =
     classResultInfo.next_term_resumption_date ??
     termDetail?.next_term_resumption_date;
@@ -53,7 +54,10 @@ export default function Template5(props: ResultProps) {
   const resultSummary1 = [
     { label: 'Name', value: student.user?.full_name },
     { label: 'Class', value: termResult.classification?.title },
-    { label: 'No in Class', value: classResultInfo.num_of_students },
+    {
+      label: `No of ${titles.students} in Class`,
+      value: classResultInfo.num_of_students,
+    },
     { label: 'Average Score', value: termResult.average },
     ...(hidePosition
       ? []
@@ -242,7 +246,7 @@ export default function Template5(props: ResultProps) {
               </Text>
             </VStack>
           </Div>
-          <StudentPassport student={student} />
+          <StudentPassport student={student} title={titles.student} />
         </HStack>
         <Divider height={2} backgroundColor={'#550d98'} opacity={1} />
         <Flex
@@ -366,7 +370,7 @@ export default function Template5(props: ResultProps) {
                       size={'xs'}
                       whiteSpace={'nowrap'}
                     >
-                      Teacher's comment:{' '}
+                      {titles.headOfClassPossessive} comment:{' '}
                     </Text>
                     <Text>{teacherComment}</Text>
                   </HStack>
@@ -381,7 +385,7 @@ export default function Template5(props: ResultProps) {
                       size={'xs'}
                       whiteSpace={'nowrap'}
                     >
-                      Administrator's comment:{' '}
+                      {titles.headOfSchoolPossessive} comment:{' '}
                     </Text>
                     <Text>{principalComment}</Text>
                   </HStack>

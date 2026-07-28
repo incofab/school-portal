@@ -20,7 +20,11 @@ class ClassificationGroupFactory extends Factory
       'institution_id' => Institution::factory(),
       'title' => fake()
         ->unique()
-        ->sentence()
+        ->sentence(),
+      'head_of_school_title' =>
+        ClassificationGroup::DEFAULT_HEAD_OF_SCHOOL_TITLE,
+      'head_of_class_title' => ClassificationGroup::DEFAULT_HEAD_OF_CLASS_TITLE,
+      'student_title' => ClassificationGroup::DEFAULT_STUDENT_TITLE
     ];
   }
 
