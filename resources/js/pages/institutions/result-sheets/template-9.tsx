@@ -59,30 +59,38 @@ export default function Template9(props: ResultProps) {
     backgroundRepeat: 'repeat',
     backgroundSize: '220px 160px',
   };
-  const configuredAssessmentMax = assessments.reduce((total, assessment) => {
-    const assessmentIds: number[] = [];
-    courseResults.forEach((courseResult) => {
-      Object.keys(courseResult.assessment_values).forEach((assessmentKey) => {
-        const key = assessmentKey.split('|');
-        const foundAssessment = assessments.find(
-          (assessment) =>
-            assessment.id === Number(key[1] ?? 0) ||
-            assessment.raw_title === key[0]
-        );
-        if (
-          foundAssessment &&
-          !assessmentIds.find((id) => id === foundAssessment.id)
-        ) {
-          assessmentIds.push(foundAssessment.id);
-        }
-      });
-    });
+  // const configuredAssessmentMax = assessments.reduce((total, assessment) => {
+  //   const assessmentIds: number[] = [];
+  //   courseResults.forEach((courseResult) => {
+  //     Object.keys(courseResult.assessment_values).forEach((assessmentKey) => {
+  //       const key = assessmentKey.split('|');
+  //       const foundAssessment = assessments.find(
+  //         (assessment) =>
+  //           assessment.id === Number(key[1] ?? 0) ||
+  //           assessment.raw_title === key[0]
+  //       );
+  //       if (
+  //         foundAssessment &&
+  //         !assessmentIds.find((id) => id === foundAssessment.id)
+  //       ) {
+  //         assessmentIds.push(foundAssessment.id);
+  //       }
+  //     });
+  //   });
+  //   const value = assessmentIds.find((id) => id === assessment.id)
+  //     ? Number(assessment.max ?? 0)
+  //     : 0;
+  //   return total + value;
+  // }, 0);
+  const relevantAssessments = ResultUtil.getRelevantAssessments(
+    assessments,
+    courseResults
+  );
+  const configuredAssessmentMax = relevantAssessments.reduce(
+    (total, assessment) => total + Number(assessment.max ?? 0),
+    0
+  );
 
-    const value = assessmentIds.find((id) => id === assessment.id)
-      ? Number(assessment.max ?? 0)
-      : 0;
-    return total + value;
-  }, 0);
   const assessmentMax =
     configuredAssessmentMax > 0
       ? configuredAssessmentMax
@@ -93,14 +101,15 @@ export default function Template9(props: ResultProps) {
   const nextTermResumptionDate =
     classResultInfo.next_term_resumption_date ??
     termDetail?.next_term_resumption_date;
-  const principalComment =
-    termResult.principal_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment;
-  const teacherComment =
-    termResult.teacher_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment_2;
+
+  const principalComment = ResultUtil.getPrincipalsComment(
+    termResult,
+    resultCommentTemplate
+  );
+  const teacherComment = ResultUtil.getTeachersComment(
+    termResult,
+    resultCommentTemplate
+  );
 
   function score(value: number | string | undefined | null) {
     if (value === undefined || value === null || value === '') {
@@ -111,7 +120,7 @@ export default function Template9(props: ResultProps) {
   }
 
   function getAssessmentTotal(courseResult: CourseResult) {
-    return assessments.reduce(
+    return relevantAssessments.reduce(
       (total, assessment) =>
         total +
         Number(ResultUtil.getAssessmentValue(courseResult, assessment, 0)),

@@ -48,6 +48,10 @@ export default function Template7(props: ResultProps) {
   const nextTermResumptionDate =
     classResultInfo.next_term_resumption_date ??
     termDetail?.next_term_resumption_date;
+  const relevantAssessments = ResultUtil.getRelevantAssessments(
+    assessments,
+    courseResults
+  );
 
   const resultSummary = [
     { label: 'Name', value: student.user?.full_name },
@@ -82,7 +86,7 @@ export default function Template7(props: ResultProps) {
 
   const resultTableHeaders: TableHeader<CourseResult>[] = [
     { label: 'Subject', value: 'course.title' },
-    ...assessments.map((a: Assessment) => ({
+    ...relevantAssessments.map((a: Assessment) => ({
       label: a.title,
       render: (cr: CourseResult) =>
         String(ResultUtil.getAssessmentValue(cr, a, '')),
@@ -125,15 +129,14 @@ export default function Template7(props: ResultProps) {
     },
   ];
 
-  const principalComment =
-    termResult.principal_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment;
-
-  const teacherComment =
-    termResult.teacher_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment_2;
+  const principalComment = ResultUtil.getPrincipalsComment(
+    termResult,
+    resultCommentTemplate
+  );
+  const teacherComment = ResultUtil.getTeachersComment(
+    termResult,
+    resultCommentTemplate
+  );
 
   function Header() {
     return (

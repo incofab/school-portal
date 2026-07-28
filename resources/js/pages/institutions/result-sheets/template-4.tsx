@@ -40,6 +40,10 @@ export default function Template4(props: ResultProps) {
   const nextTermResumptionDate =
     classResultInfo.next_term_resumption_date ??
     termDetail?.next_term_resumption_date;
+  const relevantAssessments = ResultUtil.getRelevantAssessments(
+    assessments,
+    courseResults
+  );
 
   const resultSummary1 = [
     { label: 'Name', value: student.user?.full_name },
@@ -79,14 +83,14 @@ export default function Template4(props: ResultProps) {
       : []),
   ];
 
-  const principalComment =
-    termResult.principal_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment;
-  const teacherComment =
-    termResult.teacher_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment_2;
+  const principalComment = ResultUtil.getPrincipalsComment(
+    termResult,
+    resultCommentTemplate
+  );
+  const teacherComment = ResultUtil.getTeachersComment(
+    termResult,
+    resultCommentTemplate
+  );
 
   function LabelText({
     label,
@@ -223,7 +227,7 @@ export default function Template4(props: ResultProps) {
               >
                 <tr>
                   <th>Subject</th>
-                  {assessments.map((assessment) => (
+                  {relevantAssessments.map((assessment) => (
                     <th
                       style={{
                         background: '#5b9bd5',
@@ -263,7 +267,7 @@ export default function Template4(props: ResultProps) {
                       <td style={{ fontWeight: 'bold' }}>
                         {courseResult.course?.title}
                       </td>
-                      {assessments.map((assessment) => (
+                      {relevantAssessments.map((assessment) => (
                         <td
                           key={`assessment-val-${courseResult.id}-${assessment.id}`}
                         >

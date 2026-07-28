@@ -39,6 +39,7 @@ export default function Template2(props: ResultProps) {
     learningEvaluations,
     courseResultInfoData,
     showExamResult,
+    assessments,
   } = props;
   const { currentInstitution } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
@@ -55,15 +56,19 @@ export default function Template2(props: ResultProps) {
     { label: 'Average Score', value: termResult.average },
     { label: 'Class Average Score', value: classResultInfo.average },
   ];
+  const relevantAssessments = ResultUtil.getRelevantAssessments(
+    assessments,
+    courseResults
+  );
 
-  const principalComment =
-    termResult.principal_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment;
-  const teacherComment =
-    termResult.teacher_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment_2;
+  const principalComment = ResultUtil.getPrincipalsComment(
+    termResult,
+    resultCommentTemplate
+  );
+  const teacherComment = ResultUtil.getTeachersComment(
+    termResult,
+    resultCommentTemplate
+  );
 
   // function LabelText({
   //   label,

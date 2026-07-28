@@ -134,7 +134,14 @@ class RecordCourseResultRequest extends FormRequest
           $arrayPrefix = substr($attr, 0, $examPos);
 
           $assessments = Arr::get($data, $arrayPrefix . 'ass', []);
-          $assessmentsTotalScore = array_sum($assessments);
+
+          $assessmentsTotalScore = array_reduce(
+            $assessments,
+            fn($total, $item) => $total + intval($item ?? 0),
+            0
+          );
+
+          // $assessmentsTotalScore = array_sum($assessments);
 
           $exam = floatval(Arr::get($data, $arrayPrefix . 'exam', 0));
           if ($assessmentsTotalScore + $exam > 100) {

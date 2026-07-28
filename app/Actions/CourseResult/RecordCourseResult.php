@@ -126,25 +126,23 @@ class RecordCourseResult
     );
 
     $result = $this->data['exam'] ?? ($courseResult?->exam ?? 0);
-
-    $allAssessmentValues = [
-      ...$existingAssessmentValues,
-      ...$this->data['ass'] ?? []
-    ];
+    $submittedAssessmentValues = $this->data['ass'] ?? [];
     $assessmentValues = [];
 
     /** @var Assessment $assessment */
     foreach ($assessments as $key => $assessment) {
-      $assessmentScore = Assessment::assessmentScoreFromValues(
-        $allAssessmentValues,
-        $assessment
+      $assessmentScore = $this->getAssessmentScore(
+        $assessment,
+        $submittedAssessmentValues,
+        $existingAssessmentValues
       );
       if ($assessment->depends_on) {
         $assessmentScore = $this->getDependentScore($assessment);
         if ($assessmentScore == null) {
-          $assessmentScore = Assessment::assessmentScoreFromValues(
-            $allAssessmentValues,
-            $assessment
+          $assessmentScore = $this->getAssessmentScore(
+            $assessment,
+            $submittedAssessmentValues,
+            $existingAssessmentValues
           );
         }
       }
@@ -153,6 +151,27 @@ class RecordCourseResult
     }
 
     return [$result, $assessmentValues];
+  }
+
+  private function getAssessmentScore(
+    Assessment $assessment,
+    array $submittedAssessmentValues,
+    array $existingAssessmentValues
+  ): int|float|string|null {
+    $submittedScore = Assessment::assessmentScoreFromValues(
+      $submittedAssessmentValues,
+      $assessment,
+      null
+    );
+
+    if ($submittedScore !== null) {
+      return $submittedScore;
+    }
+
+    return Assessment::assessmentScoreFromValues(
+      $existingAssessmentValues,
+      $assessment
+    );
   }
 
   private function getDependentScore(Assessment $assessment)

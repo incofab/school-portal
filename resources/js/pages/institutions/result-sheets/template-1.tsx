@@ -40,15 +40,19 @@ export default function Template1(props: ResultProps) {
   const { currentInstitution } = useSharedProps();
   const { hidePosition, showGrade } = useResultSetting();
   const titles = ResultUtil.getClassificationGroupTitles(classification);
+  const relevantAssessments = ResultUtil.getRelevantAssessments(
+    assessments,
+    courseResults
+  );
 
-  const principalComment =
-    termResult.principal_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment;
-  const teacherComment =
-    termResult.teacher_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment_2;
+  const principalComment = ResultUtil.getPrincipalsComment(
+    termResult,
+    resultCommentTemplate
+  );
+  const teacherComment = ResultUtil.getTeachersComment(
+    termResult,
+    resultCommentTemplate
+  );
 
   function VerticalText({ text }: { text: string }) {
     return <Text className="vertical-header">{text}</Text>;
@@ -176,7 +180,7 @@ export default function Template1(props: ResultProps) {
               <thead>
                 <tr>
                   <th>Subjects</th>
-                  {assessments.map((assessment) => (
+                  {relevantAssessments.map((assessment) => (
                     <th key={assessment.id}>
                       <VerticalText text={startCase(assessment.title)} />
                     </th>
@@ -212,7 +216,7 @@ export default function Template1(props: ResultProps) {
                   return (
                     <tr key={courseResult.id}>
                       <td>{courseResult.course?.title}</td>
-                      {assessments.map((assessment) => (
+                      {relevantAssessments.map((assessment) => (
                         <td key={assessment.id}>
                           {ResultUtil.getAssessmentValue(
                             courseResult,

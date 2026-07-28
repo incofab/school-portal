@@ -52,19 +52,23 @@ export default function Template8(props: ResultProps) {
     classResultInfo.next_term_resumption_date ??
     termDetail?.next_term_resumption_date;
 
+  const relevantAssessments = ResultUtil.getRelevantAssessments(
+    assessments,
+    courseResults
+  );
+
   // Color Theme
   const themeColor = 'teal.600';
   const themeLight = 'teal.50';
 
-  const principalComment =
-    termResult.principal_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment;
-
-  const teacherComment =
-    termResult.teacher_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment_2;
+  const principalComment = ResultUtil.getPrincipalsComment(
+    termResult,
+    resultCommentTemplate
+  );
+  const teacherComment = ResultUtil.getTeachersComment(
+    termResult,
+    resultCommentTemplate
+  );
 
   function SummaryCard({
     label,
@@ -241,7 +245,7 @@ export default function Template8(props: ResultProps) {
                 <Th color="white" borderTopLeftRadius="md">
                   Subject
                 </Th>
-                {assessments.map((a) => (
+                {relevantAssessments.map((a) => (
                   <Th key={a.id} isNumeric color="white">
                     {a.title}
                   </Th>
@@ -277,7 +281,7 @@ export default function Template8(props: ResultProps) {
                 return (
                   <Tr key={result.id}>
                     <Td fontWeight="medium">{result.course?.title}</Td>
-                    {assessments.map((a) => (
+                    {relevantAssessments.map((a) => (
                       <Td key={a.id} isNumeric>
                         {ResultUtil.getAssessmentValue(result, a, '-')}
                       </Td>

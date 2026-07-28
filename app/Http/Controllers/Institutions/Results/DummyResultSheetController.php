@@ -245,8 +245,9 @@ class DummyResultSheetController extends Controller
         break;
       }
 
-      $courses->push(
-        new Course([
+      $course = new Course();
+      $course->setRawAttributes(
+        [
           'id' => $nextId++,
           'institution_id' => $institution->id,
           'title' => $title,
@@ -254,8 +255,11 @@ class DummyResultSheetController extends Controller
             ->upper()
             ->replace(' ', '')
             ->substr(0, 4)
-        ])
+        ],
+        true
       );
+
+      $courses->push($course);
     }
 
     return $courses->take(14)->values();

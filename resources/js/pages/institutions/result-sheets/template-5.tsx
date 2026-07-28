@@ -51,6 +51,11 @@ export default function Template5(props: ResultProps) {
     classResultInfo.next_term_resumption_date ??
     termDetail?.next_term_resumption_date;
 
+  const relevantAssessments = ResultUtil.getRelevantAssessments(
+    assessments,
+    courseResults
+  );
+
   const resultSummary1 = [
     { label: 'Name', value: student.user?.full_name },
     { label: 'Class', value: termResult.classification?.title },
@@ -110,30 +115,21 @@ export default function Template5(props: ResultProps) {
     );
   }
 
-  const svgCode = `<svg xmlns='http://www.w3.org/2000/svg' width='140' height='100' opacity='0.08' viewBox='0 0 100 100' transform='rotate(45)'><text x='0' y='50' font-size='18' fill='%23000'>${currentInstitution.name}</text></svg>`;
-  const backgroundStyle = {
-    backgroundImage: `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-      svgCode
-    )}")`,
-    backgroundRepeat: 'repeat',
-    backgroundColor: 'white',
-  };
-
-  const principalComment =
-    termResult.principal_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment;
-  const teacherComment =
-    termResult.teacher_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment_2;
+  const principalComment = ResultUtil.getPrincipalsComment(
+    termResult,
+    resultCommentTemplate
+  );
+  const teacherComment = ResultUtil.getTeachersComment(
+    termResult,
+    resultCommentTemplate
+  );
 
   const resultTableHeaders: TableHeader<CourseResult>[] = [
     {
       label: 'Subject',
       value: 'course.title',
     },
-    ...assessments.map((assessment) => ({
+    ...relevantAssessments.map((assessment) => ({
       label: assessment.title,
       render: (courseResult: CourseResult) =>
         String(ResultUtil.getAssessmentValue(courseResult, assessment, '')),

@@ -250,6 +250,19 @@ const ResultUtil = {
     return keyedValue?.[1] ?? fallback;
   },
 
+  assessmentExistsInCourseResult: function (
+    courseResult: CourseResult,
+    assessment: Assessment
+  ) {
+    const values = courseResult.assessment_values ?? {};
+    return Object.keys(values).some((key) => {
+      const arr = key.split('|');
+      return (
+        Number(arr[1] ?? 0) == assessment.id || arr[0] == assessment.raw_title
+      );
+    });
+  },
+
   exportAsPdf: async function (
     id: string,
     filename: string | undefined = undefined
@@ -332,6 +345,27 @@ const ResultUtil = {
       ResultUtil.getCommentFromTemplate(termResult.average, commentTemplate)
         ?.comment_2
     );
+  },
+
+  getRelevantAssessments: function (
+    assessments: Assessment[],
+    courseResults: CourseResult[]
+  ) {
+    const relevantAssessments: Assessment[] = [];
+    assessments.forEach((assessment) => {
+      if (relevantAssessments.some((ass) => ass.id == assessment.id)) {
+        return;
+      }
+
+      if (
+        courseResults.some((courseResult) =>
+          ResultUtil.assessmentExistsInCourseResult(courseResult, assessment)
+        )
+      ) {
+        relevantAssessments.push(assessment);
+      }
+    });
+    return relevantAssessments;
   },
 
   /** This should be removed next term. Grades should not be shown in the list-course-results */
