@@ -82,20 +82,20 @@ class ClassificationGroup extends BaseModel
 
   protected function headOfSchoolTitle(): Attribute
   {
-    return $this->titleAttribute(self::DEFAULT_HEAD_OF_SCHOOL_TITLE);
+    return $this->titleWithFallback(self::DEFAULT_HEAD_OF_SCHOOL_TITLE);
   }
 
   protected function headOfClassTitle(): Attribute
   {
-    return $this->titleAttribute(self::DEFAULT_HEAD_OF_CLASS_TITLE);
+    return $this->titleWithFallback(self::DEFAULT_HEAD_OF_CLASS_TITLE);
   }
 
   protected function studentTitle(): Attribute
   {
-    return $this->titleAttribute(self::DEFAULT_STUDENT_TITLE);
+    return $this->titleWithFallback(self::DEFAULT_STUDENT_TITLE);
   }
 
-  private function titleAttribute(string $fallback): Attribute
+  private function titleWithFallback(string $fallback)
   {
     return Attribute::make(
       get: fn($value) => filled($value) ? $value : $fallback,
