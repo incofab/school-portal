@@ -198,9 +198,9 @@ if (!function_exists('trimAiResponse')) {
 }
 
 if (!function_exists('trimDecimal')) {
-  function trimDecimal($value)
+  function trimDecimal($value, $precision = 3)
   {
-    $normalized = round((float) $value, 6);
+    $normalized = round((float) $value, $precision);
 
     return $normalized == (int) $normalized ? (int) $normalized : $normalized;
   }

@@ -224,7 +224,7 @@ export default function Template7(props: ResultProps) {
             )}
             {stamp && <Img src={stamp} alt="Stamp" boxSize="100px" />}
           </VStack>
-          {resultCommentTemplate && (
+          {resultCommentTemplate && resultCommentTemplate.length > 0 && (
             <table className="keys-table" style={{ textAlign: 'center' }}>
               <thead>
                 <tr>

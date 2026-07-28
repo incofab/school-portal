@@ -36,6 +36,7 @@ export default function Template9(props: ResultProps) {
     student,
     assessments,
     resultCommentTemplate,
+    subjectCumulativeAverages,
     subjectTermTotals,
     learningEvaluations,
     termDetail,
@@ -58,10 +59,30 @@ export default function Template9(props: ResultProps) {
     backgroundRepeat: 'repeat',
     backgroundSize: '220px 160px',
   };
-  const configuredAssessmentMax = assessments.reduce(
-    (total, assessment) => total + Number(assessment.max ?? 0),
-    0
-  );
+  const configuredAssessmentMax = assessments.reduce((total, assessment) => {
+    const assessmentIds: number[] = [];
+    courseResults.forEach((courseResult) => {
+      Object.keys(courseResult.assessment_values).forEach((assessmentKey) => {
+        const key = assessmentKey.split('|');
+        const foundAssessment = assessments.find(
+          (assessment) =>
+            assessment.id === Number(key[1] ?? 0) ||
+            assessment.raw_title === key[0]
+        );
+        if (
+          foundAssessment &&
+          !assessmentIds.find((id) => id === foundAssessment.id)
+        ) {
+          assessmentIds.push(foundAssessment.id);
+        }
+      });
+    });
+
+    const value = assessmentIds.find((id) => id === assessment.id)
+      ? Number(assessment.max ?? 0)
+      : 0;
+    return total + value;
+  }, 0);
   const assessmentMax =
     configuredAssessmentMax > 0
       ? configuredAssessmentMax
@@ -118,6 +139,24 @@ export default function Template9(props: ResultProps) {
       availableScores.length
     );
   }
+
+  const cumulativeAverageScores = courseResults
+    .map(
+      (courseResult) =>
+        subjectCumulativeAverages[courseResult.course_id] ??
+        getAnnualAverage(courseResult)
+    )
+    .filter(
+      (value): value is number =>
+        typeof value === 'number' && !Number.isNaN(value)
+    );
+  const cumulativeAverage = cumulativeAverageScores.length
+    ? roundNumber(
+        cumulativeAverageScores.reduce((total, value) => total + value, 0) /
+          cumulativeAverageScores.length,
+        2
+      )
+    : '-';
 
   const resultSummary = [
     { label: 'Name', value: student.user?.full_name },
@@ -286,7 +325,10 @@ export default function Template9(props: ResultProps) {
                 <strong>Total:</strong> {termResult.total_score}
               </Text>
               <Text>
-                <strong>Average:</strong> {termResult.average}
+                <strong>Average:</strong> {termResult.average}{' '}
+              </Text>
+              <Text>
+                <strong>Cummulative Average:</strong> {cumulativeAverage}
               </Text>
             </Box>
             <Spacer />
@@ -312,7 +354,7 @@ export default function Template9(props: ResultProps) {
               termResult={termResult}
               learningEvaluations={learningEvaluations}
             />
-            {resultCommentTemplate && (
+            {resultCommentTemplate && resultCommentTemplate.length > 0 && (
               <table className="keys-table template-9-keys">
                 <thead>
                   <tr>
@@ -350,42 +392,8 @@ export default function Template9(props: ResultProps) {
                   {principalComment}
                 </Text>
               )}
-              <HStack justify="space-between" pt={2}>
-                <Box minW="180px" borderTop="1px solid #111" pt={1}>
-                  <Text fontWeight="bold">{titles.headOfClass}</Text>
-                </Box>
-                <Box
-                  minW="180px"
-                  borderTop="1px solid #111"
-                  pt={1}
-                  textAlign="right"
-                >
-                  <Text fontWeight="bold">{titles.headOfSchool}</Text>
-                </Box>
-              </HStack>
               {stamp && <Img src={stamp} alt="School stamp" boxSize="90px" />}
             </VStack>
-
-            {/* {resultCommentTemplate && (
-              <table className="keys-table template-9-keys">
-                <thead>
-                  <tr>
-                    <th>Range (%)</th>
-                    <th>Remark</th>
-                    <th>Grade</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {resultCommentTemplate.map((item) => (
-                    <tr key={`${item.grade}-${item.min}-${item.max}`}>
-                      <td>{`${item.min} - ${item.max}`}</td>
-                      <td>{item.grade_label}</td>
-                      <td>{item.grade}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )} */}
           </HStack>
         </Div>
       </Div>

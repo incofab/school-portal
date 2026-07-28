@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Casts\TrimDecimal;
 use App\Enums\TermType;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
@@ -23,7 +24,7 @@ class TermResult extends BaseModel
     'for_mid_term' => 'boolean',
     'is_activated' => 'boolean',
     'next_term_resumption_date' => 'date',
-    'average' => 'float',
+    'average' => TrimDecimal::class,
     'class_group_position' => 'integer',
     'position' => 'integer',
     'learning_evaluation' => AsArrayObject::class

@@ -331,7 +331,7 @@ export default function Template5(props: ResultProps) {
               justifyContent: 'space-between',
             }}
           >
-            {resultCommentTemplate && (
+            {resultCommentTemplate && resultCommentTemplate.length > 0 && (
               <table
                 className="keys-table"
                 style={{ textAlign: 'center', minWidth: '300px' }}

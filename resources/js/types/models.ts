@@ -196,6 +196,7 @@ export interface SchoolActivity extends Row {
 interface InstitutionRow extends Row {
   institution_id: number;
   institution?: Institution;
+  deleted_at?: string;
 }
 
 export interface Timetable extends InstitutionRow {

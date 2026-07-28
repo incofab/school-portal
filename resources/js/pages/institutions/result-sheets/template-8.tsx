@@ -349,31 +349,33 @@ export default function Template8(props: ResultProps) {
             </VStack>
 
             {/* Grading Keys */}
-            <Box bg="gray.50" p={4} borderRadius="md">
-              <Text fontWeight="bold" mb={2} fontSize="sm">
-                Grading System
-              </Text>
-              <Table size="xs" variant="simple">
-                <Thead>
-                  <Tr>
-                    <Th>Range</Th>
-                    <Th>Grade</Th>
-                    <Th>Remark</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {resultCommentTemplate.map((item) => (
-                    <Tr key={item.id}>
-                      <Td>
-                        {item.min} - {item.max}
-                      </Td>
-                      <Td fontWeight="bold">{item.grade}</Td>
-                      <Td>{item.grade_label}</Td>
+            {resultCommentTemplate && resultCommentTemplate.length > 0 && (
+              <Box bg="gray.50" p={4} borderRadius="md">
+                <Text fontWeight="bold" mb={2} fontSize="sm">
+                  Grading System
+                </Text>
+                <Table size="xs" variant="simple">
+                  <Thead>
+                    <Tr>
+                      <Th>Range</Th>
+                      <Th>Grade</Th>
+                      <Th>Remark</Th>
                     </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </Box>
+                  </Thead>
+                  <Tbody>
+                    {resultCommentTemplate.map((item) => (
+                      <Tr key={item.id}>
+                        <Td>
+                          {item.min} - {item.max}
+                        </Td>
+                        <Td fontWeight="bold">{item.grade}</Td>
+                        <Td>{item.grade_label}</Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </Box>
+            )}
           </SimpleGrid>
         </Box>
         <Spacer height="40px" />

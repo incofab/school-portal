@@ -5,12 +5,12 @@ import GenericModal from '@/components/generic-modal';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '../forms/form-control-box';
-import { TermResult } from '@/types/models';
+import { ResultCommentTemplate, TermResult } from '@/types/models';
 import ResultUtil from '@/util/result-util';
 
 interface Props {
   termResult: TermResult;
-  templateComment?: string;
+  resultCommentTemplate?: ResultCommentTemplate[];
   isOpen: boolean;
   onClose(): void;
   onSuccess(): void;
@@ -21,7 +21,7 @@ export default function TermResultPrincipalCommentModal({
   onSuccess,
   onClose,
   termResult,
-  templateComment,
+  resultCommentTemplate,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -29,7 +29,7 @@ export default function TermResultPrincipalCommentModal({
     termResult.classification
   );
   const webForm = useWebForm({
-    comment: termResult.principal_comment ?? templateComment,
+    comment: ResultUtil.getPrincipalsComment(termResult, resultCommentTemplate),
   });
 
   const onSubmit = async () => {

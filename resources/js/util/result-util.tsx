@@ -310,6 +310,30 @@ const ResultUtil = {
     return comment;
   },
 
+  getPrincipalsComment: (
+    termResult?: TermResult,
+    commentTemplate?: ResultCommentTemplate[]
+  ) => {
+    if (!termResult) return undefined;
+    return (
+      termResult.principal_comment ??
+      ResultUtil.getCommentFromTemplate(termResult.average, commentTemplate)
+        ?.comment
+    );
+  },
+
+  getTeachersComment: (
+    termResult?: TermResult,
+    commentTemplate?: ResultCommentTemplate[]
+  ) => {
+    if (!termResult) return undefined;
+    return (
+      termResult.teacher_comment ??
+      ResultUtil.getCommentFromTemplate(termResult.average, commentTemplate)
+        ?.comment_2
+    );
+  },
+
   /** This should be removed next term. Grades should not be shown in the list-course-results */
   filterTemplates: function (
     allResultComments: ResultCommentTemplate[],

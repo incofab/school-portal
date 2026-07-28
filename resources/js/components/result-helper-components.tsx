@@ -7,34 +7,41 @@ export const GradingTable = ({
   resultCommentTemplate,
 }: {
   resultCommentTemplate: ResultCommentTemplate[];
-}) => (
-  <table className="result-analysis-table">
-    <thead>
-      <tr>
-        <th colSpan={3}>Keys</th>
-      </tr>
-      <tr>
-        <td>Score</td>
-        <td>Grade</td>
-        <td>Remark</td>
-      </tr>
-    </thead>
-    <tbody>
-      {resultCommentTemplate.map((item) => {
-        const { grade, grade_label } = item;
-        return (
-          <tr key={grade}>
-            <td
-              style={{ fontWeight: 'normal', maxLines: 1 }}
-            >{`${item.min} - ${item.max}`}</td>
-            <td style={{ fontWeight: 'normal', maxLines: 1 }}>{grade_label}</td>
-            <td style={{ fontWeight: 'normal', maxLines: 1 }}>{grade}</td>
-          </tr>
-        );
-      })}
-    </tbody>
-  </table>
-);
+}) => {
+  if (!resultCommentTemplate || resultCommentTemplate.length === 0) {
+    return <></>;
+  }
+  return (
+    <table className="result-analysis-table">
+      <thead>
+        <tr>
+          <th colSpan={3}>Keys</th>
+        </tr>
+        <tr>
+          <td>Score</td>
+          <td>Grade</td>
+          <td>Remark</td>
+        </tr>
+      </thead>
+      <tbody>
+        {resultCommentTemplate.map((item) => {
+          const { grade, grade_label } = item;
+          return (
+            <tr key={grade}>
+              <td
+                style={{ fontWeight: 'normal', maxLines: 1 }}
+              >{`${item.min} - ${item.max}`}</td>
+              <td style={{ fontWeight: 'normal', maxLines: 1 }}>
+                {grade_label}
+              </td>
+              <td style={{ fontWeight: 'normal', maxLines: 1 }}>{grade}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+};
 
 export const LabelText = function ({
   label,

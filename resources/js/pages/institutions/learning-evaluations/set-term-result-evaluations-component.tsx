@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Checkbox,
   Divider,
@@ -49,16 +49,10 @@ export default function SetTermResultEvaluation({
     termResult.learning_evaluation = evaluation;
     // Inertia.visit(instRoute('learning-evaluations.index'));
   };
-  // console.log('TermResult', termResult);
 
   useEffect(() => {
-    console.log(`Effect called on ${termResult?.student?.user?.full_name}`);
     setEvaluation(termResult.learning_evaluation ?? []);
   }, [termResult.id]);
-  // useMemo(() => {
-  //   console.log(`Memo called on ${termResult?.student?.user?.full_name}`);
-  //   setEvaluation(termResult.learning_evaluation ?? []);
-  // }, [termResult.id]);
 
   if (!learningEvaluations) {
     return null;
@@ -70,7 +64,7 @@ export default function SetTermResultEvaluation({
         Learning Evaluation
       </Text>
       <Divider mb={5} mt={1} />
-      {learningEvaluations ? (
+      {learningEvaluations.length ? (
         <>
           <VStack
             align={'stretch'}

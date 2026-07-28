@@ -7,7 +7,7 @@ class TrimDecimal implements CastsAttributes
 {
   public function get($model, $key, $value, $attributes)
   {
-    return trimDecimal($value);
+    return trimDecimal($value, 2);
     // return $value == (int) $value ? (int) $value : (float) $value;
   }
 

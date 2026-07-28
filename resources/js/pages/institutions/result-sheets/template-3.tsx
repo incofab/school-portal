@@ -368,31 +368,33 @@ export default function Template3(props: ResultProps) {
           )}
           <br />
           <Flex flexDirection={'row'} justifyContent={'space-between'}>
-            <div style={{ minWidth: '240px' }}>
-              <table className="keys-table">
-                <thead>
-                  <tr>
-                    <th colSpan={3}>
-                      <Text textAlign={'center'}>Key to Grades</Text>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* {[100, 89, 79, 69, 64, 59, 54, 49, 44, 39].map((item) => { */}
-                  {resultCommentTemplate.map((item) => {
-                    const { grade, grade_label } = item;
-                    // const [grade, remark, label] = getGrade(item);
-                    return (
-                      <tr key={item.id}>
-                        <td>{`${item.min} - ${item.max}`}</td>
-                        <td>{grade_label}</td>
-                        <td>{grade}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            {resultCommentTemplate && resultCommentTemplate.length > 0 && (
+              <div style={{ minWidth: '240px' }}>
+                <table className="keys-table">
+                  <thead>
+                    <tr>
+                      <th colSpan={3}>
+                        <Text textAlign={'center'}>Key to Grades</Text>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* {[100, 89, 79, 69, 64, 59, 54, 49, 44, 39].map((item) => { */}
+                    {resultCommentTemplate.map((item) => {
+                      const { grade, grade_label } = item;
+                      // const [grade, remark, label] = getGrade(item);
+                      return (
+                        <tr key={item.id}>
+                          <td>{`${item.min} - ${item.max}`}</td>
+                          <td>{grade_label}</td>
+                          <td>{grade}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
             <Div textAlign={'center'} mx={2}>
               <Img src={stamp} alt="School stamp" display={'inline-block'} />
             </Div>

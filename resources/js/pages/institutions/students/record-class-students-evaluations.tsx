@@ -21,7 +21,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { BrandButton } from '@/components/buttons';
-import useModalToggle from '@/hooks/use-modal-toggle';
+import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import TermResultTeacherCommentModal from '@/components/modals/term-result-teacher-comment-modal';
 import { Inertia } from '@inertiajs/inertia';
 import TermResultPrincipalCommentModal from '@/components/modals/term-result-principal-comment-modal';
@@ -57,18 +57,22 @@ export default function RecordClassStudentsEvaluations({
   resultCommentTemplate,
 }: Props) {
   const [index, setIndex] = useState(0);
-  const teacherCommentModalToggle = useModalToggle();
-  const principalCommentModalToggle = useModalToggle();
-  const termResult = termResults[index];
+  const teacherCommentModalToggle = useModalValueToggle<TermResult>();
+  const principalCommentModalToggle = useModalValueToggle<TermResult>();
+  const lastIndex = Math.max(termResults.length - 1, 0);
+  const selectedIndex = Math.min(index, lastIndex);
+  const termResult = termResults[selectedIndex]
+    ? { ...termResults[selectedIndex], classification }
+    : undefined;
 
-  const principalComment =
-    termResult.principal_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment;
-  const teacherComment =
-    termResult.teacher_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment_2;
+  const principalComment = ResultUtil.getPrincipalsComment(
+    termResult,
+    resultCommentTemplate
+  );
+  const teacherComment = ResultUtil.getTeachersComment(
+    termResult,
+    resultCommentTemplate
+  );
 
   return (
     <DashboardLayout>
@@ -81,15 +85,16 @@ export default function RecordClassStudentsEvaluations({
               leftIcon={<Icon as={ArrowLeftIcon} />}
               variant={'outline'}
               onClick={() => {
-                if (index > 0) {
-                  setIndex(index - 1);
+                if (selectedIndex > 0) {
+                  setIndex(selectedIndex - 1);
                 }
               }}
-              disabled={index === 0}
+              disabled={!termResults.length || selectedIndex === 0}
             />
             <Spacer />
             <Div>
-              {index + 1} of {termResults.length}
+              {termResults.length ? selectedIndex + 1 : 0} of{' '}
+              {termResults.length}
             </Div>
             <Spacer />
             <BrandButton
@@ -97,11 +102,13 @@ export default function RecordClassStudentsEvaluations({
               variant={'outline'}
               rightIcon={<Icon as={ArrowRightIcon} />}
               onClick={() => {
-                if (index < termResults.length - 1) {
-                  setIndex(index + 1);
+                if (selectedIndex < termResults.length - 1) {
+                  setIndex(selectedIndex + 1);
                 }
               }}
-              disabled={index === termResults.length - 1}
+              disabled={
+                !termResults.length || selectedIndex === termResults.length - 1
+              }
             />
           </HStack>
         </SlabBody>
@@ -163,7 +170,9 @@ export default function RecordClassStudentsEvaluations({
                         aria-label="edit teacher's comment"
                         icon={<Icon as={PencilIcon} />}
                         variant={'outline'}
-                        onClick={teacherCommentModalToggle.open}
+                        onClick={() =>
+                          teacherCommentModalToggle.open(termResult)
+                        }
                       />
                     </HStack>
                   </>
@@ -178,25 +187,31 @@ export default function RecordClassStudentsEvaluations({
                         aria-label="edit Administrator's comment"
                         icon={<Icon as={PencilIcon} />}
                         variant={'outline'}
-                        onClick={principalCommentModalToggle.open}
+                        onClick={() =>
+                          principalCommentModalToggle.open(termResult)
+                        }
                       />
                     </HStack>
                   </>
                 </VStack>
               </Div>
             </Stack>
-            <TermResultTeacherCommentModal
-              termResult={termResult}
-              templateComment={teacherComment}
-              {...teacherCommentModalToggle.props}
-              onSuccess={() => Inertia.reload({ only: ['termResult'] })}
-            />
-            <TermResultPrincipalCommentModal
-              termResult={termResult}
-              templateComment={principalComment}
-              {...principalCommentModalToggle.props}
-              onSuccess={() => Inertia.reload({ only: ['termResult'] })}
-            />
+            {teacherCommentModalToggle.state && (
+              <TermResultTeacherCommentModal
+                termResult={teacherCommentModalToggle.state}
+                resultCommentTemplate={resultCommentTemplate}
+                {...teacherCommentModalToggle.props}
+                onSuccess={() => Inertia.reload({ only: ['termResults'] })}
+              />
+            )}
+            {principalCommentModalToggle.state && (
+              <TermResultPrincipalCommentModal
+                termResult={termResult}
+                resultCommentTemplate={resultCommentTemplate}
+                {...principalCommentModalToggle.props}
+                onSuccess={() => Inertia.reload({ only: ['termResults'] })}
+              />
+            )}
           </>
         ) : (
           <Text>

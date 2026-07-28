@@ -334,6 +334,9 @@ class ClassResultInfoController extends Controller
     Institution $institution,
     ClassResultInfo $classResultInfo
   ) {
+    $classResultInfo->loadMissing('classification.classificationGroup');
+    $classification = $classResultInfo->classification;
+
     $termResults = $classResultInfo
       ->termResultsQuery(fn($q) => $q->joinStudent())
       ->with('student.user')
@@ -342,7 +345,7 @@ class ClassResultInfoController extends Controller
 
     return inertia('institutions/students/record-class-students-evaluations', [
       'termResults' => $termResults,
-      'classification' => $classResultInfo->classification,
+      'classification' => $classification,
       'academicSession' => $classResultInfo->academicSession,
       'term' => $classResultInfo->term,
       'forMidTerm' => $classResultInfo->for_mid_term,
