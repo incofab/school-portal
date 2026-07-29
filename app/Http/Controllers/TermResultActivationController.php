@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Models\TermResult;
 use App\Services\Results\TermResultAccessService;
 use App\Support\SettingsHandler;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use URL;
@@ -96,20 +97,58 @@ class TermResultActivationController extends Controller
 
     return response()->json([
       'has_multiple_results' => true,
-      'term_results' => $termResults
+      'term_results' => $this->mergedTermResults(
+        $institution,
+        $student,
+        $termResults
+      )
     ]);
+  }
+
+  private function mergedTermResults(
+    Institution $institution,
+    Student $student,
+    Collection $termResults
+  ) {
+    $settingHandler = SettingsHandler::makeFromInstitution($institution);
+    $academicSessionId = $settingHandler->getCurrentAcademicSession();
+    $currentTerm = $settingHandler->getCurrentTerm();
+
+    if (!$academicSessionId || !$currentTerm) {
+      return $termResults;
+    }
+    $currentTermResult = TermResult::where(
+      'academic_session_id',
+      $academicSessionId
+    )
+      ->where('term', $currentTerm)
+      ->where('institution_id', $institution->id)
+      ->where('student_id', $student->id)
+      ->where('for_mid_term', false)
+      ->first();
+    $last5Results = TermResult::where('institution_id', $institution->id)
+      ->where('student_id', $student->id)
+      ->where('for_mid_term', false)
+      ->latest('id')
+      ->take(5)
+      ->get();
+
+    if ($currentTermResult && $termResults->doesntContain($currentTermResult)) {
+      return $termResults->push($currentTermResult);
+    }
+    foreach ($last5Results as $result) {
+      if ($termResults->doesntContain($result)) {
+        $termResults->push($result);
+      }
+    }
+
+    return $termResults->each(
+      fn($t) => $t->setAttribute('signed_url', $t->signedUrl())
+    );
   }
 
   private function successRes(Institution $institution, TermResult $termResult)
   {
-    // $route = route('institutions.students.result-sheet', [
-    //   $institution->uuid,
-    //   $termResult->student_id,
-    //   $termResult->classification_id,
-    //   $termResult->academic_session_id,
-    //   $termResult->term,
-    //   $termResult->for_mid_term ? 1 : 0
-    // ]);
     $route = URL::temporarySignedRoute(
       'institutions.students.result-sheet.signed',
       now()->addMinutes(30),

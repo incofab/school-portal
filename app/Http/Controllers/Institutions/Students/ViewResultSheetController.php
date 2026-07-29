@@ -75,18 +75,6 @@ class ViewResultSheetController extends Controller
     }
 
     $viewData['signed_url'] = $termResult?->signedUrl();
-    // URL::temporarySignedRoute(
-    //   'institutions.students.result-sheet.signed',
-    //   now()->addHour(),
-    //   [
-    //     $institution->uuid,
-    //     $student,
-    //     $classification,
-    //     $academicSession,
-    //     $term,
-    //     $forMidTerm ? 1 : 0
-    //   ]
-    // );
 
     return $this->display($viewData);
   }
@@ -110,9 +98,9 @@ class ViewResultSheetController extends Controller
       $term,
       $forMidTerm
     );
-    $viewData['signed_url'] = url()->current();
     /** @var TermResult|null $termResult */
     $termResult = $viewData['termResult'];
+    $viewData['signed_url'] = $termResult->signedUrl();
     // abort_unless($termResult->isActivated(), 403, 'Result not activated');
     return $this->display($viewData);
   }

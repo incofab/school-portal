@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   Divider,
@@ -23,6 +24,8 @@ import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import PhoneNumberNormalizer from '@/util/phone-normalize';
+import { BrandButton, LinkButton } from '@/components/buttons';
+import { ArrowRightIcon } from '@heroicons/react/24/solid';
 
 function whatsappLink(phoneNumber?: string | null) {
   if (!phoneNumber) {
@@ -43,7 +46,9 @@ export default function StudentTermResultActivation({
     student_code: '',
     term_result_id: '',
   });
-  const [termResults, setTermResults] = useState([] as TermResult[]);
+  const [termResults, setTermResults] = useState(
+    [] as (TermResult & { signed_url: string })[]
+  );
   const { toastError, toastSuccess } = useMyToast();
   const whatsappPhoneNumber = PhoneNumberNormalizer.normalize(
     import.meta.env.VITE_WHATSAPP_PHONE_NUMBER as string | null | undefined
@@ -177,22 +182,87 @@ export default function StudentTermResultActivation({
               <Spacer />
               <Text>{startCase(termResult.term)}</Text>
               <Spacer />
-              <Text>{termResult.classification?.title}</Text>
+              <Div>
+                <Text>{termResult.classification?.title}</Text>
+                {termResult.is_activated ? (
+                  <Badge colorScheme={'green'} size={'sm'} fontSize={'9px'}>
+                    Activated
+                  </Badge>
+                ) : (
+                  <Badge colorScheme={'red'} size={'sm'} fontSize={'9px'}>
+                    Not Activated
+                  </Badge>
+                )}
+              </Div>
               <Spacer />
-              <DestructivePopover
-                label={'Activate this result?'}
-                onConfirm={(onClose) => submitForm(termResult.id, onClose)}
-                isLoading={form.processing}
-                positiveButtonLabel="Yes"
-              >
-                <Button variant={'solid'} colorScheme="brand">
-                  Activate
-                </Button>
-              </DestructivePopover>
+              {termResult.is_activated ? (
+                <LinkButton
+                  variant={'outline'}
+                  colorScheme="brand"
+                  title="View Result"
+                  href={termResult.signed_url ?? ''}
+                />
+              ) : (
+                <DestructivePopover
+                  label={'Activate this result?'}
+                  onConfirm={(onClose) => submitForm(termResult.id, onClose)}
+                  isLoading={form.processing}
+                  positiveButtonLabel="Yes"
+                >
+                  <Button variant={'solid'} colorScheme="brand">
+                    Activate
+                  </Button>
+                </DestructivePopover>
+              )}
             </HStack>
           ))}
+          {form.data.student_code && (
+            <>
+              <Divider my={2} />
+              <LoginButton studentCode={form.data.student_code} />
+            </>
+          )}
         </VStack>
       )}
     </CenteredLayout>
+  );
+}
+
+function LoginButton({ studentCode }: { studentCode: string }) {
+  const { toastError, toastSuccess } = useMyToast();
+  const form = useWebForm({
+    student_code: studentCode,
+  });
+
+  async function onSubmit() {
+    const res = await form.submit((data, web) => {
+      return web.post(
+        route('student-login.store', {
+          student_code: stripInitials(data.student_code),
+        })
+      );
+    });
+    if (!res.ok) {
+      return void toastError(res.message ?? 'Invalid credentials');
+    }
+
+    if (res.data.should_enter_password) {
+      Inertia.visit(route('student-login'));
+      return;
+    }
+    toastSuccess('Login successful');
+    window.location.href = route('user.dashboard');
+  }
+
+  return (
+    <BrandButton
+      onClick={onSubmit}
+      width={'200px'}
+      mx={'auto'}
+      variant={'outline'}
+      rightIcon={<Icon as={ArrowRightIcon} />}
+    >
+      Goto Dashboard
+    </BrandButton>
   );
 }

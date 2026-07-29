@@ -23,6 +23,11 @@ use App\Support\UITableFilters\TermResultUITableFilters;
 
 class GetViewResultSheetData
 {
+  public static function runByTermResult(TermResult $termResult)
+  {
+    return self::getSheetData($termResult);
+  }
+
   public static function run(
     Institution $institution,
     Student $student,
@@ -50,13 +55,30 @@ class GetViewResultSheetData
 
     abort_unless($termResult, 404, 'Result not found');
 
-    // if (currentUser()->id == $student->user_id) {
-    //   abort_unless(
-    //     $termResult->is_activated,
-    //     403,
-    //     'This result is not activated'
-    //   );
-    // }
+    return self::getSheetData($termResult);
+  }
+
+  public static function getSheetData(TermResult $termResult)
+  {
+    $termResult->loadMissing(
+      'classification.classificationGroup',
+      'student',
+      'academicSession',
+      'institution'
+    );
+    $institution = $termResult->institution;
+    $student = $termResult->student;
+    $classification = $termResult->classification;
+    $academicSession = $termResult->academicSession;
+    $term = $termResult->term;
+    $forMidTerm = $termResult->for_mid_term;
+    $params = [
+      'institution_id' => $institution->id,
+      'classification' => $classification->id,
+      'term' => $term,
+      'academicSession' => $academicSession->id,
+      'forMidTerm' => $termResult->for_mid_term
+    ];
 
     $courseResults = CourseResultsUITableFilters::make(
       $params,

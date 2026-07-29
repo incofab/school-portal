@@ -575,6 +575,7 @@ export interface TermResult extends InstitutionRow {
   classification_id: number;
   academic_session_id: number;
   term: TermType;
+  is_activated: boolean;
   total_score: number;
   position: number;
   average: number;
