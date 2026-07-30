@@ -94,6 +94,7 @@ export default function ListFundings({ fundings, wallet }: Props) {
           >
             {[WalletType.Credit, WalletType.Debt, ''].map((item) => (
               <Item
+                key={item}
                 label={item}
                 isActive={item === (wallet ?? '')}
                 url={instRoute('fundings.index', [item])}

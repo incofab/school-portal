@@ -348,9 +348,10 @@ const ResultUtil = {
   },
 
   getRelevantAssessments: function (
-    assessments: Assessment[],
+    assessments: Assessment[] | undefined,
     courseResults: CourseResult[]
   ) {
+    assessments = assessments ?? [];
     const relevantAssessments: Assessment[] = [];
     assessments.forEach((assessment) => {
       if (relevantAssessments.some((ass) => ass.id == assessment.id)) {

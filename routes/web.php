@@ -62,12 +62,13 @@ Route::get('deduct-credit', function () {
 });
 
 Route::get('/activate-result/{instUuid}', function ($instUuid) {
+    $academicSession = \App\Models\AcademicSession::where('title', '2025/2026')->firstOrfail();
     $inst = \App\Models\Institution::where('uuid', $instUuid)->firstOrFail();
     $termResults = \App\Models\TermResult::query()
         ->where('institution_id', $inst->id)
         ->where('for_mid_term', false)
         ->where('term', \App\Enums\TermType::First)
-        ->where('academic_session_id', 5)
+        ->where('academic_session_id', $academicSession->id)
         ->activated(false)
     //   ->update(['is_activated' => true]);
         ->count();

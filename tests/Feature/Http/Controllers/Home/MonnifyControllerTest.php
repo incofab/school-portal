@@ -1,6 +1,11 @@
 <?php
 
 use App\Enums\TransactionType;
+use App\Enums\Payments\PaymentMerchantType;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentStatus;
+use App\Models\Institution;
+use App\Models\PaymentReference;
 use App\Models\ReservedAccount;
 use App\Models\User;
 use App\Models\UserTransaction;
@@ -11,6 +16,7 @@ beforeEach(function () {
   Config::set('app.debug', false); // simulate production
   Config::set('services.monnify.secret', 'secret');
   Config::set('services.monnify.public', 'public');
+  Config::set('services.monnify.contract-code', 'contract-code');
 
   // Fake Monnify auth API call
   Http::fake([
@@ -21,6 +27,45 @@ beforeEach(function () {
       ]
     ])
   ]);
+});
+
+it('renders Monnify checkout with public SDK credentials only', function () {
+  Config::set('services.monnify.secret', 'monnify-secret-key');
+  Config::set('services.monnify.public', 'monnify-public-key');
+  Config::set('services.monnify.contract-code', 'monnify-contract-code');
+
+  $institution = Institution::factory()->create();
+  $user = User::factory()
+    ->admin($institution)
+    ->create([
+      'first_name' => "Ada's",
+      'last_name' => 'Admin',
+      'other_names' => null,
+      'email' => 'ada@example.com'
+    ]);
+
+  $paymentReference = PaymentReference::factory()->create([
+    'institution_id' => $institution->id,
+    'user_id' => $user->id,
+    'merchant' => PaymentMerchantType::Monnify->value,
+    'purpose' => PaymentPurpose::WalletFunding->value,
+    'status' => PaymentStatus::Pending->value,
+    'reference' => 'wallet-funding-reference',
+    'amount' => 2500,
+    'redirect_url' => route('home')
+  ]);
+
+  $this->get(
+    route('monnify.checkout', [
+      'reference' => $paymentReference->reference
+    ])
+  )
+    ->assertOk()
+    ->assertSee('monnify-public-key')
+    ->assertSee('monnify-contract-code')
+    ->assertSee('wallet-funding-reference')
+    ->assertSee('Ada\\u0027s Admin', false)
+    ->assertDontSee('monnify-secret-key');
 });
 
 it('processes Monnify webhook successfully', function () {

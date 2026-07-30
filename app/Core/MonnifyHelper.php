@@ -134,7 +134,7 @@ class MonnifyHelper
     $url = $this->url(
       'v2/merchant/transactions/query?paymentReference=' . urlencode($reference)
     );
-    $res = $this->execCurl($url, [], 'GET');
+    $res = $this->execCurl($url, [], 'GET', true);
     if (!$res->isSuccessful()) {
       return $res;
     }
@@ -192,6 +192,23 @@ class MonnifyHelper
       'account_name' => $result['accountName'],
       'bank_code' => $result['bankCode']
     ]);
+  }
+
+  static function getCharge(float $amount): float
+  {
+    if ($amount <= 0) {
+      return 0.0;
+    }
+
+    $percentageCharge = $amount * 0.015; // 1.5%
+    $maximumCharge = 2000.0;
+
+    return round(min($percentageCharge, $maximumCharge), 2);
+  }
+
+  static function applyCharge(float $amount): float
+  {
+    return $amount + self::getCharge($amount);
   }
 
   function execCurl($url, $data, $method = 'POST', bool $useAuth = false): Res

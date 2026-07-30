@@ -1,3 +1,7 @@
+<?php
+$amountWithCharge = \App\Core\MonnifyHelper::applyCharge(
+  $paymentReference->amount
+); ?>
 <html>
 <head>
   <script
@@ -5,18 +9,20 @@
     src="https://sdk.monnify.com/plugin/monnify.js"
   ></script>
   <script>
-    console.log("Monnify SDK loaded", <?= json_encode(config('app.debug')) ?>);
+    console.log("Monnify SDK loaded", @json(config('app.debug')));
+    let paymentCompleted = false;
+
     function payWithMonnify() {
       MonnifySDK.initialize({
-        amount: <?= $paymentReference->amount ?>,
+        amount: @json($amountWithCharge),
         currency: "NGN",
-        reference: "{{ $paymentReference->reference }}",
-        customerFullName: "{{ $paymentReference->user->full_name }}",
-        customerEmail: "{{ $paymentReference->user->email }}",
-        apiKey: "{{ config('services.monnify.secret') }}",
-        contractCode: "{{ config('services.monnify.contract-code') }}",
-        paymentDescription: "{{ $paymentReference->purpose }}",
-        isTestMode: <?= json_encode(config('app.debug')) ?>,
+        reference: @json($paymentReference->reference),
+        customerFullName: @json($paymentReference->user->full_name),
+        customerEmail: @json($paymentReference->user->email),
+        apiKey: @json(config('services.monnify.public')),
+        contractCode: @json(config('services.monnify.contract-code')),
+        paymentDescription: @json($paymentReference->purpose->value),
+        isTestMode: @json(config('app.debug')),
         // metadata: {
         //   name: "Damilare",
         //   age: 45,
@@ -44,11 +50,15 @@
         onComplete: function (response) {
           //Implement what happens when the transaction is completed.
           console.log(response);
+          paymentCompleted = true;
+          window.location.href = @json(route('monnify.callback', ['reference' => $paymentReference->reference]));
         },
         onClose: function (data) {
           //Implement what should happen when the modal is closed here
           console.log('On Close called', data);
-          window.location.href = "{{ route('monnify.callback', ['reference' => $paymentReference->reference]) }}";
+          if (!paymentCompleted) {
+            window.location.href = @json($paymentReference->redirect_url ?? route('home'));
+          }
         },
       });
     }

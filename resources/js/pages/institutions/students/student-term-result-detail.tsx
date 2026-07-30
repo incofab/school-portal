@@ -64,22 +64,26 @@ export default function StudentTermResultDetail({
   const teacherCommentModalToggle = useModalToggle();
   const principalCommentModalToggle = useModalToggle();
 
-  const principalComment =
-    termResult.principal_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment;
-  const teacherComment =
-    termResult.teacher_comment ??
-    ResultUtil.getCommentFromTemplate(termResult.average, resultCommentTemplate)
-      ?.comment_2;
+  const relevantAssessments = ResultUtil.getRelevantAssessments(
+    assessments,
+    courseResults
+  );
+  const principalComment = ResultUtil.getPrincipalsComment(
+    termResult,
+    resultCommentTemplate
+  );
+  const teacherComment = ResultUtil.getTeachersComment(
+    termResult,
+    resultCommentTemplate
+  );
 
   const headers: TableHeader<CourseResult>[] = [
     {
       label: 'Subject',
       value: 'course.title',
     },
-    ...(assessments
-      ? assessments.map((item) => ({
+    ...(relevantAssessments
+      ? relevantAssessments.map((item) => ({
           label: startCase(item.title),
           render: (row: CourseResult) =>
             String(ResultUtil.getAssessmentValue(row, item, 0)),
@@ -213,13 +217,11 @@ export default function StudentTermResultDetail({
         </Stack>
         <TermResultTeacherCommentModal
           termResult={termResult}
-          templateComment={teacherComment}
           {...teacherCommentModalToggle.props}
           onSuccess={() => Inertia.reload({ only: ['termResult'] })}
         />
         <TermResultPrincipalCommentModal
           termResult={termResult}
-          templateComment={principalComment}
           {...principalCommentModalToggle.props}
           onSuccess={() => Inertia.reload({ only: ['termResult'] })}
         />

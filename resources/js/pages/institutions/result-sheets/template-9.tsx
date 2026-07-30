@@ -59,29 +59,6 @@ export default function Template9(props: ResultProps) {
     backgroundRepeat: 'repeat',
     backgroundSize: '220px 160px',
   };
-  // const configuredAssessmentMax = assessments.reduce((total, assessment) => {
-  //   const assessmentIds: number[] = [];
-  //   courseResults.forEach((courseResult) => {
-  //     Object.keys(courseResult.assessment_values).forEach((assessmentKey) => {
-  //       const key = assessmentKey.split('|');
-  //       const foundAssessment = assessments.find(
-  //         (assessment) =>
-  //           assessment.id === Number(key[1] ?? 0) ||
-  //           assessment.raw_title === key[0]
-  //       );
-  //       if (
-  //         foundAssessment &&
-  //         !assessmentIds.find((id) => id === foundAssessment.id)
-  //       ) {
-  //         assessmentIds.push(foundAssessment.id);
-  //       }
-  //     });
-  //   });
-  //   const value = assessmentIds.find((id) => id === assessment.id)
-  //     ? Number(assessment.max ?? 0)
-  //     : 0;
-  //   return total + value;
-  // }, 0);
   const relevantAssessments = ResultUtil.getRelevantAssessments(
     assessments,
     courseResults
@@ -280,7 +257,7 @@ export default function Template9(props: ResultProps) {
                   <th>Annual Average</th>
                   <th>Remark/Grade</th>
                 </tr>
-                <tr className="template-9-max-row">
+                <tr className="template-9-max-row" style={{ display: 'none' }}>
                   <th></th>
                   <th>{score(assessmentMax)}</th>
                   <th>{examMax === undefined ? '-' : score(examMax)}</th>
