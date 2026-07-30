@@ -94,7 +94,7 @@ export default function Profile({ user, institutionUser }: Props) {
     });
     if (!handleResponseToast(res)) return;
     form.setValue('photo', res.data.url);
-    Inertia.reload({ only: ['user'] });
+    Inertia.reload({ only: ['user', 'shared__currentUser'] });
   }
 
   async function generateResultPin(student: Student) {

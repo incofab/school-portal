@@ -14,12 +14,18 @@ use function Pest\Laravel\assertDatabaseHas;
 beforeEach(function () {
   $this->institution = Institution::factory()->create();
   $this->admin = $this->institution->createdBy;
-  $this->teacher = User::factory()->teacher($this->institution)->create();
+  $this->teacher = User::factory()
+    ->teacher($this->institution)
+    ->create();
   $this->accountant = User::factory()
     ->accountant($this->institution)
     ->create();
-  $this->guardian = User::factory()->guardian($this->institution)->create();
-  $this->student = User::factory()->student($this->institution)->create();
+  $this->guardian = User::factory()
+    ->guardian($this->institution)
+    ->create();
+  $this->student = User::factory()
+    ->student($this->institution)
+    ->create();
   $this->alumni = User::factory()->create();
   $this->alumni->institutionUsers()->create([
     'institution_id' => $this->institution->id,
@@ -80,15 +86,107 @@ it('lets any institution user start institution and role chats', function () {
   ]);
 });
 
-it('prevents staff-only direct chat creation by non eligible users', function () {
-  actingAs($this->teacher)
-    ->post(route('institutions.chats.store', $this->institution), [
-      'type' => ChatThreadType::DirectUser->value,
-      'target_user_id' => $this->accountant->id,
-      'message' => 'Hello accountant.'
-    ])
-    ->assertForbidden();
-});
+it(
+  'lets school staff and admin start direct chats with any institution user',
+  function () {
+    actingAs($this->teacher)
+      ->post(route('institutions.chats.store', $this->institution), [
+        'type' => ChatThreadType::DirectUser->value,
+        'target_user_id' => $this->student->id,
+        'message' => 'Hello student.'
+      ])
+      ->assertOk();
+
+    actingAs($this->accountant)
+      ->post(route('institutions.chats.store', $this->institution), [
+        'type' => ChatThreadType::DirectUser->value,
+        'target_user_id' => $this->guardian->id,
+        'message' => 'Hello guardian.'
+      ])
+      ->assertOk();
+
+    actingAs($this->admin)
+      ->post(route('institutions.chats.store', $this->institution), [
+        'type' => ChatThreadType::DirectUser->value,
+        'target_user_id' => $this->alumni->id,
+        'message' => 'Hello alumni.'
+      ])
+      ->assertOk();
+
+    assertDatabaseHas('chat_threads', [
+      'institution_id' => $this->institution->id,
+      'requester_user_id' => $this->teacher->id,
+      'target_user_id' => $this->student->id,
+      'type' => ChatThreadType::DirectUser->value
+    ]);
+
+    assertDatabaseHas('chat_threads', [
+      'institution_id' => $this->institution->id,
+      'requester_user_id' => $this->accountant->id,
+      'target_user_id' => $this->guardian->id,
+      'type' => ChatThreadType::DirectUser->value
+    ]);
+
+    assertDatabaseHas('chat_threads', [
+      'institution_id' => $this->institution->id,
+      'requester_user_id' => $this->admin->id,
+      'target_user_id' => $this->alumni->id,
+      'type' => ChatThreadType::DirectUser->value
+    ]);
+  }
+);
+
+it(
+  'keeps students and guardians limited to direct staff chat targets',
+  function () {
+    actingAs($this->student)
+      ->post(route('institutions.chats.store', $this->institution), [
+        'type' => ChatThreadType::DirectUser->value,
+        'target_user_id' => $this->guardian->id,
+        'message' => 'Hello guardian.'
+      ])
+      ->assertUnprocessable();
+
+    actingAs($this->guardian)
+      ->post(route('institutions.chats.store', $this->institution), [
+        'type' => ChatThreadType::DirectUser->value,
+        'target_user_id' => $this->student->id,
+        'message' => 'Hello student.'
+      ])
+      ->assertUnprocessable();
+  }
+);
+
+it(
+  'exposes all institution users as direct chat targets for staff only',
+  function () {
+    actingAs($this->teacher)
+      ->get(route('institutions.chats.index', $this->institution))
+      ->assertInertia(
+        fn(AssertableInertia $page) => $page
+          ->component('institutions/chats/index')
+          ->where('chatComposerOptions.canDirectMessageStaff', true)
+          ->where(
+            'chatComposerOptions.directMessageTargetLabel',
+            'Institution User'
+          )
+          ->has('chatComposerOptions.staffTargets', 5)
+      );
+
+    actingAs($this->student)
+      ->get(route('institutions.chats.index', $this->institution))
+      ->assertInertia(
+        fn(AssertableInertia $page) => $page
+          ->component('institutions/chats/index')
+          ->where('chatComposerOptions.canDirectMessageStaff', true)
+          ->where(
+            'chatComposerOptions.directMessageTargetLabel',
+            'Staff Member'
+          )
+          ->has('chatComposerOptions.staffTargets', 3)
+      );
+  }
+);
 
 it('shows only accessible chat threads in the inbox', function () {
   $directThread = ChatThread::factory()
@@ -132,7 +230,9 @@ it('shows only accessible chat threads in the inbox', function () {
 
   actingAs($this->admin)
     ->get(route('institutions.chats.index', $this->institution))
-    ->assertInertia(function (AssertableInertia $page) use ($institutionThread) {
+    ->assertInertia(function (AssertableInertia $page) use (
+      $institutionThread
+    ) {
       $page
         ->component('institutions/chats/index')
         ->has('threads', 1)
@@ -140,74 +240,96 @@ it('shows only accessible chat threads in the inbox', function () {
     });
 });
 
-it('allows only the intended staff member to view a direct chat thread', function () {
-  $thread = ChatThread::factory()
-    ->institution($this->institution)
-    ->create([
-      'requester_user_id' => $this->student->id,
-      'target_user_id' => $this->teacher->id,
-      'type' => ChatThreadType::DirectUser->value
+it(
+  'allows only the intended staff member to view a direct chat thread',
+  function () {
+    $thread = ChatThread::factory()
+      ->institution($this->institution)
+      ->create([
+        'requester_user_id' => $this->student->id,
+        'target_user_id' => $this->teacher->id,
+        'type' => ChatThreadType::DirectUser->value
+      ]);
+    ChatMessage::factory()->create([
+      'institution_id' => $this->institution->id,
+      'chat_thread_id' => $thread->id,
+      'sender_user_id' => $this->student->id,
+      'body' => 'Need help'
     ]);
-  ChatMessage::factory()->create([
-    'institution_id' => $this->institution->id,
-    'chat_thread_id' => $thread->id,
-    'sender_user_id' => $this->student->id,
-    'body' => 'Need help'
-  ]);
-  $thread->update(['last_message_at' => now()]);
+    $thread->update(['last_message_at' => now()]);
 
-  actingAs($this->teacher)
-    ->get(route('institutions.chats.show', [$this->institution, $thread]))
-    ->assertInertia(
-      fn(AssertableInertia $page) => $page
-        ->component('institutions/chats/index')
-        ->where('activeThread.id', $thread->id)
-        ->where(
-          'activeThread.profile_url',
-          route('institutions.users.profile', [$this->institution, $this->student])
-        )
-    );
+    actingAs($this->teacher)
+      ->get(route('institutions.chats.show', [$this->institution, $thread]))
+      ->assertInertia(
+        fn(AssertableInertia $page) => $page
+          ->component('institutions/chats/index')
+          ->where('activeThread.id', $thread->id)
+          ->where(
+            'activeThread.profile_url',
+            route('institutions.users.profile', [
+              $this->institution,
+              $this->student
+            ])
+          )
+      );
 
-  actingAs($this->accountant)
-    ->get(route('institutions.chats.show', [$this->institution, $thread]))
-    ->assertForbidden();
-});
+    actingAs($this->accountant)
+      ->get(route('institutions.chats.show', [$this->institution, $thread]))
+      ->assertForbidden();
+  }
+);
 
-it('exposes a clickable profile link only for user-backed active threads', function () {
-  $institutionThread = ChatThread::factory()
-    ->institution($this->institution)
-    ->create([
-      'requester_user_id' => $this->guardian->id,
-      'target_user_id' => null,
-      'type' => ChatThreadType::Institution->value
+it(
+  'exposes a clickable profile link only for user-backed active threads',
+  function () {
+    $institutionThread = ChatThread::factory()
+      ->institution($this->institution)
+      ->create([
+        'requester_user_id' => $this->guardian->id,
+        'target_user_id' => null,
+        'type' => ChatThreadType::Institution->value
+      ]);
+
+    ChatMessage::factory()->create([
+      'institution_id' => $this->institution->id,
+      'chat_thread_id' => $institutionThread->id,
+      'sender_user_id' => $this->guardian->id,
+      'body' => 'Need admin assistance'
     ]);
 
-  ChatMessage::factory()->create([
-    'institution_id' => $this->institution->id,
-    'chat_thread_id' => $institutionThread->id,
-    'sender_user_id' => $this->guardian->id,
-    'body' => 'Need admin assistance'
-  ]);
+    actingAs($this->guardian)
+      ->get(
+        route('institutions.chats.show', [
+          $this->institution,
+          $institutionThread
+        ])
+      )
+      ->assertInertia(
+        fn(AssertableInertia $page) => $page
+          ->component('institutions/chats/index')
+          ->where('activeThread.profile_url', null)
+      );
 
-  actingAs($this->guardian)
-    ->get(route('institutions.chats.show', [$this->institution, $institutionThread]))
-    ->assertInertia(
-      fn(AssertableInertia $page) => $page
-        ->component('institutions/chats/index')
-        ->where('activeThread.profile_url', null)
-    );
-
-  actingAs($this->admin)
-    ->get(route('institutions.chats.show', [$this->institution, $institutionThread]))
-    ->assertInertia(
-      fn(AssertableInertia $page) => $page
-        ->component('institutions/chats/index')
-        ->where(
-          'activeThread.profile_url',
-          route('institutions.users.profile', [$this->institution, $this->guardian])
-        )
-    );
-});
+    actingAs($this->admin)
+      ->get(
+        route('institutions.chats.show', [
+          $this->institution,
+          $institutionThread
+        ])
+      )
+      ->assertInertia(
+        fn(AssertableInertia $page) => $page
+          ->component('institutions/chats/index')
+          ->where(
+            'activeThread.profile_url',
+            route('institutions.users.profile', [
+              $this->institution,
+              $this->guardian
+            ])
+          )
+      );
+  }
+);
 
 it('lets matching role staff and admin reply to role threads', function () {
   $thread = ChatThread::factory()

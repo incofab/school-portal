@@ -3,5 +3,5 @@ import { InstitutionUserType } from '@/types/types';
 
 export default function useIsAdmin() {
   const { currentInstitutionUser } = useSharedProps();
-  return currentInstitutionUser.role === InstitutionUserType.Admin;
+  return currentInstitutionUser?.role === InstitutionUserType.Admin;
 }

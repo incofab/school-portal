@@ -48,24 +48,23 @@ class ChatController extends Controller
     $data = $request->validate([
       'type' => ['required', Rule::in(ChatThreadType::values())],
       'target_user_id' => ['nullable', 'integer'],
-      'target_role' => ['nullable', Rule::in([
-        InstitutionUserType::Admin->value,
-        InstitutionUserType::Teacher->value,
-        InstitutionUserType::Accountant->value
-      ])],
+      'target_role' => [
+        'nullable',
+        Rule::in([
+          InstitutionUserType::Admin->value,
+          InstitutionUserType::Teacher->value,
+          InstitutionUserType::Accountant->value
+        ])
+      ],
       'message' => ['required', 'string', 'max:2000']
     ]);
 
     $type = ChatThreadType::from($data['type']);
     abort_if(
       $type === ChatThreadType::DirectUser &&
-        !in_array($institutionUser->role, [
-          InstitutionUserType::Guardian,
-          InstitutionUserType::Student,
-          InstitutionUserType::Alumni
-        ]),
+        !$this->canStartDirectChat($institutionUser),
       403,
-      'Only guardians, students, and alumni can start direct staff chats.'
+      'You are not allowed to start a direct chat.'
     );
 
     $thread = $this->findOrCreateThread(
@@ -117,7 +116,7 @@ class ChatController extends Controller
           'chat_messages.body',
           'chat_messages.created_at'
         ),
-        'latestMessage.sender:id,first_name,last_name,other_names,photo',
+        'latestMessage.sender:id,first_name,last_name,other_names,photo'
       ])
       ->selectSub(
         fn($query) => $query
@@ -159,7 +158,7 @@ class ChatController extends Controller
                 ->where('institution_id', $institution->id)
             ])
             ->latest('id')
-            ->limit(100),
+            ->limit(100)
         ])
         ->find($selectedThread->id)
       : null;
@@ -183,14 +182,16 @@ class ChatController extends Controller
         ? $this->transformActiveThread($activeThread, $institution, $user)
         : null,
       'chatComposerOptions' => [
-        'canDirectMessageStaff' => in_array($institutionUser->role, [
-          InstitutionUserType::Guardian,
-          InstitutionUserType::Student,
-          InstitutionUserType::Alumni
-        ]),
+        'canDirectMessageStaff' => $this->canStartDirectChat($institutionUser),
+        'directMessageTargetLabel' => $this->canDirectMessageAnyInstitutionUser(
+          $institutionUser
+        )
+          ? 'Institution User'
+          : 'Staff Member',
         'institutionTarget' => [
           'label' => 'Institution Admin Desk',
-          'description' => 'Reach the institution directly. Only admins attend this inbox.'
+          'description' =>
+            'Reach the institution directly. Only admins attend this inbox.'
         ],
         'roleTargets' => [
           [
@@ -209,25 +210,11 @@ class ChatController extends Controller
             'description' => 'Reach the finance desk or any admin.'
           ]
         ],
-        'staffTargets' => InstitutionUser::query()
-          ->where('institution_id', $institution->id)
-          ->whereIn('role', [
-            InstitutionUserType::Admin->value,
-            InstitutionUserType::Teacher->value,
-            InstitutionUserType::Accountant->value
-          ])
-          ->where('user_id', '!=', $user->id)
-          ->with('user')
-          ->get()
-          ->map(function (InstitutionUser $institutionUser) {
-            return [
-              'value' => $institutionUser->user_id,
-              'label' => $institutionUser->user?->full_name,
-              'description' => ucfirst($institutionUser->role->value),
-              'photo_url' => $institutionUser->user?->photo_url
-            ];
-          })
-          ->values()
+        'staffTargets' => $this->directMessageTargets(
+          $institution,
+          $institutionUser,
+          $user
+        )
       ]
     ]);
   }
@@ -259,18 +246,22 @@ class ChatController extends Controller
     $targetInstitutionUser = InstitutionUser::query()
       ->where('institution_id', $institution->id)
       ->where('user_id', $data['target_user_id'])
-      ->whereIn('role', [
-        InstitutionUserType::Admin->value,
-        InstitutionUserType::Teacher->value,
-        InstitutionUserType::Accountant->value
-      ])
+      ->when(
+        !$this->canDirectMessageAnyInstitutionUser($requesterInstitutionUser),
+        fn($query) => $query->whereIn(
+          'role',
+          $this->staffDirectChatTargetRoles()
+        )
+      )
       ->with('user')
       ->first();
 
     abort_unless(
       $targetInstitutionUser,
       422,
-      'Please select a valid staff member.'
+      $this->canDirectMessageAnyInstitutionUser($requesterInstitutionUser)
+        ? 'Please select a valid institution user.'
+        : 'Please select a valid staff member.'
     );
 
     abort_if(
@@ -280,13 +271,9 @@ class ChatController extends Controller
     );
 
     abort_if(
-      !in_array($requesterInstitutionUser->role, [
-        InstitutionUserType::Guardian,
-        InstitutionUserType::Student,
-        InstitutionUserType::Alumni
-      ]),
+      !$this->canStartDirectChat($requesterInstitutionUser),
       403,
-      'You are not allowed to start a direct staff chat.'
+      'You are not allowed to start a direct chat.'
     );
 
     return ChatThread::query()->firstOrCreate([
@@ -295,6 +282,73 @@ class ChatController extends Controller
       'type' => $type->value,
       'target_user_id' => $targetInstitutionUser->user_id
     ]);
+  }
+
+  private function directMessageTargets(
+    Institution $institution,
+    InstitutionUser $requesterInstitutionUser,
+    User $user
+  ) {
+    return InstitutionUser::query()
+      ->where('institution_id', $institution->id)
+      ->when(
+        !$this->canDirectMessageAnyInstitutionUser($requesterInstitutionUser),
+        fn($query) => $query->whereIn(
+          'role',
+          $this->staffDirectChatTargetRoles()
+        )
+      )
+      ->where('user_id', '!=', $user->id)
+      ->with('user')
+      ->get()
+      ->map(function (InstitutionUser $institutionUser) {
+        return [
+          'value' => $institutionUser->user_id,
+          'label' => $institutionUser->user?->full_name,
+          'description' => ucfirst($institutionUser->role->value),
+          'photo_url' => $institutionUser->user?->photo_url
+        ];
+      })
+      ->values();
+  }
+
+  private function canStartDirectChat(InstitutionUser $institutionUser): bool
+  {
+    return in_array(
+      $institutionUser->role,
+      [
+        InstitutionUserType::Admin,
+        InstitutionUserType::Teacher,
+        InstitutionUserType::Accountant,
+        InstitutionUserType::Guardian,
+        InstitutionUserType::Student,
+        InstitutionUserType::Alumni
+      ],
+      true
+    );
+  }
+
+  private function canDirectMessageAnyInstitutionUser(
+    InstitutionUser $institutionUser
+  ): bool {
+    return in_array(
+      $institutionUser->role,
+      [
+        InstitutionUserType::Admin,
+        InstitutionUserType::Teacher,
+        InstitutionUserType::Accountant
+      ],
+      true
+    );
+  }
+
+  private function staffDirectChatTargetRoles(): array
+  {
+    return [
+      InstitutionUserType::Admin->value,
+      InstitutionUserType::Teacher->value,
+      InstitutionUserType::Accountant->value
+    ];
   }
 
   private function transformThreadSummary(
@@ -308,7 +362,8 @@ class ChatController extends Controller
       $viewer
     );
     $latestMessage = $thread->latestMessage;
-    $lastReadMessageId = (int) ($thread->current_user_last_read_message_id ?? 0);
+    $lastReadMessageId =
+      (int) ($thread->current_user_last_read_message_id ?? 0);
 
     return [
       'id' => $thread->id,
@@ -318,7 +373,11 @@ class ChatController extends Controller
       'photo_url' => $photoUrl,
       'last_message_preview' =>
         $thread->last_message_preview ??
-        ($latestMessage ? str($latestMessage->body)->limit(160)->value() : null),
+        ($latestMessage
+          ? str($latestMessage->body)
+            ->limit(160)
+            ->value()
+          : null),
       'last_message_at' => $thread->last_message_at,
       'has_unread' => $latestMessage
         ? $latestMessage->sender_user_id !== $viewer->id &&
@@ -349,23 +408,25 @@ class ChatController extends Controller
         $institution,
         $viewer
       ),
-      'messages' => $thread->messages->map(
-        fn(ChatMessage $message) => [
-          'id' => $message->id,
-          'body' => $message->body,
-          'created_at' => $message->created_at,
-          'is_mine' => $message->sender_user_id === $viewer->id,
-          'sender' => [
-            'id' => $message->sender?->id,
-            'full_name' => $message->sender?->full_name,
-            'photo_url' => $message->sender?->photo_url,
-            'role' => $message
-              ->sender?->institutionUsers
-              ?->firstWhere('institution_id', $institution->id)
-              ?->role?->value
+      'messages' => $thread->messages
+        ->map(
+          fn(ChatMessage $message) => [
+            'id' => $message->id,
+            'body' => $message->body,
+            'created_at' => $message->created_at,
+            'is_mine' => $message->sender_user_id === $viewer->id,
+            'sender' => [
+              'id' => $message->sender?->id,
+              'full_name' => $message->sender?->full_name,
+              'photo_url' => $message->sender?->photo_url,
+              'role' => $message->sender?->institutionUsers?->firstWhere(
+                'institution_id',
+                $institution->id
+              )?->role?->value
+            ]
           ]
-        ]
-      )->values()
+        )
+        ->values()
     ];
   }
 
@@ -377,9 +438,10 @@ class ChatController extends Controller
     $profileUser = null;
 
     if ($thread->type === ChatThreadType::DirectUser) {
-      $profileUser = $thread->requester_user_id === $viewer->id
-        ? $thread->targetUser
-        : $thread->requester;
+      $profileUser =
+        $thread->requester_user_id === $viewer->id
+          ? $thread->targetUser
+          : $thread->requester;
     } elseif (
       $thread->type === ChatThreadType::Institution &&
       $thread->requester_user_id !== $viewer->id
@@ -396,10 +458,7 @@ class ChatController extends Controller
       return null;
     }
 
-    return route('institutions.users.profile', [
-      $institution,
-      $profileUser
-    ]);
+    return route('institutions.users.profile', [$institution, $profileUser]);
   }
 
   private function describeThread(
@@ -407,27 +466,25 @@ class ChatController extends Controller
     Institution $institution,
     User $viewer
   ): array {
-    $requesterRole = $thread
-      ->requester
-      ?->institutionUsers
-      ?->firstWhere('institution_id', $institution->id)
-      ?->role
-      ?->value;
-    $targetRole = $thread
-      ->targetUser
-      ?->institutionUsers
-      ?->firstWhere('institution_id', $institution->id)
-      ?->role
-      ?->value;
+    $requesterRole = $thread->requester?->institutionUsers?->firstWhere(
+      'institution_id',
+      $institution->id
+    )?->role?->value;
+    $targetRole = $thread->targetUser?->institutionUsers?->firstWhere(
+      'institution_id',
+      $institution->id
+    )?->role?->value;
 
     if ($thread->type === ChatThreadType::DirectUser) {
-      $counterparty = $thread->requester_user_id === $viewer->id
-        ? $thread->targetUser
-        : $thread->requester;
+      $counterparty =
+        $thread->requester_user_id === $viewer->id
+          ? $thread->targetUser
+          : $thread->requester;
 
-      $counterpartyRole = $thread->requester_user_id === $viewer->id
-        ? $targetRole
-        : $requesterRole;
+      $counterpartyRole =
+        $thread->requester_user_id === $viewer->id
+          ? $targetRole
+          : $requesterRole;
 
       return [
         $counterparty?->full_name ?? 'Staff Member',
@@ -438,11 +495,7 @@ class ChatController extends Controller
 
     if ($thread->type === ChatThreadType::Institution) {
       if ($thread->requester_user_id === $viewer->id) {
-        return [
-          'Institution Admin Desk',
-          'Admin-only institution inbox',
-          null
-        ];
+        return ['Institution Admin Desk', 'Admin-only institution inbox', null];
       }
 
       return [

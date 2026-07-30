@@ -212,7 +212,9 @@
           and
           <code
             >resources/js/components/explanations/dashboard-explanation-guide.tsx</code
-          >.
+          >. The shared top-right account menu links every authenticated user
+          type to the global profile management page for viewing and editing
+          basic personal details.
         </p>
       </section>
 
@@ -618,15 +620,16 @@
             <div>
               <p>
                 Supports staff login, student login, password reset,
-                authenticated dashboard routing, user password changes, BVN/NIN
-                updates, logout, manager-only impersonation of
-                users/institutions, admin user-list impersonation, and stopping
-                impersonation. These security-sensitive workflows now emit
-                explicit audit events for login success/failure, logout,
-                password reset request/completion, password changes, identity
-                updates, impersonation start/stop, and intercepted unauthorized
-                access attempts. Public result activation and exam-result login
-                are also exposed to guest users.
+                authenticated dashboard routing, global self-service profile
+                viewing/editing, user password changes, BVN/NIN updates, logout,
+                manager-only impersonation of users/institutions, admin
+                user-list impersonation, and stopping impersonation. These
+                security-sensitive workflows now emit explicit audit events for
+                login success/failure, logout, password reset
+                request/completion, password changes, identity updates,
+                impersonation start/stop, and intercepted unauthorized access
+                attempts. Public result activation and exam-result login are
+                also exposed to guest users.
               </p>
               <ul>
                 <li>

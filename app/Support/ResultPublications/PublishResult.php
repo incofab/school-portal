@@ -5,6 +5,7 @@ namespace App\Support\ResultPublications;
 use App\Actions\Messages\SendTermResultToGuardians;
 use App\Enums\InstitutionUserType;
 use App\Enums\PriceLists\PaymentStructure;
+use App\Enums\TermType;
 use App\Models\Institution;
 use App\Models\InstitutionGroup;
 use App\Models\PriceList;
@@ -52,12 +53,17 @@ abstract class PublishResult
     protected SettingsHandler $settingHandler,
     protected PriceList $priceList,
     array $submittedClassIds,
+    ?int $academicSessionId = null,
+    TermType|string|null $term = null,
     protected ?bool $sendToGuardiansWhatsapp = false
   ) {
     $this->submittedClassIds = $submittedClassIds;
     $this->institutionGroup = $priceList->institutionGroup;
-    $this->academicSessionId = $this->settingHandler->getCurrentAcademicSession();
-    $this->term = $settingHandler->getCurrentTerm();
+    $this->academicSessionId =
+      $academicSessionId ?? $this->settingHandler->getCurrentAcademicSession();
+    $this->term = $term instanceof TermType
+      ? $term->value
+      : $term ?? $settingHandler->getCurrentTerm();
     $this->resultsToPublish = $this->queryResultsToPublish()->get();
     $this->numOfStudents = $this->countStudents();
 
@@ -282,6 +288,8 @@ abstract class PublishResult
     SettingsHandler $settingHandler,
     PriceList $priceList,
     array $submittedClassIds,
+    ?int $academicSessionId = null,
+    TermType|string|null $term = null,
     ?bool $sendToGuardiansWhatsapp = false
   ): static {
     $className = '';
@@ -309,6 +317,8 @@ abstract class PublishResult
       $settingHandler,
       $priceList,
       $submittedClassIds,
+      $academicSessionId,
+      $term,
       $sendToGuardiansWhatsapp
     );
   }

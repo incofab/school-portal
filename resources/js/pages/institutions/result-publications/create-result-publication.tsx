@@ -26,16 +26,23 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
+import FormControlBox from '@/components/forms/form-control-box';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { formatAsCurrency } from '@/util/util';
+import AcademicSessionSelect from '@/components/selectors/academic-session-select';
+import EnumSelect from '@/components/dropdown-select/enum-select';
+import { TermType } from '@/types/types';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   classifications: Classification[];
   publicationBilling?: PublicationBilling | null;
+  academic_session_id?: number;
+  term?: TermType;
 }
 
 interface PublicationBilling {
@@ -54,9 +61,13 @@ interface PublicationBilling {
 export default function CreateResultPublications({
   classifications,
   publicationBilling,
+  academic_session_id: academicSessionId,
+  term,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
+  const { currentAcademicSessionId, currentTerm, lockTermSession } =
+    useSharedProps();
   const insufficientBalanceModal = useDisclosure();
   const [insufficientBalance, setInsufficientBalance] =
     useState<PublicationBilling | null>(null);
@@ -66,7 +77,36 @@ export default function CreateResultPublications({
     number[]
   >(classifications.map((classification) => classification.id));
 
-  const webForm = useWebForm({});
+  const webForm = useWebForm({
+    academic_session_id: academicSessionId ?? currentAcademicSessionId,
+    term: (term ?? currentTerm) as TermType | null,
+  });
+
+  function reloadWithSelection(
+    academicSessionValue: number | null,
+    termValue: TermType | null
+  ) {
+    const nextUrl = new URL(
+      instRoute('result-publications.create'),
+      window.location.origin
+    );
+
+    if (academicSessionValue) {
+      nextUrl.searchParams.set(
+        'academic_session_id',
+        String(academicSessionValue)
+      );
+    }
+
+    if (termValue) {
+      nextUrl.searchParams.set('term', termValue);
+    }
+
+    Inertia.visit(nextUrl.toString(), {
+      preserveScroll: true,
+      preserveState: false,
+    });
+  }
 
   const goToFunding = (billing?: PublicationBilling | null) => {
     if (billing?.funding_url) {
@@ -96,6 +136,8 @@ export default function CreateResultPublications({
     const res = await webForm.submit((data, web) => {
       const postData = {
         classifications: selectedClassifications,
+        academic_session_id: data.academic_session_id,
+        term: data.term,
       };
 
       return web.post(instRoute('result-publications.store'), postData);
@@ -150,6 +192,50 @@ export default function CreateResultPublications({
                   </VStack>
                 </Alert>
               )}
+
+              <FormControlBox
+                form={webForm as any}
+                title="Academic Session"
+                formKey="academic_session_id"
+              >
+                <AcademicSessionSelect
+                  selectValue={webForm.data.academic_session_id}
+                  isMulti={false}
+                  isClearable={false}
+                  required
+                  isDisabled={lockTermSession}
+                  onChange={(e: any) => {
+                    const nextAcademicSessionId = e?.value ?? null;
+                    webForm.setValue(
+                      'academic_session_id',
+                      nextAcademicSessionId
+                    );
+                    reloadWithSelection(
+                      nextAcademicSessionId,
+                      webForm.data.term
+                    );
+                  }}
+                />
+              </FormControlBox>
+
+              <FormControlBox form={webForm as any} title="Term" formKey="term">
+                <EnumSelect
+                  enumData={TermType}
+                  selectValue={webForm.data.term}
+                  isMulti={false}
+                  isClearable={false}
+                  required
+                  isDisabled={lockTermSession}
+                  onChange={(e: any) => {
+                    const nextTerm = e?.value ?? null;
+                    webForm.setValue('term', nextTerm);
+                    reloadWithSelection(
+                      webForm.data.academic_session_id,
+                      nextTerm
+                    );
+                  }}
+                />
+              </FormControlBox>
 
               <Text>Select classes whose results should be published.</Text>
               {classifications.map((classification) => (

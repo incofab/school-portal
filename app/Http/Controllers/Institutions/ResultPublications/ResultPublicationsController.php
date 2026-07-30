@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions\ResultPublications;
 
 use App\Enums\PriceLists\PriceType;
+use App\Enums\TermType;
 use App\Models\Institution;
 use Illuminate\Http\Request;
 use App\Models\Classification;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ResultPublication;
 use App\Rules\ValidateExistsRule;
 use App\Support\ResultPublications\PublishResult;
+use Illuminate\Validation\Rules\Enum;
 
 class ResultPublicationsController extends Controller
 {
@@ -26,19 +28,24 @@ class ResultPublicationsController extends Controller
     );
   }
 
-  function create(Institution $institution)
+  function create(Institution $institution, Request $request)
   {
+    $selection = $this->publicationSelection($institution, $request);
     $classifications = Classification::all();
     $publicationBilling = $this->publicationBilling(
       $institution,
-      $classifications->pluck('id')->toArray()
+      $classifications->pluck('id')->toArray(),
+      $selection['academic_session_id'],
+      $selection['term']
     );
 
     return inertia(
       'institutions/result-publications/create-result-publication',
       [
         'classifications' => $classifications,
-        'publicationBilling' => $publicationBilling
+        'publicationBilling' => $publicationBilling,
+        'academic_session_id' => $selection['academic_session_id'],
+        'term' => $selection['term']
       ]
     );
   }
@@ -51,6 +58,8 @@ class ResultPublicationsController extends Controller
         'required',
         new ValidateExistsRule(Classification::class)
       ],
+      'academic_session_id' => ['nullable', 'exists:academic_sessions,id'],
+      'term' => ['nullable', new Enum(TermType::class)],
       'send_to_guardians_whatsapp' => 'boolean'
     ]);
 
@@ -58,6 +67,11 @@ class ResultPublicationsController extends Controller
     $settingHandler = SettingsHandler::makeFromInstitution(
       $institution->fresh('institutionSettings') ?? $institution
     );
+    $academicSessionId = intval(
+      $data['academic_session_id'] ??
+        $settingHandler->getCurrentAcademicSession()
+    );
+    $term = $data['term'] ?? $settingHandler->getCurrentTerm();
     $institutionGroup = $institution->institutionGroup;
     $instGroupPriceList = $institutionGroup
       ->priceLists()
@@ -74,6 +88,8 @@ class ResultPublicationsController extends Controller
       $settingHandler,
       $instGroupPriceList,
       $submittedClassIds,
+      $academicSessionId,
+      $term,
       $request->send_to_guardians_whatsapp
     );
     $res = $obj->execute();
@@ -104,7 +120,9 @@ class ResultPublicationsController extends Controller
 
   private function publicationBilling(
     Institution $institution,
-    array $submittedClassIds
+    array $submittedClassIds,
+    ?int $academicSessionId = null,
+    TermType|string|null $term = null
   ): ?array {
     $settingHandler = SettingsHandler::makeFromInstitution(
       $institution->fresh('institutionSettings') ?? $institution
@@ -124,7 +142,9 @@ class ResultPublicationsController extends Controller
       $institution,
       $settingHandler,
       $instGroupPriceList,
-      $submittedClassIds
+      $submittedClassIds,
+      $academicSessionId,
+      $term
     )->getBillingSummary();
 
     return [
@@ -142,5 +162,30 @@ class ResultPublicationsController extends Controller
       $institution,
       'amount' => $amount
     ]);
+  }
+
+  /**
+   * @return array{academic_session_id: int, term: string}
+   */
+  private function publicationSelection(
+    Institution $institution,
+    Request $request
+  ): array {
+    $settingHandler = SettingsHandler::makeFromInstitution(
+      $institution->fresh('institutionSettings') ?? $institution
+    );
+
+    $data = $request->validate([
+      'academic_session_id' => ['nullable', 'exists:academic_sessions,id'],
+      'term' => ['nullable', new Enum(TermType::class)]
+    ]);
+
+    return [
+      'academic_session_id' => intval(
+        $data['academic_session_id'] ??
+          $settingHandler->getCurrentAcademicSession()
+      ),
+      'term' => $data['term'] ?? $settingHandler->getCurrentTerm()
+    ];
   }
 }

@@ -132,6 +132,10 @@ class InstitutionController extends Controller
       legacyUrlColumn: 'photo'
     );
 
-    return response()->json(['url' => $res->media?->url]);
+    return response()->json([
+      'message' => 'Institution logo uploaded successfully.',
+      'url' => $res->media?->url,
+      'institution' => $institution->fresh()
+    ]);
   }
 }

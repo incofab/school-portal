@@ -21,7 +21,7 @@ import {
 import { PageTitle } from '@/components/page-header';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useSharedProps from '@/hooks/use-shared-props';
-import useWebForm from '@/hooks/use-web-form';
+import useWebForm, { WebForm } from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import {
   ChatComposerOptions,
@@ -51,6 +51,13 @@ type NewChatType =
   | ChatThreadType.Role
   | ChatThreadType.DirectUser;
 
+interface NewThreadFormData {
+  type: ChatThreadType;
+  target_role: string;
+  target_user_id: string;
+  message: string;
+}
+
 export default function ChatIndex({
   threads,
   activeThread,
@@ -68,7 +75,7 @@ export default function ChatIndex({
   );
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  const threadForm = useWebForm({
+  const threadForm = useWebForm<NewThreadFormData>({
     type: ChatThreadType.Institution,
     target_role: '',
     target_user_id: '',
@@ -118,7 +125,7 @@ export default function ChatIndex({
       newChatType === ChatThreadType.DirectUser &&
       !threadForm.data.target_user_id
     ) {
-      toastError('Please select a staff member.');
+      toastError(`Please select a ${directMessageTargetLabel.toLowerCase()}.`);
       return;
     }
 
@@ -170,6 +177,8 @@ export default function ChatIndex({
     InstitutionUserType.Accountant,
     InstitutionUserType.Teacher,
   ].includes(currentInstitutionUser.role);
+  const directMessageTargetLabel =
+    chatComposerOptions.directMessageTargetLabel ?? 'Staff Member';
 
   return (
     <DashboardLayout>
@@ -318,6 +327,7 @@ export default function ChatIndex({
                 surfaceBg={surfaceBg}
                 panelBg={panelBg}
                 subtleText={subtleText}
+                directMessageTargetLabel={directMessageTargetLabel}
                 onChangeType={setNewChatType}
                 onStartConversation={startConversation}
               />
@@ -460,15 +470,17 @@ function StartConversationPanel({
   surfaceBg,
   panelBg,
   subtleText,
+  directMessageTargetLabel,
   onChangeType,
   onStartConversation,
 }: {
   newChatType: NewChatType;
   chatComposerOptions: ChatComposerOptions;
-  threadForm: ReturnType<typeof useWebForm>;
+  threadForm: WebForm<NewThreadFormData>;
   surfaceBg: string;
   panelBg: string;
   subtleText: string;
+  directMessageTargetLabel: string;
   onChangeType: (type: NewChatType) => void;
   onStartConversation: () => void;
 }) {
@@ -506,7 +518,7 @@ function StartConversationPanel({
             <QuickModeButton
               active={newChatType === ChatThreadType.DirectUser}
               icon={UserCircleIcon}
-              label="Staff Member"
+              label={directMessageTargetLabel}
               onClick={() => onChangeType(ChatThreadType.DirectUser)}
             />
           )}
@@ -517,7 +529,7 @@ function StartConversationPanel({
             ? chatComposerOptions.institutionTarget.description
             : newChatType === ChatThreadType.Role
             ? 'Choose a role. Any matching staff member or admin can respond.'
-            : 'Pick a specific staff member for a direct one-to-one conversation.'}
+            : `Pick a specific ${directMessageTargetLabel.toLowerCase()} for a direct one-to-one conversation.`}
         </Text>
 
         {newChatType === ChatThreadType.Role && (
@@ -545,7 +557,7 @@ function StartConversationPanel({
             onChange={(e) =>
               threadForm.setValue('target_user_id', e.currentTarget.value)
             }
-            placeholder="Select staff member"
+            placeholder={`Select ${directMessageTargetLabel.toLowerCase()}`}
             bg={surfaceBg}
           >
             {chatComposerOptions.staffTargets.map((target) => (

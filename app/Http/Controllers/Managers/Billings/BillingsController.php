@@ -57,11 +57,12 @@ class BillingsController extends Controller
       ->where('institution_group_id', $validated['institution_group_id'])
       ->first();
 
+    $amount = $validated['amount'];
     $partnerCommission = $priceList
       ? $validated['partner_commission'] ?? $priceList->partner_commission
       : $validated['partner_commission'] ?? 0;
 
-    if ($partnerCommission >= $validated['amount']) {
+    if ($partnerCommission > 0 && $partnerCommission >= $amount) {
       return throw ValidationException::withMessages([
         'partner_commission' =>
           'The full price must be greater than the partner commission.'

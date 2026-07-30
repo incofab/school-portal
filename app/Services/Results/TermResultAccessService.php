@@ -7,6 +7,7 @@ use App\Models\Pin;
 use App\Models\Student;
 use App\Models\TermResult;
 use App\Support\Audit\AcademicIntegrityActivityLogger;
+use App\Support\Res;
 use App\Support\SettingsHandler;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\ValidationException;
@@ -177,20 +178,31 @@ class TermResultAccessService
     ]);
   }
 
-  public function canActivate(Pin $pin, TermResult $termResult): bool
+  public function canActivate(Pin $pin, TermResult $termResult): Res
   {
-    if (!$pin->term_result_id) {
-      return true;
+    if (!$pin->term_result_id || $pin->term_result_id === $termResult->id) {
+      return successRes();
     }
 
     $settingHandler = SettingsHandler::makeFromInstitution($pin->institution);
     if ($settingHandler->getPinUsageCount() == 1) {
-      return false;
+      return failRes('You can only use this pin once');
     }
 
-    return ($pin->academic_session_id ??
-      $pin->termResult->academic_session_id) ===
+    $valid =
+      ($pin->academic_session_id ?? $pin->termResult->academic_session_id) ===
       $termResult->academic_session_id;
+
+    if ($valid) {
+      return successRes();
+    }
+
+    $pinAcademicSession = $pin->academicSession;
+    $message = $pinAcademicSession
+      ? "This pin can only be used for {$pinAcademicSession->name} Academic Session."
+      : 'Invalid pin combination.';
+
+    return failRes($message);
   }
 
   public function activate(
@@ -201,10 +213,9 @@ class TermResultAccessService
     $this->checkForPublication($termResult);
     $this->validateStudentForPin($pin, $student);
 
-    if (!$this->canActivate($pin, $termResult)) {
-      throw ValidationException::withMessages([
-        'pin' => 'Invalid pin combination'
-      ]);
+    $res = $this->canActivate($pin, $termResult);
+    if ($res->isNotSuccessful()) {
+      throw ValidationException::withMessages(['pin' => $res->getMessage()]);
     }
 
     $termResult->fill(['is_activated' => true])->save();

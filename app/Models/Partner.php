@@ -6,6 +6,7 @@ use App\Casts\TrimDecimal;
 use App\Enums\ManagerRole;
 use App\Enums\PartnerUserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -28,7 +29,7 @@ class Partner extends BaseModel
       ...User::generalRule($user?->id),
       'username' => [
         'required',
-        'unique:users,username',
+        Rule::unique('users', 'username')->ignore($user?->id),
         function ($attr, $value, $fail) {
           if (ctype_digit($value)) {
             $fail('Username cannot contain only digits');

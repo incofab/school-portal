@@ -191,6 +191,12 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('users.password.edit');
     Route::put('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'update'])
         ->name('users.password.update');
+    Route::get('users/profile', [Web\Users\ProfileController::class, 'show'])
+        ->name('users.profile');
+    Route::put('users/profile', [Web\Users\ProfileController::class, 'update'])
+        ->name('users.profile.update');
+    Route::post('users/profile/upload-photo', [Web\Users\ProfileController::class, 'uploadPhoto'])
+        ->name('users.profile.upload-photo');
     Route::put('users/bvn-nin/update', [Web\Users\UserController::class, 'updateBvnNin'])
         ->name('users.bvn-nin.update');
 

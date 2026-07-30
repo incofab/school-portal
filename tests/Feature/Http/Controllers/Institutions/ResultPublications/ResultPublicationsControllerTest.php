@@ -127,6 +127,96 @@ it('publishes results when valid data is provided', function () {
   }
 });
 
+it('publishes results for the selected academic session and term', function () {
+  $selectedAcademicSession = AcademicSession::factory()->create();
+  $selectedTerm = TermType::Second;
+  $classificationId = $this->classes->first()->id;
+
+  $currentTermResults = TermResult::factory(2)
+    ->for($this->academicSession)
+    ->withInstitution($this->institution)
+    ->create([
+      'classification_id' => $classificationId,
+      'term' => $this->term->value
+    ]);
+
+  $selectedTermResults = TermResult::factory(3)
+    ->for($selectedAcademicSession)
+    ->withInstitution($this->institution)
+    ->create([
+      'classification_id' => $classificationId,
+      'term' => $selectedTerm->value
+    ]);
+
+  postJson(
+    route('institutions.result-publications.store', $this->institution),
+    [
+      'classifications' => [$classificationId],
+      'academic_session_id' => $selectedAcademicSession->id,
+      'term' => $selectedTerm->value
+    ]
+  )->assertOk();
+
+  $this->assertDatabaseHas('result_publications', [
+    'institution_id' => $this->institution->id,
+    'academic_session_id' => $selectedAcademicSession->id,
+    'term' => $selectedTerm->value,
+    'num_of_results' => $selectedTermResults->count()
+  ]);
+
+  foreach ($selectedTermResults as $result) {
+    expect($result->fresh()->result_publication_id)->not->toBeNull();
+  }
+
+  foreach ($currentTermResults as $result) {
+    expect($result->fresh()->result_publication_id)->toBeNull();
+  }
+});
+
+it('shows billing for the selected academic session and term', function () {
+  $this->priceList
+    ->fill([
+      'payment_structure' => PaymentStructure::PerTerm->value,
+      'amount' => 5000
+    ])
+    ->save();
+
+  $selectedAcademicSession = AcademicSession::factory()->create();
+  $selectedTerm = TermType::Second;
+
+  TermResult::factory(3)
+    ->for($this->academicSession)
+    ->withInstitution($this->institution)
+    ->create([
+      'classification_id' => $this->classes->first()->id,
+      'term' => $this->term->value
+    ]);
+
+  TermResult::factory(4)
+    ->for($selectedAcademicSession)
+    ->withInstitution($this->institution)
+    ->create([
+      'classification_id' => $this->classes->first()->id,
+      'term' => $selectedTerm->value
+    ]);
+
+  $response = $this->get(
+    route('institutions.result-publications.create', [
+      $this->institution,
+      'academic_session_id' => $selectedAcademicSession->id,
+      'term' => $selectedTerm->value
+    ])
+  );
+
+  $response->assertInertia(
+    fn($page) => $page
+      ->component('institutions/result-publications/create-result-publication')
+      ->where('academic_session_id', $selectedAcademicSession->id)
+      ->where('term', $selectedTerm->value)
+      ->where('publicationBilling.results_to_publish_count', 4)
+  );
+});
+
 // Test store method failure case: no unpublished results
 it(
   'fails to publish results when no unpublished results are found',

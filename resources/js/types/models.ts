@@ -50,6 +50,7 @@ export interface User extends Row {
   partner?: Partner;
   partner_user?: PartnerUser;
   institution_user?: InstitutionUser;
+  institution_users?: InstitutionUser[];
   student?: Student;
 }
 
@@ -275,6 +276,7 @@ export interface InstitutionUser extends InstitutionRow {
   status_message: string;
   user?: User;
   student?: Student;
+  institution?: Institution;
   attendance_status?: {
     checked_in: boolean;
     checked_out: boolean;
@@ -1305,6 +1307,7 @@ export interface ChatComposerTarget {
 
 export interface ChatComposerOptions {
   canDirectMessageStaff: boolean;
+  directMessageTargetLabel?: string;
   institutionTarget: ChatComposerTarget;
   roleTargets: ChatComposerTarget[];
   staffTargets: ChatComposerTarget[];

@@ -6,7 +6,6 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
-  useToast,
   VStack,
   Grid,
   GridItem,
@@ -16,12 +15,8 @@ import {
   HStack,
   SimpleGrid,
 } from '@chakra-ui/react';
-import React, { ChangeEvent } from 'react';
-import {
-  bytesToMb,
-  MAX_FILE_SIZE_BYTES,
-  FileDropperType,
-} from '@/components/file-dropper/common';
+import React, { ChangeEvent, useState } from 'react';
+import { bytesToMb, FileDropperType } from '@/components/file-dropper/common';
 import { resizeImage } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
@@ -39,7 +34,8 @@ interface Props {
 }
 export default function InstitutionProfile({ institution }: Props) {
   const { instRoute } = useInstitutionRoute();
-  const { handleResponseToast } = useMyToast();
+  const { handleResponseToast, toastError } = useMyToast();
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const form = useWebForm({
     name: institution.name,
     phone: institution.phone,
@@ -51,9 +47,9 @@ export default function InstitutionProfile({ institution }: Props) {
     website: institution.website,
   });
 
-  const toast = useToast();
   const web = useWeb();
   const extensions = FileDropperType.Image.extensionLabels;
+  const maxLogoFileSizeBytes = 1 * 1024 * 1024;
 
   async function onSubmit() {
     const res = await form.submit((data, web) => {
@@ -68,20 +64,46 @@ export default function InstitutionProfile({ institution }: Props) {
   async function uploadImage(e: ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
     const { files } = e.target;
-    if (!files) {
+    if (!files?.length) {
       return;
     }
     const file: File = files[0];
-    const imageBlob = await resizeImage(file, 300, 300);
 
-    const res = await form.submit(async () => {
-      const formData = new FormData();
-      formData.append('photo', imageBlob as Blob);
-      return web.post(instRoute('upload-photo'), formData);
-    });
-    if (!handleResponseToast(res)) return;
-    form.setValue('photo', res.data.url);
-    Inertia.reload({ only: ['institution'] });
+    if (file.size > maxLogoFileSizeBytes) {
+      toastError(
+        `Please select an image smaller than ${Math.floor(
+          bytesToMb(maxLogoFileSizeBytes)
+        )}MB.`
+      );
+      e.target.value = '';
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+
+    try {
+      const imageBlob = await resizeImage(file, 300, 300);
+
+      const res = await form.submit(async () => {
+        const formData = new FormData();
+        formData.append('photo', imageBlob as Blob, 'institution-logo.jpg');
+        return web.post(instRoute('upload-photo'), formData);
+      });
+
+      if (!handleResponseToast(res)) {
+        return;
+      }
+
+      form.setValue('photo', res.data.url);
+      Inertia.reload({
+        only: ['institution', 'shared__currentInstitution'],
+      });
+    } catch {
+      toastError('Unable to process this image. Please try another logo file.');
+    } finally {
+      e.target.value = '';
+      setIsUploadingPhoto(false);
+    }
   }
 
   return (
@@ -235,7 +257,7 @@ export default function InstitutionProfile({ institution }: Props) {
                       borderRadius="8px"
                       bg="gray.50"
                     >
-                      {form.processing ? (
+                      {isUploadingPhoto ? (
                         <Spinner size="xl" color="brand.500" />
                       ) : (
                         <Avatar size={'2xl'} src={form.data.photo} />
@@ -254,17 +276,20 @@ export default function InstitutionProfile({ institution }: Props) {
                           type={'file'}
                           id="photo"
                           hidden
-                          accept={'image/jpeg,image/png,image/jpg'}
+                          accept={'image/jpeg,image/png,image/jpg,image/webp'}
+                          disabled={isUploadingPhoto}
                           onChange={(e) => uploadImage(e)}
                         />
-                        Change profile photo
+                        {isUploadingPhoto
+                          ? 'Uploading photo...'
+                          : 'Change profile photo'}
                       </FormLabel>
                       <Text fontSize={'sm'} color={'blackAlpha.700'}>
                         Allowed extensions {extensions.join(', ')}
                       </Text>
                       <Text fontSize={'sm'} color={'blackAlpha.700'}>
                         Maximum size{' '}
-                        {Math.floor(bytesToMb(MAX_FILE_SIZE_BYTES))}MB
+                        {Math.floor(bytesToMb(maxLogoFileSizeBytes))}MB
                       </Text>
                       <FormErrorMessage>{form.errors.photo}</FormErrorMessage>
                     </Div>
@@ -275,7 +300,8 @@ export default function InstitutionProfile({ institution }: Props) {
             <HStack mt={5} justify="end">
               <Button
                 type="submit"
-                isLoading={form.processing}
+                isLoading={form.processing && !isUploadingPhoto}
+                isDisabled={isUploadingPhoto}
                 loadingText="Saving"
                 colorScheme={'brand'}
               >
