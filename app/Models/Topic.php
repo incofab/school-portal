@@ -103,6 +103,11 @@ class Topic extends BaseModel
     return $this->belongsTo(Topic::class, 'parent_topic_id');
   }
 
+  public function subTopics()
+  {
+    return $this->hasMany(Topic::class, 'parent_topic_id');
+  }
+
   public function practiceSummaries()
   {
     return $this->hasMany(TopicPracticeSummary::class);

@@ -66,13 +66,23 @@ class StudentManagementController extends Controller
   public function classStudentsIdCards(
     Request $request,
     Institution $institution,
-    Classification $classification
+    ?Classification $classification = null
   ) {
+    $classification ??= Classification::query()
+      ->orderBy('title')
+      ->first();
+
     return inertia('institutions/students/class-students-id-cards', [
+      'classification' => $classification,
+      'classifications' => Classification::query()
+        ->orderBy('title')
+        ->get(),
       'students' => $classification
-        ->students()
-        ->with('user')
-        ->get()
+        ? $classification
+          ->students()
+          ->with('user')
+          ->get()
+        : []
     ]);
   }
 

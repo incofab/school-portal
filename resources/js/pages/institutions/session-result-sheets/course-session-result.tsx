@@ -48,6 +48,7 @@ export default function CourseSessionResult({
   courses,
 }: Props) {
   const { currentInstitution } = useSharedProps();
+  const filename = `${classification.title}-result-sheet`;
   const headers: TableHeader<CourseSessionResultData>[] = [
     {
       label: 'Name',
@@ -81,8 +82,10 @@ export default function CourseSessionResult({
   return (
     <PagePrintLayout
       useBgStyle={true}
-      filename={`${classification.title}-result-sheet.pdf`}
+      filename={`${filename}.pdf`}
       contentId={'result-sheet'}
+      exportToExcel
+      excelSheetName="Session Result"
     >
       <Div
         mx={'auto'}

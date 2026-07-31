@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Institutions\Curriculums;
 
-use App\Enums\Audit\ActivityLogCategory;
 use App\Enums\InstitutionUserType;
-use App\Enums\Media\MediaVisibility;
 use App\Enums\NoteStatusType;
-use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Curriculums\CurriculumMediaRequest;
+use App\Http\Requests\Curriculums\LessonNoteRequest;
 use App\Models\ClassificationGroup;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
@@ -15,11 +14,10 @@ use App\Models\LessonNote;
 use App\Models\LessonPlan;
 use App\Models\Media;
 use App\Models\Topic;
+use App\Services\Curriculum\CurriculumMediaService;
 use App\Support\Audit\AcademicActivityLogger;
-use App\Support\Media\MediaManager;
 use App\Support\UITableFilters\LessonNoteUITableFilters;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class LessonNoteController extends Controller
@@ -114,10 +112,10 @@ class LessonNoteController extends Controller
 
   public function storeOrUpdate(
     Institution $institution,
-    Request $request,
+    LessonNoteRequest $request,
     ?LessonNote $lessonNote = null
   ) {
-    $data = $request->validate(LessonNote::createRule());
+    $data = $request->validated();
 
     $lessonPlanId = $lessonNote
       ? $lessonNote->lesson_plan_id
@@ -169,80 +167,29 @@ class LessonNoteController extends Controller
 
   public function uploadMedia(
     Institution $institution,
-    Request $request,
-    LessonNote $lessonNote
+    CurriculumMediaRequest $request,
+    LessonNote $lessonNote,
+    CurriculumMediaService $curriculumMediaService
   ) {
-    $data = $request->validate([
-      'file' => [
-        'required',
-        'file',
-        'mimes:jpg,jpeg,png,webp,pdf,doc,docx,mp4,mov,avi,mkv,mp3,wav',
-        'max:10240'
-      ]
-    ]);
-
-    $res = app(MediaManager::class)->storeUploadedFile(
-      $data['file'],
+    $media = $curriculumMediaService->storeLessonNoteAttachment(
+      $institution,
       $lessonNote,
-      'attachments',
-      $institution->folder(S3Folder::LessonNotes, (string) $lessonNote->id),
-      $institution,
-      currentUser(),
-      visibility: MediaVisibility::Public
+      $request->file('file')
     );
 
-    app(AcademicActivityLogger::class)->workflowEvent(
-      $institution,
-      'curriculum.lesson_note_attachment_uploaded',
-      ActivityLogCategory::Curriculum,
-      'uploaded_attachment',
-      'Lesson note attachment uploaded.',
-      [
-        'lesson_note_id' => $lessonNote->id,
-        'media_id' => $res->media->id,
-        'original_name' => $res->media->original_name,
-        'collection_name' => $res->media->collection_name,
-        'mime_type' => $res->media->mime_type,
-        'size' => $res->media->size
-      ],
-      $lessonNote
-    );
-
-    return $this->ok(['media' => $res->media]);
+    return $this->ok(['media' => $media]);
   }
 
   public function destroyMedia(
     Institution $institution,
     LessonNote $lessonNote,
-    Media $media
+    Media $media,
+    CurriculumMediaService $curriculumMediaService
   ) {
-    abort_unless(
-      $media->mediable_type === $lessonNote->getMorphClass() &&
-        $media->mediable_id === $lessonNote->id &&
-        $media->collection_name === 'attachments',
-      404
-    );
-
-    $properties = [
-      'lesson_note_id' => $lessonNote->id,
-      'media_id' => $media->id,
-      'original_name' => $media->original_name,
-      'collection_name' => $media->collection_name,
-      'mime_type' => $media->mime_type,
-      'size' => $media->size
-    ];
-
-    Storage::disk($media->disk)->delete($media->path);
-    $media->delete();
-
-    app(AcademicActivityLogger::class)->workflowEvent(
+    $curriculumMediaService->deleteLessonNoteAttachment(
       $institution,
-      'curriculum.lesson_note_attachment_deleted',
-      ActivityLogCategory::Curriculum,
-      'deleted_attachment',
-      'Lesson note attachment deleted.',
-      $properties,
-      $lessonNote
+      $lessonNote,
+      $media
     );
 
     return $this->ok();

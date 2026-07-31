@@ -8,6 +8,7 @@ use App\Models\InstitutionUser;
 use App\Models\Student;
 use App\Models\TermResult;
 use App\Models\User;
+use Inertia\Testing\AssertableInertia as Assert;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
@@ -82,6 +83,62 @@ it('updates student code with correct payload', function () {
     'id' => $student->id,
     'code' => $newCode
   ]);
+});
+
+it(
+  'shows student id cards from the sidebar route with a default class',
+  function () {
+    $defaultClassification = Classification::query()
+      ->where('institution_id', $this->institution->id)
+      ->orderBy('title')
+      ->first();
+    $classificationsCount = Classification::query()
+      ->where('institution_id', $this->institution->id)
+      ->count();
+
+    actingAs($this->instAdmin)
+      ->get(route('institutions.students.idcards', $this->institution->uuid))
+      ->assertOk()
+      ->assertInertia(
+        fn(Assert $page) => $page
+          ->component('institutions/students/class-students-id-cards')
+          ->where('classification.id', $defaultClassification->id)
+          ->has('classifications', $classificationsCount)
+          ->has('students')
+      );
+  }
+);
+
+it('shows student id cards for a selected class', function () {
+  $otherClassification = Classification::factory()
+    ->withInstitution($this->institution)
+    ->create(['title' => 'Primary 2']);
+  Student::factory()
+    ->withInstitution($this->institution, $this->classification)
+    ->create();
+  $selectedStudent = Student::factory()
+    ->withInstitution($this->institution, $otherClassification)
+    ->create();
+  $classificationsCount = Classification::query()
+    ->where('institution_id', $this->institution->id)
+    ->count();
+
+  actingAs($this->instAdmin)
+    ->get(
+      route('institutions.students.idcards', [
+        $this->institution->uuid,
+        $otherClassification->id
+      ])
+    )
+    ->assertOk()
+    ->assertInertia(
+      fn(Assert $page) => $page
+        ->component('institutions/students/class-students-id-cards')
+        ->where('classification.id', $otherClassification->id)
+        ->has('classifications', $classificationsCount)
+        ->has('students', 1)
+        ->where('students.0.id', $selectedStudent->id)
+    );
 });
 
 // --- Testing for delete ---

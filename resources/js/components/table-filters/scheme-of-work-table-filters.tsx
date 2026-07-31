@@ -9,6 +9,7 @@ import EnumSelect from '../dropdown-select/enum-select';
 import useSharedProps from '@/hooks/use-shared-props';
 import ClassificationGroupSelect from '../selectors/classification-group-select';
 import useIsStaff from '@/hooks/use-is-staff';
+import { Input } from '@chakra-ui/react';
 
 interface Props {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export default function SchemeOfWorkTableFilters({ isOpen, onClose }: Props) {
     classification: params.classification ?? '',
     classificationGroup: params.classificationGroup ?? '',
     course: params.course ?? '',
+    weekNumber: params.weekNumber,
   }));
 
   return (
@@ -56,6 +58,14 @@ export default function SchemeOfWorkTableFilters({ isOpen, onClose }: Props) {
           selectValue={filters.course}
           onChange={(e: any) => setFilters({ ...filters, course: e?.value })}
           isClearable={true}
+        />
+      </FilterFormControlBox>
+      <FilterFormControlBox title="Week Number">
+        <Input
+          onChange={(e) =>
+            setFilters({ ...filters, weekNumber: e.currentTarget.value })
+          }
+          value={filters.weekNumber}
         />
       </FilterFormControlBox>
       <FilterFormControlBox title="Term">

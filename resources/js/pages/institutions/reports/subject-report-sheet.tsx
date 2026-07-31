@@ -126,12 +126,16 @@ export default function SubjectReportSheet({
     },
   ];
   const canShow = Boolean(classification);
+  const filename = `subject-report-${classification?.id ?? ''}-${
+    academicSession?.id ?? ''
+  }-${term ?? ''}`;
+
   return (
     <PagePrintLayout
-      filename={`subject-report-${classification?.id ?? ''}-${
-        academicSession?.id ?? ''
-      }-${term ?? ''}.pdf`}
+      filename={`${filename}.pdf`}
       contentId={'subject-report-sheet'}
+      exportToExcel
+      excelSheetName="Subject Report"
     >
       <Div
         mx={'auto'}

@@ -2,21 +2,18 @@
 
 namespace App\Http\Controllers\Institutions\Curriculums;
 
-use App\Enums\Audit\ActivityLogCategory;
 use App\Enums\InstitutionUserType;
-use App\Enums\Media\MediaVisibility;
-use App\Enums\S3Folder;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Curriculums\CurriculumMediaRequest;
+use App\Http\Requests\Curriculums\LessonPlanRequest;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\LessonPlan;
 use App\Models\Media;
 use App\Models\SchemeOfWork;
-use App\Support\Audit\AcademicActivityLogger;
-use App\Support\Media\MediaManager;
+use App\Services\Curriculum\CurriculumMediaService;
 use App\Support\UITableFilters\LessonPlanUITableFilters;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class LessonPlanController extends Controller
@@ -128,10 +125,10 @@ class LessonPlanController extends Controller
 
   public function storeOrUpdate(
     Institution $institution,
-    Request $request,
+    LessonPlanRequest $request,
     ?LessonPlan $lessonPlan = null
   ) {
-    $data = $request->validate(LessonPlan::createRule());
+    $data = $request->validated();
 
     $params = collect($data)
       ->only(['course_teacher_id', 'objective', 'activities', 'content'])
@@ -157,80 +154,29 @@ class LessonPlanController extends Controller
 
   public function uploadMedia(
     Institution $institution,
-    Request $request,
-    LessonPlan $lessonPlan
+    CurriculumMediaRequest $request,
+    LessonPlan $lessonPlan,
+    CurriculumMediaService $curriculumMediaService
   ) {
-    $data = $request->validate([
-      'file' => [
-        'required',
-        'file',
-        'mimes:jpg,jpeg,png,webp,pdf,doc,docx,mp4,mov,avi,mkv,mp3,wav',
-        'max:10240'
-      ]
-    ]);
-
-    $res = app(MediaManager::class)->storeUploadedFile(
-      $data['file'],
+    $media = $curriculumMediaService->storeLessonPlanAttachment(
+      $institution,
       $lessonPlan,
-      'attachments',
-      $institution->folder(S3Folder::LessonPlans, (string) $lessonPlan->id),
-      $institution,
-      currentUser(),
-      visibility: MediaVisibility::Public
+      $request->file('file')
     );
 
-    app(AcademicActivityLogger::class)->workflowEvent(
-      $institution,
-      'curriculum.lesson_plan_attachment_uploaded',
-      ActivityLogCategory::Curriculum,
-      'uploaded_attachment',
-      'Lesson plan attachment uploaded.',
-      [
-        'lesson_plan_id' => $lessonPlan->id,
-        'media_id' => $res->media->id,
-        'original_name' => $res->media->original_name,
-        'collection_name' => $res->media->collection_name,
-        'mime_type' => $res->media->mime_type,
-        'size' => $res->media->size
-      ],
-      $lessonPlan
-    );
-
-    return $this->ok(['media' => $res->media]);
+    return $this->ok(['media' => $media]);
   }
 
   public function destroyMedia(
     Institution $institution,
     LessonPlan $lessonPlan,
-    Media $media
+    Media $media,
+    CurriculumMediaService $curriculumMediaService
   ) {
-    abort_unless(
-      $media->mediable_type === $lessonPlan->getMorphClass() &&
-        $media->mediable_id === $lessonPlan->id &&
-        $media->collection_name === 'attachments',
-      404
-    );
-
-    $properties = [
-      'lesson_plan_id' => $lessonPlan->id,
-      'media_id' => $media->id,
-      'original_name' => $media->original_name,
-      'collection_name' => $media->collection_name,
-      'mime_type' => $media->mime_type,
-      'size' => $media->size
-    ];
-
-    Storage::disk($media->disk)->delete($media->path);
-    $media->delete();
-
-    app(AcademicActivityLogger::class)->workflowEvent(
+    $curriculumMediaService->deleteLessonPlanAttachment(
       $institution,
-      'curriculum.lesson_plan_attachment_deleted',
-      ActivityLogCategory::Curriculum,
-      'deleted_attachment',
-      'Lesson plan attachment deleted.',
-      $properties,
-      $lessonPlan
+      $lessonPlan,
+      $media
     );
 
     return $this->ok();
@@ -255,7 +201,7 @@ class LessonPlanController extends Controller
 
   public function destroy(Institution $institution, LessonPlan $lessonPlan)
   {
-    if (count($lessonPlan->lessonNote()->get()) > 0) {
+    if ($lessonPlan->lessonNote()->exists()) {
       return $this->message('This Lesson-Plan already has a Lesson-Note.', 403);
     }
 

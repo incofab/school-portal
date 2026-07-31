@@ -71,13 +71,16 @@ export default function SingleSubjectReportSheet({
   const { currentInstitution } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const canShow = Boolean(classification && academicSession && course);
+  const filename = `single-subject-report-${classification?.id ?? ''}-${
+    academicSession?.id ?? ''
+  }-${course?.id ?? ''}`;
 
   return (
     <PagePrintLayout
-      filename={`single-subject-report-${classification?.id ?? ''}-${
-        academicSession?.id ?? ''
-      }-${course?.id ?? ''}.pdf`}
+      filename={`${filename}.pdf`}
       contentId={'single-subject-report-sheet'}
+      exportToExcel
+      excelSheetName="Single Subject Report"
     >
       <Div
         mx={'auto'}

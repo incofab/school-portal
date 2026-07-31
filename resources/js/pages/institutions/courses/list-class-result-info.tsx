@@ -5,7 +5,6 @@ import useModalToggle from '@/hooks/use-modal-toggle';
 import { ClassResultInfo } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
 import {
-  Button,
   HStack,
   Icon,
   IconButton,
@@ -248,6 +247,17 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
                     py={3}
                   >
                     Grade Report
+                  </MenuItem>
+                  <MenuItem
+                    as={InertiaLink}
+                    href={instRoute('reports.full-class-report', {
+                      classification: row.classification_id,
+                      academicSession: row.academic_session_id,
+                      term: row.term,
+                    })}
+                    py={3}
+                  >
+                    Full Class Report
                   </MenuItem>
                   <MenuItem
                     as={InertiaLink}

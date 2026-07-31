@@ -32,6 +32,7 @@ import { FormButton } from '@/components/buttons';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import useDownloadHtml from '@/util/download-html';
 import ImagePaths from '@/util/images';
+import ExcelExportButton from '@/components/excel-export-button';
 
 interface SessionResultLog {
   student: Student;
@@ -194,10 +195,11 @@ export default function CummulativeResultSheet({
     return resultData.length > 0 && displayedTerms.length > 0;
   }
   const canShow = Boolean(classification) && Boolean(academicSession);
+  const filename = `cummulative-result-sheet-c${classification?.id}-a${academicSession?.id}-t${term}`;
 
   return (
     <Div style={backgroundStyle} minHeight={'1170px'}>
-      <Div mx={'auto'} px={3} py={2}>
+      <Div mx={'auto'} px={3} py={2} id={'cummulative-result-sheet'}>
         <VStack align={'stretch'}>
           <Div className="result-sheet-header">
             <HStack background={'#FAFAFA'} p={2}>
@@ -244,11 +246,15 @@ export default function CummulativeResultSheet({
           />
           {hasResultData() && (
             <div className="table-container">
-              <DownloadButton
-                filename={`cummulative-result-sheet-c${classification?.id}-a${academicSession?.id}-t${term}`}
-                title="Download"
-                mb={3}
-              />
+              <HStack className="hidden-on-print" spacing={2} mb={3}>
+                <DownloadButton filename={filename} title="Download" />
+                <ExcelExportButton
+                  filename={filename}
+                  sheetName="Cummulative Result"
+                  contentId="cummulative-result-sheet"
+                  colorScheme="brand"
+                />
+              </HStack>
               <table className="result-table" width={'100%'}>
                 <thead>
                   <tr>

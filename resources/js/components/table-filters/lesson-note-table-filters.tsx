@@ -10,6 +10,7 @@ import useSharedProps from '@/hooks/use-shared-props';
 import ClassificationGroupSelect from '../selectors/classification-group-select';
 import CourseTeacherSelect from '../selectors/course-teacher-select';
 import useIsStaff from '@/hooks/use-is-staff';
+import { Input } from '@chakra-ui/react';
 
 interface Props {
   isOpen: boolean;
@@ -28,6 +29,7 @@ export default function LessonNoteTableFilters({ isOpen, onClose }: Props) {
     course: params.course ?? '',
     // teacher: params.teacher ?? '',
     status: params.status,
+    weekNumber: params.weekNumber,
   }));
 
   return (
@@ -81,6 +83,14 @@ export default function LessonNoteTableFilters({ isOpen, onClose }: Props) {
                 setFilters({ ...filters, status: e?.value })
               }
               isClearable={true}
+            />
+          </FilterFormControlBox>
+          <FilterFormControlBox title="Week Number">
+            <Input
+              onChange={(e) =>
+                setFilters({ ...filters, weekNumber: e.currentTarget.value })
+              }
+              value={filters.weekNumber}
             />
           </FilterFormControlBox>
           <FilterFormControlBox title="Term">

@@ -114,6 +114,8 @@ Route::get('/students/download-recording-template', [Web\Staff\StudentManagement
     ->name('students.download-recording-template');
 Route::post('/students/upload/{classification}', [Web\Staff\StudentManagementController::class, 'uploadStudents'])
     ->name('students.upload');
+Route::get('/students/idcards/{classification?}', [Web\Staff\StudentManagementController::class, 'classStudentsIdCards'])
+    ->name('students.idcards');
 
 Route::resource('/students', Web\Staff\StudentManagementController::class)->except(['show']);
 Route::post('/term-results/{termResult}/teacher-comment', [Web\Staff\TermResultCommentController::class, 'teacherComment'])
@@ -272,6 +274,8 @@ Route::get('/reports/single-subject-report', Web\Reports\SingleSubjectReportCont
     ->name('reports.single-subject-report');
 Route::get('/reports/class-subject-result-report', Web\Reports\ClassSubjectResultReportController::class)
     ->name('reports.class-subject-result-report');
+Route::get('/reports/full-class-report', Web\Reports\FullClassReportController::class)
+    ->name('reports.full-class-report');
 Route::get('/reports/grade-report', Web\Reports\GradeReportController::class)
     ->name('reports.grade-report');
 

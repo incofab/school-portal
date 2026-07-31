@@ -126,7 +126,8 @@ class GenerateInvoice
   function downloadAsPdf(): HttpResponse
   {
     $pdf = Pdf::loadView('invoices.institution-group-invoice', $this->data);
-    return $pdf->download('invoice.pdf');
+    $filename = "{$this->institutionGroup->name}-{$this->academicSession->title}-{$this->term->value}-term-invoice.pdf";
+    return $pdf->download(sanitizeFilename($filename));
   }
 
   function viewAsHtml()

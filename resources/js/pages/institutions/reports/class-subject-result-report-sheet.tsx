@@ -76,13 +76,16 @@ export default function ClassSubjectResultReportSheet({
   const canShow = Boolean(classification && academicSession);
   const courses = classSubjectResultReport.courses ?? [];
   const rows = classSubjectResultReport.students ?? [];
+  const filename = `class-subject-result-report-${classification?.id ?? ''}-${
+    academicSession?.id ?? ''
+  }`;
 
   return (
     <PagePrintLayout
-      filename={`class-subject-result-report-${classification?.id ?? ''}-${
-        academicSession?.id ?? ''
-      }.pdf`}
+      filename={`${filename}.pdf`}
       contentId={'class-subject-result-report-sheet'}
+      exportToExcel
+      excelSheetName="Subject Result Report"
     >
       <Div
         mx={'auto'}

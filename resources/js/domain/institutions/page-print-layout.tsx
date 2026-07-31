@@ -1,14 +1,18 @@
 import React, { PropsWithChildren } from 'react';
-import { useColorMode } from '@chakra-ui/react';
+import { HStack, useColorMode } from '@chakra-ui/react';
 import { Div } from '@/components/semantic';
 import useSharedProps from '@/hooks/use-shared-props';
 import PageDownloadButton from '@/pages/institutions/result-sheets/page-download-button';
+import ExcelExportButton from '@/components/excel-export-button';
 
 interface Props {
   useBgStyle?: boolean;
   filename: string;
   contentId: string;
   signed_url?: string;
+  exportToExcel?: boolean;
+  excelSheetName?: string;
+  excelTableSelector?: string;
 }
 
 export default function PagePrintLayout({
@@ -16,7 +20,10 @@ export default function PagePrintLayout({
   useBgStyle,
   filename,
   contentId,
-  signed_url,
+  signed_url: signedUrl,
+  exportToExcel,
+  excelSheetName,
+  excelTableSelector,
 }: Props & PropsWithChildren) {
   const { currentInstitution } = useSharedProps();
   const { colorMode, setColorMode } = useColorMode();
@@ -39,12 +46,23 @@ export default function PagePrintLayout({
         // minHeight={'1170px'}
         minHeight={'900px'}
       >
-        <PageDownloadButton
-          signed_url={signed_url}
-          // termResult={resultProps.termResult}
-          filename={filename}
-          contentId={contentId}
-        />
+        <HStack className="hidden-on-print" spacing={2} mb={2}>
+          <PageDownloadButton
+            signed_url={signedUrl}
+            // termResult={resultProps.termResult}
+            filename={filename}
+            contentId={contentId}
+          />
+          {exportToExcel && (
+            <ExcelExportButton
+              filename={filename}
+              sheetName={excelSheetName}
+              contentId={contentId}
+              tableSelector={excelTableSelector}
+              colorScheme="brand"
+            />
+          )}
+        </HStack>
         {children}
       </Div>
     </Div>

@@ -7,6 +7,7 @@
 - Database assets are in `database/migrations`, `database/seeders`, and `database/factories`; seeders include roles and sample domain data.
 - Public entry is `public/index.php`; built assets are published to `public/build` by Vite. Tests live in `tests/Feature` using Pest.
 - `public/feature-docs/`: The project knowledge base for AI CLIs and maintainers. Start with `public/feature-docs/features.html` for the implemented feature map, then use `backend.html`, `frontend.html`, and `data.html` for route/controller/action, UI, model, and migration details.
+- There's a trait `app/Traits/InstitutionScope.php` that ensures all queries made on a controller that uses the `institution.user` (`app/Http/Middleware/VerifyInstitutionUser.php`) middleware are scoped to the institution and calls the `->where('institution_id', currentInstitution()->id)` method on the query.
 
 ## Build, Test, and Development Commands
 

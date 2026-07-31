@@ -121,6 +121,11 @@ export default function SideBarLayout() {
           route: instRoute('students.create'),
           roles: [InstitutionUserType.Admin],
         },
+        {
+          label: 'Student ID Cards',
+          route: instRoute('students.idcards'),
+          roles: staff,
+        },
         // {
         //   label: 'Student Applications',
         //   route: instRoute('admission-applications.index'),
@@ -272,6 +277,11 @@ export default function SideBarLayout() {
         {
           label: 'Full Subject Result',
           route: instRoute('reports.class-subject-result-report'),
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
+          label: 'Full Class Report',
+          route: instRoute('reports.full-class-report'),
           roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {

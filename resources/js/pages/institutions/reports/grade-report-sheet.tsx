@@ -67,13 +67,16 @@ export default function GradeReportSheet({
   const { instRoute } = useInstitutionRoute();
   const canShow = Boolean(classification && academicSession && term);
   const totalStudents = gradeReport.reduce((acc, item) => acc + item.count, 0);
+  const filename = `grade-report-${classification?.id ?? ''}-${
+    academicSession?.id ?? ''
+  }-${term ?? ''}-${forMidTerm ? 'mid' : 'full'}`;
 
   return (
     <PagePrintLayout
-      filename={`grade-report-${classification?.id ?? ''}-${
-        academicSession?.id ?? ''
-      }-${term ?? ''}-${forMidTerm ? 'mid' : 'full'}.pdf`}
+      filename={`${filename}.pdf`}
       contentId={'grade-report-sheet'}
+      exportToExcel
+      excelSheetName="Grade Report"
     >
       <Div
         mx={'auto'}

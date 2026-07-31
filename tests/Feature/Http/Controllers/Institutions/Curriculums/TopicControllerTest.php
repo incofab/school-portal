@@ -7,8 +7,12 @@ use App\Models\Topic;
 use App\Models\Course;
 use App\Models\CourseTeacher;
 use App\Models\SchemeOfWork;
+use App\Models\LessonPlan;
+use App\Models\Media;
 use App\Models\Student;
 use Inertia\Testing\AssertableInertia;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseCount;
@@ -85,6 +89,54 @@ it('stores topic data', function () {
 
   assertDatabaseCount('topics', 1);
   assertDatabaseHas('topics', $topicData);
+});
+
+it('stores lesson plan files when creating topic data', function () {
+  Storage::fake('s3_public');
+
+  $route = route('institutions.inst-topics.store-or-update', [
+    'institution' => $this->institution->uuid
+  ]);
+
+  $courseTeacher = CourseTeacher::factory()
+    ->withInstitution($this->institution)
+    ->create([
+      'course_id' => $this->course->id,
+      'classification_id' => $this->classification->id
+    ]);
+
+  $topicData = Topic::factory()
+    ->course($this->course)
+    ->make()
+    ->toArray();
+
+  actingAs($this->admin)
+    ->post($route, [
+      ...$topicData,
+      'term' => TermType::First->value,
+      'week_number' => 1,
+      'is_used_by_institution_group' => false,
+      'user_id' => $courseTeacher->user_id,
+      'classification_group_id' =>
+        $this->classification->classification_group_id,
+      'lesson_plan_files' => [
+        UploadedFile::fake()->create('lesson-plan.pdf', 20, 'application/pdf')
+      ]
+    ])
+    ->assertOk();
+
+  $lessonPlan = LessonPlan::query()->firstOrFail();
+
+  assertDatabaseCount('topics', 1);
+  assertDatabaseCount('scheme_of_works', 1);
+  assertDatabaseCount('lesson_plans', 1);
+  assertDatabaseHas('media', [
+    'mediable_type' => $lessonPlan->getMorphClass(),
+    'mediable_id' => $lessonPlan->id,
+    'collection_name' => 'attachments'
+  ]);
+
+  expect(Media::query()->first()?->original_name)->toBe('lesson-plan.pdf');
 });
 
 it('updates topic data', function () {

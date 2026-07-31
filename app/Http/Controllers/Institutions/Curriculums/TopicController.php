@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\Institutions\Curriculums;
 
-use Inertia\Inertia;
-use App\Models\Topic;
-use Illuminate\Http\Request;
 use App\Enums\InstitutionUserType;
-use App\Models\ClassificationGroup;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Curriculums\TopicRequest;
+use App\Models\ClassificationGroup;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\LessonPlan;
 use App\Models\SchemeOfWork;
+use App\Models\Topic;
+use App\Services\Curriculum\CurriculumMediaService;
 use App\Support\UITableFilters\TopicUITableFilters;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class TopicController extends Controller
 {
-  //
   public function __construct()
   {
     $this->allowedRoles([
@@ -26,7 +28,6 @@ class TopicController extends Controller
     $this->allowedRoles([InstitutionUserType::Admin])->only('destroy');
   }
 
-  //== Listing
   public function index(Institution $institution, ?Topic $topic = null)
   {
     $query = Topic::query()->when(
@@ -61,34 +62,56 @@ class TopicController extends Controller
     ]);
   }
 
-  //== Create/Edit Topic
   function createOrEdit(Institution $institution, ?Topic $topic = null)
   {
-    $parentTopics = Topic::whereNull('parent_topic_id')->get();
+    $parentTopics = Topic::query()
+      ->whereNull('parent_topic_id')
+      ->with('classificationGroup', 'course')
+      ->latest('id')
+      ->get();
 
     return Inertia::render('institutions/topics/create-edit-topic', [
       'parentTopics' => $parentTopics,
-      'topic' => $topic?->load('classificationGroup', 'course')
+      'topic' => $topic?->load(
+        'classificationGroup',
+        'course',
+        'parentTopic',
+        'schemeOfWorks.lessonPlans.media'
+      )
     ]);
   }
 
   function show(Institution $institution, Topic $topic)
   {
-    $topic->load('schemeOfWorks.lessonPlans.lessonNote');
+    $topic->load([
+      'classificationGroup',
+      'course',
+      'parentTopic',
+      'schemeOfWorks' => fn($query) => $query
+        ->with([
+          'lessonPlans' => fn($lessonPlanQuery) => $lessonPlanQuery->with([
+            'courseTeacher.user',
+            'courseTeacher.classification',
+            'media',
+            'lessonNote.media'
+          ])
+        ])
+        ->orderBy('term')
+        ->orderBy('week_number')
+    ]);
 
     $institutionUser = currentInstitutionUser();
     $user = $institutionUser->user;
 
-    //== Fetch all the courseTeacher ids of the teacher.
     if ($institutionUser->isTeacher()) {
-      $assignedCourseIds = CourseTeacher::where('user_id', $user->id)
+      $assignedCourseIds = CourseTeacher::query()
+        ->where('user_id', $user->id)
         ->pluck('id')
         ->toArray();
     } else {
       $assignedCourseIds = [];
     }
 
-    //== For Parent Topics
     return Inertia::render('institutions/topics/show-topic', [
       'topic' => $topic,
       'assignedCourseIds' => $assignedCourseIds
@@ -104,26 +127,22 @@ class TopicController extends Controller
     return response()->json(['result' => $query->latest('id')->get()]);
   }
 
-  function storeOrUpdate(
+  public function storeOrUpdate(
     Institution $institution,
-    Request $request,
+    TopicRequest $request,
+    CurriculumMediaService $curriculumMediaService,
     ?Topic $topic = null
   ) {
-    // $data = $request->validate(Topic::createRule());
+    $data = $request->validated();
 
-    //= Check if there's a topic and use the corresponding validation rule
-    $data = $request->validate(
-      $topic ? Topic::createRule2($topic) : Topic::createRule($topic)
-    );
-
-    //= For Topic
-    $params_topic = [
+    $topicAttributes = [
       ...collect($data)
         ->except(
           'is_used_by_institution_group',
           'term',
           'week_number',
-          'user_id'
+          'user_id',
+          'lesson_plan_files'
         )
         ->toArray(),
       'institution_id' => $institution->id,
@@ -132,10 +151,37 @@ class TopicController extends Controller
         : null
     ];
 
-    //== CREATE NEW RECORDS
-    if (empty($topic)) {
-      //= For SchemeOfWork
-      $params_scheme_of_work = [
+    if ($topic) {
+      $topic->update($topicAttributes);
+      $this->uploadTopicLessonPlanFiles(
+        $institution,
+        $topic,
+        $request->file('lesson_plan_files', []),
+        $curriculumMediaService
+      );
+
+      return $this->ok();
+    }
+
+    $courseTeacher = $this->getCourseTeacher($data);
+
+    if (!$courseTeacher) {
+      return $this->message(
+        'This teacher is not assigned to this class subject.',
+        401
+      );
+    }
+
+    DB::transaction(function () use (
+      $institution,
+      $data,
+      $topicAttributes,
+      $courseTeacher,
+      $request,
+      $curriculumMediaService
+    ) {
+      $newTopic = Topic::query()->create($topicAttributes);
+      $newSchemeOfWork = SchemeOfWork::query()->create([
         'term' => $data['term'],
         'week_number' => $data['week_number'],
         'learning_objectives' => 'NA',
@@ -143,59 +189,38 @@ class TopicController extends Controller
         'institution_id' => $institution->id,
         'institution_group_id' => $data['is_used_by_institution_group']
           ? $institution->institutionGroup->id
-          : null
-      ];
-
-      //= For LessonPlan
-      $getCourseTeacher = $this->getCourseTeacher($data);
-
-      if (!$getCourseTeacher) {
-        return $this->message(
-          'This teacher is not assigned to this class subject.',
-          401
-        );
-      }
-
-      $params_lesson_plan = [
-        'course_teacher_id' => $getCourseTeacher->id,
+          : null,
+        'topic_id' => $newTopic->id
+      ]);
+      $newLessonPlan = LessonPlan::query()->create([
+        'course_teacher_id' => $courseTeacher->id,
         'objective' => 'NA',
         'activities' => 'NA',
         'content' => 'NA',
         'institution_id' => $institution->id,
         'institution_group_id' => $data['is_used_by_institution_group']
           ? $institution->institutionGroup->id
-          : null
-      ];
-
-      //== Create Topic
-      $newTopic = Topic::create($params_topic);
-
-      //== Create Scheme_Of_Work
-      $newSchemeOfWork = SchemeOfWork::create([
-        ...$params_scheme_of_work,
-        'topic_id' => $newTopic->id
-      ]);
-
-      //== Create LessonPlan
-      LessonPlan::create([
-        ...$params_lesson_plan,
+          : null,
         'scheme_of_work_id' => $newSchemeOfWork->id
       ]);
-    }
 
-    //== UPDATE EXISTING RECORDS
-    if (!empty($topic)) {
-      //= Update $topic only.
-      $topic->update($params_topic);
-    }
+      foreach ($request->file('lesson_plan_files', []) as $file) {
+        $curriculumMediaService->storeLessonPlanAttachment(
+          $institution,
+          $newLessonPlan,
+          $file
+        );
+      }
+    });
 
     return $this->ok();
   }
 
-  function getCourseTeacher($data)
+  private function getCourseTeacher(array $data): ?CourseTeacher
   {
     $institutionUser = currentInstitutionUser();
     $user = $institutionUser->user;
+    $userId = null;
 
     if ($institutionUser->isTeacher()) {
       $userId = $user->id;
@@ -207,15 +232,15 @@ class TopicController extends Controller
 
     $reqClassGroupId = $data['classification_group_id'];
 
-    if (is_int($reqClassGroupId)) {
-      $getClassGroup = ClassificationGroup::find($reqClassGroupId);
-    } else {
-      // Parent Topic was selected, hence $reqClassGroup is not an integer.
-      $reqParentTopicId = $data['parent_topic_id'];
-      $getParentTopic = Topic::find($reqParentTopicId);
-      $getClassGroup = ClassificationGroup::find(
-        $getParentTopic->classification_group_id
-      );
+    $getClassGroup = ClassificationGroup::query()->find($reqClassGroupId);
+
+    if (!$getClassGroup && !empty($data['parent_topic_id'])) {
+      $getClassGroup = Topic::query()->find($data['parent_topic_id'])
+        ?->classificationGroup;
+    }
+
+    if (!$getClassGroup || !$userId) {
+      return null;
     }
 
     $classGroup_classification_ids = $getClassGroup
@@ -223,22 +248,49 @@ class TopicController extends Controller
       ->pluck('id')
       ->toArray();
 
-    $courseTeacher = CourseTeacher::where('course_id', $data['course_id'])
+    return CourseTeacher::query()
+      ->where('course_id', $data['course_id'])
       ->where('user_id', $userId)
       ->whereIn('classification_id', $classGroup_classification_ids)
       ->first();
+  }
 
-    return $courseTeacher;
+  private function uploadTopicLessonPlanFiles(
+    Institution $institution,
+    Topic $topic,
+    array $files,
+    CurriculumMediaService $curriculumMediaService
+  ): void {
+    if (empty($files)) {
+      return;
+    }
+
+    $lessonPlan = $topic
+      ->schemeOfWorks()
+      ->with('lessonPlans')
+      ->oldest('id')
+      ->get()
+      ->pluck('lessonPlans')
+      ->flatten()
+      ->first();
+
+    if (!$lessonPlan) {
+      return;
+    }
+
+    foreach ($files as $file) {
+      $curriculumMediaService->storeLessonPlanAttachment(
+        $institution,
+        $lessonPlan,
+        $file
+      );
+    }
   }
 
   function destroy(Institution $institution, Topic $topic)
   {
-    $hasSubTopics = Topic::where('parent_topic_id', $topic->id)->exists();
-    $hasSchemeOfWork =
-      $topic
-        ->schemeOfWorks()
-        ->get()
-        ->count() > 0;
+    $hasSubTopics = $topic->subTopics()->exists();
+    $hasSchemeOfWork = $topic->schemeOfWorks()->exists();
 
     if ($hasSubTopics || $hasSchemeOfWork) {
       return $this->message(

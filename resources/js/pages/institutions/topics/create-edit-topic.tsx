@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Checkbox, FormControl, VStack } from '@chakra-ui/react';
+import { Checkbox, FormControl, Text, VStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
@@ -21,14 +21,15 @@ import EnumSelect from '@/components/dropdown-select/enum-select';
 import StaffSelect from '@/components/selectors/staff-select';
 import useIsAdmin from '@/hooks/use-is-admin';
 import TinyMceEditor from '@/components/tinymce-editor';
+import FileDropper from '@/components/file-dropper';
+import FileObject from '@/components/file-dropper/file-object';
+import { FileDropperType } from '@/components/file-dropper/common';
 
 interface Props {
   user?: User;
   topic?: Topic;
   parentTopics: Topic[];
 }
-
-const tinymceApiKey = import.meta.env.VITE_TINYMCE_API_KEY;
 
 export default function CreateOrUpdateTopic({
   user,
@@ -42,6 +43,7 @@ export default function CreateOrUpdateTopic({
   const [shouldBeDisabled, setShouldBeDisabled] = useState(
     topic?.parent_topic_id ? true : false
   );
+  const [lessonPlanFiles, setLessonPlanFiles] = useState<FileObject[]>([]);
 
   const webForm = useWebForm({
     term: topic ? topic.scheme_of_works?.[0]?.term : currentTerm,
@@ -59,10 +61,10 @@ export default function CreateOrUpdateTopic({
       : false,
   });
 
-  const updateForm = (parentTopicId: number) => {
+  const updateForm = (parentTopicId?: number | string | null) => {
     if (parentTopicId) {
       const selectedParentTopic = parentTopics.find(
-        (topic) => topic.id === parentTopicId
+        (topic) => topic.id === Number(parentTopicId)
       );
 
       webForm.setValue(
@@ -77,20 +79,50 @@ export default function CreateOrUpdateTopic({
       setShouldBeDisabled(false);
     }
 
-    webForm.setValue('parent_topic_id', String(parentTopicId));
-    return String(parentTopicId);
+    webForm.setValue(
+      'parent_topic_id',
+      parentTopicId ? String(parentTopicId) : ''
+    );
+    return parentTopicId ? String(parentTopicId) : '';
   };
 
   const submit = async () => {
     const res = await webForm.submit((data, web) => {
+      const payload = { ...data, user_id: data.user_id?.value };
+
+      if (lessonPlanFiles.length === 0) {
+        return web.post(
+          instRoute('inst-topics.store-or-update', topic ? [topic] : undefined),
+          payload
+        );
+      }
+
+      const formData = new FormData();
+
+      Object.entries(payload).forEach(([key, value]) => {
+        if (value === undefined || value === null || value === '') {
+          return;
+        }
+
+        formData.append(
+          key,
+          typeof value === 'boolean' ? (value ? '1' : '0') : String(value)
+        );
+      });
+
+      lessonPlanFiles.forEach((file) => {
+        formData.append(
+          'lesson_plan_files[]',
+          file.file,
+          file.getNameWithExtension()
+        );
+      });
+
       return web.post(
         instRoute('inst-topics.store-or-update', topic ? [topic] : undefined),
-        { ...data, user_id: data.user_id?.value }
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
-
-      // return topic
-      //   ? web.post(instRoute('inst-topics.store-or-update', topic??[topic]), data)
-      //   : web.post(instRoute('inst-topics.store-or-update'), data);
     });
 
     if (!handleResponseToast(res)) {
@@ -207,11 +239,10 @@ export default function CreateOrUpdateTopic({
                 <TopicSelect
                   topics={parentTopics}
                   onChange={(e: any) => {
-                    // webForm.setValue('parent_topic_id', e?.value);
                     updateForm(e?.value);
                   }}
                   selectValue={webForm.data.parent_topic_id}
-                  isMulti={true}
+                  isMulti={false}
                   isClearable={true}
                 />
               </FormControlBox>
@@ -260,6 +291,29 @@ export default function CreateOrUpdateTopic({
                   Applies to entire Institution Group.
                 </Checkbox>
               </FormControl>
+
+              <FormControlBox
+                title="Lesson Plan Files"
+                form={webForm as any}
+                formKey="lesson_plan_files"
+              >
+                <VStack align={'stretch'} spacing={2}>
+                  <FileDropper
+                    files={lessonPlanFiles}
+                    onChange={setLessonPlanFiles}
+                    accept={[FileDropperType.Media]}
+                    multiple
+                    canRename
+                    maxSize={10 * 1024 * 1024}
+                    isLoading={webForm.processing}
+                  />
+                  <Text fontSize={'sm'} color={'blackAlpha.700'}>
+                    Files are attached to the lesson plan created for this
+                    topic. On edit, files are attached to the first available
+                    lesson plan for the topic.
+                  </Text>
+                </VStack>
+              </FormControlBox>
 
               <FormControl>
                 <FormButton isLoading={webForm.processing} />

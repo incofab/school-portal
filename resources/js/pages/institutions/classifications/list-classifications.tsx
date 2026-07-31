@@ -234,7 +234,7 @@ export default function ListClassification({ classifications }: Props) {
                       </MenuItem>
                       <MenuItem
                         as={InertiaLink}
-                        href={instRoute('users.idcards', [row])}
+                        href={instRoute('classifications.idcards', [row])}
                       >
                         {ResultUtil.getClassificationGroupTitles(row).students}{' '}
                         ID Cards
