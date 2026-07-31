@@ -17,8 +17,30 @@ body {
 }
 .table-container {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   /* opacity: 0.4; */
+}
+.table-container > .result-table,
+.chakra-table__container > .result-table {
+  min-width: max-content;
+}
+
+@media screen {
+  .result-sheet-header {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .result-sheet-header .chakra-stack {
+    min-width: 0;
+  }
+
+  .result-sheet-header .chakra-text {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
 }
 /* .result-table {
     width: auto;

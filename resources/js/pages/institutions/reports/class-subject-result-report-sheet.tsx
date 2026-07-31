@@ -12,6 +12,7 @@ import {
   Avatar,
   FormControl,
   HStack,
+  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -92,15 +93,22 @@ export default function ClassSubjectResultReportSheet({
         px={3}
         py={2}
         maxWidth={'1400px'}
+        w={'full'}
+        minW={0}
         id={'class-subject-result-report-sheet'}
       >
-        <VStack align={'stretch'} spacing={2}>
+        <VStack align={'stretch'} spacing={2} minW={0}>
           <Div className="result-sheet-header">
-            <HStack background={'#FAFAFA'} p={2}>
+            <Stack
+              background={'#FAFAFA'}
+              p={2}
+              direction={{ base: 'column', md: 'row' }}
+            >
               <Avatar
                 size={'2xl'}
                 name="Institution logo"
                 src={currentInstitution.photo ?? ImagePaths.default_school_logo}
+                mx={'auto'}
               />
               <VStack spacing={1} align={'stretch'} width={'full'}>
                 <Text fontSize={'2xl'} fontWeight={'bold'} textAlign={'center'}>
@@ -131,7 +139,7 @@ export default function ClassSubjectResultReportSheet({
                   Full Subject Result Report
                 </Text>
               </VStack>
-            </HStack>
+            </Stack>
           </Div>
           <ClassAndSessionSelector
             classification={classification}
@@ -144,8 +152,15 @@ export default function ClassSubjectResultReportSheet({
             }
           />
           {canShow && (
-            <TableContainer mt={2} overflowX={'auto'}>
-              <Table className="result-table" size={'sm'}>
+            <TableContainer
+              mt={2}
+              overflowX={'auto'}
+              w={'full'}
+              maxW={'100%'}
+              minW={0}
+              sx={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              <Table className="result-table" size={'sm'} minW={'max-content'}>
                 <Thead>
                   <Tr>
                     <Th rowSpan={2} minW={'220px'}>

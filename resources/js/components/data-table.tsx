@@ -56,7 +56,13 @@ export default function DataTable<T>({
   useEffect(() => setContent(data), [data]);
 
   return (
-    <Div overflow={scroll ? 'auto' : undefined}>
+    <Div
+      overflowX={scroll ? 'auto' : undefined}
+      maxW={scroll ? '100%' : undefined}
+      w={scroll ? 'full' : undefined}
+      minW={0}
+      sx={scroll ? { WebkitOverflowScrolling: 'touch' } : undefined}
+    >
       <HStack>
         {!hideSearchField && (
           <FieldSearchForm
@@ -72,7 +78,11 @@ export default function DataTable<T>({
         )}
       </HStack>
       <Divider my={2} />
-      <Table size={'sm'} {...tableProps}>
+      <Table
+        size={'sm'}
+        minW={scroll ? 'max-content' : undefined}
+        {...tableProps}
+      >
         <Thead>
           <Tr>
             {headers.map((header, i) => (

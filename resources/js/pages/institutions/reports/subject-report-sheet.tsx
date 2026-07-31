@@ -3,7 +3,14 @@ import { AcademicSession, Classification, Course } from '@/types/models';
 import { Div } from '@/components/semantic';
 import useSharedProps from '@/hooks/use-shared-props';
 import '@/../../public/style/result-sheet.css';
-import { Avatar, FormControl, HStack, Text, VStack } from '@chakra-ui/react';
+import {
+  Avatar,
+  FormControl,
+  HStack,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import ClassificationSelect from '@/components/selectors/classification-select';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
@@ -142,15 +149,22 @@ export default function SubjectReportSheet({
         px={3}
         py={2}
         maxWidth={'1200px'}
+        w={'full'}
+        minW={0}
         id={'subject-report-sheet'}
       >
-        <VStack align={'stretch'} spacing={2}>
+        <VStack align={'stretch'} spacing={2} minW={0}>
           <Div className="result-sheet-header">
-            <HStack background={'#FAFAFA'} p={2}>
+            <Stack
+              background={'#FAFAFA'}
+              p={2}
+              direction={{ base: 'column', md: 'row' }}
+            >
               <Avatar
                 size={'2xl'}
                 name="Institution logo"
                 src={currentInstitution.photo ?? ImagePaths.default_school_logo}
+                mx={'auto'}
               />
               <VStack spacing={1} align={'stretch'} width={'full'}>
                 <Text fontSize={'2xl'} fontWeight={'bold'} textAlign={'center'}>
@@ -188,7 +202,7 @@ export default function SubjectReportSheet({
                   Subject Report
                 </Text>
               </VStack>
-            </HStack>
+            </Stack>
           </Div>
           <ClassAndSessionSelector
             classification={classification}
@@ -201,7 +215,7 @@ export default function SubjectReportSheet({
             }
           />
           {canShow && (
-            <VStack align={'stretch'} spacing={8} mt={2}>
+            <VStack align={'stretch'} spacing={8} mt={2} minW={0}>
               {reportSections.map((section) => (
                 <Div key={section.key}>
                   {isAllTerms && (

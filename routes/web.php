@@ -5,8 +5,8 @@ use App\Http\Controllers\Home;
 use App\Http\Controllers\Institutions\Admissions;
 use App\Http\Controllers\Institutions\Exams\External;
 use App\Http\Controllers\Institutions\Recruitment;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('dummy1', function () {
     // $res = (new \App\Services\Messaging\Whatsapp\Templates\WhatsappTemplateUtility(
@@ -17,7 +17,7 @@ Route::get('dummy1', function () {
     // ))->send();
     // info($res->toArray());
     // dd($res->toArray());
-// dd('dksds');
+    // dd('dksds');
     // $res = (new \App\Services\Messaging\Whatsapp\WhatsappClient())->sendHelloMessage('07036098561');
     // dd($res->toArray());
 
@@ -186,6 +186,11 @@ Route::group(['middleware' => ['guest']], function () {
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard', [Web\Users\UserController::class, 'index'])->name('user.dashboard');
+
+    Route::get('payment-attempts', [Web\PaymentHistoryController::class, 'userIndex'])
+        ->name('payment-attempts.index');
+    Route::post('payment-attempts/{paymentReference:reference}/verify', [Web\PaymentHistoryController::class, 'verifyOwn'])
+        ->name('payment-attempts.verify');
 
     Route::get('users/change-password', [Web\Users\ChangeUserPasswordController::class, 'edit'])
         ->name('users.password.edit');

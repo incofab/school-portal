@@ -339,6 +339,8 @@ Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
 Route::get('/fee-payments/summary', [Web\Payments\FeePaymentController::class, 'feePaymentSummary'])->name('fee-payments.summary');
 Route::get('/fee-payments/index/{fee?}', [Web\Payments\FeePaymentController::class, 'index'])->name('fee-payments.index');
 Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['index', 'edit', 'update']);
+Route::get('/payment-attempts', [\App\Http\Controllers\PaymentHistoryController::class, 'institutionIndex'])->name('payment-attempts.index');
+Route::post('/payment-attempts/{paymentReference:reference}/verify', [\App\Http\Controllers\PaymentHistoryController::class, 'verifyInstitution'])->name('payment-attempts.verify');
 Route::get('/manual-payments', [Web\Payments\ManualPaymentController::class, 'index'])->name('manual-payments.index');
 Route::get('/manual-payments/history', [Web\Payments\ManualPaymentController::class, 'history'])->name('manual-payments.history');
 Route::post('/manual-payments/{manualPayment}/confirm', [Web\Payments\ManualPaymentController::class, 'confirm'])->name('manual-payments.confirm');

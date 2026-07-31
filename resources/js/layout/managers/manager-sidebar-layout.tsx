@@ -58,6 +58,11 @@ export default function ManagerSideBarLayout() {
       roles: [ManagerRole.Admin],
     },
     {
+      label: 'Payment Attempts',
+      route: route('managers.payment-attempts.index'),
+      roles: [ManagerRole.Admin],
+    },
+    {
       label: 'Partnership Requests',
       roles: [ManagerRole.Admin],
       route: route('managers.partner-registration-requests.index'),

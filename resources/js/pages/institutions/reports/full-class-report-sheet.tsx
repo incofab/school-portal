@@ -15,7 +15,7 @@ import {
   Avatar,
   Box,
   FormControl,
-  HStack,
+  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -107,9 +107,11 @@ export default function FullClassReportSheet({
         px={3}
         py={2}
         maxWidth={'1500px'}
+        w={'full'}
+        minW={0}
         id={'full-class-report-sheet'}
       >
-        <VStack align={'stretch'} spacing={3}>
+        <VStack align={'stretch'} spacing={3} minW={0}>
           <ReportHeader
             classification={classification}
             academicSession={academicSession}
@@ -127,12 +129,16 @@ export default function FullClassReportSheet({
               border={'1px solid'}
               borderColor={'gray.300'}
               overflowX={'auto'}
+              w={'full'}
               maxW={'100%'}
+              minW={0}
               className="full-class-report-table-container"
+              sx={{ WebkitOverflowScrolling: 'touch' }}
             >
               <Table
                 className="result-table full-class-report-table"
                 size={'sm'}
+                minW={'max-content'}
                 sx={{
                   'th, td': {
                     whiteSpace: 'nowrap',
@@ -278,11 +284,16 @@ function ReportHeader({
 
   return (
     <Div className="result-sheet-header">
-      <HStack background={'#FAFAFA'} p={2}>
+      <Stack
+        background={'#FAFAFA'}
+        p={2}
+        direction={{ base: 'column', md: 'row' }}
+      >
         <Avatar
           size={'2xl'}
           name="Institution logo"
           src={currentInstitution.photo ?? ImagePaths.default_school_logo}
+          mx={'auto'}
         />
         <VStack spacing={1} align={'stretch'} width={'full'}>
           <Text fontSize={'2xl'} fontWeight={'bold'} textAlign={'center'}>
@@ -307,7 +318,7 @@ function ReportHeader({
             Full Class Report
           </Text>
         </VStack>
-      </HStack>
+      </Stack>
     </Div>
   );
 }
@@ -407,7 +418,7 @@ function ClassSessionAndTermSelector({
 function VerticalHeader({ text }: { text: string }) {
   return (
     <Box minH={'120px'} display={'flex'} alignItems={'center'}>
-      <Text className="vertical-header" overflow={'auto'}>
+      <Text className="vertical-header" overflow={'hidden'}>
         {text}
       </Text>
     </Box>

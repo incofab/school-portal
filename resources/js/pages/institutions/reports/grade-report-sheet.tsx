@@ -9,7 +9,9 @@ import {
   Checkbox,
   FormControl,
   HStack,
+  Stack,
   Table,
+  TableContainer,
   Tbody,
   Td,
   Text,
@@ -83,15 +85,22 @@ export default function GradeReportSheet({
         px={3}
         py={2}
         maxWidth={'1200px'}
+        w={'full'}
+        minW={0}
         id={'grade-report-sheet'}
       >
-        <VStack align={'stretch'} spacing={4}>
+        <VStack align={'stretch'} spacing={4} minW={0}>
           <Div className="result-sheet-header">
-            <HStack background={'#FAFAFA'} p={2}>
+            <Stack
+              background={'#FAFAFA'}
+              p={2}
+              direction={{ base: 'column', md: 'row' }}
+            >
               <Avatar
                 size={'2xl'}
                 name="Institution logo"
                 src={currentInstitution.photo ?? ImagePaths.default_school_logo}
+                mx={'auto'}
               />
               <VStack spacing={1} align={'stretch'} width={'full'}>
                 <Text fontSize={'2xl'} fontWeight={'bold'} textAlign={'center'}>
@@ -124,7 +133,7 @@ export default function GradeReportSheet({
                   Grade Report
                 </Text>
               </VStack>
-            </HStack>
+            </Stack>
           </Div>
 
           <GradeReportSelector
@@ -143,78 +152,102 @@ export default function GradeReportSheet({
                 <Text fontWeight={'bold'} mb={3}>
                   Grade Report Summary
                 </Text>
-                <Table size="sm" className="result-table">
-                  <Thead>
-                    <Tr>
-                      <Th>Grade</Th>
-                      <Th isNumeric>Students</Th>
-                      <Th isNumeric>Percentage (%)</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {gradeReport.map((item) => (
-                      <Tr key={item.grade}>
-                        <Td>{item.grade}</Td>
-                        <Td isNumeric>{item.count}</Td>
-                        <Td isNumeric>{item.percentage}%</Td>
+                <TableContainer
+                  overflowX={'auto'}
+                  w={'full'}
+                  maxW={'100%'}
+                  minW={0}
+                  sx={{ WebkitOverflowScrolling: 'touch' }}
+                >
+                  <Table
+                    size="sm"
+                    className="result-table"
+                    minW={'max-content'}
+                  >
+                    <Thead>
+                      <Tr>
+                        <Th>Grade</Th>
+                        <Th isNumeric>Students</Th>
+                        <Th isNumeric>Percentage (%)</Th>
                       </Tr>
-                    ))}
-                    <Tr>
-                      <Td fontWeight={'bold'}>Total</Td>
-                      <Td isNumeric fontWeight={'bold'}>
-                        {totalStudents}
-                      </Td>
-                      <Td isNumeric fontWeight={'bold'}>
-                        {totalStudents > 0 ? '100%' : '0%'}
-                      </Td>
-                    </Tr>
-                  </Tbody>
-                </Table>
+                    </Thead>
+                    <Tbody>
+                      {gradeReport.map((item) => (
+                        <Tr key={item.grade}>
+                          <Td>{item.grade}</Td>
+                          <Td isNumeric>{item.count}</Td>
+                          <Td isNumeric>{item.percentage}%</Td>
+                        </Tr>
+                      ))}
+                      <Tr>
+                        <Td fontWeight={'bold'}>Total</Td>
+                        <Td isNumeric fontWeight={'bold'}>
+                          {totalStudents}
+                        </Td>
+                        <Td isNumeric fontWeight={'bold'}>
+                          {totalStudents > 0 ? '100%' : '0%'}
+                        </Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </TableContainer>
               </Box>
 
               <Box>
                 <Text fontWeight={'bold'} mb={3}>
                   Subject Grade Matrix
                 </Text>
-                <Table size="sm" className="result-table">
-                  <Thead>
-                    <Tr>
-                      <Th>Subject</Th>
-                      {subjectGradeReport.grades.map((grade) => (
-                        <Th key={grade} isNumeric>
-                          {grade}
-                        </Th>
-                      ))}
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {subjectGradeReport.rows.length > 0 ? (
-                      subjectGradeReport.rows.map((row) => (
-                        <Tr key={row.course_id}>
-                          <Td>{row.course_title}</Td>
-                          {subjectGradeReport.grades.map((grade) => (
-                            <Td key={grade} isNumeric>
-                              {row.grades[grade] ?? 0}
-                            </Td>
-                          ))}
-                        </Tr>
-                      ))
-                    ) : (
+                <TableContainer
+                  overflowX={'auto'}
+                  w={'full'}
+                  maxW={'100%'}
+                  minW={0}
+                  sx={{ WebkitOverflowScrolling: 'touch' }}
+                >
+                  <Table
+                    size="sm"
+                    className="result-table"
+                    minW={'max-content'}
+                  >
+                    <Thead>
                       <Tr>
-                        <Td
-                          colSpan={Math.max(
-                            subjectGradeReport.grades.length + 1,
-                            2
-                          )}
-                        >
-                          <Text textAlign={'center'} py={2}>
-                            No results found
-                          </Text>
-                        </Td>
+                        <Th>Subject</Th>
+                        {subjectGradeReport.grades.map((grade) => (
+                          <Th key={grade} isNumeric>
+                            {grade}
+                          </Th>
+                        ))}
                       </Tr>
-                    )}
-                  </Tbody>
-                </Table>
+                    </Thead>
+                    <Tbody>
+                      {subjectGradeReport.rows.length > 0 ? (
+                        subjectGradeReport.rows.map((row) => (
+                          <Tr key={row.course_id}>
+                            <Td>{row.course_title}</Td>
+                            {subjectGradeReport.grades.map((grade) => (
+                              <Td key={grade} isNumeric>
+                                {row.grades[grade] ?? 0}
+                              </Td>
+                            ))}
+                          </Tr>
+                        ))
+                      ) : (
+                        <Tr>
+                          <Td
+                            colSpan={Math.max(
+                              subjectGradeReport.grades.length + 1,
+                              2
+                            )}
+                          >
+                            <Text textAlign={'center'} py={2}>
+                              No results found
+                            </Text>
+                          </Td>
+                        </Tr>
+                      )}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
               </Box>
             </VStack>
           )}

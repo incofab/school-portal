@@ -9,7 +9,7 @@ import React from 'react';
 import { Div } from '@/components/semantic';
 import DataTable, { TableHeader } from '@/components/data-table';
 import { ucFirst } from '@/util/util';
-import { Avatar, HStack, Text, VStack } from '@chakra-ui/react';
+import { Avatar, HStack, Stack, Text, VStack } from '@chakra-ui/react';
 import useSharedProps from '@/hooks/use-shared-props';
 import ImagePaths from '@/util/images';
 import '@/../../public/style/result-sheet.css';
@@ -90,6 +90,8 @@ export default function CourseSessionResult({
       <Div
         mx={'auto'}
         maxWidth={'1200px'}
+        w={'full'}
+        minW={0}
         px={3}
         position={'relative'}
         id={'result-sheet'}
@@ -121,11 +123,16 @@ export default function CourseSessionResult({
         `}
         </style>
         <Div className="result-sheet-header">
-          <HStack background={'#FAFAFA'} p={2}>
+          <Stack
+            background={'#FAFAFA'}
+            p={2}
+            direction={{ base: 'column', md: 'row' }}
+          >
             <Avatar
               size={'2xl'}
               name="Institution logo"
               src={currentInstitution.photo ?? ImagePaths.default_school_logo}
+              mx={'auto'}
             />
             <VStack spacing={1} align={'stretch'} width={'full'}>
               <Text fontSize={'2xl'} fontWeight={'bold'} textAlign={'center'}>
@@ -148,7 +155,7 @@ export default function CourseSessionResult({
                 {academicSession.title}
               </Text>
             </VStack>
-          </HStack>
+          </Stack>
         </Div>
         <Div>
           <DataTable

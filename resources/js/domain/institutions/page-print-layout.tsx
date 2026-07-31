@@ -40,11 +40,14 @@ export default function PagePrintLayout({
     backgroundColor: 'white',
   };
   return (
-    <Div>
+    <Div w={'full'} maxW={'100vw'} overflowX={'hidden'}>
       <Div
         style={useBgStyle === false ? undefined : backgroundStyle}
         // minHeight={'1170px'}
         minHeight={'900px'}
+        w={'full'}
+        maxW={'100vw'}
+        minW={0}
       >
         <HStack className="hidden-on-print" spacing={2} mb={2}>
           <PageDownloadButton

@@ -391,3 +391,15 @@ export enum PaymentMerchantType {
   UserWallet = 'user-wallet',
   Manual = 'manual',
 }
+
+export enum PaymentStatus {
+  Pending = 'pending',
+  Confirmed = 'confirmed',
+  Cancelled = 'cancelled',
+}
+
+export enum PaymentPurpose {
+  Fee = 'fee',
+  WalletFunding = 'wallet-funding',
+  AdmissionFormPurchase = 'admission-form-purchase',
+}

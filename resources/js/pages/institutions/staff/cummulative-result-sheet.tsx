@@ -10,6 +10,7 @@ import {
   Avatar,
   FormControl,
   HStack,
+  Stack,
   Text,
   VStack,
   Wrap,
@@ -199,14 +200,27 @@ export default function CummulativeResultSheet({
 
   return (
     <Div style={backgroundStyle} minHeight={'1170px'}>
-      <Div mx={'auto'} px={3} py={2} id={'cummulative-result-sheet'}>
-        <VStack align={'stretch'}>
+      <Div
+        mx={'auto'}
+        px={3}
+        py={2}
+        id={'cummulative-result-sheet'}
+        w={'full'}
+        maxW={'100vw'}
+        minW={0}
+      >
+        <VStack align={'stretch'} minW={0}>
           <Div className="result-sheet-header">
-            <HStack background={'#FAFAFA'} p={2}>
+            <Stack
+              background={'#FAFAFA'}
+              p={2}
+              direction={{ base: 'column', md: 'row' }}
+            >
               <Avatar
                 size={'2xl'}
                 name="Institution logo"
                 src={currentInstitution.photo ?? ImagePaths.default_school_logo}
+                mx={'auto'}
               />
               <VStack spacing={1} align={'stretch'} width={'full'}>
                 <Text fontSize={'2xl'} fontWeight={'bold'} textAlign={'center'}>
@@ -236,7 +250,7 @@ export default function CummulativeResultSheet({
                   Cummulative Result
                 </Text>
               </VStack>
-            </HStack>
+            </Stack>
           </Div>
 
           <ClassAndSessionSelector

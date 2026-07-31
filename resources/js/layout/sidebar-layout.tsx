@@ -641,6 +641,11 @@ export default function SideBarLayout() {
           roles: accountant,
         },
         {
+          label: 'Payment Attempts',
+          route: instRoute('payment-attempts.index'),
+          roles: accountant,
+        },
+        {
           label: 'Manual Payments',
           route: instRoute('manual-payments.index'),
           roles: accountant,
@@ -667,6 +672,11 @@ export default function SideBarLayout() {
                 route: instRoute('students.manual-payments.history', [
                   student.id,
                 ]),
+                roles: studentOrAlumni,
+              },
+              {
+                label: 'Payment Attempts',
+                route: instRoute('payment-attempts.index'),
                 roles: studentOrAlumni,
               },
             ]

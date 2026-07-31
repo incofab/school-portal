@@ -12,6 +12,7 @@ import {
   Avatar,
   FormControl,
   HStack,
+  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -87,11 +88,17 @@ export default function SingleSubjectReportSheet({
         px={3}
         py={2}
         maxWidth={'1200px'}
+        w={'full'}
+        minW={0}
         id={'single-subject-report-sheet'}
       >
-        <VStack align={'stretch'} spacing={2}>
+        <VStack align={'stretch'} spacing={2} minW={0}>
           <Div className="result-sheet-header">
-            <HStack background={'#FAFAFA'} p={2}>
+            <Stack
+              background={'#FAFAFA'}
+              p={2}
+              direction={{ base: 'column', md: 'row' }}
+            >
               <Avatar
                 size={'2xl'}
                 name="Institution logo"
@@ -126,7 +133,7 @@ export default function SingleSubjectReportSheet({
                   Single Subject Report
                 </Text>
               </VStack>
-            </HStack>
+            </Stack>
           </Div>
           <ClassSessionAndSubjectSelector
             classification={classification}
@@ -139,8 +146,15 @@ export default function SingleSubjectReportSheet({
             }
           />
           {canShow && (
-            <TableContainer mt={2} overflowX={'auto'}>
-              <Table className="result-table" size={'sm'}>
+            <TableContainer
+              mt={2}
+              overflowX={'auto'}
+              w={'full'}
+              maxW={'100%'}
+              minW={0}
+              sx={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              <Table className="result-table" size={'sm'} minW={'max-content'}>
                 <Thead>
                   <Tr>
                     <Th rowSpan={2}>Student</Th>

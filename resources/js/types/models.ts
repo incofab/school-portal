@@ -761,6 +761,28 @@ export interface ManualPayment extends InstitutionRow {
   rejected_by?: User;
 }
 
+export interface PaymentReference extends InstitutionRow {
+  user_id?: number;
+  payable_type?: string;
+  payable_id?: number;
+  paymentable_type?: string;
+  paymentable_id?: number;
+  reference: string;
+  amount: number;
+  charges: number;
+  merchant: string;
+  method?: string;
+  purpose: string;
+  status: string;
+  processed_at?: string;
+  can_verify: boolean;
+  payer_name?: string;
+  purpose_details?: string;
+  meta_summary?: { [key: string]: string | number | boolean | null };
+  user?: User;
+  institution?: Institution;
+}
+
 export interface InstitutionSetting extends InstitutionRow {
   key: string;
   value: string | any;
