@@ -61,14 +61,15 @@ abstract class PublishResult
     $this->institutionGroup = $priceList->institutionGroup;
     $this->academicSessionId =
       $academicSessionId ?? $this->settingHandler->getCurrentAcademicSession();
-    $this->term = $term instanceof TermType
-      ? $term->value
-      : $term ?? $settingHandler->getCurrentTerm();
+    $this->term =
+      $term instanceof TermType
+        ? $term->value
+        : $term ?? $settingHandler->getCurrentTerm();
     $this->resultsToPublish = $this->queryResultsToPublish()->get();
     $this->numOfStudents = $this->countStudents();
 
     $this->resultPublicationBindingData = [
-      'institution_id' => $this->institution->id,
+      // 'institution_id' => $this->institution->id,
       'institution_group_id' => $this->institutionGroup->id,
       'academic_session_id' => $this->academicSessionId,
       'payment_structure' => $this->priceList->payment_structure
@@ -158,7 +159,7 @@ abstract class PublishResult
       return successRes('Result published successfully');
     });
 
-    if ($res->isNotSuccessful()) {
+    if ($res->isNotSuccessful() || !$publication) {
       return $res;
     }
 
@@ -214,6 +215,7 @@ abstract class PublishResult
     if (!$publication) {
       $publication = ResultPublication::create([
         ...$this->resultPublicationBindingData,
+        'institution_id' => $this->institution->id,
         'term' => $this->term,
         'num_of_results' => $resultsToPublishCount,
         'staff_user_id' => $this->staffUser->id,

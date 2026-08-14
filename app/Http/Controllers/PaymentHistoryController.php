@@ -74,7 +74,9 @@ class PaymentHistoryController extends Controller
     $query = $this->filteredBaseQuery($request)->withoutGlobalScopes();
 
     return inertia('payments/list-payment-attempts', [
-      'paymentReferences' => $this->paginatePaymentReferences($query),
+      'paymentReferences' => $this->paginatePaymentReferences(
+        $query->with('institution')
+      ),
       'filters' => $this->filtersFromRequest($request),
       'context' => 'manager'
     ]);

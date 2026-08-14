@@ -20,9 +20,18 @@ abstract class PaymentMerchant
     $this->merchant = $merchant;
   }
 
-  function isManualPayment(): bool
+  function getMerchant(): string
   {
-    return $this->merchant === PaymentMerchantType::Manual->value;
+    return $this->merchant;
+  }
+
+  /** whether merchant can credit wallet directly, payments like manual payments cannot be use to credit wallet because the institution has already collected the money offline */
+  function canCreditWallet(): bool
+  {
+    return in_array(
+      PaymentMerchantType::from($this->merchant),
+      PaymentMerchantType::walletCreditable()
+    );
   }
 
   protected function createPaymentReference(

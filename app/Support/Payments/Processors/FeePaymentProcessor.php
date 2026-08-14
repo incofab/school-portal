@@ -46,7 +46,7 @@ class FeePaymentProcessor extends PaymentProcessor
       allowOverPayment: true
     );
 
-    if (!$this->paymentMerchant->isManualPayment()) {
+    if ($this->paymentMerchant->canCreditWallet()) {
       TransactionHandler::make(
         $this->paymentReference->getInstitution(),
         $this->paymentReference->getReference()

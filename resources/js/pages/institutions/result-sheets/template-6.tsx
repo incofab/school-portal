@@ -58,7 +58,7 @@ export default function Template6(props: ResultProps) {
     { label: 'Name', value: student.user?.full_name },
     { label: 'Class', value: termResult.classification?.title },
     {
-      label: `No of ${titles.students} in Class`,
+      label: `${titles.students} in Class`,
       value: classResultInfo.num_of_students,
     },
     // { label: 'Average Score', value: termResult.average },
@@ -108,7 +108,7 @@ export default function Template6(props: ResultProps) {
     text: string | number | undefined | React.ReactNode;
   }) {
     return (
-      <Div className="cell" width={'full'}>
+      <Div className="cell" width={'full'} minWidth={'200px'}>
         <Text as={'span'} textTransform={'uppercase'} width={'120px'}>
           {label.toUpperCase()}:
         </Text>

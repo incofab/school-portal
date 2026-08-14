@@ -170,7 +170,7 @@ export default function Template5(props: ResultProps) {
     ...(classResultInfo.term == TermType.Third
       ? [
           {
-            label: 'Cumulative Avg',
+            label: 'Cumm. Avg',
             render: (courseResult: CourseResult) =>
               subjectCumulativeAverages[courseResult.course_id] === undefined
                 ? ''

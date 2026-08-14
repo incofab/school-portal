@@ -13,9 +13,10 @@ class UserWalletFundingProcessor extends PaymentProcessor
   public function processPayment(): Res
   {
     abort_if(
-      $this->paymentMerchant->isManualPayment(),
+      !$this->paymentMerchant->canCreditWallet(),
       402,
-      'Manual payments cannot be used for wallet funding'
+      ucfirst($this->paymentMerchant->getMerchant()) .
+        ' payments cannot be used for wallet funding'
     );
 
     $res = $this->verify();

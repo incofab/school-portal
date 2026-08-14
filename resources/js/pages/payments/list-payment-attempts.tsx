@@ -14,7 +14,7 @@ import useMyToast from '@/hooks/use-my-toast';
 import useWebForm from '@/hooks/use-web-form';
 import route from '@/util/route';
 import { formatAsCurrency } from '@/util/util';
-import { PaymentReference } from '@/types/models';
+import { Institution, PaymentReference } from '@/types/models';
 import { PaginationResponse } from '@/types/types';
 import startCase from 'lodash/startCase';
 import useModalToggle from '@/hooks/use-modal-toggle';
@@ -22,7 +22,9 @@ import PaymentReferenceTableFilters from '@/components/table-filters/payment-ref
 import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-filter';
 
 interface Props {
-  paymentReferences: PaginationResponse<PaymentReference>;
+  paymentReferences: PaginationResponse<
+    PaymentReference & { institution?: Institution }
+  >;
   context: 'user' | 'institution' | 'manager';
 }
 
@@ -80,6 +82,14 @@ export default function ListPaymentAttempts({
 
   const headers = useMemo<ServerPaginatedTableHeader<PaymentReference>[]>(
     () => [
+      ...(isManagerContext
+        ? [
+            {
+              label: 'Institution',
+              render: (row: any) => row.institution?.name,
+            },
+          ]
+        : []),
       {
         label: 'Status',
         render: (row) => (

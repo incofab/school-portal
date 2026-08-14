@@ -59,7 +59,7 @@ class AdmissionFormPurchaseProcessor extends PaymentProcessor
       }
     );
 
-    if (!$this->paymentMerchant->isManualPayment()) {
+    if ($this->paymentMerchant->canCreditWallet()) {
       TransactionHandler::make(
         $this->paymentReference->getInstitution(),
         $this->paymentReference->getReference()

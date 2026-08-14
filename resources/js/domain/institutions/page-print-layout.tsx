@@ -40,7 +40,7 @@ export default function PagePrintLayout({
     backgroundColor: 'white',
   };
   return (
-    <Div w={'full'} maxW={'100vw'} overflowX={'hidden'}>
+    <Div w={'full'} maxW={'100vw'} overflowX={'auto'}>
       <Div
         style={useBgStyle === false ? undefined : backgroundStyle}
         // minHeight={'1170px'}
