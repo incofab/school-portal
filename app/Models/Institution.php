@@ -182,6 +182,11 @@ class Institution extends BaseModel
     return $this->hasMany(PaymentReference::class);
   }
 
+  public function settlements()
+  {
+    return $this->hasMany(Settlement::class);
+  }
+
   public function institutionSettings()
   {
     return $this->hasMany(InstitutionSetting::class);

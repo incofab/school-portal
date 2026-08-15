@@ -20,12 +20,11 @@ beforeEach(function () {
 });
 
 it('lists academic sessions for admin managers', function () {
-  AcademicSession::factory()->create([
-    'title' => '2024/2025',
+  AcademicSession::query()->forceDelete();
+  $academicSession1 = AcademicSession::factory()->create([
     'order_index' => 10
   ]);
-  AcademicSession::factory()->create([
-    'title' => '2025/2026',
+  $academicSession2 = AcademicSession::factory()->create([
     'order_index' => 20
   ]);
 
@@ -36,7 +35,7 @@ it('lists academic sessions for admin managers', function () {
       fn(Assert $page) => $page
         ->component('managers/academic-sessions/list-academic-sessions')
         ->has('academicSessions.data', 2)
-        ->where('academicSessions.data.0.title', '2025/2026')
+        ->where('academicSessions.data.0.title', $academicSession2->title)
     );
 });
 
@@ -59,23 +58,24 @@ it('stores an academic session', function () {
 
 it('updates an academic session', function () {
   $academicSession = AcademicSession::factory()->create([
-    'title' => '2026/2027',
     'order_index' => 30
   ]);
-
+  $newTitle = fake()
+    ->unique()
+    ->numerify('####/####');
   actingAs($this->manager)
     ->putJson(route('managers.academic-sessions.update', [$academicSession]), [
-      'title' => '2027/2028',
+      'title' => $newTitle,
       'order_index' => 40,
       'is_active' => false
     ])
     ->assertOk()
-    ->assertJsonPath('academicSession.title', '2027/2028')
+    ->assertJsonPath('academicSession.title', $newTitle)
     ->assertJsonPath('academicSession.order_index', 40);
 
   assertDatabaseHas('academic_sessions', [
     'id' => $academicSession->id,
-    'title' => '2027/2028',
+    'title' => $newTitle,
     'order_index' => 40
   ]);
 });
@@ -83,11 +83,14 @@ it('updates an academic session', function () {
 it('stores an active academic session and deactivates the rest', function () {
   $oldActive = AcademicSession::factory()
     ->active()
-    ->create(['title' => '2025/2026']);
+    ->create();
+  $newTitle = fake()
+    ->unique()
+    ->numerify('####/####');
 
   actingAs($this->manager)
     ->postJson(route('managers.academic-sessions.store'), [
-      'title' => '2026/2027',
+      'title' => $newTitle,
       'order_index' => 30,
       'is_active' => true
     ])
@@ -99,7 +102,7 @@ it('stores an active academic session and deactivates the rest', function () {
     'is_active' => false
   ]);
   assertDatabaseHas('academic_sessions', [
-    'title' => '2026/2027',
+    'title' => $newTitle,
     'is_active' => true
   ]);
 });
@@ -107,15 +110,14 @@ it('stores an active academic session and deactivates the rest', function () {
 it('updates an active academic session and deactivates the rest', function () {
   $oldActive = AcademicSession::factory()
     ->active()
-    ->create(['title' => '2025/2026']);
+    ->create();
   $academicSession = AcademicSession::factory()->create([
-    'title' => '2026/2027',
     'order_index' => 30
   ]);
 
   actingAs($this->manager)
     ->putJson(route('managers.academic-sessions.update', [$academicSession]), [
-      'title' => '2026/2027',
+      'title' => $academicSession->title,
       'order_index' => 30,
       'is_active' => true
     ])
@@ -135,10 +137,8 @@ it('updates an active academic session and deactivates the rest', function () {
 it('activates an academic session from the list action', function () {
   $oldActive = AcademicSession::factory()
     ->active()
-    ->create(['title' => '2025/2026']);
-  $academicSession = AcademicSession::factory()->create([
-    'title' => '2026/2027'
-  ]);
+    ->create();
+  $academicSession = AcademicSession::factory()->create();
 
   actingAs($this->manager)
     ->postJson(route('managers.academic-sessions.activate', [$academicSession]))
@@ -158,10 +158,10 @@ it('activates an academic session from the list action', function () {
 it(
   'uses the active academic session as the default settings session',
   function () {
-    AcademicSession::factory()->create(['title' => '2027/2028']);
+    AcademicSession::factory()->create();
     $activeSession = AcademicSession::factory()
       ->active()
-      ->create(['title' => '2025/2026']);
+      ->create();
 
     expect(SettingsHandler::make([])->getCurrentAcademicSession())->toBe(
       $activeSession->id
@@ -170,14 +170,13 @@ it(
 );
 
 it('validates duplicate academic session titles', function () {
-  AcademicSession::factory()->create([
-    'title' => '2026/2027',
+  $academicSession = AcademicSession::factory()->create([
     'order_index' => 30
   ]);
 
   actingAs($this->manager)
     ->postJson(route('managers.academic-sessions.store'), [
-      'title' => '2026/2027',
+      'title' => $academicSession->title,
       'order_index' => 31
     ])
     ->assertUnprocessable()
@@ -186,7 +185,6 @@ it('validates duplicate academic session titles', function () {
 
 it('deletes an academic session', function () {
   $academicSession = AcademicSession::factory()->create([
-    'title' => '2026/2027',
     'order_index' => 30
   ]);
 

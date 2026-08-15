@@ -13,6 +13,7 @@ use App\Models\User;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\assertDatabaseMissing;
 
 beforeEach(function () {
   $this->institution = Institution::factory()->create();
@@ -37,17 +38,14 @@ it('stores institution user full name display format', function () {
 it(
   'seeds current academic session and first term settings when an institution is created',
   function () {
+    AcademicSession::query()->forceDelete();
     AcademicSession::factory()->create([
-      'title' => '2027/2028',
       'order_index' => 30,
       'is_active' => false
     ]);
     $activeSession = AcademicSession::factory()
       ->active()
-      ->create([
-        'title' => '2026/2027',
-        'order_index' => 20
-      ]);
+      ->create(['order_index' => 20]);
 
     $institution = Institution::factory()->create();
 
@@ -67,13 +65,12 @@ it(
 it(
   'uses the latest academic session for new institution settings when none is active',
   function () {
+    AcademicSession::query()->forceDelete();
     AcademicSession::factory()->create([
-      'title' => '2025/2026',
       'order_index' => 10,
       'is_active' => false
     ]);
     $latestSession = AcademicSession::factory()->create([
-      'title' => '2026/2027',
       'order_index' => 20,
       'is_active' => false
     ]);
@@ -93,10 +90,7 @@ it(
   function () {
     $activeSession = AcademicSession::factory()
       ->active()
-      ->create([
-        'title' => '2026/2027',
-        'order_index' => 20
-      ]);
+      ->create(['order_index' => 20]);
 
     InstitutionSetting::query()
       ->where('institution_id', $this->institution->id)

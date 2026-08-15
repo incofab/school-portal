@@ -46,6 +46,10 @@ return [
     'public-key' => env('PAYSTACK_PUBLIC_KEY')
   ],
 
+  'payout' => [
+    'merchant' => env('PAYOUT_MERCHANT', 'monnify')
+  ],
+
   'bulksms_nigeria' => [
     'api-token' => env('BULKSMS_NIGERIA_API_TOKEN')
   ],
@@ -63,7 +67,8 @@ return [
   'monnify' => [
     'secret' => env('MONNIFY_SECRET_KEY'),
     'public' => env('MONNIFY_PUBLIC_KEY'),
-    'contract-code' => env('MONNIFY_CONTRACT_CODE')
+    'contract-code' => env('MONNIFY_CONTRACT_CODE'),
+    'disbursement-account-number' => env('MONNIFY_DISBURSEMENT_ACCOUNT_NUMBER')
   ],
 
   'payment-point' => [

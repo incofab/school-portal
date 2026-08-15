@@ -272,9 +272,7 @@ it(
   'offers recent available results when current term result is missing',
   function () {
     $institution = Institution::factory()->create();
-    $currentSession = AcademicSession::factory()->create([
-      'title' => '2024/2025'
-    ]);
+    $currentSession = AcademicSession::factory()->create();
     InstitutionSetting::factory()->create([
       'institution_id' => $institution->id,
       'key' => InstitutionSettingType::CurrentAcademicSession->value,
@@ -294,9 +292,7 @@ it(
       ->forStudent($student)
       ->published()
       ->create([
-        'academic_session_id' => AcademicSession::factory()->create([
-          'title' => '2023/2024'
-        ])->id,
+        'academic_session_id' => AcademicSession::factory()->create()->id,
         'term' => TermType::Third->value,
         'for_mid_term' => false,
         'is_activated' => true
@@ -313,10 +309,13 @@ it(
     Http::assertSent(
       fn($request) => str_contains(
         $request['text']['body'],
-        'We could not find a result for the First term 2024/2025 session yet.'
+        "We could not find a result for the First term {$currentSession->title} session yet."
       ) &&
         str_contains($request['text']['body'], 'Available recent results:') &&
-        str_contains($request['text']['body'], 'Third term - 2023/2024 session')
+        str_contains(
+          $request['text']['body'],
+          "Third term - {$availableResult->academicSession->title} session"
+        )
     );
   }
 );
@@ -325,9 +324,7 @@ it(
   'continues result checking after selecting an available past result',
   function () {
     $institution = Institution::factory()->create();
-    $currentSession = AcademicSession::factory()->create([
-      'title' => '2024/2025'
-    ]);
+    $currentSession = AcademicSession::factory()->create();
     InstitutionSetting::factory()->create([
       'institution_id' => $institution->id,
       'key' => InstitutionSettingType::CurrentAcademicSession->value,
@@ -347,9 +344,7 @@ it(
       ->forStudent($student)
       ->published()
       ->create([
-        'academic_session_id' => AcademicSession::factory()->create([
-          'title' => '2023/2024'
-        ])->id,
+        'academic_session_id' => AcademicSession::factory()->create()->id,
         'term' => TermType::Third->value,
         'for_mid_term' => false,
         'is_activated' => true
@@ -483,10 +478,7 @@ function createStudentWithCurrentResult(
 ): array {
   $institution = Institution::factory()->create();
   $academicSession =
-    AcademicSession::first() ??
-    AcademicSession::factory()->create([
-      'title' => '2025/2026'
-    ]);
+    AcademicSession::first() ?? AcademicSession::factory()->create();
   InstitutionSetting::factory()->create([
     'institution_id' => $institution->id,
     'key' => InstitutionSettingType::CurrentAcademicSession->value,

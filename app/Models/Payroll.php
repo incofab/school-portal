@@ -63,4 +63,9 @@ class Payroll extends BaseModel
   {
     return $this->belongsTo(Institution::class);
   }
+
+  public function payout()
+  {
+    return $this->morphOne(Payout::class, 'payoutable');
+  }
 }

@@ -66,7 +66,8 @@ class WithdrawalHandler
     // = Partner
     if ($withdrawable instanceof Partner) {
       // = Refund the Partner, and save record to UserTransaction DB Table
-      CommissionHandler::make($withdrawable->reference)->refundPartner(
+      $refundRef = "refund-{$withdrawal->reference}";
+      CommissionHandler::make($refundRef)->refundPartner(
         $withdrawable,
         $withdrawal,
         $remark

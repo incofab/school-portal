@@ -222,9 +222,30 @@ export interface Withdrawal extends InstitutionRow {
   amount: number;
   status: string;
   bank_account?: BankAccount;
+  payout?: Payout;
   withdrawable?: Partner | InstitutionGroup;
   paid_at: string;
   remark: string;
+}
+
+export interface Payout extends InstitutionRow {
+  payoutable_type: string;
+  payoutable_id: number;
+  purpose: string;
+  merchant: string;
+  status?: string;
+  merchant_status?: string;
+  reference: string;
+  batch_reference?: string;
+  provider_reference?: string;
+  amount: number;
+  currency: string;
+  is_processing: boolean;
+  attempt_count: number;
+  attempted_at?: string;
+  completed_at?: string;
+  provider_response?: Record<string, unknown>;
+  note?: string;
 }
 
 export interface Partner extends InstitutionRow {

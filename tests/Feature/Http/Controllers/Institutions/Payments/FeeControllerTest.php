@@ -72,9 +72,7 @@ test('index displays list of fees', function () {
 });
 
 test('create includes previous fees as reusable templates', function () {
-  $academicSession = AcademicSession::factory()->create([
-    'title' => '2024/2025'
-  ]);
+  $academicSession = AcademicSession::factory()->create();
   $fee = Fee::factory()
     ->for($this->institution)
     ->has(
@@ -102,7 +100,10 @@ test('create includes previous fees as reusable templates', function () {
       fn(AssertableInertia $page) => $page
         ->component('institutions/payments/create-edit-fee')
         ->where('feeTemplates.0.id', $fee->id)
-        ->where('feeTemplates.0.academic_session.title', '2024/2025')
+        ->where(
+          'feeTemplates.0.academic_session.title',
+          $academicSession->title
+        )
         ->where(
           'feeTemplates.0.fee_categories.0.feeable_id',
           $this->institution->id

@@ -28,6 +28,7 @@ class PaymentReference extends BaseModel implements PaymentRecord
         'payable_id' => 'integer',
         'paymentable_id' => 'integer',
         'processed_at' => 'datetime',
+        'settled_at' => 'datetime',
         'merchant' => PaymentMerchantType::class,
         'status' => PaymentStatus::class,
         'method' => PaymentMethod::class,
@@ -148,6 +149,16 @@ class PaymentReference extends BaseModel implements PaymentRecord
     public function institution()
     {
         return $this->belongsTo(Institution::class);
+    }
+
+    public function settlement()
+    {
+        return $this->belongsToMany(
+            Settlement::class,
+            'settlement_payments'
+        )
+            ->withPivot('amount')
+            ->withTimestamps();
     }
 
     public static function generateReference($username = null): string

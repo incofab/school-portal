@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Managers\Withdrawals;
 
 use App\Actions\Payments\WithdrawalHandler;
+use App\Actions\Payments\PayoutHandler;
 use App\Http\Controllers\Controller;
 use App\Enums\WithdrawalStatus;
 use App\Models\InstitutionGroup;
@@ -21,6 +22,7 @@ class WithdrawalController extends Controller
     $user = currentUser();
     $withdrawalsQuery = [
       'bankAccount',
+      'payout',
       'withdrawable' => function (MorphTo $morphTo) {
         $morphTo->morphWith([
           Partner::class => ['user'],
@@ -92,5 +94,28 @@ class WithdrawalController extends Controller
       WithdrawalHandler::make()->confirmWithdrawal($withdrawal, $user, $remark);
     }
     return $this->ok();
+  }
+
+  public function payUnprocessed()
+  {
+    abort_unless(currentUser()->isAdmin(), 403);
+
+    $summary = PayoutHandler::make()->processPendingWithdrawals(currentUser());
+    $res = successRes($summary->message(), $summary->toArray());
+
+    return $this->apiRes($res);
+  }
+
+  public function payWithdrawal(Withdrawal $withdrawal)
+  {
+    abort_unless(currentUser()->isAdmin(), 403);
+
+    $summary = PayoutHandler::make()->processWithdrawal(
+      $withdrawal,
+      currentUser()
+    );
+    $res = successRes($summary->message(), $summary->toArray());
+
+    return $this->apiRes($res);
   }
 }

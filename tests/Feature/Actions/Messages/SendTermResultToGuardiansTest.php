@@ -38,9 +38,7 @@ it(
   'queues whatsapp result templates and records message for multiple guardians',
   function () {
     config()->set('services.whatsapp-charge', 5);
-    $academicSession = AcademicSession::factory()->create([
-      'title' => '2025/2026'
-    ]);
+    $academicSession = AcademicSession::factory()->create();
 
     $student1 = Student::factory()
       ->withInstitution($this->institution, $this->classification)
@@ -91,7 +89,9 @@ it(
     ]);
 
     Queue::assertPushed(SendWhatsappTemplateMessage::class, 2);
-    Queue::assertPushed(SendWhatsappTemplateMessage::class, function ($job) {
+    Queue::assertPushed(SendWhatsappTemplateMessage::class, function (
+      $job
+    ) use (&$academicSession) {
       $ref = new ReflectionClass($job);
       $templateProperty = $ref->getProperty('whatsappTemplate');
       $templateProperty->setAccessible(true);
@@ -115,7 +115,7 @@ it(
         $headerParameters[0]['parameter_name'] === 'school_name' &&
         $bodyParameters[2]['text'] === 'First Mid-Term' &&
         $bodyParameters[2]['parameter_name'] === 'term' &&
-        $bodyParameters[3]['text'] === '2025/2026 Session' &&
+        $bodyParameters[3]['text'] === "{$academicSession->title} Session" &&
         $bodyParameters[3]['parameter_name'] === 'academic_session' &&
         str_contains($bodyParameters[4]['text'], 'signed-result-sheet') &&
         $bodyParameters[4]['parameter_name'] === 'result_link';

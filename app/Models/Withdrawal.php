@@ -53,6 +53,16 @@ class Withdrawal extends BaseModel
     return $this->belongsTo(User::class, 'processed_by_user_id');
   }
 
+  public function payout()
+  {
+    return $this->morphOne(Payout::class, 'payoutable');
+  }
+
+  public function settlement()
+  {
+    return $this->hasOne(Settlement::class);
+  }
+
   function userTransaction()
   {
     return $this->morphOne(UserTransaction::class, 'transactionable');

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Withdrawal;
+use App\Actions\Payments\PayoutHandler;
 use Illuminate\Console\Command;
 
 class ProcessWithdrawal extends Command
@@ -26,12 +26,7 @@ class ProcessWithdrawal extends Command
    */
   public function handle()
   {
-    $withdrawals = Withdrawal::query()
-      ->isProcessed(false)
-      ->take(10)
-      ->get();
-    foreach ($withdrawals as $key => $withdrawal) {
-      //
-    }
+    $summary = PayoutHandler::make()->refreshPendingStatuses();
+    $this->info($summary->message());
   }
 }

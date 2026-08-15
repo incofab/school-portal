@@ -144,4 +144,10 @@ Route::resource('/bank-accounts', Web\BankAccounts\BankAccountController::class)
 Route::resource('/commissions', Web\Commissions\CommissionController::class);
 
 // == WITHDRAWALS
+Route::post('/withdrawals/pay-unprocessed', [Web\Withdrawals\WithdrawalController::class, 'payUnprocessed'])
+    ->middleware('admin')
+    ->name('withdrawals.pay-unprocessed');
+Route::post('/withdrawals/{withdrawal}/pay', [Web\Withdrawals\WithdrawalController::class, 'payWithdrawal'])
+    ->middleware('admin')
+    ->name('withdrawals.pay');
 Route::resource('/withdrawals', Web\Withdrawals\WithdrawalController::class);

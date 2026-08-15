@@ -32,4 +32,9 @@ enum PaymentMerchantType: string
       self::UserWallet
     ];
   }
+
+  static function payouts(): array
+  {
+    return [self::Monnify, self::PaymentPoint, self::Paystack, self::Rave];
+  }
 }

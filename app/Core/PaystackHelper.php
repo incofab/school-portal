@@ -153,7 +153,94 @@ class PaystackHelper
     return successRes('Account validated', [
       'account_number' => $result['account_number'],
       'account_name' => $result['account_name'],
-      'bank_code' => $$bankCode
+      'bank_code' => $bankCode
+    ]);
+  }
+
+  public function createTransferRecipient(array $data)
+  {
+    $res = Http::withToken($this->paystackKeys->getPrivateKey())
+      ->contentType('application/json')
+      ->post('https://api.paystack.co/transferrecipient', $data);
+
+    if (!$res->ok() || !$res->json('status')) {
+      return failRes(
+        $res->json('message', 'Transfer recipient creation failed')
+      );
+    }
+
+    return successRes($res->json('message', 'Transfer recipient created'), [
+      'result' => $res->json('data') ?? []
+    ]);
+  }
+
+  public function createTransferRecipients(array $batch)
+  {
+    $res = Http::withToken($this->paystackKeys->getPrivateKey())
+      ->contentType('application/json')
+      ->post('https://api.paystack.co/transferrecipient/bulk', [
+        'batch' => $batch
+      ]);
+
+    if (!$res->ok() || !$res->json('status')) {
+      return failRes(
+        $res->json('message', 'Transfer recipients creation failed')
+      );
+    }
+
+    return successRes($res->json('message', 'Transfer recipients created'), [
+      'result' => $res->json('data') ?? []
+    ]);
+  }
+
+  public function initiateTransfer(array $data)
+  {
+    $res = Http::withToken($this->paystackKeys->getPrivateKey())
+      ->contentType('application/json')
+      ->post('https://api.paystack.co/transfer', $data);
+
+    if (!$res->ok() || !$res->json('status')) {
+      return failRes($res->json('message', 'Transfer initiation failed'), [
+        'result' => $res->json('data') ?? []
+      ]);
+    }
+
+    return successRes($res->json('message', 'Transfer initiated'), [
+      'result' => $res->json('data') ?? []
+    ]);
+  }
+
+  public function initiateBulkTransfer(array $data)
+  {
+    $res = Http::withToken($this->paystackKeys->getPrivateKey())
+      ->contentType('application/json')
+      ->post('https://api.paystack.co/transfer/bulk', $data);
+
+    if (!$res->ok() || !$res->json('status')) {
+      return failRes($res->json('message', 'Bulk transfer initiation failed'), [
+        'result' => $res->json('data') ?? []
+      ]);
+    }
+
+    return successRes($res->json('message', 'Bulk transfer initiated'), [
+      'result' => $res->json('data') ?? []
+    ]);
+  }
+
+  public function verifyTransfer(string $reference)
+  {
+    $res = Http::withToken($this->paystackKeys->getPrivateKey())
+      ->contentType('application/json')
+      ->get('https://api.paystack.co/transfer/verify/' . urlencode($reference));
+
+    if (!$res->ok() || !$res->json('status')) {
+      return failRes($res->json('message', 'Transfer verification failed'), [
+        'result' => $res->json('data') ?? []
+      ]);
+    }
+
+    return successRes($res->json('message', 'Transfer retrieved'), [
+      'result' => $res->json('data') ?? []
     ]);
   }
 

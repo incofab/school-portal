@@ -71,9 +71,8 @@ it(
     $classification = Classification::factory()
       ->withInstitution($institution)
       ->create();
-    $academicSession = AcademicSession::factory()->create([
-      'title' => '2025/2026'
-    ]);
+    $academicSession = AcademicSession::factory()->create();
+    $title = $academicSession->title;
     $student = Student::factory()
       ->withInstitution($institution, $classification)
       ->guardian($institution)
@@ -122,7 +121,7 @@ it(
     expect($bodyParameters[1]['parameter_name'])->toBe('student_name');
     expect($bodyParameters[2]['text'])->toBe('Second Term');
     expect($bodyParameters[2]['parameter_name'])->toBe('term');
-    expect($bodyParameters[3]['text'])->toBe('2025/2026 Session');
+    expect($bodyParameters[3]['text'])->toBe("$title Session");
     expect($bodyParameters[3]['parameter_name'])->toBe('academic_session');
     expect($bodyParameters[4]['text'])->toContain('signed-result-sheet');
     expect($bodyParameters[4]['parameter_name'])->toBe('result_link');
