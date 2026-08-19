@@ -38,6 +38,7 @@ export default function Template9(props: ResultProps) {
     resultCommentTemplate,
     subjectCumulativeAverages,
     subjectTermTotals,
+    termTotalsByTerm,
     learningEvaluations,
     termDetail,
     showExamResult,
@@ -125,6 +126,26 @@ export default function Template9(props: ResultProps) {
       availableScores.length
     );
   }
+
+  const firstTermGrandTotal = termTotalsByTerm?.first?.total_score;
+  const secondTermGrandTotal = termTotalsByTerm?.second?.total_score;
+  const thirdTermGrandTotal =
+    termTotalsByTerm?.third?.total_score ?? termResult.total_score;
+  const availableTermGrandTotals = [
+    firstTermGrandTotal,
+    secondTermGrandTotal,
+    thirdTermGrandTotal,
+  ].filter(
+    (value): value is number =>
+      typeof value === 'number' && !Number.isNaN(value)
+  );
+  const combinedGrandTotal = availableTermGrandTotals.reduce(
+    (total, value) => total + value,
+    0
+  );
+  const combinedGrandAverage = availableTermGrandTotals.length
+    ? roundNumber(combinedGrandTotal / availableTermGrandTotals.length, 2)
+    : '-';
 
   const cumulativeAverageScores = courseResults
     .map(
@@ -249,13 +270,42 @@ export default function Template9(props: ResultProps) {
               <thead>
                 <tr>
                   <th>Subject</th>
-                  <th>Third-Term Assessment</th>
-                  <th>Third-Term Examination</th>
-                  <th>Third-Term Total</th>
-                  <th>Second-Term Total</th>
-                  <th>First-Term Total</th>
-                  <th>Annual Average</th>
-                  <th>Remark/Grade</th>
+                  <th>
+                    3rd Term
+                    <br />
+                    Assessment
+                  </th>
+                  <th>
+                    3rd Term
+                    <br />
+                    Examination
+                  </th>
+                  <th>
+                    3rd Term
+                    <br />
+                    Total
+                  </th>
+                  <th>
+                    2nd Term
+                    <br />
+                    Total
+                  </th>
+                  <th>
+                    1st Term
+                    <br />
+                    Total
+                  </th>
+                  <th>Pos</th>
+                  <th>
+                    Annual
+                    <br />
+                    Average
+                  </th>
+                  <th>
+                    Remark
+                    <br />
+                    Grade
+                  </th>
                 </tr>
                 <tr className="template-9-max-row" style={{ display: 'none' }}>
                   <th></th>
@@ -292,6 +342,9 @@ export default function Template9(props: ResultProps) {
                       <td>{score(thirdTotal)}</td>
                       <td>{score(secondTotal)}</td>
                       <td>{score(firstTotal)}</td>
+                      <td>
+                        {ResultUtil.formatPosition(courseResult.position)}
+                      </td>
                       <td>{score(annualAverage)}</td>
                       <td>
                         {annualGrade
@@ -315,6 +368,12 @@ export default function Template9(props: ResultProps) {
               </Text>
               <Text>
                 <strong>Cummulative Average:</strong> {cumulativeAverage}
+              </Text>
+              <Text>
+                <strong>1st + 2nd + 3rd Term Total:</strong>{' '}
+                {score(firstTermGrandTotal)} + {score(secondTermGrandTotal)} +{' '}
+                {score(thirdTermGrandTotal)} = {score(combinedGrandTotal)} (
+                <strong>Avg:</strong> {combinedGrandAverage})
               </Text>
             </Box>
             <Spacer />

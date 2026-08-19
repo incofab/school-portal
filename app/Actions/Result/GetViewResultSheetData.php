@@ -149,6 +149,7 @@ class GetViewResultSheetData
         $termResult,
         $courseResults->pluck('course_id')->all()
       ),
+      'termTotalsByTerm' => self::getTermTotalsByTerm($termResult),
       'resultDetails' => self::getResultDetails($classResultInfo, $termResult),
       'assessments' => $assessments,
       'resultCommentTemplate' => $resultCommentTemplate,
@@ -197,7 +198,7 @@ class GetViewResultSheetData
   }
 
   /**
-   * @param array<int, int> $courseIds
+   * @param  array<int, int>  $courseIds
    * @return array<int, float>
    */
   private static function getSubjectCumulativeAverages(
@@ -228,7 +229,7 @@ class GetViewResultSheetData
   }
 
   /**
-   * @param array<int, int> $courseIds
+   * @param  array<int, int>  $courseIds
    * @return array<int, array{first?: float, second?: float, third?: float}>
    */
   private static function getSubjectTermTotals(
@@ -262,5 +263,39 @@ class GetViewResultSheetData
       });
 
     return $data;
+  }
+
+  /**
+   * @return array<string, array{total_score?: float, average?: float}>
+   */
+  private static function getTermTotalsByTerm(TermResult $termResult): array
+  {
+    return TermResult::query()
+      ->where('institution_id', $termResult->institution_id)
+      ->where('student_id', $termResult->student_id)
+      ->where('classification_id', $termResult->classification_id)
+      ->where('academic_session_id', $termResult->academic_session_id)
+      ->where('for_mid_term', false)
+      ->whereIn('term', [
+        TermType::First->value,
+        TermType::Second->value,
+        TermType::Third->value
+      ])
+      ->get(['term', 'total_score', 'average'])
+      ->mapWithKeys(function (TermResult $result) {
+        $term = is_string($result->term) ? $result->term : $result->term->value;
+
+        return [
+          $term => [
+            'total_score' =>
+              $result->total_score === null
+                ? null
+                : (float) $result->total_score,
+            'average' =>
+              $result->average === null ? null : (float) $result->average
+          ]
+        ];
+      })
+      ->all();
   }
 }

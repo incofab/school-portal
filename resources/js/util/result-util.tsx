@@ -439,6 +439,12 @@ export interface ResultProps {
       third?: number;
     };
   };
+  termTotalsByTerm?: {
+    [term: string]: {
+      total_score?: number;
+      average?: number;
+    };
+  };
   academicSession: AcademicSession;
   classification: Classification;
   student: Student;

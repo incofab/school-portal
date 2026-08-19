@@ -100,6 +100,7 @@ class DummyResultSheetController extends Controller
         $courseResults
       ),
       'subjectTermTotals' => $this->subjectTermTotals($courseResults),
+      'termTotalsByTerm' => $this->termTotalsByTerm($totalScore, $average),
       'resultDetails' => [
         ['label' => "{$studentTitle} Total Score", 'value' => $totalScore],
         [
@@ -383,8 +384,8 @@ class DummyResultSheetController extends Controller
   }
 
   /**
-   * @param Collection<int, Assessment> $assessments
-   * @param Collection<int, Course> $courses
+   * @param  Collection<int, Assessment>  $assessments
+   * @param  Collection<int, Course>  $courses
    * @return Collection<int, CourseResult>
    */
   private function courseResults(
@@ -439,7 +440,7 @@ class DummyResultSheetController extends Controller
   }
 
   /**
-   * @param Collection<int, CourseResult> $courseResults
+   * @param  Collection<int, CourseResult>  $courseResults
    * @return array<int, CourseResultInfo>
    */
   private function courseResultInfoData(
@@ -474,7 +475,7 @@ class DummyResultSheetController extends Controller
   }
 
   /**
-   * @param Collection<int, CourseResult> $courseResults
+   * @param  Collection<int, CourseResult>  $courseResults
    * @return array<int, float>
    */
   private function subjectCumulativeAverages(Collection $courseResults): array
@@ -489,7 +490,7 @@ class DummyResultSheetController extends Controller
   }
 
   /**
-   * @param Collection<int, CourseResult> $courseResults
+   * @param  Collection<int, CourseResult>  $courseResults
    * @return array<int, array{first: float, second: float, third: float}>
    */
   private function subjectTermTotals(Collection $courseResults): array
@@ -506,5 +507,26 @@ class DummyResultSheetController extends Controller
     }
 
     return $data;
+  }
+
+  /**
+   * @return array<string, array{total_score: float, average: float}>
+   */
+  private function termTotalsByTerm(float $totalScore, float $average): array
+  {
+    return [
+      TermType::First->value => [
+        'total_score' => max(0, $totalScore - rand(30, 60)),
+        'average' => max(0, $average - rand(3, 8))
+      ],
+      TermType::Second->value => [
+        'total_score' => max(0, $totalScore - rand(10, 30)),
+        'average' => max(0, $average - rand(1, 5))
+      ],
+      TermType::Third->value => [
+        'total_score' => $totalScore,
+        'average' => $average
+      ]
+    ];
   }
 }
