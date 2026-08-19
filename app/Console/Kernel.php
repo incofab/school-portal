@@ -6,6 +6,7 @@ use App\Console\Commands\AssignRoleToUser;
 use App\Console\Commands\ProcessSettlements;
 use App\Console\Commands\PruneActivityLogs;
 use App\Console\Commands\PublishPendingResult;
+use App\Console\Commands\SendDailyAttendanceNotificationsCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -20,7 +21,8 @@ class Kernel extends ConsoleKernel
     AssignRoleToUser::class,
     ProcessSettlements::class,
     PublishPendingResult::class,
-    PruneActivityLogs::class
+    PruneActivityLogs::class,
+    SendDailyAttendanceNotificationsCommand::class
   ];
 
   /**
@@ -38,6 +40,10 @@ class Kernel extends ConsoleKernel
       ->command('settlements:process')
       ->dailyAt('01:00')
       ->withoutOverlapping();
+    // $schedule
+    //   ->command('attendance:notify-guardians')
+    //   ->dailyAt(config('services.attendance-notification.time', '17:00'))
+    //   ->withoutOverlapping();
   }
 
   /**

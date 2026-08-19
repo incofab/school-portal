@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Http;
 
 class SendBulksms implements ShouldQueue
@@ -48,6 +49,22 @@ class SendBulksms implements ShouldQueue
         'Accept' => 'application/json'
       ])
       ->post('https://www.bulksmsnigeria.com/api/v2/sms', $data);
+
+    if ($res->failed()) {
+      // Log::warning('BulkSMS delivery failed.', [
+      //   'to' => $this->to,
+      //   'status' => $res->status(),
+      //   'body' => $res->body()
+      // ]);
+
+      $this->messageModel
+        ?->fill([
+          'status' => MessageStatus::Failed->value
+        ])
+        ->save();
+
+      return;
+    }
 
     $this->messageModel
       ?->fill([

@@ -16,6 +16,10 @@ return [
   'sms-charge' => env('SMS_CHARGE', 7),
   'email-charge' => env('EMAIL_CHARGE', 3),
   'whatsapp-charge' => env('WHATSAPP_CHARGE', env('SMS_CHARGE', 7)),
+  'attendance-notification' => [
+    'channel' => env('ATTENDANCE_NOTIFICATION_CHANNEL', 'sms'),
+    'time' => env('ATTENDANCE_NOTIFICATION_TIME', '17:00')
+  ],
 
   'mailgun' => [
     'domain' => env('MAILGUN_DOMAIN'),

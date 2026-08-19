@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class SendWhatsappTemplateMessage implements ShouldQueue
 {
@@ -27,7 +28,11 @@ class SendWhatsappTemplateMessage implements ShouldQueue
 
     if ($response->isSuccessful()) {
       $this->markSent();
+
+      return;
     }
+
+    $this->markFailed($response->getMessage());
   }
 
   private function markSent(): void
@@ -40,6 +45,23 @@ class SendWhatsappTemplateMessage implements ShouldQueue
       ->fill([
         'status' => MessageStatus::Sent->value,
         'sent_at' => now()
+      ])
+      ->save();
+  }
+
+  private function markFailed(string $reason): void
+  {
+    // Log::warning('WhatsApp template message failed.', [
+    //   'reason' => $reason
+    // ]);
+
+    if (!$this->messageModel) {
+      return;
+    }
+
+    $this->messageModel
+      ->fill([
+        'status' => MessageStatus::Failed->value
       ])
       ->save();
   }
