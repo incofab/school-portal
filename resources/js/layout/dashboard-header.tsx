@@ -42,6 +42,8 @@ export default function DashboardHeader() {
   const chatsRoute = currentInstitution ? instRoute('chats.index') : null;
   return (
     <HStack
+      minW={0}
+      spacing={{ base: 1, md: 2 }}
       background={useColorModeValue('white', 'gray.700')}
       py={1}
       boxShadow={'0px 2px 6px rgba(0, 0, 0, 0.1)'}
@@ -67,6 +69,7 @@ export default function DashboardHeader() {
         aria-label={'Toggle light and dark moon'}
         icon={<Icon as={colorMode === 'dark' ? SunIcon : MoonIcon} />}
         variant={'ghost'}
+        size={{ base: 'sm', md: 'md' }}
         onClick={toggleColorMode}
       />
       <Box position="relative">
@@ -74,6 +77,7 @@ export default function DashboardHeader() {
           aria-label={'notifications'}
           icon={<Icon as={BellIcon} />}
           variant={'ghost'}
+          size={{ base: 'sm', md: 'md' }}
           as={InertiaLink}
           href={notificationsRoute}
         />
@@ -95,6 +99,7 @@ export default function DashboardHeader() {
           aria-label={'chats'}
           icon={<Icon as={ChatBubbleLeftRightIcon} />}
           variant={'ghost'}
+          size={{ base: 'sm', md: 'md' }}
           as={InertiaLink}
           href={chatsRoute}
         />
@@ -106,8 +111,15 @@ export default function DashboardHeader() {
           aria-label="Open menu"
           variant={'ghost'}
           fontWeight={'normal'}
+          size={{ base: 'sm', md: 'md' }}
+          px={{ base: 2, md: 4 }}
         >
-          <Text flexShrink={0} fontSize={'sm'}>
+          <Text
+            isTruncated
+            maxW={{ base: '64px', md: '160px' }}
+            fontSize={'sm'}
+            title={currentUser.last_name}
+          >
             {currentUser.last_name}
           </Text>
         </MenuButton>
@@ -133,10 +145,20 @@ function TermSessionDisplay() {
 
   if (!currentInstitution) return <></>;
 
+  const label = `${startCase(currentTerm)} Term, ${
+    currentAcademicSession.title
+  } Session`;
+
   return (
-    <Div>
-      <Text as={'span'} fontWeight={'bold'} size={'sm'}>
-        {startCase(currentTerm)} Term, {currentAcademicSession.title} Session
+    <Div minW={0}>
+      <Text
+        fontWeight={'bold'}
+        fontSize={'sm'}
+        isTruncated
+        maxW={{ base: '130px', sm: '220px', md: 'none' }}
+        title={label}
+      >
+        {label}
       </Text>
     </Div>
   );

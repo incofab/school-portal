@@ -27,8 +27,11 @@ import { formatAsCurrency } from '@/util/util';
 import feeableUtil from '@/util/feeable-util';
 import { Div } from '@/components/semantic';
 import { LabelText } from '@/components/result-helper-components';
-import { useModalValueToggle } from '@/hooks/use-modal-toggle';
+import useModalToggle, {
+  useModalValueToggle,
+} from '@/hooks/use-modal-toggle';
 import CreateFeeReminderModal from '@/components/modals/create-fee-reminder-modal';
+import DuplicateFeesModal from '@/components/modals/duplicate-fees-modal';
 
 interface Props {
   fees: PaginationResponse<Fee>;
@@ -39,6 +42,7 @@ export default function ListFees({ fees }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const reminderToggle = useModalValueToggle<Fee>();
+  const duplicateFeesToggle = useModalToggle();
   const isAdmin = useIsAdmin();
 
   async function deleteItem(obj: Fee) {
@@ -76,7 +80,9 @@ export default function ListFees({ fees }: Props) {
       label: 'Sectors',
       render: (row) =>
         row.fee_categories
-          ?.map((item) => feeableUtil(item.feeable).getName())
+          ?.map((item) =>
+            feeableUtil(item.feeable, item.feeable_type).getName()
+          )
           .join(', '),
     },
     {
@@ -131,7 +137,16 @@ export default function ListFees({ fees }: Props) {
         <SlabHeading
           title="List Fees"
           rightElement={
-            <LinkButton href={instRoute('fees.create')} title={'New'} />
+            <HStack spacing={2}>
+              {isAdmin && (
+                <BrandButton
+                  title={'Duplicate Fees'}
+                  variant={'outline'}
+                  onClick={duplicateFeesToggle.open}
+                />
+              )}
+              <LinkButton href={instRoute('fees.create')} title={'New'} />
+            </HStack>
           }
         />
         <SlabBody>
@@ -152,6 +167,10 @@ export default function ListFees({ fees }: Props) {
           onSuccess={() => {}}
         />
       )}
+      <DuplicateFeesModal
+        {...duplicateFeesToggle.props}
+        onSuccess={() => Inertia.reload({ only: ['fees'] })}
+      />
     </DashboardLayout>
   );
 }

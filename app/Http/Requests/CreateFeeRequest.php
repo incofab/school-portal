@@ -4,7 +4,9 @@ namespace App\Http\Requests;
 
 use App\Enums\PaymentInterval;
 use App\Enums\TermType;
+use App\Models\Student;
 use App\Rules\ValidateMorphRule;
+use App\Support\MorphMap;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -50,7 +52,35 @@ class CreateFeeRequest extends FormRequest
       'fee_items.*.amount' => ['required', 'numeric', 'min:1'],
       'fee_items.*.title' => ['required', 'string', 'max:255'],
       'fee_categories' => ['required', 'array', 'min:1'],
-      'fee_categories.*.feeable_id' => ['required', 'integer'],
+      'fee_categories.*.feeable_id' => [
+        'required',
+        'integer',
+        function ($attribute, $value, $fail) {
+          $index = explode('.', $attribute)[1] ?? null;
+          $feeableType = $this->input("fee_categories.$index.feeable_type");
+
+          if ($feeableType !== MorphMap::key(Student::class)) {
+            return;
+          }
+
+          $belongsToInstitution = Student::query()
+            ->join(
+              'institution_users',
+              'students.institution_user_id',
+              'institution_users.id'
+            )
+            ->where(
+              'institution_users.institution_id',
+              currentInstitution()->id
+            )
+            ->where('students.id', $value)
+            ->exists();
+
+          if (!$belongsToInstitution) {
+            $fail('The selected student does not belong to this institution.');
+          }
+        }
+      ],
       'fee_categories.*.feeable_type' => [
         'required',
         new ValidateMorphRule('feeable')

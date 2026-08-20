@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions\Fees;
 
 use App\Models\Association;
@@ -14,17 +15,19 @@ use Illuminate\Support\Collection;
 class FeeMembersHandler
 {
   private $ids;
-  function __construct(private Institution $institution)
+
+  public function __construct(private Institution $institution)
   {
     $this->ids = [
       MorphMap::key(Classification::class) => [],
       MorphMap::key(ClassificationGroup::class) => [],
       MorphMap::key(Institution::class) => [],
-      MorphMap::key(Association::class) => []
+      MorphMap::key(Association::class) => [],
+      MorphMap::key(Student::class) => []
     ];
   }
 
-  function getFeeMembers(Fee $fee, $forOwingMembers = false): Collection
+  public function getFeeMembers(Fee $fee, $forOwingMembers = false): Collection
   {
     $feeCategories = $fee->feeCategories;
     /** @var FeeCategory $feeCategory */
@@ -46,12 +49,13 @@ class FeeMembersHandler
     return $forOwingMembers
       ? $users->filter(function ($item) {
         $receipt = $item->receipts->first();
+
         return empty($receipt) || $receipt->amount_remaining > 0;
       })
       : $users;
   }
 
-  function getMorphMembers($feeableType, $feeableId)
+  public function getMorphMembers($feeableType, $feeableId)
   {
     if (!$feeableType || !$feeableId) {
       return [];
@@ -68,6 +72,9 @@ class FeeMembersHandler
       ->select('users.*')
       ->join('institution_users', 'users.id', 'institution_users.user_id')
       ->where('institution_users.institution_id', $this->institution->id);
+
+    $studentIds = $this->ids[MorphMap::key(Student::class)];
+
     if (
       $this->ids[MorphMap::key(Classification::class)] ||
       $this->ids[MorphMap::key(ClassificationGroup::class)]
@@ -88,6 +95,10 @@ class FeeMembersHandler
               'classifications.classification_group_id',
               $classGroupIds
             )
+            ->when(
+              $studentIds,
+              fn($qq) => $qq->orWhereIn('students.id', $studentIds)
+            )
         );
     } elseif ($this->ids[MorphMap::key(Association::class)]) {
       $usersQuery
@@ -96,9 +107,14 @@ class FeeMembersHandler
           'users_associations.association_id',
           $this->ids[MorphMap::key(Association::class)]
         );
+    } elseif ($studentIds) {
+      $usersQuery
+        ->join('students', 'users.id', 'students.user_id')
+        ->whereIn('students.id', $studentIds);
     } else {
       // Applies to all
     }
+
     return $usersQuery;
   }
 }

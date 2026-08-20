@@ -112,6 +112,71 @@ test('create includes previous fees as reusable templates', function () {
         ->missing('fee')
     );
 });
+
+test('store creates a fee targeted at an individual student', function () {
+  $classification = Classification::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  $student = Student::factory()
+    ->withInstitution($this->institution, $classification)
+    ->create();
+
+  $feeData = [
+    'title' => 'Individual Fee',
+    'amount' => 1500.0,
+    'payment_interval' => PaymentInterval::Termly->value,
+    'academic_session_id' => $this->academicSession->id,
+    'term' => TermType::First->value,
+    'fee_items' => [['title' => 'Item 1', 'amount' => 1500]],
+    'fee_categories' => [
+      [
+        'feeable_type' => MorphMap::key(Student::class),
+        'feeable_id' => $student->id
+      ]
+    ]
+  ];
+
+  postJson(
+    route('institutions.fees.store', $this->institution),
+    $feeData
+  )->assertOk();
+
+  assertDatabaseHas('fee_categories', [
+    'feeable_type' => MorphMap::key(Student::class),
+    'feeable_id' => $student->id
+  ]);
+});
+
+test(
+  'store rejects an individual student that belongs to another institution',
+  function () {
+    $otherInstitution = Institution::factory()->create();
+    $otherStudent = Student::factory()
+      ->withInstitution($otherInstitution)
+      ->create();
+
+    $feeData = [
+      'title' => 'Individual Fee',
+      'amount' => 1500.0,
+      'payment_interval' => PaymentInterval::Termly->value,
+      'academic_session_id' => $this->academicSession->id,
+      'term' => TermType::First->value,
+      'fee_items' => [['title' => 'Item 1', 'amount' => 1500]],
+      'fee_categories' => [
+        [
+          'feeable_type' => MorphMap::key(Student::class),
+          'feeable_id' => $otherStudent->id
+        ]
+      ]
+    ];
+
+    postJson(
+      route('institutions.fees.store', $this->institution),
+      $feeData
+    )->assertJsonValidationErrors(['fee_categories.0.feeable_id']);
+  }
+);
+
 return;
 test('create displays the fee creation form', function () {
   Association::factory(2)

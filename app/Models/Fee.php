@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\PaymentInterval;
 use App\Enums\TermType;
-use App\Support\MorphMap;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,6 +14,7 @@ class Fee extends BaseModel
   use HasFactory, InstitutionScope, SoftDeletes;
 
   public $guarded = [];
+
   public $casts = [
     'payment_interval' => PaymentInterval::class,
     'institution_id' => 'integer',
@@ -24,13 +24,13 @@ class Fee extends BaseModel
     'fee_items' => AsArrayObject::class
   ];
 
-  function isSessional(): bool
+  public function isSessional(): bool
   {
     return $this->payment_interval === PaymentInterval::Termly ||
       $this->payment_interval === PaymentInterval::Sessional;
   }
 
-  function isTermly(): bool
+  public function isTermly(): bool
   {
     return $this->payment_interval === PaymentInterval::Termly;
   }
@@ -61,51 +61,56 @@ class Fee extends BaseModel
   //   });
   // }
 
-  function forStudent(Student $student, Classification $classification)
+  public function forStudent(Student $student, Classification $classification)
   {
     $isForStudent = false;
     foreach ($this->feeCategories as $key => $feeCategory) {
-      if ($feeCategory->forClass($classification)) {
+      if (
+        $feeCategory->forClass($classification) ||
+        $feeCategory->forStudent($student)
+      ) {
         $isForStudent = true;
         break;
       }
 
       // Check association
     }
+
     return $isForStudent;
   }
 
-  function forClass(Classification $classification)
+  public function forClass(Classification $classification)
   {
     foreach ($this->feeCategories as $key => $feeCategory) {
       if ($feeCategory->forClass($classification)) {
         return true;
       }
     }
+
     return false;
   }
 
-  function institution()
+  public function institution()
   {
     return $this->belongsTo(Institution::class);
   }
 
-  function academicSession()
+  public function academicSession()
   {
     return $this->belongsTo(AcademicSession::class);
   }
 
-  function feeCategories()
+  public function feeCategories()
   {
     return $this->hasMany(FeeCategory::class);
   }
 
-  function feePayments()
+  public function feePayments()
   {
     return $this->hasMany(FeePayment::class);
   }
 
-  function receipts()
+  public function receipts()
   {
     return $this->hasMany(Receipt::class);
   }

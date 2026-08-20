@@ -1622,7 +1622,14 @@
             references, and provider webhook processing. Fee creation can reuse
             previous term/session fee structures so staff can copy line items,
             amounts, intervals, and category assignments into a new period
-            without rebuilding the fee manually. Fee create/update/delete, fee
+            without rebuilding the fee manually. Fee targeting supports
+            institution-wide, class, class-group, association, and individual
+            student scopes (a searchable student picker) simultaneously on the
+            same fee, and every place that resolves a student's applicable
+            fees &mdash; fee listing, payment summaries, balances, manual and
+            online payment processing, and reminders &mdash; honors
+            individually assigned fees alongside the other scopes. Fee
+            create/update/delete, fee
             assignment snapshots, manual payment approvals/rejections, outgoing
             payment notifications, and payment credential changes now emit
             explicit finance audit events with compact sanitized amount,

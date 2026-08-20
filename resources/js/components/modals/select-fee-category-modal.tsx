@@ -13,6 +13,7 @@ import { Association } from '@/types/models';
 import ClassificationGroupSelect from '../selectors/classification-group-select';
 import ClassificationSelect from '../selectors/classification-select';
 import AssociationSelect from '../selectors/association-select';
+import StudentSelect from '../selectors/student-select';
 import { FeeCategoryType } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
 
@@ -21,6 +22,7 @@ interface FeeableTypeSelect {
   class: boolean;
   classGroup: boolean;
   association: boolean;
+  student: boolean;
 }
 
 interface FeeableTypeIdItem {
@@ -33,6 +35,7 @@ interface FeeableTypeId {
   class: FeeableTypeIdItem[];
   classGroup: FeeableTypeIdItem[];
   association: FeeableTypeIdItem[];
+  student: FeeableTypeIdItem[];
 }
 
 interface FeeCategoryMorph {
@@ -63,6 +66,7 @@ export default function SelectFeeCategoryModal({
     class: [],
     classGroup: [],
     association: [],
+    student: [],
   } as FeeableTypeId;
   for (let i = 0; i < feeCategories.length; i++) {
     const feeCategory = feeCategories[i];
@@ -76,6 +80,8 @@ export default function SelectFeeCategoryModal({
     ) {
     } else if (feeCategory.feeable_type === FeeCategoryType.Institution) {
       arr = initialFeeableTypeIds.institution;
+    } else if (feeCategory.feeable_type === FeeCategoryType.Student) {
+      arr = initialFeeableTypeIds.student;
     }
     arr.push({
       morphClass: feeCategory.feeable_type,
@@ -89,6 +95,7 @@ export default function SelectFeeCategoryModal({
     class: initialFeeableTypeIds.class.length === 0 ? false : true,
     classGroup: initialFeeableTypeIds.classGroup.length === 0 ? false : true,
     association: initialFeeableTypeIds.association.length === 0 ? false : true,
+    student: initialFeeableTypeIds.student.length === 0 ? false : true,
   } as FeeableTypeSelect);
 
   const [feeableTypeIds, setFeeableTypeIds] = useState(initialFeeableTypeIds);
@@ -138,6 +145,7 @@ export default function SelectFeeCategoryModal({
                   class: isChecked ? false : feeableTypeCheck.class,
                   classGroup: isChecked ? false : feeableTypeCheck.classGroup,
                   association: isChecked ? false : feeableTypeCheck.association,
+                  student: isChecked ? false : feeableTypeCheck.student,
                 });
               }}
               size={'md'}
@@ -150,10 +158,10 @@ export default function SelectFeeCategoryModal({
               onChange={(e) => {
                 const isChecked = e.currentTarget.checked;
                 setFeeableTypeCheck({
+                  ...feeableTypeCheck,
                   institution: isChecked ? false : feeableTypeCheck.institution,
                   class: isChecked,
                   classGroup: isChecked ? false : feeableTypeCheck.classGroup,
-                  association: feeableTypeCheck.association,
                 });
               }}
               size={'md'}
@@ -166,10 +174,10 @@ export default function SelectFeeCategoryModal({
               onChange={(e) => {
                 const isChecked = e.currentTarget.checked;
                 setFeeableTypeCheck({
+                  ...feeableTypeCheck,
                   institution: isChecked ? false : feeableTypeCheck.institution,
                   classGroup: isChecked,
                   class: isChecked ? false : feeableTypeCheck.class,
-                  association: feeableTypeCheck.association,
                 });
               }}
               size={'md'}
@@ -191,6 +199,21 @@ export default function SelectFeeCategoryModal({
               colorScheme="brand"
             >
               Student Grouping
+            </Checkbox>
+            <Checkbox
+              isChecked={feeableTypeCheck.student}
+              onChange={(e) => {
+                const isChecked = e.currentTarget.checked;
+                setFeeableTypeCheck({
+                  ...feeableTypeCheck,
+                  institution: isChecked ? false : feeableTypeCheck.institution,
+                  student: isChecked,
+                });
+              }}
+              size={'md'}
+              colorScheme="brand"
+            >
+              Individual Student
             </Checkbox>
           </VStack>
           <VStack spacing={2} align={'stretch'}>
@@ -245,6 +268,26 @@ export default function SelectFeeCategoryModal({
                       ...feeableTypeIds,
                       association: e.map((item: any) => ({
                         morphClass: FeeCategoryType.Association,
+                        ...item,
+                      })),
+                    });
+                  }}
+                />
+              </FormControl>
+            )}
+            {feeableTypeCheck.student && (
+              <FormControl>
+                <FormLabel mb={0}>{'Individual Student'}</FormLabel>
+                <StudentSelect
+                  value={feeableTypeIds.student}
+                  isMulti={true}
+                  isClearable={true}
+                  placeholder={'Search for a student by name'}
+                  onChange={(e: any) => {
+                    setFeeableTypeIds({
+                      ...feeableTypeIds,
+                      student: e.map((item: any) => ({
+                        morphClass: FeeCategoryType.Student,
                         ...item,
                       })),
                     });

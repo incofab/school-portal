@@ -19,7 +19,11 @@ export type GenericUser =
   | Student
   | AdmissionApplication
   | RecruitmentApplication;
-export type Feeable = Classification | ClassificationGroup | Institution;
+export type Feeable =
+  | Classification
+  | ClassificationGroup
+  | Institution
+  | Student;
 export type Examable = GenericUser;
 export type SelectValue =
   | number
@@ -363,6 +367,7 @@ export enum FeeCategoryType {
   Institution = 'institution',
   Classification = 'classification',
   ClassificationGroup = 'classification-group',
+  Student = 'student',
   Association = 'association',
 }
 

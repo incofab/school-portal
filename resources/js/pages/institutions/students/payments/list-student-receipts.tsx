@@ -38,7 +38,9 @@ export default function ListStudentReceipts({ receipts, student }: Props) {
       label: 'Sectors',
       render: (row) =>
         row.fee?.fee_categories
-          ?.map((item) => feeableUtil(item.feeable).getName())
+          ?.map((item) =>
+            feeableUtil(item.feeable, item.feeable_type).getName()
+          )
           .join(', ') ?? '',
     },
     {

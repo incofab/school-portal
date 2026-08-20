@@ -332,6 +332,8 @@ Route::post('/pin-generators/store', [Web\Pins\PinGeneratorController::class, 's
     ->name('pin-generators.store');
 
 Route::get('/fees/search', [Web\Payments\FeeController::class, 'search'])->name('fees.search');
+Route::get('/fees/previous-term', [Web\Payments\FeeController::class, 'previousTermFees'])->name('fees.previous-term');
+Route::post('/fees/duplicate', [Web\Payments\FeeController::class, 'duplicate'])->name('fees.duplicate');
 Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
 
 // Route::get('/fee-payments/download/{classification}/{receiptType}', [Web\Payments\FeePaymentController::class, 'download'])->name('fee-payments.download');

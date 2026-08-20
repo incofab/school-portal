@@ -56,7 +56,7 @@ class UserAssociationController extends Controller
       ->select('users.*')
       ->join('institution_users', 'users.id', 'institution_users.user_id')
       ->where('institution_users.institution_id', $institution->id);
-    $morphable = null;
+    $morphable = $institution;
     if ($morphableType && $morphableId) {
       switch ($morphableType) {
         case MorphMap::key(Classification::class):
@@ -83,7 +83,6 @@ class UserAssociationController extends Controller
           break;
       }
     }
-
     return Inertia::render(
       'institutions/associations/create-user-association',
       [

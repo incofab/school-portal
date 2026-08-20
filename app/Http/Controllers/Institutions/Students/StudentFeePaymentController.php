@@ -9,10 +9,10 @@ use App\Enums\Payments\PaymentPurpose;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\Fee;
+use App\Models\FeeCategory;
 use App\Models\FeePayment;
 use App\Models\Institution;
 use App\Models\ManualPayment;
-use App\Models\PaymentReference;
 use App\Models\Receipt;
 use App\Models\Student;
 use App\Rules\ValidateExistsRule;
@@ -62,7 +62,10 @@ class StudentFeePaymentController extends Controller
     )
       ->filterQuery()
       ->getQuery()
-      ->with('academicSession', 'fee.feeCategories.feeable');
+      ->with([
+        'academicSession',
+        'fee.feeCategories.feeable' => FeeCategory::feeableConstraint()
+      ]);
 
     return inertia('institutions/students/payments/list-student-receipts', [
       'fees' => Fee::query()->get(),

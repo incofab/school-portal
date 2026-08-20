@@ -14,10 +14,18 @@ export default function DashboardLayout({
   return (
     <Div>
       {isImpersonating && <ImpersonationBanner />}
-      <Div style={{ display: 'flex', height: '100%', minHeight: '100vh' }}>
+      <Div
+        style={{
+          display: 'flex',
+          height: '100%',
+          minHeight: '100vh',
+          overflowX: 'hidden',
+        }}
+      >
         <SideBarLayout />
         <Div
-          w={'full'}
+          flex={'1'}
+          minW={0}
           background={useColorModeValue('brand.50', 'gray.900')}
           overflow={'auto'}
           {...mainBarProps}

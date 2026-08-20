@@ -75,7 +75,7 @@ export default function CreateOrUpdateFee({
       fee?.fee_categories.map((item) => ({
         feeable_id: item.feeable_id,
         feeable_type: item.feeable_type,
-        label: feeableUtil(item.feeable).getName(),
+        label: feeableUtil(item.feeable, item.feeable_type).getName(),
         value: item.feeable_id,
       })) ?? ([] as FeeCategoryMorph[]),
   });
@@ -117,7 +117,9 @@ export default function CreateOrUpdateFee({
       fee_categories: template.fee_categories.map((item) => ({
         feeable_id: item.feeable_id,
         feeable_type: item.feeable_type,
-        label: item.feeable ? feeableUtil(item.feeable).getName() : '',
+        label: item.feeable
+          ? feeableUtil(item.feeable, item.feeable_type).getName()
+          : '',
         value: item.feeable_id,
       })),
     });

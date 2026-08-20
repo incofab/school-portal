@@ -39,6 +39,11 @@ _ide_helper.php
 
 .phpunit.cache
 
+# Generated tutorial videos (regenerate with `npm run tutorial:login`)
+/public/tutorials/*.webm
+/public/tutorials/*.mp4
+/public/tutorials/debug/
+
 error_log
 public/error_log
 
