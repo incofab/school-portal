@@ -65,6 +65,11 @@ export enum ManagerRole {
   Partner = 'partner',
 }
 
+export enum FaqType {
+  Faq = 'faq',
+  KnowledgeBase = 'knowledge_base',
+}
+
 export enum PartnerUserRole {
   Admin = 'admin',
   Staff = 'staff',

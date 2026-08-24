@@ -13,51 +13,61 @@ A living feature knowledge base is maintained at `public/feature-docs/` — star
 ## Commands
 
 Install:
+
 ```bash
-composer install
-npm install
+./vendor/bin/sail composer install
+./vendor/bin/sail npm install
 ```
+
 (or `./vendor/bin/sail composer install` / `./vendor/bin/sail npm install` when using Sail — Sail provides MySQL + MinIO via `docker-compose.yml`)
 
 Run app:
+
 ```bash
-php artisan serve      # or ./vendor/bin/sail up
-npm run dev            # Vite HMR
+./vendor/bin/sail artisan serve      # or ./vendor/bin/sail up
+./vendor/bin/sail npm run dev            # Vite HMR
 ```
 
 Build frontend for production:
+
 ```bash
-npm run build
+./vendor/bin/sail npm run build
 ```
 
 Frontend lint/typecheck:
+
 ```bash
-npm run lint            # eslint resources/js && tsc
+./vendor/bin/sail npm run lint            # eslint resources/js && tsc
 ```
 
 Backend format (Pint, PSR-12):
+
 ```bash
 ./vendor/bin/pint
 ```
 
 Format every file you worked on (PHP included — `@prettier/plugin-php` is installed, so this is required in addition to Pint, not instead of it):
+
 ```bash
 npx prettier --write <files>
 ```
 
 Backend tests (Pest):
+
 ```bash
-./vendor/bin/pest                                  # all tests
-./vendor/bin/pest tests/Feature/Path/To/Test.php    # single file
-./vendor/bin/pest --filter="test description"       # by name
+./vendor/bin/sail ./vendor/bin/pest                                  # all tests
+./vendor/bin/sail ./vendor/bin/pest tests/Feature/Path/To/Test.php    # single file
+./vendor/bin/sail ./vendor/bin/pest --filter="test description"       # by name
 ```
+
 Tests use `.env.testing`, run inside DB transactions (`tests/Pest.php`), and auto-seed `RoleSeeder` before each Feature test. Don't depend on production `.env` data.
 
 Environment setup: copy `.env.example` to `.env` and run `php artisan key:generate` before first run; `.env.testing` is for automated tests only.
 
 DB setup (seeders include roles/permissions and sample domain data — needed for a usable local install, not just tests):
+
 ```bash
-php artisan migrate --seed
+./vendor/bin/sail artisan migrate --seed
 ```
 
 ## Architecture

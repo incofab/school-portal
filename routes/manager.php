@@ -128,6 +128,10 @@ Route::group(['middleware' => 'admin'], function () {
     ])->name('academic-sessions.activate');
     Route::resource('academic-sessions', Web\AcademicSessions\AcademicSessionController::class)
         ->except(['show']);
+
+    Route::post('faqs/{faq}/toggle', [Web\Faqs\FaqController::class, 'toggle'])
+        ->name('faqs.toggle');
+    Route::resource('faqs', Web\Faqs\FaqController::class);
 });
 
 Route::post('funding/record-debt', [Web\Fundings\FundingController::class, 'recordDebt'])->name('funding.record-debt');

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Institutions as Web;
+use App\Http\Controllers\Institutions\Exams\ExamAttempts;
 
 Route::get(
   'events/offline-cbt/setup-guide',
@@ -11,6 +12,11 @@ Route::get(
 Route::get('events/{event}/download', [Web\Exams\EventController::class, 'download'])
     ->name('events.download');
 Route::resource('/events', Web\Exams\EventController::class);
+
+Route::get(
+  'events/{event}/attempt-activity',
+  ExamAttempts\ActivitySummaryController::class
+)->name('events.attempt-activity');
 
 Route::delete('event-courseables/{eventCourseable}/delete', [Web\Exams\EventCourseableController::class, 'destroy'])
     ->name('event-courseables.destroy');
@@ -28,6 +34,15 @@ Route::post('/{exam}/exam-courseables/{examCourseable}/evaluate-theory', [Web\Ex
     ->name('exam-courseables.evaluate-theory');
 Route::resource('/{exam}/exam-courseables', Web\Exams\ExamCourseableController::class)
     ->except(['edit', 'update', 'destroy']);
+
+Route::post(
+  'exam-attempts/{exam}/answers',
+  ExamAttempts\RecordAttemptController::class
+)->name('exam-attempts.answers.store');
+Route::post(
+  'exam-attempts/{exam}/ping',
+  ExamAttempts\PingAttemptController::class
+)->name('exam-attempts.ping');
     
 Route::post('events/{event}/transfer-results', Web\Exams\TransferEventResultController::class)
 ->name('events.transfer-results');

@@ -2,6 +2,7 @@ import {
   EventType,
   Examable,
   ExamAttempt,
+  FaqType,
   Feeable,
   FeeItem,
   InstitutionStatus,
@@ -25,6 +26,19 @@ export interface AcademicSession extends Row {
   title: string;
   order_index: number;
   is_active: boolean;
+}
+
+export interface Faq extends Row {
+  name: string;
+  code: string;
+  type: FaqType;
+  description: string;
+  description_html: string;
+  video_url?: string | null;
+  is_active: boolean;
+  sort_order?: number | null;
+  youtube_video_id?: string | null;
+  youtube_embed_url?: string | null;
 }
 
 export interface Role extends Row {

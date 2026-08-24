@@ -9,12 +9,11 @@ import {
   Icon,
   IconButton,
   Input,
-  Radio,
-  RadioGroup,
   Spinner,
   Spacer,
   Text,
   VStack,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
@@ -53,9 +52,9 @@ import SwitchCourseTeacher from './switch-course-teacher-component';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import DestructivePopover from '@/components/destructive-popover';
+import ResultModeSelectionCard from '@/components/result-mode-selection-card';
 
 type AssessmentValue = { [key: string]: number | string };
-type ResultMode = 'full-term' | 'mid-term' | '';
 type SelectionParams = {
   academic_session_id?: number | string | null;
   term?: string | null;
@@ -97,15 +96,6 @@ function getSelectedStudentOption(
     label: student.user?.full_name ?? '',
     value: student.id,
   };
-}
-
-function getResultModeValue(
-  hasSelectedResultMode: boolean,
-  isMidTermSelected: boolean
-): ResultMode {
-  if (!hasSelectedResultMode) return '';
-
-  return isMidTermSelected ? 'mid-term' : 'full-term';
 }
 
 function visitCreatePage(
@@ -164,6 +154,7 @@ export default function RecordCourseResult({
     !usesMidTermResult ||
     Boolean(courseResult) ||
     typeof forMidTerm === 'boolean';
+  const isResultTypeRequired = usesMidTermResult && !hasSelectedResultMode;
   const createPageUrl = instRoute('course-results.create', [courseTeacher.id]);
 
   const webForm = useWebForm({
@@ -193,8 +184,17 @@ export default function RecordCourseResult({
     ? resultModeLabel
     : 'Select Result Type';
   const resultModeScheme = isMidTermSelected ? 'yellow' : 'blue';
-  const resultModeBg = isMidTermSelected ? 'yellow.50' : 'transparent';
-  const resultModeBorder = isMidTermSelected ? 'yellow.200' : 'transparent';
+  const resultModeBg = isResultTypeRequired
+    ? 'gray.50'
+    : isMidTermSelected
+    ? 'yellow.50'
+    : 'transparent';
+  const resultModeBorder = isResultTypeRequired
+    ? 'gray.200'
+    : isMidTermSelected
+    ? 'yellow.200'
+    : 'transparent';
+  const isFormDisabled = isSelectionLoading || isResultTypeRequired;
 
   function reloadWithSelection(changes: Partial<SelectionParams>) {
     setIsSelectionLoading(true);
@@ -227,6 +227,8 @@ export default function RecordCourseResult({
   }
 
   const submit = async () => {
+    if (isResultTypeRequired) return;
+
     const res = await webForm.submit((data, web) => {
       const { exam, ...resultData } = data.result;
       return web.post(instRoute('course-results.store', [courseTeacher]), {
@@ -258,16 +260,38 @@ export default function RecordCourseResult({
     { label: 'Class', value: courseTeacher.classification?.title ?? '' },
     { label: 'Teacher', value: courseTeacher.user?.full_name ?? '' },
   ];
-
+  const disabledBg = useColorModeValue('gray.100', 'gray.700');
   return (
     <DashboardLayout>
       <Div>
         <CenteredBox>
-          <Slab>
+          <Slab backgroundColor={isFormDisabled ? disabledBg : undefined}>
             <SlabHeading
               title={`${courseResult ? 'Update' : 'Record'} Result`}
             />
             <SlabBody>
+              {usesMidTermResult && (
+                <ResultModeSelectionCard
+                  value={
+                    isMidTermSelected
+                      ? 'mid-term'
+                      : hasSelectedResultMode
+                      ? 'full-term'
+                      : ''
+                  }
+                  isDisabled={isSelectionLoading}
+                  error={webForm.errors.for_mid_term}
+                  onChange={(value) => {
+                    if (isSelectionLoading) return;
+                    const nextForMidTerm = value === 'mid-term';
+                    webForm.setValue('for_mid_term', nextForMidTerm);
+                    reloadWithSelection({
+                      for_mid_term: nextForMidTerm,
+                    });
+                  }}
+                  mb={2}
+                />
+              )}
               <SwitchCourseTeacher
                 courseTeacher={courseTeacher}
                 teachersCourses={teachersCourses}
@@ -275,51 +299,23 @@ export default function RecordCourseResult({
                 getUrl={(courseTeacherId) =>
                   instRoute('course-results.create', [courseTeacherId])
                 }
-                isDisabled={isSelectionLoading}
+                isDisabled={isFormDisabled}
               />
               <Dt contentData={details} />
               <Divider height={1} my={2} />
               {selectedCourseTeacherState[0].id === courseTeacher.id && (
-                <VStack
-                  spacing={4}
-                  as={'form'}
-                  bg={resultModeBg}
-                  borderColor={resultModeBorder}
-                  borderWidth={1}
-                  borderRadius={'md'}
-                  p={4}
-                  align={'stretch'}
-                  onSubmit={preventNativeSubmit(submit)}
-                >
-                  <RecordingFormHeader
-                    label={visibleResultModeLabel}
-                    badgeLabel={resultModeLabel}
-                    colorScheme={resultModeScheme}
-                  />
-                  {isSelectionLoading && <SelectionLoadingNotice />}
-                  <SessionAndTermFields
-                    form={webForm}
-                    lockTermSession={lockTermSession}
-                    isDisabled={isSelectionLoading}
-                    onAcademicSessionChange={(value) => {
-                      if (isSelectionLoading) return;
-                      webForm.setValue('academic_session_id', value as any);
-                      reloadWithSelection({ academic_session_id: value });
-                    }}
-                    onTermChange={(value) => {
-                      if (isSelectionLoading) return;
-                      webForm.setValue('term', value as any);
-                      reloadWithSelection({ term: value });
-                    }}
-                  />
-                  {usesMidTermResult && (
-                    <ResultModeField
-                      form={webForm}
-                      value={getResultModeValue(
-                        hasSelectedResultMode,
+                <>
+                  {/* {usesMidTermResult && (
+                    <ResultModeSelectionCard
+                      value={
                         isMidTermSelected
-                      )}
+                          ? 'mid-term'
+                          : hasSelectedResultMode
+                          ? 'full-term'
+                          : ''
+                      }
                       isDisabled={isSelectionLoading}
+                      error={webForm.errors.for_mid_term}
                       onChange={(value) => {
                         if (isSelectionLoading) return;
                         const nextForMidTerm = value === 'mid-term';
@@ -329,29 +325,74 @@ export default function RecordCourseResult({
                         });
                       }}
                     />
-                  )}
-                  {hasSelectedResultMode && (
-                    <ResultEntryFields
-                      form={webForm}
-                      courseTeacher={courseTeacher}
-                      assessments={selectedAssessments}
-                      assessmentValue={assessmentValue}
-                      shouldShowExamInput={shouldShowExamInput}
-                      isDisabled={isSelectionLoading}
-                      onStudentChange={(student) => {
-                        if (isSelectionLoading) return;
-                        webForm.setValue('result', {
-                          ...webForm.data.result,
-                          student_id: student,
-                        });
-                        reloadWithSelection({
-                          student_id: student?.value ?? null,
-                        });
-                      }}
-                      onAssessmentChange={updateAssessmentValue}
-                    />
-                  )}
-                </VStack>
+                  )} */}
+                  <Box
+                    as="div"
+                    aria-disabled={isResultTypeRequired}
+                    opacity={isResultTypeRequired ? 0.55 : 1}
+                    pointerEvents={isResultTypeRequired ? 'none' : 'auto'}
+                    mt={usesMidTermResult ? 4 : 0}
+                  >
+                    <VStack
+                      spacing={4}
+                      as={'form'}
+                      bg={resultModeBg}
+                      borderColor={resultModeBorder}
+                      borderWidth={1}
+                      borderRadius={'md'}
+                      p={4}
+                      align={'stretch'}
+                      onSubmit={preventNativeSubmit(submit)}
+                    >
+                      <RecordingFormHeader
+                        label={visibleResultModeLabel}
+                        badgeLabel={
+                          hasSelectedResultMode
+                            ? resultModeLabel
+                            : 'Selection required'
+                        }
+                        colorScheme={
+                          hasSelectedResultMode ? resultModeScheme : 'red'
+                        }
+                      />
+                      {isSelectionLoading && <SelectionLoadingNotice />}
+                      <SessionAndTermFields
+                        form={webForm}
+                        lockTermSession={lockTermSession}
+                        isDisabled={isFormDisabled}
+                        onAcademicSessionChange={(value) => {
+                          if (isFormDisabled) return;
+                          webForm.setValue('academic_session_id', value as any);
+                          reloadWithSelection({ academic_session_id: value });
+                        }}
+                        onTermChange={(value) => {
+                          if (isFormDisabled) return;
+                          webForm.setValue('term', value as any);
+                          reloadWithSelection({ term: value });
+                        }}
+                      />
+                      <ResultEntryFields
+                        form={webForm}
+                        courseTeacher={courseTeacher}
+                        assessments={selectedAssessments}
+                        assessmentValue={assessmentValue}
+                        shouldShowExamInput={shouldShowExamInput}
+                        isDisabled={isFormDisabled}
+                        onStudentChange={(student) => {
+                          if (isFormDisabled) return;
+                          webForm.setValue('result', {
+                            ...webForm.data.result,
+                            student_id: student,
+                          });
+                          reloadWithSelection({
+                            student_id: student?.value ?? null,
+                          });
+                        }}
+                        onAssessmentChange={updateAssessmentValue}
+                      />
+                    </VStack>
+                  </Box>
+                </>
               )}
             </SlabBody>
           </Slab>
@@ -451,40 +492,6 @@ function SessionAndTermFields({
         />
       </FormControlBox>
     </>
-  );
-}
-
-function ResultModeField({
-  form,
-  value,
-  isDisabled,
-  onChange,
-}: {
-  form: any;
-  value: ResultMode;
-  isDisabled: boolean;
-  onChange: (value: ResultMode) => void;
-}) {
-  return (
-    <FormControlBox
-      form={form as any}
-      formKey="for_mid_term"
-      title="Result Type"
-    >
-      <RadioGroup
-        value={value}
-        onChange={(nextValue) => onChange(nextValue as ResultMode)}
-        isDisabled={isDisabled}
-      >
-        <HStack spacing={6}>
-          <Radio value="full-term">Full term</Radio>
-          <Radio value="mid-term">Mid-term</Radio>
-        </HStack>
-      </RadioGroup>
-      <Box color={'gray.600'} fontSize={'sm'} mt={1}>
-        Select the result type before choosing a student.
-      </Box>
-    </FormControlBox>
   );
 }
 

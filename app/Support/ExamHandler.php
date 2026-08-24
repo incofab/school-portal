@@ -4,7 +4,6 @@ namespace App\Support;
 
 use App\Enums\EventStatus;
 use App\Enums\ExamStatus;
-use App\Helpers\ExamAttemptFileHandler;
 use App\Models\Exam;
 use App\Models\ExamCourseable;
 use App\Support\Audit\AcademicIntegrityActivityLogger;
@@ -76,20 +75,6 @@ class ExamHandler
         ->save();
     });
 
-    ExamAttemptFileHandler::make(
-      $this->exam->only([
-        'id',
-        'event_id',
-        'exam_no',
-        'time_remaining',
-        'start_time',
-        'pause_time',
-        'end_time',
-        'status',
-        'num_of_questions'
-      ])
-    )->syncExamFile();
-
     app(AcademicIntegrityActivityLogger::class)->examStarted($this->exam);
 
     return $this;
@@ -125,7 +110,6 @@ class ExamHandler
       return;
     }
     $this->exam->examCourseables;
-    $examAttemptFileHandler = ExamAttemptFileHandler::make($this->exam);
     $totalScore = 0;
     $totalTheoryScore = 0;
     $totalTheoryMaxScore = 0;
@@ -135,8 +119,21 @@ class ExamHandler
     foreach ($this->exam->examCourseables as $key => $examCourseable) {
       $questions = $examCourseable->courseable->questions()->get();
       $theoryQuestions = $examCourseable->courseable->theoryQuestions()->get();
-      $scoreCalc = $examAttemptFileHandler->calculateScoreFromFile($questions);
-      $score = $scoreCalc['score'] ?? $examCourseable->score;
+      $objectiveAttempts = $this->exam
+        ->questionAttempts()
+        ->where(
+          'questionable_type',
+          (new \App\Models\Question())->getMorphClass()
+        )
+        ->whereIn('questionable_id', $questions->pluck('id'))
+        ->pluck('answer', 'questionable_id');
+      $score = $questions->reduce(
+        fn($carry, $question) => $carry +
+          ($objectiveAttempts->get($question->id) === $question->answer
+            ? 1
+            : 0),
+        0
+      );
       $numOfQuestions = $questions->count();
       $theoryNumOfQuestions = $theoryQuestions->count();
       $theoryMaxScore = $theoryQuestions->sum('marks');
@@ -178,8 +175,7 @@ class ExamHandler
       $totalScore,
       $totalTheoryScore,
       $totalTheoryMaxScore,
-      $totalNumOfQuestions,
-      $examAttemptFileHandler
+      $totalNumOfQuestions
     ) {
       $this->exam
         ->fill([
@@ -187,6 +183,8 @@ class ExamHandler
           'end_time' => null,
           'time_remaining' => 0,
           'status' => ExamStatus::Ended,
+          'submitted_at' => $this->exam->submitted_at ?? now(),
+          'last_activity_at' => now(),
           'score' => $totalScore,
           'theory_score' => $totalTheoryScore,
           'theory_max_score' => $totalTheoryMaxScore,
@@ -197,7 +195,18 @@ class ExamHandler
             ) => $courseable->theory_num_of_questions > 0 &&
               !$courseable->theory_evaluated
           ),
-          'attempts' => $examAttemptFileHandler->getQuestionAttempts()
+          'attempts' => $this->exam
+            ->questionAttempts()
+            ->get(['questionable_type', 'questionable_id', 'answer'])
+            ->mapWithKeys(
+              fn($attempt) => [
+                $attempt->questionable_type ===
+                (new \App\Models\TheoryQuestion())->getMorphClass()
+                  ? 'theory-' . $attempt->questionable_id
+                  : $attempt->questionable_id => $attempt->answer
+              ]
+            )
+            ->toArray()
         ])
         ->save();
     });

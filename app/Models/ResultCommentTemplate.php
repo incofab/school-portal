@@ -25,20 +25,19 @@ class ResultCommentTemplate extends BaseModel
    */
   static function getTemplate(
     Classification|int|null $classification = null,
-    ?bool $forMidTerm = false
+    ?bool $forMidTerm = null,
+    ?ResultCommentTemplateType $type = ResultCommentTemplateType::FullTermResult
   ) {
+    if (!is_null($forMidTerm)) {
+      $type = $forMidTerm
+        ? ResultCommentTemplateType::MidTermResult
+        : ResultCommentTemplateType::FullTermResult;
+    }
     $resultComments = ResultCommentTemplate::query()
       ->when(
-        !is_null($forMidTerm),
+        !is_null($type),
         fn($qq) => $qq->where(
-          fn($q) => $q
-            ->whereNull('type')
-            ->orWhere(
-              'type',
-              $forMidTerm
-                ? ResultCommentTemplateType::MidTermResult
-                : ResultCommentTemplateType::FullTermResult
-            )
+          fn($q) => $q->whereNull('type')->orWhere('type', $type)
         )
       )
       ->with('classifications')

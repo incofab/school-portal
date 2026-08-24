@@ -1,22 +1,23 @@
-import { Classification } from '@/types/models';
+import { Classification, ResultCommentTemplate } from '@/types/models';
 import React from 'react';
 import { Div } from '@/components/semantic';
-import useSharedProps from '@/hooks/use-shared-props';
 import SessionResultTemplate1, {
   SessionResultProps,
 } from './session-result-template-1';
 
+type ClassSessionResult = Omit<SessionResultProps, 'resultCommentTemplate'>;
+
 interface Props {
-  classSessionResults: SessionResultProps[];
+  classSessionResults: ClassSessionResult[];
   classification: Classification;
+  resultCommentTemplate: ResultCommentTemplate[];
 }
 
 export default function ClassSessionResults({
   classSessionResults,
   classification,
+  resultCommentTemplate,
 }: Props) {
-  const { currentInstitution } = useSharedProps();
-
   return (
     <Div>
       <Div>
@@ -29,7 +30,7 @@ export default function ClassSessionResults({
           key={sessionResultProps.sessionResult.id}
           sessionResult={sessionResultProps.sessionResult}
           termResultDetails={sessionResultProps.termResultDetails}
-          resultCommentTemplate={sessionResultProps.resultCommentTemplate}
+          resultCommentTemplate={resultCommentTemplate}
         />
       ))}
     </Div>

@@ -256,7 +256,7 @@ it(
   }
 );
 
-it('keeps related messages pending when the template send fails', function () {
+it('marks related messages failed when the template send fails', function () {
   Http::fake([
     'graph.facebook.com/*' => Http::response(['error' => 'bad request'], 400)
   ]);
@@ -275,7 +275,7 @@ it('keeps related messages pending when the template send fails', function () {
     $message
   ))->handle();
 
-  expect($message->fresh()->status)->toBe(MessageStatus::Pending);
+  expect($message->fresh()->status)->toBe(MessageStatus::Failed);
   expect($message->fresh()->sent_at)->toBeNull();
 });
 

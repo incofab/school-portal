@@ -102,10 +102,10 @@ export async function removeHighlight(page: Page): Promise<void> {
  * exempt — see browser-runtime.js) to `scale`. Calling this repeatedly with
  * the *same* scale but a different locator pans the already-zoomed view
  * (browser-runtime.js transitions `transform-origin`, not just `transform`)
- * instead of zooming out and back in — that's how `Tutorial.focusOn`/`step`
- * stay at one zoom level while moving between fields in the same form. Only
- * reach for this directly (rather than `Tutorial.focusOn`) for a genuine
- * single-element zoom outside of any form context.
+ * instead of zooming out and back in. `Tutorial.focusOn`/`step` use this
+ * only once per region (via `computeFitTransform`/`applyZoom`) and then
+ * hold still — reach for this directly only for a genuine one-off
+ * single-element zoom outside of any `Tutorial.focusOn` region.
  */
 export async function zoomToElement(
   page: Page,
@@ -258,16 +258,29 @@ export async function typeForTutorial(
  * label text to the next `.control` element instead. `labelIndex` picks
  * between duplicate label text on the page (e.g. a checkbox and a revealed
  * field that share the same word).
+ *
+ * Pass a RegExp instead of a plain string for a field whose `FormControl`
+ * is `isRequired` — Chakra renders the red "*" as part of the label's own
+ * text, so an exact string match like `'Role'` never matches (the label's
+ * text is really "Role *"); e.g. `/^Role\b/`.
  */
 export function reactSelectControl(
   page: Page,
-  labelText: string,
+  labelText: string | RegExp,
   labelIndex = 0
 ): Locator {
-  return page
-    .getByText(labelText, { exact: true })
-    .nth(labelIndex)
-    .locator('xpath=following::div[contains(@class,"control")][1]');
+  const label =
+    typeof labelText === 'string'
+      ? page.getByText(labelText, { exact: true })
+      : page.getByText(labelText);
+
+  return label.nth(labelIndex).locator(
+    // Chakra's own `FormControl` wrapper carries a `chakra-form-control`
+    // class, which also contains "control" — excluding it stops this
+    // from matching a *later* field's FormControl wrapper instead of
+    // the react-select control actually tied to `labelText`.
+    'xpath=following::div[contains(@class,"control") and not(contains(@class,"chakra-form-control"))][1]'
+  );
 }
 
 /**

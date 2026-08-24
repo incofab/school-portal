@@ -44,6 +44,11 @@ _ide_helper.php
 /public/tutorials/*.mp4
 /public/tutorials/debug/
 
+# Temporary DB dump used to restore the database after each tutorial-video
+# generation (see app/Actions/Tutorials/CreateDatabaseSnapshot.php) — never
+# committed, and deleted automatically once the restore succeeds.
+/storage/app/tutorial-snapshots/
+
 error_log
 public/error_log
 

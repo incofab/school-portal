@@ -1,0 +1,38 @@
+<svg width="760" height="560" viewBox="0 0 760 560" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">EduManager dashboard illustration</title>
+  <desc id="desc">A modern school management dashboard with student, fee, attendance, and result widgets.</desc>
+  <rect width="760" height="560" rx="28" fill="#E6F6F3"/>
+  <path d="M0 88C132 36 241 31 368 75C507 124 612 117 760 43V560H0V88Z" fill="#C8EEE8"/>
+  <path d="M74 94C74 71.9086 91.9086 54 114 54H646C668.091 54 686 71.9086 686 94V466C686 488.091 668.091 506 646 506H114C91.9086 506 74 488.091 74 466V94Z" fill="#FFFFFF"/>
+  <path d="M74 94C74 71.9086 91.9086 54 114 54H646C668.091 54 686 71.9086 686 94V132H74V94Z" fill="#008374"/>
+  <circle cx="116" cy="94" r="8" fill="#F85A40"/>
+  <circle cx="144" cy="94" r="8" fill="#BCE8E2"/>
+  <circle cx="172" cy="94" r="8" fill="#FFFFFF"/>
+  <rect x="540" y="82" width="104" height="24" rx="12" fill="#1AA394"/>
+  <rect x="106" y="166" width="176" height="144" rx="18" fill="#F5FBF9" stroke="#DCE9E6" stroke-width="2"/>
+  <rect x="314" y="166" width="340" height="144" rx="18" fill="#F5FBF9" stroke="#DCE9E6" stroke-width="2"/>
+  <rect x="106" y="342" width="548" height="104" rx="18" fill="#F5FBF9" stroke="#DCE9E6" stroke-width="2"/>
+  <rect x="132" y="196" width="66" height="66" rx="18" fill="#008374"/>
+  <path d="M148 242C151.587 229.386 158.017 223.079 165 223.079C171.983 223.079 178.413 229.386 182 242" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="165" cy="214" r="13" fill="#FFFFFF"/>
+  <rect x="216" y="198" width="40" height="10" rx="5" fill="#B7DCD6"/>
+  <rect x="216" y="220" width="36" height="10" rx="5" fill="#008374"/>
+  <rect x="132" y="278" width="118" height="10" rx="5" fill="#DCE9E6"/>
+  <rect x="342" y="196" width="130" height="14" rx="7" fill="#10211F"/>
+  <rect x="342" y="226" width="76" height="10" rx="5" fill="#6CBDB2"/>
+  <path d="M342 276C376 236 408 255 438 232C466 211 494 213 523 251C556 294 589 269 626 221" stroke="#008374" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M342 298H626" stroke="#DCE9E6" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="438" cy="232" r="10" fill="#F85A40"/>
+  <circle cx="523" cy="251" r="10" fill="#F85A40"/>
+  <rect x="132" y="374" width="148" height="14" rx="7" fill="#10211F"/>
+  <rect x="132" y="404" width="92" height="10" rx="5" fill="#6CBDB2"/>
+  <rect x="322" y="374" width="108" height="14" rx="7" fill="#10211F"/>
+  <rect x="322" y="404" width="132" height="10" rx="5" fill="#6CBDB2"/>
+  <rect x="508" y="374" width="96" height="14" rx="7" fill="#10211F"/>
+  <rect x="508" y="404" width="76" height="10" rx="5" fill="#6CBDB2"/>
+  <circle cx="626" cy="398" r="20" fill="#F85A40"/>
+  <path d="M616 398L623 405L637 389" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M64 454L20 500" stroke="#008374" stroke-width="10" stroke-linecap="round"/>
+  <path d="M713 113L741 84" stroke="#F85A40" stroke-width="10" stroke-linecap="round"/>
+  <path d="M697 475L733 511" stroke="#008374" stroke-width="10" stroke-linecap="round"/>
+</svg>

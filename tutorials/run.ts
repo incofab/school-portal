@@ -8,12 +8,15 @@ import { startRecording } from './helpers/tutorial-recorder';
 interface TutorialEntry {
   load: () => Promise<(page: Page) => Promise<void>>;
   /**
-   * Artisan command (and args) to shell out to once the recording ends —
-   * success or failure — to wipe any DB records the run itself created, so
-   * nothing it generated is left sitting around afterwards. Omit for
-   * tutorials that don't write any lasting demo data (e.g. login).
+   * Artisan command (and args) that creates/updates whatever fixture data
+   * this tutorial needs before recording (a class, a demo student, etc).
+   * Runs after the database snapshot is taken, so anything it does is
+   * automatically undone by the restore at the end of `main()` — no
+   * tutorial needs to reset or clean up after itself. Omit for tutorials
+   * that only need the shared demo admin/institution (see
+   * `EnsureTutorialInstitution`).
    */
-  cleanupArtisanCommand?: string[];
+  seedArtisanCommand?: string[];
 }
 
 /**
@@ -26,16 +29,46 @@ interface TutorialEntry {
 const TUTORIALS: Record<string, TutorialEntry> = {
   login: {
     load: async () => (await import('./login/login.tutorial')).runLoginTutorial,
+    seedArtisanCommand: ['tutorial:seed-demo-user'],
   },
   'fee-payment': {
     load: async () =>
       (await import('./fee-payment/fee-payment.tutorial'))
         .runFeePaymentTutorial,
-    // The tutorial creates a fee, a bank account, and payments while it
-    // records — clear them back out afterwards so re-running (or just
-    // watching it happen) never leaves demo data sitting in the database.
-    // See app/Console/Commands/Tutorials/ClearFeeTutorialData.php.
-    cleanupArtisanCommand: ['tutorial:clear-fee-demo'],
+    seedArtisanCommand: ['tutorial:seed-fee-demo'],
+  },
+  'cbt-exam-workflow': {
+    load: async () =>
+      (await import('./cbt-exam-workflow/cbt-exam-workflow.tutorial'))
+        .runCbtExamWorkflowTutorial,
+    seedArtisanCommand: ['tutorial:seed-cbt-demo'],
+  },
+  'school-onboarding-walkthrough': {
+    load: async () =>
+      (
+        await import(
+          './school-onboarding-walkthrough/school-onboarding-walkthrough.tutorial'
+        )
+      ).runSchoolOnboardingWalkthroughTutorial,
+    seedArtisanCommand: ['tutorial:seed-onboarding-demo'],
+  },
+  'feature-overview-walkthrough': {
+    load: async () =>
+      (
+        await import(
+          './feature-overview-walkthrough/feature-overview-walkthrough.tutorial'
+        )
+      ).runFeatureOverviewWalkthroughTutorial,
+    seedArtisanCommand: ['tutorial:seed-feature-overview-demo'],
+  },
+  'result-recording-workflow': {
+    load: async () =>
+      (
+        await import(
+          './result-recording-workflow/result-recording-workflow.tutorial'
+        )
+      ).runResultRecordingWorkflowTutorial,
+    seedArtisanCommand: ['tutorial:seed-result-recording-workflow-demo'],
   },
 };
 
@@ -56,28 +89,45 @@ async function main(): Promise<void> {
     `[tutorial] Generating "${name}" (${config.deviceType}) against ${config.baseUrl} ...`
   );
 
-  const runTutorial = await entry.load();
-  const session = await startRecording(name);
+  // Snapshot the whole database before anything else runs, so the restore
+  // in `finally` below can put it back exactly as it was regardless of
+  // what this tutorial creates or modifies — no per-tutorial cleanup code
+  // needed. See app/Actions/Tutorials/CreateDatabaseSnapshot.php.
+  console.log('[tutorial] Creating database snapshot...');
+  await runArtisanCommand(['tutorial:db-snapshot']);
 
   try {
-    await runTutorial(session.page);
+    if (entry.seedArtisanCommand) {
+      console.log('[tutorial] Preparing tutorial data...');
+      await runArtisanCommand(entry.seedArtisanCommand);
+    }
 
-    const { webmPath, mp4Path } = await session.finish();
-    console.log(`[tutorial] Saved: ${webmPath}`);
-    if (mp4Path) {
-      console.log(`[tutorial] Saved: ${mp4Path}`);
+    const runTutorial = await entry.load();
+    const session = await startRecording(name);
+
+    try {
+      await runTutorial(session.page);
+
+      const { webmPath, mp4Path } = await session.finish();
+      console.log(`[tutorial] Saved: ${webmPath}`);
+      if (mp4Path) {
+        console.log(`[tutorial] Saved: ${mp4Path}`);
+      }
+    } catch (error) {
+      console.error(`[tutorial] "${name}" failed:`, error);
+      await saveDebugScreenshot(name, session.page);
+      await session.discard();
+      process.exitCode = 1;
     }
-  } catch (error) {
-    console.error(`[tutorial] "${name}" failed:`, error);
-    await saveDebugScreenshot(name, session.page);
-    await session.discard();
-    process.exitCode = 1;
   } finally {
-    if (entry.cleanupArtisanCommand) {
-      await runArtisanCommand(entry.cleanupArtisanCommand).catch((error) =>
-        console.error('[tutorial] cleanup failed:', error)
-      );
-    }
+    // Always restore, whether the tutorial succeeded or failed above —
+    // this is what keeps a failed/aborted run from leaving the database
+    // polluted with partial demo data.
+    console.log('[tutorial] Restoring database snapshot...');
+    await runArtisanCommand(['tutorial:db-restore']).catch((error) => {
+      console.error('[tutorial] restore failed:', error);
+      process.exitCode = 1;
+    });
   }
 }
 

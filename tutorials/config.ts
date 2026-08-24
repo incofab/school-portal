@@ -62,3 +62,45 @@ export const feeTutorialFixtures = {
   bankName: 'Access bank',
   bankAccountNumber: '0000000000',
 };
+
+// Fixture data seeded by `php artisan tutorial:seed-cbt-demo`
+// (app/Console/Commands/Tutorials/SeedCbtTutorialData.php) — keep these in
+// sync with that command's constants.
+export const cbtTutorialFixtures = {
+  studentCode: 'TUT0002',
+  className: 'JSS 3',
+  classGroupName: 'CBT Demo Group',
+  courseTitle: 'CBT Demo Subject',
+  sessionName: 'CBT Practice Session',
+  eventTitle: 'CBT Demo Exam',
+};
+
+// Fixture data seeded by `php artisan tutorial:seed-onboarding-demo`
+// (app/Console/Commands/Tutorials/SeedOnboardingTutorialData.php) — keep
+// these in sync with that command's constants. Unlike the other tutorials'
+// fixtures, this seed command creates nothing beyond the admin/institution
+// themselves — every value below is instead typed into the app live, by
+// the tutorial script, so the recording shows a genuinely empty school
+// being set up from scratch.
+export const onboardingTutorialFixtures = {
+  adminEmail:
+    process.env.TUTORIAL_ONBOARDING_USER_EMAIL ??
+    'tutorial.onboarding.admin@example.com',
+  institutionName: 'New Horizon Academy',
+  classGroupTitle: 'Junior Secondary',
+  classTitles: ['JSS 1', 'JSS 2'],
+  subjectTitles: ['Mathematics', 'English Language'],
+  teacherFirstName: 'Grace',
+  teacherLastName: 'Adeyemi',
+  teacherEmail: 'tutorial.onboarding.teacher@example.com',
+  teacherPhone: '08033333333',
+  studentFirstName: 'David',
+  studentLastName: 'Okafor',
+  studentPhone: '08022222222',
+  guardianPhone: '08011111111',
+  guardianFirstName: 'Blessing',
+  guardianLastName: 'Okafor',
+  guardianEmail: 'tutorial.onboarding.guardian@example.com',
+  bankName: 'Access bank',
+  bankAccountNumber: '0000000001',
+};

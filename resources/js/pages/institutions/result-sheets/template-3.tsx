@@ -280,7 +280,7 @@ export default function Template3(props: ResultProps) {
                   color: '#3f3f3f',
                   fontWeight: 'bold',
                   textTransform: 'uppercase',
-                  fontSize: '14px',
+                  fontSize: '12px',
                 }}
               >
                 <tr>
@@ -297,10 +297,10 @@ export default function Template3(props: ResultProps) {
                   ))}
                   {showExamResult && <th>Exam</th>}
                   <th>Total</th>
-                  {!hidePosition && <th>Subject Position</th>}
+                  {!hidePosition && <th>Pos</th>}
                   <th>Grade</th>
-                  <th>Highest Score</th>
-                  <th>Lowest Score</th>
+                  <th>Highest</th>
+                  <th>Lowest</th>
                   <th>Remark</th>
                 </tr>
               </thead>

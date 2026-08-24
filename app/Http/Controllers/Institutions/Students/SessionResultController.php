@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Institutions\Students;
 
 use App\Actions\CourseResult\GenerateCourseSessionResult;
+use App\Enums\ResultCommentTemplateType;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
@@ -82,7 +83,7 @@ class SessionResultController extends Controller
         'termResultDetails' => $this->getTermResultDetails($sessionResult),
         'resultCommentTemplate' => ResultCommentTemplate::getTemplate(
           $sessionResult->classification_id,
-          false
+          type: ResultCommentTemplateType::SessionResult
         )
       ]
     );
@@ -165,7 +166,7 @@ class SessionResultController extends Controller
       }),
       'resultCommentTemplate' => ResultCommentTemplate::getTemplate(
         $classification,
-        false
+        type: ResultCommentTemplateType::SessionResult
       ),
       'classification' => $classification->loadMissing('classificationGroup')
     ]);

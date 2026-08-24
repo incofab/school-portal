@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\ActivityLog;
+use App\Models\Faq;
 use App\Models\PaymentReference;
 use App\Policies\ActivityLogPolicy;
+use App\Policies\FaqPolicy;
 use App\Policies\PaymentReferencePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -18,6 +20,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         ActivityLog::class => ActivityLogPolicy::class,
+        Faq::class => FaqPolicy::class,
         PaymentReference::class => PaymentReferencePolicy::class,
     ];
 

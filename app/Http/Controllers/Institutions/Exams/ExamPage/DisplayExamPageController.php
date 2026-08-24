@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers\Institutions\Exams\ExamPage;
 
-use App\Helpers\ExamAttemptFileHandler;
+use App\Actions\Exams\StartOrResumeExamAttempt;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Institution;
 use App\Models\Student;
-use App\Support\ExamHandler;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class DisplayExamPageController extends Controller
 {
-  function __invoke(Institution $institution, Exam $exam, Request $request)
-  {
+  function __invoke(
+    Institution $institution,
+    Exam $exam,
+    Request $request,
+    StartOrResumeExamAttempt $startOrResumeExamAttempt
+  ) {
     $exam = $exam
       ->where('id', $exam->id)
       ->with('event')
@@ -34,8 +37,7 @@ class DisplayExamPageController extends Controller
       )
       ->first();
 
-    $examHandler = ExamHandler::make($exam)->startExam();
-    $examAttemptFileHandler = ExamAttemptFileHandler::make($exam);
+    $examHandler = $startOrResumeExamAttempt->execute($exam);
     $tokenUser =
       currentUser() ?? ($exam->examable ?? $this->getTokenUserFromCookie());
 
@@ -45,7 +47,18 @@ class DisplayExamPageController extends Controller
       'tokenUser' => $tokenUser,
       'existingAttempts' =>
         collect($exam->attempts)->toArray() +
-        $examAttemptFileHandler->getQuestionAttempts()
+        $exam
+          ->questionAttempts()
+          ->get(['questionable_type', 'questionable_id', 'answer'])
+          ->mapWithKeys(
+            fn($attempt) => [
+              $attempt->questionable_type ===
+              (new \App\Models\TheoryQuestion())->getMorphClass()
+                ? 'theory-' . $attempt->questionable_id
+                : $attempt->questionable_id => $attempt->answer
+            ]
+          )
+          ->toArray()
     ]);
   }
 }

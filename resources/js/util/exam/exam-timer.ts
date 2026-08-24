@@ -3,7 +3,7 @@ class ExamTimer {
   private duration: number = 0;
   private timeElapsed: number = 0;
   private timeRemaining: number = 0;
-  private readonly PING_INTERVAL = 5;
+  private readonly PING_INTERVAL = 30;
   private pingCounter = 0;
 
   constructor(

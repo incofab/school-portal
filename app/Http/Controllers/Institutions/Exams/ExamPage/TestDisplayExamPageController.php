@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Institutions\Exams\ExamPage;
 
 use App\Enums\ExamStatus;
-use App\Helpers\ExamAttemptFileHandler;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Institution;
 use App\Models\Student;
+use App\Models\TheoryQuestion;
 use App\Models\TokenUser;
-use App\Support\ExamHandler;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -47,9 +46,6 @@ class TestDisplayExamPageController extends Controller
       ])
       ->save();
 
-    // $examHandler = ExamHandler::make($exam)->startExam();
-    $examAttemptFileHandler = ExamAttemptFileHandler::make($exam);
-
     return Inertia::render('institutions/exams/exam-page/display-exam', [
       'exam' => $exam,
       'timeRemaining' => $exam->event->getDurationInSeconds(),
@@ -61,7 +57,18 @@ class TestDisplayExamPageController extends Controller
       ]),
       'existingAttempts' =>
         collect($exam->attempts)->toArray() +
-        $examAttemptFileHandler->getQuestionAttempts()
+        $exam
+          ->questionAttempts()
+          ->get(['questionable_type', 'questionable_id', 'answer'])
+          ->mapWithKeys(
+            fn($attempt) => [
+              $attempt->questionable_type ===
+              (new TheoryQuestion())->getMorphClass()
+                ? 'theory-' . $attempt->questionable_id
+                : $attempt->questionable_id => $attempt->answer
+            ]
+          )
+          ->toArray()
     ]);
   }
 }

@@ -63,7 +63,8 @@ class SendDailyAttendanceNotifications
     $attendance->loadMissing(
       'institution.createdBy',
       'institutionUser.student.user',
-      'institutionUser.student.guardian'
+      'institutionUser.student.guardian',
+      'institutionUser.student.guardianStudents.guardian'
     );
 
     $phone = $this->guardianPhone($attendance);
@@ -165,9 +166,18 @@ class SendDailyAttendanceNotifications
   private function guardianPhone(Attendance $attendance): ?string
   {
     $student = $attendance->institutionUser?->student;
+    $guardianPhones =
+      $student?->guardianStudents
+        ?->pluck('guardian.phone')
+        ->filter()
+        ->all() ?? [];
 
     foreach (
-      [$student?->guardian_phone, $student?->guardian?->phone]
+      [
+        $student?->guardian_phone,
+        $student?->guardian?->phone,
+        ...$guardianPhones
+      ]
       as $phone
     ) {
       $normalized = $this->phoneNumberNormalizer->normalize($phone);

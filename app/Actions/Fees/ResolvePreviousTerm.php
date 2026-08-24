@@ -9,7 +9,11 @@ use App\Support\SettingsHandler;
 
 class ResolvePreviousTerm
 {
-  private const TERM_ORDER = [TermType::First, TermType::Second, TermType::Third];
+  private const TERM_ORDER = [
+    TermType::First,
+    TermType::Second,
+    TermType::Third
+  ];
 
   public function __construct(private Institution $institution)
   {
@@ -28,6 +32,7 @@ class ResolvePreviousTerm
     $settingsHandler = SettingsHandler::makeFromInstitution($this->institution);
     $currentTerm = TermType::tryFrom($settingsHandler->getCurrentTerm());
     $currentSessionId = $settingsHandler->getCurrentAcademicSession();
+    $currentSessionId = $currentSessionId ? (int) $currentSessionId : null;
 
     if (!$currentTerm) {
       return ['term' => null, 'academic_session_id' => null];
@@ -44,7 +49,9 @@ class ResolvePreviousTerm
 
     return [
       'term' => TermType::Third,
-      'academic_session_id' => $this->previousAcademicSessionId($currentSessionId)
+      'academic_session_id' => $this->previousAcademicSessionId(
+        $currentSessionId
+      )
     ];
   }
 

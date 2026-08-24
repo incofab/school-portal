@@ -94,6 +94,11 @@ export default function ManagerSideBarLayout() {
       roles: [ManagerRole.Admin],
     },
     {
+      label: 'FAQs',
+      route: route('managers.faqs.index'),
+      roles: [ManagerRole.Admin],
+    },
+    {
       label: 'Institution Groups',
       roles: [ManagerRole.Partner, ManagerRole.Admin],
       route: route('managers.institution-groups.index'),
@@ -188,7 +193,8 @@ export default function ManagerSideBarLayout() {
           }
           if (
             menu.partnerUserRoles &&
-            !menu.partnerUserRoles.includes(currentUser.partner_user?.role)
+            (!currentUser.partner_user?.role ||
+              !menu.partnerUserRoles.includes(currentUser.partner_user.role))
           ) {
             return;
           }

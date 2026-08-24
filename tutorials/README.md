@@ -27,14 +27,21 @@ tutorials/
     login.tutorial.ts          # the "How to Log In" walkthrough script
   fee-payment/
     fee-payment.tutorial.ts    # the "Fee Recording & Payment" walkthrough script
+  cbt-exam-workflow/
+    cbt-exam-workflow.tutorial.ts  # the "CBT Exam Workflow" walkthrough script
+  school-onboarding-walkthrough/
+    school-onboarding-walkthrough.tutorial.ts  # the "First-Time School Onboarding" walkthrough script
   run.ts                       # CLI entry point / tutorial registry
 app/Console/Commands/Tutorials/  # Artisan commands used only by the tutorial system, kept out of
-                                  # the main Commands folder — seeding, resetting, and the online-
-                                  # payment simulation helper (see below)
+                                  # the main Commands folder — seeding, the database snapshot/
+                                  # restore pair (see "Database snapshot & restore" below), and the
+                                  # online-payment simulation helper (see further down)
 public/
   tutorials/
     login-tutorial.webm        # generated output (and .mp4 if ffmpeg is available)
     fee-payment-tutorial.webm  # generated output (and .mp4 if ffmpeg is available)
+    cbt-exam-workflow-tutorial.webm  # generated output (and .mp4 if ffmpeg is available)
+    school-onboarding-walkthrough-tutorial.webm  # generated output (and .mp4 if ffmpeg is available)
     debug/                     # failure screenshots only (not committed, not in the final output)
 ```
 
@@ -79,42 +86,29 @@ pauses so a viewer can read it, runs the action, then clears the highlight.
    ```bash
    ./vendor/bin/sail up -d
    ```
-3. Seed the deterministic tutorial/demo user (idempotent — safe to re-run):
-   ```bash
-   ./vendor/bin/sail artisan tutorial:seed-demo-user
-   # or, if not using Sail and your shell can reach the DB directly:
-   php artisan tutorial:seed-demo-user
-   ```
-   This creates (or updates) a single institution admin account and a
-   matching "Tutorial Demo Academy" institution — see
-   `app/Console/Commands/Tutorials/SeedTutorialDemoUser.php`. It never
-   touches real user data and is safe to run repeatedly.
-4. The fee-payment tutorial additionally needs its own fixture data (a
-   class, a demo student, a demo parent/guardian, and a clean slate for
-   fees/bank accounts/payments — see
-   `app/Console/Commands/Tutorials/SeedFeeTutorialData.php`):
-   ```bash
-   ./vendor/bin/sail artisan tutorial:seed-fee-demo
-   # or: php artisan tutorial:seed-fee-demo
-   ```
-   This resets (deletes and recreates) any fee, bank account, and payment
-   state tied to the dedicated "Tutorial Demo Academy" institution so the
-   video looks the same every time it's regenerated. It never touches any
-   other institution's data.
-5. The fee-payment tutorial also shells out to `artisan` once, mid-run, to
-   finish an online payment (see "Demonstrating online payments" below —
-   this needs the same DB access as the seed commands, i.e. Sail on this
-   project). Point it at the right command with an env var:
-   ```bash
-   export TUTORIAL_ARTISAN_COMMAND="./vendor/bin/sail artisan"
-   ```
-   Defaults to plain `php artisan` if unset.
+That's it — every `npm run tutorial:<name>` script already points `run.ts`
+at `./vendor/bin/sail artisan` (it shells out to it before, and sometimes
+during and after, every recording — see "Database snapshot & restore"
+below), since this project's database is only reachable through Sail. You
+don't need to set `TUTORIAL_ARTISAN_COMMAND` yourself for the `npm run`
+workflow — it's only relevant if you invoke `tsx tutorials/run.ts <name>`
+directly, where it defaults to plain `php artisan`.
+
+`npm run tutorial:<name>` (see "Running" below) now creates a
+database snapshot, prepares whatever fixture data that tutorial needs
+(demo admin/institution, class, student, guardian, etc.), records the
+video, and restores the database afterwards, automatically. You don't need
+to run any `tutorial:seed-*` command by hand first (each `*.tutorial.ts`
+entry's `seedArtisanCommand` in `tutorials/run.ts` handles it), and there's
+nothing to clean up afterwards either.
 
 ## Running
 
 ```bash
 npm run tutorial:login
-TUTORIAL_ARTISAN_COMMAND="./vendor/bin/sail artisan" npm run tutorial:fee-payment
+npm run tutorial:fee-payment
+npm run tutorial:cbt-exam-workflow
+npm run tutorial:school-onboarding-walkthrough
 ```
 
 Each generates `public/tutorials/<name>-tutorial.webm` (and a matching
@@ -131,7 +125,7 @@ Every tutorial can also be generated at a phone-sized viewport, using the
 
 ```bash
 npm run tutorial:login:mobile
-TUTORIAL_ARTISAN_COMMAND="./vendor/bin/sail artisan" npm run tutorial:fee-payment:mobile
+npm run tutorial:fee-payment:mobile
 ```
 
 This records at a 390×844 (iPhone 13/14-class portrait) viewport instead of
@@ -144,19 +138,24 @@ zoom is needed, and zooming would just crop content instead. Tutorial
 scripts don't need any device-specific code to support this; write the
 walkthrough once and both sizes fall out of it.
 
+The school-onboarding-walkthrough tutorial is desktop-only by design — a
+new admin's first-time setup is a long, form-heavy session best watched at
+full size — so it has no `:mobile` npm script.
+
 ## Configuration
 
 Set these as real environment variables, or add them to `.env` (already
 gitignored) — see `tutorials/config.ts` for the defaults:
 
-| Variable                   | Default                | Purpose                                                                                                                              |
-| -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `TUTORIAL_BASE_URL`        | `http://localhost`     | Where the app under test is running                                                                                                  |
-| `TUTORIAL_USER_EMAIL`      | `tutorial@example.com` | Demo login email (also read by the seeder via `config('tutorial.demo_email')`)                                                       |
-| `TUTORIAL_USER_PASSWORD`   | `password`             | Demo login password (shared by the admin, student, and guardian demo accounts)                                                       |
-| `TUTORIAL_HEADLESS`        | `false`                | Set to `true` to run without a visible window                                                                                        |
-| `TUTORIAL_DEVICE`          | `desktop`              | Set to `mobile` to record at a phone-sized viewport instead — see "Mobile recordings" above                                          |
-| `TUTORIAL_ARTISAN_COMMAND` | `php artisan`          | Used by the fee-payment tutorial to shell out mid-run — set to `./vendor/bin/sail artisan` if your DB is only reachable through Sail |
+| Variable                         | Default                | Purpose                                                                                                                                                                                                                   |
+| -------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TUTORIAL_BASE_URL`              | `http://localhost`     | Where the app under test is running                                                                                                                                                                                       |
+| `TUTORIAL_USER_EMAIL`            | `tutorial@example.com` | Demo login email (also read by the seeder via `config('tutorial.demo_email')`)                                                                                                                                            |
+| `TUTORIAL_USER_PASSWORD`         | `password`             | Demo login password (shared by the admin, student, and guardian demo accounts)                                                                                                                                            |
+| `TUTORIAL_HEADLESS`              | `false`                | Set to `true` to run without a visible window                                                                                                                                                                             |
+| `TUTORIAL_DEVICE`                | `desktop`              | Set to `mobile` to record at a phone-sized viewport instead — see "Mobile recordings" above                                                                                                                               |
+| `TUTORIAL_ARTISAN_COMMAND`       | `php artisan`          | Used by `run.ts` for the database snapshot/restore/seed steps around every recording, and by the fee-payment tutorial to shell out mid-run. Every `npm run tutorial:*` script already sets this to `./vendor/bin/sail artisan` — only override it if you're invoking `tsx tutorials/run.ts <name>` directly, or your DB is reachable some other way |
+| `TUTORIAL_SNAPSHOT_ENVIRONMENTS` | `local,testing`        | Comma-separated Laravel environments the snapshot/restore commands are allowed to run in — see "Database snapshot & restore" below. Read on the Laravel side via `config('tutorial.snapshot.allowed_environments')`       |
 
 The demo credentials are never used anywhere in application logic — only by
 the `tutorial:seed-*` commands and the tutorial scripts themselves. Never
@@ -165,6 +164,45 @@ point them at a real account. The fee-payment tutorial's demo student
 (`tutorial.guardian@example.com`) are seeded by `tutorial:seed-fee-demo` —
 see `app/Console/Commands/Tutorials/SeedFeeTutorialData.php` for the exact
 fixture values.
+
+## Database snapshot & restore
+
+Rather than every tutorial writing its own teardown code to delete whatever
+it created (events, questions, fees, payments, users, ...), `run.ts` wraps
+the whole recording in a generic database snapshot/restore pair:
+
+```
+tutorial:db-snapshot  →  seedArtisanCommand  →  Playwright recording  →  tutorial:db-restore
+```
+
+1. **`sail artisan tutorial:db-snapshot`** (`App\Actions\Tutorials\CreateDatabaseSnapshot`)
+   dumps the _entire_ current database with `mysqldump` to a single file at
+   `storage/app/tutorial-snapshots/tutorial-db-snapshot.sql` (gitignored).
+   This runs before any tutorial data is touched.
+2. The tutorial's `seedArtisanCommand` (e.g. `tutorial:seed-fee-demo`) then
+   creates whatever fixture data that tutorial needs, and the Playwright
+   script performs whatever it does on top of that — new records,
+   payments, exam attempts, edits to existing rows, anything.
+3. **`php artisan tutorial:db-restore`** (`App\Actions\Tutorials\RestoreDatabaseSnapshot`)
+   re-imports that same dump, which was taken with `--add-drop-table`, so
+   every table it covers is dropped and recreated exactly as it was —
+   same rows, same ids, same auto-increment counters. This runs in a
+   `finally` block in `run.ts`, so it happens **even if the tutorial script
+   throws** (a failed recording never leaves demo data behind). The
+   snapshot file is deleted once the restore succeeds; if the restore
+   itself fails, the file is left in place so you can retry
+   `php artisan tutorial:db-restore` by hand rather than losing the only
+   copy of the pre-tutorial state.
+
+Both commands refuse to run outside `TUTORIAL_SNAPSHOT_ENVIRONMENTS`
+(default `local,testing`), and refuse unconditionally in production
+regardless of that setting (`App::isProduction()`) — this operation
+overwrites the entire database, so `DatabaseSnapshotGuard` checks this in
+the Action layer itself, not just at the console-command boundary.
+
+Because restoring doesn't depend on knowing what a tutorial created or
+changed, **a new tutorial never needs its own cleanup command** — see step
+5 under "Adding another tutorial" below.
 
 **Note:** if Laravel Debugbar is enabled in your local `.env`
 (`APP_DEBUG=true` typically enables it), the runtime script actively hides
@@ -218,7 +256,10 @@ same fee for their child, and pays part of what's left by bank transfer.
    that takes a Playwright `Page` and drives the walkthrough.
 2. Register it in the `TUTORIALS` map in `tutorials/run.ts`:
    ```ts
-   'add-student': async () => (await import('./add-student/add-student.tutorial')).runAddStudentTutorial
+   'add-student': {
+     load: async () => (await import('./add-student/add-student.tutorial')).runAddStudentTutorial,
+     seedArtisanCommand: ['tutorial:seed-add-student-demo'], // omit if no fixtures are needed
+   },
    ```
 3. Optionally add an npm script:
    ```json
@@ -249,13 +290,16 @@ same fee for their child, and pays part of what's left by bank transfer.
 5. If the flow needs specific seeded records (a class, a student, a fee,
    etc.), add a dedicated Artisan command under
    `app/Console/Commands/Tutorials/` (see `SeedFeeTutorialData.php`) using
-   `firstOrCreate`/`updateOrCreate`, and reset any transactional data it
-   creates (payments, receipts, etc.) at the start of the command so
-   re-running produces the same clean recording every time. Reuse
+   `firstOrCreate`/`updateOrCreate`, and wire it up as that entry's
+   `seedArtisanCommand` in `tutorials/run.ts`. Reuse
    `App\Actions\Tutorials\EnsureTutorialInstitution` to get the shared demo
    admin/institution rather than re-deriving it. Keep every tutorial-only
    Artisan command in that `Tutorials/` folder, not the top-level
    `app/Console/Commands/`, so they don't get lost among real app commands.
+   **Don't write any cleanup/teardown logic for what the seed command or the
+   recording itself creates** — the database snapshot/restore around every
+   run (see "Database snapshot & restore" above) already undoes all of it
+   generically, whether the run succeeds or fails.
 
 The output will land at `public/tutorials/<name>-tutorial.webm` (+ `.mp4`)
 automatically — `tutorial-recorder.ts` derives the filename from the name
@@ -329,6 +373,7 @@ tutorial.
 If a tutorial script throws (a selector doesn't match, a wait times out,
 etc.), `run.ts` saves a full-page screenshot to `public/tutorials/debug/`
 for troubleshooting, discards the in-progress recording (nothing partial is
-written to `public/tutorials/`), closes the browser cleanly, and exits with
+written to `public/tutorials/`), closes the browser cleanly, restores the
+database snapshot (see "Database snapshot & restore" above), and exits with
 a non-zero status. `public/tutorials/debug/` is gitignored — it's a
 scratch space for you, not a deliverable.

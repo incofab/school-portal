@@ -6,7 +6,6 @@ use App\Enums\Audit\ActivityLogSeverity;
 use App\Enums\ExamStatus;
 use App\Enums\PriceLists\PriceType;
 use App\Enums\TermType;
-use App\Helpers\ExamAttemptFileHandler;
 use App\Models\AcademicSession;
 use App\Models\ActivityLog;
 use App\Models\AdmissionApplication;
@@ -18,6 +17,7 @@ use App\Models\CourseTeacher;
 use App\Models\Event;
 use App\Models\Exam;
 use App\Models\ExamCourseable;
+use App\Models\ExamQuestionAttempt;
 use App\Models\Institution;
 use App\Models\InstitutionSetting;
 use App\Models\Question;
@@ -262,12 +262,17 @@ it(
     $questions = Question::factory(2)
       ->courseable($examCourseable->courseable)
       ->create();
-    $attemptFile = ExamAttemptFileHandler::make($exam);
-    $attemptFile->syncExamFile();
-    $attemptFile->attemptQuestion(
-      $questions
-        ->mapWithKeys(fn($question) => [$question->id => $question->answer])
-        ->toArray()
+
+    $questions->each(
+      fn(Question $question) => ExamQuestionAttempt::query()->create([
+        'exam_id' => $exam->id,
+        'institution_id' => $this->institution->id,
+        'questionable_type' => $question->getMorphClass(),
+        'questionable_id' => $question->id,
+        'answer' => $question->answer,
+        'is_answered' => true,
+        'answered_at' => now()
+      ])
     );
 
     ActivityLog::query()->delete();
@@ -297,10 +302,6 @@ it(
       ->toBeNull()
       ->and($log->new_values)
       ->toBeNull();
-
-    if (File::exists($attemptFile->getFullFilepath())) {
-      File::delete($attemptFile->getFullFilepath());
-    }
   }
 );
 

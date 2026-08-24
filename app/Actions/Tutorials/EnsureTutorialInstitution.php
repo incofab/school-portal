@@ -9,16 +9,27 @@ use Illuminate\Support\Facades\Hash;
 class EnsureTutorialInstitution
 {
   /**
-   * Idempotently creates (or fetches) the deterministic admin user and
-   * institution shared by every tutorial-video seed command. Safe to call
-   * repeatedly — never duplicates the admin or their institution.
+   * Idempotently creates (or fetches) a deterministic admin user and
+   * institution for a tutorial-video seed command. Safe to call repeatedly
+   * — never duplicates the admin or their institution.
+   *
+   * Defaults to the single admin/institution shared by most tutorial seed
+   * commands (`config('tutorial.demo_email')` / "Tutorial Demo Academy").
+   * Pass `$email`/`$institutionName` to get a separate, isolated
+   * admin/institution instead — e.g. the school-onboarding-walkthrough
+   * tutorial needs a genuinely *empty* school (no classes/subjects/
+   * students/teachers), which the shared demo institution can't guarantee
+   * once other tutorials have seeded data into it.
    *
    * @return array{0: User, 1: Institution}
    */
-  public static function run(): array
-  {
-    $email = config('tutorial.demo_email');
+  public static function run(
+    ?string $email = null,
+    ?string $institutionName = null
+  ): array {
+    $email ??= config('tutorial.demo_email');
     $password = config('tutorial.demo_password');
+    $institutionName ??= 'Tutorial Demo Academy';
 
     $user = User::withTrashed()->updateOrCreate(
       ['email' => $email],
@@ -45,7 +56,7 @@ class EnsureTutorialInstitution
       // via InstitutionFactory::configure() using the given user_id.
       $institution = Institution::factory()->create([
         'user_id' => $user->id,
-        'name' => 'Tutorial Demo Academy'
+        'name' => $institutionName
       ]);
     }
 

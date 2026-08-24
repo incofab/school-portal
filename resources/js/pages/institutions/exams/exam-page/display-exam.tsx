@@ -30,6 +30,7 @@ import { formatTime } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
 import useWebForm from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import { useWeb } from '@/hooks/use-web-form';
 import { ExamAttempt } from '@/types/types';
 import QuestionImageHandler from '@/util/exam/question-image-handler';
 import '@/style/exam-display.css';
@@ -52,6 +53,7 @@ export default function DisplayExam({
   const [, forceRender] = useState(0);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const webForm = useWebForm({});
+  const web = useWeb();
   const calculatorModalToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
   function updateExamUtil() {
@@ -73,12 +75,23 @@ export default function DisplayExam({
   });
 
   async function onTimeElapsed() {
-    await examUtil.getAttemptManager().sendAttempts(webForm);
+    await sendPendingAttempts();
     Inertia.visit(instRoute('external.exam-result', [exam.exam_no]));
   }
 
   function onIntervalPing() {
-    examUtil.getAttemptManager().sendAttempts(webForm);
+    void examUtil
+      .getAttemptManager()
+      .sendAttempts(
+        webForm,
+        instRoute('public-exam-attempts.answers.store', [exam.id]),
+        examUtil.getTabManager().getCurrentQuestionIndex()
+      )
+      .then(() => {
+        if (isExamActive) {
+          return web.post(instRoute('public-exam-attempts.ping', [exam.id]));
+        }
+      });
   }
 
   async function submitExam() {
@@ -91,7 +104,7 @@ export default function DisplayExam({
   async function submitExamNow() {
     setIsExamActive(false);
     setSubmitLoading(true);
-    await examUtil.getAttemptManager().sendAttempts(webForm);
+    await sendPendingAttempts();
 
     await webForm.submit((data, web) => {
       return web.post(instRoute('end-exam', [exam.id]));
@@ -110,6 +123,16 @@ export default function DisplayExam({
     examUtil
       .getTabManager()
       .setCurrentQuestion(examUtil.getExamNavManager().getGoNextIndex());
+  }
+
+  async function sendPendingAttempts() {
+    await examUtil
+      .getAttemptManager()
+      .sendAttempts(
+        webForm,
+        instRoute('public-exam-attempts.answers.store', [exam.id]),
+        examUtil.getTabManager().getCurrentQuestionIndex()
+      );
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {

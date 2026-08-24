@@ -6,7 +6,6 @@ use App\Http\Controllers\Institutions\Admissions;
 use App\Http\Controllers\Institutions\Exams\External;
 use App\Http\Controllers\Institutions\Recruitment;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('dummy1', function () {
     // $res = (new \App\Services\Messaging\Whatsapp\Templates\WhatsappTemplateUtility(
@@ -110,8 +109,9 @@ Route::get('download-offline-cbt-app', [Home\HomeController::class, 'downloadOff
     ->name('download-offline-cbt-app');
 
 Route::get('error', [Home\HomeController::class, 'error'])->name('home.error');
-Route::get('knowledge-base', fn () => Inertia::render('knowledge-base'))
+Route::get('knowledge-base', [Web\FaqController::class, 'index'])
     ->name('knowledge-base');
+Route::get('faqs', [Web\FaqController::class, 'faqs'])->name('faqs');
 Route::view('proposal', 'home.proposal')->name('proposal');
 
 Route::get('/institutions/{institution}/admission-forms/search', [Admissions\AdmissionFormController::class, 'search'])->name('institutions.admission-forms.search');
@@ -224,6 +224,10 @@ Route::group(['prefix' => '{institution}/my-exam/'], function () {
         ->name('institutions.pause-exam');
     Route::post('/end/{exam}', Web\Institutions\Exams\ExamPage\EndExamController::class)
         ->name('institutions.end-exam');
+    Route::post('/attempts/{exam}/answers', Web\Institutions\Exams\ExamAttempts\RecordAttemptController::class)
+        ->name('institutions.public-exam-attempts.answers.store');
+    Route::post('/attempts/{exam}/ping', Web\Institutions\Exams\ExamAttempts\PingAttemptController::class)
+        ->name('institutions.public-exam-attempts.ping');
     // Route::get('/exam/completed/{examNo?}', [\App\Http\Controllers\Exam\ExamController::class, 'examCompleted'])->name('home.exam.completed');
     // Route::get('/exam/view-result-form', [\App\Http\Controllers\Exam\ExamController::class, 'viewResultForm'])->name('home.exam.view-result-form');
     // Route::get('/exam/view-result', [\App\Http\Controllers\Exam\ExamController::class, 'viewResult'])->name('home.exam.view-result');

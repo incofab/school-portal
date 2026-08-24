@@ -2,10 +2,10 @@
 
 use App\Casts\TrimDecimal;
 use App\Enums\ExamStatus;
-use App\Helpers\ExamAttemptFileHandler;
 use App\Models\Event;
 use App\Models\Exam;
 use App\Models\ExamCourseable;
+use App\Models\ExamQuestionAttempt;
 use App\Models\Institution;
 use App\Models\Question;
 use App\Models\Student;
@@ -37,14 +37,6 @@ beforeEach(function () {
     ->courseable($this->eventCourseables->first()->courseable)
     ->create(['num_of_questions' => 5]);
   $this->examHandler = ExamHandler::make($this->exam);
-  $this->examAttemptFileHandler = ExamAttemptFileHandler::make($this->exam);
-  $this->filePath = $this->examAttemptFileHandler->getFullFilepath();
-});
-
-afterEach(function () {
-  if (File::exists($this->filePath)) {
-    File::delete($this->filePath);
-  }
 });
 
 it('ensures that exam can start only when conditions are met', function () {
@@ -107,8 +99,17 @@ it('can end an exam', function () {
   $studentAttempts = $questions
     ->mapWithKeys(fn($item) => [$item->id => $item->answer])
     ->toArray();
-  $this->examAttemptFileHandler->syncExamFile();
-  $this->examAttemptFileHandler->attemptQuestion($studentAttempts);
+  $questions->each(
+    fn($question) => ExamQuestionAttempt::query()->create([
+      'exam_id' => $this->exam->id,
+      'institution_id' => $this->institution->id,
+      'questionable_type' => $question->getMorphClass(),
+      'questionable_id' => $question->id,
+      'answer' => $question->answer,
+      'is_answered' => true,
+      'answered_at' => now()
+    ])
+  );
   $this->examHandler->endExam();
 
   expect($this->exam->status)->toBe(ExamStatus::Ended);
@@ -140,8 +141,28 @@ it(
       $theoryQuestions
         ->mapWithKeys(fn($item) => ["theory-{$item->id}" => 'Essay answer'])
         ->toArray();
-    $this->examAttemptFileHandler->syncExamFile();
-    $this->examAttemptFileHandler->attemptQuestion($studentAttempts);
+    $questions->each(
+      fn($question) => ExamQuestionAttempt::query()->create([
+        'exam_id' => $this->exam->id,
+        'institution_id' => $this->institution->id,
+        'questionable_type' => $question->getMorphClass(),
+        'questionable_id' => $question->id,
+        'answer' => $question->answer,
+        'is_answered' => true,
+        'answered_at' => now()
+      ])
+    );
+    $theoryQuestions->each(
+      fn($question) => ExamQuestionAttempt::query()->create([
+        'exam_id' => $this->exam->id,
+        'institution_id' => $this->institution->id,
+        'questionable_type' => $question->getMorphClass(),
+        'questionable_id' => $question->id,
+        'answer' => 'Essay answer',
+        'is_answered' => true,
+        'answered_at' => now()
+      ])
+    );
     $this->examHandler->endExam();
 
     expect($this->exam->score)->toBe(floatval(2));

@@ -46,6 +46,19 @@ class StudentUITableFilters extends UserUITableFilters
   //   return $this;
   // }
 
+  protected function generalSearch(string $search)
+  {
+    $this->joinUser()->baseQuery->where(
+      fn($q) => $q
+        ->where('users.last_name', 'like', "%$search%")
+        ->orWhere('users.first_name', 'like', "%$search%")
+        ->orWhere('users.other_names', 'like', "%$search%")
+        ->orWhere('users.email', 'like', "%$search%")
+        ->orWhere('users.phone', 'like', "%$search%")
+        ->orWhere('students.code', 'like', "%$search%")
+    );
+  }
+
   protected function directQuery()
   {
     $this->joinUser();
@@ -56,8 +69,8 @@ class StudentUITableFilters extends UserUITableFilters
         fn($q, $value) => $q->where('students.classification_id', $value)
       )
       ->when(
-        $this->requestGet('studentRole', InstitutionUserType::Student->value),
-        fn($q, $value) => $value == 'all'
+        $this->requestGet('studentRole'),
+        fn($q, $value) => $value == 'all' || !$value
           ? $q
           : $q->where('institution_users.role', $value)
       );

@@ -3,7 +3,6 @@
 namespace App\Console\Commands\Tutorials;
 
 use App\Actions\Tutorials\EnsureTutorialInstitution;
-use App\Actions\Tutorials\ResetFeeTutorialData;
 use App\Enums\GuardianRelationship;
 use App\Enums\InstitutionUserType;
 use App\Models\Classification;
@@ -28,7 +27,7 @@ class SeedFeeTutorialData extends Command
    *
    * @var string
    */
-  protected $description = 'Create/reset the deterministic class, student, guardian, and fee state used to generate the fee recording & payment tutorial video';
+  protected $description = 'Create the deterministic class, student, and guardian fixtures used to generate the fee recording & payment tutorial video';
 
   const DEMO_CLASS_TITLE = 'JSS 1';
 
@@ -103,22 +102,12 @@ class SeedFeeTutorialData extends Command
       ['relationship' => GuardianRelationship::Parent]
     );
 
-    // Reset state so re-running the tutorial produces a clean recording
-    // instead of accumulating fees/payments/accounts every regeneration.
-    // Scoped entirely to this dedicated demo institution, so it never
-    // touches real school data. Shared with `tutorial:clear-fee-demo`,
-    // which runs this same reset as a teardown after each recording.
-    ResetFeeTutorialData::run($institution);
-
     $this->info("Class ready: {$classification->title}");
     $this->info(
       "Student ready: {$student->code} (log in at /student/login with this Student Id)"
     );
     $this->info(
       "Guardian ready: {$guardianUser->email} (log in at /login with this email)"
-    );
-    $this->info(
-      'Bank accounts, payments, and the demo fee were reset for a clean demo.'
     );
 
     return self::SUCCESS;

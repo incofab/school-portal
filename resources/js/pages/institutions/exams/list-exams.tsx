@@ -75,6 +75,11 @@ export default function ListExams({ exams, event }: Props) {
                   variant={'link'}
                   title="Detail"
                 />
+                <LinkButton
+                  href={instRoute('events.attempt-activity', [event.id])}
+                  variant={'link'}
+                  title="Activity"
+                />
                 <DestructivePopover
                   label={'Delete this exam'}
                   onConfirm={() => deleteItem(row)}

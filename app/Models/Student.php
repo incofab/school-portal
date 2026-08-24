@@ -161,6 +161,11 @@ class Student extends BaseModel
     );
   }
 
+  function guardianStudents()
+  {
+    return $this->hasMany(GuardianStudent::class);
+  }
+
   function assignmentSubmissions()
   {
     return $this->hasMany(AssignmentSubmission::class);

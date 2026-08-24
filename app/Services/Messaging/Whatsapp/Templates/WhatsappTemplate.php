@@ -17,9 +17,18 @@ abstract class WhatsappTemplate
     private string $templateName,
     private string $receiverPhoneNumber
   ) {
-    $this->token = config('services.facebook.whatsapp-access-token');
-    $this->phoneNumberId = config('services.facebook.whatsapp-phone-number-id');
-    $this->apiVersion = config('services.facebook.whatsapp-api-version');
+    $this->token = (string) config(
+      'services.facebook.whatsapp-access-token',
+      ''
+    );
+    $this->phoneNumberId = (string) config(
+      'services.facebook.whatsapp-phone-number-id',
+      ''
+    );
+    $this->apiVersion = (string) config(
+      'services.facebook.whatsapp-api-version',
+      'v25.0'
+    );
 
     if (!$this->token || !$this->phoneNumberId) {
       Log::warning('WhatsApp Cloud API credentials are not configured.');

@@ -141,7 +141,9 @@ class AttemptManager {
   }
 
   async sendAttempts(
-    webForm: WebForm<Record<string, never>, Record<never, string>>
+    webForm: WebForm<Record<string, never>, Record<never, string>>,
+    endpoint: string,
+    currentQuestionIndex?: number
   ) {
     // console.log('Sending attempts', this.attemptsToSend);
     if (Object.entries(this.attemptsToSend).length < 1) {
@@ -151,10 +153,9 @@ class AttemptManager {
     this.attemptsToSend = {};
 
     const res = await webForm.submit((data, web) => {
-      return web.post('attempt-question.php', {
+      return web.post(endpoint, {
         attempts: submittingAttempts,
-        exam_no: this.exam.exam_no,
-        event_id: this.exam.event_id,
+        current_question_index: currentQuestionIndex,
       });
     });
     if (res.ok) {

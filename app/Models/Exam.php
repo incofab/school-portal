@@ -19,6 +19,10 @@ class Exam extends BaseModel
     'start_time' => 'datetime',
     'pause_time' => 'datetime',
     'end_time' => 'datetime',
+    'last_activity_at' => 'datetime',
+    'last_ping_at' => 'datetime',
+    'current_question_index' => 'integer',
+    'submitted_at' => 'datetime',
     'event_id' => 'integer',
     'institution_id' => 'integer',
     'time_remaining' => 'float',
@@ -81,6 +85,16 @@ class Exam extends BaseModel
   public function examCourseables()
   {
     return $this->hasMany(ExamCourseable::class);
+  }
+
+  public function questionAttempts()
+  {
+    return $this->hasMany(ExamQuestionAttempt::class);
+  }
+
+  public function lastQuestionable()
+  {
+    return $this->morphTo();
   }
 
   // TokenUser|User|Student|AdmissionApplication|RecruitmentApplication
