@@ -150,6 +150,17 @@ class SettingsHandler
       ResultExamMode::Both->value;
   }
 
+  public function usesSessionResultAsThirdTerm(): bool
+  {
+    $resultSetting = $this->getValue(InstitutionSettingType::Result->value, []);
+
+    return filter_var(
+      $resultSetting[ResultSettingType::UseSessionResultAsThirdTerm->value] ??
+        false,
+      FILTER_VALIDATE_BOOLEAN
+    );
+  }
+
   public function shouldDisplayExamResults(
     ?TermDetail $termDetail,
     bool $forMidTerm

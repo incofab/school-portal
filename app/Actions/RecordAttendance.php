@@ -26,7 +26,8 @@ class RecordAttendance
   public function __construct(
     private Institution $institution,
     private InstitutionUser $staffInstitutionUser,
-    private array $post
+    private array $post,
+    private ?Carbon $recordedAt = null
   ) {
   }
 
@@ -46,7 +47,7 @@ class RecordAttendance
 
   public function checkIn(): Res
   {
-    $now = now();
+    $now = $this->attendanceAt();
     $attendance = $this->institution
       ->attendances()
       ->whereDate('signed_in_at', $now->toDateString())
@@ -86,11 +87,12 @@ class RecordAttendance
         ...collect($this->post)->except(
           'type',
           'force',
-          'audit_suppress_individual'
+          'audit_suppress_individual',
+          'datetime'
         ),
         'institution_id' => $this->institution->id,
         'institution_staff_user_id' => $this->staffInstitutionUser->id,
-        'signed_in_at' => now()
+        'signed_in_at' => $now
       ])
     );
     $this->logAttendanceRecorded($attendance);
@@ -100,11 +102,12 @@ class RecordAttendance
 
   public function checkOut(): Res
   {
+    $now = $this->attendanceAt();
     $todaySignOut = Attendance::where(
       'institution_user_id',
       $this->post['institution_user_id']
     )
-      ->whereDate('signed_out_at', now()->toDateString())
+      ->whereDate('signed_out_at', $now->toDateString())
       ->latest()
       ->first();
 
@@ -115,7 +118,8 @@ class RecordAttendance
         'signed_out_at' => $todaySignOut->signed_out_at
       ];
       ModelAudit::withoutAuditingFor(Attendance::class, function () use (
-        $todaySignOut
+        $todaySignOut,
+        $now
       ) {
         $todaySignOut
           ->fill([
@@ -123,7 +127,7 @@ class RecordAttendance
               ? $this->post['remark']
               : $todaySignOut->remark,
             'institution_staff_user_id' => $this->staffInstitutionUser->id,
-            'signed_out_at' => now()
+            'signed_out_at' => $now
           ])
           ->save();
       });
@@ -150,13 +154,14 @@ class RecordAttendance
       'signed_out_at' => $lastSignIn->signed_out_at
     ];
     ModelAudit::withoutAuditingFor(Attendance::class, function () use (
-      $lastSignIn
+      $lastSignIn,
+      $now
     ) {
       $lastSignIn
         ->fill([
           'remark' => $this->appendRemark($lastSignIn->remark),
           'institution_staff_user_id' => $this->staffInstitutionUser->id,
-          'signed_out_at' => now()
+          'signed_out_at' => $now
         ])
         ->save();
     });
@@ -175,13 +180,18 @@ class RecordAttendance
   private function ensureActiveDay(): Res
   {
     $termDetail = SettingsHandler::makeFromRoute()->fetchCurrentTermDetail();
-    $today = Carbon::now();
+    $today = $this->attendanceAt();
 
     if (!$termDetail->isActiveOnDate($today)) {
       return failRes('Attendance can only be recorded on active school days.');
     }
 
     return successRes();
+  }
+
+  private function attendanceAt(): Carbon
+  {
+    return $this->recordedAt ?? now();
   }
 
   private function logAttendanceRecorded(Attendance $attendance): void

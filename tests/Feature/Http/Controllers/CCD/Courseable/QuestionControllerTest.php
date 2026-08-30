@@ -11,6 +11,8 @@ use App\Models\Question;
 use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Prism\Prism\Facades\Prism;
+use Prism\Prism\Testing\TextResponseFake;
 
 use function Pest\Laravel\actingAs;
 
@@ -245,6 +247,82 @@ test(
       ->assertOk();
   }
 )->with([[CourseSession::class], [EventCourseable::class]]);
+
+test('question upload page includes segmented TinyMCE controls', function () {
+  $response = actingAs($this->instAdmin)->get(
+    route('institutions.questions.upload.create', [
+      $this->institution,
+      $this->courseSession->getMorphedId()
+    ])
+  );
+
+  $response
+    ->assertOk()
+    ->assertSee('Paste Questions in Segments')
+    ->assertSee('name="question_segments[]"', false)
+    ->assertSee('data-max-segments="6"', false)
+    ->assertSee('Process and upload segments');
+});
+
+test(
+  'segmented question content is sent to AI one segment at a time',
+  function () {
+    $fake = Prism::fake([
+      TextResponseFake::make()->withText(
+        json_encode([
+          [
+            'question_no' => 1,
+            'question' => '<p>First question</p>',
+            'option_a' => '<p>First A</p>',
+            'option_b' => '<p>First B</p>',
+            'option_c' => '<p>First C</p>',
+            'answer' => 'A'
+          ]
+        ])
+      ),
+      TextResponseFake::make()->withText(
+        json_encode([
+          [
+            'question_no' => 2,
+            'question' => '<p>Second question</p>',
+            'option_a' => '<p>Second A</p>',
+            'option_b' => '<p>Second B</p>',
+            'option_c' => '<p>Second C</p>',
+            'answer' => 'B'
+          ]
+        ])
+      )
+    ]);
+
+    $response = actingAs($this->instAdmin)->post(
+      route('institutions.questions.upload.store', [
+        $this->institution,
+        $this->courseSession->getMorphedId()
+      ]),
+      [
+        'question_segments' => [
+          '<p>First segment content</p>',
+          '<p>Second segment content</p>',
+          '<p> </p>'
+        ]
+      ]
+    );
+
+    $response->assertRedirect();
+    $fake->assertCallCount(2);
+    $fake->assertRequest(function ($requests) {
+      expect($requests[0]->prompt())->toContain('First segment content');
+      expect($requests[0]->prompt())->not->toContain('Second segment content');
+      expect($requests[1]->prompt())->toContain('Second segment content');
+      expect($requests[1]->prompt())->not->toContain('First segment content');
+    });
+    expect(
+      Question::query()
+        ->where('institution_id', $this->institution->id)
+        ->count()
+    )->toBe(2);
+  }
+);
 
 test('unassigned teacher cannot access question bank routes', function (
   $class

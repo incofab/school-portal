@@ -37,4 +37,9 @@ enum PaymentMerchantType: string
   {
     return [self::Monnify, self::PaymentPoint, self::Paystack, self::Rave];
   }
+
+  static function getDefault(): string
+  {
+    return self::Paystack->value;
+  }
 }

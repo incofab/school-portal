@@ -1,7 +1,10 @@
 <?php
-
+$institution = currentInstitution();
 $institutionGroup =
-  currentInstitution()?->institutionGroup ?? getInstitutionGroupFromDomain();
+  $institution?->institutionGroup ?? getInstitutionGroupFromDomain();
+$logo =
+  $institution?->photo ?? $institutionGroup?->institutions()?->first()?->photo;
+
 // dd($institutionGroup->toArray());
 ?>
 <!DOCTYPE html>
@@ -10,7 +13,9 @@ $institutionGroup =
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 
-    <title>{{config('app.name')}}</title>
+    <title>{{ $institutionGroup?->name ?? config('app.name') }}</title>
+
+    <link rel="icon" type="image/x-icon" href="{{ $logo ?? '/favicon.ico' }}?v=2" />
 
     @routes
     @viteReactRefresh

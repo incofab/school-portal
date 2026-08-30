@@ -117,7 +117,7 @@ it('processes Monnify webhook successfully', function () {
   ]);
 
   // Simulate request from Monnify IP
-  $this->postJson(route('monnify.webhook'), $webhookPayload, [
+  $this->postJson(route('api.monnify.webhook'), $webhookPayload, [
     'REMOTE_ADDR' => '35.242.133.146',
     'X-Forwarded-For' => '35.242.133.146'
   ])->assertOk();
@@ -184,11 +184,11 @@ it(
       )
     ]);
 
-    $this->postJson(route('monnify.webhook'), $webhookPayload, [
+    $this->postJson(route('api.monnify.webhook'), $webhookPayload, [
       'REMOTE_ADDR' => '35.242.133.146',
       'X-Forwarded-For' => '35.242.133.146'
     ])->assertOk();
-    $this->postJson(route('monnify.webhook'), $webhookPayload, [
+    $this->postJson(route('api.monnify.webhook'), $webhookPayload, [
       'REMOTE_ADDR' => '35.242.133.146',
       'X-Forwarded-For' => '35.242.133.146'
     ])->assertOk();
@@ -204,7 +204,7 @@ it(
 
 it('rejects Monnify webhooks with an invalid transaction hash', function () {
   $this->postJson(
-    route('monnify.webhook'),
+    route('api.monnify.webhook'),
     [
       'eventData' => [
         'paymentReference' => 'REF-BAD-HASH',
@@ -227,7 +227,7 @@ it('rejects Monnify webhooks with an invalid transaction hash', function () {
 
 it('rejects webhook from unauthorized IP', function () {
   $this->postJson(
-    route('monnify.webhook'),
+    route('api.monnify.webhook'),
     [],
     [
       'REMOTE_ADDR' => '192.168.1.1',

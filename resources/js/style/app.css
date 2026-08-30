@@ -13,4 +13,14 @@
   .show-on-print {
     display: block !important;
   }
+
+  body.printing-institution-qr-card #staff-id-cards-list {
+    display: none !important;
+  }
+
+  body.printing-institution-qr-card #institution-qr-card {
+    display: inline-block !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+  }
 }

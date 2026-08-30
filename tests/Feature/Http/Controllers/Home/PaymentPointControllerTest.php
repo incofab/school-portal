@@ -42,7 +42,7 @@ test('it processes a valid payment point webhook', function () {
 
   $_SERVER['HTTP_PAYMENTPOINT_SIGNATURE'] = $signature;
   withHeader('PAYMENTPOINT_SIGNATURE', $signature)
-    ->post(route('payment-point.webhook'), $payload)
+    ->post(route('api.payment-point.webhook'), $payload)
     ->assertOk();
 
   $user->refresh();
@@ -78,10 +78,10 @@ test(
 
     $_SERVER['HTTP_PAYMENTPOINT_SIGNATURE'] = $signature;
     withHeader('PAYMENTPOINT_SIGNATURE', $signature)
-      ->post(route('payment-point.webhook'), $payload)
+      ->post(route('api.payment-point.webhook'), $payload)
       ->assertOk();
     withHeader('PAYMENTPOINT_SIGNATURE', $signature)
-      ->post(route('payment-point.webhook'), $payload)
+      ->post(route('api.payment-point.webhook'), $payload)
       ->assertOk();
 
     expect($user->fresh()->wallet)->toBe(floatval($settlementAmount));

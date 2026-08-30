@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\CCD\QuestionController;
 use App\Http\Controllers\API\OfflineMock;
 use App\Http\Controllers\API\Institutions as Inst;
+use App\Http\Controllers\Home as Home;
 use App\Http\Controllers\API\WhatsappWebhookController;
 
 /*
@@ -20,15 +21,21 @@ use App\Http\Controllers\API\WhatsappWebhookController;
 */
 
 Route::group(['middleware' => ['auth:sanctum', 'institution.user']], function () {
+    Route::post('/{institution:code}/attendance/self', [Inst\AttendanceController::class, 'selfStore'])
+        ->name('institutions.attendance.self');
     Route::post('/{institution:code}/attendance', [Inst\AttendanceController::class, 'store']);
 });
 
 Route::post('/login', [AuthController::class, 'login']); // Login route for API
 
 Route::get('/whatsapp/webhook', [WhatsappWebhookController::class, 'verify'])
-    ->name('api.whatsapp.webhook.verify');
+    ->name('whatsapp.webhook.verify');
 Route::post('/whatsapp/webhook', [WhatsappWebhookController::class, 'receive'])
-    ->name('api.whatsapp.webhook.receive');
+    ->name('whatsapp.webhook.receive');
+
+Route::any('/paystack/webhook', [Home\PaystackController::class, 'webhook'])->name('paystack.webhook');
+Route::any('/monnify/webhook', [Home\MonnifyController::class, 'webhook'])->name('monnify.webhook');
+Route::any('/payment-point/webhook', [Home\PaymentPointController::class, 'webhook'])->name('payment-point.webhook');
 
 Route::middleware('auth:sanctum')->any('/user', function (Request $request) {
     return $request->user();
@@ -47,7 +54,7 @@ Route::group(['middleware' => []], function () {
 });
 
 Route::group(['middleware' => []], function () {
-    Route::any('/ccd/institution/{institution_id}/question/create/{sessionId}', [QuestionController::class, 'apiCreate'])->name('api.ccd.question.create');
+    Route::any('/ccd/institution/{institution_id}/question/create/{sessionId}', [QuestionController::class, 'apiCreate'])->name('ccd.question.create');
 });
 
 Route::group(['middleware' => [], 'prefix' => '/offline-mock/institutions/{institution:code}', 'as' => 'offline-mock.'], function () {

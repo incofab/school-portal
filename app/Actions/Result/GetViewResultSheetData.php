@@ -12,6 +12,7 @@ use App\Models\CourseResult;
 use App\Models\CourseResultInfo;
 use App\Models\Institution;
 use App\Models\ResultCommentTemplate;
+use App\Models\SessionResult;
 use App\Models\Student;
 use App\Models\TermDetail;
 use App\Models\TermResult;
@@ -162,7 +163,13 @@ class GetViewResultSheetData
         ->learningEvaluations()
         ->with('learningEvaluationDomain')
         ->orderBy('learning_evaluation_domain_id')
-        ->get()
+        ->get(),
+      'sessionResult' => self::sessionResult(
+        $institution,
+        $student,
+        $classification,
+        $academicSession
+      )
     ];
 
     return $viewData;
@@ -297,5 +304,19 @@ class GetViewResultSheetData
         ];
       })
       ->all();
+  }
+
+  private static function sessionResult(
+    Institution $institution,
+    Student $student,
+    Classification $classification,
+    AcademicSession $academicSession
+  ) {
+    return SessionResult::query()
+      ->where('institution_id', $institution->id)
+      ->where('student_id', $student->id)
+      ->where('classification_id', $classification->id)
+      ->where('academic_session_id', $academicSession->id)
+      ->first();
   }
 }

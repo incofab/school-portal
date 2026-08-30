@@ -230,7 +230,7 @@ class AdmissionApplicationController extends Controller
       ],
       'merchant' => ['nullable', new Enum(PaymentMerchantType::class)]
     ]);
-    $merchant = $request->merchant ?? PaymentMerchantType::Monnify->value;
+    $merchant = $request->merchant ?? PaymentMerchantType::getDefault();
     if ($merchant === PaymentMerchantType::Manual->value) {
       $reference = ManualPayment::generateReference();
       $paymentReferenceDto = new PaymentReferenceDto(

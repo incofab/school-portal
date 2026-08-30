@@ -81,12 +81,14 @@ export default function Template9(props: ResultProps) {
     termDetail?.next_term_resumption_date;
 
   const principalComment = ResultUtil.getPrincipalsComment(
-    termResult,
-    resultCommentTemplate
+    termResult.average,
+    resultCommentTemplate,
+    termResult.principal_comment
   );
   const teacherComment = ResultUtil.getTeachersComment(
-    termResult,
-    resultCommentTemplate
+    termResult.average,
+    resultCommentTemplate,
+    termResult.teacher_comment
   );
 
   function score(value: number | string | undefined | null) {
@@ -167,7 +169,7 @@ export default function Template9(props: ResultProps) {
 
   const resultSummary = [
     { label: 'Name', value: student.user?.full_name },
-    { label: 'Admission No', value: student.code },
+    { label: 'Student ID', value: student.code },
     { label: 'Class', value: classification.title },
     { label: 'Session', value: academicSession.title },
     { label: 'Term', value: `${startCase(termResult.term)} Term` },
@@ -175,11 +177,9 @@ export default function Template9(props: ResultProps) {
       label: `No of ${titles.students} in Class`,
       value: classResultInfo.num_of_students,
     },
-    { label: 'Attendance', value: termResult.attendance_count },
-    {
-      label: 'School Opened',
-      value: termDetail?.expected_attendance_count,
-    },
+    ...(termResult.attendance_count > 0
+      ? [{ label: 'Attendance', value: termResult.attendance_count }]
+      : []),
     ...(termDetail?.start_date
       ? [{ label: 'Opening Date', value: formatAsDate(termDetail.start_date) }]
       : []),

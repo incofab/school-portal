@@ -37,7 +37,7 @@ it(
     );
 
     getJson(
-      route('offline-mock.events.index', [
+      route('api.offline-mock.events.index', [
         'institution' => $this->institution->code
       ])
     )
@@ -58,7 +58,7 @@ it('returns a single formatted event', function () {
   );
 
   $response = getJson(
-    route('offline-mock.events.show', [
+    route('api.offline-mock.events.show', [
       'institution' => $this->institution->code,
       'event' => $event->id
     ])
@@ -102,7 +102,7 @@ it(
     $expectedData = $this->handler->formatEvent($reloadedEvent, true);
 
     $response = $this->getJson(
-      route('offline-mock.events.deep-show', [
+      route('api.offline-mock.events.deep-show', [
         'institution' => $this->institution->code,
         'event' => $event->id
       ])
@@ -115,7 +115,7 @@ it(
       ]);
     // Also works with event code
     $response = $this->getJson(
-      route('offline-mock.events.deep-show-by-code', [
+      route('api.offline-mock.events.deep-show-by-code', [
         'institution' => $this->institution->code,
         'event' => $event->code
       ])

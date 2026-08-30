@@ -132,7 +132,7 @@ class StudentFeePaymentController extends Controller
     $user = currentUser();
     $settingshandler = SettingsHandler::makeFromRoute();
 
-    $merchant = $request->merchant ?? PaymentMerchantType::Monnify->value;
+    $merchant = $request->merchant ?? PaymentMerchantType::getDefault();
     $reference = ManualPayment::generateReference();
     $redirectUrl =
       $merchant === PaymentMerchantType::Manual->value

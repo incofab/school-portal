@@ -133,6 +133,27 @@ it('stores institution result exam display mode', function () {
   ]);
 });
 
+it('stores the session result as the third-term result setting', function () {
+  actingAs($this->admin)
+    ->postJson(route('institutions.settings.store', $this->institution), [
+      'key' => InstitutionSettingType::Result->value,
+      'value' => [
+        ResultSettingType::UseSessionResultAsThirdTerm->value => true
+      ],
+      'type' => 'array'
+    ])
+    ->assertOk();
+
+  $setting = InstitutionSetting::query()
+    ->where('institution_id', $this->institution->id)
+    ->where('key', InstitutionSettingType::Result->value)
+    ->first();
+
+  expect(json_decode($setting->value, true))->toMatchArray([
+    ResultSettingType::UseSessionResultAsThirdTerm->value => true
+  ]);
+});
+
 it(
   'uses the institution full name display format on institution-scoped user responses',
   function () {

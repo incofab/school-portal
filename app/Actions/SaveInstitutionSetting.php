@@ -117,6 +117,10 @@ class SaveInstitutionSetting
         'value.' . ResultSettingType::ExamMode->value => [
           'nullable',
           new Enum(ResultExamMode::class)
+        ],
+        'value.' . ResultSettingType::UseSessionResultAsThirdTerm->value => [
+          'nullable',
+          'boolean'
         ]
       ])->validate();
 

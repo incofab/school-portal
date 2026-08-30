@@ -132,11 +132,11 @@ export default function SessionResultTemplate1({
     sessionResult.remark ||
     ResultUtil.getGrade(sessionResult.average, resultCommentTemplate).remark;
   const teacherComment = ResultUtil.getTeachersComment(
-    sessionResult as unknown as TermResult,
+    sessionResult.average,
     resultCommentTemplate
   );
   const principalComment = ResultUtil.getPrincipalsComment(
-    sessionResult as unknown as TermResult,
+    sessionResult.average,
     resultCommentTemplate
   );
   const showClassGroupPosition = Boolean(

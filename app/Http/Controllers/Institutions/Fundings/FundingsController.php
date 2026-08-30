@@ -55,7 +55,7 @@ class FundingsController extends Controller
     ]);
     $user = currentUser();
 
-    $merchant = $request->merchant ?? PaymentMerchantType::Monnify->value;
+    $merchant = $request->merchant ?? PaymentMerchantType::getDefault();
     $paymentReferenceDto = new PaymentReferenceDto(
       institution_id: $institution->id,
       merchant: $merchant,

@@ -183,7 +183,7 @@ if (!function_exists('initPrism')) {
   {
     return Prism::text()
       ->withClientOptions(['timeout' => 120])
-      ->using(Provider::OpenAI, 'gpt-4o-mini')
+      ->using(Provider::OpenAI, config('services.openai.model'))
       ->withSystemPrompt(
         $systemPrompt ?? 'You are a well qualified school teacher'
       );

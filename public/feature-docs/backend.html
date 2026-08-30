@@ -398,6 +398,14 @@
             [Inst\AttendanceController::class, &#x27;store&#x27;]);
           </li>
           <li>
+            <code>routes/api.php</code> —
+            Route::post(&#x27;/{institution:code}/attendance/self&#x27;,
+            [Inst\AttendanceController::class, &#x27;selfStore&#x27;]); The endpoint
+            records check-in or check-out attendance for the authenticated
+            institution staff user without accepting a user ID, using server
+            date/time by default when no datetime is supplied.
+          </li>
+          <li>
             <code>routes/api.php</code> — Route::post(&#x27;/login&#x27;,
             [AuthController::class, &#x27;login&#x27;]); // Login route for API
           </li>
@@ -3186,7 +3194,8 @@
             </div>
             <div class="desc">
               HTTP controller for Attendance, handling requests, authorization,
-              and responses.
+              and responses, including separate student-code and authenticated
+              self-attendance API flows.
             </div>
           </li>
           <li>
@@ -4354,6 +4363,8 @@
               HTTP controller for Institution Setting, handling requests,
               authorization, and validation for settings such as result options,
               payment keys, and institution-scoped user full-name display order.
+              Result options include using the session result as the third-term
+              result.
               Persistence delegates to
               <code>SaveInstitutionSetting</code>. Payment-key changes emit
               security audit events with provider/key-presence summaries only.
@@ -6310,7 +6321,8 @@
               Action class that builds result-sheet view data, including current
               course results, class/course summary data, cumulative subject
               averages, and per-subject first-, second-, and third-term totals
-              used by annual result templates.
+              used by annual result templates. Third-term result routes can
+              instead return the session-result sheet when configured.
             </div>
           </li>
           <li>

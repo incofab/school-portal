@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Checkbox,
   Divider,
   FormControl,
   FormLabel,
@@ -39,7 +40,10 @@ export default function ResultSettings() {
       resultSetting?.[ResultSettingType.Template] ?? ResultTemplate.Template1,
     [ResultSettingType.ExamMode]:
       resultSetting?.[ResultSettingType.ExamMode] ?? ResultExamMode.Both,
-  } as { [key: string]: string });
+    [ResultSettingType.UseSessionResultAsThirdTerm]: Boolean(
+      resultSetting?.[ResultSettingType.UseSessionResultAsThirdTerm]
+    ),
+  } as { [key: string]: string | boolean });
 
   const submit = async () => {
     const res = await webForm.submit((data, web) => {
@@ -95,6 +99,29 @@ export default function ResultSettings() {
                 webForm.setValue(ResultSettingType.ExamMode, e.value)
               }
             />
+          </FormControl>
+        </GridItem>
+        <GridItem>
+          <FormControl>
+            <FormLabel>Third-Term Result</FormLabel>
+            <Checkbox
+              colorScheme="brand"
+              isChecked={Boolean(
+                webForm.data[ResultSettingType.UseSessionResultAsThirdTerm]
+              )}
+              onChange={(event) =>
+                webForm.setValue(
+                  ResultSettingType.UseSessionResultAsThirdTerm,
+                  event.target.checked
+                )
+              }
+            >
+              Use session result
+            </Checkbox>
+            <Text fontSize="sm" color="gray.500" mt={1}>
+              Show the annual session result when students view third-term
+              results.
+            </Text>
           </FormControl>
         </GridItem>
         <Div>

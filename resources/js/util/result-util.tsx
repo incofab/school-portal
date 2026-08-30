@@ -9,6 +9,7 @@ import {
   CourseResultInfo,
   LearningEvaluation,
   ResultCommentTemplate,
+  SessionResult,
   Student,
   TermDetail,
   TermResult,
@@ -324,26 +325,26 @@ const ResultUtil = {
   },
 
   getPrincipalsComment: (
-    termResult?: TermResult,
-    commentTemplate?: ResultCommentTemplate[]
+    score?: number,
+    commentTemplate?: ResultCommentTemplate[],
+    defaultComment?: string
   ) => {
-    if (!termResult) return undefined;
+    if (!score) return defaultComment;
     return (
-      termResult.principal_comment ??
-      ResultUtil.getCommentFromTemplate(termResult.average, commentTemplate)
-        ?.comment
+      defaultComment ??
+      ResultUtil.getCommentFromTemplate(score, commentTemplate)?.comment
     );
   },
 
   getTeachersComment: (
-    termResult?: TermResult,
-    commentTemplate?: ResultCommentTemplate[]
+    score?: number,
+    commentTemplate?: ResultCommentTemplate[],
+    defaultComment?: string
   ) => {
-    if (!termResult) return undefined;
+    if (!score) return defaultComment;
     return (
-      termResult.teacher_comment ??
-      ResultUtil.getCommentFromTemplate(termResult.average, commentTemplate)
-        ?.comment_2
+      defaultComment ??
+      ResultUtil.getCommentFromTemplate(score, commentTemplate)?.comment_2
     );
   },
 
@@ -454,4 +455,5 @@ export interface ResultProps {
   termDetail?: TermDetail;
   showExamResult: boolean;
   signed_url: string;
+  sessionResult?: SessionResult;
 }

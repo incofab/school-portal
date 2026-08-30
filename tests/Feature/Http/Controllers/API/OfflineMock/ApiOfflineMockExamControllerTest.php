@@ -55,7 +55,7 @@ it('successfully uploads new exam results for existing students', function () {
   $payload = ['exams' => [$examData]];
 
   postJson(
-    route('offline-mock.exams.upload', [
+    route('api.offline-mock.exams.upload', [
       'institution' => $this->institution->code
     ]),
     $payload
@@ -127,7 +127,7 @@ it('updates existing exam results if exam_no and event_id match', function () {
   $payload = ['exams' => [$updatedExamData]];
 
   $this->postJson(
-    route('offline-mock.exams.upload', [
+    route('api.offline-mock.exams.upload', [
       'institution' => $this->institution->code
     ]),
     $payload
@@ -170,7 +170,7 @@ it(
     $payload = ['exams' => [$examDataNonExistentStudent]];
 
     $this->postJson(
-      route('offline-mock.exams.upload', [
+      route('api.offline-mock.exams.upload', [
         'institution' => $this->institution->code
       ]),
       $payload

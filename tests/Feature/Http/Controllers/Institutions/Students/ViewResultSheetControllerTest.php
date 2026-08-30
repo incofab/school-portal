@@ -1,6 +1,8 @@
 <?php
 
 use App\Enums\TermType;
+use App\Enums\InstitutionSettingType;
+use App\Enums\ResultSettingType;
 use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\ClassResultInfo;
@@ -9,8 +11,10 @@ use App\Models\CourseResult;
 use App\Models\CourseResultInfo;
 use App\Models\Institution;
 use App\Models\ResultPublication;
+use App\Models\SessionResult;
 use App\Models\Student;
 use App\Models\TermResult;
+use App\Models\InstitutionSetting;
 use Inertia\Testing\AssertableInertia as Assert;
 
 use function Pest\Laravel\actingAs;
@@ -167,4 +171,131 @@ it('exposes cumulative subject averages on result sheet data', function () {
         ->missing("subjectTermTotals.{$otherCourse->id}.second")
         ->where("subjectTermTotals.{$otherCourse->id}.third", 65)
     );
+});
+
+it('shows the session result when third-term result viewing is configured', function () {
+  $institution = Institution::factory()->create();
+  $academicSession = AcademicSession::factory()->create();
+  $classification = Classification::factory()
+    ->withInstitution($institution)
+    ->create();
+  $student = Student::factory()
+    ->withInstitution($institution, $classification)
+    ->create();
+  $publication = ResultPublication::factory()
+    ->institution($institution)
+    ->create([
+      'academic_session_id' => $academicSession->id,
+      'term' => TermType::Third->value
+    ]);
+
+  foreach (TermType::cases() as $term) {
+    TermResult::factory()
+      ->withInstitution($institution)
+      ->for($academicSession)
+      ->forStudent($student)
+      ->create([
+        'term' => $term->value,
+        'is_activated' => true,
+        'result_publication_id' =>
+          $term === TermType::Third ? $publication->id : null
+      ]);
+  }
+
+  $sessionResult = SessionResult::query()->create([
+    'institution_id' => $institution->id,
+    'student_id' => $student->id,
+    'classification_id' => $classification->id,
+    'academic_session_id' => $academicSession->id,
+    'result' => 240,
+    'average' => 80,
+    'grade' => 'A',
+    'remark' => 'Excellent'
+  ]);
+  InstitutionSetting::factory()->create([
+    'institution_id' => $institution->id,
+    'key' => InstitutionSettingType::Result->value,
+    'type' => 'array',
+    'value' => json_encode([
+      ResultSettingType::UseSessionResultAsThirdTerm->value => true
+    ])
+  ]);
+
+  actingAs($student->user)
+    ->get(
+      route('institutions.students.result-sheet', [
+        $institution->uuid,
+        $student,
+        $classification,
+        $academicSession,
+        TermType::Third->value,
+        0
+      ])
+    )
+    ->assertOk()
+    ->assertInertia(
+      fn(Assert $page) => $page
+        ->component('institutions/session-result-sheets/session-result-template-1')
+        ->where('sessionResult.id', $sessionResult->id)
+    );
+});
+
+it('does not show a session result until all three term results are activated', function () {
+  $institution = Institution::factory()->create();
+  $academicSession = AcademicSession::factory()->create();
+  $classification = Classification::factory()
+    ->withInstitution($institution)
+    ->create();
+  $student = Student::factory()
+    ->withInstitution($institution, $classification)
+    ->create();
+  $publication = ResultPublication::factory()
+    ->institution($institution)
+    ->create([
+      'academic_session_id' => $academicSession->id,
+      'term' => TermType::Third->value
+    ]);
+
+  foreach (TermType::cases() as $term) {
+    TermResult::factory()
+      ->withInstitution($institution)
+      ->for($academicSession)
+      ->forStudent($student)
+      ->create([
+        'term' => $term->value,
+        'is_activated' => $term === TermType::Third,
+        'result_publication_id' =>
+          $term === TermType::Third ? $publication->id : null
+      ]);
+  }
+
+  SessionResult::query()->create([
+    'institution_id' => $institution->id,
+    'student_id' => $student->id,
+    'classification_id' => $classification->id,
+    'academic_session_id' => $academicSession->id,
+    'result' => 240,
+    'average' => 80
+  ]);
+  InstitutionSetting::factory()->create([
+    'institution_id' => $institution->id,
+    'key' => InstitutionSettingType::Result->value,
+    'type' => 'array',
+    'value' => json_encode([
+      ResultSettingType::UseSessionResultAsThirdTerm->value => true
+    ])
+  ]);
+
+  actingAs($student->user)
+    ->get(
+      route('institutions.students.result-sheet', [
+        $institution->uuid,
+        $student,
+        $classification,
+        $academicSession,
+        TermType::Third->value,
+        0
+      ])
+    )
+    ->assertForbidden();
 });

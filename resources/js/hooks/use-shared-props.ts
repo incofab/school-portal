@@ -64,6 +64,18 @@ function prepareSettings(institutionSettings?: InstitutionSetting[]) {
   const usesMidTermResult = Boolean(
     parseInt(settings[InstitutionSettingType.UsesMidTermResult]?.value)
   );
+  const rawResultSetting = settings[InstitutionSettingType.Result]?.value;
+  let resultSetting: { [key: string]: string | boolean } = {};
+  if (typeof rawResultSetting === 'string') {
+    try {
+      resultSetting = JSON.parse(rawResultSetting);
+    } catch {
+      resultSetting = {};
+    }
+  } else if (rawResultSetting && typeof rawResultSetting === 'object') {
+    resultSetting = rawResultSetting as { [key: string]: string | boolean };
+  }
+
   return {
     usesMidTermResult: usesMidTermResult,
     currentlyOnMidTerm:
@@ -71,9 +83,7 @@ function prepareSettings(institutionSettings?: InstitutionSetting[]) {
       Boolean(
         parseInt(settings[InstitutionSettingType.CurrentlyOnMidTerm]?.value)
       ),
-    resultSetting: (settings[InstitutionSettingType.Result]?.value ?? {}) as {
-      [key: string]: string;
-    },
+    resultSetting,
     stamp: settings[InstitutionSettingType.Stamp]?.value,
     paymentKeys: settings[InstitutionSettingType.PaymentKeys]?.value as {
       [key: string]: PaymentKey;

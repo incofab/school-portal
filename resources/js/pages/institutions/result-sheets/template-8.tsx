@@ -62,12 +62,14 @@ export default function Template8(props: ResultProps) {
   const themeLight = 'teal.50';
 
   const principalComment = ResultUtil.getPrincipalsComment(
-    termResult,
-    resultCommentTemplate
+    termResult.average,
+    resultCommentTemplate,
+    termResult.principal_comment
   );
   const teacherComment = ResultUtil.getTeachersComment(
-    termResult,
-    resultCommentTemplate
+    termResult.average,
+    resultCommentTemplate,
+    termResult.teacher_comment
   );
 
   function SummaryCard({

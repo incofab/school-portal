@@ -219,6 +219,7 @@ export enum ResultSettingType {
   Template = 'template',
   PositionDisplayType = 'position-display-type',
   ExamMode = 'exam-mode',
+  UseSessionResultAsThirdTerm = 'use-session-result-as-third-term',
 }
 
 export enum PositionDisplayType {

@@ -46,12 +46,14 @@ export default function Template1(props: ResultProps) {
   );
 
   const principalComment = ResultUtil.getPrincipalsComment(
-    termResult,
-    resultCommentTemplate
+    termResult.average,
+    resultCommentTemplate,
+    termResult.principal_comment
   );
   const teacherComment = ResultUtil.getTeachersComment(
-    termResult,
-    resultCommentTemplate
+    termResult.average,
+    resultCommentTemplate,
+    termResult.teacher_comment
   );
 
   function VerticalText({ text }: { text: string }) {

@@ -69,12 +69,14 @@ export default function StudentTermResultDetail({
     courseResults
   );
   const principalComment = ResultUtil.getPrincipalsComment(
-    termResult,
-    resultCommentTemplate
+    termResult.average,
+    resultCommentTemplate,
+    termResult.principal_comment
   );
   const teacherComment = ResultUtil.getTeachersComment(
-    termResult,
-    resultCommentTemplate
+    termResult.average,
+    resultCommentTemplate,
+    termResult.teacher_comment
   );
 
   const headers: TableHeader<CourseResult>[] = [

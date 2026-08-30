@@ -63,8 +63,15 @@ class InstitutionUser extends BaseModel
 
   function isStaff()
   {
-    return $this->hasRole(InstitutionUserType::Teacher) ||
-      $this->hasRole(InstitutionUserType::Admin);
+    return in_array(
+      $this->role,
+      [
+        InstitutionUserType::Admin,
+        InstitutionUserType::Teacher,
+        InstitutionUserType::Accountant
+      ],
+      true
+    );
   }
 
   function institution()

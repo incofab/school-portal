@@ -1187,14 +1187,19 @@
             improved attendance record display with check-in/check-out status,
             class day and weekly attendance register reports, API-style CRUD,
             institution attendance listing, student attendance report retrieval,
-            and an authenticated API endpoint for attendance posting. Single
-            attendance record/update operations emit explicit audit events,
-            while batch registers emit one compact summary audit event with
-            selected, recorded, unmarked, skipped, and failed counts. Batch
-            registers show today's check-in/check-out status and submit only
-            changed rows: newly checked rows are marked, newly unchecked
-            check-ins remove open check-in records, and newly unchecked
-            check-outs reopen the attendance by clearing checkout time.
+            an authenticated API endpoint for scanning a student's attendance
+            code, and a separate authenticated self-attendance endpoint for
+            institution staff scanning a fixed school QR code. The self flow
+            resolves the subject from the authenticated institution user,
+            accepts the same <code>type</code> parameter for check-in/check-out,
+            and uses server date/time by default. Single attendance record/update
+            operations emit explicit audit events, while batch registers emit
+            one compact summary audit event with selected, recorded, unmarked,
+            skipped, and failed counts. Batch registers show today's
+            check-in/check-out status and submit only changed rows: newly
+            checked rows are marked, newly unchecked check-ins remove open
+            check-in records, and newly unchecked check-outs reopen the
+            attendance by clearing checkout time.
           </p>
           <ul>
             <li>
@@ -1205,7 +1210,11 @@
               <code>attendances.class-register.view</code>,
               <code>Institutions/Attendance/AttendanceController</code>,
               <code>StudentAttendanceReportController</code>,
-              <code>API/Institutions/AttendanceController</code>.
+              <code>API/Institutions/AttendanceController</code>. The API
+              self-attendance route is
+              <code>POST /api/{institution:code}/attendance/self</code>; it
+              remains separate from the student QR attendance route and accepts
+              an optional validated <code>datetime</code> value.
             </li>
             <li>
               Frontend:
@@ -1280,7 +1289,9 @@
             AI-generated teacher/principal comments from class result analysis,
             extra result data, class result sheet rendering, transcripts, signed
             result sheets, public result activation, result publications, and
-            result delivery to guardians. WhatsApp check-result requests now
+            result delivery to guardians. Institutions can configure the
+            session result to be shown for third-term result viewing. WhatsApp
+            check-result requests now
             reuse shared result access logic for current institution settings,
             result publication, PIN activation, recent-result fallback
             selection, and signed result URL behavior before sending one or more

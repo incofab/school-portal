@@ -3,10 +3,10 @@
 
 <script type="text/javascript">
 
-function initTinymce() {
+function initTinymce(selector, options) {
     	
 	tinymce.init({
-		selector:'.useEditor',
+		selector: selector || '.useEditor',
 		valid_elements : '*[*]',
 		browser_spellcheck : true,
     plugins: 'image table code charmap lists',
@@ -35,14 +35,18 @@ function initTinymce() {
     // images_upload_url: 'postAcceptor.php',
     // here we add custom filepicker only to Image dialog
     file_picker_types: 'image', 
-    
+
+    ...(options || {}),
+
 	});
 	
 	tinyMCE.triggerSave();
 }
 
 $(function() {
-	initTinymce();
+	@if (($autoInit ?? true))
+		initTinymce();
+	@endif
 });
 /*
 $('form[name="record-question"]').on('submit', function (e) {

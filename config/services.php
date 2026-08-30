@@ -87,5 +87,8 @@ return [
     'whatsapp-api-version' => env('WHATSAPP_API_VERSION', 'v25.0'),
     'whatsapp-app-secret' => env('WHATSAPP_APP_SECRET')
     // 'whatsapp-business-account-id' => env('WHATSAPP_BUSINESS_ACCOUNT_ID')
+  ],
+  'openai' => [
+    'model' => env('OPENAI_MODEL', 'gpt-4o-mini')
   ]
 ];
