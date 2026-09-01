@@ -1,7 +1,9 @@
 <?php
 
 use App\Enums\AttendanceType;
+use App\Enums\AttendanceNotificationType;
 use App\Enums\InstitutionSettingType;
+use App\Enums\NotificationChannelsType;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\Attendance;
@@ -9,10 +11,18 @@ use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\InstitutionSetting;
 use App\Models\InstitutionUser;
+use App\Models\Message;
 use App\Models\Student;
+use App\Models\GuardianStudent;
+use App\Models\User;
 use App\Models\TermDetail;
+use App\Jobs\SendBulksms;
+use App\Jobs\SendWhatsappTemplateMessage;
+use App\Mail\InstitutionMessageMail;
 use App\Support\SettingsHandler;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertSoftDeleted;
@@ -576,3 +586,214 @@ it('prevents a non-admin user from deleting an attendance record', function () {
     ->deleteJson($route)
     ->assertStatus(403);
 });
+
+it(
+  'sends a check-in attendance notification using the preferred SMS channel',
+  function () {
+    Queue::fake();
+    InstitutionSetting::query()
+      ->where('institution_id', $this->institution->id)
+      ->where('key', InstitutionSettingType::AttendanceNotification->value)
+      ->update(['value' => AttendanceNotificationType::CheckIn->value]);
+    SettingsHandler::clear();
+    Carbon::setTestNow(Carbon::parse('2024-06-04 08:00:00'));
+
+    $student = Student::factory()
+      ->withInstitution($this->institution)
+      ->create(['guardian_phone' => '08012345678']);
+
+    actingAs($this->admin)
+      ->postJson(route('institutions.attendances.store', $this->institution), [
+        'institution_user_id' => $student->institution_user_id,
+        'reference' => Str::orderedUuid()->toString(),
+        'type' => AttendanceType::In->value
+      ])
+      ->assertOk();
+
+    Queue::assertPushed(SendBulksms::class, function (SendBulksms $job) {
+      return $job->getTo() === '08012345678';
+    });
+    expect(Message::query()->first()?->meta['attendance_event'])->toBe(
+      AttendanceType::In->value
+    );
+  }
+);
+
+it(
+  'sends separate check-in and check-out notifications when configured',
+  function () {
+    Queue::fake();
+    InstitutionSetting::query()
+      ->where('institution_id', $this->institution->id)
+      ->where('key', InstitutionSettingType::AttendanceNotification->value)
+      ->update(['value' => AttendanceNotificationType::CheckInAndOut->value]);
+    SettingsHandler::clear();
+    $student = Student::factory()
+      ->withInstitution($this->institution)
+      ->create(['guardian_phone' => '08012345678']);
+    $route = route('institutions.attendances.store', $this->institution);
+
+    Carbon::setTestNow(Carbon::parse('2024-06-04 08:00:00'));
+    actingAs($this->admin)
+      ->postJson($route, [
+        'institution_user_id' => $student->institution_user_id,
+        'reference' => Str::orderedUuid()->toString(),
+        'type' => AttendanceType::In->value
+      ])
+      ->assertOk();
+
+    Carbon::setTestNow(Carbon::parse('2024-06-04 15:30:00'));
+    actingAs($this->admin)
+      ->postJson($route, [
+        'institution_user_id' => $student->institution_user_id,
+        'type' => AttendanceType::Out->value
+      ])
+      ->assertOk();
+
+    Queue::assertPushed(SendBulksms::class, 2);
+    expect(Message::query()->count())->toBe(2);
+    expect(
+      Message::query()
+        ->pluck('meta')
+        ->map(fn(array $meta) => $meta['attendance_event'] ?? null)
+    )
+      ->toContain(AttendanceType::In->value)
+      ->toContain(AttendanceType::Out->value);
+  }
+);
+
+it(
+  'sends only the check-out summary when check-out notifications are selected',
+  function () {
+    Queue::fake();
+    InstitutionSetting::query()
+      ->where('institution_id', $this->institution->id)
+      ->where('key', InstitutionSettingType::AttendanceNotification->value)
+      ->update(['value' => AttendanceNotificationType::CheckOut->value]);
+    SettingsHandler::clear();
+    $student = Student::factory()
+      ->withInstitution($this->institution)
+      ->create(['guardian_phone' => '08012345678']);
+    $route = route('institutions.attendances.store', $this->institution);
+
+    Carbon::setTestNow(Carbon::parse('2024-06-04 08:00:00'));
+    actingAs($this->admin)
+      ->postJson($route, [
+        'institution_user_id' => $student->institution_user_id,
+        'reference' => Str::orderedUuid()->toString(),
+        'type' => AttendanceType::In->value
+      ])
+      ->assertOk();
+    Queue::assertNothingPushed();
+
+    Carbon::setTestNow(Carbon::parse('2024-06-04 15:30:00'));
+    actingAs($this->admin)
+      ->postJson($route, [
+        'institution_user_id' => $student->institution_user_id,
+        'type' => AttendanceType::Out->value
+      ])
+      ->assertOk();
+
+    Queue::assertPushed(SendBulksms::class, 1);
+    expect(Message::query()->first()?->body)
+      ->toContain('Sign-in: 8:00 AM')
+      ->toContain('Sign-out: 3:30 PM');
+  }
+);
+
+it(
+  'does not send attendance notifications when the default option is selected',
+  function () {
+    Queue::fake();
+    SettingsHandler::clear();
+    Carbon::setTestNow(Carbon::parse('2024-06-04 08:00:00'));
+    $student = Student::factory()
+      ->withInstitution($this->institution)
+      ->create(['guardian_phone' => '08012345678']);
+
+    actingAs($this->admin)
+      ->postJson(route('institutions.attendances.store', $this->institution), [
+        'institution_user_id' => $student->institution_user_id,
+        'reference' => Str::orderedUuid()->toString(),
+        'type' => AttendanceType::In->value
+      ])
+      ->assertOk();
+
+    Queue::assertNothingPushed();
+    expect(Message::query()->count())->toBe(0);
+  }
+);
+
+it(
+  'uses the preferred email channel for attendance notifications',
+  function () {
+    Mail::fake();
+    Queue::fake();
+    InstitutionSetting::query()
+      ->where('institution_id', $this->institution->id)
+      ->where('key', InstitutionSettingType::AttendanceNotification->value)
+      ->update(['value' => AttendanceNotificationType::CheckIn->value]);
+    InstitutionSetting::query()
+      ->where('institution_id', $this->institution->id)
+      ->where('key', InstitutionSettingType::PreferredMessageOption->value)
+      ->update(['value' => NotificationChannelsType::Email->value]);
+    SettingsHandler::clear();
+    $student = Student::factory()
+      ->withInstitution($this->institution)
+      ->create(['guardian_phone' => null]);
+    $guardian = User::factory()
+      ->guardian($this->institution)
+      ->create(['email' => 'guardian@example.com']);
+    GuardianStudent::factory()
+      ->withInstitution($this->institution)
+      ->student($student)
+      ->guardianUser($guardian)
+      ->create();
+
+    actingAs($this->admin)
+      ->postJson(route('institutions.attendances.store', $this->institution), [
+        'institution_user_id' => $student->institution_user_id,
+        'reference' => Str::orderedUuid()->toString(),
+        'type' => AttendanceType::In->value
+      ])
+      ->assertOk();
+
+    Mail::assertQueued(InstitutionMessageMail::class, function (
+      InstitutionMessageMail $mail
+    ) {
+      return $mail->hasTo('guardian@example.com');
+    });
+    Queue::assertNotPushed(SendBulksms::class);
+    Queue::assertNotPushed(SendWhatsappTemplateMessage::class);
+  }
+);
+
+it(
+  'uses the preferred WhatsApp channel for attendance notifications',
+  function () {
+    Queue::fake();
+    InstitutionSetting::query()
+      ->where('institution_id', $this->institution->id)
+      ->where('key', InstitutionSettingType::AttendanceNotification->value)
+      ->update(['value' => AttendanceNotificationType::CheckIn->value]);
+    InstitutionSetting::query()
+      ->where('institution_id', $this->institution->id)
+      ->where('key', InstitutionSettingType::PreferredMessageOption->value)
+      ->update(['value' => NotificationChannelsType::Whatsapp->value]);
+    SettingsHandler::clear();
+    $student = Student::factory()
+      ->withInstitution($this->institution)
+      ->create(['guardian_phone' => '08012345678']);
+
+    actingAs($this->admin)
+      ->postJson(route('institutions.attendances.store', $this->institution), [
+        'institution_user_id' => $student->institution_user_id,
+        'reference' => Str::orderedUuid()->toString(),
+        'type' => AttendanceType::In->value
+      ])
+      ->assertOk();
+
+    Queue::assertPushed(SendWhatsappTemplateMessage::class, 1);
+    Queue::assertNotPushed(SendBulksms::class);
+  }
+);

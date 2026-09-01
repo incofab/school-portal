@@ -4368,6 +4368,8 @@
               Persistence delegates to
               <code>SaveInstitutionSetting</code>. Payment-key changes emit
               security audit events with provider/key-presence summaries only.
+              Attendance notification and preferred message settings are
+              validated as enums and are consumed by the attendance action.
             </div>
           </li>
           <li>
@@ -6208,7 +6210,24 @@
             </div>
             <div class="desc">
               Action class that runs the Record Attendance workflow and
-              coordinates domain logic.
+              coordinates domain logic. Successful check-in and check-out
+              operations invoke the configured attendance notification action.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>SendAttendanceNotification</strong>
+              <span class="path"
+                ><code
+                  >app/Actions/Attendance/SendAttendanceNotification.php</code
+                ></span
+            </div>
+            <div class="desc">
+              Resolves the institution's attendance timing and preferred
+              message channel, selects a guardian email or phone contact,
+              records the notification against the attendance row, and queues
+              email, SMS, or WhatsApp delivery with separate check-in/check-out
+              idempotency.
             </div>
           </li>
           <li>
@@ -7749,8 +7768,9 @@
             </div>
             <div class="desc">
               Support/helper class for institution settings, current academic
-              context, result template selection, and resolved exam-score
-              display mode.
+              context, result template selection, resolved exam-score display
+              mode, attendance notification timing, and preferred message
+              channel.
             </div>
           </li>
           <li>
@@ -8377,6 +8397,17 @@
             </div>
             <div class="desc">
               Enum defining valid Institution Setting Type options.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>AttendanceNotificationType</strong>
+              <span class="path"
+                ><code>app/Enums/AttendanceNotificationType.php</code></span
+            </div>
+            <div class="desc">
+              Enum defining disabled, check-in, check-in-and-check-out, and
+              check-out-summary attendance notification timings.
             </div>
           </li>
           <li>

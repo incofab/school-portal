@@ -1,15 +1,13 @@
 import React from 'react';
 import {
+  Box,
   Checkbox,
-  Divider,
   FormControl,
   FormLabel,
   Grid,
   GridItem,
   HStack,
-  Spacer,
   Text,
-  VStack,
 } from '@chakra-ui/react';
 import useWebForm from '@/hooks/use-web-form';
 import { Inertia } from '@inertiajs/inertia';
@@ -25,14 +23,19 @@ import {
   ResultTemplate,
 } from '@/types/types';
 import useSharedProps from '@/hooks/use-shared-props';
-import { Div } from '@/components/semantic';
+import {
+  SettingsSection,
+  default as SettingsGroup,
+} from '@/components/settings/settings-group';
 
-export default function ResultSettings() {
-  const { handleResponseToast } = useMyToast();
-  const { instRoute } = useInstitutionRoute();
-  const { resultSetting } = useSharedProps();
+export interface ResultSettingsData {
+  [key: string]: string | boolean;
+}
 
-  const webForm = useWebForm({
+export function getResultSettingsData(
+  resultSetting?: ResultSettingsData
+): ResultSettingsData {
+  return {
     [ResultSettingType.PositionDisplayType]:
       resultSetting?.[ResultSettingType.PositionDisplayType] ??
       PositionDisplayType.Position,
@@ -43,105 +46,148 @@ export default function ResultSettings() {
     [ResultSettingType.UseSessionResultAsThirdTerm]: Boolean(
       resultSetting?.[ResultSettingType.UseSessionResultAsThirdTerm]
     ),
-  } as { [key: string]: string | boolean });
+  };
+}
+
+interface Props {
+  embedded?: boolean;
+  data?: ResultSettingsData;
+  onChange?: (key: ResultSettingType, value: string | boolean) => void;
+  showActions?: boolean;
+}
+
+export default function ResultSettings({
+  embedded = false,
+  data,
+  onChange,
+  showActions = true,
+}: Props) {
+  const { handleResponseToast } = useMyToast();
+  const { instRoute } = useInstitutionRoute();
+  const { resultSetting } = useSharedProps();
+  const webForm = useWebForm(getResultSettingsData(resultSetting));
+  const values = data ?? webForm.data;
+
+  const setValue = (key: ResultSettingType, value: string | boolean) => {
+    if (onChange) {
+      onChange(key, value);
+      return;
+    }
+
+    webForm.setValue(key, value);
+  };
 
   const submit = async () => {
-    const res = await webForm.submit((data, web) => {
+    const res = await webForm.submit((_, web) => {
       return web.post(instRoute('settings.store'), {
         key: InstitutionSettingType.Result,
-        value: data,
+        value: values,
         type: 'array',
       });
     });
-    if (!handleResponseToast(res)) {
-      return;
-    }
+    if (!handleResponseToast(res)) return;
     Inertia.reload({ only: ['settings'] });
   };
 
-  return (
-    <VStack align={'stretch'}>
-      <Divider my={2} />
-      <Text fontWeight={'bold'}>Result Setting</Text>
-      <Grid templateColumns={{ lg: 'repeat(3, 1fr)' }} gap={4}>
-        {/* <HStack align={'stretch'} spacing={2}> */}
-        <GridItem>
-          <FormControl>
-            <FormLabel>Display Position</FormLabel>
-            <EnumSelect
-              enumData={PositionDisplayType}
-              selectValue={webForm.data[ResultSettingType.PositionDisplayType]}
-              onChange={(e: any) =>
-                webForm.setValue(ResultSettingType.PositionDisplayType, e.value)
-              }
-            />
-          </FormControl>
-        </GridItem>
-        <GridItem>
-          <FormControl>
-            <FormLabel>Template</FormLabel>
-            <EnumSelect
-              enumData={ResultTemplate}
-              selectValue={webForm.data[ResultSettingType.Template]}
-              onChange={(e: any) =>
-                webForm.setValue(ResultSettingType.Template, e.value)
-              }
-            />
-          </FormControl>
-        </GridItem>
-        <GridItem>
-          <FormControl>
-            <FormLabel>Show Exam Result</FormLabel>
-            <EnumSelect
-              enumData={ResultExamMode}
-              selectValue={webForm.data[ResultSettingType.ExamMode]}
-              onChange={(e: any) =>
-                webForm.setValue(ResultSettingType.ExamMode, e.value)
-              }
-            />
-          </FormControl>
-        </GridItem>
-        <GridItem>
-          <FormControl>
-            <FormLabel>Third-Term Result</FormLabel>
-            <Checkbox
-              colorScheme="brand"
-              isChecked={Boolean(
-                webForm.data[ResultSettingType.UseSessionResultAsThirdTerm]
-              )}
-              onChange={(event) =>
-                webForm.setValue(
-                  ResultSettingType.UseSessionResultAsThirdTerm,
-                  event.target.checked
-                )
-              }
-            >
-              Use session result
-            </Checkbox>
-            <Text fontSize="sm" color="gray.500" mt={1}>
-              Show the annual session result when students view third-term
-              results.
-            </Text>
-          </FormControl>
-        </GridItem>
-        <Div>
-          <HStack mt={'30px'}>
-            <BrandButton
-              title="Update"
-              onClick={() => submit()}
-              isLoading={webForm.processing}
-              size={'md'}
-            />
+  const action = showActions ? (
+    <BrandButton
+      title="Save result presentation"
+      onClick={() => submit()}
+      isLoading={webForm.processing}
+      size="md"
+    />
+  ) : undefined;
+
+  const content = (
+    <Grid templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }} gap={4}>
+      <GridItem>
+        <FormControl>
+          <FormLabel>Display position</FormLabel>
+          <EnumSelect
+            enumData={PositionDisplayType}
+            selectValue={values[ResultSettingType.PositionDisplayType]}
+            onChange={(e: any) =>
+              setValue(ResultSettingType.PositionDisplayType, e.value)
+            }
+          />
+        </FormControl>
+      </GridItem>
+      <GridItem>
+        <FormControl>
+          <FormLabel>Template</FormLabel>
+          <HStack align="stretch" spacing={2}>
+            <Box flex={1} minW={0}>
+              <EnumSelect
+                enumData={ResultTemplate}
+                selectValue={values[ResultSettingType.Template]}
+                onChange={(e: any) =>
+                  setValue(ResultSettingType.Template, e.value)
+                }
+              />
+            </Box>
             <LinkButton
-              title="Preview Template"
+              title="Preview template"
               href={instRoute('result-sheets.dummy')}
-              variant={'outline'}
+              variant="outline"
+              whiteSpace="nowrap"
             />
           </HStack>
-        </Div>
-      </Grid>
-      <Divider my={2} />
-      <Spacer height={5} />
-    </VStack>
+        </FormControl>
+      </GridItem>
+      <GridItem>
+        <FormControl>
+          <FormLabel>Show exam result</FormLabel>
+          <EnumSelect
+            enumData={ResultExamMode}
+            selectValue={values[ResultSettingType.ExamMode]}
+            onChange={(e: any) => setValue(ResultSettingType.ExamMode, e.value)}
+          />
+        </FormControl>
+      </GridItem>
+      <GridItem>
+        <FormControl>
+          <FormLabel>Show Annual Result in 3rd Term</FormLabel>
+          <Checkbox
+            colorScheme="brand"
+            isChecked={Boolean(
+              values[ResultSettingType.UseSessionResultAsThirdTerm]
+            )}
+            onChange={(event) =>
+              setValue(
+                ResultSettingType.UseSessionResultAsThirdTerm,
+                event.target.checked
+              )
+            }
+          >
+            Use session result
+          </Checkbox>
+          {/* <Text fontSize="sm" color="gray.500" mt={1}>
+            Show the session result when students view third-term results.
+          </Text> */}
+        </FormControl>
+      </GridItem>
+    </Grid>
+  );
+
+  if (embedded) {
+    return (
+      <SettingsSection
+        title="Result presentation"
+        description="Choose how results are displayed and whether the session result is used for third term."
+        action={action}
+      >
+        {content}
+      </SettingsSection>
+    );
+  }
+
+  return (
+    <SettingsGroup
+      title="Result presentation"
+      description="Choose how results are displayed and whether the session result is used for third term."
+      action={action}
+    >
+      {content}
+    </SettingsGroup>
   );
 }

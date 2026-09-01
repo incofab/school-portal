@@ -1,7 +1,9 @@
 <?php
 
 use App\Actions\SeedSetupData;
+use App\Enums\AttendanceNotificationType;
 use App\Enums\InstitutionSettingType;
+use App\Enums\NotificationChannelsType;
 use App\Enums\ResultExamMode;
 use App\Enums\ResultSettingType;
 use App\Enums\TermType;
@@ -32,6 +34,138 @@ it('stores institution user full name display format', function () {
     'institution_id' => $this->institution->id,
     'key' => InstitutionSettingType::UserFullNameFormat->value,
     'value' => UserFullNameFormat::LastFirstOther->value
+  ]);
+});
+
+it(
+  'stores attendance notification timing and preferred message option',
+  function () {
+    actingAs($this->admin)
+      ->postJson(
+        route('institutions.settings.store-multiple', $this->institution),
+        [
+          'settings' => [
+            [
+              'key' => InstitutionSettingType::AttendanceNotification->value,
+              'value' => AttendanceNotificationType::CheckInAndOut->value
+            ],
+            [
+              'key' => InstitutionSettingType::PreferredMessageOption->value,
+              'value' => NotificationChannelsType::Whatsapp->value
+            ]
+          ]
+        ]
+      )
+      ->assertOk();
+
+    assertDatabaseHas('institution_settings', [
+      'institution_id' => $this->institution->id,
+      'key' => InstitutionSettingType::AttendanceNotification->value,
+      'value' => AttendanceNotificationType::CheckInAndOut->value
+    ]);
+    assertDatabaseHas('institution_settings', [
+      'institution_id' => $this->institution->id,
+      'key' => InstitutionSettingType::PreferredMessageOption->value,
+      'value' => NotificationChannelsType::Whatsapp->value
+    ]);
+  }
+);
+
+it(
+  'seeds disabled attendance notifications and SMS as the default message option',
+  function () {
+    assertDatabaseHas('institution_settings', [
+      'institution_id' => $this->institution->id,
+      'key' => InstitutionSettingType::AttendanceNotification->value,
+      'value' => AttendanceNotificationType::None->value
+    ]);
+    assertDatabaseHas('institution_settings', [
+      'institution_id' => $this->institution->id,
+      'key' => InstitutionSettingType::PreferredMessageOption->value,
+      'value' => NotificationChannelsType::Sms->value
+    ]);
+  }
+);
+
+it('stores multiple institution settings together', function () {
+  $academicSession = AcademicSession::factory()->create();
+
+  actingAs($this->admin)
+    ->postJson(
+      route('institutions.settings.store-multiple', $this->institution),
+      [
+        'settings' => [
+          [
+            'key' => InstitutionSettingType::CurrentTerm->value,
+            'value' => TermType::Second->value
+          ],
+          [
+            'key' => InstitutionSettingType::CurrentAcademicSession->value,
+            'value' => $academicSession->id
+          ]
+        ]
+      ]
+    )
+    ->assertOk();
+
+  assertDatabaseHas('institution_settings', [
+    'institution_id' => $this->institution->id,
+    'key' => InstitutionSettingType::CurrentTerm->value,
+    'value' => TermType::Second->value
+  ]);
+  assertDatabaseHas('institution_settings', [
+    'institution_id' => $this->institution->id,
+    'key' => InstitutionSettingType::CurrentAcademicSession->value,
+    'value' => (string) $academicSession->id
+  ]);
+});
+
+it('stores result access, PIN usage, and presentation together', function () {
+  actingAs($this->admin)
+    ->postJson(
+      route('institutions.settings.store-multiple', $this->institution),
+      [
+        'settings' => [
+          [
+            'key' => InstitutionSettingType::UsesMidTermResult->value,
+            'value' => true
+          ],
+          [
+            'key' => InstitutionSettingType::ResultActivationRequired->value,
+            'value' => false
+          ],
+          [
+            'key' => InstitutionSettingType::PinUsageCount->value,
+            'value' => 3
+          ],
+          [
+            'key' => InstitutionSettingType::Result->value,
+            'value' => [
+              ResultSettingType::ExamMode->value =>
+                ResultExamMode::MidTerm->value,
+              ResultSettingType::UseSessionResultAsThirdTerm->value => true
+            ],
+            'type' => 'array'
+          ]
+        ]
+      ]
+    )
+    ->assertOk();
+
+  assertDatabaseHas('institution_settings', [
+    'institution_id' => $this->institution->id,
+    'key' => InstitutionSettingType::PinUsageCount->value,
+    'value' => '3'
+  ]);
+
+  $setting = InstitutionSetting::query()
+    ->where('institution_id', $this->institution->id)
+    ->where('key', InstitutionSettingType::Result->value)
+    ->first();
+
+  expect(json_decode($setting->value, true))->toMatchArray([
+    ResultSettingType::ExamMode->value => ResultExamMode::MidTerm->value,
+    ResultSettingType::UseSessionResultAsThirdTerm->value => true
   ]);
 });
 

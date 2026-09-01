@@ -87,7 +87,7 @@ DB setup (seeders include roles/permissions and sample domain data — needed fo
 
 ### Backend structure (`app/`)
 
-Business logic favors an **Action pattern** over fat controllers/services: `app/Actions/<Domain>/<Verb...>.php` (e.g. `app/Actions/Attendance/SendDailyAttendanceNotifications.php`, `app/Actions/Fees`, `app/Actions/Result`, `app/Actions/Payments`). Controllers are thin and delegate into Actions. Prefer reusing/extending an existing Action before adding a new global helper or duplicating logic.
+Business logic favors an **Action pattern** over fat controllers/services: `app/Actions/<Domain>/<Verb...>.php` (e.g. `app/Actions/Attendance/SendAttendanceNotification.php`, `app/Actions/Fees`, `app/Actions/Result`, `app/Actions/Payments`). Controllers are thin and delegate into Actions. Prefer reusing/extending an existing Action before adding a new global helper or duplicating logic.
 
 Controllers under `app/Http/Controllers/` mirror the tenancy split: `Institutions/*` (heavily subdivided by domain — `Attendance`, `Results`, `Admissions`, `Exams`, `Payments`, `Withdrawals`, `Chats`, `Staff`, `Recruitment`, etc.), `Managers/*` (platform admin), `API/*`, `Impersonate/*`, `Auth/*`, `Home/*`.
 

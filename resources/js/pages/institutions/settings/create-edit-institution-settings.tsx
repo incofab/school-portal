@@ -1,12 +1,13 @@
 import React, { ChangeEvent, useState } from 'react';
 import {
   Avatar,
-  Divider,
+  Box,
+  Flex,
   FormControl,
   FormLabel,
   HStack,
   Input,
-  Spacer,
+  SimpleGrid,
   Spinner,
   Switch,
   Text,
@@ -23,26 +24,40 @@ import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import {
+  FileDropperType,
+  MAX_FILE_SIZE_BYTES,
+  bytesToMb,
+} from '@/components/file-dropper/common';
+import {
+  AttendanceNotificationType,
   InstitutionSettingType,
+  NotificationChannelsType,
   SelectOptionType,
   TermType,
   UserFullNameFormat,
 } from '@/types/types';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import useSharedProps from '@/hooks/use-shared-props';
-import { Div } from '@/components/semantic';
-import {
-  FileDropperType,
-  MAX_FILE_SIZE_BYTES,
-  bytesToMb,
-} from '@/components/file-dropper/common';
 import { resizeImage } from '@/util/util';
-import ResultSettings from './result-settings';
+import ResultSettings, {
+  getResultSettingsData,
+  ResultSettingsData,
+} from './result-settings';
 import PaymentKeysSettings from './payment-keys-settings';
 import DataSelect from '@/components/dropdown-select/data-select';
+import {
+  SettingsSection,
+  default as SettingsGroup,
+} from '@/components/settings/settings-group';
 
 interface Props {
   settings: { [key: string]: InstitutionSetting };
+}
+
+interface SettingUpdate {
+  key: InstitutionSettingType;
+  value: unknown;
+  type?: string;
 }
 
 const fullNameFormatOptions: SelectOptionType<string>[] = [
@@ -63,22 +78,39 @@ const fullNameFormatOptions: SelectOptionType<string>[] = [
     label: 'Surname / Other names / First name',
     value: UserFullNameFormat.LastOtherFirst,
   },
-  // {
-  //   label: 'Other names / First name / Surname',
-  //   value: UserFullNameFormat.OtherFirstLast,
-  // },
-  // {
-  //   label: 'Other names / Surname / First name',
-  //   value: UserFullNameFormat.OtherLastFirst,
-  // },
+];
+
+const attendanceNotificationOptions: SelectOptionType<string>[] = [
+  { label: 'No notification', value: AttendanceNotificationType.None },
+  {
+    label: 'Send notification on check-in',
+    value: AttendanceNotificationType.CheckIn,
+  },
+  {
+    label: 'Send notification on check-in and check-out',
+    value: AttendanceNotificationType.CheckInAndOut,
+  },
+  {
+    label: 'Send summary notification only at check-out',
+    value: AttendanceNotificationType.CheckOut,
+  },
+];
+
+const preferredMessageOptions: SelectOptionType<string>[] = [
+  { label: 'Email', value: NotificationChannelsType.Email },
+  { label: 'SMS', value: NotificationChannelsType.Sms },
+  { label: 'WhatsApp', value: NotificationChannelsType.Whatsapp },
 ];
 
 export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
-  const [activeSetting, setActiveSetting] = useState<string>('');
-  const { currentTerm, currentAcademicSessionId, currentUser } =
+  const [activeGroup, setActiveGroup] = useState('');
+  const { currentTerm, currentAcademicSessionId, currentUser, resultSetting } =
     useSharedProps();
+  const [resultSettings, setResultSettings] = useState<ResultSettingsData>(() =>
+    getResultSettingsData(resultSetting)
+  );
 
   const webForm = useWebForm({
     [InstitutionSettingType.CurrentTerm]:
@@ -86,8 +118,6 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
     [InstitutionSettingType.CurrentAcademicSession]:
       settings[InstitutionSettingType.CurrentAcademicSession]?.value ??
       currentAcademicSessionId,
-    // [InstitutionSettingType.ResultTemplate]:
-    //   settings[InstitutionSettingType.ResultTemplate]?.value ?? '',
     [InstitutionSettingType.UsesMidTermResult]: Boolean(
       parseInt(settings[InstitutionSettingType.UsesMidTermResult]?.value)
     ),
@@ -98,14 +128,20 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
         settings[InstitutionSettingType.ResultActivationRequired]?.value ?? 1
       )
     ),
-    [InstitutionSettingType.PinUsageCount]: Boolean(
-      parseInt(settings[InstitutionSettingType.PinUsageCount]?.value ?? 1)
+    [InstitutionSettingType.PinUsageCount]: parseInt(
+      settings[InstitutionSettingType.PinUsageCount]?.value ?? 1
     ),
     [InstitutionSettingType.LockTermSession]: Boolean(
       parseInt(settings[InstitutionSettingType.LockTermSession]?.value ?? 1)
     ),
     [InstitutionSettingType.UserFullNameFormat]:
       settings[InstitutionSettingType.UserFullNameFormat]?.value ?? '',
+    [InstitutionSettingType.AttendanceNotification]:
+      settings[InstitutionSettingType.AttendanceNotification]?.value ??
+      AttendanceNotificationType.None,
+    [InstitutionSettingType.PreferredMessageOption]:
+      settings[InstitutionSettingType.PreferredMessageOption]?.value ??
+      NotificationChannelsType.Sms,
   } as { [key: string]: any });
 
   const fullNamePreview = formatFullNamePreview(
@@ -117,189 +153,317 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
     webForm.data[InstitutionSettingType.UserFullNameFormat]
   );
 
-  const submit = async (activeSetting: InstitutionSettingType, value?: any) => {
-    setActiveSetting(activeSetting);
-    const res = await webForm.submit((data, web) => {
-      return web.post(instRoute('settings.store'), {
-        key: activeSetting,
-        value: value ?? data[activeSetting],
-      });
-    });
+  const submitSettings = async (group: string, updates: SettingUpdate[]) => {
+    setActiveGroup(group);
+    const res = await webForm.submit((_, web) =>
+      web.post(instRoute('settings.store-multiple'), {
+        settings: updates,
+      })
+    );
+
     if (!handleResponseToast(res)) return;
     Inertia.reload({ only: ['settings'] });
   };
 
+  const submitSingleSetting = (key: InstitutionSettingType, value?: unknown) =>
+    submitSettings(key, [
+      {
+        key,
+        value: value ?? webForm.data[key],
+      },
+    ]);
+
+  const submitResultsAndPinAccess = () =>
+    submitSettings('results-and-pin-access', [
+      {
+        key: InstitutionSettingType.UsesMidTermResult,
+        value: webForm.data[InstitutionSettingType.UsesMidTermResult],
+      },
+      {
+        key: InstitutionSettingType.ResultActivationRequired,
+        value: webForm.data[InstitutionSettingType.ResultActivationRequired],
+      },
+      {
+        key: InstitutionSettingType.PinUsageCount,
+        value: webForm.data[InstitutionSettingType.PinUsageCount],
+      },
+      {
+        key: InstitutionSettingType.Result,
+        value: resultSettings,
+        type: 'array',
+      },
+    ]);
+
   return (
     <DashboardLayout>
-      <CenteredBox>
+      <CenteredBox maxWidth="960px" py={{ base: 3, md: 6 }}>
         <Slab>
-          <SlabHeading title={`Set Your Settings`} />
+          <SlabHeading
+            title="Institution settings"
+            fontSize={{ base: 'xl', md: '2xl' }}
+          />
           <SlabBody>
-            <VStack align={'stretch'}>
-              <Text>Current Term</Text>
-              <HStack align={'stretch'} spacing={2}>
-                <FormControl>
-                  <EnumSelect
-                    enumData={TermType}
-                    selectValue={
-                      webForm.data[InstitutionSettingType.CurrentTerm]
+            <Text color="gray.500" mb={5}>
+              Manage academic context, results, identity display, and other
+              institution preferences from one place.
+            </Text>
+
+            <VStack align="stretch" spacing={4}>
+              <SettingsGroup
+                title="Academic context"
+                description="Choose the current term and academic session used across the institution."
+                action={
+                  <BrandButton
+                    title="Save academic context"
+                    onClick={() =>
+                      submitSettings('academic-context', [
+                        {
+                          key: InstitutionSettingType.CurrentTerm,
+                          value:
+                            webForm.data[InstitutionSettingType.CurrentTerm],
+                        },
+                        {
+                          key: InstitutionSettingType.CurrentAcademicSession,
+                          value:
+                            webForm.data[
+                              InstitutionSettingType.CurrentAcademicSession
+                            ],
+                        },
+                      ])
                     }
-                    onChange={(e: any) =>
-                      webForm.setValue(
-                        InstitutionSettingType.CurrentTerm,
-                        e.value
+                    isLoading={
+                      activeGroup === 'academic-context' && webForm.processing
+                    }
+                    size="md"
+                  />
+                }
+              >
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                  <FormControl>
+                    <FormLabel>Current term</FormLabel>
+                    <EnumSelect
+                      enumData={TermType}
+                      selectValue={
+                        webForm.data[InstitutionSettingType.CurrentTerm]
+                      }
+                      onChange={(e: any) =>
+                        webForm.setValue(
+                          InstitutionSettingType.CurrentTerm,
+                          e.value
+                        )
+                      }
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Academic session</FormLabel>
+                    <AcademicSessionSelect
+                      selectValue={
+                        webForm.data[
+                          InstitutionSettingType.CurrentAcademicSession
+                        ]
+                      }
+                      onChange={(e: any) =>
+                        webForm.setValue(
+                          InstitutionSettingType.CurrentAcademicSession,
+                          e.value
+                        )
+                      }
+                    />
+                  </FormControl>
+                </SimpleGrid>
+
+                <Box borderWidth="1px" borderRadius="lg" p={4}>
+                  <HStack align="start" spacing={3}>
+                    <Switch
+                      id="lock-term-session"
+                      isChecked={
+                        webForm.data[InstitutionSettingType.LockTermSession] ===
+                        true
+                      }
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        const message =
+                          'Disabling this will allow change of term and session when filling out results';
+                        if (!isChecked && !window.confirm(message)) return;
+
+                        webForm.setValue(
+                          InstitutionSettingType.LockTermSession,
+                          isChecked
+                        );
+                        submitSingleSetting(
+                          InstitutionSettingType.LockTermSession,
+                          isChecked
+                        );
+                      }}
+                      colorScheme="brand"
+                      isDisabled={
+                        activeGroup ===
+                          InstitutionSettingType.LockTermSession &&
+                        webForm.processing
+                      }
+                      mt={1}
+                    />
+                    <Box>
+                      <FormLabel htmlFor="lock-term-session" mb={1}>
+                        Lock term and session changes
+                      </FormLabel>
+                      <Text fontSize="sm" color="gray.500">
+                        This setting updates immediately. Turn it off only when
+                        staff need to change the academic context while entering
+                        results.
+                      </Text>
+                    </Box>
+                  </HStack>
+                </Box>
+              </SettingsGroup>
+
+              <SettingsGroup
+                title="Results and PIN access"
+                description="Manage result availability, presentation, and PIN usage from one place."
+              >
+                <SettingsSection
+                  title="Result access"
+                  description="Control mid-term result usage and whether published results require activation pins."
+                  first
+                >
+                  <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                    <FormControl>
+                      <FormLabel>Use mid-term results</FormLabel>
+                      <EnumSelect
+                        enumData={{ Yes: 'Yes', No: 'No' }}
+                        selectValue={
+                          webForm.data[InstitutionSettingType.UsesMidTermResult]
+                            ? 'Yes'
+                            : 'No'
+                        }
+                        onChange={(e: any) =>
+                          webForm.setValue(
+                            InstitutionSettingType.UsesMidTermResult,
+                            e.value === 'Yes'
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel>Result activation required</FormLabel>
+                      <HStack align="start" spacing={3} pt={2}>
+                        <Switch
+                          id="result-activation-required"
+                          isChecked={
+                            webForm.data[
+                              InstitutionSettingType.ResultActivationRequired
+                            ] === true
+                          }
+                          onChange={(e) => {
+                            const isChecked = e.target.checked;
+                            const message =
+                              'If you disable this, students will be able to check their results without activation pins.';
+                            if (!isChecked && !window.confirm(message)) return;
+                            webForm.setValue(
+                              InstitutionSettingType.ResultActivationRequired,
+                              isChecked
+                            );
+                          }}
+                          colorScheme="brand"
+                        />
+                        <Box>
+                          <FormLabel
+                            htmlFor="result-activation-required"
+                            mb={1}
+                          >
+                            Require activation pins
+                          </FormLabel>
+                          <Text fontSize="sm" color="gray.500">
+                            Applies when students check results after
+                            publishing.
+                          </Text>
+                        </Box>
+                      </HStack>
+                    </FormControl>
+                  </SimpleGrid>
+                </SettingsSection>
+
+                <SettingsSection
+                  title="PIN usage"
+                  description="Set how often a generated result PIN can be used."
+                >
+                  <FormControl maxW={{ base: 'full', md: '320px' }}>
+                    <FormLabel>PIN validity</FormLabel>
+                    <DataSelect
+                      data={{
+                        main: [
+                          { label: 'Once', value: 1 },
+                          { label: 'For the session', value: 3 },
+                        ],
+                        label: 'label',
+                        value: 'value',
+                      }}
+                      selectValue={
+                        webForm.data[InstitutionSettingType.PinUsageCount]
+                      }
+                      onChange={(e: any) =>
+                        webForm.setValue(
+                          InstitutionSettingType.PinUsageCount,
+                          e.value
+                        )
+                      }
+                    />
+                  </FormControl>
+                </SettingsSection>
+
+                <ResultSettings
+                  embedded
+                  data={resultSettings}
+                  onChange={(key, value) =>
+                    setResultSettings((current) => ({
+                      ...current,
+                      [key]: value,
+                    }))
+                  }
+                  showActions={false}
+                />
+
+                <Flex
+                  justify={{ base: 'stretch', sm: 'flex-end' }}
+                  borderTopWidth="1px"
+                  borderColor="gray.200"
+                  pt={5}
+                >
+                  <BrandButton
+                    title="Save results and PIN access"
+                    onClick={submitResultsAndPinAccess}
+                    isLoading={
+                      activeGroup === 'results-and-pin-access' &&
+                      webForm.processing
+                    }
+                    w={{ base: 'full', sm: 'auto' }}
+                    size="md"
+                  />
+                </Flex>
+              </SettingsGroup>
+
+              <SettingsGroup
+                title="Name display"
+                description="Choose how names appear on institution-scoped pages and responses."
+                action={
+                  <BrandButton
+                    title="Save name display"
+                    onClick={() =>
+                      submitSingleSetting(
+                        InstitutionSettingType.UserFullNameFormat
                       )
                     }
+                    isLoading={
+                      activeGroup ===
+                        InstitutionSettingType.UserFullNameFormat &&
+                      webForm.processing
+                    }
+                    size="md"
                   />
-                </FormControl>
-                <BrandButton
-                  title="Update"
-                  onClick={() => submit(InstitutionSettingType.CurrentTerm)}
-                  isLoading={
-                    activeSetting === InstitutionSettingType.CurrentTerm &&
-                    webForm.processing
-                  }
-                  size={'md'}
-                />
-              </HStack>
-              {/* <Spacer height={5} /> */}
-              <Divider />
-              <Text>Academic Session</Text>
-              <HStack align={'stretch'} spacing={2}>
+                }
+              >
                 <FormControl>
-                  <AcademicSessionSelect
-                    selectValue={
-                      webForm.data[
-                        InstitutionSettingType.CurrentAcademicSession
-                      ]
-                    }
-                    onChange={(e: any) =>
-                      webForm.setValue(
-                        InstitutionSettingType.CurrentAcademicSession,
-                        e.value
-                      )
-                    }
-                  />
-                </FormControl>
-                <BrandButton
-                  title="Update"
-                  onClick={() =>
-                    submit(InstitutionSettingType.CurrentAcademicSession)
-                  }
-                  isLoading={
-                    activeSetting ===
-                      InstitutionSettingType.CurrentAcademicSession &&
-                    webForm.processing
-                  }
-                  size={'md'}
-                />
-              </HStack>
-              <Divider />
-              <Text>Uses Mid Term Results</Text>
-              <HStack align={'stretch'} spacing={2}>
-                <FormControl>
-                  <EnumSelect
-                    enumData={{ Yes: 'Yes', No: 'No' }}
-                    selectValue={
-                      webForm.data[InstitutionSettingType.UsesMidTermResult] ===
-                      true
-                        ? 'Yes'
-                        : 'No'
-                    }
-                    onChange={(e: any) =>
-                      webForm.setValue(
-                        InstitutionSettingType.UsesMidTermResult,
-                        e.value === 'Yes' ? true : false
-                      )
-                    }
-                  />
-                </FormControl>
-                <BrandButton
-                  title="Update"
-                  onClick={() =>
-                    submit(InstitutionSettingType.UsesMidTermResult)
-                  }
-                  isLoading={
-                    activeSetting ===
-                      InstitutionSettingType.UsesMidTermResult &&
-                    webForm.processing
-                  }
-                  size={'md'}
-                />
-              </HStack>
-              <Divider my={3} />
-              <FormLabel border={'1px solid #999999AA'} p={2} borderRadius={5}>
-                <Switch
-                  isChecked={
-                    webForm.data[InstitutionSettingType.LockTermSession] ===
-                    true
-                  }
-                  onChange={(e) => {
-                    const isChecked = e.target.checked;
-                    const message =
-                      'Disabling this will allow change of term and session when filling out results';
-                    if (!isChecked && !window.confirm(message)) {
-                      return;
-                    }
-                    webForm.setValue(
-                      InstitutionSettingType.LockTermSession,
-                      isChecked
-                    );
-                    submit(InstitutionSettingType.LockTermSession, isChecked);
-                  }}
-                  colorScheme={'brand'}
-                  disabled={
-                    activeSetting === InstitutionSettingType.LockTermSession &&
-                    webForm.processing
-                  }
-                  pr={3}
-                />
-                <span>Lock Term and Session Change</span>
-                <Div fontSize={11} mt={2} color={'red'}>
-                  <i>
-                    Be careful, turning this off means you can change term and
-                    session when filling out results
-                  </i>
-                </Div>
-              </FormLabel>
-              <Divider my={3} />
-              <Text>Pin Usage Count</Text>
-              <HStack spacing={2}>
-                <FormControl>
-                  <DataSelect
-                    data={{
-                      main: [
-                        { label: 'Once', value: 1 },
-                        { label: 'Session', value: 3 },
-                      ],
-                      label: 'label',
-                      value: 'value',
-                    }}
-                    selectValue={
-                      webForm.data[InstitutionSettingType.PinUsageCount]
-                    }
-                    onChange={(e: any) =>
-                      webForm.setValue(
-                        InstitutionSettingType.PinUsageCount,
-                        e.value
-                      )
-                    }
-                  />
-                </FormControl>
-                <BrandButton
-                  title="Update"
-                  onClick={() => submit(InstitutionSettingType.PinUsageCount)}
-                  isLoading={
-                    activeSetting === InstitutionSettingType.PinUsageCount &&
-                    webForm.processing
-                  }
-                  size={'md'}
-                />
-              </HStack>
-              <Divider />
-              <Text>User Full Name Display Order</Text>
-              <HStack align={'stretch'} spacing={2}>
-                <FormControl>
+                  <FormLabel>User full name display order</FormLabel>
                   <DataSelect
                     data={{
                       main: fullNameFormatOptions,
@@ -316,108 +480,100 @@ export default function CreateOrUpdateInstitutionSettings({ settings }: Props) {
                       )
                     }
                   />
+                  <Text mt={2} fontSize="sm" color="gray.500">
+                    Preview: <strong>{fullNamePreview}</strong>
+                  </Text>
                 </FormControl>
-                <BrandButton
-                  title="Update"
-                  onClick={() =>
-                    submit(InstitutionSettingType.UserFullNameFormat)
-                  }
-                  isLoading={
-                    activeSetting ===
-                      InstitutionSettingType.UserFullNameFormat &&
-                    webForm.processing
-                  }
-                  size={'md'}
-                />
-              </HStack>
-              <Div fontSize={13} color={'gray.600'}>
-                Applies only inside institution pages and institution-scoped
-                responses. Preview: {fullNamePreview}
-              </Div>
-              <Spacer height={3} />
-              <FormLabel border={'1px solid #999999AA'} p={2} borderRadius={5}>
-                <Switch
-                  isChecked={
-                    webForm.data[
-                      InstitutionSettingType.ResultActivationRequired
-                    ] === true
-                  }
-                  onChange={(e) => {
-                    const isChecked = e.target.checked;
-                    const message =
-                      'If you diable this, Students will be able to check their results without requiring activation pins.';
-                    if (!isChecked && !window.confirm(message)) {
-                      return;
+              </SettingsGroup>
+
+              <SettingsGroup
+                title="Attendance notifications"
+                description="Choose when guardians receive attendance updates and which channel the institution prefers. Notifications are disabled by default."
+                action={
+                  <BrandButton
+                    title="Save attendance notifications"
+                    onClick={() =>
+                      submitSettings('attendance-notifications', [
+                        {
+                          key: InstitutionSettingType.AttendanceNotification,
+                          value:
+                            webForm.data[
+                              InstitutionSettingType.AttendanceNotification
+                            ],
+                        },
+                        {
+                          key: InstitutionSettingType.PreferredMessageOption,
+                          value:
+                            webForm.data[
+                              InstitutionSettingType.PreferredMessageOption
+                            ],
+                        },
+                      ])
                     }
-                    webForm.setValue(
-                      InstitutionSettingType.ResultActivationRequired,
-                      isChecked
-                    );
-                    submit(
-                      InstitutionSettingType.ResultActivationRequired,
-                      isChecked
-                    );
-                  }}
-                  colorScheme={'brand'}
-                  disabled={
-                    activeSetting ===
-                      InstitutionSettingType.ResultActivationRequired &&
-                    webForm.processing
-                  }
-                  pr={3}
-                />
-                <span>Result Activation Required</span>
-                <Div fontSize={11} mt={2} color={'red'}>
-                  <i>
-                    Be careful, turning this off means your students won't need
-                    Pins to check result after publishing
-                  </i>
-                </Div>
-              </FormLabel>
-              {/* 
-              {webForm.data[InstitutionSettingType.UsesMidTermResult] && (
-                <>
-                  <Divider />
-                  <Text>Currently on Mid Term</Text>
-                  <HStack align={'stretch'} spacing={2}>
-                    <FormControl>
-                      <EnumSelect
-                        enumData={{ Yes: 'Yes', No: 'No' }}
-                        selectValue={
-                          webForm.data[
-                            InstitutionSettingType.CurrentlyOnMidTerm
-                          ] === true
-                            ? 'Yes'
-                            : 'No'
-                        }
-                        onChange={(e: any) =>
-                          webForm.setValue(
-                            InstitutionSettingType.CurrentlyOnMidTerm,
-                            e.value === 'Yes' ? true : false
-                          )
-                        }
-                      />
-                    </FormControl>
-                    <BrandButton
-                      title="Update"
-                      onClick={() =>
-                        submit(InstitutionSettingType.CurrentlyOnMidTerm)
+                    isLoading={
+                      activeGroup === 'attendance-notifications' &&
+                      webForm.processing
+                    }
+                    size="md"
+                  />
+                }
+              >
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                  <FormControl>
+                    <FormLabel>Attendance notification timing</FormLabel>
+                    <DataSelect
+                      data={{
+                        main: attendanceNotificationOptions,
+                        label: 'label',
+                        value: 'value',
+                      }}
+                      selectValue={
+                        webForm.data[
+                          InstitutionSettingType.AttendanceNotification
+                        ]
                       }
-                      isLoading={
-                        activeSetting ===
-                          InstitutionSettingType.CurrentlyOnMidTerm &&
-                        webForm.processing
+                      onChange={(e: any) =>
+                        webForm.setValue(
+                          InstitutionSettingType.AttendanceNotification,
+                          e?.value ?? AttendanceNotificationType.None
+                        )
                       }
-                      size={'md'}
                     />
-                  </HStack>
-                </>
-              )}
-              */}
-              <ResultSettings />
+                    <Text mt={2} fontSize="sm" color="gray.500">
+                      Check-out notifications include the child&apos;s arrival
+                      and departure times.
+                    </Text>
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Preferred message option</FormLabel>
+                    <DataSelect
+                      data={{
+                        main: preferredMessageOptions,
+                        label: 'label',
+                        value: 'value',
+                      }}
+                      selectValue={
+                        webForm.data[
+                          InstitutionSettingType.PreferredMessageOption
+                        ]
+                      }
+                      onChange={(e: any) =>
+                        webForm.setValue(
+                          InstitutionSettingType.PreferredMessageOption,
+                          e?.value ?? NotificationChannelsType.Sms
+                        )
+                      }
+                    />
+                    <Text mt={2} fontSize="sm" color="gray.500">
+                      The selected channel uses the guardian contact saved for
+                      each child.
+                    </Text>
+                  </FormControl>
+                </SimpleGrid>
+              </SettingsGroup>
+
               <PaymentKeysSettings />
               <UpdateStamp settings={settings} />
-              <Spacer height={5} />
             </VStack>
           </SlabBody>
         </Slab>
@@ -458,7 +614,6 @@ function formatFullNamePreview(
 function UpdateStamp({ settings }: Props) {
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
-
   const webForm = useWebForm({
     [InstitutionSettingType.Stamp]:
       settings[InstitutionSettingType.Stamp]?.value,
@@ -468,13 +623,11 @@ function UpdateStamp({ settings }: Props) {
   async function uploadImage(e: ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
     const { files } = e.target;
-    if (!files) {
-      return;
-    }
+    if (!files) return;
+
     const file: File = files[0];
     const imageBlob = await resizeImage(file, 300, 300);
-
-    const res = await webForm.submit(async (data, web) => {
+    const res = await webForm.submit(async (_, web) => {
       const formData = new FormData();
       formData.append('photo', imageBlob as Blob);
       formData.append('key', InstitutionSettingType.Stamp);
@@ -487,56 +640,57 @@ function UpdateStamp({ settings }: Props) {
   }
 
   return (
-    <Div
-      mt={{ lg: 4 }}
-      display={'flex'}
-      alignItems={'center'}
-      flexDirection={{ base: 'column' }}
+    <SettingsGroup
+      title="School stamp"
+      description="Upload the stamp used on institution documents."
     >
-      <Div
-        display={'flex'}
-        alignItems={'center'}
-        justifyContent={'center'}
-        w={200}
-        h={200}
-        borderWidth={1}
-        borderColor={'gray.200'}
+      <Flex
+        direction={{ base: 'column', sm: 'row' }}
+        align={{ base: 'center', sm: 'start' }}
+        gap={5}
       >
-        {webForm.processing ? (
-          <Spinner size="xl" color="brand.500" />
-        ) : (
-          <Avatar
-            size={'2xl'}
-            src={webForm.data[InstitutionSettingType.Stamp]}
-          />
-        )}
-      </Div>
-      <Div mt={4} textAlign={'center'}>
-        <FormLabel
-          htmlFor="photo"
-          textColor={'brand.500'}
-          display={'inline-block'}
-          cursor={'pointer'}
-          m={0}
-          p={0}
+        <Flex
+          align="center"
+          justify="center"
+          w="200px"
+          h="200px"
+          flexShrink={0}
+          borderWidth={1}
+          borderColor="gray.200"
         >
+          {webForm.processing ? (
+            <Spinner size="xl" color="brand.500" />
+          ) : (
+            <Avatar
+              size="2xl"
+              src={webForm.data[InstitutionSettingType.Stamp]}
+            />
+          )}
+        </Flex>
+        <Box textAlign={{ base: 'center', sm: 'left' }}>
+          <FormLabel
+            htmlFor="school-stamp"
+            color="brand.500"
+            cursor="pointer"
+            mb={1}
+          >
+            Change school stamp
+          </FormLabel>
           <Input
-            type={'file'}
-            id="photo"
+            type="file"
+            id="school-stamp"
             hidden
-            accept={'image/jpeg,image/png,image/jpg'}
-            onChange={(e) => uploadImage(e)}
+            accept="image/jpeg,image/png,image/jpg"
+            onChange={uploadImage}
           />
-          Change School Stamp
-        </FormLabel>
-        <Text fontSize={'sm'} color={'blackAlpha.700'}>
-          Allowed extensions {extensions.join(', ')}
-        </Text>
-        <Text fontSize={'sm'} color={'blackAlpha.700'}>
-          Maximum size {Math.floor(bytesToMb(MAX_FILE_SIZE_BYTES))}
-          MB
-        </Text>
-      </Div>
-    </Div>
+          <Text fontSize="sm" color="blackAlpha.700">
+            Allowed extensions: {extensions.join(', ')}
+          </Text>
+          <Text fontSize="sm" color="blackAlpha.700">
+            Maximum size: {Math.floor(bytesToMb(MAX_FILE_SIZE_BYTES))} MB
+          </Text>
+        </Box>
+      </Flex>
+    </SettingsGroup>
   );
 }

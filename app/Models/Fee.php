@@ -61,7 +61,7 @@ class Fee extends BaseModel
   //   });
   // }
 
-  public function forStudent(Student $student, Classification $classification)
+  public function forStudent(Student $student, ?Classification $classification)
   {
     $isForStudent = false;
     foreach ($this->feeCategories as $key => $feeCategory) {
@@ -79,7 +79,7 @@ class Fee extends BaseModel
     return $isForStudent;
   }
 
-  public function forClass(Classification $classification)
+  public function forClass(?Classification $classification)
   {
     foreach ($this->feeCategories as $key => $feeCategory) {
       if ($feeCategory->forClass($classification)) {

@@ -23,4 +23,10 @@
     margin: 0 auto !important;
     box-shadow: none !important;
   }
+
+  .student-id-card,
+  .staff-id-card {
+    box-shadow: none !important;
+    margin: 2mm !important;
+  }
 }

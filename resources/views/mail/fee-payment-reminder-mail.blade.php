@@ -11,6 +11,10 @@ is due. Please ensure timely payment to avoid any disruptions to your child's ac
 
 **Total Amount: ₦{{number_format($fee->amount)}}**
 
+@component('mail::button', ['url' => route('public.student-fee-payment', [$institution->code, $student->code])])
+View fees and pay securely
+@endcomponent
+
 Thank you for your prompt attention to this matter.
 
 Best regards,

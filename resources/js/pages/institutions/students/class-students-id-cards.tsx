@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Classification, Student } from '@/types/models';
 import { Div } from '@/components/semantic';
 import {
-  Avatar,
   Badge,
   Box,
   Button,
@@ -10,21 +9,18 @@ import {
   FormControl,
   FormLabel,
   HStack,
-  Image,
   SimpleGrid,
   Spinner,
   Text,
-  VStack,
   useColorModeValue,
+  VStack,
 } from '@chakra-ui/react';
 import useSharedProps from '@/hooks/use-shared-props';
-import ImagePaths from '@/util/images';
-// import QRCode from 'react-qr-code';
-import { QRCodeSVG } from 'qrcode.react';
 import ClassificationSelect from '@/components/selectors/classification-select';
 import { SelectOptionType } from '@/types/types';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Inertia } from '@inertiajs/inertia';
+import StudentIdCard from '@/components/id-cards/student-id-card';
 
 interface Props {
   classification?: Classification;
@@ -53,13 +49,8 @@ export default function ClassStudentTiles({
   }
 
   return (
-    <Div textAlign={'center'} bg={useColorModeValue('white', 'gray.900')}>
-      <VStack
-        align={'stretch'}
-        spacing={6}
-        bg={useColorModeValue('white', 'gray.900')}
-        minH={'100vh'}
-      >
+    <Div textAlign={'center'} bg="white">
+      <VStack align={'stretch'} spacing={6} bg="white" minH={'100vh'}>
         <Container
           maxW={'5xl'}
           className="hidden-on-print"
@@ -158,86 +149,11 @@ export default function ClassStudentTiles({
 
         <Div textAlign={'center'}>
           {students.map((student) => (
-            <Div
-              display={'inline-block'}
-              width={'340px'}
-              mx={2}
-              my={2}
-              border={'1px solid #000'}
-              p={2}
+            <StudentIdCard
               key={student.id}
-              borderRadius={'md'}
-            >
-              <HStack align={'stretch'} mb={6}>
-                <Avatar
-                  size="md"
-                  src={
-                    currentInstitution.photo ?? ImagePaths.default_school_logo
-                  }
-                />
-                <Div
-                  verticalAlign={'center'}
-                  pl={1}
-                  overflow={'hidden'}
-                  textAlign={'center'}
-                >
-                  <Text
-                    whiteSpace={'nowrap'}
-                    fontSize={'lg'}
-                    fontWeight={'bold'}
-                  >
-                    {currentInstitution.name}
-                  </Text>
-                  <Text whiteSpace={'nowrap'} fontSize={'xs'}>
-                    {currentInstitution.address}
-                  </Text>
-                  <Text whiteSpace={'nowrap'} fontSize={'xs'}>
-                    {currentInstitution.phone +
-                      ' / ' +
-                      currentInstitution.email}
-                  </Text>
-                </Div>
-              </HStack>
-
-              <HStack align={'stretch'}>
-                <Image
-                  rounded="md"
-                  src={student.user?.photo ?? ImagePaths.default_school_logo}
-                  h="75px"
-                  w="75px"
-                />
-
-                <Div textAlign={'left'} width={'190px'} fontSize={'sm'}>
-                  <Div mb={1}>
-                    <Text>
-                      ID No.:
-                      <Text as={'span'} fontWeight={'bold'}>
-                        {' ' + student.code}
-                      </Text>
-                    </Text>
-                  </Div>
-
-                  <Div>
-                    <Text>
-                      Name:
-                      <Text as={'span'} fontWeight={'bold'}>
-                        {' ' + student.user?.full_name}
-                      </Text>
-                    </Text>
-                  </Div>
-                </Div>
-
-                <Box
-                  width={'73px'}
-                  height={'73px'}
-                  display={'flex'}
-                  justifyContent={'center'}
-                  alignItems={'center'}
-                >
-                  <QRCodeSVG value={student.institution_user_id + ''} />
-                </Box>
-              </HStack>
-            </Div>
+              institution={currentInstitution}
+              student={student}
+            />
           ))}
         </Div>
       </VStack>

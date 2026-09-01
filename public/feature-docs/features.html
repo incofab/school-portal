@@ -810,7 +810,8 @@
             Institution users get a dashboard, setup checklist, profile editing,
             photo upload, payment key settings, result settings, current
             academic session and term settings, configurable institution-scoped
-            user full-name display order, institution-level search endpoints,
+            user full-name display order, attendance notification timing and
+            preferred email/SMS/WhatsApp channel settings, institution-level search endpoints,
             and contextual dashboard guide explanations for critical institution
             pages. Institution and user profile pages use grouped, modernized
             profile panels. Term-detail listing is separate from a dedicated
@@ -1199,7 +1200,12 @@
             check-in/check-out status and submit only changed rows: newly
             checked rows are marked, newly unchecked check-ins remove open
             check-in records, and newly unchecked check-outs reopen the
-            attendance by clearing checkout time.
+            attendance by clearing checkout time. Configured attendance
+            notifications are dispatched immediately after successful
+            check-in/check-out recording: no notification, check-in only,
+            check-in and check-out, or a check-out summary. Delivery uses the
+            institution's preferred email, SMS, or WhatsApp channel; the old
+            daily notification command is no longer used.
           </p>
           <ul>
             <li>

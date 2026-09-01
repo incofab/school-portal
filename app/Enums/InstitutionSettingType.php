@@ -20,4 +20,6 @@ enum InstitutionSettingType: string
   case PinUsageCount = 'pin-usage-count';
   case LockTermSession = 'lock-term-session';
   case UserFullNameFormat = 'user-full-name-format';
+  case AttendanceNotification = 'attendance-notification';
+  case PreferredMessageOption = 'preferred-message-option';
 }

@@ -132,11 +132,16 @@ class RecordFeePaymentReminder
 
   private function getSmsMessage(User $user)
   {
+    $paymentLink = route('public.student-fee-payment', [
+      $this->institution->code,
+      $user->student->code
+    ]);
+
     return "Dear Parent,\nThis is a gentle reminder that the
       {$this->fee->title} for {$user->last_name}
       {$user->first_name}, is due for payment.\nThe total amount is N" .
       number_format($this->fee->amount) .
-      ".\nThank you.";
+      ".\nPay securely here: {$paymentLink}\nThank you.";
   }
 
   private function saveMessage(

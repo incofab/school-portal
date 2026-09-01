@@ -51,3 +51,5 @@
 - Where possible, Make reasonable assumptions where necessary
 - Add wide covering tests for every feature you implement, following the style and structure of the existing tests.
 - Always abstract out logics that are good enough to be abstracted out. Always use the DRY principle, and other widely accepted software developmen conventions
+- Use proper abstractions, do little or no logic in the controller, use actions and services instead
+- Use the `app/Support/Res` class for action/logic functions that need to return responses that need success status, message and optional payload

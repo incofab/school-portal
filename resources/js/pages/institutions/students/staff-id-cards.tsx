@@ -2,127 +2,68 @@ import React from 'react';
 import { Institution, InstitutionUser, Student } from '@/types/models';
 import { Div } from '@/components/semantic';
 import {
-  Avatar,
   Box,
   Button,
+  Heading,
   HStack,
-  Image,
   Text,
   VStack,
   useBreakpointValue,
-  useColorModeValue,
 } from '@chakra-ui/react';
 import useSharedProps from '@/hooks/use-shared-props';
-import ImagePaths from '@/util/images';
 import { QRCodeSVG } from 'qrcode.react';
-
-function isStudent(person: InstitutionUser | Student) {
-  return (person as InstitutionUser).role === undefined;
-}
+import StaffIdCard from '@/components/id-cards/staff-id-card';
+import StudentIdCard from '@/components/id-cards/student-id-card';
 
 interface Props {
   persons: InstitutionUser[] | Student[];
+}
+
+function isStudent(person: InstitutionUser | Student): person is Student {
+  return 'code' in person;
 }
 
 export default function UserIdCards({ persons }: Props) {
   const { currentInstitution } = useSharedProps();
 
   return (
-    <Div textAlign={'center'} bg={useColorModeValue('white', 'gray.900')}>
+    <Div textAlign={'center'} bg="white" minH="100vh" py={{ base: 4, md: 8 }}>
+      <HStack
+        className="hidden-on-print"
+        maxW="6xl"
+        mx="auto"
+        px={{ base: 4, md: 8 }}
+        mb={5}
+        justify="space-between"
+        align="center"
+      >
+        <Box textAlign="left">
+          <Heading size="md">Staff ID cards</Heading>
+          <Box as="p" mt={1} color="gray.500" fontSize="sm">
+            Larger, print-ready cards with essential staff details.
+          </Box>
+        </Box>
+        <Button colorScheme="brand" onClick={() => window.print()}>
+          Print ID cards
+        </Button>
+      </HStack>
+
       <Div id="staff-id-cards-list">
-        {persons.map((person) => (
-          <Div
-            display={'inline-block'}
-            width={'340px'}
-            mx={2}
-            my={2}
-            border={'1px solid #000'}
-            p={2}
-            key={person.id}
-            borderRadius={'md'}
-          >
-            <HStack align={'stretch'} mb={3}>
-              <Avatar
-                size="md"
-                src={currentInstitution.photo ?? ImagePaths.default_school_logo}
-              />
-              <Div
-                verticalAlign={'center'}
-                pl={1}
-                overflow={'hidden'}
-                textAlign={'center'}
-              >
-                <Text whiteSpace={'nowrap'} fontSize={'lg'} fontWeight={'bold'}>
-                  {currentInstitution.name}
-                </Text>
-                <Text whiteSpace={'nowrap'} fontSize={'xs'}>
-                  {currentInstitution.address}
-                </Text>
-                <Text whiteSpace={'nowrap'} fontSize={'xs'}>
-                  {currentInstitution.phone + ' / ' + currentInstitution.email}
-                </Text>
-              </Div>
-            </HStack>
-
-            <HStack align={'stretch'}>
-              <Image
-                rounded="md"
-                src={person.user?.photo ?? ImagePaths.default_school_logo}
-                h="75px"
-                w="75px"
-              />
-
-              <Div textAlign={'left'} width={'190px'} fontSize={'sm'}>
-                <Div mb={1}>
-                  {isStudent(person) ? (
-                    <Text>
-                      ID No.:{' '}
-                      <Text as={'span'} fontWeight={'bold'}>
-                        {(person as Student).code}
-                      </Text>
-                    </Text>
-                  ) : (
-                    <Text>
-                      Role:{' '}
-                      <Text as={'span'} fontWeight={'bold'}>
-                        {(person as InstitutionUser).role}
-                      </Text>
-                    </Text>
-                  )}
-                </Div>
-
-                <Div>
-                  <Text noOfLines={1}>
-                    Name:{' '}
-                    <Text as={'span'} fontWeight={'bold'}>
-                      {person.user?.full_name}
-                    </Text>
-                  </Text>
-                </Div>
-
-                <Div fontSize={'xs'} mt={1} noOfLines={1}>
-                  www.{window.location.hostname}/login
-                </Div>
-              </Div>
-
-              <Box
-                width={'73px'}
-                height={'73px'}
-                display={'flex'}
-                justifyContent={'center'}
-                alignItems={'center'}
-              >
-                <QRCodeSVG
-                  value={
-                    isStudent(person)
-                      ? String((person as Student).institution_user_id)
-                      : String(person.id)
-                  }
-                />
-              </Box>
-            </HStack>
-          </Div>
-        ))}
+        {persons.map((person) =>
+          isStudent(person) ? (
+            <StudentIdCard
+              key={person.id}
+              institution={currentInstitution}
+              student={person}
+            />
+          ) : (
+            <StaffIdCard
+              key={person.id}
+              institution={currentInstitution}
+              staff={person}
+            />
+          )
+        )}
       </Div>
       <InstitutionQrCard institution={currentInstitution} />
     </Div>

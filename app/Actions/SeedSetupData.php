@@ -1,7 +1,9 @@
 <?php
 namespace App\Actions;
 
+use App\Enums\AttendanceNotificationType;
 use App\Enums\InstitutionSettingType;
+use App\Enums\NotificationChannelsType;
 use App\Enums\PriceLists\PaymentStructure;
 use App\Enums\PriceLists\PriceType;
 use App\Enums\TermType;
@@ -21,6 +23,7 @@ class SeedSetupData
     $obj = new self($institution);
     $obj->seedAssessment();
     $obj->seedPriceList();
+    $obj->seedCommunicationSettings();
     $obj->seedAcademicSettings();
   }
 
@@ -109,6 +112,18 @@ class SeedSetupData
     $this->saveSetting(
       InstitutionSettingType::CurrentAcademicSession,
       $academicSession->id
+    );
+  }
+
+  private function seedCommunicationSettings(): void
+  {
+    $this->saveSetting(
+      InstitutionSettingType::AttendanceNotification,
+      AttendanceNotificationType::None->value
+    );
+    $this->saveSetting(
+      InstitutionSettingType::PreferredMessageOption,
+      NotificationChannelsType::Sms->value
     );
   }
 

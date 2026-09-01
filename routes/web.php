@@ -7,6 +7,15 @@ use App\Http\Controllers\Institutions\Exams\External;
 use App\Http\Controllers\Institutions\Recruitment;
 use Illuminate\Support\Facades\Route;
 
+Route::get(
+    '/pay/{institution:code}/{studentCode}',
+    [Web\PublicStudentFeePaymentController::class, 'show']
+)->name('public.student-fee-payment');
+Route::post(
+    '/pay/{institution:code}/{studentCode}',
+    [Web\PublicStudentFeePaymentController::class, 'store']
+)->name('public.student-fee-payment.store');
+
 Route::get('dummy1', function () {
     // $res = (new \App\Services\Messaging\Whatsapp\Templates\WhatsappTemplateUtility(
     //     schoolName: 'Udoka Group of Schools',

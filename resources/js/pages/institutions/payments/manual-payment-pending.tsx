@@ -116,7 +116,7 @@ export default function ManualPaymentPending({
 
   function canEdit() {
     return (
-      currentUser.id === manualPayment.user_id &&
+      currentUser?.id === manualPayment.user_id &&
       isPending &&
       hasBankSelection &&
       !isEditing

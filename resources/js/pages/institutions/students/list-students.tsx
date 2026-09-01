@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { Student, User } from '@/types/models';
-import { HStack, IconButton, Icon, Button, Text } from '@chakra-ui/react';
+import {
+  HStack,
+  IconButton,
+  Icon,
+  Button,
+  Text,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
@@ -18,6 +28,10 @@ import {
   CloudArrowUpIcon,
   TrashIcon,
 } from '@heroicons/react/24/solid';
+import {
+  ClipboardDocumentIcon,
+  EllipsisVerticalIcon,
+} from '@heroicons/react/24/outline';
 import useIsStaff from '@/hooks/use-is-staff';
 import useQueryString from '@/hooks/use-query-string';
 import useMyToast from '@/hooks/use-my-toast';
@@ -32,6 +46,9 @@ import { Div } from '@/components/semantic';
 import UniversalReceiptModal from '@/components/modals/universal-receipt-modal';
 import SuspensionToggleButton from '@/domain/institutions/user-profile/suspension-toggle-button';
 import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-filter';
+import useSharedProps from '@/hooks/use-shared-props';
+import route from '@/util/route';
+import { copyToClipboard } from '@/util/util';
 
 interface Props {
   students: PaginationResponse<Student>;
@@ -41,6 +58,7 @@ interface Props {
 
 function ListStudents({ students, studentCount, alumniCount }: Props) {
   const { instRoute } = useInstitutionRoute();
+  const { currentInstitution } = useSharedProps();
   const [selectedUser, setSelectedUser] = useState<User>();
   const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
@@ -128,6 +146,34 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
       label: 'Action',
       render: (row) => (
         <HStack>
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              aria-label={`More actions for ${
+                row.user?.full_name ?? 'student'
+              }`}
+              icon={<Icon as={EllipsisVerticalIcon} />}
+              variant="ghost"
+              colorScheme="brand"
+            />
+            <MenuList>
+              <MenuItem
+                icon={<Icon as={ClipboardDocumentIcon} />}
+                onClick={() => {
+                  if (!currentInstitution) return;
+                  copyToClipboard(
+                    route('public.student-fee-payment', [
+                      currentInstitution.code,
+                      row.code,
+                    ]),
+                    'Payment link copied'
+                  );
+                }}
+              >
+                Copy payment link
+              </MenuItem>
+            </MenuList>
+          </Menu>
           <IconButton
             as={InertiaLink}
             aria-label={'Edit user'}

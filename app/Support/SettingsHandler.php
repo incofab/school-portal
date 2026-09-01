@@ -3,7 +3,9 @@
 namespace App\Support;
 
 use App\DTO\PaymentKeyDto;
+use App\Enums\AttendanceNotificationType;
 use App\Enums\InstitutionSettingType;
+use App\Enums\NotificationChannelsType;
 use App\Enums\ResultExamMode;
 use App\Enums\ResultSettingType;
 use App\Enums\ResultTemplateType;
@@ -248,5 +250,23 @@ class SettingsHandler
     );
 
     return filled($format) ? $format : null;
+  }
+
+  public function getAttendanceNotification(): AttendanceNotificationType
+  {
+    return AttendanceNotificationType::tryFrom(
+      (string) $this->getValue(
+        InstitutionSettingType::AttendanceNotification->value
+      )
+    ) ?? AttendanceNotificationType::None;
+  }
+
+  public function getPreferredMessageOption(): NotificationChannelsType
+  {
+    return NotificationChannelsType::tryFrom(
+      (string) $this->getValue(
+        InstitutionSettingType::PreferredMessageOption->value
+      )
+    ) ?? NotificationChannelsType::Sms;
   }
 }

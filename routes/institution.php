@@ -355,6 +355,7 @@ Route::get('/receipts/universal-receipt/{user}', [Web\Payments\ReceiptController
 Route::get('/receipts/{receipt}', [Web\Payments\ReceiptController::class, 'show'])->name('receipts.show');
 
 Route::get('/settings/search', [Web\InstitutionSettingController::class, 'search'])->name('settings.search');
+Route::post('/settings/store-multiple', [Web\InstitutionSettingController::class, 'storeMultiple'])->name('settings.store-multiple');
 Route::resource('/settings', Web\InstitutionSettingController::class)->only(['index', 'create', 'store']);
 
 Route::get('/assessments/index/{assessment?}', [Web\Staff\AssessmentController::class, 'index'])->name('assessments.index');

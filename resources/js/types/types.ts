@@ -204,6 +204,15 @@ export enum InstitutionSettingType {
   PinUsageCount = 'pin-usage-count',
   LockTermSession = 'lock-term-session',
   UserFullNameFormat = 'user-full-name-format',
+  AttendanceNotification = 'attendance-notification',
+  PreferredMessageOption = 'preferred-message-option',
+}
+
+export enum AttendanceNotificationType {
+  None = 'none',
+  CheckIn = 'check-in',
+  CheckInAndOut = 'check-in-and-out',
+  CheckOut = 'check-out',
 }
 
 export enum UserFullNameFormat {
@@ -402,6 +411,8 @@ export enum PaymentMerchantType {
   UserWallet = 'user-wallet',
   Manual = 'manual',
 }
+
+export const DefaultPaymentMerchantType = PaymentMerchantType.Paystack;
 
 export enum PaymentStatus {
   Pending = 'pending',

@@ -18,10 +18,13 @@ class FeeCategory extends BaseModel
     'feeable_id' => 'integer'
   ];
 
-  public function forClass(Classification $classification)
+  public function forClass(?Classification $classification)
   {
     if ($this->feeable_type == MorphMap::key(Institution::class)) {
       return true;
+    }
+    if (is_null($classification)) {
+      return false;
     }
     if ($this->feeable_type == MorphMap::key(Classification::class)) {
       return $this->feeable_id == $classification->id;

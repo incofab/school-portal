@@ -369,12 +369,14 @@ export default function Template9(props: ResultProps) {
               <Text>
                 <strong>Cummulative Average:</strong> {cumulativeAverage}
               </Text>
+              {/* 
               <Text>
                 <strong>1st + 2nd + 3rd Term Total:</strong>{' '}
                 {score(firstTermGrandTotal)} + {score(secondTermGrandTotal)} +{' '}
                 {score(thirdTermGrandTotal)} = {score(combinedGrandTotal)} (
                 <strong>Avg:</strong> {combinedGrandAverage})
               </Text>
+               */}
             </Box>
             <Spacer />
             {!hidePosition && (

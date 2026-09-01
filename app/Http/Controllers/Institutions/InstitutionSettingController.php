@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions;
 
 use App\Actions\SaveInstitutionSetting;
+use App\Actions\SaveMultipleInstitutionSettings;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
@@ -62,9 +63,7 @@ class InstitutionSettingController extends Controller
       ...InstitutionSetting::storeRule('settings.*.')
     ]);
 
-    foreach ($data['settings'] as $setting) {
-      SaveInstitutionSetting::run($institution, $setting);
-    }
+    SaveMultipleInstitutionSettings::run($institution, $data['settings']);
 
     return $this->ok();
   }

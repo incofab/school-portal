@@ -16,7 +16,7 @@ import { formatAsCurrency } from '@/util/util';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import { PaymentMerchantType } from '@/types/types';
+import { DefaultPaymentMerchantType, PaymentMerchantType } from '@/types/types';
 import FormControlBox from '@/components/forms/form-control-box';
 import MySelect from '@/components/dropdown-select/my-select';
 import BankAccountList from '@/components/payments/bank-account-list';
@@ -33,13 +33,13 @@ export default function BuyAdmissionApplication({
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
-    merchant: PaymentMerchantType.Monnify,
+    merchant: DefaultPaymentMerchantType,
   });
 
   const paymentOptions = [
     {
       label: 'Instant Payment',
-      value: PaymentMerchantType.Monnify,
+      value: DefaultPaymentMerchantType,
     },
     {
       label: 'Pay from Wallet (not available here)',
@@ -115,7 +115,7 @@ export default function BuyAdmissionApplication({
               onChange={(e: any) =>
                 webForm.setValue(
                   'merchant',
-                  e?.value ?? PaymentMerchantType.Monnify
+                  e?.value ?? DefaultPaymentMerchantType
                 )
               }
             />

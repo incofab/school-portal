@@ -10,7 +10,12 @@ import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
 import EnumSelect from '@/components/dropdown-select/enum-select';
-import { PaymentMerchantType, SelectOptionType, TermType } from '@/types/types';
+import {
+  DefaultPaymentMerchantType,
+  PaymentMerchantType,
+  SelectOptionType,
+  TermType,
+} from '@/types/types';
 import AcademicSessionSelect from '@/components/selectors/academic-session-select';
 import useSharedProps from '@/hooks/use-shared-props';
 import FeeSelect from '@/components/selectors/fee-select';
@@ -45,13 +50,13 @@ export default function RecordStudentFeePayment({
     academic_session_id: currentAcademicSessionId,
     fee_id: '',
     amount: 0,
-    merchant: PaymentMerchantType.Monnify,
+    merchant: DefaultPaymentMerchantType,
   });
 
   const paymentOptions: SelectOptionType<string>[] = [
     {
       label: 'Instant Payment',
-      value: PaymentMerchantType.Monnify,
+      value: DefaultPaymentMerchantType,
     },
     {
       label: `Pay from Wallet (${formatAsCurrency(currentUser.wallet)})`,
@@ -158,7 +163,7 @@ export default function RecordStudentFeePayment({
                   onChange={(e: any) =>
                     webForm.setValue(
                       'merchant',
-                      e?.value ?? PaymentMerchantType.Monnify
+                      e?.value ?? DefaultPaymentMerchantType
                     )
                   }
                 />

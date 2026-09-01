@@ -2,8 +2,10 @@
 
 namespace App\Actions;
 
+use App\Enums\AttendanceNotificationType;
 use App\Enums\InstitutionSettingType;
 use App\Enums\Media\MediaVisibility;
+use App\Enums\NotificationChannelsType;
 use App\Enums\ResultExamMode;
 use App\Enums\ResultSettingType;
 use App\Enums\S3Folder;
@@ -111,6 +113,28 @@ class SaveInstitutionSetting
 
   private function validateSettingValue(array $data): void
   {
+    if (
+      ($data['key'] ?? null) ===
+      InstitutionSettingType::AttendanceNotification->value
+    ) {
+      validator($data, [
+        'value' => ['nullable', new Enum(AttendanceNotificationType::class)]
+      ])->validate();
+
+      return;
+    }
+
+    if (
+      ($data['key'] ?? null) ===
+      InstitutionSettingType::PreferredMessageOption->value
+    ) {
+      validator($data, [
+        'value' => ['nullable', new Enum(NotificationChannelsType::class)]
+      ])->validate();
+
+      return;
+    }
+
     if (($data['key'] ?? null) === InstitutionSettingType::Result->value) {
       validator($data, [
         'value' => ['nullable', 'array'],

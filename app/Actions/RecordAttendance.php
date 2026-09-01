@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use App\Enums\AttendanceType;
+use App\Actions\Attendance\SendAttendanceNotification;
 use App\Models\Attendance;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
@@ -73,6 +74,7 @@ class RecordAttendance
             ->save();
         });
         $this->logAttendanceUpdated($attendance, $oldValues);
+        $this->sendNotification($attendance, AttendanceType::In);
 
         return successRes('', ['status' => 'recorded']);
       }
@@ -96,6 +98,7 @@ class RecordAttendance
       ])
     );
     $this->logAttendanceRecorded($attendance);
+    $this->sendNotification($attendance, AttendanceType::In);
 
     return successRes('', ['status' => 'recorded']);
   }
@@ -132,6 +135,7 @@ class RecordAttendance
           ->save();
       });
       $this->logAttendanceUpdated($todaySignOut, $oldValues);
+      $this->sendNotification($todaySignOut, AttendanceType::Out);
 
       return successRes('', ['status' => 'recorded']);
     }
@@ -166,8 +170,16 @@ class RecordAttendance
         ->save();
     });
     $this->logAttendanceUpdated($lastSignIn, $oldValues);
+    $this->sendNotification($lastSignIn, AttendanceType::Out);
 
     return successRes('', ['status' => 'recorded']);
+  }
+
+  private function sendNotification(
+    Attendance $attendance,
+    AttendanceType $event
+  ): void {
+    app(SendAttendanceNotification::class)->run($attendance, $event);
   }
 
   private function appendRemark(?string $existingRemark): string
