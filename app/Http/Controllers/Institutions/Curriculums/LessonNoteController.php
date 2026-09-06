@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Curriculums;
 
+use App\Enums\Audit\ActivityLogCategory;
 use App\Enums\InstitutionUserType;
 use App\Enums\NoteStatusType;
 use App\Http\Controllers\Controller;
@@ -72,9 +73,7 @@ class LessonNoteController extends Controller
 
     return Inertia::render('institutions/lesson-notes/list-lesson-notes', [
       'lessonNotes' => paginateFromRequest(
-        $query
-          ->with('classification', 'course', 'courseTeacher')
-          ->latest('id')
+        $query->with('classification', 'course', 'courseTeacher')->latest('id')
       ),
       'classificationGroups' => ClassificationGroup::all()
     ]);
@@ -260,7 +259,7 @@ class LessonNoteController extends Controller
       $institutionUser->isAdmin() ||
         $lessonNote->courseTeacher?->user_id === $institutionUser->user_id,
       403,
-      "You can only work on your own lesson notes"
+      'You can only work on your own lesson notes'
     );
   }
 

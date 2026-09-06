@@ -15,6 +15,8 @@ use App\Models\Topic;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia;
+use Prism\Prism\Facades\Prism;
+use Prism\Prism\Testing\TextResponseFake;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseCount;
@@ -414,4 +416,95 @@ it('restricts students access to some lesson note routes', function () {
       )
       ->assertForbidden();
   }
+});
+
+it('generates an AI lesson note for an existing topic', function () {
+  $fake = Prism::fake([
+    TextResponseFake::make()->withText('```html<p>Generated lesson note</p>```')
+  ]);
+
+  $route = route('institutions.lesson-notes.gen-ai-note', [
+    'institution' => $this->institution->uuid
+  ]);
+
+  $response = actingAs($this->admin)->postJson($route, [
+    'topic_id' => $this->topic->id,
+    'title' => 'Extra Title'
+  ]);
+
+  $response->assertOk()->assertJson([
+    'ok' => true,
+    'result' => '<p>Generated lesson note</p>'
+  ]);
+
+  $fake->assertCallCount(1);
+
+  $classificationGroupTitle = $this->classificationGroup->title;
+  $expectedTopicTitle = $this->topic->title . ' - Extra Title';
+
+  $fake->assertRequest(function ($requests) use (
+    $classificationGroupTitle,
+    $expectedTopicTitle
+  ) {
+    expect($requests[0]->prompt())
+      ->toContain($classificationGroupTitle)
+      ->toContain($expectedTopicTitle);
+  });
+
+  assertDatabaseHas('activity_logs', [
+    'institution_id' => $this->institution->id,
+    'event' => 'curriculum.lesson_note_generated',
+    'action' => 'generated_lesson_note',
+    'subject_id' => $this->topic->id,
+    'subject_type' => get_class($this->topic)
+  ]);
+});
+
+it('generates an AI lesson note when no matching topic exists', function () {
+  $fake = Prism::fake([
+    TextResponseFake::make()->withText('<p>Generic note</p>')
+  ]);
+
+  $route = route('institutions.lesson-notes.gen-ai-note', [
+    'institution' => $this->institution->uuid
+  ]);
+
+  $response = actingAs($this->courseTeacher->user)->postJson($route, [
+    'topic_id' => null,
+    'title' => 'A Standalone Topic'
+  ]);
+
+  $response->assertOk()->assertJson([
+    'ok' => true,
+    'result' => '<p>Generic note</p>'
+  ]);
+
+  $fake->assertRequest(function ($requests) {
+    expect($requests[0]->prompt())
+      ->toContain('a class')
+      ->toContain('A Standalone Topic');
+  });
+
+  assertDatabaseHas('activity_logs', [
+    'institution_id' => $this->institution->id,
+    'event' => 'curriculum.lesson_note_generated',
+    'action' => 'generated_lesson_note',
+    'subject_id' => null,
+    'subject_type' => null
+  ]);
+});
+
+it('does not allow a student to generate an AI lesson note', function () {
+  Prism::fake([TextResponseFake::make()->withText('<p>Note</p>')]);
+
+  $route = route('institutions.lesson-notes.gen-ai-note', [
+    'institution' => $this->institution->uuid
+  ]);
+
+  actingAs($this->student->user)
+    ->postJson($route, [
+      'topic_id' => $this->topic->id,
+      'title' => 'Extra Title'
+    ])
+    ->assertForbidden();
 });
