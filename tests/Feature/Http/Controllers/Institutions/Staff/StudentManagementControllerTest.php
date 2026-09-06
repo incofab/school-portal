@@ -186,7 +186,7 @@ it(
     $institutionUser2 = InstitutionUser::factory()
       ->for($institution2)
       ->for($user)
-      ->create(['role' => InstitutionUserType::Teacher]);
+      ->create(['type' => InstitutionUserType::Teacher]);
 
     actingAs($this->instAdmin) // Admin of the first institution
       ->deleteJson(

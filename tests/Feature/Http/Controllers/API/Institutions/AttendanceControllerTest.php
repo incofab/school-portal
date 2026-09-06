@@ -116,7 +116,7 @@ it(
     Carbon::setTestNow(Carbon::parse('2026-08-29 17:10:00'));
     $institutionUser = InstitutionUser::factory()
       ->withInstitution($this->institution)
-      ->state(['role' => InstitutionUserType::Accountant->value])
+      ->state(['type' => InstitutionUserType::Accountant->value])
       ->create();
 
     actingAs($institutionUser->user, 'sanctum')
@@ -189,7 +189,7 @@ it(
   function () {
     $institutionUser = InstitutionUser::factory()
       ->withInstitution($this->institution)
-      ->state(['role' => InstitutionUserType::Student->value])
+      ->state(['type' => InstitutionUserType::Student->value])
       ->create();
 
     actingAs($institutionUser->user, 'sanctum')

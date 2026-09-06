@@ -30,7 +30,7 @@ class InstitutionController extends Controller
 
     $institutionGroup = currentInstitution()->institutionGroup;
     $currentInstitutionUser = currentInstitutionUser();
-    $showAttentionSection = in_array($currentInstitutionUser->role, [
+    $showAttentionSection = in_array($currentInstitutionUser->type, [
       InstitutionUserType::Admin,
       InstitutionUserType::Accountant
     ]);

@@ -345,6 +345,42 @@
         </ul>
       </section>
       <section>
+        <h2>Institution Roles and Permissions</h2>
+        <ul class="detail-list">
+          <li>
+            <div><code>InstitutionRoleService</code></div>
+            <div class="desc">
+              Owns institution-scoped role creation, updates, assignment,
+              built-in role provisioning, and permission inventory setup.
+              Built-in roles are identified by their role names and are not
+              provisioned by the generic setup-data action; institution
+              registration and the one-time maintenance command handle them.
+            </div>
+          </li>
+          <li>
+            <div><code>institutions:seed-roles</code></div>
+            <div class="desc">
+              One-time maintenance command that creates the institution
+              permission inventory, provisions built-in roles and permissions,
+              and assigns missing built-in roles to existing institution users
+              for every existing institution.
+            </div>
+          </li>
+          <li>
+            <div><code>HandleInertiaRequests</code></div>
+            <div class="desc">
+              Shares the current institution user and their effective
+              permission names through
+              <code>shared__currentUserPermissions</code> for frontend
+              visibility decisions. Institution capability controllers use the
+              same assigned permissions for server-side authorization; teacher
+              result and class workflows also verify the teacher's own
+              course/class ownership before mutations.
+            </div>
+          </li>
+        </ul>
+      </section>
+      <section>
         <h2>Shared Media Subsystem</h2>
         <ul class="detail-list">
           <li>

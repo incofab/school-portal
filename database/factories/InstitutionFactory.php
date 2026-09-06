@@ -15,12 +15,15 @@ class InstitutionFactory extends Factory
   public function configure()
   {
     return $this->afterCreating(function (Institution $model) {
-      $model->createdBy->institutionUsers()->firstOrCreate(
-        ['institution_id' => $model->id],
-        [
-          'role' => InstitutionUserType::Admin
-        ]
-      );
+      $model->createdBy
+        ->institutionUsers()
+        ->withoutGlobalScopes()
+        ->firstOrCreate(
+          ['institution_id' => $model->id],
+          [
+            'type' => InstitutionUserType::Admin
+          ]
+        );
       SeedSetupData::run($model);
     });
   }

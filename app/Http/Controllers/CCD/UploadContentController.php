@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CCD;
 use App\Actions\ExportCourse;
 use App\Actions\UploadCourseContent;
 use App\Enums\Audit\ActivityLogCategory;
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Institution;
@@ -13,8 +14,17 @@ use Illuminate\Http\Request;
 
 class UploadContentController extends Controller
 {
+  public function __construct()
+  {
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ])->only(['exportCourse', 'uploadContentView', 'uploadContent']);
+  }
+
   public function exportCourse(Institution $institution, Course $course)
   {
+    $this->authorizeQuestionBank($course);
     app(AcademicActivityLogger::class)->workflowEvent(
       $institution,
       'question_bank.exported',
@@ -34,6 +44,7 @@ class UploadContentController extends Controller
 
   public function uploadContentView(Institution $institution, Course $course)
   {
+    $this->authorizeQuestionBank($course);
     return view('ccd/courses/upload-content', [
       'course' => $course
     ]);
@@ -44,6 +55,7 @@ class UploadContentController extends Controller
     Course $course,
     Request $request
   ) {
+    $this->authorizeQuestionBank($course);
     $request->validate([
       'content' => ['required', 'mimes:zip', 'file', 'max:' . 20 * 1024]
     ]);
@@ -70,5 +82,10 @@ class UploadContentController extends Controller
         'success' => 'Content uploaded successfully'
       ]
     );
+  }
+
+  private function authorizeQuestionBank(Course $course): void
+  {
+    $this->authorize('viewQuestionBank', [Course::class, $course]);
   }
 }

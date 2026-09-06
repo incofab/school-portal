@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Institutions\Notifications;
 
 use App\Actions\Notifications\CreateInternalNotification;
-use App\Enums\InstitutionUserType;
+use App\Enums\InstitutionPermission;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInternalNotificationRequest;
 use App\Models\Classification;
@@ -29,11 +29,9 @@ class NotificationController extends Controller
 {
   function __construct()
   {
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Teacher,
-      InstitutionUserType::Accountant
-    ])->except(['index']);
+    $this->allowedPermissions([
+      InstitutionPermission::ManageNotifications
+    ])->except('index');
   }
 
   public function index(Institution $institution)

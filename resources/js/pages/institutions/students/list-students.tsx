@@ -32,7 +32,6 @@ import {
   ClipboardDocumentIcon,
   EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
-import useIsStaff from '@/hooks/use-is-staff';
 import useQueryString from '@/hooks/use-query-string';
 import useMyToast from '@/hooks/use-my-toast';
 import UploadStudentModal from '@/components/modals/upload-student-modal';
@@ -49,6 +48,8 @@ import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-
 import useSharedProps from '@/hooks/use-shared-props';
 import route from '@/util/route';
 import { copyToClipboard } from '@/util/util';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   students: PaginationResponse<Student>;
@@ -60,7 +61,6 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
   const { instRoute } = useInstitutionRoute();
   const { currentInstitution } = useSharedProps();
   const [selectedUser, setSelectedUser] = useState<User>();
-  const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
   const { params } = useQueryString();
   const { toastError, handleResponseToast } = useMyToast();
@@ -117,13 +117,15 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
       render: (row) => (
         <HStack>
           <Text as={'span'}>{row.code}</Text>
-          <IconButton
-            aria-label={'Edit user'}
-            icon={<Icon as={PencilIcon} />}
-            variant={'ghost'}
-            colorScheme={'brand'}
-            onClick={() => editStudentModalToggle.open(row)}
-          />
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            <IconButton
+              aria-label={'Edit user'}
+              icon={<Icon as={PencilIcon} />}
+              variant={'ghost'}
+              colorScheme={'brand'}
+              onClick={() => editStudentModalToggle.open(row)}
+            />
+          </PermissionGate>
         </HStack>
       ),
     },
@@ -136,7 +138,7 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
     {
       label: 'Suspended',
       render: (row) =>
-        row.institution_user ? (
+        isAdmin && row.institution_user ? (
           <SuspensionToggleButton institutionUser={row.institution_user} />
         ) : (
           <></>
@@ -174,14 +176,16 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
               </MenuItem>
             </MenuList>
           </Menu>
-          <IconButton
-            as={InertiaLink}
-            aria-label={'Edit user'}
-            icon={<Icon as={PencilIcon} />}
-            href={instRoute('students.edit', [row.id])}
-            variant={'ghost'}
-            colorScheme={'brand'}
-          />
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            <IconButton
+              as={InertiaLink}
+              aria-label={'Edit user'}
+              icon={<Icon as={PencilIcon} />}
+              href={instRoute('students.edit', [row.id])}
+              variant={'ghost'}
+              colorScheme={'brand'}
+            />
+          </PermissionGate>
           {isAdmin && (
             <>
               <BrandButton
@@ -221,36 +225,41 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
           title="List Students"
           rightElement={
             <HStack>
-              {isStaff && (
-                <>
-                  <LinkButton
-                    href={instRoute('students.create')}
-                    title={'New'}
-                  />
-                  <BrandButton
-                    leftIcon={<Icon as={CloudArrowUpIcon} />}
-                    onClick={studentUploadModalToggle.open}
-                    title="Upload Students"
-                  />
-                  <Button
-                    as={'a'}
-                    href={
-                      params.classification
-                        ? instRoute('classifications.students-download', [
-                            params.classification,
-                          ])
-                        : '#'
-                    }
-                    colorScheme={'brand'}
-                    variant={'solid'}
-                    size={'sm'}
-                    leftIcon={<Icon as={CloudArrowDownIcon} />}
-                    onClick={downloadSheet}
-                  >
-                    Download
-                  </Button>
-                </>
-              )}
+              <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+              >
+                <LinkButton href={instRoute('students.create')} title={'New'} />
+              </PermissionGate>
+              <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+              >
+                <BrandButton
+                  leftIcon={<Icon as={CloudArrowUpIcon} />}
+                  onClick={studentUploadModalToggle.open}
+                  title="Upload Students"
+                />
+              </PermissionGate>
+              <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+              >
+                <Button
+                  as={'a'}
+                  href={
+                    params.classification
+                      ? instRoute('classifications.students-download', [
+                          params.classification,
+                        ])
+                      : '#'
+                  }
+                  colorScheme={'brand'}
+                  variant={'solid'}
+                  size={'sm'}
+                  leftIcon={<Icon as={CloudArrowDownIcon} />}
+                  onClick={downloadSheet}
+                >
+                  Download
+                </Button>
+              </PermissionGate>
             </HStack>
           }
         />

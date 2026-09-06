@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Institutions\Attendance;
 use App\Actions\RecordBulkAttendance;
 use App\Actions\RecordAttendance;
 use App\Enums\AttendanceType;
+use App\Enums\InstitutionPermission;
 use App\Enums\InstitutionUserType;
 use Inertia\Inertia;
 use App\Models\Attendance;
@@ -20,17 +21,27 @@ use Illuminate\Validation\Rule;
 
 class AttendanceController extends Controller
 {
+  public function __construct()
+  {
+    $this->allowedPermissions([InstitutionPermission::ManageAttendance]);
+    $this->allowedPermissions([InstitutionPermission::ManageAttendance])->only([
+      'create',
+      'classRegister',
+      'classRegisterView'
+    ]);
+  }
+
   function create(Institution $institution)
   {
     $staff = InstitutionUser::query()
       ->where('institution_id', $institution->id)
-      ->whereIn('role', [
+      ->whereIn('type', [
         InstitutionUserType::Admin->value,
         InstitutionUserType::Teacher->value,
         InstitutionUserType::Accountant->value
       ])
       ->with('user')
-      ->orderBy('role')
+      ->orderBy('type')
       ->latest('institution_users.id')
       ->get();
 
@@ -50,7 +61,7 @@ class AttendanceController extends Controller
 
     $students = InstitutionUser::query()
       ->where('institution_id', $institution->id)
-      ->where('role', InstitutionUserType::Student->value)
+      ->where('type', InstitutionUserType::Student->value)
       ->whereHas(
         'student.classification',
         fn($query) => $query->where(
@@ -108,7 +119,9 @@ class AttendanceController extends Controller
     $data = $request->validate(Attendance::createRule());
     $staffUser = currentInstitutionUser();
     abort_unless(
-      $staffUser->isStaff(),
+      $staffUser->hasInstitutionPermission(
+        InstitutionPermission::ManageAttendance
+      ),
       403,
       'You are not authorized to record attendance'
     );
@@ -144,7 +157,9 @@ class AttendanceController extends Controller
 
     $staffUser = currentInstitutionUser();
     abort_unless(
-      $staffUser->isStaff(),
+      $staffUser->hasInstitutionPermission(
+        InstitutionPermission::ManageAttendance
+      ),
       403,
       'You are not authorized to record attendance'
     );
@@ -173,7 +188,7 @@ class AttendanceController extends Controller
 
     $students = InstitutionUser::query()
       ->where('institution_id', $institution->id)
-      ->where('role', InstitutionUserType::Student->value)
+      ->where('type', InstitutionUserType::Student->value)
       ->whereHas(
         'student.classification',
         fn($query) => $query->where(

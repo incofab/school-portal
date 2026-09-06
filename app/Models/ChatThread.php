@@ -57,9 +57,18 @@ class ChatThread extends BaseModel
     User $user,
     InstitutionUser $institutionUser
   ) {
+    $institutionUser->loadMissing('roles');
+    $assignedRoleIds = $institutionUser->roles
+      ->pluck('id')
+      ->map(fn($id) => (string) $id);
+
     return $query
       ->where('institution_id', $institution->id)
-      ->where(function ($query) use ($user, $institutionUser) {
+      ->where(function ($query) use (
+        $user,
+        $institutionUser,
+        $assignedRoleIds
+      ) {
         $query
           ->where('requester_user_id', $user->id)
           ->orWhere(function ($query) use ($user) {
@@ -77,15 +86,25 @@ class ChatThread extends BaseModel
         }
 
         if (
-          in_array($institutionUser->role, [
+          in_array($institutionUser->type, [
             InstitutionUserType::Teacher,
             InstitutionUserType::Accountant
           ])
         ) {
-          $query->orWhere(function ($query) use ($institutionUser) {
+          $query->orWhere(function ($query) use (
+            $institutionUser,
+            $assignedRoleIds
+          ) {
             $query
               ->where('type', ChatThreadType::Role->value)
-              ->where('target_role', $institutionUser->role->value);
+              ->where(function ($query) use (
+                $institutionUser,
+                $assignedRoleIds
+              ) {
+                $query
+                  ->whereIn('target_role', $assignedRoleIds)
+                  ->orWhere('target_role', $institutionUser->type?->value);
+              });
           });
         }
       });
@@ -111,7 +130,16 @@ class ChatThread extends BaseModel
       return false;
     }
 
-    return $this->target_role === $institutionUser->role->value;
+    return $this->matchesRole($institutionUser);
+  }
+
+  private function matchesRole(InstitutionUser $institutionUser): bool
+  {
+    $institutionUser->loadMissing('roles');
+
+    return $institutionUser->roles->contains(
+      fn($role) => (string) $role->id === (string) $this->target_role
+    ) || $this->target_role === $institutionUser->type?->value;
   }
 
   public function markAsRead(User $user, ?ChatMessage $message = null): void

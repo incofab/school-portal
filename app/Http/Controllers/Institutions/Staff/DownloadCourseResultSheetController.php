@@ -6,6 +6,7 @@ use App\Actions\CourseResult\DownloadCourseResult;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DownloadCourseResultSheetRequest;
 use App\Models\CourseResult;
+use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +17,18 @@ class DownloadCourseResultSheetController extends Controller
     Institution $institution,
     DownloadCourseResultSheetRequest $request
   ) {
+    $institutionUser = currentInstitutionUser();
+    abort_unless(
+      $institutionUser->isAdmin() ||
+        CourseTeacher::query()
+          ->where('course_id', $request->courseObj->id)
+          ->where('classification_id', $request->classificationObj->id)
+          ->where('user_id', $institutionUser->user_id)
+          ->exists(),
+      403,
+      'You can only download results for your assigned course'
+    );
+
     $query = CourseResult::query()->select('course_results.*');
     CourseResultsUITableFilters::make($request->all(), $query)->filterQuery();
 

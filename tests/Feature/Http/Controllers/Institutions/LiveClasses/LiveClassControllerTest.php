@@ -28,7 +28,7 @@ beforeEach(function () {
     ->withInstitution($this->institution)
     ->create([
       'user_id' => $this->teacher->id,
-      'role' => InstitutionUserType::Teacher->value
+      'type' => InstitutionUserType::Teacher->value
     ]);
 
   $this->classificationGroup = ClassificationGroup::factory()

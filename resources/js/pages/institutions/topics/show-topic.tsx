@@ -39,8 +39,13 @@ import { Div } from '@/components/semantic';
 import DestructivePopover from '@/components/destructive-popover';
 import MediaAttachmentsList from '@/components/media-attachments-list';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import useSharedProps from '@/hooks/use-shared-props';
 import useIsAdmin from '@/hooks/use-is-admin';
-import useIsTeacher from '@/hooks/use-is-teacher';
+import {
+  InstitutionPermission,
+  InstitutionPermissionName,
+} from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 import useMyToast from '@/hooks/use-my-toast';
 import useWebForm from '@/hooks/use-web-form';
 import { LessonNote, LessonPlan, SchemeOfWork, Topic } from '@/types/models';
@@ -54,8 +59,6 @@ interface Props {
 
 export default function ShowTopic({ topic, assignedCourseIds = [] }: Props) {
   const isAdmin = useIsAdmin();
-  const isTeacher = useIsTeacher();
-  const canManage = isAdmin || isTeacher;
   const schemeOfWorks = topic.scheme_of_works ?? [];
   const lessonPlans = schemeOfWorks.flatMap(
     (schemeOfWork) => schemeOfWork.lesson_plans ?? []
@@ -68,7 +71,7 @@ export default function ShowTopic({ topic, assignedCourseIds = [] }: Props) {
     <DashboardLayout>
       <Box px={{ base: 3, md: 6 }} py={4}>
         <VStack align={'stretch'} spacing={5}>
-          <TopicHeader topic={topic} canManage={canManage} isAdmin={isAdmin} />
+          <TopicHeader topic={topic} isAdmin={isAdmin} />
 
           <Tabs colorScheme="brand" variant="enclosed" isLazy>
             <TabList overflowX={'auto'} overflowY={'hidden'}>
@@ -85,7 +88,6 @@ export default function ShowTopic({ topic, assignedCourseIds = [] }: Props) {
                   topic={topic}
                   schemeOfWorks={schemeOfWorks}
                   assignedCourseIds={assignedCourseIds}
-                  canManage={canManage}
                   isAdmin={isAdmin}
                 />
               </TabPanel>
@@ -93,7 +95,6 @@ export default function ShowTopic({ topic, assignedCourseIds = [] }: Props) {
                 <NotesPanel
                   lessonPlans={lessonPlans}
                   lessonNotes={lessonNotes}
-                  canManage={canManage}
                   isAdmin={isAdmin}
                 />
               </TabPanel>
@@ -105,15 +106,7 @@ export default function ShowTopic({ topic, assignedCourseIds = [] }: Props) {
   );
 }
 
-function TopicHeader({
-  topic,
-  canManage,
-  isAdmin,
-}: {
-  topic: Topic;
-  canManage: boolean;
-  isAdmin: boolean;
-}) {
+function TopicHeader({ topic, isAdmin }: { topic: Topic; isAdmin: boolean }) {
   const { instRoute } = useInstitutionRoute();
 
   return (
@@ -156,7 +149,7 @@ function TopicHeader({
           </Text>
         </VStack>
 
-        {canManage && (
+        <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
           <Wrap justify={{ base: 'start', lg: 'end' }} spacing={2}>
             <WrapItem>
               <Button
@@ -189,7 +182,7 @@ function TopicHeader({
               </WrapItem>
             )}
           </Wrap>
-        )}
+        </PermissionGate>
       </Stack>
       <Divider mt={5} />
     </Box>
@@ -230,13 +223,11 @@ function SchemesPanel({
   topic,
   schemeOfWorks,
   assignedCourseIds,
-  canManage,
   isAdmin,
 }: {
   topic: Topic;
   schemeOfWorks: SchemeOfWork[];
   assignedCourseIds: number[];
-  canManage: boolean;
   isAdmin: boolean;
 }) {
   const { instRoute } = useInstitutionRoute();
@@ -247,7 +238,9 @@ function SchemesPanel({
         title="No scheme of work yet"
         description="Create a scheme to define the term, week, objectives, resources, and lesson plans for this topic."
         action={
-          canManage ? (
+          <PermissionGate
+            permissions={InstitutionPermission.NaturalAccess}
+          >
             <Button
               as={InertiaLink}
               href={instRoute('scheme-of-works.create', [topic.id])}
@@ -256,7 +249,7 @@ function SchemesPanel({
             >
               Create Scheme of Work
             </Button>
-          ) : null
+          </PermissionGate>
         }
       />
     );
@@ -264,7 +257,7 @@ function SchemesPanel({
 
   return (
     <VStack align={'stretch'} spacing={4}>
-      {canManage && (
+      <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
         <HStack justify={'flex-end'}>
           <Button
             as={InertiaLink}
@@ -276,15 +269,16 @@ function SchemesPanel({
             Add Scheme
           </Button>
         </HStack>
-      )}
+      </PermissionGate>
       {schemeOfWorks.map((schemeOfWork) => (
         <Section
           key={schemeOfWork.id}
           title={`Week ${schemeOfWork.week_number}`}
           rightElement={
             <RecordActions
-              canEdit={canManage}
-              canDelete={isAdmin}
+              editPermission={InstitutionPermission.NaturalAccess}
+              deletePermission={InstitutionPermission.NaturalAccess}
+              deleteWhen={isAdmin}
               editRoute={instRoute('scheme-of-works.edit', [schemeOfWork.id])}
               deleteRoute={instRoute('scheme-of-works.destroy', [
                 schemeOfWork.id,
@@ -331,7 +325,6 @@ function SchemesPanel({
           <LessonPlanList
             schemeOfWork={schemeOfWork}
             assignedCourseIds={assignedCourseIds}
-            canManage={canManage}
             isAdmin={isAdmin}
           />
         </Section>
@@ -343,12 +336,10 @@ function SchemesPanel({
 function LessonPlanList({
   schemeOfWork,
   assignedCourseIds,
-  canManage,
   isAdmin,
 }: {
   schemeOfWork: SchemeOfWork;
   assignedCourseIds: number[];
-  canManage: boolean;
   isAdmin: boolean;
 }) {
   const { instRoute } = useInstitutionRoute();
@@ -360,7 +351,7 @@ function LessonPlanList({
         title="No lesson plan yet"
         description="Create a lesson plan to document objectives, activities, content, and supporting files."
         action={
-          canManage ? (
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
             <Button
               as={InertiaLink}
               href={instRoute('lesson-plans.create', [schemeOfWork.id])}
@@ -369,7 +360,7 @@ function LessonPlanList({
             >
               Create Lesson Plan
             </Button>
-          ) : null
+          </PermissionGate>
         }
       />
     );
@@ -379,7 +370,7 @@ function LessonPlanList({
     <VStack align={'stretch'} spacing={3}>
       <HStack justify={'space-between'} align={'center'}>
         <Text fontWeight={'semibold'}>Lesson Plans</Text>
-        {canManage && (
+        <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
           <Button
             as={InertiaLink}
             href={instRoute('lesson-plans.create', [schemeOfWork.id])}
@@ -388,7 +379,7 @@ function LessonPlanList({
           >
             Add Lesson Plan
           </Button>
-        )}
+        </PermissionGate>
       </HStack>
 
       {lessonPlans.map((lessonPlan, index) => (
@@ -423,20 +414,25 @@ function LessonPlanList({
               </Text>
             </VStack>
             <Wrap spacing={2}>
-              {(isAdmin ||
-                assignedCourseIds.includes(lessonPlan.course_teacher_id)) &&
-                !lessonPlan.lesson_note && (
-                  <WrapItem>
-                    <Button
-                      as={InertiaLink}
-                      href={instRoute('lesson-notes.create', [lessonPlan.id])}
-                      size="sm"
-                      colorScheme="brand"
-                    >
-                      Create Lesson Note
-                    </Button>
-                  </WrapItem>
-                )}
+              <PermissionGate
+                permissions={InstitutionPermission.NaturalAccess}
+                when={
+                  !lessonPlan.lesson_note &&
+                  (isAdmin ||
+                    assignedCourseIds.includes(lessonPlan.course_teacher_id))
+                }
+              >
+                <WrapItem>
+                  <Button
+                    as={InertiaLink}
+                    href={instRoute('lesson-notes.create', [lessonPlan.id])}
+                    size="sm"
+                    colorScheme="brand"
+                  >
+                    Create Lesson Note
+                  </Button>
+                </WrapItem>
+              </PermissionGate>
               <WrapItem>
                 <Button
                   as={InertiaLink}
@@ -448,7 +444,13 @@ function LessonPlanList({
                   View
                 </Button>
               </WrapItem>
-              {canManage && (
+              <PermissionGate
+                permissions={InstitutionPermission.NaturalAccess}
+                when={
+                  isAdmin ||
+                  assignedCourseIds.includes(lessonPlan.course_teacher_id)
+                }
+              >
                 <WrapItem>
                   <IconButton
                     as={InertiaLink}
@@ -459,8 +461,14 @@ function LessonPlanList({
                     variant="ghost"
                   />
                 </WrapItem>
-              )}
-              {isAdmin && (
+              </PermissionGate>
+              <PermissionGate
+                permissions={InstitutionPermission.NaturalAccess}
+                when={
+                  isAdmin ||
+                  assignedCourseIds.includes(lessonPlan.course_teacher_id)
+                }
+              >
                 <WrapItem>
                   <DeleteButton
                     route={instRoute('lesson-plans.destroy', [lessonPlan.id])}
@@ -468,7 +476,7 @@ function LessonPlanList({
                     iconOnly
                   />
                 </WrapItem>
-              )}
+              </PermissionGate>
             </Wrap>
           </Stack>
 
@@ -496,15 +504,14 @@ function LessonPlanList({
 function NotesPanel({
   lessonPlans,
   lessonNotes,
-  canManage,
   isAdmin,
 }: {
   lessonPlans: LessonPlan[];
   lessonNotes: LessonNote[];
-  canManage: boolean;
   isAdmin: boolean;
 }) {
   const { instRoute } = useInstitutionRoute();
+  const { currentUser } = useSharedProps();
 
   if (lessonPlans.length === 0) {
     return (
@@ -533,8 +540,14 @@ function NotesPanel({
           title={lessonNote.title}
           rightElement={
             <RecordActions
-              canEdit={canManage}
-              canDelete={isAdmin}
+              editPermission={InstitutionPermission.NaturalAccess}
+              deletePermission={InstitutionPermission.NaturalAccess}
+              editWhen={
+                isAdmin || lessonNote.course_teacher?.user_id === currentUser.id
+              }
+              deleteWhen={
+                isAdmin || lessonNote.course_teacher?.user_id === currentUser.id
+              }
               editRoute={instRoute('lesson-notes.edit', [lessonNote.id])}
               deleteRoute={instRoute('lesson-notes.destroy', [lessonNote.id])}
               deleteLabel="Delete this lesson note?"
@@ -566,7 +579,12 @@ function NotesPanel({
               >
                 View
               </Button>
-              {isAdmin && <PublishToggle lessonNote={lessonNote} />}
+              <PermissionGate
+                permissions={InstitutionPermission.NaturalAccess}
+                when={isAdmin}
+              >
+                <PublishToggle lessonNote={lessonNote} />
+              </PermissionGate>
             </HStack>
           </Stack>
 
@@ -627,25 +645,25 @@ function PublishToggle({ lessonNote }: { lessonNote: LessonNote }) {
 }
 
 function RecordActions({
-  canEdit,
-  canDelete,
+  editPermission,
+  deletePermission,
+  editWhen = true,
+  deleteWhen = true,
   editRoute,
   deleteRoute,
   deleteLabel,
 }: {
-  canEdit: boolean;
-  canDelete: boolean;
+  editPermission: InstitutionPermissionName;
+  deletePermission: InstitutionPermissionName;
+  editWhen?: boolean;
+  deleteWhen?: boolean;
   editRoute: string;
   deleteRoute: string;
   deleteLabel: string;
 }) {
-  if (!canEdit && !canDelete) {
-    return null;
-  }
-
   return (
     <HStack spacing={1}>
-      {canEdit && (
+      <PermissionGate permissions={editPermission} when={editWhen}>
         <IconButton
           as={InertiaLink}
           href={editRoute}
@@ -655,10 +673,10 @@ function RecordActions({
           variant="ghost"
           colorScheme="brand"
         />
-      )}
-      {canDelete && (
+      </PermissionGate>
+      <PermissionGate permissions={deletePermission} when={deleteWhen}>
         <DeleteButton route={deleteRoute} label={deleteLabel} iconOnly />
-      )}
+      </PermissionGate>
     </HStack>
   );
 }

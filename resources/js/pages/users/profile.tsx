@@ -44,6 +44,12 @@ import { preventNativeSubmit, resizeImage } from '@/util/util';
 import { InstitutionUser, User } from '@/types/models';
 import { Gender, SelectOptionType } from '@/types/types';
 import startCase from 'lodash/startCase';
+import DownloadResultRecordingSheetModal from '@/components/modals/download-result-recording-sheet-modal';
+import useModalToggle from '@/hooks/use-modal-toggle';
+import PermissionGate from '@/components/permission-gate';
+import { InstitutionPermission } from '@/types/permissions';
+import { BrandButton } from '@/components/buttons';
+import useIsStaff from '@/hooks/use-is-staff';
 
 interface Props {
   user: User;
@@ -62,6 +68,9 @@ const editableFields = [
 export default function Profile({ user, institutionUser }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const toast = useToast();
+  const isInstitutionStaff = useIsStaff();
+  const downloadRecordingSheetModalToggle = useModalToggle();
+
   const web = useWeb();
   const extensions = FileDropperType.Image.extensionLabels;
   const form = useWebForm({
@@ -79,7 +88,7 @@ export default function Profile({ user, institutionUser }: Props) {
     ...(user.partner_user
       ? [`Partner ${startCase(user.partner_user.role)}`]
       : []),
-    ...(institutionUser ? [startCase(institutionUser.role)] : []),
+    ...(institutionUser ? [startCase(institutionUser.type)] : []),
   ];
   const institutions = user.institution_user
     ? [user.institution_user]
@@ -426,7 +435,7 @@ export default function Profile({ user, institutionUser }: Props) {
                               {item.institution?.name ?? 'Institution'}
                             </Text>
                             <Text fontSize="sm" color="gray.600">
-                              {startCase(item.role)}
+                              {startCase(item.type)}
                             </Text>
                           </Box>
                         ))}
@@ -462,12 +471,26 @@ export default function Profile({ user, institutionUser }: Props) {
                   >
                     Change Password
                   </Button>
+                  {isInstitutionStaff && (
+                    <PermissionGate
+                      permissions={InstitutionPermission.NaturalAccess}
+                    >
+                      <BrandButton
+                        title="Download Result Recording Sheet"
+                        onClick={downloadRecordingSheetModalToggle.open}
+                      />
+                    </PermissionGate>
+                  )}
                 </VStack>
               </Box>
             </VStack>
           </GridItem>
         </Grid>
       </SlabBody>
+      <DownloadResultRecordingSheetModal
+        {...downloadRecordingSheetModalToggle.props}
+        onSuccess={() => undefined}
+      />
     </Slab>
   );
 }

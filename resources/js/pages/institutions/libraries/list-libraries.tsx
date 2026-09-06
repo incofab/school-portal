@@ -31,7 +31,9 @@ import { Library } from '@/types/models';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useIsStudent from '@/hooks/use-is-student';
 import useIsAdmin from '@/hooks/use-is-admin';
-import useIsTeacher from '@/hooks/use-is-teacher';
+import useSharedProps from '@/hooks/use-shared-props';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 
@@ -43,7 +45,7 @@ export default function ListLibraries({ libraries }: Props) {
   const { instRoute } = useInstitutionRoute();
   const isStudent = useIsStudent();
   const isAdmin = useIsAdmin();
-  const isTeacher = useIsTeacher();
+  const { currentInstitutionUser } = useSharedProps();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
 
@@ -61,9 +63,11 @@ export default function ListLibraries({ libraries }: Props) {
         <SlabHeading
           title="E-Library"
           rightElement={
-            !isStudent && (
-              <LinkButton href={instRoute('libraries.create')} title="Add" />
-            )
+            <PermissionGate permissions={InstitutionPermission.ManageLibrary}>
+              {!isStudent && (
+                <LinkButton href={instRoute('libraries.create')} title="Add" />
+              )}
+            </PermissionGate>
           }
         />
         <SlabBody>
@@ -142,30 +146,35 @@ export default function ListLibraries({ libraries }: Props) {
                       View
                     </Button>
 
-                    {(isAdmin || isTeacher) && (
-                      <>
-                        <IconButton
-                          aria-label="Edit library material"
-                          icon={<Icon as={PencilIcon} />}
-                          as={InertiaLink}
-                          href={instRoute('libraries.edit', [row.id])}
-                          variant="ghost"
-                          colorScheme="brand"
-                        />
-                        <DestructivePopover
-                          label="Delete this library material"
-                          onConfirm={() => deleteItem(row)}
-                          isLoading={deleteForm.processing}
-                        >
+                    <PermissionGate
+                      permissions={InstitutionPermission.ManageLibrary}
+                    >
+                      {isAdmin ||
+                      row.institution_user_id === currentInstitutionUser.id ? (
+                        <>
                           <IconButton
-                            aria-label="Delete library material"
-                            icon={<Icon as={TrashIcon} />}
+                            aria-label="Edit library material"
+                            icon={<Icon as={PencilIcon} />}
+                            as={InertiaLink}
+                            href={instRoute('libraries.edit', [row.id])}
                             variant="ghost"
-                            colorScheme="red"
+                            colorScheme="brand"
                           />
-                        </DestructivePopover>
-                      </>
-                    )}
+                          <DestructivePopover
+                            label="Delete this library material"
+                            onConfirm={() => deleteItem(row)}
+                            isLoading={deleteForm.processing}
+                          >
+                            <IconButton
+                              aria-label="Delete library material"
+                              icon={<Icon as={TrashIcon} />}
+                              variant="ghost"
+                              colorScheme="red"
+                            />
+                          </DestructivePopover>
+                        </>
+                      ) : null}
+                    </PermissionGate>
                   </HStack>
                 ),
               },

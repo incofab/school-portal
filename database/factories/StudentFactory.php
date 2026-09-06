@@ -49,7 +49,7 @@ class StudentFactory extends Factory
       if (empty($institutionUser)) {
         $institutionUser = InstitutionUser::factory()
           ->withInstitution($institution)
-          ->create(['role' => InstitutionUserType::Student]);
+          ->create(['type' => InstitutionUserType::Student]);
       }
 
       return [

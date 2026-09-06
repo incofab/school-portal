@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Institutions\Payrolls;
 use App\Actions\GenericExport;
 use App\Actions\Payrolls\GeneratePayroll;
 use App\Models\Institution;
-use App\Enums\InstitutionUserType;
+use App\Enums\InstitutionPermission;
 use App\Enums\YearMonth;
 use App\Http\Controllers\Controller;
 use App\Models\PayrollSummary;
@@ -16,10 +16,7 @@ class PayrollSummariesController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Accountant
-    ]);
+    $this->allowedPermissions([InstitutionPermission::ManagePayroll]);
   }
 
   public function index(Institution $institution)

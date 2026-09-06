@@ -34,7 +34,7 @@ export default function InstitutionUserSelect<
         { roles_in: rolesIn },
       ])}
       label={(item: InstitutionUser) =>
-        item.user!.full_name + ' - ' + item.role
+        item.user!.full_name + ' - ' + item.type
       }
       valueKey={valueKey ?? 'id'}
       {...props}

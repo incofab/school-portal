@@ -23,6 +23,8 @@ class UpdateTermResultExtraDataController extends Controller
     Institution $institution,
     TermResult $termResult
   ) {
+    $termResult->loadMissing('classification');
+    $this->ensureClassOwnership($termResult->classification);
     $data = $request->validate([
       'weight' => ['nullable', 'numeric'],
       'height' => ['nullable', 'numeric'],

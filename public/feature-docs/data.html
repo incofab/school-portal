@@ -750,8 +750,8 @@
               creates explicit current-term and current-academic-session
               records, defaulting to first term and the active or latest
               academic session, and seeds attendance notifications disabled with
-              SMS as the preferred channel. Result settings can mark the
-              session result as the institution's third-term result.
+              SMS as the preferred channel. Result settings can mark the session
+              result as the institution's third-term result.
             </div>
           </li>
           <li>
@@ -2240,6 +2240,37 @@
           </li>
           <li>
             <div>
+              <strong>2026_09_02_000001_add_institution_scope_to_roles</strong>
+              <span class="path"
+                ><code
+                  >database/migrations/2026_09_02_000001_add_institution_scope_to_roles.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Adds nullable institution ownership to roles, changes role-name
+              uniqueness to allow institution-scoped roles, and renames the
+              required institution-user column from <code>role</code> to
+              <code>type</code>. The model exposes a legacy
+              <code>role</code> attribute in responses.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>2026_09_02_000002_add_role_metadata</strong>
+              <span class="path"
+                ><code
+                  >database/migrations/2026_09_02_000002_add_role_metadata.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Adds role descriptions and a seeded-permissions marker used to
+              identify built-in institution roles.
+            </div>
+          </li>
+          <li>
+            <div>
               <strong
                 >2024_02_12_097110_create_registration_requests_table</strong
               >
@@ -3502,13 +3533,14 @@
           </li>
           <li>
             <div>
-              <strong>MyRefillDatabaseSeeder</strong>
+              <strong>DemoInstitutionSeeder</strong>
               <span class="path"
-                ><code>database/seeders/MyRefillDatabaseSeeder.php</code></span
+                ><code>database/seeders/DemoInstitutionSeeder.php</code></span
               >
             </div>
             <div class="desc">
-              Seeds baseline My Refill Database data used in local/dev/testing.
+              Seeds demo institutions, classes, subjects, students, results, and
+              price list used in local/dev/testing.
             </div>
           </li>
           <li>
@@ -3554,6 +3586,21 @@
             </div>
             <div class="desc">
               Seeds baseline Test data used in local/dev/testing.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>PermissionInventorySeeder</strong>
+              <span class="path"
+                ><code
+                  >database/seeders/PermissionInventorySeeder.php</code
+                ></span
+              >
+            </div>
+            <div class="desc">
+              Seeds the institution permission inventory for local, development,
+              and test environments; production backfills use
+              <code>institutions:seed-roles</code>.
             </div>
           </li>
           <li>

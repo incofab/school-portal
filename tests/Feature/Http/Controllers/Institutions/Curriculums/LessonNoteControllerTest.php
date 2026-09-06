@@ -215,7 +215,7 @@ it('stores lesson note data', function () {
 it('updates lesson note data', function () {
   $lessonNote = LessonNote::factory()
     ->lessonPlan($this->lessonPlan)
-    ->create();
+    ->create(['course_teacher_id' => $this->courseTeacher->id]);
 
   $route = route('institutions.lesson-notes.store-or-update', [
     'institution' => $this->institution->uuid,

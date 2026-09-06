@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Actions\RecordStaff;
-use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\User;
 use App\Support\Res;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
 class AttachInstitutionUserController extends Controller
@@ -19,7 +17,6 @@ class AttachInstitutionUserController extends Controller
   {
     abort_unless(currentUser()->isInstitutionAdmin(), 403);
     $data = $request->validate([
-      'role' => ['required', new Enum(InstitutionUserType::class)],
       'email' => ['required', Rule::exists('users', 'email')]
     ]);
 
@@ -32,7 +29,7 @@ class AttachInstitutionUserController extends Controller
       ]);
     }
 
-    RecordStaff::make($institution, $data)->syncRole($user);
+    RecordStaff::make($institution, [])->syncRole($user);
 
     return $this->message('User has been attached successfully');
   }

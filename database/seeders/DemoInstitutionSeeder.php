@@ -31,7 +31,7 @@ use App\Models\Student;
 use App\Models\TermResult;
 use App\Support\SettingsHandler;
 
-class MyRefillDatabaseSeeder extends Seeder
+class DemoInstitutionSeeder extends Seeder
 {
   /**
    * Run the database seeds.
@@ -396,7 +396,7 @@ class MyRefillDatabaseSeeder extends Seeder
     $student =
       $institution
         ->institutionUsers()
-        ->where('role', \App\Enums\InstitutionUserType::Student)
+        ->where('type', \App\Enums\InstitutionUserType::Student)
         ->inRandomOrder()
         ->first()?->student ??
       \App\Models\Student::factory()
@@ -445,7 +445,7 @@ class MyRefillDatabaseSeeder extends Seeder
     $student =
       $institution
         ->institutionUsers()
-        ->where('role', \App\Enums\InstitutionUserType::Student)
+        ->where('type', \App\Enums\InstitutionUserType::Student)
         ->inRandomOrder()
         ->first()?->student ??
       \App\Models\Student::factory()

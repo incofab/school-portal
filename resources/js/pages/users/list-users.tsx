@@ -80,7 +80,7 @@ function ListUsers({ users }: Props) {
         row.institution_users && row.institution_users.length > 0 ? (
           <HStack spacing={2} wrap="wrap">
             {row.institution_users.map((institutionUser) => (
-              <Badge key={institutionUser.id}>{institutionUser.role}</Badge>
+              <Badge key={institutionUser.id}>{institutionUser.type}</Badge>
             ))}
           </HStack>
         ) : null,

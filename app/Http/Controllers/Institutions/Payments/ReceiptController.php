@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Institutions\Payments;
 
-use App\Enums\InstitutionUserType;
+use App\Enums\InstitutionPermission;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
 use App\Models\Institution;
@@ -15,10 +15,10 @@ class ReceiptController extends Controller
 {
   function __construct()
   {
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Accountant
-    ])->except(['generateUniversalReceipt', 'printUniversalReceipt']);
+    $this->allowedPermissions([InstitutionPermission::ManageFees])->except([
+      'generateUniversalReceipt',
+      'printUniversalReceipt'
+    ]);
   }
 
   function index(Institution $institution)

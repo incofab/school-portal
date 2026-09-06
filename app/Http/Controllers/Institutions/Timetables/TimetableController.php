@@ -18,7 +18,10 @@ class TimetableController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin])->except('index', 'show');
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ])->except('index', 'show');
   }
 
   //

@@ -17,10 +17,11 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '../forms/form-control-box';
 import { LinkButton } from '../buttons';
 import { CloudArrowDownIcon } from '@heroicons/react/24/solid';
-import { InstitutionUserType } from '@/types/types';
-import EnumSelect from '../dropdown-select/enum-select';
+import { Role } from '@/types/models';
+import RoleSelect from '../selectors/role-select';
 
 interface Props {
+  roles: Role[];
   isOpen: boolean;
   onClose(): void;
   onSuccess(): void;
@@ -30,12 +31,14 @@ export default function UploadStaffModal({
   isOpen,
   onSuccess,
   onClose,
+  roles,
 }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
     files: [] as FileObject[],
-    role: InstitutionUserType.Teacher,
+    role:
+      roles.find((role) => role.name === 'teacher')?.id ?? roles[0]?.id ?? '',
   });
 
   const onSubmit = async () => {
@@ -77,8 +80,8 @@ export default function UploadStaffModal({
             title="Role"
             formKey="Select Role"
           >
-            <EnumSelect
-              enumData={InstitutionUserType}
+            <RoleSelect
+              roles={roles}
               selectValue={webForm.data.role}
               isMulti={false}
               isClearable={true}

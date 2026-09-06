@@ -8,6 +8,6 @@ enum ManagerRole: string
 {
   use EnumToArray;
 
-  case Admin = 'admin';
+  case ManagerAdmin = 'manager-admin';
   case Partner = 'partner';
 }

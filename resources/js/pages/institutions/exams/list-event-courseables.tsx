@@ -24,7 +24,10 @@ import CenteredBox from '@/components/centered-box';
 import MySelect from '@/components/dropdown-select/my-select';
 import { preventNativeSubmit } from '@/util/util';
 import { Div } from '@/components/semantic';
-import useIsStaff from '@/hooks/use-is-staff';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useIsTeacher from '@/hooks/use-is-teacher';
 
 interface Props {
   event: Event;
@@ -40,7 +43,7 @@ export default function ListEventCourseables({
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
-  const isStaff = useIsStaff();
+  const canManageEventCourses = useIsAdmin() || useIsTeacher();
 
   async function deleteItem(obj: EventCourseable) {
     const res = await deleteForm.submit((data, web) =>
@@ -61,24 +64,28 @@ export default function ListEventCourseables({
     //   label: 'Status',
     //   value: 'status',
     // },
-    ...(isStaff
+    ...(canManageEventCourses
       ? [
           {
             label: 'Action',
             render: (row: EventCourseable) => (
               <HStack>
-                <DestructivePopover
-                  label={'Delete this subjects'}
-                  onConfirm={() => deleteItem(row)}
-                  isLoading={deleteForm.processing}
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
                 >
-                  <IconButton
-                    aria-label={'Delete subject'}
-                    icon={<Icon as={TrashIcon} />}
-                    variant={'ghost'}
-                    colorScheme={'red'}
-                  />
-                </DestructivePopover>
+                  <DestructivePopover
+                    label={'Delete this subjects'}
+                    onConfirm={() => deleteItem(row)}
+                    isLoading={deleteForm.processing}
+                  >
+                    <IconButton
+                      aria-label={'Delete subject'}
+                      icon={<Icon as={TrashIcon} />}
+                      variant={'ghost'}
+                      colorScheme={'red'}
+                    />
+                  </DestructivePopover>
+                </PermissionGate>
               </HStack>
             ),
           },
@@ -91,7 +98,9 @@ export default function ListEventCourseables({
       <Slab>
         <SlabHeading title="Event Subjects" />
         <SlabBody>
-          <CreateEventCourseable event={event} courses={courses} />
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            <CreateEventCourseable event={event} courses={courses} />
+          </PermissionGate>
           <Divider my={1} />
           <ServerPaginatedTable
             scroll={true}

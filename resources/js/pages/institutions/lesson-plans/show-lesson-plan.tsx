@@ -16,6 +16,11 @@ import { FileDropperType } from '@/components/file-dropper/common';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
+import useSharedProps from '@/hooks/use-shared-props';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useInstitutionPermission from '@/hooks/use-institution-permission';
+import PermissionGate from '@/components/permission-gate';
+import { InstitutionPermission } from '@/types/permissions';
 
 interface Props {
   lessonPlan: LessonPlan;
@@ -23,6 +28,11 @@ interface Props {
 
 export default function ShowLessonPlan({ lessonPlan }: Props) {
   const { instRoute } = useInstitutionRoute();
+  const { currentUser } = useSharedProps();
+  const isAdmin = useIsAdmin();
+  const canManageLessonPlans = useInstitutionPermission(
+    InstitutionPermission.NaturalAccess
+  );
   const { handleResponseToast } = useMyToast();
   const uploadWebForm = useWebForm({});
   const deleteWebForm = useWebForm({});
@@ -35,6 +45,9 @@ export default function ShowLessonPlan({ lessonPlan }: Props) {
   const schemeOfWork = lessonPlan.scheme_of_work;
   const topic = schemeOfWork?.topic;
   const isSubTopic = Boolean(topic?.parent_topic);
+  const canWorkOnLessonPlan =
+    canManageLessonPlans &&
+    (isAdmin || lessonPlan.course_teacher?.user_id === currentUser.id);
 
   const uploadMedia = async (files: FileObject[]) => {
     if (files.length === 0) {
@@ -73,10 +86,15 @@ export default function ShowLessonPlan({ lessonPlan }: Props) {
         <SlabHeading
           title={`Lesson Plan  (Week ${lessonPlan.scheme_of_work?.week_number})`}
           rightElement={
-            <LinkButton
-              href={instRoute('lesson-plans.edit', [lessonPlan.id])}
-              title={'Edit'}
-            />
+            <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+              when={canWorkOnLessonPlan}
+            >
+              <LinkButton
+                href={instRoute('lesson-plans.edit', [lessonPlan.id])}
+                title={'Edit'}
+              />
+            </PermissionGate>
           }
         />
 
@@ -145,20 +163,25 @@ export default function ShowLessonPlan({ lessonPlan }: Props) {
             ATTACHMENTS ::
           </Heading>
           <VStack align={'stretch'} spacing={3}>
-            <FileDropper
-              files={uploadFiles}
-              onChange={uploadMedia}
-              accept={[FileDropperType.Media]}
-              multiple={false}
-              canRename={false}
-              isLoading={uploadWebForm.processing}
-            />
-            <Text fontSize={'sm'} color={'blackAlpha.700'}>
-              Uploads are saved one file at a time.
-            </Text>
+            <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+              when={canWorkOnLessonPlan}
+            >
+              <FileDropper
+                files={uploadFiles}
+                onChange={uploadMedia}
+                accept={[FileDropperType.Media]}
+                multiple={false}
+                canRename={false}
+                isLoading={uploadWebForm.processing}
+              />
+              <Text fontSize={'sm'} color={'blackAlpha.700'}>
+                Uploads are saved one file at a time.
+              </Text>
+            </PermissionGate>
             <MediaAttachmentsList
               media={lessonPlan.media}
-              onDelete={deleteMedia}
+              onDelete={canWorkOnLessonPlan ? deleteMedia : undefined}
               deletingMediaId={deletingMediaId}
             />
           </VStack>

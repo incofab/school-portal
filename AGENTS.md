@@ -53,3 +53,4 @@
 - Always abstract out logics that are good enough to be abstracted out. Always use the DRY principle, and other widely accepted software developmen conventions
 - Use proper abstractions, do little or no logic in the controller, use actions and services instead
 - Use the `app/Support/Res` class for action/logic functions that need to return responses that need success status, message and optional payload
+- When certain logics, functions, action and service classes are added that can be easily misunderstood, provide a short concise explanation on what it does. This should only be done is the method is complex and difficult to understand. Methods and classes whose methods are self explanatory does not need extra comment.

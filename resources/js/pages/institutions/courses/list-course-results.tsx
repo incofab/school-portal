@@ -10,7 +10,6 @@ import startCase from 'lodash/startCase';
 import React from 'react';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { BrandButton } from '@/components/buttons';
-import useIsStaff from '@/hooks/use-is-staff';
 import DashboardLayout from '@/layout/dashboard-layout';
 import CourseResultsTableFilters from '@/components/table-filters/course-result-table-filters';
 import UploadCourseResultsModal from '@/components/modals/upload-course-results-modal';
@@ -19,12 +18,15 @@ import { CloudArrowDownIcon, PencilIcon } from '@heroicons/react/24/outline';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
 import useIsAdmin from '@/hooks/use-is-admin';
+import useIsTeacher from '@/hooks/use-is-teacher';
 import useSharedProps from '@/hooks/use-shared-props';
 import DestructivePopover from '@/components/destructive-popover';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import DateTimeDisplay from '@/components/date-time-display';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   courseTeacher?: CourseTeacher;
@@ -39,8 +41,9 @@ export default function ListCourseResults({
     CourseTeacher | undefined
   >();
   const courseResultFilterToggle = useModalToggle();
-  const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
+  const isTeacher = useIsTeacher();
+  const canRecordResults = isAdmin || isTeacher;
   const { currentUser } = useSharedProps();
   const { toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -136,43 +139,41 @@ export default function ListCourseResults({
       label: 'Date',
       render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
     },
-    ...(isStaff
-      ? [
-          {
-            label: 'Action',
-            render: (row: CourseResult) => (
-              <HStack>
-                {(isAdmin || currentUser.id === row.teacher_user_id) && (
-                  <>
-                    <IconButton
-                      as={InertiaLink}
-                      aria-label={'Edit'}
-                      icon={<Icon as={PencilIcon} />}
-                      variant={'ghost'}
-                      colorScheme={'brand'}
-                      href={instRoute('course-results.edit', [row.id])}
-                    />
-                    <DestructivePopover
-                      label={`Delete ${row.course?.title} result for ${
-                        row.student?.user!.full_name
-                      }?`}
-                      onConfirm={() => deleteItem(row)}
-                      isLoading={deleteForm.processing}
-                    >
-                      <IconButton
-                        aria-label={'Delete'}
-                        icon={<Icon as={TrashIcon} />}
-                        variant={'ghost'}
-                        colorScheme={'red'}
-                      />
-                    </DestructivePopover>
-                  </>
-                )}
-              </HStack>
-            ),
-          },
-        ]
-      : []),
+    {
+      label: 'Action',
+      render: (row: CourseResult) => (
+        <HStack>
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            {isAdmin || currentUser.id === row.teacher_user_id ? (
+              <>
+                <IconButton
+                  as={InertiaLink}
+                  aria-label={'Edit'}
+                  icon={<Icon as={PencilIcon} />}
+                  variant={'ghost'}
+                  colorScheme={'brand'}
+                  href={instRoute('course-results.edit', [row.id])}
+                />
+                <DestructivePopover
+                  label={`Delete ${row.course?.title} result for ${
+                    row.student?.user!.full_name
+                  }?`}
+                  onConfirm={() => deleteItem(row)}
+                  isLoading={deleteForm.processing}
+                >
+                  <IconButton
+                    aria-label={'Delete'}
+                    icon={<Icon as={TrashIcon} />}
+                    variant={'ghost'}
+                    colorScheme={'red'}
+                  />
+                </DestructivePopover>
+              </>
+            ) : null}
+          </PermissionGate>
+        </HStack>
+      ),
+    },
   ];
 
   return (
@@ -182,36 +183,42 @@ export default function ListCourseResults({
           title="Student Results"
           rightElement={
             <HStack>
-              {isStaff && (
-                <>
-                  <BrandButton
-                    onClick={() =>
-                      uploadCourseResultModalToggle.open(courseTeacher)
-                    }
-                    title={'Upload Results'}
-                  />
-                  <Button
-                    as={InertiaLink}
-                    href={instRoute('record-student-subject-results.create')}
-                    colorScheme={'brand'}
-                    variant={'outline'}
-                    size={'sm'}
-                  >
-                    Record Student Subjects
-                  </Button>
-                  <Button
-                    as={'a'}
-                    href={instRoute('course-results.download', [params])}
-                    colorScheme={'brand'}
-                    variant={'solid'}
-                    size={'sm'}
-                    leftIcon={<Icon as={CloudArrowDownIcon} />}
-                    onClick={downloadSheet}
-                  >
-                    Download
-                  </Button>
-                </>
+              {canRecordResults && (
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                >
+                  <>
+                    <BrandButton
+                      onClick={() =>
+                        uploadCourseResultModalToggle.open(courseTeacher)
+                      }
+                      title={'Upload Results'}
+                    />
+                    <Button
+                      as={InertiaLink}
+                      href={instRoute('record-student-subject-results.create')}
+                      colorScheme={'brand'}
+                      variant={'outline'}
+                      size={'sm'}
+                    >
+                      Record Student Subjects
+                    </Button>
+                  </>
+                </PermissionGate>
               )}
+              <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+                <Button
+                  as={'a'}
+                  href={instRoute('course-results.download', [params])}
+                  colorScheme={'brand'}
+                  variant={'solid'}
+                  size={'sm'}
+                  leftIcon={<Icon as={CloudArrowDownIcon} />}
+                  onClick={downloadSheet}
+                >
+                  Download
+                </Button>
+              </PermissionGate>
             </HStack>
           }
         />

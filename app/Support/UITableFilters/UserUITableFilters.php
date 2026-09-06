@@ -85,7 +85,7 @@ class UserUITableFilters extends BaseUITableFilter
       )
       ->when(
         $this->requestGet('role'),
-        fn($q, $value) => $q->where('institution_users.role', $value)
+        fn($q, $value) => $q->where('institution_users.type', $value)
       )
       ->when(
         $this->requestGet('status'),

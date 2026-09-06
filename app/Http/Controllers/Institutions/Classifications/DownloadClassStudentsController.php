@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Actions\CourseResult\DownloadClassStudentsSheet;
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Classification;
 use App\Models\Institution;
@@ -13,6 +14,14 @@ use Storage;
 
 class DownloadClassStudentsController extends Controller
 {
+  public function __construct()
+  {
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ]);
+  }
+
   public function __invoke(
     Institution $institution,
     Classification $classification,

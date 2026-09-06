@@ -20,6 +20,9 @@ import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
 import useIsStudent from '@/hooks/use-is-student';
 import useIsTeacher from '@/hooks/use-is-teacher';
+import useSharedProps from '@/hooks/use-shared-props';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   assignments: PaginationResponse<Assignment>;
@@ -30,9 +33,9 @@ export default function ListEvents({ assignments }: Props) {
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
-  const isTeacher = useIsTeacher();
   const isStudent = useIsStudent();
-
+  const isTeacher = useIsTeacher();
+  const { currentInstitutionUser } = useSharedProps();
   async function deleteItem(obj: Assignment) {
     const res = await deleteForm.submit((data, web) =>
       web.delete(instRoute('assignments.destroy', [obj.id]))
@@ -45,7 +48,8 @@ export default function ListEvents({ assignments }: Props) {
     {
       label: 'Class',
       value: 'classification.title',
-      render: (row) => row.classifications?.map((item) => item.title).join(', ') ?? '',
+      render: (row) =>
+        row.classifications?.map((item) => item.title).join(', ') ?? '',
     },
     {
       label: 'Subject',
@@ -72,36 +76,42 @@ export default function ListEvents({ assignments }: Props) {
             title="View"
           />
 
-          {(isAdmin || isTeacher) && (
-            <>
-              <IconButton
-                aria-label={'Edit Assignment'}
-                icon={<Icon as={PencilIcon} />}
-                as={InertiaLink}
-                href={instRoute('assignments.edit', [row.id])}
-                variant={'ghost'}
-                colorScheme={'brand'}
-              />
-              <DestructivePopover
-                label={'Delete this assignment'}
-                onConfirm={() => deleteItem(row)}
-                isLoading={deleteForm.processing}
-              >
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            {(isAdmin || isTeacher) &&
+            (isAdmin ||
+              row.institution_user_id === currentInstitutionUser.id) ? (
+              <>
                 <IconButton
-                  aria-label={'Delete assignment'}
-                  icon={<Icon as={TrashIcon} />}
+                  aria-label={'Edit Assignment'}
+                  icon={<Icon as={PencilIcon} />}
+                  as={InertiaLink}
+                  href={instRoute('assignments.edit', [row.id])}
                   variant={'ghost'}
-                  colorScheme={'red'}
+                  colorScheme={'brand'}
                 />
-              </DestructivePopover>
+                <DestructivePopover
+                  label={'Delete this assignment'}
+                  onConfirm={() => deleteItem(row)}
+                  isLoading={deleteForm.processing}
+                >
+                  <IconButton
+                    aria-label={'Delete assignment'}
+                    icon={<Icon as={TrashIcon} />}
+                    variant={'ghost'}
+                    colorScheme={'red'}
+                  />
+                </DestructivePopover>
 
-              <LinkButton
-                href={instRoute('assignment-submission.submissions', [row.id])}
-                variant={'link'}
-                title="Submissions"
-              />
-            </>
-          )}
+                <LinkButton
+                  href={instRoute('assignment-submission.submissions', [
+                    row.id,
+                  ])}
+                  variant={'link'}
+                  title="Submissions"
+                />
+              </>
+            ) : null}
+          </PermissionGate>
         </HStack>
       ),
     },
@@ -113,12 +123,14 @@ export default function ListEvents({ assignments }: Props) {
         <SlabHeading
           title="List of Assignments"
           rightElement={
-            !isStudent && (
-              <LinkButton
-                href={instRoute('assignments.create')}
-                title={'New'}
-              />
-            )
+            <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+              {!isStudent && (isAdmin || isTeacher) && (
+                <LinkButton
+                  href={instRoute('assignments.create')}
+                  title={'New'}
+                />
+              )}
+            </PermissionGate>
           }
         />
         <SlabBody>

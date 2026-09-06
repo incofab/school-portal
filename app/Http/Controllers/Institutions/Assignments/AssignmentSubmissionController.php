@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Institutions\Assignments;
 
-use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
@@ -15,15 +14,6 @@ use Inertia\Inertia;
 
 class AssignmentSubmissionController extends Controller
 {
-  //
-  public function __construct()
-  {
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Teacher
-    ])->except('index', 'show', 'store');
-  }
-
   public function index(Request $request, Institution $institution)
   {
     $user = currentInstitutionUser();

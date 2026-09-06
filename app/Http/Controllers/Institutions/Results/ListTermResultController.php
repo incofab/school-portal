@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Institutions\Results;
 use App\Actions\CourseResult\GetGrade;
 use App\Http\Controllers\Controller;
 use App\Models\ClassResultInfo;
-use App\Models\GuardianStudent;
+use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\TermResult;
 use App\Models\User;
@@ -65,38 +65,25 @@ class ListTermResultController extends Controller
   {
     $institutionUser = currentInstitutionUser();
     if (!$user) {
-      abort_if(!$institutionUser->isStaff(), 403);
-      return;
-    }
-
-    if ($user->id === $institutionUser->user_id) {
-      abort_unless($institutionUser->isStudent(), 403, 'You are not a student');
-      return;
-    }
-
-    if ($institutionUser->isGuardian()) {
-      abort_unless(
-        GuardianStudent::isGuardianOfStudent(
-          $institutionUser->user_id,
-          $user->student->id
-        ),
-        403,
-        'You are not a guardian to this student'
+      abort_if(
+        !$institutionUser->canViewAllResults() &&
+          !$institutionUser->isTeacher() &&
+          !$institutionUser->isStudent(),
+        403
       );
       return;
     }
 
-    abort_unless(
-      $institutionUser->isStaff(),
-      403,
-      'You cannot check another student result'
-    );
+    $student = $user->institutionStudent();
+    abort_unless($student, 403, 'This user is not a student');
 
-    abort_unless(
-      $user->isInstitutionStudent(),
-      403,
-      'This user is not a student'
-    );
+      $canView = $institutionUser->canViewResultsFor($student) &&
+        ($institutionUser->isAdmin() ||
+        $institutionUser->isStudent() ||
+        $institutionUser->isGuardian() ||
+        $institutionUser->isTeacher());
+
+    abort_unless($canView, 403, 'You cannot check this student result');
   }
 
   private function getQuery(?User $user = null)
@@ -105,9 +92,31 @@ class ListTermResultController extends Controller
     $currentInstitutionUser = currentInstitutionUser();
 
     if (!$user) {
-      if ($currentInstitutionUser->isStaff()) {
+      if ($currentInstitutionUser->canViewAllResults()) {
         return TermResult::query();
-      } elseif ($currentInstitutionUser->isGuardian()) {
+      }
+
+      if ($currentInstitutionUser->isTeacher()) {
+        return TermResult::query()
+          ->where(function ($query) use ($currentInstitutionUser) {
+            $query
+              ->whereHas(
+                'classification',
+                fn($classification) => $classification->where(
+                  'form_teacher_id',
+                  $currentInstitutionUser->user_id
+                )
+              )
+              ->orWhereIn(
+                'classification_id',
+                CourseTeacher::query()
+                  ->where('user_id', $currentInstitutionUser->user_id)
+                  ->select('classification_id')
+              );
+          });
+      }
+
+      if ($currentInstitutionUser->isGuardian()) {
         abort(403, 'Select a  student first');
       }
       return $this->getStudentResultQuery(currentUser());

@@ -24,7 +24,8 @@ import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
-import { searchContent } from '@/util/search-content';
+import PermissionGate from '@/components/permission-gate';
+import { InstitutionPermission } from '@/types/permissions';
 
 interface Props {
   subtopics: PaginationResponse<Topic>;
@@ -70,26 +71,30 @@ export default function ListSubTopics({ subtopics, parentTopic }: Props) {
             variant={'link'}
             title="View"
           />
-          <IconButton
-            aria-label={'Edit Topic'}
-            icon={<Icon as={PencilIcon} />}
-            as={InertiaLink}
-            href={instRoute('inst-topics.create-or-edit', [row.id])}
-            variant={'ghost'}
-            colorScheme={'brand'}
-          />
-          <DestructivePopover
-            label={'Delete this topic'}
-            onConfirm={() => deleteItem(row)}
-            isLoading={deleteForm.processing}
-          >
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
             <IconButton
-              aria-label={'Delete topic'}
-              icon={<Icon as={TrashIcon} />}
+              aria-label={'Edit Topic'}
+              icon={<Icon as={PencilIcon} />}
+              as={InertiaLink}
+              href={instRoute('inst-topics.create-or-edit', [row.id])}
               variant={'ghost'}
-              colorScheme={'red'}
+              colorScheme={'brand'}
             />
-          </DestructivePopover>
+          </PermissionGate>
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            <DestructivePopover
+              label={'Delete this topic'}
+              onConfirm={() => deleteItem(row)}
+              isLoading={deleteForm.processing}
+            >
+              <IconButton
+                aria-label={'Delete topic'}
+                icon={<Icon as={TrashIcon} />}
+                variant={'ghost'}
+                colorScheme={'red'}
+              />
+            </DestructivePopover>
+          </PermissionGate>
         </HStack>
       ),
     },
@@ -101,10 +106,12 @@ export default function ListSubTopics({ subtopics, parentTopic }: Props) {
         <SlabHeading
           title={`List of Sub-Topics`}
           rightElement={
-            <LinkButton
-              href={instRoute('inst-topics.create-or-edit')}
-              title={'New'}
-            />
+            <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+              <LinkButton
+                href={instRoute('inst-topics.create-or-edit')}
+                title={'New'}
+              />
+            </PermissionGate>
           }
         />
         <SlabBody>

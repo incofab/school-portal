@@ -56,7 +56,7 @@ class PaymentReferencePolicy
     $institutionUser = currentInstitutionUser();
 
     return $institutionUser?->institution_id === $institution->id &&
-      in_array($institutionUser->role, [
+      in_array($institutionUser->type, [
         InstitutionUserType::Admin,
         InstitutionUserType::Accountant
       ]);

@@ -20,6 +20,8 @@ import { dateTimeFormat } from '@/util/util';
 import useIsAdmin from '@/hooks/use-is-admin';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import SchemeOfWorkTableFilters from '@/components/table-filters/scheme-of-work-table-filters';
+import PermissionGate from '@/components/permission-gate';
+import { InstitutionPermission } from '@/types/permissions';
 
 interface Props {
   schemeOfWorks: PaginationResponse<SchemeOfWork>;
@@ -81,33 +83,45 @@ export default function ListSchemeOfWork({ schemeOfWorks }: Props) {
             variant={'link'}
             title="View"
           />
-          <IconButton
-            aria-label={'Edit Scheme'}
-            icon={<Icon as={PencilIcon} />}
-            as={InertiaLink}
-            href={instRoute('scheme-of-works.edit', [row.id])}
-            variant={'ghost'}
-            colorScheme={'brand'}
-          />
-          <DestructivePopover
-            label={'Delete this Scheme of Work'}
-            onConfirm={() => deleteItem(row)}
-            isLoading={deleteForm.processing}
+          <PermissionGate
+            permissions={InstitutionPermission.NaturalAccess}
           >
             <IconButton
-              aria-label={'Delete Scheme'}
-              icon={<Icon as={TrashIcon} />}
+              aria-label={'Edit Scheme'}
+              icon={<Icon as={PencilIcon} />}
+              as={InertiaLink}
+              href={instRoute('scheme-of-works.edit', [row.id])}
               variant={'ghost'}
-              colorScheme={'red'}
+              colorScheme={'brand'}
             />
-          </DestructivePopover>
-          {row.lesson_plans?.length === 0 && (
+          </PermissionGate>
+          <PermissionGate
+            permissions={InstitutionPermission.NaturalAccess}
+            when={isAdmin}
+          >
+            <DestructivePopover
+              label={'Delete this Scheme of Work'}
+              onConfirm={() => deleteItem(row)}
+              isLoading={deleteForm.processing}
+            >
+              <IconButton
+                aria-label={'Delete Scheme'}
+                icon={<Icon as={TrashIcon} />}
+                variant={'ghost'}
+                colorScheme={'red'}
+              />
+            </DestructivePopover>
+          </PermissionGate>
+          <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+            when={row.lesson_plans?.length === 0}
+          >
             <LinkButton
               href={instRoute('lesson-plans.create', [row.id])}
               variant={'link'}
               title="Create Lesson Plan"
             />
-          )}
+          </PermissionGate>
         </HStack>
       ),
     },
@@ -119,9 +133,9 @@ export default function ListSchemeOfWork({ schemeOfWorks }: Props) {
         <SlabHeading
           title="Scheme of Works"
           rightElement={
-            isAdmin && (
+            <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
               <LinkButton href={instRoute('inst-topics.index')} title={'New'} />
-            )
+            </PermissionGate>
           }
         />
         <SlabBody>

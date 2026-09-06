@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\CCD;
 
 use App\Actions\GenericExport;
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuestionPayloadRequest;
 use App\Http\Requests\UploadSessionQuestionsRequest;
@@ -13,6 +14,23 @@ use App\Support\MorphableHandler;
 
 class QuestionController extends Controller
 {
+  public function __construct()
+  {
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ])->only([
+      'create',
+      'storeApi',
+      'store',
+      'edit',
+      'update',
+      'destroy',
+      'uploadQuestionsView',
+      'uploadQuestionsStore'
+    ]);
+  }
+
   function index(Institution $institution, QuestionCourseable $morphable)
   {
     $this->authorizeQuestionBank($morphable);

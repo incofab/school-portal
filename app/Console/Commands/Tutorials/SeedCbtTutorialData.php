@@ -85,7 +85,7 @@ class SeedCbtTutorialData extends Command
 
     $studentInstitutionUser = InstitutionUser::firstOrCreate(
       ['institution_id' => $institution->id, 'user_id' => $studentUser->id],
-      ['role' => InstitutionUserType::Student]
+      ['type' => InstitutionUserType::Student]
     );
 
     $student = Student::withTrashed()->updateOrCreate(

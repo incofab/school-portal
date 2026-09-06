@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Institutions\Payments;
 use App\Actions\Fees\GetClassFeePaymentSummary;
 use App\Actions\Payments\FeePaymentHandler;
 use App\Enums\InstitutionUserType;
+use App\Enums\InstitutionPermission;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
@@ -23,10 +24,16 @@ class FeePaymentController extends Controller
 {
   function __construct()
   {
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Accountant
-    ])->except(['index', 'search', 'show']);
+    $this->allowedPermissions([InstitutionPermission::ManageFees])->only([
+      'index',
+      'search',
+      'show'
+    ]);
+    $this->allowedPermissions([InstitutionPermission::ManageFees])->except([
+      'index',
+      'search',
+      'show'
+    ]);
   }
 
   function index(Institution $institution, ?Fee $fee = null)
@@ -71,7 +78,7 @@ class FeePaymentController extends Controller
         'required',
         Rule::exists('institution_users', 'user_id')
           ->where('institution_id', $institution->id)
-          ->whereIn('role', [
+          ->whereIn('type', [
             InstitutionUserType::Student,
             InstitutionUserType::Alumni
           ])

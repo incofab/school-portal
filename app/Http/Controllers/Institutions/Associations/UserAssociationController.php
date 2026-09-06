@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Institutions\Associations;
 
 use App\Actions\Users\RecordUserAssociation;
+use App\Enums\InstitutionUserType;
 use Inertia\Inertia;
 use App\Models\Institution;
 use Illuminate\Http\Request;
-use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Association;
 use App\Models\Classification;

@@ -61,7 +61,7 @@ export interface Message {
 }
 
 export enum ManagerRole {
-  Admin = 'admin',
+  ManagerAdmin = 'manager-admin',
   Partner = 'partner',
 }
 

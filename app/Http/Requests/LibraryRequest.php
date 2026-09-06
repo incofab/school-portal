@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\LibrarySourceType;
+use App\Enums\InstitutionPermission;
 use App\Models\InstitutionUser;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -79,11 +80,10 @@ class LibraryRequest extends FormRequest
                         return;
                     }
 
-                    if (
-                        ! $this->institutionUser->isTeacher() &&
-                        ! $this->institutionUser->isAdmin()
-                    ) {
-                        $fail('Only teachers and admins can create library materials.');
+                    if (! $this->institutionUser->hasInstitutionPermission(
+                        InstitutionPermission::ManageLibrary
+                    )) {
+                        $fail('You do not have permission to create library materials.');
                     }
                 },
             ],

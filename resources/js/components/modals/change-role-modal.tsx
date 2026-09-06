@@ -5,12 +5,12 @@ import GenericModal from '@/components/generic-modal';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '../forms/form-control-box';
-import { InstitutionUser } from '@/types/models';
-import { InstitutionUserType } from '@/types/types';
-import EnumSelect from '../dropdown-select/enum-select';
+import { InstitutionUser, Role } from '@/types/models';
+import RoleSelect from '../selectors/role-select';
 
 interface Props {
   institutionUser: InstitutionUser;
+  roles: Role[];
   isOpen: boolean;
   onClose(): void;
   onSuccess(): void;
@@ -21,11 +21,12 @@ export default function ChangeRoleModal({
   onSuccess,
   onClose,
   institutionUser,
+  roles,
 }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
-    role: institutionUser.role,
+    role: institutionUser.roles?.[0]?.id ?? '',
   });
 
   const onSubmit = async () => {
@@ -47,8 +48,8 @@ export default function ChangeRoleModal({
       bodyContent={
         <VStack spacing={2}>
           <FormControlBox form={webForm as any} title="Role" formKey="role">
-            <EnumSelect
-              enumData={InstitutionUserType}
+            <RoleSelect
+              roles={roles}
               selectValue={webForm.data.role}
               isMulti={false}
               isClearable={true}

@@ -19,9 +19,10 @@ import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
-import useIsStaff from '@/hooks/use-is-staff';
+import { InstitutionPermission } from '@/types/permissions';
 import ClassificationSelect from '@/components/selectors/classification-select';
 import { Inertia } from '@inertiajs/inertia';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   timetables: Timetable[];
@@ -42,7 +43,6 @@ export default function ListTimetables({
   const [formattedTableState, setFormattedTableState] =
     useState<FormattedTimetable>(getFormattedTimetable());
   const { instRoute } = useInstitutionRoute();
-  const isStaff = useIsStaff();
 
   function getActionableName(timetable: Timetable) {
     if (timetable.actionable_type === TimetableActionableType.Course) {
@@ -77,7 +77,7 @@ export default function ListTimetables({
   // }, []);
 
   function getFormattedTimetable() {
-    let fff = {} as FormattedTimetable;
+    const fff = {} as FormattedTimetable;
     timetables.forEach((timetable) => {
       const thisDay = fff[timetable.day] ?? [];
       if (!fff[timetable.day]) {
@@ -144,7 +144,9 @@ export default function ListTimetables({
         <SlabHeading
           title="Timetable"
           rightElement={
-            isStaff && (
+            <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+            >
               <Div minW={'150px'}>
                 <ClassificationSelect
                   selectValue={{
@@ -155,14 +157,14 @@ export default function ListTimetables({
                   isClearable={true}
                   onChange={(e: any) => {
                     const id = e?.value;
-                    if (!id || id == classification.id) {
+                    if (!id || id === classification.id) {
                       return;
                     }
                     Inertia.visit(instRoute('timetables.classTimetable', [id]));
                   }}
                 />
               </Div>
-            )
+            </PermissionGate>
           }
         />
 
@@ -193,7 +195,9 @@ export default function ListTimetables({
                   />
                 ))}
 
-                {isStaff && (
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                >
                   <IconButton
                     colorScheme={'brand'}
                     variant={'outline'}
@@ -226,7 +230,7 @@ export default function ListTimetables({
                       createEditTimetableModalToggle.open(cell);
                     }}
                   />
-                )}
+                </PermissionGate>
               </HStack>
             );
           })}
@@ -257,7 +261,6 @@ function Cell({
   const deleteForm = useWebForm({});
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
-  const isStaff = useIsStaff();
 
   async function deleteItem(cell: TimetableCell) {
     const res = await deleteForm.submit((data, web) =>
@@ -318,7 +321,7 @@ function Cell({
             {cell ? `${cell.start_time} - ${cell.end_time}` : ''}{' '}
           </Text>
 
-          {isStaff && (
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
             <IconButton
               colorScheme={'red'}
               variant={'ghost'}
@@ -327,7 +330,7 @@ function Cell({
               icon={<Icon as={PencilIcon} />}
               onClick={() => onEditClick()}
             />
-          )}
+          </PermissionGate>
         </Flex>
 
         {/* Action:  */}
@@ -336,7 +339,7 @@ function Cell({
             {cell.actionable_name}
           </Text>
 
-          {isStaff && (
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
             <DestructivePopover
               label={'Delete this activity'}
               onConfirm={() => deleteItem(cell)}
@@ -350,7 +353,7 @@ function Cell({
                 icon={<Icon as={TrashIcon} />}
               />
             </DestructivePopover>
-          )}
+          </PermissionGate>
         </Flex>
 
         {/* Coordinator:  */}

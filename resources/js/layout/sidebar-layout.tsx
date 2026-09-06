@@ -12,6 +12,10 @@ import {
 import { SidebarHeader } from '../components/sidebar-header';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { Nullable, InstitutionUserType } from '@/types/types';
+import {
+  hasInstitutionPermission,
+  InstitutionPermission,
+} from '@/types/permissions';
 import useSharedProps from '@/hooks/use-shared-props';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useIsTeacher from '@/hooks/use-is-teacher';
@@ -26,6 +30,7 @@ interface MenuType {
   label: string;
   icon?: string;
   roles?: Nullable<InstitutionUserType[]>;
+  permissions?: string[];
   route?: string;
   onClick?: () => void;
 }
@@ -35,17 +40,13 @@ interface MenuListType extends MenuType {
 }
 
 export default function SideBarLayout() {
-  const { currentUser, currentInstitutionUser } = useSharedProps();
+  const { currentUser, currentInstitutionUser, currentUserPermissions } =
+    useSharedProps();
   const { toggleSidebar } = useProSidebar();
   const { instRoute } = useInstitutionRoute();
   const isTeacher = useIsTeacher();
   const reportModalToggle = useModalValueToggle<GenericSelectorModalConfig>();
   const student = currentInstitutionUser.student;
-  const staff = [
-    InstitutionUserType.Admin,
-    InstitutionUserType.Teacher,
-    InstitutionUserType.Accountant,
-  ];
   const teachers = [InstitutionUserType.Admin, InstitutionUserType.Teacher];
   const accountant = [
     InstitutionUserType.Admin,
@@ -65,7 +66,7 @@ export default function SideBarLayout() {
     {
       label: 'Chats',
       route: instRoute('chats.index'),
-      roles: null,
+      permissions: [InstitutionPermission.ManageChat],
     },
     ...(student
       ? [
@@ -78,12 +79,10 @@ export default function SideBarLayout() {
       : []),
     {
       label: 'Staff',
-      roles: [InstitutionUserType.Admin],
       sub_items: [
         {
           label: 'All Staff',
           route: instRoute('users.index', { staffOnly: true }),
-          roles: teachers,
         },
         {
           label: 'Add Staff',
@@ -91,40 +90,42 @@ export default function SideBarLayout() {
           roles: [InstitutionUserType.Admin],
         },
         {
+          label: 'Roles and permissions',
+          route: instRoute('roles.index'),
+          roles: [InstitutionUserType.Admin],
+          permissions: [InstitutionPermission.ManageRoles],
+        },
+        {
           label: 'Staff ID Cards',
           route: instRoute('users.idcards'),
-          roles: [InstitutionUserType.Admin],
         },
         {
           label: 'My Bank Accounts',
           route: instRoute('inst-user-bank-accounts.index'),
-          roles: staff,
+          permissions: [InstitutionPermission.ManageFinance],
         },
       ],
     },
     {
       label: 'Students',
-      roles: staff,
       sub_items: [
         {
           label: 'All Students',
           route: instRoute('students.index'),
-          roles: staff,
         },
         {
           label: 'Guardians',
           route: instRoute('guardians.index'),
-          roles: staff,
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Add Student',
           route: instRoute('students.create'),
-          roles: [InstitutionUserType.Admin],
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Student ID Cards',
           route: instRoute('students.idcards'),
-          roles: staff,
         },
         // {
         //   label: 'Student Applications',
@@ -135,20 +136,10 @@ export default function SideBarLayout() {
     },
     {
       label: 'Subject',
-      roles: [
-        InstitutionUserType.Student,
-        InstitutionUserType.Admin,
-        InstitutionUserType.Teacher,
-      ],
       sub_items: [
         {
           label: 'All Subject',
           route: instRoute('courses.index'),
-          roles: [
-            InstitutionUserType.Student,
-            InstitutionUserType.Admin,
-            InstitutionUserType.Teacher,
-          ],
         },
         {
           label: 'Add Subject',
@@ -166,7 +157,7 @@ export default function SideBarLayout() {
         {
           label: 'Recorded Results',
           route: instRoute('course-result-info.index'),
-          roles: teachers,
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
       ],
     },
@@ -181,7 +172,6 @@ export default function SideBarLayout() {
         {
           label: 'All Classes',
           route: instRoute('classifications.index'),
-          roles: teachers,
         },
         {
           label: 'Add Class',
@@ -191,36 +181,29 @@ export default function SideBarLayout() {
         {
           label: 'All Class Groups',
           route: instRoute('classification-groups.index'),
-          roles: teachers,
         },
         {
           label: 'Student Class Changes',
           route: instRoute('student-class-movements.index'),
-          roles: teachers,
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Class Divisions',
           route: instRoute('class-divisions.index'),
-          roles: teachers,
         },
         {
           label: 'Class Result',
           route: instRoute('class-result-info.index'),
-          roles: teachers,
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Session Result',
           route: instRoute('session-results.index'),
-          roles: [
-            ...teachers,
-            InstitutionUserType.Student,
-            InstitutionUserType.Alumni,
-          ],
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Live Classes',
           route: instRoute('live-classes.index'),
-          roles: [...teachers, InstitutionUserType.Student],
         },
       ],
     },
@@ -231,27 +214,24 @@ export default function SideBarLayout() {
     },
     {
       label: 'Attendance',
-      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
       sub_items: [
         {
           label: 'Mark Attendance',
           route: instRoute('attendances.create'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          permissions: [InstitutionPermission.ManageAttendance],
         },
         {
           label: 'All Attendances',
           route: instRoute('attendances.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Class Register',
           route: instRoute('attendances.class-register.view'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          permissions: [InstitutionPermission.ManageAttendance],
         },
         {
           label: 'Attendance Report',
           route: instRoute('attendance-reports.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
       ],
     },
@@ -262,27 +242,22 @@ export default function SideBarLayout() {
         {
           label: 'Grade Report',
           route: instRoute('reports.grade-report'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Subject Report',
           route: instRoute('reports.subject-report'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Single Subject Report',
           route: instRoute('reports.single-subject-report'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Full Subject Result',
           route: instRoute('reports.class-subject-result-report'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Full Class Report',
           route: instRoute('reports.full-class-report'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Student Result',
@@ -313,7 +288,6 @@ export default function SideBarLayout() {
                 );
               },
             }),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Student Class Sheet',
@@ -342,7 +316,6 @@ export default function SideBarLayout() {
                 );
               },
             }),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Transcript',
@@ -463,35 +436,21 @@ export default function SideBarLayout() {
         {
           label: 'Lesson Notes',
           route: instRoute('lesson-notes.index'),
-          roles: [
-            InstitutionUserType.Admin,
-            InstitutionUserType.Teacher,
-            InstitutionUserType.Student,
-          ],
+          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
       ],
     },
     {
       label: 'Assignments',
-      roles: [
-        InstitutionUserType.Student,
-        InstitutionUserType.Admin,
-        InstitutionUserType.Teacher,
-      ],
       sub_items: [
         {
           label: 'All Assignments',
           route: instRoute('assignments.index'),
-          roles: [
-            InstitutionUserType.Student,
-            InstitutionUserType.Admin,
-            InstitutionUserType.Teacher,
-          ],
         },
         {
           label: 'Add Assignment',
           route: instRoute('assignments.create'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          permissions: [InstitutionPermission.NaturalAccess],
         },
         {
           label: 'Submitted Assignments',
@@ -502,25 +461,15 @@ export default function SideBarLayout() {
     },
     {
       label: 'E-Library',
-      roles: [
-        InstitutionUserType.Student,
-        InstitutionUserType.Admin,
-        InstitutionUserType.Teacher,
-      ],
       sub_items: [
         {
           label: 'Library Materials',
           route: instRoute('libraries.index'),
-          roles: [
-            InstitutionUserType.Student,
-            InstitutionUserType.Admin,
-            InstitutionUserType.Teacher,
-          ],
         },
         {
           label: 'Add Material',
           route: instRoute('libraries.create'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          permissions: [InstitutionPermission.ManageLibrary],
         },
       ],
     },
@@ -633,27 +582,27 @@ export default function SideBarLayout() {
         {
           label: 'Fees',
           route: instRoute('fees.index'),
-          roles: accountant,
+          permissions: [InstitutionPermission.ManageFees],
         },
         {
           label: 'Payments',
           route: instRoute('fee-payments.index'),
-          roles: accountant,
+          permissions: [InstitutionPermission.ManageFees],
         },
         {
           label: 'Payment Attempts',
           route: instRoute('payment-attempts.index'),
-          roles: accountant,
+          permissions: [InstitutionPermission.ManageFees],
         },
         {
           label: 'Manual Payments',
           route: instRoute('manual-payments.index'),
-          roles: accountant,
+          permissions: [InstitutionPermission.ManageFees],
         },
         {
           label: 'Receipts',
           route: instRoute('receipts.index'),
-          roles: accountant,
+          permissions: [InstitutionPermission.ManageFees],
         },
         ...(student
           ? [
@@ -686,11 +635,6 @@ export default function SideBarLayout() {
     {
       label: 'CBT Events',
       route: instRoute('events.index'),
-      roles: [
-        InstitutionUserType.Admin,
-        InstitutionUserType.Student,
-        InstitutionUserType.Teacher,
-      ],
     },
     {
       label: 'Settings',
@@ -715,22 +659,22 @@ export default function SideBarLayout() {
     },
     {
       label: 'Payroll',
-      roles: [InstitutionUserType.Admin],
+      permissions: [InstitutionPermission.ManagePayroll],
       sub_items: [
         {
           label: 'Payroll',
           route: instRoute('payroll-summaries.index'),
-          roles: [InstitutionUserType.Admin],
+          permissions: [InstitutionPermission.ManagePayroll],
         },
         {
           label: 'Salary Components',
           route: instRoute('salary-types.index'),
-          roles: [InstitutionUserType.Admin],
+          permissions: [InstitutionPermission.ManagePayroll],
         },
         {
           label: 'Salaries',
           route: instRoute('salaries.index'),
-          roles: [InstitutionUserType.Admin],
+          permissions: [InstitutionPermission.ManagePayroll],
         },
         // {
         //   label: 'Bonuses/Deductions',
@@ -798,7 +742,15 @@ export default function SideBarLayout() {
       <SidebarHeader />
       <Menu menuItemStyles={menuItemStyles}>
         {menus.map(function (menu: MenuListType, i: number) {
-          if (menu.roles && !menu.roles.includes(currentInstitutionUser.role)) {
+          if (menu.roles && !menu.roles.includes(currentInstitutionUser.type)) {
+            return;
+          }
+          if (
+            menu.permissions &&
+            !menu.permissions.some((permission) =>
+              hasInstitutionPermission(currentUserPermissions, permission)
+            )
+          ) {
             return;
           }
           if (!menu.sub_items) {
@@ -824,7 +776,15 @@ export default function SideBarLayout() {
               {menu.sub_items.map(function (subItem: MenuListType, i: number) {
                 if (
                   subItem.roles &&
-                  !subItem.roles?.includes(currentInstitutionUser.role)
+                  !subItem.roles?.includes(currentInstitutionUser.type)
+                ) {
+                  return;
+                }
+                if (
+                  subItem.permissions &&
+                  !subItem.permissions.some((permission) =>
+                    hasInstitutionPermission(currentUserPermissions, permission)
+                  )
                 ) {
                   return;
                 }

@@ -25,7 +25,7 @@ class DeleteUserController extends Controller
       ->first();
 
     abort_unless($institutionUser, 403);
-    $role = $institutionUser->role?->value;
+    $role = $institutionUser->type?->value;
 
     app(SecurityActivityLogger::class)->userDeleted(
       currentUser(),

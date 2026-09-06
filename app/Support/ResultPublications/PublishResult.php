@@ -280,7 +280,7 @@ abstract class PublishResult
   {
     return $this->institution
       ->institutionUsers()
-      ->where('role', InstitutionUserType::Student)
+      ->where('type', InstitutionUserType::Student)
       ->count();
   }
 

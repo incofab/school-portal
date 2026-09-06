@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Institutions\Attendance;
 
-use App\Enums\InstitutionUserType;
+use App\Enums\InstitutionPermission;
 use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
@@ -20,10 +20,7 @@ class StudentAttendanceReportController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Teacher
-    ]);
+    $this->allowedPermissions([InstitutionPermission::ManageAttendance]);
   }
 
   public function index(Request $request, Institution $institution)

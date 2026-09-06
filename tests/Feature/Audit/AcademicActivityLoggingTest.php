@@ -170,7 +170,7 @@ it('logs guardian assignment and dependent removal', function () {
     ->institutions()
     ->syncWithPivotValues(
       [$this->institution->id],
-      ['role' => InstitutionUserType::Guardian]
+      ['type' => InstitutionUserType::Guardian]
     );
 
   actingAs($this->admin)
@@ -233,7 +233,7 @@ it('logs course teacher assignments', function () {
   InstitutionUser::factory()->create([
     'institution_id' => $this->institution->id,
     'user_id' => $teacher->id,
-    'role' => InstitutionUserType::Teacher->value
+    'type' => InstitutionUserType::Teacher->value
   ]);
   $course = Course::factory()
     ->withInstitution($this->institution)
@@ -280,7 +280,7 @@ it('logs assignment scoring with student and course metadata', function () {
   $teacherInstitutionUser = InstitutionUser::factory()->create([
     'institution_id' => $this->institution->id,
     'user_id' => $teacher->id,
-    'role' => InstitutionUserType::Teacher->value
+    'type' => InstitutionUserType::Teacher->value
   ]);
   $classification = Classification::factory()
     ->withInstitution($this->institution)

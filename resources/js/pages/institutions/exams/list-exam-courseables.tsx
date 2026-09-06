@@ -23,8 +23,11 @@ import DestructivePopover from '@/components/destructive-popover';
 import { LabelText } from '@/components/result-helper-components';
 import tokenUserUtil from '@/util/token-user-util';
 import { BrandButton, LinkButton } from '@/components/buttons';
-import useIsStaff from '@/hooks/use-is-staff';
 import { PageTitle } from '@/components/page-header';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useIsTeacher from '@/hooks/use-is-teacher';
 
 interface Props {
   exam: Exam;
@@ -36,7 +39,7 @@ export default function ListExamCourseables({ exam, examCourseables }: Props) {
   const deleteForm = useWebForm({});
   const reEvaluateForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
-  const isStaff = useIsStaff();
+  const canManageExamCourses = useIsAdmin() || useIsTeacher();
 
   async function deleteItem(obj: ExamCourseable) {
     const res = await deleteForm.submit((data, web) =>
@@ -93,7 +96,7 @@ export default function ListExamCourseables({ exam, examCourseables }: Props) {
         </Badge>
       ),
     },
-    ...(isStaff
+    ...(canManageExamCourses
       ? [
           {
             label: 'Action',
@@ -153,11 +156,13 @@ export default function ListExamCourseables({ exam, examCourseables }: Props) {
           <HStack>
             <PageTitle>Exam Subjects</PageTitle>
             <Spacer />
-            <BrandButton
-              onClick={reEvaluate}
-              isLoading={reEvaluateForm.processing}
-              title={'Re-Evaluate'}
-            />
+            <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+              <BrandButton
+                onClick={reEvaluate}
+                isLoading={reEvaluateForm.processing}
+                title={'Re-Evaluate'}
+              />
+            </PermissionGate>
           </HStack>
         </SlabHeading>
         <SlabBody>

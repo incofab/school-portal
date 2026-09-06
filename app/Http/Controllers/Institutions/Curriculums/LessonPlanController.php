@@ -25,7 +25,6 @@ class LessonPlanController extends Controller
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
     ]);
-    $this->allowedRoles([InstitutionUserType::Admin])->only('destroy');
   }
 
   public function index(Institution $institution, Request $request)
@@ -70,6 +69,7 @@ class LessonPlanController extends Controller
 
     // == Edit Existing Lesson Plan ==
     if ($lessonPlan) {
+      $this->ensureTeacherOwns($lessonPlan);
       $schemeOfWork = $lessonPlan->schemeOfWork;
       $courseId = $lessonPlan->schemeOfWork->topic->course_id;
       $classificationIds = $lessonPlan->schemeOfWork->topic->classificationGroup
@@ -128,6 +128,10 @@ class LessonPlanController extends Controller
     LessonPlanRequest $request,
     ?LessonPlan $lessonPlan = null
   ) {
+    if ($lessonPlan) {
+      $this->ensureTeacherOwns($lessonPlan);
+    }
+
     $data = $request->validated();
 
     $params = collect($data)
@@ -158,6 +162,8 @@ class LessonPlanController extends Controller
     LessonPlan $lessonPlan,
     CurriculumMediaService $curriculumMediaService
   ) {
+    $this->ensureTeacherOwns($lessonPlan);
+
     $media = $curriculumMediaService->storeLessonPlanAttachment(
       $institution,
       $lessonPlan,
@@ -173,6 +179,8 @@ class LessonPlanController extends Controller
     Media $media,
     CurriculumMediaService $curriculumMediaService
   ) {
+    $this->ensureTeacherOwns($lessonPlan);
+
     $curriculumMediaService->deleteLessonPlanAttachment(
       $institution,
       $lessonPlan,
@@ -201,6 +209,8 @@ class LessonPlanController extends Controller
 
   public function destroy(Institution $institution, LessonPlan $lessonPlan)
   {
+    $this->ensureTeacherOwns($lessonPlan);
+
     if ($lessonPlan->lessonNote()->exists()) {
       return $this->message('This Lesson-Plan already has a Lesson-Note.', 403);
     }
@@ -208,5 +218,17 @@ class LessonPlanController extends Controller
     $lessonPlan->delete();
 
     return $this->ok();
+  }
+
+  private function ensureTeacherOwns(LessonPlan $lessonPlan): void
+  {
+    $institutionUser = currentInstitutionUser();
+
+    abort_unless(
+      $institutionUser->isAdmin() ||
+        $lessonPlan->courseTeacher?->user_id === $institutionUser->user_id,
+      403,
+      'You can only work on your own lesson plans'
+    );
   }
 }

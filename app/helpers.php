@@ -20,8 +20,13 @@ if (!function_exists('currentUser')) {
 if (!function_exists('currentInstitution')) {
   function currentInstitution(): Institution|null
   {
-    $institution = request()->route('institution');
-    if (!($institution instanceof Institution)) {
+    $request = request();
+    $middlewares = $request->route()?->gatherMiddleware() ?? [];
+    $institution = $request->route('institution');
+    if (
+      in_array('manager', $middlewares) ||
+      !($institution instanceof Institution)
+    ) {
       return null;
     }
     return $institution;
@@ -31,7 +36,17 @@ if (!function_exists('currentInstitution')) {
 if (!function_exists('currentInstitutionUser')) {
   function currentInstitutionUser(): InstitutionUser|null
   {
-    return currentInstitution()?->institutionUsers?->first();
+    $institution = currentInstitution();
+    $user = currentUser();
+
+    if (!$institution || !$user) {
+      return null;
+    }
+
+    return $institution
+      ->institutionUsers()
+      ->where('user_id', $user->id)
+      ->first();
   }
 }
 
@@ -164,7 +179,7 @@ if (!function_exists('getInstitutionGroupFromDomain')) {
     return \App\Models\InstitutionGroup::where(
       'website',
       'LIKE',
-      "%{$currentDomain}%"
+      "%{$currentDomain}"
     )->first();
   }
 }

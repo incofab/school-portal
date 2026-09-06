@@ -9,7 +9,8 @@ class InstitutionPolicy
 {
   public function delete(User $user, Institution $model)
   {
-    return $model->institutionGroup->partner_user_id === $user->id;
+    return $user->isAdmin() ||
+      $model->institutionGroup->partner_user_id === $user->id;
   }
   public function impersonate(User $user, Institution $model)
   {

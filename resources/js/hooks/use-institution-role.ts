@@ -4,7 +4,7 @@ import { InstitutionUserType } from '@/types/types';
 export default function useInstitutionRole() {
   const { currentInstitutionUser } = useSharedProps();
 
-  const instRole = currentInstitutionUser.role;
+  const instRole = currentInstitutionUser.type;
 
   const forTeacher =
     instRole === InstitutionUserType.Admin ||

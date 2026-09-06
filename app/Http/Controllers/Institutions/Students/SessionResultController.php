@@ -178,7 +178,6 @@ class SessionResultController extends Controller
     AcademicSession $academicSession,
     Classification $classification
   ) {
-    abort_unless(currentInstitutionUser()->isStaff(), 403);
     $obj = new GenerateCourseSessionResult($classification, $academicSession);
 
     return inertia('institutions/session-result-sheets/course-session-result', [

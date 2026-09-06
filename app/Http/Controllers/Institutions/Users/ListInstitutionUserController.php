@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Institutions\Users;
 
 use App\Enums\InstitutionUserType;
+use App\Enums\RoleGuard;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
+use App\Services\Institutions\InstitutionRoleService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -34,16 +36,25 @@ class ListInstitutionUserController extends Controller
       // ->where('institution_users.institution_id', currentInstitution()->id)
       ->when(
         $rolesIn,
-        fn($q, $value) => $q->whereIn('institution_users.role', $value)
+        fn($q, $value) => $q->whereIn('institution_users.type', $value)
       )
       ->when(
         $request->roles_not_in,
-        fn($q, $value) => $q->whereNotIn('institution_users.role', $value)
+        fn($q, $value) => $q->whereNotIn('institution_users.type', $value)
       )
-      ->when(
-        $request->role,
-        fn($q, $value) => $q->where('institution_users.role', $value)
-      )
+      ->when($request->role, function ($q, $value) {
+        if (is_numeric($value)) {
+          return $q->whereHas(
+            'roles',
+            fn($roleQuery) => $roleQuery
+              ->whereKey((int) $value)
+              ->where('roles.institution_id', currentInstitution()->id)
+              ->where('roles.guard_name', RoleGuard::Web->value)
+          );
+        }
+
+        return $q->where('institution_users.type', $value);
+      })
       ->when(
         $request->search,
         fn($q, $value) => $q
@@ -55,17 +66,21 @@ class ListInstitutionUserController extends Controller
               ->orWhere('users.other_names', 'like', "%$value%")
           )
       )
-      ->with('user', 'student')
+      ->with('user', 'student', 'roles')
       ->latest('institution_users.id');
   }
 
   /**
-   * Display a listing of the resource. 
+   * Display a listing of the resource.
    */
-  public function index(Institution $institution, Request $request)
-  {
+  public function index(
+    Institution $institution,
+    Request $request,
+    InstitutionRoleService $roleService
+  ) {
     return Inertia::render('institutions/users/list-institution-users', [
-      'institutionUsers' => paginateFromRequest($this->getQuery())
+      'institutionUsers' => paginateFromRequest($this->getQuery()),
+      'roles' => $roleService->forStaff($institution)
     ]);
   }
 

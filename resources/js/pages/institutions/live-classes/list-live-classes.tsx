@@ -14,7 +14,11 @@ import DestructivePopover from '@/components/destructive-popover';
 import { LinkButton } from '@/components/buttons';
 import LiveIndicator from '@/components/live-indicator';
 import { Div } from '@/components/semantic';
-import useIsStaff from '@/hooks/use-is-staff';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useIsTeacher from '@/hooks/use-is-teacher';
+import useSharedProps from '@/hooks/use-shared-props';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   liveClasses: LiveClass[];
@@ -23,7 +27,9 @@ interface Props {
 export default function ListLiveClasses({ liveClasses }: Props) {
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
-  const isStaff = useIsStaff();
+  const isAdmin = useIsAdmin();
+  const isTeacher = useIsTeacher();
+  const { currentUser } = useSharedProps();
   const deleteForm = useWebForm({});
 
   async function deleteItem(obj: LiveClass) {
@@ -62,30 +68,33 @@ export default function ListLiveClasses({ liveClasses }: Props) {
       label: 'Actions',
       render: (row) => (
         <HStack>
-          {isStaff && (
-            <>
-              <IconButton
-                aria-label={'Edit Live Class'}
-                icon={<Icon as={PencilIcon} />}
-                as={InertiaLink}
-                href={instRoute('live-classes.edit', [row.id])}
-                variant={'ghost'}
-                colorScheme={'brand'}
-              />
-              <DestructivePopover
-                label={'Delete this live class'}
-                onConfirm={() => deleteItem(row)}
-                isLoading={deleteForm.processing}
-              >
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            {(isAdmin || isTeacher) &&
+            (isAdmin || row.teacher_user_id === currentUser.id) ? (
+              <>
                 <IconButton
-                  aria-label={'Delete live class'}
-                  icon={<Icon as={TrashIcon} />}
+                  aria-label={'Edit Live Class'}
+                  icon={<Icon as={PencilIcon} />}
+                  as={InertiaLink}
+                  href={instRoute('live-classes.edit', [row.id])}
                   variant={'ghost'}
-                  colorScheme={'red'}
+                  colorScheme={'brand'}
                 />
-              </DestructivePopover>
-            </>
-          )}
+                <DestructivePopover
+                  label={'Delete this live class'}
+                  onConfirm={() => deleteItem(row)}
+                  isLoading={deleteForm.processing}
+                >
+                  <IconButton
+                    aria-label={'Delete live class'}
+                    icon={<Icon as={TrashIcon} />}
+                    variant={'ghost'}
+                    colorScheme={'red'}
+                  />
+                </DestructivePopover>
+              </>
+            ) : null}
+          </PermissionGate>
           <LinkButton
             as={'a'}
             href={instRoute('live-classes.join', [row.id])}
@@ -103,14 +112,16 @@ export default function ListLiveClasses({ liveClasses }: Props) {
         <SlabHeading
           title="Live Classes"
           rightElement={
-            isStaff && (
-              <LinkButton
-                href={instRoute('live-classes.create')}
-                variant={'solid'}
-                title="New Live Class"
-                leftIcon={<Icon as={PlusIcon} />}
-              />
-            )
+            <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+              {(isAdmin || isTeacher) && (
+                <LinkButton
+                  href={instRoute('live-classes.create')}
+                  variant={'solid'}
+                  title="New Live Class"
+                  leftIcon={<Icon as={PlusIcon} />}
+                />
+              )}
+            </PermissionGate>
           }
         />
         <SlabBody>

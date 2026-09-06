@@ -21,7 +21,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { BrandButton } from '@/components/buttons';
-import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
+import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import TermResultTeacherCommentModal from '@/components/modals/term-result-teacher-comment-modal';
 import { Inertia } from '@inertiajs/inertia';
 import TermResultPrincipalCommentModal from '@/components/modals/term-result-principal-comment-modal';
@@ -36,6 +36,10 @@ import { TermType } from '@/types/types';
 import { roundNumber, ucFirst } from '@/util/util';
 import { TermResultExtraData } from '../learning-evaluations/term-result-extra-data';
 import ResultUtil from '@/util/result-util';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useSharedProps from '@/hooks/use-shared-props';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   classification: Classification;
@@ -59,6 +63,10 @@ export default function RecordClassStudentsEvaluations({
   const [index, setIndex] = useState(0);
   const teacherCommentModalToggle = useModalValueToggle<TermResult>();
   const principalCommentModalToggle = useModalValueToggle<TermResult>();
+  const { currentUser } = useSharedProps();
+  const isAdmin = useIsAdmin();
+  const canWorkOnClass =
+    isAdmin || classification.form_teacher_id === currentUser.id;
   const lastIndex = Math.max(termResults.length - 1, 0);
   const selectedIndex = Math.min(index, lastIndex);
   const termResult = termResults[selectedIndex]
@@ -148,17 +156,27 @@ export default function RecordClassStudentsEvaluations({
                 px={5}
                 flex={1}
               >
-                <SetTermResultEvaluation
-                  termResult={termResult}
-                  learningEvaluations={learningEvaluations}
-                />
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                  when={canWorkOnClass}
+                >
+                  <SetTermResultEvaluation
+                    termResult={termResult}
+                    learningEvaluations={learningEvaluations}
+                  />
+                </PermissionGate>
               </Div>
               <Div
                 flex={1}
                 background={useColorModeValue('#FAFAFA', 'gray.700')}
                 p={4}
               >
-                <TermResultExtraData termResult={termResult} />
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                  when={canWorkOnClass}
+                >
+                  <TermResultExtraData termResult={termResult} />
+                </PermissionGate>
                 <Divider height={20} />
                 <VStack divider={<Divider />} spacing={4} align={'stretch'}>
                   <>
@@ -168,14 +186,19 @@ export default function RecordClassStudentsEvaluations({
                     <HStack align={'stretch'}>
                       <Text>{teacherComment}</Text>
                       <Spacer />
-                      <IconButton
-                        aria-label="edit teacher's comment"
-                        icon={<Icon as={PencilIcon} />}
-                        variant={'outline'}
-                        onClick={() =>
-                          teacherCommentModalToggle.open(termResult)
-                        }
-                      />
+                      <PermissionGate
+                        permissions={InstitutionPermission.NaturalAccess}
+                        when={canWorkOnClass}
+                      >
+                        <IconButton
+                          aria-label="edit teacher's comment"
+                          icon={<Icon as={PencilIcon} />}
+                          variant={'outline'}
+                          onClick={() =>
+                            teacherCommentModalToggle.open(termResult)
+                          }
+                        />
+                      </PermissionGate>
                     </HStack>
                   </>
                   <>
@@ -185,14 +208,19 @@ export default function RecordClassStudentsEvaluations({
                     <HStack align={'stretch'}>
                       <Text>{principalComment}</Text>
                       <Spacer />
-                      <IconButton
-                        aria-label="edit Administrator's comment"
-                        icon={<Icon as={PencilIcon} />}
-                        variant={'outline'}
-                        onClick={() =>
-                          principalCommentModalToggle.open(termResult)
-                        }
-                      />
+                      <PermissionGate
+                        permissions={InstitutionPermission.NaturalAccess}
+                        when={canWorkOnClass && isAdmin}
+                      >
+                        <IconButton
+                          aria-label="edit Administrator's comment"
+                          icon={<Icon as={PencilIcon} />}
+                          variant={'outline'}
+                          onClick={() =>
+                            principalCommentModalToggle.open(termResult)
+                          }
+                        />
+                      </PermissionGate>
                     </HStack>
                   </>
                 </VStack>

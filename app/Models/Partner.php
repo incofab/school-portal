@@ -40,8 +40,8 @@ class Partner extends BaseModel
         'required',
         new Enum(ManagerRole::class),
         function ($attr, $value, $fail) {
-          if ($value === ManagerRole::Admin->value) {
-            $fail('Admin role cannot be added through this form');
+          if ($value === ManagerRole::ManagerAdmin->value) {
+            $fail('Manager Admin role cannot be added through this form');
           }
         }
       ],

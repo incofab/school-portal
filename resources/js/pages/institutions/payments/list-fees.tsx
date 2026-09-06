@@ -22,7 +22,8 @@ import { TrashIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
-import useIsAdmin from '@/hooks/use-is-admin';
+import useInstitutionPermission from '@/hooks/use-institution-permission';
+import { InstitutionPermission } from '@/types/permissions';
 import { formatAsCurrency } from '@/util/util';
 import feeableUtil from '@/util/feeable-util';
 import { Div } from '@/components/semantic';
@@ -43,7 +44,9 @@ export default function ListFees({ fees }: Props) {
   const { handleResponseToast } = useMyToast();
   const reminderToggle = useModalValueToggle<Fee>();
   const duplicateFeesToggle = useModalToggle();
-  const isAdmin = useIsAdmin();
+  const canManageFees = useInstitutionPermission(
+    InstitutionPermission.ManageFees
+  );
 
   async function deleteItem(obj: Fee) {
     const res = await deleteForm.submit((data, web) =>
@@ -89,7 +92,7 @@ export default function ListFees({ fees }: Props) {
       label: 'Interval',
       value: 'payment_interval',
     },
-    ...(isAdmin
+    ...(canManageFees
       ? [
           {
             label: 'Action',
@@ -138,14 +141,16 @@ export default function ListFees({ fees }: Props) {
           title="List Fees"
           rightElement={
             <HStack spacing={2}>
-              {isAdmin && (
+              {canManageFees && (
                 <BrandButton
                   title={'Duplicate Fees'}
                   variant={'outline'}
                   onClick={duplicateFeesToggle.open}
                 />
               )}
-              <LinkButton href={instRoute('fees.create')} title={'New'} />
+              {canManageFees && (
+                <LinkButton href={instRoute('fees.create')} title={'New'} />
+              )}
             </HStack>
           }
         />

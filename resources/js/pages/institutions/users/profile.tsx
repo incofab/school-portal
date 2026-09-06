@@ -32,7 +32,7 @@ import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import useWebForm, { useWeb } from '@/hooks/use-web-form';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useMyToast from '@/hooks/use-my-toast';
-import { InstitutionUser, Student, User } from '@/types/models';
+import { InstitutionUser, Role, Student, User } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
 import Dt from '@/components/dt';
 import { Nullable, SelectOptionType } from '@/types/types';
@@ -45,16 +45,18 @@ import startCase from 'lodash/startCase';
 import ChangeStudentClassModal from '@/components/modals/change-student-class-modal';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import DownloadResultRecordingSheetModal from '@/components/modals/download-result-recording-sheet-modal';
-import useIsStaff from '@/hooks/use-is-staff';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import SuspensionToggleButton from '@/domain/institutions/user-profile/suspension-toggle-button';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   user: User;
   institutionUser: InstitutionUser;
+  roles: Role[];
 }
 
-export default function Profile({ user, institutionUser }: Props) {
+export default function Profile({ user, institutionUser, roles }: Props) {
   const { currentUser, currentAcademicSession, currentTerm } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast } = useMyToast();
@@ -65,7 +67,6 @@ export default function Profile({ user, institutionUser }: Props) {
   });
   const web = useWeb();
   const isAdmin = useIsAdmin();
-  const isStaff = useIsStaff();
   const changeRoleModalToggle = useModalToggle();
   const extensions = FileDropperType.Image.extensionLabels;
 
@@ -128,7 +129,13 @@ export default function Profile({ user, institutionUser }: Props) {
     { label: 'Other names', value: user.other_names },
     { label: 'Email', value: user.email },
     { label: 'Phone', value: user.phone },
-    { label: 'User Type', value: startCase(institutionUser.role) },
+    { label: 'User Type', value: startCase(institutionUser.type) },
+    {
+      label: 'Assigned role',
+      value:
+        institutionUser.roles?.map((role) => startCase(role.name)).join(', ') ||
+        'Not assigned',
+    },
     { label: 'Gender', value: user.gender },
     ...(student
       ? [
@@ -139,7 +146,9 @@ export default function Profile({ user, institutionUser }: Props) {
             value: (
               <HStack spacing={3}>
                 <Text>{student.classification?.title}</Text>
-                {isStaff && (
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                >
                   <Tooltip label={'Change class'} placement={'auto-start'}>
                     <IconButton
                       aria-label="Change class"
@@ -149,7 +158,7 @@ export default function Profile({ user, institutionUser }: Props) {
                       size={'sm'}
                     />
                   </Tooltip>
-                )}
+                </PermissionGate>
               </HStack>
             ),
           },
@@ -185,8 +194,13 @@ export default function Profile({ user, institutionUser }: Props) {
                       </Text>
                       <HStack spacing={2} mt={1} flexWrap="wrap">
                         <Badge colorScheme="brand">
-                          {startCase(institutionUser.role)}
+                          {startCase(institutionUser.type)}
                         </Badge>
+                        {institutionUser.roles?.map((role) => (
+                          <Badge key={role.id} colorScheme="purple">
+                            {role.name}
+                          </Badge>
+                        ))}
                         {student && (
                           <Badge colorScheme="purple">
                             {student.classification?.title ?? 'Student'}
@@ -218,10 +232,12 @@ export default function Profile({ user, institutionUser }: Props) {
                       spacing={4}
                       labelWidth={'150px'}
                     />
-                    <SuspensionToggleButton
-                      institutionUser={institutionUser}
-                      showLabel={true}
-                    />
+                    {isAdmin && (
+                      <SuspensionToggleButton
+                        institutionUser={institutionUser}
+                        showLabel={true}
+                      />
+                    )}
                   </VStack>
                 </Box>
               </VStack>
@@ -238,12 +254,14 @@ export default function Profile({ user, institutionUser }: Props) {
                   <VStack align="stretch" spacing={3}>
                     <Text fontWeight="semibold">Quick Actions</Text>
                     <SimpleGrid columns={1} spacing={2}>
-                      {isStaff && (
+                      <PermissionGate
+                        permissions={InstitutionPermission.NaturalAccess}
+                      >
                         <BrandButton
                           title="Download Result Recording Sheet"
                           onClick={downloadRecordingSheetModalToggle.open}
                         />
-                      )}
+                      </PermissionGate>
                       {currentUser.id !== user.id && isAdmin && (
                         <>
                           <BrandButton
@@ -267,7 +285,7 @@ export default function Profile({ user, institutionUser }: Props) {
                           </DestructivePopover>
                         </>
                       )}
-                      {isStaff && student && (
+                      {isAdmin && student && (
                         <>
                           <Button
                             as={InertiaLink}
@@ -356,6 +374,7 @@ export default function Profile({ user, institutionUser }: Props) {
           </Grid>
           <ChangeRoleModal
             institutionUser={institutionUser}
+            roles={roles}
             {...changeRoleModalToggle.props}
             onSuccess={() => Inertia.reload({ only: ['institutionUser'] })}
           />
@@ -370,7 +389,7 @@ export default function Profile({ user, institutionUser }: Props) {
       </Slab>
       <DownloadResultRecordingSheetModal
         {...downloadRecordingSheetModalToggle.props}
-        onSuccess={() => {}}
+        onSuccess={() => undefined}
       />
     </Box>
   );

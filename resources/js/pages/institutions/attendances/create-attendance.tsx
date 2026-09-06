@@ -338,7 +338,7 @@ export default function MarkAttendance({ staff }: Props) {
                           </Td>
                           <Td>
                             <Badge textTransform="capitalize">
-                              {person.role}
+                              {person.type}
                             </Badge>
                           </Td>
                           <Td>

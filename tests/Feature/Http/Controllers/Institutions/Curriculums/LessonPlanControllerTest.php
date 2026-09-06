@@ -173,7 +173,7 @@ it('stores lesson plan data', function () {
 it('updates lesson plan data', function () {
   $lessonPlan = LessonPlan::factory()
     ->schemeOfWork($this->schemeOfWork)
-    ->create();
+    ->create(['course_teacher_id' => $this->courseTeacher->id]);
 
   $route = route('institutions.lesson-plans.store-or-update', [
     'institution' => $this->institution->uuid,

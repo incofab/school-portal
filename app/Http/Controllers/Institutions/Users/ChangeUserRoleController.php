@@ -2,37 +2,55 @@
 
 namespace App\Http\Controllers\Institutions\Users;
 
-use App\Enums\InstitutionUserType;
+use App\Enums\RoleGuard;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
+use App\Services\Institutions\InstitutionRoleService;
 use App\Support\Audit\ModelAudit;
 use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rule;
 
 class ChangeUserRoleController extends Controller
 {
   public function __invoke(
     Request $request,
     Institution $institution,
-    InstitutionUser $suppliedInstitutionUser
+    InstitutionUser $suppliedInstitutionUser,
+    InstitutionRoleService $roleService
   ) {
     $data = $request->validate([
-      'role' => ['required', new Enum(InstitutionUserType::class)]
+      'role' => [
+        'required',
+        'integer',
+        Rule::exists('roles', 'id')->where(
+          fn($query) => $query
+            ->where('institution_id', $institution->id)
+            ->where('guard_name', RoleGuard::Web->value)
+        )
+      ]
     ]);
 
     abort_unless(currentUser()->isInstitutionAdmin(), 403);
+    abort_unless(
+      (int) $suppliedInstitutionUser->institution_id === (int) $institution->id,
+      404
+    );
 
-    $role = $data['role'];
-    $prevRole = $suppliedInstitutionUser->role->value;
-    $this->canChangeRole($prevRole, $role);
+    $role = $roleService->findForInstitution($institution, (int) $data['role']);
+    $suppliedInstitutionUser->load('roles');
+    $prevRole =
+      $suppliedInstitutionUser->roles->pluck('name')->implode(', ') ?:
+      $suppliedInstitutionUser->type?->value ?:
+      '';
 
     ModelAudit::withoutAuditingFor(InstitutionUser::class, function () use (
       $suppliedInstitutionUser,
+      $roleService,
       $role
     ) {
-      $suppliedInstitutionUser->fill(['role' => $role])->update();
+      $roleService->assign($suppliedInstitutionUser, $role);
     });
     $suppliedInstitutionUser->loadMissing('user');
 
@@ -41,42 +59,9 @@ class ChangeUserRoleController extends Controller
       $suppliedInstitutionUser,
       $institution,
       $prevRole,
-      $role
+      $role->name
     );
 
     return $this->ok();
-  }
-
-  private function canChangeRole($prevRole, $newRole)
-  {
-    if ($prevRole === InstitutionUserType::Student->value) {
-      abort_unless(
-        $newRole === InstitutionUserType::Alumni->value,
-        403,
-        'You cannot change a student to another role aside alumni'
-      );
-    }
-    if ($prevRole === InstitutionUserType::Alumni->value) {
-      abort_unless(
-        $newRole === InstitutionUserType::Student->value,
-        403,
-        'You cannot change an alumni to another role aside student'
-      );
-    }
-    if (
-      in_array($newRole, [
-        InstitutionUserType::Student->value,
-        InstitutionUserType::Alumni->value
-      ])
-    ) {
-      abort_unless(
-        in_array($prevRole, [
-          InstitutionUserType::Student->value,
-          InstitutionUserType::Alumni->value
-        ]),
-        403,
-        'You can only change student and alumni with each other'
-      );
-    }
   }
 }

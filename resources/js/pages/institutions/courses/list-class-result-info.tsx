@@ -19,7 +19,6 @@ import { Inertia } from '@inertiajs/inertia';
 import startCase from 'lodash/startCase';
 import React from 'react';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
-import useIsStaff from '@/hooks/use-is-staff';
 import DashboardLayout from '@/layout/dashboard-layout';
 import ClassResultInfoTableFilters from '@/components/table-filters/class-result-info-table-filters';
 import CalculateClassResultInfoModal from '@/components/modals/calculate-class-result-info-modal';
@@ -37,6 +36,9 @@ import SetResumptionDateModal from '@/components/modals/set-resumption-date-moda
 import { Div } from '@/components/semantic';
 import useIsAdmin from '@/hooks/use-is-admin';
 import { InertiaLink } from '@inertiajs/inertia-react';
+import useInstitutionPermission from '@/hooks/use-institution-permission';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   classResultInfo: PaginationResponse<ClassResultInfo>;
@@ -50,8 +52,14 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
   const calculateClassResultInfoToggle = useModalToggle();
   const classResultInfoFilterToggle = useModalToggle();
   const setResumptionDateModalToggle = useModalToggle();
-  const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
+  const canManageLocks = useInstitutionPermission(
+    InstitutionPermission.NaturalAccess
+  );
+
+  function isFormTeacher(row: ClassResultInfo) {
+    return row.classification?.form_teacher_id === currentUser.id;
+  }
   const sendViaWhatsappForm = useWebForm({
     class_result_info: '',
   });
@@ -193,8 +201,8 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
             onChange={(e) => updateResultLock(row, e.target.checked)}
             isDisabled={
               webForm.processing ||
-              (!isAdmin &&
-                row.classification!.form_teacher_id !== currentUser.id)
+              !canManageLocks ||
+              (!isAdmin && !isFormTeacher(row))
             }
             colorScheme="brand"
           />
@@ -206,10 +214,10 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
       label: 'Action',
       render: (row) => (
         <HStack spacing={2}>
-          {(isAdmin ||
-            row.classification!.form_teacher_id === currentUser.id) && (
-            <>
-              {/* <LinkButton
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            {isAdmin || isFormTeacher(row) ? (
+              <>
+                {/* <LinkButton
                 href={route('term-results.class-result-info.index', {
                   institution: currentInstitution.uuid,
                   classification: row.classification_id,
@@ -220,99 +228,131 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
                 title="Student Results"
               /> */}
 
-              <LinkButton
-                href={instRoute('term-results.class-result-info.index', [
-                  row.id,
-                ])}
-                title="Student Results"
-              />
+                <LinkButton
+                  href={instRoute('term-results.class-result-info.index', [
+                    row.id,
+                  ])}
+                  title="Student Results"
+                />
 
-              <Menu>
-                <MenuButton
-                  as={IconButton}
-                  aria-label={'open file menu'}
-                  icon={<Icon as={EllipsisVerticalIcon} />}
-                  size={'sm'}
-                  variant={'ghost'}
-                />
-                <MenuList>
-                  <MenuItem
-                    as={InertiaLink}
-                    href={instRoute('reports.grade-report', {
-                      classification: row.classification_id,
-                      academicSession: row.academic_session_id,
-                      term: row.term,
-                      forMidTerm: row.for_mid_term ? 1 : 0,
-                    })}
-                    py={3}
-                  >
-                    Grade Report
-                  </MenuItem>
-                  <MenuItem
-                    as={InertiaLink}
-                    href={instRoute('reports.full-class-report', {
-                      classification: row.classification_id,
-                      academicSession: row.academic_session_id,
-                      term: row.term,
-                    })}
-                    py={3}
-                  >
-                    Full Class Report
-                  </MenuItem>
-                  <MenuItem
-                    as={InertiaLink}
-                    href={instRoute('class-result-info.record-evaluations', [
-                      row.id,
-                    ])}
-                    py={3}
-                  >
-                    Record Evaluations
-                  </MenuItem>
-                  <MenuItem
-                    aria-label="Download"
-                    onClick={() => downloadResults(row)}
-                    py={3}
-                  >
-                    Download Results
-                  </MenuItem>
-                  <MenuItem
-                    as={InertiaLink}
-                    href={instRoute('class-result-info.result-sheets', [
-                      row.id,
-                    ])}
-                    py={3}
-                  >
-                    All Result Sheets
-                  </MenuItem>
-                  <MenuItem onClick={() => sendViaWhatsapp(row)} py={2}>
-                    Send Results via Whatsapp
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => generateAiComments(row)}
-                    py={3}
-                    isDisabled={webForm.processing}
-                  >
-                    Generate AI Comments
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-              <DestructivePopover
-                label={`Do you want to recalculate the results for this ${row.classification?.title}?`}
-                onConfirm={(onClose) =>
-                  recalculateClassResultInfo(onClose, row)
-                }
-                isLoading={webForm.processing}
-                positiveButtonLabel="Recalculate"
-              >
-                <IconButton
-                  aria-label="Recalculate"
-                  icon={<Icon as={ArrowPathIcon} />}
-                  colorScheme="brand"
-                  size="sm"
-                />
-              </DestructivePopover>
-            </>
-          )}
+                <Menu>
+                  <MenuButton
+                    as={IconButton}
+                    aria-label={'open file menu'}
+                    icon={<Icon as={EllipsisVerticalIcon} />}
+                    size={'sm'}
+                    variant={'ghost'}
+                  />
+                  <MenuList>
+                    <PermissionGate
+                      permissions={InstitutionPermission.NaturalAccess}
+                    >
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute('reports.grade-report', {
+                          classification: row.classification_id,
+                          academicSession: row.academic_session_id,
+                          term: row.term,
+                          forMidTerm: row.for_mid_term ? 1 : 0,
+                        })}
+                        py={3}
+                      >
+                        Grade Report
+                      </MenuItem>
+                    </PermissionGate>
+                    <PermissionGate
+                      permissions={InstitutionPermission.NaturalAccess}
+                    >
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute('reports.full-class-report', {
+                          classification: row.classification_id,
+                          academicSession: row.academic_session_id,
+                          term: row.term,
+                        })}
+                        py={3}
+                      >
+                        Full Class Report
+                      </MenuItem>
+                    </PermissionGate>
+                    <PermissionGate
+                      permissions={InstitutionPermission.NaturalAccess}
+                    >
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute(
+                          'class-result-info.record-evaluations',
+                          [row.id]
+                        )}
+                        py={3}
+                      >
+                        Record Evaluations
+                      </MenuItem>
+                    </PermissionGate>
+                    <MenuItem
+                      aria-label="Download"
+                      onClick={() => downloadResults(row)}
+                      py={3}
+                    >
+                      Download Results
+                    </MenuItem>
+                    <PermissionGate
+                      permissions={InstitutionPermission.NaturalAccess}
+                    >
+                      <MenuItem
+                        as={InertiaLink}
+                        href={instRoute('class-result-info.result-sheets', [
+                          row.id,
+                        ])}
+                        py={3}
+                      >
+                        All Result Sheets
+                      </MenuItem>
+                    </PermissionGate>
+                    <PermissionGate
+                      permissions={InstitutionPermission.NaturalAccess}
+                    >
+                      <MenuItem onClick={() => sendViaWhatsapp(row)} py={2}>
+                        Send Results via Whatsapp
+                      </MenuItem>
+                    </PermissionGate>
+                    <PermissionGate
+                      permissions={InstitutionPermission.NaturalAccess}
+                    >
+                      <MenuItem
+                        onClick={() => generateAiComments(row)}
+                        py={3}
+                        isDisabled={webForm.processing}
+                      >
+                        Generate AI Comments
+                      </MenuItem>
+                    </PermissionGate>
+                  </MenuList>
+                </Menu>
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                >
+                  {isAdmin || isFormTeacher(row) ? (
+                    <DestructivePopover
+                      label={`Do you want to recalculate the results for this ${row.classification?.title}?`}
+                      onConfirm={(onClose) =>
+                        recalculateClassResultInfo(onClose, row)
+                      }
+                      isLoading={webForm.processing}
+                      positiveButtonLabel="Recalculate"
+                    >
+                      <IconButton
+                        aria-label="Recalculate"
+                        icon={<Icon as={ArrowPathIcon} />}
+                        colorScheme="brand"
+                        size="sm"
+                      />
+                    </DestructivePopover>
+                  ) : null}
+                </PermissionGate>
+              </>
+            ) : null}
+          </PermissionGate>
         </HStack>
       ),
     },
@@ -322,25 +362,29 @@ export default function ListClassResultInfo({ classResultInfo }: Props) {
     <DashboardLayout>
       <Div>
         <HStack justifyContent={'space-between'} my={2}>
-          <BrandButton
-            title="Set Resumption Date"
-            onClick={setResumptionDateModalToggle.open}
-          />
-          <LinkButton
-            href={instRoute('course-results.class-sheet.upload')}
-            title="Upload Class Sheet"
-          />
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            <BrandButton
+              title="Set Resumption Date"
+              onClick={setResumptionDateModalToggle.open}
+            />
+          </PermissionGate>
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            <LinkButton
+              href={instRoute('course-results.class-sheet.upload')}
+              title="Upload Class Sheet"
+            />
+          </PermissionGate>
         </HStack>
         <Slab>
           <SlabHeading
             title="Class Result Analysis"
             rightElement={
-              isStaff && (
+              <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
                 <BrandButton
                   onClick={calculateClassResultInfoToggle.open}
                   title="Calculate"
                 />
-              )
+              </PermissionGate>
             }
           />
           <SlabBody>

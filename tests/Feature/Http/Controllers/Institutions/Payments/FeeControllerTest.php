@@ -27,7 +27,7 @@ use function Pest\Laravel\putJson;
 beforeEach(function () {
   // Create a user and assign the admin role
   $this->admin = InstitutionUser::factory()->create([
-    'role' => InstitutionUserType::Admin
+    'type' => InstitutionUserType::Admin
   ]);
   $this->institution = Institution::factory()->create();
   $this->admin = $this->institution->createdBy;

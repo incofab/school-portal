@@ -206,8 +206,8 @@ class User extends Authenticatable
     return $this->institutionUser()
       ->when(
         is_array($role),
-        fn($q) => $q->whereIn('role', $role),
-        fn($q) => $q->where('role', $role)
+        fn($q) => $q->whereIn('type', $role),
+        fn($q) => $q->where('type', $role)
       )
       ->exists();
   }
@@ -232,14 +232,15 @@ class User extends Authenticatable
     return $this->hasInstitutionRole(InstitutionUserType::Guardian);
   }
 
+  /** Manager Admin, has access to all institutions */
   public function isAdmin()
   {
-    return $this->hasRole(ManagerRole::Admin);
+    return $this->managerRoleExists(ManagerRole::ManagerAdmin);
   }
 
   public function isPartner()
   {
-    return $this->hasRole(ManagerRole::Partner);
+    return $this->managerRoleExists(ManagerRole::Partner);
   }
 
   public function isPartnerAdmin(): bool
@@ -254,7 +255,21 @@ class User extends Authenticatable
 
   public function isManager()
   {
-    return $this->hasRole([ManagerRole::Admin, ManagerRole::Partner]);
+    return $this->managerRoleExists([
+      ManagerRole::ManagerAdmin,
+      ManagerRole::Partner
+    ]);
+  }
+
+  private function managerRoleExists(ManagerRole|array $roles): bool
+  {
+    $roles = is_array($roles) ? $roles : [$roles];
+
+    return $this->roles()
+      ->withoutGlobalScopes()
+      ->whereNull('roles.institution_id')
+      ->whereIn('roles.name', array_map(fn($role) => $role->value, $roles))
+      ->exists();
   }
 
   public function institutionGroups()

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Institutions\Staff;
 use App\Actions\CourseResult\EvaluateCourseResultForClass;
 use App\Actions\CourseResult\RecordClassSheet;
 use App\Actions\CourseResult\RecordCourseResult;
-use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RecordCourseResultRequest;
 use App\Http\Requests\UploadClassSheetRequest;
@@ -31,8 +30,21 @@ class CourseResultsController extends Controller
   public function __construct()
   {
     $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Teacher
+      \App\Enums\InstitutionUserType::Admin,
+      \App\Enums\InstitutionUserType::Teacher
+    ])->only([
+      'create',
+      'store',
+      'upload',
+      'uploadClassSheetView',
+      'uploadClassSheetStore'
+    ]);
+    $this->allowedRoles([
+      \App\Enums\InstitutionUserType::Admin,
+      \App\Enums\InstitutionUserType::Teacher
+    ])->only([
+      'edit',
+      'destroy'
     ]);
   }
 
@@ -43,7 +55,7 @@ class CourseResultsController extends Controller
     $teacher = $courseTeacher->user;
     $user = currentUser();
     abort_if(
-      !$user->isInstitutionAdmin() && !$teacher->is(currentUser()),
+      !currentInstitutionUser()->isAdmin() && !$teacher->is(currentUser()),
       403,
       $msg
     );
@@ -52,6 +64,14 @@ class CourseResultsController extends Controller
   public function index(Institution $institution, Request $request)
   {
     $query = CourseResult::query()->select('course_results.*');
+    $institutionUser = currentInstitutionUser();
+
+    if ($institutionUser->isTeacher()) {
+      $query->where('teacher_user_id', currentUser()->id);
+    } elseif ($institutionUser->isStudent()) {
+      $query->where('student_id', $institutionUser->student?->id);
+    }
+
     CourseResultsUITableFilters::make($request->all(), $query)
       ->joinStudent()
       ->filterQuery()
@@ -276,6 +296,27 @@ class CourseResultsController extends Controller
     $classificationId = $data['classification_id'];
     $classification = Classification::query()->findOrFail($classificationId);
 
+    if (!currentInstitutionUser()->isAdmin()) {
+      $courseIds = collect($data['class_results'])
+        ->flatMap(fn($student) => $student['results'])
+        ->pluck('course_id')
+        ->unique();
+
+      $assignedCourseCount = CourseTeacher::query()
+        ->where('classification_id', $classification->id)
+        ->where('user_id', currentInstitutionUser()->user_id)
+        ->whereIn('course_id', $courseIds)
+        ->pluck('course_id')
+        ->unique()
+        ->count();
+
+      abort_unless(
+        $assignedCourseCount === $courseIds->count(),
+        403,
+        'You can only upload results for your assigned courses'
+      );
+    }
+
     (new RecordClassSheet(
       $institution,
       $data,
@@ -293,8 +334,9 @@ class CourseResultsController extends Controller
   ) {
     $currentUser = currentUser();
     abort_unless(
-      $currentUser->isInstitutionAdmin() ||
-        $courseResult->teacher_user_id == $currentUser->id,
+      currentInstitutionUser()->isAdmin() ||
+        (currentInstitutionUser()->isTeacher() &&
+          $courseResult->teacher_user_id == $currentUser->id),
       403
     );
     $courseResult->load([

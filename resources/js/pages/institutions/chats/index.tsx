@@ -28,6 +28,7 @@ import {
   ChatThreadDetail,
   ChatThreadSummary,
 } from '@/types/models';
+import RoleSelect from '@/components/selectors/role-select';
 import {
   ChatBubbleBottomCenterTextIcon,
   BuildingLibraryIcon,
@@ -39,6 +40,9 @@ import {
 import { ChatThreadType, InstitutionUserType } from '@/types/types';
 import { Inertia } from '@inertiajs/inertia';
 import { InertiaLink } from '@inertiajs/inertia-react';
+import useInstitutionPermission from '@/hooks/use-institution-permission';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   threads: ChatThreadSummary[];
@@ -53,7 +57,7 @@ type NewChatType =
 
 interface NewThreadFormData {
   type: ChatThreadType;
-  target_role: string;
+  target_role: string | number;
   target_user_id: string;
   message: string;
 }
@@ -64,6 +68,9 @@ export default function ChatIndex({
   chatComposerOptions,
 }: Props) {
   const { currentInstitutionUser } = useSharedProps();
+  const canSendChatMessages = useInstitutionPermission(
+    InstitutionPermission.ManageChat
+  );
   const { instRoute } = useInstitutionRoute();
   const { handleResponseToast, toastError } = useMyToast();
   const [search, setSearch] = useState('');
@@ -171,12 +178,12 @@ export default function ChatIndex({
   const panelBg = useColorModeValue('gray.50', 'gray.900');
   const softBorder = useColorModeValue('gray.200', 'gray.700');
   const subtleText = useColorModeValue('gray.600', 'gray.400');
-  const showComposer = isComposerOpen;
+  const showComposer = isComposerOpen && canSendChatMessages;
   const canOpenThreadProfile = [
     InstitutionUserType.Admin,
     InstitutionUserType.Accountant,
     InstitutionUserType.Teacher,
-  ].includes(currentInstitutionUser.role);
+  ].includes(currentInstitutionUser.type);
   const directMessageTargetLabel =
     chatComposerOptions.directMessageTargetLabel ?? 'Staff Member';
 
@@ -272,15 +279,19 @@ export default function ChatIndex({
                   bg={panelBg}
                   p={4}
                 >
-                  <Button
-                    colorScheme="brand"
-                    leftIcon={<Icon as={PaperAirplaneIcon} />}
-                    borderRadius="full"
-                    onClick={() => setIsComposerOpen(true)}
-                    w={{ base: '100%', md: 'auto' }}
+                  <PermissionGate
+                    permissions={InstitutionPermission.ManageChat}
                   >
-                    Start New Chat
-                  </Button>
+                    <Button
+                      colorScheme="brand"
+                      leftIcon={<Icon as={PaperAirplaneIcon} />}
+                      borderRadius="full"
+                      onClick={() => setIsComposerOpen(true)}
+                      w={{ base: '100%', md: 'auto' }}
+                    >
+                      Start New Chat
+                    </Button>
+                  </PermissionGate>
                 </Box>
               </VStack>
             </Box>
@@ -418,6 +429,7 @@ export default function ChatIndex({
                     resize="vertical"
                     bg={panelBg}
                     borderColor="transparent"
+                    isDisabled={!canSendChatMessages}
                     _focusVisible={{ borderColor: 'brand.400', bg: surfaceBg }}
                   />
                   {replyForm.errors.message && (
@@ -436,15 +448,19 @@ export default function ChatIndex({
                       Replies stay inside this conversation for everyone allowed
                       to attend it.
                     </Text>
-                    <Button
-                      colorScheme="brand"
-                      borderRadius="full"
-                      leftIcon={<Icon as={PaperAirplaneIcon} />}
-                      isLoading={replyForm.processing}
-                      onClick={sendReply}
+                    <PermissionGate
+                      permissions={InstitutionPermission.ManageChat}
                     >
-                      Send Reply
-                    </Button>
+                      <Button
+                        colorScheme="brand"
+                        borderRadius="full"
+                        leftIcon={<Icon as={PaperAirplaneIcon} />}
+                        isLoading={replyForm.processing}
+                        onClick={sendReply}
+                      >
+                        Send Reply
+                      </Button>
+                    </PermissionGate>
                   </Flex>
                 </Box>
               </Flex>
@@ -533,21 +549,15 @@ function StartConversationPanel({
         </Text>
 
         {newChatType === ChatThreadType.Role && (
-          <Select
-            mb={3}
-            value={threadForm.data.target_role}
-            onChange={(e) =>
-              threadForm.setValue('target_role', e.currentTarget.value)
+          <RoleSelect
+            roles={chatComposerOptions.roleTargets}
+            selectValue={threadForm.data.target_role}
+            onChange={(option: any) =>
+              threadForm.setValue('target_role', option?.value ?? '')
             }
+            isClearable
             placeholder="Select staff role"
-            bg={surfaceBg}
-          >
-            {chatComposerOptions.roleTargets.map((target) => (
-              <option key={target.value} value={target.value}>
-                {target.label}
-              </option>
-            ))}
-          </Select>
+          />
         )}
 
         {newChatType === ChatThreadType.DirectUser && (

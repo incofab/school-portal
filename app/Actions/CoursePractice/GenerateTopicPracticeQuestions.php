@@ -207,9 +207,9 @@ class GenerateTopicPracticeQuestions
         'generated_count' => count($practiceQuestions),
         'topic_practice_attempt_id' => $attempt?->id,
         'for_role' =>
-          $this->institutionUser->role instanceof \BackedEnum
-            ? $this->institutionUser->role->value
-            : $this->institutionUser->role
+          $this->institutionUser->type instanceof \BackedEnum
+            ? $this->institutionUser->type->value
+            : $this->institutionUser->type
       ]
     );
   }

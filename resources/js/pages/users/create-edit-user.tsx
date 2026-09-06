@@ -28,7 +28,7 @@ export function CreateOrUpdateStaff({ user }: Props) {
     other_names: user?.other_names ?? '',
     email: user?.email ?? '',
     phone: user?.phone ?? '',
-    role: user?.institution_user.role ?? '',
+    role: user?.institution_user.type ?? '',
   });
 
   const submit = async () => {

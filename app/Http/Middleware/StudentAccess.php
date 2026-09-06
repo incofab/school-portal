@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\InstitutionUserType;
 use App\Models\Student;
 use App\Support\Audit\SecurityActivityLogger;
 use Closure;
@@ -24,13 +23,7 @@ class StudentAccess
             return $next($request);
         }
 
-        if (
-            $user->hasInstitutionRole([
-                InstitutionUserType::Admin,
-                InstitutionUserType::Teacher,
-                InstitutionUserType::Accountant,
-            ])
-        ) {
+        if (currentInstitutionUser()) {
             return $next($request);
         }
 

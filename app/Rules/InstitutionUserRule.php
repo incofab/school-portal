@@ -30,7 +30,7 @@ class InstitutionUserRule implements ValidationRule
       ->where('institution_users.institution_id', $this->institution->id)
       ->when(
         $this->role,
-        fn($q) => $q->where('institution_users.role', $this->role)
+        fn($q) => $q->where('institution_users.type', $this->role)
       )
       ->first();
 

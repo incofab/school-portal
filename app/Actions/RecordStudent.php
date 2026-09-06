@@ -7,6 +7,7 @@ use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\Student;
 use App\Models\User;
+use App\Services\Institutions\InstitutionRoleService;
 use Illuminate\Support\Facades\DB;
 
 class RecordStudent
@@ -49,8 +50,10 @@ class RecordStudent
       [
         'institution_id' => $this->institution->id
       ],
-      ['role' => InstitutionUserType::Student]
+      ['type' => InstitutionUserType::Student]
     );
+
+    app(InstitutionRoleService::class)->assignDefaultRole($institutionUser);
 
     $student = $this->createUpdateStudent(
       $user,

@@ -10,6 +10,7 @@ use App\Enums\Audit\ActivityLogCategory;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\CourseTeacher;
 use App\Models\CourseSession;
 use App\Models\Institution;
 use App\Models\Question;
@@ -26,6 +27,10 @@ class CoursesController extends Controller
 {
   public function __construct()
   {
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ])->only('insertQuestionsToQuestionbank');
     $this->allowedRoles([InstitutionUserType::Admin])->only([
       'create',
       'store',
@@ -37,13 +42,20 @@ class CoursesController extends Controller
 
   public function index(Institution $institution, Request $request)
   {
+    $institutionUser = currentInstitutionUser();
     $query = Course::query()
       ->select('courses.*')
       ->with('topics', 'sessions');
     CoursesUITableFilters::make($request->all(), $query)->filterQuery();
 
     return Inertia::render('institutions/courses/list-courses', [
-      'courses' => paginateFromRequest($query->orderedByCourseOrder())
+      'courses' => paginateFromRequest($query->orderedByCourseOrder()),
+      'assignedCourseIds' => $institutionUser?->isTeacher()
+        ? CourseTeacher::query()
+          ->where('user_id', $institutionUser->user_id)
+          ->pluck('course_id')
+          ->all()
+        : []
     ]);
   }
 
@@ -220,8 +232,6 @@ class CoursesController extends Controller
         GetStudentTopicPracticeProgress::run($institutionUser->student)
       );
     }
-
-    abort_unless($institutionUser->isStaff(), 403);
 
     return Inertia::render(
       'institutions/courses/practice-progress-teacher',

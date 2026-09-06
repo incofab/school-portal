@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\InstitutionUserType;
+use App\Enums\InstitutionPermission;
 use App\Models\Institution;
 use App\Models\PaymentReference;
 use App\Support\Payments\Processors\PaymentProcessor;
@@ -40,10 +40,9 @@ class PaymentHistoryController extends Controller
   public function institutionIndex(Request $request, Institution $institution)
   {
     $institutionUser = currentInstitutionUser();
-    $canManageInstitutionPayments = in_array($institutionUser?->role, [
-      InstitutionUserType::Admin,
-      InstitutionUserType::Accountant
-    ]);
+    $canManageInstitutionPayments = $institutionUser?->hasInstitutionPermission(
+      InstitutionPermission::ManageFees
+    );
 
     $query = $this->filteredBaseQuery($request)->when(
       !$canManageInstitutionPayments,
@@ -249,10 +248,9 @@ class PaymentHistoryController extends Controller
     $institutionUser = currentInstitutionUser();
 
     return $institutionUser?->institution_id === $institution->id &&
-      in_array($institutionUser->role, [
-        InstitutionUserType::Admin,
-        InstitutionUserType::Accountant
-      ]);
+      $institutionUser->hasInstitutionPermission(
+        InstitutionPermission::ManageFees
+      );
   }
 
   private function belongsToUser(

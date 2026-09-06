@@ -16,6 +16,7 @@ class TermResultCommentController extends Controller
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
     ]);
+    $this->allowedRoles([InstitutionUserType::Admin])->only('principalComment');
   }
 
   public function teacherComment(
@@ -23,6 +24,8 @@ class TermResultCommentController extends Controller
     Institution $institution,
     TermResult $termResult
   ) {
+    $termResult->loadMissing('classification');
+    $this->ensureClassOwnership($termResult->classification);
     $data = $request->validate(['comment' => ['required', 'string']]);
     $termResult->fill(['teacher_comment' => $data['comment']])->save();
     return $this->ok();
@@ -33,6 +36,8 @@ class TermResultCommentController extends Controller
     Institution $institution,
     TermResult $termResult
   ) {
+    $termResult->loadMissing('classification');
+    $this->ensureClassOwnership($termResult->classification);
     $data = $request->validate(['comment' => ['required', 'string']]);
     $termResult->fill(['principal_comment' => $data['comment']])->save();
     return $this->ok();

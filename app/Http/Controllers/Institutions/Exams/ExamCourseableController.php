@@ -258,7 +258,7 @@ class ExamCourseableController extends Controller
     }
 
     abort_unless(
-      currentInstitutionUser()->role === InstitutionUserType::Teacher,
+      currentInstitutionUser()->type === InstitutionUserType::Teacher,
       403,
       'Only teachers and admins can evaluate theory answers'
     );

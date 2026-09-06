@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Institutions\Payments;
 
 use App\Actions\Payments\ManualPaymentHandler;
-use App\Enums\InstitutionUserType;
+use App\Enums\InstitutionPermission;
 use App\Enums\Media\MediaVisibility;
 use App\Enums\Payments\PaymentStatus;
 use App\Http\Controllers\Controller;
@@ -23,10 +23,11 @@ class ManualPaymentController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Accountant
-    ])->except(['history', 'show', 'updatePending']);
+    $this->allowedPermissions([InstitutionPermission::ManageFees])->only([
+      'index',
+      'confirm',
+      'reject'
+    ]);
   }
 
   public function index(Institution $institution)

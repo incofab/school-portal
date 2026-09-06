@@ -7,6 +7,8 @@ use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
 use App\Models\ClassificationGroup;
+use App\Models\CourseSession;
+use App\Models\CourseTeacher;
 use App\Models\Event;
 use App\Models\EventCourseable;
 use App\Models\Institution;
@@ -21,12 +23,16 @@ class EventController extends Controller
     $this->allowedRoles([
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
-    ])->except('index', 'show');
+    ])->except(
+      'index',
+      'show'
+    );
   }
 
   function index(Request $request, Institution $institution)
   {
-    $student = currentInstitutionUser()
+    $institutionUser = currentInstitutionUser();
+    $student = $institutionUser
       ?->student()
       ->with('classification')
       ->first();
@@ -36,6 +42,19 @@ class EventController extends Controller
       ->getQuery()
       ->forStudent($student)
       ->withCount('eventCourseables');
+
+    if ($institutionUser?->isTeacher()) {
+      $courseIds = CourseTeacher::query()
+        ->where('user_id', $institutionUser->user_id)
+        ->pluck('course_id');
+      $query->whereHas('eventCourseables', function ($query) use ($courseIds) {
+        $query->whereHasMorph(
+          'courseable',
+          [CourseSession::class],
+          fn($query) => $query->whereIn('course_id', $courseIds)
+        );
+      });
+    }
 
     return Inertia::render('institutions/exams/list-events', [
       'events' => paginateFromRequest($query->latest('id')),
@@ -53,18 +72,25 @@ class EventController extends Controller
 
   function create(Institution $institution)
   {
+    $coursesQuery = $institution->courses()->with('sessions');
+    if (currentInstitutionUser()->isTeacher()) {
+      $coursesQuery->whereIn(
+        'courses.id',
+        CourseTeacher::query()
+          ->where('user_id', currentInstitutionUser()->user_id)
+          ->select('course_id')
+      );
+    }
+
     return Inertia::render('institutions/exams/create-edit-event', [
       'classificationGroups' => ClassificationGroup::all(),
-      'courses' => $institution
-        ->courses()
-        ->with('sessions')
-        ->orderedByCourseOrder()
-        ->get()
+      'courses' => $coursesQuery->orderedByCourseOrder()->get()
     ]);
   }
 
   function edit(Institution $institution, Event $event)
   {
+    $this->ensureTeacherOwns($event);
     return Inertia::render('institutions/exams/create-edit-event', [
       'event' => $event,
       'classificationGroups' => ClassificationGroup::all()
@@ -94,6 +120,7 @@ class EventController extends Controller
 
   function destroy(Institution $institution, Event $event)
   {
+    $this->ensureTeacherOwns($event);
     $event->delete();
     return $this->ok();
   }
@@ -105,6 +132,7 @@ class EventController extends Controller
       'event_courseables' => ['nullable', 'array', 'min:1'],
       ...EventCourseable::createRule('event_courseables.*.')
     ]);
+    $this->ensureTeacherCanUseCourses($data['event_courseables'] ?? []);
     $event = $institution->events()->create([
       ...collect($data)
         ->except('event_courseables')
@@ -119,6 +147,7 @@ class EventController extends Controller
 
   function update(Request $request, Institution $institution, Event $event)
   {
+    $this->ensureTeacherOwns($event);
     $data = $request->validate(Event::createRule($event));
     $event
       ->fill([...$data, 'code' => $event->code ?? Event::generateCode()])
@@ -128,6 +157,7 @@ class EventController extends Controller
 
   function download(Institution $institution, Event $event)
   {
+    $this->ensureTeacherOwns($event);
     $excelWriter = DownloadResult::run($event);
     $fileName = sanitizeFilename("{$event->title}-exams.xlsx");
     $tempFilePath = storage_path("app/public/{$fileName}");
@@ -135,6 +165,57 @@ class EventController extends Controller
     $excelWriter->save($tempFilePath);
     return Response::download($tempFilePath, $fileName)->deleteFileAfterSend(
       true
+    );
+  }
+
+  private function ensureTeacherOwns(Event $event): void
+  {
+    $institutionUser = currentInstitutionUser();
+    if ($institutionUser->isAdmin()) {
+      return;
+    }
+
+    $courseIds = CourseTeacher::query()
+      ->where('user_id', $institutionUser->user_id)
+      ->pluck('course_id');
+
+    abort_unless(
+      $event
+        ->eventCourseables()
+        ->whereHasMorph(
+          'courseable',
+          [CourseSession::class],
+          fn($query) => $query->whereIn('course_id', $courseIds)
+        )
+        ->exists(),
+      403,
+      'You can only work on your own exams'
+    );
+  }
+
+  private function ensureTeacherCanUseCourses(array $courseables): void
+  {
+    $institutionUser = currentInstitutionUser();
+    if ($institutionUser->isAdmin()) {
+      return;
+    }
+
+    $courseIds = CourseTeacher::query()
+      ->where('user_id', $institutionUser->user_id)
+      ->pluck('course_id');
+    $courseSessionIds = collect($courseables)
+      ->pluck('courseable_id')
+      ->unique()
+      ->values();
+
+    abort_unless(
+      $courseSessionIds->isNotEmpty() &&
+        CourseSession::query()
+          ->whereIn('id', $courseSessionIds)
+          ->whereIn('course_id', $courseIds)
+          ->count() === $courseSessionIds->count(),
+      403,
+      'You can only create exams for your assigned subjects'
     );
   }
 }

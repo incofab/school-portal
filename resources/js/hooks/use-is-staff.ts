@@ -5,8 +5,8 @@ export default function useIsStaff() {
   const { currentInstitutionUser } = useSharedProps();
   return (
     !!currentInstitutionUser &&
-    currentInstitutionUser.role !== InstitutionUserType.Guardian &&
-    currentInstitutionUser.role !== InstitutionUserType.Student &&
-    currentInstitutionUser.role !== InstitutionUserType.Alumni
+    currentInstitutionUser.type !== InstitutionUserType.Guardian &&
+    currentInstitutionUser.type !== InstitutionUserType.Student &&
+    currentInstitutionUser.type !== InstitutionUserType.Alumni
   );
 }

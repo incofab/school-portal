@@ -11,6 +11,7 @@ use App\Models\AcademicSession;
 use App\Models\Institution;
 use App\Models\InstitutionSetting;
 use App\Models\PriceList;
+use App\Services\Institutions\InstitutionRoleService;
 
 class SeedSetupData
 {
@@ -25,6 +26,16 @@ class SeedSetupData
     $obj->seedPriceList();
     $obj->seedCommunicationSettings();
     $obj->seedAcademicSettings();
+
+    $roleService = app(InstitutionRoleService::class);
+    $roleService->ensureDefaultRoles($institution);
+    $roleService->assignDefaultRole(
+      $institution
+        ->institutionUsers()
+        ->withoutGlobalScopes()
+        ->where('user_id', $institution->user_id)
+        ->firstOrFail()
+    );
   }
 
   static function seedAllInstitutions()

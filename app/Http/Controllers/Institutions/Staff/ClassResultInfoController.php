@@ -7,8 +7,8 @@ use App\Actions\CourseResult\GenerateAiTermResultComments;
 use App\Actions\GenericExport;
 use App\Actions\Messages\SendTermResultToGuardians;
 use App\Actions\Result\GetViewResultSheetData;
-use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Classification;
 use App\Models\ClassificationGroup;
@@ -30,10 +30,7 @@ class ClassResultInfoController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Teacher
-    ]);
+    $this->allowedRoles([InstitutionUserType::Admin, InstitutionUserType::Teacher]);
   }
 
   public function index(Institution $institution, Request $request)
@@ -65,9 +62,25 @@ class ClassResultInfoController extends Controller
       ]
     ]);
 
-    Classification::query()
+    $classificationQuery = Classification::query()
       ->whereIn('id', $data['classifications'])
-      ->get()
+      ->when(
+        !currentInstitutionUser()->isAdmin(),
+        fn($query) => $query->where(
+          'form_teacher_id',
+          currentInstitutionUser()->user_id
+        )
+      );
+
+    $classifications = $classificationQuery->get();
+
+    abort_unless(
+      $classifications->count() === count($data['classifications']),
+      403,
+      'You can only calculate results for your own classes'
+    );
+
+    $classifications
       ->each(function (Classification $classification) use ($data) {
         ClassResultInfoAction::make()->calculate(
           classification: $classification,
@@ -85,6 +98,8 @@ class ClassResultInfoController extends Controller
     Institution $institution,
     ClassResultInfo $classResultInfo
   ) {
+    $classResultInfo->loadMissing('classification');
+    $this->ensureClassOwnership($classResultInfo->classification);
     ClassResultInfoAction::make()->reCalculate($classResultInfo);
 
     return $this->ok();
@@ -188,6 +203,16 @@ class ClassResultInfoController extends Controller
       ->where('term', $data['term'])
       ->where('academic_session_id', $data['academic_session_id']);
 
+    if (!currentInstitutionUser()->isAdmin()) {
+      $query->whereHas(
+        'classification',
+        fn($classificationQuery) => $classificationQuery->where(
+          'form_teacher_id',
+          currentInstitutionUser()->user_id
+        )
+      );
+    }
+
     abort_if(
       (clone $query)->get()->isEmpty(),
       403,
@@ -206,6 +231,7 @@ class ClassResultInfoController extends Controller
     ClassResultInfo $classResultInfo
   ) {
     $classResultInfo->load('classification', 'academicSession');
+    $this->ensureClassOwnership($classResultInfo->classification);
     $courseResults = $classResultInfo->courseResultsQuery()->get();
 
     $students = $classResultInfo
@@ -336,6 +362,7 @@ class ClassResultInfoController extends Controller
   ) {
     $classResultInfo->loadMissing('classification.classificationGroup');
     $classification = $classResultInfo->classification;
+    $this->ensureClassOwnership($classification);
 
     $termResults = $classResultInfo
       ->termResultsQuery(fn($q) => $q->joinStudent())

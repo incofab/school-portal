@@ -20,15 +20,18 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
+import useIsTeacher from '@/hooks/use-is-teacher';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import PracticeQuestionModal from '@/components/modals/practice-question-modal';
-import useIsTeacher from '@/hooks/use-is-teacher';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   courses: PaginationResponse<Course>;
+  assignedCourseIds?: number[];
 }
 
-export default function ListCourse({ courses }: Props) {
+export default function ListCourse({ courses, assignedCourseIds = [] }: Props) {
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
@@ -57,15 +60,24 @@ export default function ListCourse({ courses }: Props) {
       label: 'Action',
       render: (row: Course) => (
         <HStack>
-          <BrandButton
-            onClick={() => practiceQuestionModalToggle.open(row)}
-            leftIcon={<Icon as={PlusIcon} />}
-            variant={'ghost'}
-            colorScheme={'brand'}
-            title="Practice Question"
-          />
-          {(isAdmin || isTeacher) && (
-            <>
+          <PermissionGate
+            permissions={[
+              InstitutionPermission.NaturalAccess,
+              InstitutionPermission.NaturalAccess,
+            ]}
+          >
+            <BrandButton
+              onClick={() => practiceQuestionModalToggle.open(row)}
+              leftIcon={<Icon as={PlusIcon} />}
+              variant={'ghost'}
+              colorScheme={'brand'}
+              title="Practice Question"
+            />
+          </PermissionGate>
+          <>
+            <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+            >
               <Button
                 as={'a'}
                 href={instRoute('lesson-plans.index', {
@@ -76,6 +88,8 @@ export default function ListCourse({ courses }: Props) {
               >
                 Lesson Plans
               </Button>
+            </PermissionGate>
+            <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
               <Button
                 as={'a'}
                 href={instRoute('inst-topics.index', {
@@ -86,16 +100,21 @@ export default function ListCourse({ courses }: Props) {
               >
                 List Topics
               </Button>
-              <Button
-                as={'a'}
-                href={instRoute('course-sessions.index', [row.id])}
-                variant={'link'}
-                colorScheme={'purple'}
-              >
-                Question Bank
-              </Button>
-            </>
-          )}
+            </PermissionGate>
+            <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+              {(isAdmin ||
+                (isTeacher && assignedCourseIds.includes(row.id))) && (
+                <Button
+                  as={'a'}
+                  href={instRoute('course-sessions.index', [row.id])}
+                  variant={'link'}
+                  colorScheme={'purple'}
+                >
+                  Question Bank
+                </Button>
+              )}
+            </PermissionGate>
+          </>
 
           {isAdmin && (
             <>
@@ -147,11 +166,18 @@ export default function ListCourse({ courses }: Props) {
           title="List Subjects"
           rightElement={
             <HStack spacing={2}>
-              <LinkButton
-                href={instRoute('courses.practice-progress')}
-                title={'Practice Progress'}
-                colorScheme="green"
-              />
+              <PermissionGate
+                permissions={[
+                  InstitutionPermission.NaturalAccess,
+                  InstitutionPermission.NaturalAccess,
+                ]}
+              >
+                <LinkButton
+                  href={instRoute('courses.practice-progress')}
+                  title={'Practice Progress'}
+                  colorScheme="green"
+                />
+              </PermissionGate>
               {isAdmin ? (
                 <>
                   <LinkButton

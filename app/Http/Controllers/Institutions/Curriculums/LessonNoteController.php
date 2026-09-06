@@ -28,7 +28,6 @@ class LessonNoteController extends Controller
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
     ])->except('index', 'show');
-    $this->allowedRoles([InstitutionUserType::Admin])->only('destroy');
   }
   //
 
@@ -73,7 +72,9 @@ class LessonNoteController extends Controller
 
     return Inertia::render('institutions/lesson-notes/list-lesson-notes', [
       'lessonNotes' => paginateFromRequest(
-        $query->with('classification', 'course')->latest('id')
+        $query
+          ->with('classification', 'course', 'courseTeacher')
+          ->latest('id')
       ),
       'classificationGroups' => ClassificationGroup::all()
     ]);
@@ -86,6 +87,14 @@ class LessonNoteController extends Controller
   ) {
     // == Create New Lesson Note ==
     if (!empty($lessonPlan)) {
+      $lessonPlan->loadMissing('courseTeacher');
+      $institutionUser = currentInstitutionUser();
+      abort_unless(
+        $institutionUser->isAdmin() ||
+          $lessonPlan->courseTeacher?->user_id === $institutionUser->user_id,
+        403,
+        'You can only work on your own lesson notes'
+      );
       // == A LessonPlan should have ONLY 1 LessonNote. Hence, check if a LessonNote already exist for this LessonPlan
       $hasLessonNote = LessonNote::where(
         'lesson_plan_id',
@@ -101,7 +110,9 @@ class LessonNoteController extends Controller
 
     // == Edit Existing Lesson Note ==
     if (!empty($lessonNote)) {
-      $params['lessonNote'] = $lessonNote->load('media', 'lessonPlan');
+      $lessonNote->load('media', 'lessonPlan.courseTeacher');
+      $this->ensureTeacherOwns($lessonNote);
+      $params['lessonNote'] = $lessonNote;
     }
 
     return Inertia::render(
@@ -115,6 +126,11 @@ class LessonNoteController extends Controller
     LessonNoteRequest $request,
     ?LessonNote $lessonNote = null
   ) {
+    if ($lessonNote) {
+      $lessonNote->loadMissing('courseTeacher');
+      $this->ensureTeacherOwns($lessonNote);
+    }
+
     $data = $request->validated();
 
     $lessonPlanId = $lessonNote
@@ -171,6 +187,9 @@ class LessonNoteController extends Controller
     LessonNote $lessonNote,
     CurriculumMediaService $curriculumMediaService
   ) {
+    $lessonNote->loadMissing('courseTeacher');
+    $this->ensureTeacherOwns($lessonNote);
+
     $media = $curriculumMediaService->storeLessonNoteAttachment(
       $institution,
       $lessonNote,
@@ -186,6 +205,9 @@ class LessonNoteController extends Controller
     Media $media,
     CurriculumMediaService $curriculumMediaService
   ) {
+    $lessonNote->loadMissing('courseTeacher');
+    $this->ensureTeacherOwns($lessonNote);
+
     $curriculumMediaService->deleteLessonNoteAttachment(
       $institution,
       $lessonNote,
@@ -214,6 +236,7 @@ class LessonNoteController extends Controller
       'lessonNote' => $lessonNote->load(
         'classification',
         'course',
+        'courseTeacher',
         'lessonPlan.schemeOfWork.topic',
         'media'
       )
@@ -222,20 +245,23 @@ class LessonNoteController extends Controller
 
   public function destroy(Institution $institution, LessonNote $lessonNote)
   {
-    $institutionUser = currentInstitutionUser();
-
-    if ($institutionUser->isTeacher()) {
-      if ($institutionUser->user->id != $lessonNote->courseTeacher->user_id) {
-        return $this->message(
-          "Only a Note's Creator is allowed to delete the Note.",
-          403
-        );
-      }
-    }
+    $this->ensureTeacherOwns($lessonNote);
 
     $lessonNote->delete();
 
     return $this->ok();
+  }
+
+  private function ensureTeacherOwns(LessonNote $lessonNote): void
+  {
+    $institutionUser = currentInstitutionUser();
+
+    abort_unless(
+      $institutionUser->isAdmin() ||
+        $lessonNote->courseTeacher?->user_id === $institutionUser->user_id,
+      403,
+      "You can only work on your own lesson notes"
+    );
   }
 
   public function togglePublish(

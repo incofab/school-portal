@@ -20,6 +20,11 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
+import useSharedProps from '@/hooks/use-shared-props';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useInstitutionPermission from '@/hooks/use-institution-permission';
+import PermissionGate from '@/components/permission-gate';
+import { InstitutionPermission } from '@/types/permissions';
 
 interface Props {
   lessonNote: LessonNote;
@@ -27,12 +32,20 @@ interface Props {
 
 export default function ShowLessonNote({ lessonNote }: Props) {
   const { instRoute } = useInstitutionRoute();
+  const { currentUser } = useSharedProps();
+  const isAdmin = useIsAdmin();
+  const canManageLessonNotes = useInstitutionPermission(
+    InstitutionPermission.NaturalAccess
+  );
   const { handleResponseToast } = useMyToast();
   const uploadWebForm = useWebForm({});
   const deleteWebForm = useWebForm({});
   const [uploadFiles, setUploadFiles] = useState<FileObject[]>([]);
   const [deletingMediaId, setDeletingMediaId] = useState<number | null>(null);
   const sanitizedContent = DOMPurify.sanitize(lessonNote.content);
+  const canWorkOnLessonNote =
+    canManageLessonNotes &&
+    (isAdmin || lessonNote.course_teacher?.user_id === currentUser.id);
 
   const uploadMedia = async (files: FileObject[]) => {
     if (files.length === 0) {
@@ -121,20 +134,25 @@ export default function ShowLessonNote({ lessonNote }: Props) {
             ATTACHMENTS ::
           </Heading>
           <VStack align={'stretch'} spacing={3}>
-            <FileDropper
-              files={uploadFiles}
-              onChange={uploadMedia}
-              accept={[FileDropperType.Media]}
-              multiple={false}
-              canRename={false}
-              isLoading={uploadWebForm.processing}
-            />
-            <Text fontSize={'sm'} color={'blackAlpha.700'}>
-              Uploads are saved one file at a time.
-            </Text>
+            <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+              when={canWorkOnLessonNote}
+            >
+              <FileDropper
+                files={uploadFiles}
+                onChange={uploadMedia}
+                accept={[FileDropperType.Media]}
+                multiple={false}
+                canRename={false}
+                isLoading={uploadWebForm.processing}
+              />
+              <Text fontSize={'sm'} color={'blackAlpha.700'}>
+                Uploads are saved one file at a time.
+              </Text>
+            </PermissionGate>
             <MediaAttachmentsList
               media={lessonNote.media}
-              onDelete={deleteMedia}
+              onDelete={canWorkOnLessonNote ? deleteMedia : undefined}
               deletingMediaId={deletingMediaId}
             />
           </VStack>

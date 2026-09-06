@@ -41,7 +41,7 @@ class InstitutionDashboardStat
    */
   public function getStat(?bool $forceRefresh = false): array
   {
-    $cacheKey = "dashboard-stats-{$this->institution->id}-{$this->institutionUser->role->value}";
+    $cacheKey = "dashboard-stats-{$this->institution->id}-{$this->institutionUser->type->value}";
 
     if ($forceRefresh) {
       Cache::forget($cacheKey);
@@ -122,7 +122,7 @@ class InstitutionDashboardStat
 
     collect(InstitutionUserType::toArray())
       ->map(
-        fn($role) => "SUM(CASE WHEN role = '$role' THEN 1 ELSE 0 END) as $role"
+        fn($role) => "SUM(CASE WHEN type = '$role' THEN 1 ELSE 0 END) as $role"
       )
       ->join(',');
 
@@ -132,7 +132,7 @@ class InstitutionDashboardStat
           ->map(
             fn(
               $role
-            ) => "SUM(CASE WHEN role = '$role' THEN 1 ELSE 0 END) as $role"
+            ) => "SUM(CASE WHEN type = '$role' THEN 1 ELSE 0 END) as $role"
           )
           ->join(',')
       )

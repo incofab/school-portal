@@ -8,6 +8,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Arr;
 use App\Enums\InstitutionUserType;
+use App\Models\Classification;
 use App\Models\TokenUser;
 use App\Support\Res;
 use Illuminate\Routing\ControllerMiddlewareOptions;
@@ -86,12 +87,45 @@ class Controller extends BaseController
   {
     return $this->middleware(function ($request, $next) use ($roles) {
       abort_unless(
-        in_array(currentInstitutionUser()->role, $roles),
+        in_array(currentInstitutionUser()->type, $roles),
         403,
         'This role is not part of the allowed roles for this operation'
       );
       return $next($request);
     });
+  }
+
+  protected function allowedPermissions(
+    array $permissions
+  ): ControllerMiddlewareOptions {
+    return $this->middleware(function ($request, $next) use ($permissions) {
+      $institutionUser = currentInstitutionUser();
+      $allowed = collect($permissions)->contains(
+        fn($permission) => $institutionUser?->hasInstitutionPermission(
+          $permission
+        )
+      );
+
+      abort_unless(
+        $allowed,
+        403,
+        'You do not have permission to perform this operation'
+      );
+
+      return $next($request);
+    });
+  }
+
+  protected function ensureClassOwnership(Classification $classification): void
+  {
+    $institutionUser = currentInstitutionUser();
+
+    abort_unless(
+      $institutionUser?->isAdmin() ||
+        $classification->form_teacher_id === $institutionUser?->user_id,
+      403,
+      'You can only work on your own class results'
+    );
   }
 
   protected function getTokenUserFromCookie(): TokenUser

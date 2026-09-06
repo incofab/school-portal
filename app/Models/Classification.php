@@ -41,7 +41,7 @@ class Classification extends BaseModel
         'nullable',
         'integer',
         new ValidateExistsRule(InstitutionUser::class, 'user_id', [
-          'role' => InstitutionUserType::Teacher->value
+          'type' => InstitutionUserType::Teacher->value
         ])
       ],
       $prefix . 'classification_group_id' => [

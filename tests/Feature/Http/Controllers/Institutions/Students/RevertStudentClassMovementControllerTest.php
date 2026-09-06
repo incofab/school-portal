@@ -55,12 +55,12 @@ it('reverts a single student class movement', function () {
       ->revert_reference_id->toBe($studentClassMovement->id);
 
     if ($newMovement->moveFromAlumni()) {
-      expect($newMovement->student->institutionUser->role)->toBe(
+      expect($newMovement->student->institutionUser->type)->toBe(
         InstitutionUserType::Student
       );
     }
     if ($newMovement->moveToAlumni()) {
-      expect($newMovement->student->institutionUser->role)->toBe(
+      expect($newMovement->student->institutionUser->type)->toBe(
         InstitutionUserType::Alumni
       );
     }

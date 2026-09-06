@@ -8,7 +8,6 @@ use App\Enums\TermType;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
 use App\Models\Classification;
-use App\Models\GuardianStudent;
 use App\Models\Institution;
 use App\Models\SessionResult;
 use App\Models\Student;
@@ -24,22 +23,9 @@ class ViewResultSheetController extends Controller
     Classification $classification
   ) {
     $institutionUser = currentInstitutionUser();
-    if ($institutionUser->isAdmin()) {
-      return;
-    }
-    if ($classification->form_teacher_id === $institutionUser->user_id) {
-      return;
-    }
-    if ($institutionUser->user_id == $student->user_id) {
-      return;
-    }
+    $student->loadMissing('classification');
 
-    if (
-      GuardianStudent::isGuardianOfStudent(
-        $institutionUser->user_id,
-        $student->id
-      )
-    ) {
+    if ($institutionUser->canViewResultsFor($student)) {
       return;
     }
 

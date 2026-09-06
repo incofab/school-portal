@@ -36,6 +36,10 @@ import TermResultPrincipalCommentModal from '@/components/modals/term-result-pri
 import SetTermResultEvaluation from '../learning-evaluations/set-term-result-evaluations-component';
 import { TermResultExtraData } from '../learning-evaluations/term-result-extra-data';
 import ResultUtil from '@/util/result-util';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useSharedProps from '@/hooks/use-shared-props';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   term: string;
@@ -63,6 +67,10 @@ export default function StudentTermResultDetail({
   const { instRoute } = useInstitutionRoute();
   const teacherCommentModalToggle = useModalToggle();
   const principalCommentModalToggle = useModalToggle();
+  const { currentUser } = useSharedProps();
+  const isAdmin = useIsAdmin();
+  const canWorkOnClass =
+    isAdmin || classification.form_teacher_id === currentUser.id;
 
   const relevantAssessments = ResultUtil.getRelevantAssessments(
     assessments,
@@ -169,12 +177,17 @@ export default function StudentTermResultDetail({
               <HStack align={'stretch'}>
                 <Text>{teacherComment}</Text>
                 <Spacer />
-                <IconButton
-                  aria-label="edit teacher's comment"
-                  icon={<Icon as={PencilIcon} />}
-                  variant={'outline'}
-                  onClick={teacherCommentModalToggle.open}
-                />
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                  when={canWorkOnClass}
+                >
+                  <IconButton
+                    aria-label="edit teacher's comment"
+                    icon={<Icon as={PencilIcon} />}
+                    variant={'outline'}
+                    onClick={teacherCommentModalToggle.open}
+                  />
+                </PermissionGate>
               </HStack>
             </>
             <>
@@ -184,12 +197,17 @@ export default function StudentTermResultDetail({
               <HStack align={'stretch'}>
                 <Text>{principalComment}</Text>
                 <Spacer />
-                <IconButton
-                  aria-label="edit Administrator's comment"
-                  icon={<Icon as={PencilIcon} />}
-                  variant={'outline'}
-                  onClick={principalCommentModalToggle.open}
-                />
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                  when={canWorkOnClass && isAdmin}
+                >
+                  <IconButton
+                    aria-label="edit Administrator's comment"
+                    icon={<Icon as={PencilIcon} />}
+                    variant={'outline'}
+                    onClick={principalCommentModalToggle.open}
+                  />
+                </PermissionGate>
               </HStack>
             </>
           </VStack>
@@ -204,17 +222,27 @@ export default function StudentTermResultDetail({
             px={5}
             flex={1}
           >
-            <SetTermResultEvaluation
-              termResult={termResult}
-              learningEvaluations={learningEvaluations}
-            />
+            <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+              when={canWorkOnClass}
+            >
+              <SetTermResultEvaluation
+                termResult={termResult}
+                learningEvaluations={learningEvaluations}
+              />
+            </PermissionGate>
           </Div>
           <Div
             flex={1}
             background={useColorModeValue('#FAFAFA', 'gray.700')}
             p={4}
           >
-            <TermResultExtraData termResult={termResult} />
+            <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+              when={canWorkOnClass}
+            >
+              <TermResultExtraData termResult={termResult} />
+            </PermissionGate>
           </Div>
         </Stack>
         <TermResultTeacherCommentModal

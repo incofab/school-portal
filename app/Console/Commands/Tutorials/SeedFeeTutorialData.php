@@ -61,7 +61,7 @@ class SeedFeeTutorialData extends Command
 
     $studentInstitutionUser = InstitutionUser::firstOrCreate(
       ['institution_id' => $institution->id, 'user_id' => $studentUser->id],
-      ['role' => InstitutionUserType::Student]
+      ['type' => InstitutionUserType::Student]
     );
 
     $student = Student::withTrashed()->updateOrCreate(
@@ -90,7 +90,7 @@ class SeedFeeTutorialData extends Command
 
     InstitutionUser::firstOrCreate(
       ['institution_id' => $institution->id, 'user_id' => $guardianUser->id],
-      ['role' => InstitutionUserType::Guardian]
+      ['type' => InstitutionUserType::Guardian]
     );
 
     GuardianStudent::firstOrCreate(

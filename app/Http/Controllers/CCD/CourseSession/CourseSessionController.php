@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\CCD\CourseSession;
 
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseSession;
@@ -10,16 +11,26 @@ use Illuminate\Http\Request;
 
 class CourseSessionController extends Controller
 {
+  public function __construct()
+  {
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ])->only(['create', 'store', 'edit', 'update', 'destroy']);
+  }
+
   public function index(Institution $institution, ?Course $course = null)
   {
     $this->authorizeQuestionBank($course);
     $query = $course ? $course->courseSessions() : CourseSession::query();
 
     return view('ccd/course-sessions/index', [
-      'allRecords' => $query
-        ->with('course')
-        ->withCount(['questions', 'theoryQuestions'])
-        ->paginate(100),
+      'allRecords' => paginateFromRequest(
+        $query
+          ->with('course')
+          ->withCount(['questions', 'theoryQuestions'])
+          ->latest('id')
+      ),
       'course' => $course,
       'courses' => Course::query()
         ->orderedByCourseOrder()

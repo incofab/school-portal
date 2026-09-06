@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Enums\ManagerRole;
+use App\Enums\RoleGuard;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
@@ -15,8 +16,24 @@ class RoleSeeder extends Seeder
    */
   public function run()
   {
+    Role::query()
+      ->whereNull('institution_id')
+      ->where('name', 'admin')
+      ->where(
+        fn($q) => $q
+          ->where('guard_name', RoleGuard::Web->value)
+          ->orWhereNull('guard_name')
+      )
+      ->update(['name' => ManagerRole::ManagerAdmin->value]);
+
     foreach (ManagerRole::cases() as $roleType) {
-      Role::findOrCreate($roleType->value);
+      Role::query()->firstOrCreate(
+        [
+          'institution_id' => null,
+          'name' => $roleType->value
+        ],
+        ['guard_name' => RoleGuard::Web->value]
+      );
     }
   }
 }

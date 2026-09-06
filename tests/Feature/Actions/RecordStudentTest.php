@@ -45,7 +45,7 @@ it('can create a student', function () {
   assertDatabaseHas('institution_users', [
     'user_id' => $student->user->id,
     'institution_id' => $this->institution->id,
-    'role' => InstitutionUserType::Student
+    'type' => InstitutionUserType::Student
   ]);
   assertDatabaseHas('students', [
     'user_id' => $student->user->id,
@@ -54,6 +54,9 @@ it('can create a student', function () {
     'guardian_phone' => '08012345678',
     'classification_id' => $this->classification->id
   ]);
+  expect($student->institutionUser->fresh('roles')->roles->first()->name)->toBe(
+    InstitutionUserType::Student->value
+  );
 });
 
 it('can create a student with default student code', function () {
@@ -80,7 +83,7 @@ it('can update a student', function () {
   $institutionUser = InstitutionUser::factory()->create([
     'user_id' => $user->id,
     'institution_id' => $this->institution->id,
-    'role' => InstitutionUserType::Student
+    'type' => InstitutionUserType::Student
   ]);
   $student = Student::factory()->create([
     'user_id' => $user->id,
@@ -137,6 +140,6 @@ it('creates institution user if it does not exist', function () {
   assertDatabaseHas('institution_users', [
     'user_id' => $student->user->id,
     'institution_id' => $this->institution->id,
-    'role' => InstitutionUserType::Student
+    'type' => InstitutionUserType::Student
   ]);
 });

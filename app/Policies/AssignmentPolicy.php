@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\InstitutionUserType;
 use App\Models\Assignment;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -39,14 +40,20 @@ class AssignmentPolicy
   public function view(User $user, Assignment $assignment)
   {
     $institutionUser = currentInstitutionUser();
-    if($institutionUser->isStudent()){
+    if ($institutionUser->isStudent()) {
       return Assignment::query()
         ->init()
         ->forStudent($institutionUser->student)
-        ->where('assignments.id', $assignment->id)->exists();
+        ->where('assignments.id', $assignment->id)
+        ->exists();
     }
 
-    return $this->delete($user, $assignment);
+    if ($institutionUser->isAdmin()) {
+      return true;
+    }
+
+    return $institutionUser->isTeacher() &&
+      $assignment->institution_user_id === $institutionUser->id;
   }
 
   /**
@@ -57,8 +64,11 @@ class AssignmentPolicy
    */
   public function create(User $user)
   {
-    // Only Institution Admins and Teachers can create assignments
-    return true;
+    return in_array(
+      currentInstitutionUser()?->type,
+      [InstitutionUserType::Admin, InstitutionUserType::Teacher],
+      true
+    );
   }
 
   /**
@@ -84,15 +94,12 @@ class AssignmentPolicy
   public function delete(User $user, Assignment $assignment)
   {
     $institutionUser = currentInstitutionUser();
-    if($institutionUser->isAdmin()){
+    if ($institutionUser->isAdmin()) {
       return true;
     }
-    
-    if($institutionUser->isTeacher()){
-      return Assignment::query()
-        ->init()
-        ->forTeacher($institutionUser)
-        ->where('assignments.id', $assignment->id)->exists();
+
+    if ($institutionUser->isTeacher()) {
+      return $assignment->institution_user_id === $institutionUser->id;
     }
 
     return false;

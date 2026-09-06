@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\InstitutionUserType;
+use App\Enums\RoleGuard;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -28,10 +29,14 @@ class CreateStaffRequest extends FormRequest
       ...User::generalRule($this->editInstitutionUser?->user_id),
       'role' => [
         Rule::requiredIf(empty($this->editInstitutionUser)),
-        Rule::notIn([
-          InstitutionUserType::Student->value,
-          InstitutionUserType::Alumni->value
-        ])
+        'nullable',
+        'integer',
+        Rule::exists('roles', 'id')->where(
+          fn($query) => $query
+            ->where('institution_id', currentInstitution()?->id)
+            ->where('guard_name', RoleGuard::Web->value)
+            ->whereNotIn('name', InstitutionUserType::nonStaffRoles())
+        )
       ]
     ];
   }

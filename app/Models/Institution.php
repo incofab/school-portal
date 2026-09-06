@@ -137,6 +137,11 @@ class Institution extends BaseModel
     return $this->hasMany(InstitutionUser::class);
   }
 
+  public function roles()
+  {
+    return $this->hasMany(Role::class)->whereNotNull('institution_id');
+  }
+
   public function createdBy()
   {
     return $this->belongsTo(User::class, 'user_id');
@@ -307,7 +312,7 @@ class Institution extends BaseModel
       'id', // Local key on Institution table
       'user_id' // Local key on InstitutionUser table
     )->whereHas('institutionUsers', function ($query) {
-      $query->where('role', InstitutionUserType::Student);
+      $query->where('type', InstitutionUserType::Student);
     });
   }
 
@@ -321,13 +326,13 @@ class Institution extends BaseModel
       'id', // Local key on Institution table
       'user_id' // Local key on InstitutionUser table
     )->whereHas('institutionUsers', function ($query) {
-      $query->where('role', InstitutionUserType::Teacher);
+      $query->where('type', InstitutionUserType::Teacher);
     });
   }
 
   public function staff()
   {
-    return $this->hasMany(InstitutionUser::class)->whereIn('role', [
+    return $this->hasMany(InstitutionUser::class)->whereIn('type', [
       InstitutionUserType::Teacher,
       InstitutionUserType::Accountant,
       InstitutionUserType::Admin

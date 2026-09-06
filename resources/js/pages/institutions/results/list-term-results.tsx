@@ -35,6 +35,9 @@ import { Inertia } from '@inertiajs/inertia';
 import { useResultSetting } from '@/util/result-util';
 import { roundNumber } from '@/util/util';
 import DateTimeDisplay from '@/components/date-time-display';
+import useInstitutionPermission from '@/hooks/use-institution-permission';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface GradeReportItem {
   grade: string;
@@ -59,7 +62,10 @@ export default function ListTermResults({
   const { handleResponseToast } = useMyToast();
   const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
-  const canViewDetails = !isStaff || isAdmin;
+  const canViewResults = useInstitutionPermission(
+    InstitutionPermission.NaturalAccess
+  );
+  const canViewDetails = canViewResults && (!isStaff || isAdmin);
   const deleteForm = useWebForm({});
   const { hidePosition, showGrade } = useResultSetting();
 
@@ -126,32 +132,37 @@ export default function ListTermResults({
       label: 'Action',
       render: (row) => (
         <>
-          {(canViewDetails ||
-            row.classification!.form_teacher_id === currentUser.id) && (
-            <LinkButton
-              href={instRoute('students.term-result-detail', [
-                row.student_id,
-                row.classification_id,
-                row.academic_session_id,
-                row.term,
-                row.for_mid_term ? 1 : 0,
-              ])}
-              title="Result Detail"
-            />
-          )}
-          {isStaff && (
-            <DestructivePopover
-              label={'Are you sure you want to delete this result?'}
-              onConfirm={() => deleteItem(row)}
-            >
-              <IconButton
-                aria-label="Delete Result"
-                icon={<Icon as={TrashIcon} />}
-                variant="ghost"
-                colorScheme="red"
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            {canViewDetails ||
+            row.classification!.form_teacher_id === currentUser.id ? (
+              <LinkButton
+                href={instRoute('students.term-result-detail', [
+                  row.student_id,
+                  row.classification_id,
+                  row.academic_session_id,
+                  row.term,
+                  row.for_mid_term ? 1 : 0,
+                ])}
+                title="Result Detail"
               />
-            </DestructivePopover>
-          )}
+            ) : null}
+          </PermissionGate>
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            {isAdmin ||
+            row.classification!.form_teacher_id === currentUser.id ? (
+              <DestructivePopover
+                label={'Are you sure you want to delete this result?'}
+                onConfirm={() => deleteItem(row)}
+              >
+                <IconButton
+                  aria-label="Delete Result"
+                  icon={<Icon as={TrashIcon} />}
+                  variant="ghost"
+                  colorScheme="red"
+                />
+              </DestructivePopover>
+            ) : null}
+          </PermissionGate>
         </>
       ),
     },
@@ -165,12 +176,16 @@ export default function ListTermResults({
           rightElement={
             <>
               {classResultInfo && (
-                <LinkButton
-                  title="Record Evaluations"
-                  href={instRoute('class-result-info.record-evaluations', [
-                    classResultInfo.id,
-                  ])}
-                />
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                >
+                  <LinkButton
+                    title="Record Evaluations"
+                    href={instRoute('class-result-info.record-evaluations', [
+                      classResultInfo.id,
+                    ])}
+                  />
+                </PermissionGate>
               )}
             </>
           }

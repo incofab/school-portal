@@ -11,11 +11,7 @@ class ShowTranscriptController extends Controller
   public function __invoke(Institution $institution, Student $student)
   {
     $institutionUser = currentInstitutionUser();
-    abort_if(
-      $institutionUser->user_id !== $student->user_id &&
-        !$institutionUser->isAdmin(),
-      403
-    );
+    abort_unless($institutionUser->canViewResultsFor($student), 403);
 
     $student->load('user', 'classification');
     $courseResults = $student

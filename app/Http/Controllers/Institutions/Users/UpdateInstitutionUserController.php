@@ -11,6 +11,7 @@ use App\Http\Requests\CreateStaffRequest;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\User;
+use App\Services\Institutions\InstitutionRoleService;
 use App\Support\Audit\ModelAudit;
 use App\Support\Audit\SecurityActivityLogger;
 use App\Support\Media\MediaManager;
@@ -22,7 +23,8 @@ class UpdateInstitutionUserController extends Controller
   public function profile(
     Request $request,
     Institution $institution,
-    User $user
+    User $user,
+    InstitutionRoleService $roleService
   ) {
     /** Permit Guardian to view the profile of their dependants. */
     if (
@@ -39,25 +41,28 @@ class UpdateInstitutionUserController extends Controller
 
     $institutionUser = $user
       ->institutionUser()
-      ->with('student.classification')
+      ->with('student.classification', 'roles')
       ->first();
 
     return inertia('institutions/users/profile', [
       'user' => $user,
       'institutionUser' => $institutionUser,
-      'student' => $institutionUser?->student
+      'student' => $institutionUser?->student,
+      'roles' => $roleService->forInstitution($institution)
     ]);
   }
 
   public function edit(
     Institution $institution,
-    InstitutionUser $editInstitutionUser
+    InstitutionUser $editInstitutionUser,
+    InstitutionRoleService $roleService
   ) {
-    $editInstitutionUser->load(['user', 'institution']);
+    $editInstitutionUser->load(['user', 'institution', 'roles']);
     $this->validateUser($editInstitutionUser->user);
 
     return inertia('institutions/users/create-edit-user', [
-      'institutionUser' => $editInstitutionUser
+      'institutionUser' => $editInstitutionUser,
+      'roles' => $roleService->forStaff($institution)
     ]);
   }
 

@@ -7,6 +7,7 @@ use App\Models\Classification;
 use App\Models\Student;
 use App\Models\StudentClassMovement;
 use App\Models\User;
+use App\Services\Institutions\InstitutionRoleService;
 use App\Support\Audit\AcademicActivityLogger;
 use App\Support\SettingsHandler;
 use Illuminate\Database\Eloquent\Collection;
@@ -48,16 +49,20 @@ class StudentMigration
     // If there's no $destinationClass, It mean's student is being moved to Alumni
     if (!$destinationClass) {
       $student->institutionUser
-        ->fill(['role' => InstitutionUserType::Alumni])
+        ->fill(['type' => InstitutionUserType::Alumni])
         ->save();
     }
 
     // If there's no $sourceClass, It mean's an alumni is being moved back to student
     if (!$sourceClass) {
       $student->institutionUser
-        ->fill(['role' => InstitutionUserType::Student])
+        ->fill(['type' => InstitutionUserType::Student])
         ->save();
     }
+
+    app(InstitutionRoleService::class)->assignDefaultRole(
+      $student->institutionUser
+    );
 
     $movement = $student->classMovement()->create([
       'institution_id' => $student->institutionUser->institution_id,

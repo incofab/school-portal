@@ -23,6 +23,23 @@ use Throwable;
 
 class StudentManagementController extends Controller
 {
+  public function __construct()
+  {
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ])->only([
+      'create',
+      'store',
+      'edit',
+      'update',
+      'updateCode',
+      'uploadStudents',
+      'downloadTemplate',
+      'destroy'
+    ]);
+  }
+
   public function index(Request $request, Institution $institution)
   {
     $query = Student::query()->select('students.*');
@@ -33,10 +50,10 @@ class StudentManagementController extends Controller
     $countQuery = Student::query()->joinInstitution($institution->id);
 
     $studentCount = (clone $countQuery)
-      ->where('institution_users.role', InstitutionUserType::Student)
+      ->where('institution_users.type', InstitutionUserType::Student)
       ->count();
     $alumniCount = (clone $countQuery)
-      ->where('institution_users.role', InstitutionUserType::Alumni)
+      ->where('institution_users.type', InstitutionUserType::Alumni)
       ->count();
 
     return inertia('institutions/students/list-students', [
@@ -80,7 +97,7 @@ class StudentManagementController extends Controller
       'students' => $classification
         ? $classification
           ->students()
-          ->with('user')
+          ->with('user', 'classification')
           ->get()
         : []
     ]);

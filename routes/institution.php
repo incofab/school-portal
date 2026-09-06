@@ -191,6 +191,9 @@ Route::get('/users/idcards/{classification?}', [Web\Users\InstitutionUserControl
 Route::resource('/users', Web\Users\InstitutionUserController::class)
     ->only(['create', 'store']);
 
+Route::resource('/roles', Web\Roles\RoleController::class)
+    ->except(['show']);
+
 Route::get('/users/index', [Web\Users\ListInstitutionUserController::class, 'index'])
     ->name('users.index');
 Route::get('/users/search', [Web\Users\ListInstitutionUserController::class, 'search'])

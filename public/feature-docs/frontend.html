@@ -133,6 +133,35 @@
         </ul>
       </section>
       <section>
+        <h2>Institution Roles and Permissions</h2>
+        <ul class="detail-list">
+          <li>
+            <div>
+              <strong>role management pages</strong>
+              <span class="path"
+                ><code>resources/js/pages/institutions/roles/*</code></span
+              >
+            </div>
+            <div class="desc">
+              Institution admins can manage role names, descriptions, and
+              grouped permissions. Staff selectors use institution-scoped role
+              records, while built-in roles are identified by seeded metadata.
+            </div>
+          </li>
+          <li>
+            <div><strong>shared permission context</strong></div>
+            <div class="desc">
+              <code>useSharedProps</code> exposes the current institution
+              user's effective permission names from the Inertia
+              <code>shared__currentUserPermissions</code> prop for reuse across
+              frontend surfaces. Sidebar entries and sensitive actions use
+              those permissions, while teacher-owned workflows also check the
+              current user's matching course or class assignment.
+            </div>
+          </li>
+        </ul>
+      </section>
+      <section>
         <h2>Audit Log Pages</h2>
         <ul class="detail-list">
           <li>

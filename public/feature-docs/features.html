@@ -871,11 +871,22 @@
             reset, and delete workflows now record explicit access audit events
             with actor, target user, institution, severity, and old/new role or
             status context. User avatar uploads now create media records with
-            uploader, collection, and storage metadata before upload.
+            uploader, collection, and storage metadata before upload. Institution
+            roles can be created, edited, assigned, and deleted with curated
+            permissions; built-in institution roles and their permission
+            inventory are provisioned for existing institutions by the
+            <code>institutions:seed-roles</code> command.
+            Capability routes enforce the assigned institution permission, and
+            teacher result, curriculum, assignment, library, and live-class
+            mutations additionally enforce ownership where the workflow is
+            teacher-specific. The current user's effective permission names
+            are shared through Inertia for frontend navigation and action
+            visibility.
           </p>
           <ul>
             <li>
               Controllers: <code>Institutions/Users/*</code>,
+              <code>Institutions/Roles/RoleController</code>,
               <code>Institutions/Staff/CourseTeachersController</code>,
               <code>RecordStaff</code>,
               <code>DownloadStaffRecordingSheet</code>,

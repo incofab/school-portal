@@ -32,9 +32,11 @@ class RecordCourseResultRequest extends FormRequest
       $this->courseTeacher->classification_id
     );
     $currentUser = currentUser();
+    $institutionUser = currentInstitutionUser();
     $validTeacher =
-      $currentUser->id === $courseTeacher->user_id ||
-      currentInstitutionUser()->isAdmin();
+      $institutionUser->isAdmin() ||
+      ($institutionUser->isTeacher() &&
+        $currentUser->id === $courseTeacher->user_id);
     // checks if this courseTeacher's course belongs to the current institution
     if (
       !Course::query()

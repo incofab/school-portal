@@ -500,9 +500,9 @@ class AcademicActivityLogger
       'attendee_user_id' => $institutionUser?->user_id,
       'attendee_name' => $institutionUser?->user?->full_name,
       'attendee_role' =>
-        $institutionUser?->role instanceof \BackedEnum
-          ? $institutionUser->role->value
-          : $institutionUser?->role,
+        $institutionUser?->type instanceof \BackedEnum
+          ? $institutionUser->type->value
+          : $institutionUser?->type,
       'student_id' => $student?->id,
       'student_code' => $student?->code,
       'classification_id' => $student?->classification_id,

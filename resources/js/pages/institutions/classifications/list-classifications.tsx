@@ -34,7 +34,9 @@ import UploadClassificationModal from '@/components/modals/upload-classification
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 import useSharedProps from '@/hooks/use-shared-props';
 import GenericModal from '@/components/generic-modal';
-import useIsTeacher from '@/hooks/use-is-teacher';
+import useInstitutionPermissions from '@/hooks/use-institution-permissions';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 import ResultUtil from '@/util/result-util';
 
 interface Props {
@@ -48,7 +50,14 @@ export default function ListClassification({ classifications }: Props) {
   const form = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
-  const isTeacher = useIsTeacher();
+  const { canViewReports, canManageLessonPlans, canManageTopics } =
+    useInstitutionPermissions({
+      canViewReports: InstitutionPermission.NaturalAccess,
+      canManageLessonPlans: InstitutionPermission.NaturalAccess,
+      canManageTopics: InstitutionPermission.NaturalAccess,
+    });
+  const canViewActions =
+    canViewReports || canManageLessonPlans || canManageTopics;
   const migrateClassStudentsModalToggle = useModalValueToggle<Classification>();
   const suspendStudentsModalToggle = useModalValueToggle<Classification>();
   const uploadClassModalToggle = useModalToggle();
@@ -145,35 +154,45 @@ export default function ListClassification({ classifications }: Props) {
         </VStack>
       ),
     },
-    ...(isAdmin || isTeacher
+    ...(canViewActions
       ? [
           {
             label: 'Action',
             render: (row: Classification) => (
               <HStack spacing={3}>
-                {(isAdmin || isFormTeacher(row)) && (
+                <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+                  {isAdmin || isFormTeacher(row) ? (
+                    <LinkButton
+                      title="Results"
+                      href={instRoute('class-result-info.index', {
+                        classification: row.id,
+                      })}
+                      variant={'link'}
+                    />
+                  ) : null}
+                </PermissionGate>
+                <PermissionGate
+                permissions={InstitutionPermission.NaturalAccess}
+                >
                   <LinkButton
-                    title="Results"
-                    href={instRoute('class-result-info.index', {
+                    title="List Lesson Plans"
+                    href={instRoute('lesson-plans.index', {
                       classification: row.id,
                     })}
                     variant={'link'}
                   />
-                )}
-                <LinkButton
-                  title="List Lesson Plans"
-                  href={instRoute('lesson-plans.index', {
-                    classification: row.id,
-                  })}
-                  variant={'link'}
-                />
-                <LinkButton
-                  title="List Topics"
-                  href={instRoute('inst-topics.index', {
-                    classificationGroup: row.classification_group_id,
-                  })}
-                  variant={'link'}
-                />
+                </PermissionGate>
+                <PermissionGate
+                permissions={InstitutionPermission.NaturalAccess}
+                >
+                  <LinkButton
+                    title="List Topics"
+                    href={instRoute('inst-topics.index', {
+                      classificationGroup: row.classification_group_id,
+                    })}
+                    variant={'link'}
+                  />
+                </PermissionGate>
                 {isAdmin && (
                   <IconButton
                     aria-label={'Edit Class'}

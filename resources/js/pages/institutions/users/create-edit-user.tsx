@@ -11,21 +11,24 @@ import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
 import UserInputForm from '@/components/user-input-form';
-import { InstitutionUser } from '@/types/models';
+import { InstitutionUser, Role } from '@/types/models';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import CenteredBox from '@/components/centered-box';
 import { FormButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useIsAdmin from '@/hooks/use-is-admin';
-import EnumSelect from '@/components/dropdown-select/enum-select';
-import { InstitutionUserType } from '@/types/types';
+import RoleSelect from '@/components/selectors/role-select';
 
 interface Props {
   institutionUser?: InstitutionUser;
+  roles: Role[];
 }
 
-export default function CreateOrUpdateStudent({ institutionUser }: Props) {
+export default function CreateOrUpdateStudent({
+  institutionUser,
+  roles,
+}: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
   const isAdmin = useIsAdmin();
@@ -35,7 +38,7 @@ export default function CreateOrUpdateStudent({ institutionUser }: Props) {
     other_names: institutionUser?.user!.other_names ?? '',
     email: institutionUser?.user!.email ?? '',
     phone: institutionUser?.user!.phone ?? '',
-    role: institutionUser?.role ?? '',
+    role: institutionUser?.roles?.[0]?.id ?? '',
     gender: institutionUser?.user!.gender ?? '',
   });
   const forEdit = institutionUser !== undefined;
@@ -68,21 +71,13 @@ export default function CreateOrUpdateStudent({ institutionUser }: Props) {
               as={'form'}
               onSubmit={preventNativeSubmit(submit)}
             >
-              <UserInputForm
-                webForm={webForm}
-                forEdit={institutionUser !== undefined}
-              />
-              {!forEdit && isAdmin && (
+              <UserInputForm webForm={webForm as any} forEdit={forEdit} />
+              {isAdmin && (
                 <>
                   <FormControl isRequired isInvalid={!!webForm.errors.role}>
                     <FormLabel>Role</FormLabel>
-                    <EnumSelect
-                      enumData={InstitutionUserType}
-                      allowedEnum={[
-                        InstitutionUserType.Admin,
-                        InstitutionUserType.Teacher,
-                        InstitutionUserType.Accountant,
-                      ]}
+                    <RoleSelect
+                      roles={roles}
                       onChange={(e: any) => webForm.setValue('role', e.value)}
                       selectValue={webForm.data.role}
                       required

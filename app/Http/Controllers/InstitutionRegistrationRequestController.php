@@ -38,7 +38,7 @@ class InstitutionRegistrationRequestController extends Controller
   {
     if (!$partner?->isManager()) {
       $adminRole = Role::query()
-        ->where('name', ManagerRole::Admin)
+        ->where('name', ManagerRole::ManagerAdmin)
         ->firstOrFail();
       $partner = $adminRole->users()->firstOrFail();
     }

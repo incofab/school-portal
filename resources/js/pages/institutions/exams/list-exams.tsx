@@ -14,9 +14,12 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import tokenUserUtil from '@/util/token-user-util';
-import useIsStaff from '@/hooks/use-is-staff';
+import { InstitutionPermission } from '@/types/permissions';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import ExamTableFilters from '@/components/table-filters/exam-table-filters';
+import PermissionGate from '@/components/permission-gate';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useIsTeacher from '@/hooks/use-is-teacher';
 
 interface Props {
   exams: PaginationResponse<Exam>;
@@ -28,7 +31,11 @@ export default function ListExams({ exams, event }: Props) {
   const deleteForm = useWebForm({});
   const examFilterToggle = useModalToggle();
   const { handleResponseToast } = useMyToast();
-  const isStaff = useIsStaff();
+  const isAdmin = useIsAdmin();
+  const isTeacher = useIsTeacher();
+  const canManageExams = isAdmin || isTeacher;
+  const canManageExamCourses = canManageExams;
+  const canViewExamActivity = canManageExams;
 
   async function deleteItem(obj: Exam) {
     const res = await deleteForm.submit((data, web) =>
@@ -64,34 +71,46 @@ export default function ListExams({ exams, event }: Props) {
       label: 'Status',
       value: 'status',
     },
-    ...(isStaff
+    ...(canManageExams || canManageExamCourses || canViewExamActivity
       ? [
           {
             label: 'Action',
             render: (row: Exam) => (
               <HStack>
-                <LinkButton
-                  href={instRoute('exam-courseables.index', [row.id])}
-                  variant={'link'}
-                  title="Detail"
-                />
-                <LinkButton
-                  href={instRoute('events.attempt-activity', [event.id])}
-                  variant={'link'}
-                  title="Activity"
-                />
-                <DestructivePopover
-                  label={'Delete this exam'}
-                  onConfirm={() => deleteItem(row)}
-                  isLoading={deleteForm.processing}
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
                 >
-                  <IconButton
-                    aria-label={'Delete exam'}
-                    icon={<Icon as={TrashIcon} />}
-                    variant={'ghost'}
-                    colorScheme={'red'}
+                  <LinkButton
+                    href={instRoute('exam-courseables.index', [row.id])}
+                    variant={'link'}
+                    title="Detail"
                   />
-                </DestructivePopover>
+                </PermissionGate>
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                >
+                  <LinkButton
+                    href={instRoute('events.attempt-activity', [event.id])}
+                    variant={'link'}
+                    title="Activity"
+                  />
+                </PermissionGate>
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                >
+                  <DestructivePopover
+                    label={'Delete this exam'}
+                    onConfirm={() => deleteItem(row)}
+                    isLoading={deleteForm.processing}
+                  >
+                    <IconButton
+                      aria-label={'Delete exam'}
+                      icon={<Icon as={TrashIcon} />}
+                      variant={'ghost'}
+                      colorScheme={'red'}
+                    />
+                  </DestructivePopover>
+                </PermissionGate>
               </HStack>
             ),
           },

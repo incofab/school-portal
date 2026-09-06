@@ -4,7 +4,7 @@ import { ManagerRole } from '@/types/types';
 export default function useIsAdminManager() {
   const { currentUser } = useSharedProps();
   const role = currentUser.roles?.filter(
-    (role) => role.name === ManagerRole.Admin
+    (role) => role.name === ManagerRole.ManagerAdmin
   );
   return Number(role?.length) > 0;
 }

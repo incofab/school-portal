@@ -135,9 +135,11 @@ class RecordStudentSubjectsResultRequest extends FormRequest
       ]);
     }
 
+    $institutionUser = currentInstitutionUser();
     if (
-      !currentInstitutionUser()->isAdmin() &&
-      $courseTeacher->user_id !== currentUser()->id
+      !$institutionUser->isAdmin() &&
+      (!$institutionUser->isTeacher() ||
+        $courseTeacher->user_id !== currentUser()->id)
     ) {
       throw ValidationException::withMessages([
         'result' => 'Access denied'

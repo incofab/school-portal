@@ -33,8 +33,8 @@ class UserSeeder extends Seeder
 
     $admin = User::firstOrCreate(['email' => $adminEmail], $data);
 
-    if (!$admin->hasRole(ManagerRole::Admin)) {
-      $admin->syncRoles(ManagerRole::Admin);
+    if (!$admin->isAdmin()) {
+      $admin->syncRoles(ManagerRole::ManagerAdmin);
     }
   }
 }

@@ -20,26 +20,30 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import { LinkButton } from '@/components/buttons';
 import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
+import useInstitutionPermission from '@/hooks/use-institution-permission';
+import { InstitutionPermission } from '@/types/permissions';
 import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
 } from '@/components/server-paginated-table';
 import DateTimeDisplay from '@/components/date-time-display';
-import useIsStaff from '@/hooks/use-is-staff';
 import useIsAdmin from '@/hooks/use-is-admin';
 import useSharedProps from '@/hooks/use-shared-props';
 import CourseTeacherTableFilters from '@/components/table-filters/course-teacher-table-filters';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   courseTeachers: PaginationResponse<CourseTeacher>;
 }
 
 function ListLecturerCourses({ courseTeachers }: Props) {
-  const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
   const { currentUser } = useSharedProps();
+  const canManageCourseTeachers = useInstitutionPermission(
+    InstitutionPermission.NaturalAccess
+  );
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
@@ -83,80 +87,90 @@ function ListLecturerCourses({ courseTeachers }: Props) {
       label: 'Assigned On',
       render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
     },
-    ...(isStaff
+    ...(canManageCourseTeachers
       ? [
           {
             label: 'Action',
             render: (row: CourseTeacher) => (
               <HStack>
-                {(isAdmin || currentUser.id === row.user_id) && (
-                  <>
-                    <LinkButton
-                      href={instRoute('lesson-plans.index', {
-                        courseTeacher: row.id,
-                      })}
-                      variant={'link'}
-                      title="List Lesson Plans"
-                    />
-                    <LinkButton
-                      href={instRoute(
-                        'inst-topics.index',
-                        topicFilterParams(row)
-                      )}
-                      variant={'link'}
-                      title="List Topics"
-                    />
-                    <Menu>
-                      <MenuButton
-                        as={Button}
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                >
+                  {isAdmin || currentUser.id === row.user_id ? (
+                    <>
+                      <LinkButton
+                        href={instRoute('lesson-plans.index', {
+                          courseTeacher: row.id,
+                        })}
                         variant={'link'}
-                        colorScheme={'brand'}
-                        fontWeight={'normal'}
+                        title="List Lesson Plans"
+                      />
+                      <LinkButton
+                        href={instRoute(
+                          'inst-topics.index',
+                          topicFilterParams(row)
+                        )}
+                        variant={'link'}
+                        title="List Topics"
+                      />
+                      <PermissionGate
+                        permissions={InstitutionPermission.NaturalAccess}
                       >
-                        Record Result
-                      </MenuButton>
-                      <MenuList>
-                        <MenuItem
-                          as={InertiaLink}
-                          href={instRoute('course-results.create', [row])}
-                          py={2}
+                        <Menu>
+                          <MenuButton
+                            as={Button}
+                            variant={'link'}
+                            colorScheme={'brand'}
+                            fontWeight={'normal'}
+                          >
+                            Record Result
+                          </MenuButton>
+                          <MenuList>
+                            <MenuItem
+                              as={InertiaLink}
+                              href={instRoute('course-results.create', [row])}
+                              py={2}
+                            >
+                              Single Student
+                            </MenuItem>
+                            <MenuItem
+                              as={InertiaLink}
+                              href={instRoute('record-class-results.create', [
+                                row,
+                              ])}
+                              py={2}
+                            >
+                              All Class Students
+                            </MenuItem>
+                            <MenuItem
+                              as={InertiaLink}
+                              href={instRoute(
+                                'record-student-subject-results.create'
+                              )}
+                              py={2}
+                            >
+                              Single Student All Subjects
+                            </MenuItem>
+                          </MenuList>
+                        </Menu>
+                      </PermissionGate>
+                      {isAdmin && (
+                        <DestructivePopover
+                          label={`Delete ${row.course?.title} assignment from ${row.user?.full_name}?`}
+                          onConfirm={() => deleteItem(row)}
+                          isLoading={deleteForm.processing}
                         >
-                          Single Student
-                        </MenuItem>
-                        <MenuItem
-                          as={InertiaLink}
-                          href={instRoute('record-class-results.create', [row])}
-                          py={2}
-                        >
-                          All Class Students
-                        </MenuItem>
-                        <MenuItem
-                          as={InertiaLink}
-                          href={instRoute(
-                            'record-student-subject-results.create'
-                          )}
-                          py={2}
-                        >
-                          Single Student All Subjects
-                        </MenuItem>
-                      </MenuList>
-                    </Menu>
-                    {isAdmin && (
-                      <DestructivePopover
-                        label={`Delete ${row.course?.title} assignment from ${row.user?.full_name}?`}
-                        onConfirm={() => deleteItem(row)}
-                        isLoading={deleteForm.processing}
-                      >
-                        <IconButton
-                          aria-label={'Delete'}
-                          icon={<Icon as={TrashIcon} />}
-                          variant={'ghost'}
-                          colorScheme={'red'}
-                        />
-                      </DestructivePopover>
-                    )}
-                  </>
-                )}
+                          <IconButton
+                            aria-label={'Delete'}
+                            icon={<Icon as={TrashIcon} />}
+                            variant={'ghost'}
+                            colorScheme={'red'}
+                          />
+                        </DestructivePopover>
+                      )}
+                    </>
+                  ) : null}
+                </PermissionGate>
               </HStack>
             ),
           },
@@ -170,10 +184,14 @@ function ListLecturerCourses({ courseTeachers }: Props) {
         <SlabHeading
           title={'Subject Teachers'}
           rightElement={
-            <LinkButton
-              href={instRoute('course-teachers.create')}
-              title="Assign"
-            />
+            <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+              {isAdmin && (
+                <LinkButton
+                  href={instRoute('course-teachers.create')}
+                  title="Assign"
+                />
+              )}
+            </PermissionGate>
           }
         />
         <SlabBody>

@@ -72,9 +72,17 @@ class AssignmentRequest extends FormRequest
             return;
           }
 
+          $currentInstitutionUser = currentInstitutionUser();
+          if ($currentInstitutionUser?->id !== $instUser->id) {
+            $fail('Teachers can only work on their own assignments');
+
+            return;
+          }
+
           $courseTeacher = CourseTeacher::query()
             ->whereIn('classification_id', $this->classification_ids)
             ->where('course_id', $this->course_id)
+            ->where('user_id', $instUser->user_id)
             ->first();
           if (!$courseTeacher) {
             $fail('Unauthorized course teacher');

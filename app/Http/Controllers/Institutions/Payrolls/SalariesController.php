@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Institutions\Payrolls;
 
 use App\Actions\Payrolls\SalaryHandler;
-use App\Enums\InstitutionUserType;
+use App\Enums\InstitutionPermission;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SalaryRequest;
 use App\Models\Institution;
@@ -14,7 +14,7 @@ class SalariesController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin]);
+    $this->allowedPermissions([InstitutionPermission::ManagePayroll]);
   }
 
   public function index(Institution $institution)

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Institutions\Assignments;
 
 use App\Actions\RecordAssignment;
+use App\Enums\InstitutionUserType;
 use Inertia\Inertia;
 use App\Models\Assignment;
 use App\Models\Institution;
 use Illuminate\Http\Request;
-use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AssignmentRequest;
 use App\Support\Queries\AssignmentQueryBuilder;
@@ -20,13 +20,13 @@ class AssignmentController extends Controller
     $this->allowedRoles([
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
-    ])->except('index', 'show');
-
-    $this->allowedRoles([
-      InstitutionUserType::Student,
-      InstitutionUserType::Admin,
-      InstitutionUserType::Teacher
-    ])->only('index', 'show');
+    ])->only([
+      'create',
+      'store',
+      'edit',
+      'update',
+      'destroy'
+    ]);
   }
 
   function index(Request $request, Institution $institution)
@@ -43,7 +43,10 @@ class AssignmentController extends Controller
       )
       ->when(
         $institutionUser->isTeacher(),
-        fn($q) => $q->forTeacher($institutionUser)
+        fn($q) => $q->where(
+          'assignments.institution_user_id',
+          $institutionUser->id
+        )
       )
       ->with('course', 'classifications');
 
@@ -61,6 +64,7 @@ class AssignmentController extends Controller
 
   function edit(Institution $institution, Assignment $assignment)
   {
+    $this->ensureTeacherOwns($assignment);
     $assignment->load('classifications');
 
     return Inertia::render('institutions/assignments/create-edit-assignment', [
@@ -116,6 +120,7 @@ class AssignmentController extends Controller
     Institution $institution,
     Assignment $assignment
   ) {
+    $this->ensureTeacherOwns($assignment);
     $data = $request->validated();
 
     (new RecordAssignment(
@@ -125,5 +130,17 @@ class AssignmentController extends Controller
     ))->update($assignment);
 
     return $this->ok();
+  }
+
+  private function ensureTeacherOwns(Assignment $assignment): void
+  {
+    $institutionUser = currentInstitutionUser();
+
+    abort_unless(
+      $institutionUser->isAdmin() ||
+        $assignment->institution_user_id === $institutionUser->id,
+      403,
+      'You can only work on your own assignments'
+    );
   }
 }

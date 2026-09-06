@@ -45,6 +45,8 @@ class LearningEvaluationController extends Controller
     Institution $institution,
     ?LearningEvaluation $learningEvaluation = null
   ) {
+    $termResult->loadMissing('classification');
+    $this->ensureClassOwnership($termResult->classification);
     $data = $request->validate([
       'learning_evaluation_domain_id' => [
         'required',

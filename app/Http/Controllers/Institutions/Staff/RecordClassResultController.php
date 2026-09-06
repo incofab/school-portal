@@ -30,7 +30,7 @@ class RecordClassResultController extends Controller
     $teacher = $courseTeacher->user;
     $user = currentUser();
     abort_if(
-      !$user->isInstitutionAdmin() && !$teacher->is(currentUser()),
+      !currentInstitutionUser()->isAdmin() && !$teacher->is(currentUser()),
       403,
       'You cannot record result for this course'
     );

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Institutions\Payments;
 use App\Actions\Fees\DuplicateFees;
 use App\Actions\Fees\ResolvePreviousTerm;
 use App\Actions\Payments\RecordFee;
-use App\Enums\InstitutionUserType;
+use App\Enums\InstitutionPermission;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateFeeRequest;
 use App\Models\AcademicSession;
@@ -22,10 +22,19 @@ class FeeController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Accountant
-    ])->except(['index', 'search']);
+    $this->allowedPermissions([InstitutionPermission::ManageFees])->only([
+      'index',
+      'search',
+      'previousTermFees'
+    ]);
+    $this->allowedPermissions([InstitutionPermission::ManageFees])->only([
+      'create',
+      'store',
+      'edit',
+      'update',
+      'destroy',
+      'duplicate'
+    ]);
   }
 
   public function index(Request $request, Institution $institution)

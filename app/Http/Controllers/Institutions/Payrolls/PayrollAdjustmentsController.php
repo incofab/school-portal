@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Institutions\Payrolls;
 
 use App\Actions\Payrolls\PayrollAdjustmentHandler;
 use App\Models\Institution;
-use App\Enums\InstitutionUserType;
+use App\Enums\InstitutionPermission;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PayrollAdjustmentRequest;
 use App\Models\Payroll;
@@ -16,7 +16,7 @@ class PayrollAdjustmentsController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin]);
+    $this->allowedPermissions([InstitutionPermission::ManagePayroll]);
   }
 
   //= Grab the PayrollAdjustments associated with a given Payroll.

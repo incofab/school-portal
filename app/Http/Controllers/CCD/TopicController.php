@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\CCD;
 
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Institution;
@@ -8,8 +9,26 @@ use App\Models\Topic;
 
 class TopicController extends Controller
 {
+  public function __construct()
+  {
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ])->only([
+      'create',
+      'store',
+      'edit',
+      'update',
+      'destroy'
+    ]);
+  }
+
   function index(Institution $institution, Course $course = null)
   {
+    if ($course) {
+      $this->authorize('viewQuestionBank', [Course::class, $course]);
+    }
+
     return view('ccd/topics/index', [
       'allRecords' => Topic::query()
         ->when($course, fn($q) => $q->where('course_id', $course->id))
@@ -20,11 +39,13 @@ class TopicController extends Controller
 
   function create(Institution $institution, Course $course)
   {
+    $this->authorize('viewQuestionBank', [Course::class, $course]);
     return view('ccd/topics/create', ['course' => $course, 'edit' => null]);
   }
 
   function store(Institution $institution, Course $course)
   {
+    $this->authorize('viewQuestionBank', [Course::class, $course]);
     $data = request()->validate(Topic::createRule());
     $course->topics()->create([...$data, 'institution_id' => $institution->id]);
     return $this->res(
@@ -35,6 +56,7 @@ class TopicController extends Controller
 
   function edit(Institution $institution, Topic $topic)
   {
+    $this->authorize('viewQuestionBank', [Course::class, $topic->course]);
     return view('ccd/topics/create', [
       'edit' => $topic,
       'course' => $topic->course
@@ -43,6 +65,7 @@ class TopicController extends Controller
 
   function update(Institution $institution, Topic $topic)
   {
+    $this->authorize('viewQuestionBank', [Course::class, $topic->course]);
     $data = request()->validate(Topic::createRule($topic));
     $topic->fill($data)->save();
     return $this->res(successRes('Topic updated'), instRoute('topics.index'));
@@ -50,6 +73,7 @@ class TopicController extends Controller
 
   function destroy(Institution $institution, Topic $topic)
   {
+    $this->authorize('viewQuestionBank', [Course::class, $topic->course]);
     abort_if(
       $topic->questions()->exists(),
       401,

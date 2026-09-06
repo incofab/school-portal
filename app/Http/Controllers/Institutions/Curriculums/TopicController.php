@@ -24,8 +24,15 @@ class TopicController extends Controller
     $this->allowedRoles([
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
+    ])->only([
+      'index',
+      'subTopicIndex',
+      'show',
+      'createOrEdit',
+      'store',
+      'update',
+      'destroy'
     ]);
-    $this->allowedRoles([InstitutionUserType::Admin])->only('destroy');
   }
 
   public function index(Institution $institution, ?Topic $topic = null)
@@ -93,6 +100,7 @@ class TopicController extends Controller
             'courseTeacher.user',
             'courseTeacher.classification',
             'media',
+            'lessonNote.courseTeacher',
             'lessonNote.media'
           ])
         ])

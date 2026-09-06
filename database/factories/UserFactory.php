@@ -6,6 +6,7 @@ use App\Enums\Gender;
 use App\Enums\InstitutionUserType;
 use App\Enums\ManagerRole;
 use App\Models\Institution;
+use App\Models\InstitutionUser;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -65,23 +66,24 @@ class UserFactory extends Factory
 
   public function institutionUser(
     ?Institution $institution = null,
-    $role = InstitutionUserType::Admin
+    InstitutionUserType $role = InstitutionUserType::Admin
   ): static {
     return $this->afterCreating(
-      fn(User $user) => $user->institutionUsers()->create([
-        'institution_id' =>
-          $institution->id ?? Institution::factory()->create()->id,
-        'role' => $role
-      ])
+      fn(User $user) => InstitutionUser::factory()
+        ->user($user)
+        ->type($role)
+        ->when($institution, fn($q) => $q->withInstitution($institution))
+        ->create()
     );
   }
 
   public function adminManager(): static
   {
     return $this->afterCreating(
-      fn(User $user) => $user->syncRoles(ManagerRole::Admin)
+      fn(User $user) => $user->syncRoles(ManagerRole::ManagerAdmin)
     );
   }
+
   public function partnerManager(): static
   {
     return $this->afterCreating(

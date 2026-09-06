@@ -67,7 +67,7 @@ it('logs successful and failed student login', function () {
   $institution = Institution::factory()->create();
   $institutionUser = InstitutionUser::factory()
     ->withInstitution($institution)
-    ->create(['role' => InstitutionUserType::Student]);
+    ->create(['type' => InstitutionUserType::Student]);
   $student = Student::factory()
     ->withInstitution($institution, institutionUser: $institutionUser)
     ->create();
@@ -125,6 +125,10 @@ it(
   function () {
     $institution = Institution::factory()->create();
     $admin = $institution->createdBy;
+    $accountantRoleId = $institution
+      ->roles()
+      ->where('name', InstitutionUserType::Accountant->value)
+      ->value('id');
     $target = InstitutionUser::factory()
       ->teacher($institution)
       ->create();
@@ -133,7 +137,7 @@ it(
       ->postJson(
         route('institutions.users.change-role', [$institution, $target]),
         [
-          'role' => InstitutionUserType::Accountant->value
+          'role' => $accountantRoleId
         ]
       )
       ->assertOk();
@@ -186,6 +190,10 @@ it(
 it('logs admin password resets, user creation, and user deletion', function () {
   $institution = Institution::factory()->create();
   $admin = $institution->createdBy;
+  $teacherRoleId = $institution
+    ->roles()
+    ->where('name', InstitutionUserType::Teacher->value)
+    ->value('id');
 
   actingAs($admin)
     ->postJson(route('institutions.users.store', $institution), [
@@ -194,7 +202,7 @@ it('logs admin password resets, user creation, and user deletion', function () {
       'email' => 'audit-user@example.test',
       'password' => 'password',
       'password_confirmation' => 'password',
-      'role' => InstitutionUserType::Teacher->value
+      'role' => $teacherRoleId
     ])
     ->assertOk();
 

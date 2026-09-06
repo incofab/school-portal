@@ -69,7 +69,7 @@ it(
       ->create();
     $manager->institutionUsers()->create([
       'institution_id' => $this->institution->id,
-      'role' => InstitutionUserType::Admin
+      'type' => InstitutionUserType::Admin
     ]);
 
     actingAs($manager)

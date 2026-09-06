@@ -23,8 +23,8 @@ import useSharedProps from '@/hooks/use-shared-props';
 import CourseResultInfoTableFilters from '@/components/table-filters/course-result-info-table-filters';
 import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import useIsStaff from '@/hooks/use-is-staff';
 import useIsAdmin from '@/hooks/use-is-admin';
+import useIsTeacher from '@/hooks/use-is-teacher';
 import UploadCourseResultsModal from '@/components/modals/upload-course-results-modal';
 import { CloudArrowDownIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { Inertia } from '@inertiajs/inertia';
@@ -35,6 +35,8 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   courseResultInfo: PaginationResponse<CourseResultInfo>;
@@ -46,8 +48,9 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
   const downloadCourseResultModalToggle = useModalToggle();
   const uploadCourseResultModalToggle = useModalValueToggle();
   const { instRoute } = useInstitutionRoute();
-  const isStaff = useIsStaff();
   const isAdmin = useIsAdmin();
+  const isTeacher = useIsTeacher();
+  const canManageResults = isAdmin || isTeacher;
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
 
@@ -113,28 +116,31 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
       label: 'Action',
       render: (row) => (
         <HStack spacing={2}>
-          <LinkButton
-            href={route('institutions.course-results.index', {
-              institution: currentInstitution.uuid,
-              classification: row.classification_id,
-              course: row.course_id,
-              term: row.term,
-              academicSession: row.academic_session_id,
-              forMidTerm: row.for_mid_term,
-            })}
-            variant={'link'}
-            title="Student Scores"
-          />
-          <Menu>
-            <MenuButton
-              as={IconButton}
-              aria-label={'open action menu'}
-              icon={<Icon as={EllipsisVerticalIcon} />}
-              size={'sm'}
-              variant={'ghost'}
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            <LinkButton
+              href={route('institutions.course-results.index', {
+                institution: currentInstitution.uuid,
+                classification: row.classification_id,
+                course: row.course_id,
+                term: row.term,
+                academicSession: row.academic_session_id,
+                forMidTerm: row.for_mid_term,
+              })}
+              variant={'link'}
+              title="Student Scores"
             />
-            <MenuList>
-              {/* <MenuItem
+          </PermissionGate>
+          {canManageResults && (
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                aria-label={'open action menu'}
+                icon={<Icon as={EllipsisVerticalIcon} />}
+                size={'sm'}
+                variant={'ghost'}
+              />
+              <MenuList>
+                {/* <MenuItem
                 as={InertiaLink}
                 href={route('institutions.course-results.index', {
                   institution: currentInstitution.uuid,
@@ -148,19 +154,22 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
               >
                 Student Scores
               </MenuItem> */}
-              {isStaff && (
-                <MenuItem
-                  as={InertiaLink}
-                  href={instRoute('course-result-info.transfer.create', [
-                    row.id,
-                  ])}
-                  py={2}
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
                 >
-                  Transfer
-                </MenuItem>
-              )}
-            </MenuList>
-          </Menu>
+                  <MenuItem
+                    as={InertiaLink}
+                    href={instRoute('course-result-info.transfer.create', [
+                      row.id,
+                    ])}
+                    py={2}
+                  >
+                    Transfer
+                  </MenuItem>
+                </PermissionGate>
+              </MenuList>
+            </Menu>
+          )}
           {isAdmin && (
             <DestructivePopover
               label={'Delete this course result info'}
@@ -187,21 +196,25 @@ export default function ListCourseResultInfo({ courseResultInfo }: Props) {
           title="Recorded Result Detail"
           rightElement={
             <HStack>
-              {isStaff && (
-                <>
+              {canManageResults && (
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                >
                   <BrandButton
                     onClick={() =>
                       uploadCourseResultModalToggle.open(undefined)
                     }
                     title={'Upload Results'}
                   />
-                  <BrandButton
-                    leftIcon={<Icon as={CloudArrowDownIcon} />}
-                    onClick={downloadCourseResultModalToggle.open}
-                    title="Download"
-                  />
-                </>
+                </PermissionGate>
               )}
+              <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+                <BrandButton
+                  leftIcon={<Icon as={CloudArrowDownIcon} />}
+                  onClick={downloadCourseResultModalToggle.open}
+                  title="Download"
+                />
+              </PermissionGate>
             </HStack>
           }
         />

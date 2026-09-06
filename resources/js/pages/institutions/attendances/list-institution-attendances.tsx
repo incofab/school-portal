@@ -58,9 +58,9 @@ export default function ListAttendances({ attendance }: Props) {
           </Box>
           <HStack spacing={2}>
             <Badge textTransform="capitalize" colorScheme="purple">
-              {row.institution_user.role}
+              {row.institution_user.type}
             </Badge>
-            {row.institution_user.role === 'student' && (
+            {row.institution_user.type === 'student' && (
               <Badge colorScheme="gray">
                 {row.institution_user.student?.classification?.title ?? 'Class'}
               </Badge>

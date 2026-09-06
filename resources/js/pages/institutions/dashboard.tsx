@@ -154,9 +154,9 @@ export default function InstitutionDashboard({
   const student = currentInstitutionUser.student;
   const { forTeacher, forAccountant } = useInstitutionRole();
   const { instRoute } = useInstitutionRoute();
-  const isAdmin = currentInstitutionUser.role === InstitutionUserType.Admin;
+  const isAdmin = currentInstitutionUser.type === InstitutionUserType.Admin;
   const isGuardian =
-    currentInstitutionUser.role === InstitutionUserType.Guardian;
+    currentInstitutionUser.type === InstitutionUserType.Guardian;
   const accountant = [
     InstitutionUserType.Admin,
     InstitutionUserType.Accountant,
@@ -499,7 +499,7 @@ export default function InstitutionDashboard({
       )}
       <SimpleGrid spacing={6} columns={{ base: 1, sm: 2, md: 3 }} mt={6}>
         {items.map(function (item) {
-          if (item.roles && !item.roles.includes(currentInstitutionUser.role)) {
+          if (item.roles && !item.roles.includes(currentInstitutionUser.type)) {
             return null;
           }
           return <DashboardItemCard {...item} key={item.title} />;

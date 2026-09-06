@@ -1,11 +1,13 @@
 <?php
 
 use App\Enums\ChatThreadType;
+use App\Enums\InstitutionPermission;
 use App\Enums\InstitutionUserType;
 use App\Models\ChatMessage;
 use App\Models\ChatThread;
 use App\Models\Institution;
 use App\Models\User;
+use App\Services\Institutions\InstitutionRoleService;
 use Inertia\Testing\AssertableInertia;
 
 use function Pest\Laravel\actingAs;
@@ -29,7 +31,7 @@ beforeEach(function () {
   $this->alumni = User::factory()->create();
   $this->alumni->institutionUsers()->create([
     'institution_id' => $this->institution->id,
-    'role' => InstitutionUserType::Alumni
+    'type' => InstitutionUserType::Alumni
   ]);
 });
 
@@ -85,6 +87,40 @@ it('lets any institution user start institution and role chats', function () {
     'target_role' => InstitutionUserType::Accountant->value
   ]);
 });
+
+it(
+  'uses assigned institution roles for custom role conversations',
+  function () {
+    $role = app(InstitutionRoleService::class)->create($this->institution, [
+      'name' => 'Library Assistant',
+      'description' => 'Supports the school library.',
+      'permissions' => [InstitutionPermission::ManageChat->value]
+    ]);
+    $teacherInstitutionUser = $this->teacher->institutionUsers()->firstOrFail();
+    app(InstitutionRoleService::class)->assign($teacherInstitutionUser, $role);
+
+    actingAs($this->guardian)
+      ->post(route('institutions.chats.store', $this->institution), [
+        'type' => ChatThreadType::Role->value,
+        'target_role' => $role->id,
+        'message' => 'I need help finding a book.'
+      ])
+      ->assertOk();
+
+    assertDatabaseHas('chat_threads', [
+      'institution_id' => $this->institution->id,
+      'type' => ChatThreadType::Role->value,
+      'target_role' => (string) $role->id
+    ]);
+
+    $response = actingAs($this->teacher)->getJson(
+      route('institutions.chats.index', $this->institution)
+    );
+    $response->assertInertia(
+      fn(AssertableInertia $page) => $page->has('threads', 1)
+    );
+  }
+);
 
 it(
   'lets school staff and admin start direct chats with any institution user',

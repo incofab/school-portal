@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\AcademicSession;
 use App\Models\InternalNotification;
+use App\Models\InstitutionUser;
 use App\Models\User;
 use App\Support\Notifications\NotificationViewer;
 use App\Support\SettingsHandler;
@@ -50,6 +51,9 @@ class HandleInertiaRequests extends Middleware
       'classificationGroups',
       'classDivisions'
     );
+    $institutionUser = currentInstitutionUser();
+    $institutionUser?->loadMissing('roles.permissions');
+    $user = currentUser();
     $academicSessions = AcademicSession::all();
 
     return array_merge(parent::share($request), [
@@ -77,12 +81,13 @@ class HandleInertiaRequests extends Middleware
           'impersonator' => $impersonator
         ];
       },
-      'shared__currentUser' => currentUser()?->load(
-        'roles',
-        'partnerUser.partner'
-      ),
+      'shared__currentUser' => $user?->load('roles', 'partnerUser.partner'),
       'shared__currentInstitution' => fn() => $institution,
-      'shared__currentInstitutionUser' => fn() => currentInstitutionUser(),
+      'shared__currentInstitutionUser' => fn() => $institutionUser,
+      'shared__currentUserPermissions' => fn() => $this->currentUserPermissions(
+        $user,
+        $institutionUser
+      ),
       'shared__unreadNotificationCount' => function () {
         $viewer = NotificationViewer::fromRequest();
         return $viewer
@@ -96,5 +101,19 @@ class HandleInertiaRequests extends Middleware
       ),
       'shared_academicSessions' => $academicSessions
     ]);
+  }
+
+  private function currentUserPermissions(
+    ?User $user,
+    ?InstitutionUser $institutionUser
+  ): array {
+    return (
+      $institutionUser?->getAllPermissions() ??
+      ($user?->getAllPermissions() ?? collect())
+    )
+      ->pluck('name')
+      ->unique()
+      ->values()
+      ->all();
   }
 }

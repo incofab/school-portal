@@ -1,13 +1,6 @@
 import React from 'react';
 import { AxiosInstance } from 'axios';
-import {
-  Divider,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Divider, FormControl, Text, VStack } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
@@ -22,9 +15,7 @@ import { Div } from '@/components/semantic';
 import FormControlBox from '@/components/forms/form-control-box';
 import ClassificationSelect from '@/components/selectors/classification-select';
 import InputForm from '@/components/forms/input-form';
-import { InstitutionUserType } from '@/types/types';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import EnumSelect from '@/components/dropdown-select/enum-select';
 
 interface Props {
   student?: Student & {
@@ -44,7 +35,6 @@ export default function CreateOrUpdateStudent({ student }: Props) {
     email: student?.user!.email ?? '',
     phone: student?.user!.phone ?? '',
     gender: student?.user!.gender ?? '',
-    role: student?.user!.institution_user.role ?? InstitutionUserType.Student,
     guardian_phone: student?.guardian_phone ?? '',
     classification_id: student?.classification_id + '',
   });
@@ -82,62 +72,41 @@ export default function CreateOrUpdateStudent({ student }: Props) {
             >
               <UserInputForm webForm={webForm as any} forEdit={forEdit} />
 
-              {(webForm.data.role === InstitutionUserType.Student ||
-                webForm.data.role === InstitutionUserType.Alumni) && (
-                <>
-                  <Div width={'full'}>
-                    <Text
-                      fontWeight={'semibold'}
-                      fontSize={'md'}
-                      mt={3}
-                      textAlign={'center'}
+              <>
+                <Div width={'full'}>
+                  <Text
+                    fontWeight={'semibold'}
+                    fontSize={'md'}
+                    mt={3}
+                    textAlign={'center'}
+                  >
+                    Student Data
+                  </Text>
+                  <Divider />
+                </Div>
+                {!forEdit && (
+                  <>
+                    <FormControlBox
+                      isRequired
+                      formKey="classification_id"
+                      title="Class"
+                      form={webForm}
                     >
-                      Student Data
-                    </Text>
-                    <Divider />
-                  </Div>
-                  {!forEdit && (
-                    <>
-                      <FormControl isRequired isInvalid={!!webForm.errors.role}>
-                        <FormLabel>Role</FormLabel>
-                        <EnumSelect
-                          enumData={InstitutionUserType}
-                          allowedEnum={[
-                            InstitutionUserType.Student,
-                            InstitutionUserType.Alumni,
-                          ]}
-                          onChange={(e: any) =>
-                            webForm.setValue('role', e.value)
-                          }
-                          selectValue={webForm.data.role}
-                          required
-                        />
-                        <FormErrorMessage>
-                          {webForm.errors.role}
-                        </FormErrorMessage>
-                      </FormControl>
-                      <FormControlBox
-                        isRequired
-                        formKey="classification_id"
-                        title="Class"
-                        form={webForm}
-                      >
-                        <ClassificationSelect
-                          selectValue={webForm.data.classification_id}
-                          onChange={(e: any) =>
-                            webForm.setValue('classification_id', e.value)
-                          }
-                        />
-                      </FormControlBox>
-                    </>
-                  )}
-                  <InputForm
-                    form={webForm as any}
-                    formKey="guardian_phone"
-                    title="Guardian Phone"
-                  />
-                </>
-              )}
+                      <ClassificationSelect
+                        selectValue={webForm.data.classification_id}
+                        onChange={(e: any) =>
+                          webForm.setValue('classification_id', e.value)
+                        }
+                      />
+                    </FormControlBox>
+                  </>
+                )}
+                <InputForm
+                  form={webForm as any}
+                  formKey="guardian_phone"
+                  title="Guardian Phone"
+                />
+              </>
               <FormControl>
                 <FormButton isLoading={webForm.processing} />
               </FormControl>

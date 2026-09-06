@@ -1,6 +1,5 @@
-import useIsAdmin from '@/hooks/use-is-admin';
 import { WebForm } from '@/hooks/use-web-form';
-import { Gender, InstitutionUserType } from '@/types/types';
+import { Gender } from '@/types/types';
 import {
   FormControl,
   FormErrorMessage,
@@ -26,8 +25,7 @@ interface Props {
   forEdit?: boolean;
 }
 
-export default function UserInputForm({ webForm, forEdit }: Props) {
-  const isAdmin = useIsAdmin();
+export default function UserInputForm({ webForm }: Props) {
   return (
     <>
       <FormControl isRequired isInvalid={!!webForm.errors.first_name}>
@@ -93,23 +91,8 @@ export default function UserInputForm({ webForm, forEdit }: Props) {
           selectValue={webForm.data.gender}
           required
         />
-        <FormErrorMessage>{webForm.errors.phone}</FormErrorMessage>
+        <FormErrorMessage>{webForm.errors.gender}</FormErrorMessage>
       </FormControl>
-      {/* 
-      {!forEdit && isAdmin && (
-        <>
-          <FormControl isRequired isInvalid={!!webForm.errors.role}>
-            <FormLabel>Role</FormLabel>
-            <EnumSelect
-              enumData={InstitutionUserType}
-              onChange={(e: any) => webForm.setValue('role', e.value)}
-              selectValue={webForm.data.role}
-              required
-            />
-            <FormErrorMessage>{webForm.errors.role}</FormErrorMessage>
-          </FormControl>
-        </>
-      )} */}
     </>
   );
 }

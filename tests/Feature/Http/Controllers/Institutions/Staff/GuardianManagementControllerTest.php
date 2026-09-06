@@ -89,8 +89,15 @@ it('should store guardians for students', function () {
     $this->assertDatabaseHas('institution_users', [
       'user_id' => $guardianUser->id,
       'institution_id' => $this->institution->id,
-      'role' => InstitutionUserType::Guardian
+      'type' => InstitutionUserType::Guardian
     ]);
+    expect(
+      $guardianUser
+        ->institutionUser()
+        ->first()
+        ->fresh('roles')
+        ->roles->first()->name
+    )->toBe(InstitutionUserType::Guardian->value);
     $this->assertDatabaseHas('guardian_students', [
       'guardian_user_id' => $guardianUser->id,
       'student_id' => $student->id,

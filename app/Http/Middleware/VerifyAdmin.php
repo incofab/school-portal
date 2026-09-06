@@ -18,7 +18,7 @@ class VerifyAdmin
   {
     $user = currentUser();
 
-    if (!$user->hasRole(ManagerRole::Admin)) {
+    if (!$user->isAdmin()) {
       return $this->eject($request, 'You are not an admin');
     }
 

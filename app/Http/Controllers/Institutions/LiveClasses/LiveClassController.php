@@ -19,13 +19,7 @@ class LiveClassController extends Controller
     $this->allowedRoles([
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
-    ])->except('index');
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Teacher,
-      InstitutionUserType::Student,
-      InstitutionUserType::Alumni
-    ])->only('index');
+    ])->only(['create', 'store']);
   }
 
   /**
@@ -34,6 +28,13 @@ class LiveClassController extends Controller
   private function getLiveClassesQuery()
   {
     $institutionUser = currentInstitutionUser();
+    if ($institutionUser?->isTeacher()) {
+      return LiveClass::query()->where(
+        'teacher_user_id',
+        $institutionUser->user_id
+      );
+    }
+
     if (!$institutionUser?->isStudent() && !$institutionUser->isAlumni()) {
       return LiveClass::query();
     }
@@ -125,6 +126,7 @@ class LiveClassController extends Controller
 
   public function edit(Institution $institution, LiveClass $liveClass)
   {
+    $this->ensureTeacherOwns($liveClass);
     return inertia('institutions/live-classes/create-edit-live-class', [
       'liveClass' => $liveClass
     ]);
@@ -135,6 +137,7 @@ class LiveClassController extends Controller
     LiveClass $liveClass,
     Request $request
   ) {
+    $this->ensureTeacherOwns($liveClass);
     $data = $request->validate(LiveClass::createRule());
     $liveable = $this->resolveLiveable(
       $institution,
@@ -157,8 +160,21 @@ class LiveClassController extends Controller
 
   public function destroy(Institution $institution, LiveClass $liveClass)
   {
+    $this->ensureTeacherOwns($liveClass);
     $liveClass->delete();
     return $this->ok();
+  }
+
+  private function ensureTeacherOwns(LiveClass $liveClass): void
+  {
+    $institutionUser = currentInstitutionUser();
+
+    abort_unless(
+      $institutionUser->isAdmin() ||
+        $liveClass->teacher_user_id === $institutionUser->user_id,
+      403,
+      'You can only work on your own live classes'
+    );
   }
 
   private function resolveLiveable(

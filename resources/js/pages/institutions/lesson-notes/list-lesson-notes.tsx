@@ -19,10 +19,12 @@ import useIsAdmin from '@/hooks/use-is-admin';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
 import useIsStudent from '@/hooks/use-is-student';
-import useIsTeacher from '@/hooks/use-is-teacher';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import LessonNoteTableFilters from '@/components/table-filters/lesson-note-table-filters';
 import ButtonSwitch from '@/components/button-switch';
+import useSharedProps from '@/hooks/use-shared-props';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 
 interface Props {
   lessonNotes: PaginationResponse<LessonNote>;
@@ -35,9 +37,8 @@ export default function ListLessonNotes({ lessonNotes }: Props) {
   const toggleStatusForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
-  const isTeacher = useIsTeacher();
   const isStudent = useIsStudent();
-
+  const { currentUser } = useSharedProps();
   async function deleteItem(obj: LessonNote) {
     const res = await deleteForm.submit((data, web) =>
       web.delete(instRoute('lesson-notes.destroy', [obj.id]))
@@ -72,22 +73,27 @@ export default function ListLessonNotes({ lessonNotes }: Props) {
     {
       label: 'Publish',
       render: (row) => (
-        <ButtonSwitch
-          items={[
-            {
-              label: 'Draft',
-              value: NoteStatusType.Draft,
-              onClick: isAdmin ? () => toggleStatus(row) : undefined,
-            },
-            {
-              label: 'Publish',
-              value: NoteStatusType.Published,
-              onClick: isAdmin ? () => toggleStatus(row) : undefined,
-            },
-          ]}
-          value={row.status}
-          _disabled={toggleStatusForm.processing ? 'disabled' : ''}
-        />
+        <PermissionGate
+          permissions={InstitutionPermission.NaturalAccess}
+          when={isAdmin}
+        >
+          <ButtonSwitch
+            items={[
+              {
+                label: 'Draft',
+                value: NoteStatusType.Draft,
+                onClick: () => toggleStatus(row),
+              },
+              {
+                label: 'Publish',
+                value: NoteStatusType.Published,
+                onClick: () => toggleStatus(row),
+              },
+            ]}
+            value={row.status}
+            _disabled={toggleStatusForm.processing ? 'disabled' : ''}
+          />
+        </PermissionGate>
       ),
     },
     {
@@ -110,30 +116,32 @@ export default function ListLessonNotes({ lessonNotes }: Props) {
             title="View"
           />
 
-          {(isAdmin || isTeacher) && (
-            <>
-              <IconButton
-                aria-label={'Edit Topic'}
-                icon={<Icon as={PencilIcon} />}
-                as={InertiaLink}
-                href={instRoute('lesson-notes.edit', [row.id])}
-                variant={'ghost'}
-                colorScheme={'brand'}
-              />
-              <DestructivePopover
-                label={'Delete this Lesson Note'}
-                onConfirm={() => deleteItem(row)}
-                isLoading={deleteForm.processing}
-              >
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+            {isAdmin || row.course_teacher?.user_id === currentUser.id ? (
+              <>
                 <IconButton
-                  aria-label={'Delete Lesson Note'}
-                  icon={<Icon as={TrashIcon} />}
+                  aria-label={'Edit Topic'}
+                  icon={<Icon as={PencilIcon} />}
+                  as={InertiaLink}
+                  href={instRoute('lesson-notes.edit', [row.id])}
                   variant={'ghost'}
-                  colorScheme={'red'}
+                  colorScheme={'brand'}
                 />
-              </DestructivePopover>
-            </>
-          )}
+                <DestructivePopover
+                  label={'Delete this Lesson Note'}
+                  onConfirm={() => deleteItem(row)}
+                  isLoading={deleteForm.processing}
+                >
+                  <IconButton
+                    aria-label={'Delete Lesson Note'}
+                    icon={<Icon as={TrashIcon} />}
+                    variant={'ghost'}
+                    colorScheme={'red'}
+                  />
+                </DestructivePopover>
+              </>
+            ) : null}
+          </PermissionGate>
         </HStack>
       ),
     },
@@ -145,12 +153,16 @@ export default function ListLessonNotes({ lessonNotes }: Props) {
         <SlabHeading
           title="Lesson Notes"
           rightElement={
-            !isStudent && (
-              <LinkButton
-                href={instRoute('lesson-plans.index')}
-                title={'New'}
-              />
-            )
+            <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+            >
+              {!isStudent && (
+                <LinkButton
+                  href={instRoute('lesson-plans.index')}
+                  title={'New'}
+                />
+              )}
+            </PermissionGate>
           }
         />
         <SlabBody>

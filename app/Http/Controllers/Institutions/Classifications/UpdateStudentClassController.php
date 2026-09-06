@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions\Classifications;
 
 use App\Actions\StudentMigration;
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Classification;
 use App\Models\Institution;
@@ -13,6 +14,14 @@ use Illuminate\Validation\Rule;
 
 class UpdateStudentClassController extends Controller
 {
+  public function __construct()
+  {
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ]);
+  }
+
   public function migrateClassStudents(
     Request $request,
     Institution $institution,

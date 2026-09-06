@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Enums\InstitutionUserType;
 use App\Models\GuardianStudent;
 use App\Models\User;
+use App\Services\Institutions\InstitutionRoleService;
 use App\Support\Audit\AcademicActivityLogger;
 use App\Support\Audit\ModelAudit;
 use Illuminate\Support\Facades\DB;
@@ -88,13 +89,15 @@ class RecordGuardian
     DB::commit();
   }
 
-  public function syncRole(User $user)
+  private function syncRole(User $user)
   {
-    $user
-      ->institutions()
-      ->syncWithPivotValues(
-        [currentInstitution()->id],
-        ['role' => InstitutionUserType::Guardian]
+    $institutionUser = $user
+      ->institutionUsers()
+      ->updateOrCreate(
+        ['institution_id' => currentInstitution()->id],
+        ['type' => InstitutionUserType::Guardian]
       );
+
+    app(InstitutionRoleService::class)->assignDefaultRole($institutionUser);
   }
 }

@@ -149,7 +149,7 @@ export default function ShowPayroll({ payroll }: Props) {
               </GridItem>
               <GridItem>
                 <Text fontWeight="bold">Designation:</Text>
-                <Text>{ucFirst(payroll.institution_user!.role)}</Text>
+                <Text>{ucFirst(payroll.institution_user!.type)}</Text>
               </GridItem>
               <GridItem>
                 <Text fontWeight="bold">Date:</Text>

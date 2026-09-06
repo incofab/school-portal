@@ -28,7 +28,7 @@ interface MenuListType extends MenuType {
 
 export default function ManagerSideBarLayout() {
   const { currentUser } = useSharedProps();
-  const managerRole = currentUser.roles![0]?.name;
+  const managerRole = currentUser.roles![0]?.name as ManagerRole;
 
   const menus: MenuListType[] = [
     {
@@ -50,26 +50,26 @@ export default function ManagerSideBarLayout() {
     {
       label: 'Managers',
       route: route('managers.index'),
-      roles: [ManagerRole.Admin],
+      roles: [ManagerRole.ManagerAdmin],
     },
     {
       label: 'Users',
       route: route('managers.users.index'),
-      roles: [ManagerRole.Admin],
+      roles: [ManagerRole.ManagerAdmin],
     },
     {
       label: 'Payment Attempts',
       route: route('managers.payment-attempts.index'),
-      roles: [ManagerRole.Admin],
+      roles: [ManagerRole.ManagerAdmin],
     },
     {
       label: 'Partnership Requests',
-      roles: [ManagerRole.Admin],
+      roles: [ManagerRole.ManagerAdmin],
       route: route('managers.partner-registration-requests.index'),
     },
     {
       label: 'Partners',
-      roles: [ManagerRole.Admin],
+      roles: [ManagerRole.ManagerAdmin],
       route: route('managers.partners.index'),
     },
     {
@@ -81,56 +81,56 @@ export default function ManagerSideBarLayout() {
     {
       label: 'Fundings',
       route: route('managers.funding.index'),
-      roles: [ManagerRole.Admin],
+      roles: [ManagerRole.ManagerAdmin],
     },
     {
       label: 'Billings',
       route: route('managers.billings.index'),
-      roles: [ManagerRole.Admin],
+      roles: [ManagerRole.ManagerAdmin],
     },
     {
       label: 'Academic Sessions',
       route: route('managers.academic-sessions.index'),
-      roles: [ManagerRole.Admin],
+      roles: [ManagerRole.ManagerAdmin],
     },
     {
       label: 'FAQs',
       route: route('managers.faqs.index'),
-      roles: [ManagerRole.Admin],
+      roles: [ManagerRole.ManagerAdmin],
     },
     {
       label: 'Institution Groups',
-      roles: [ManagerRole.Partner, ManagerRole.Admin],
+      roles: [ManagerRole.Partner, ManagerRole.ManagerAdmin],
       route: route('managers.institution-groups.index'),
     },
     {
       label: 'Institutions',
-      roles: [ManagerRole.Partner, ManagerRole.Admin],
+      roles: [ManagerRole.Partner, ManagerRole.ManagerAdmin],
       route: route('managers.institutions.index'),
     },
     {
       label: 'Sent Notifications',
-      roles: [ManagerRole.Partner, ManagerRole.Admin],
+      roles: [ManagerRole.Partner, ManagerRole.ManagerAdmin],
       route: route('managers.notifications.sent.index'),
     },
     {
       label: 'Registration Requests',
-      roles: [ManagerRole.Partner, ManagerRole.Admin],
+      roles: [ManagerRole.Partner, ManagerRole.ManagerAdmin],
       route: route('managers.registration-requests.index'),
     },
     // {
     //   label: 'Pins',
-    //   roles: [ManagerRole.Admin],
+    //   roles: [ManagerRole.ManagerAdmin],
     //   sub_items: [
     //     {
     //       label: 'List Generated Pins',
     //       route: route('managers.pin-generators.index'),
-    //       roles: [ManagerRole.Admin],
+    //       roles: [ManagerRole.ManagerAdmin],
     //     },
     //     {
     //       label: 'Generate Pins',
     //       route: route('managers.generate-pin.create'),
-    //       roles: [ManagerRole.Admin],
+    //       roles: [ManagerRole.ManagerAdmin],
     //     },
     //   ],
     // },

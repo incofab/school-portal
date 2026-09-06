@@ -11,16 +11,23 @@
 |
 */
 
+use Database\Seeders\PermissionInventorySeeder;
 use Database\Seeders\RoleSeeder;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use function Pest\Laravel\seed;
 
-uses(Tests\TestCase::class)
-  ->beforeEach(function () {
-    seed(RoleSeeder::class);
-  })
+pest()
+  ->extend(Tests\TestCase::class)
+  ->use(DatabaseTransactions::class)
   ->in('Feature');
-uses(Illuminate\Foundation\Testing\DatabaseTransactions::class)->in('Feature');
+
+// uses(Tests\TestCase::class)
+//   ->beforeEach(function () {
+//     seed(RoleSeeder::class, PermissionInventorySeeder::class);
+//   })
+//   ->in('Feature');
+// uses(Illuminate\Foundation\Testing\DatabaseTransactions::class)->in('Feature');
 
 /*
 |--------------------------------------------------------------------------

@@ -277,7 +277,7 @@ class TransferCourseResultInfoController extends Controller
       ->first();
 
     abort_unless(
-      $courseTeacher,
+      $currentInstitutionUser->isTeacher() && $courseTeacher,
       403,
       'You can only transfer results for your course'
     );

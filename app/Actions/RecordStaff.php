@@ -4,6 +4,8 @@ namespace App\Actions;
 
 use App\Models\Institution;
 use App\Models\User;
+use App\Enums\InstitutionUserType;
+use App\Services\Institutions\InstitutionRoleService;
 use Illuminate\Support\Facades\DB;
 
 class RecordStaff
@@ -47,18 +49,35 @@ class RecordStaff
           ->toArray()
       )
       ->save();
+    $this->syncRole($user, true);
     DB::commit();
 
     return $user;
   }
 
-  public function syncRole(User $user)
+  public function syncRole(User $user, bool $isUpdating = false): void
   {
-    $user
-      ->institutions()
-      ->syncWithPivotValues(
-        [$this->institution->id],
-        ['role' => $this->userData['role']]
+    $roleService = app(InstitutionRoleService::class);
+    $institutionUser = $user
+      ->institutionUsers()
+      ->firstOrCreate(
+        ['institution_id' => $this->institution->id],
+        ['type' => InstitutionUserType::Teacher]
       );
+
+    if (empty($this->userData['role'])) {
+      if (!$isUpdating) {
+        $roleService->assignDefaultRole($institutionUser);
+      }
+      return;
+    }
+
+    $roleService->assign(
+      $institutionUser,
+      $roleService->resolveStaffSelection(
+        $this->institution,
+        (int) $this->userData['role']
+      )
+    );
   }
 }

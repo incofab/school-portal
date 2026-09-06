@@ -12,6 +12,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class InstitutionUserFactory extends Factory
 {
+  public function configure()
+  {
+    return $this->afterCreating(function (InstitutionUser $model) {
+      app(
+        \App\Services\Institutions\InstitutionRoleService::class
+      )->assignDefaultRole($model);
+    });
+  }
+
   /**
    * Define the model's default state.
    *
@@ -22,18 +31,24 @@ class InstitutionUserFactory extends Factory
     return [
       'user_id' => User::factory(),
       'institution_id' => Institution::factory(),
-      'role' => fake()->randomElement(InstitutionUserType::cases()),
+      'type' => fake()->randomElement(InstitutionUserType::cases()),
       'status' => InstitutionUserStatus::Active->value
     ];
   }
 
+  public function user(User $user): static
+  {
+    return $this->state(fn(array $attributes) => ['user_id' => $user->id]);
+  }
+
+  public function type(InstitutionUserType $type): static
+  {
+    return $this->state(fn(array $attributes) => ['type' => $type->value]);
+  }
+
   public function admin(): static
   {
-    return $this->state(
-      fn(array $attributes) => [
-        'role' => InstitutionUserType::Admin->value
-      ]
-    );
+    return $this->type(InstitutionUserType::Admin);
   }
 
   public function teacher(?Institution $institution = null): static
@@ -41,37 +56,28 @@ class InstitutionUserFactory extends Factory
     return $this->when(
       $institution,
       fn($q) => $q->withInstitution($institution)
-    )->state(
-      fn(array $attributes) => [
-        'role' => InstitutionUserType::Teacher->value
-      ]
-    );
+    )->type(InstitutionUserType::Teacher);
   }
 
   public function student(Institution $institution): static
   {
-    return $this->state(
-      fn(array $attributes) => [
-        'role' => InstitutionUserType::Student->value,
-        'institution_id' => $institution->id
-      ]
-    )->afterCreating(
-      fn(
-        InstitutionUser $institutionUser
-      ) => Student::factory()->withInstitution(
-        $institutionUser->institution,
-        null,
-        $institutionUser
-      )
-    );
+    return $this->withInstitution($institution)
+      ->type(InstitutionUserType::Student)
+      ->afterCreating(
+        fn(
+          InstitutionUser $institutionUser
+        ) => Student::factory()->withInstitution(
+          $institutionUser->institution,
+          null,
+          $institutionUser
+        )
+      );
   }
 
   public function withInstitution(Institution $institution): static
   {
     return $this->state(
-      fn(array $attributes) => [
-        'institution_id' => $institution->id
-      ]
+      fn(array $attributes) => ['institution_id' => $institution->id]
     );
   }
 }

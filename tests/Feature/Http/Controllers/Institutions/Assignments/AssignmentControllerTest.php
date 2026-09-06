@@ -33,19 +33,19 @@ beforeEach(function () {
   $this->adminInstitutionUser = InstitutionUser::factory()->create([
     'institution_id' => $this->institution->id,
     'user_id' => $this->admin->id,
-    'role' => InstitutionUserType::Admin->value
+    'type' => InstitutionUserType::Admin->value
   ]);
 
   $this->teacherInstitutionUser = InstitutionUser::factory()->create([
     'institution_id' => $this->institution->id,
     'user_id' => $this->teacher->id,
-    'role' => InstitutionUserType::Teacher->value
+    'type' => InstitutionUserType::Teacher->value
   ]);
 
   $this->studentInstitutionUser = InstitutionUser::factory()->create([
     'institution_id' => $this->institution->id,
     'user_id' => $this->student->id,
-    'role' => InstitutionUserType::Student->value
+    'type' => InstitutionUserType::Student->value
   ]);
 
   $this->course = Course::factory()->create([
@@ -131,7 +131,7 @@ it('teacher can view assignments of another teacher', function () {
   $anotherTeacherInstitutionUser = InstitutionUser::factory()->create([
     'institution_id' => $this->institution->id,
     'user_id' => $anotherTeacher,
-    'role' => InstitutionUserType::Teacher->value
+    'type' => InstitutionUserType::Teacher->value
   ]);
 
   Assignment::factory(3)

@@ -8,7 +8,6 @@ import {
   InstitutionStatus,
   InstitutionUserStatus,
   InstitutionUserType,
-  ManagerRole,
   PartnerUserRole,
   ResultTemplate,
   TermType,
@@ -42,7 +41,16 @@ export interface Faq extends Row {
 }
 
 export interface Role extends Row {
-  name: ManagerRole;
+  name: string;
+  description?: string | null;
+  default_permissions_seeded?: boolean;
+  permissions?: Permission[];
+  permissions_count?: number;
+  institution_users_count?: number;
+}
+
+export interface Permission extends Row {
+  name: string;
 }
 
 export interface User extends Row {
@@ -306,12 +314,15 @@ export interface BankAccount extends InstitutionRow {
 
 export interface InstitutionUser extends InstitutionRow {
   user_id: number;
+  type: InstitutionUserType;
+  /** @deprecated Use type instead. */
   role: InstitutionUserType;
   status: InstitutionUserStatus;
   status_message: string;
   user?: User;
   student?: Student;
   institution?: Institution;
+  roles?: Role[];
   attendance_status?: {
     checked_in: boolean;
     checked_out: boolean;
@@ -1366,7 +1377,7 @@ export interface ChatComposerOptions {
   canDirectMessageStaff: boolean;
   directMessageTargetLabel?: string;
   institutionTarget: ChatComposerTarget;
-  roleTargets: ChatComposerTarget[];
+  roleTargets: Role[];
   staffTargets: ChatComposerTarget[];
 }
 

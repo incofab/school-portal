@@ -89,7 +89,7 @@ it('changes student\'s class to another one', function () {
     $this->institution->uuid,
     $student
   ]);
-  //   expect($student->institutionUser->role)->toBe(InstitutionUserType::Student);
+  //   expect($student->institutionUser->type)->toBe(InstitutionUserType::Student);
 
   //echo 'Tests: requires destination_class when we are not moving the student to alumni\n';
   $requestData = ['destination_class' => null, 'move_to_alumni' => false];
@@ -118,7 +118,7 @@ it('moves a student in a class to alumni', function () {
     $this->institution->uuid,
     $student
   ]);
-  expect($student->institutionUser->role)->toBe(InstitutionUserType::Student);
+  expect($student->institutionUser->type)->toBe(InstitutionUserType::Student);
 
   $requestData = ['move_to_alumni' => true];
   actingAs($this->instAdmin)
@@ -127,7 +127,7 @@ it('moves a student in a class to alumni', function () {
 
   $student = $student->fresh();
   expect($student->classification_id)->toBe(null);
-  expect($student->institutionUser->role)->toBe(InstitutionUserType::Alumni);
+  expect($student->institutionUser->type)->toBe(InstitutionUserType::Alumni);
   expect($student->classMovement()->first())
     ->source_classification_id->toBe($this->classification->id)
     ->destination_classification_id->toBe(null);

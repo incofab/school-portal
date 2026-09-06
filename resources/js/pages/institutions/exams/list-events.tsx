@@ -29,12 +29,14 @@ import {
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
-import useIsAdmin from '@/hooks/use-is-admin';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
 import TransferEventResultModal from '@/components/modals/transfer-event-result-modal';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
-import useIsStaff from '@/hooks/use-is-staff';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
+import useIsAdmin from '@/hooks/use-is-admin';
+import useIsTeacher from '@/hooks/use-is-teacher';
 
 interface Props {
   events: PaginationResponse<Event>;
@@ -51,7 +53,16 @@ export default function ListEvents({
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
   const isAdmin = useIsAdmin();
-  const isStaff = useIsStaff();
+  const isTeacher = useIsTeacher();
+  const canManageEvents = isAdmin || isTeacher;
+  const canManageEventCourses = canManageEvents;
+  const canViewExams = canManageEvents;
+  const canTransferResults = canManageEvents;
+  const canViewStaffActions =
+    canManageEvents ||
+    canManageEventCourses ||
+    canViewExams ||
+    canTransferResults;
   const transferEventResultModalToggle = useModalValueToggle<Event>();
 
   function handleTransferEventResult(row: Event) {
@@ -108,7 +119,7 @@ export default function ListEvents({
       label: 'Num of Subjects',
       value: 'num_of_subjects',
     },
-    ...(isStaff
+    ...(canTransferResults
       ? [
           {
             label: 'Transferred At',
@@ -136,53 +147,63 @@ export default function ListEvents({
       label: 'Action',
       render: (row: Event) => (
         <HStack>
-          {isStaff && (
+          {canViewStaffActions && (
             <>
-              <LinkButton
-                href={instRoute('event-courseables.index', [row.id])}
-                variant={'link'}
-                title="Content"
-              />
-              <LinkButton
-                href={instRoute('exams.index', [row.id])}
-                variant={'link'}
-                title="Exams"
-              />
-              <IconButton
-                aria-label={'Edit Event'}
-                icon={<Icon as={PencilIcon} />}
-                as={InertiaLink}
-                href={instRoute('events.edit', [row.id])}
-                variant={'ghost'}
-                colorScheme={'brand'}
-              />
-              <DestructivePopover
-                label={'Download the exams of this event'}
-                onConfirm={(onClose) => {
-                  window.location.href = instRoute('events.download', [row.id]);
-                  onClose();
-                }}
-                positiveButtonLabel="Download"
-              >
-                <IconButton
-                  aria-label={'Download event exams'}
-                  icon={<Icon as={CloudArrowDownIcon} />}
-                  variant={'ghost'}
-                  colorScheme={'green'}
+              <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+                <LinkButton
+                  href={instRoute('event-courseables.index', [row.id])}
+                  variant={'link'}
+                  title="Content"
                 />
-              </DestructivePopover>
-              <DestructivePopover
-                label={'Delete this event'}
-                onConfirm={() => deleteItem(row)}
-                isLoading={deleteForm.processing}
-              >
-                <IconButton
-                  aria-label={'Delete event'}
-                  icon={<Icon as={TrashIcon} />}
-                  variant={'ghost'}
-                  colorScheme={'red'}
+              </PermissionGate>
+              <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+                <LinkButton
+                  href={instRoute('exams.index', [row.id])}
+                  variant={'link'}
+                  title="Exams"
                 />
-              </DestructivePopover>
+              </PermissionGate>
+              <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+                <>
+                  <IconButton
+                    aria-label={'Edit Event'}
+                    icon={<Icon as={PencilIcon} />}
+                    as={InertiaLink}
+                    href={instRoute('events.edit', [row.id])}
+                    variant={'ghost'}
+                    colorScheme={'brand'}
+                  />
+                  <DestructivePopover
+                    label={'Download the exams of this event'}
+                    onConfirm={(onClose) => {
+                      window.location.href = instRoute('events.download', [
+                        row.id,
+                      ]);
+                      onClose();
+                    }}
+                    positiveButtonLabel="Download"
+                  >
+                    <IconButton
+                      aria-label={'Download event exams'}
+                      icon={<Icon as={CloudArrowDownIcon} />}
+                      variant={'ghost'}
+                      colorScheme={'green'}
+                    />
+                  </DestructivePopover>
+                  <DestructivePopover
+                    label={'Delete this event'}
+                    onConfirm={() => deleteItem(row)}
+                    isLoading={deleteForm.processing}
+                  >
+                    <IconButton
+                      aria-label={'Delete event'}
+                      icon={<Icon as={TrashIcon} />}
+                      variant={'ghost'}
+                      colorScheme={'red'}
+                    />
+                  </DestructivePopover>
+                </>
+              </PermissionGate>
             </>
           )}
           <LinkButton
@@ -197,7 +218,7 @@ export default function ListEvents({
 
   return (
     <DashboardLayout>
-      {isStaff && (
+      {canManageEvents && (
         <Alert
           status="info"
           variant="left-accent"
@@ -239,11 +260,9 @@ export default function ListEvents({
         <SlabHeading
           title="List Events"
           rightElement={
-            isAdmin || isStaff ? (
+            <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
               <LinkButton href={instRoute('events.create')} title={'New'} />
-            ) : (
-              <></>
-            )
+            </PermissionGate>
           }
         />
         <SlabBody>

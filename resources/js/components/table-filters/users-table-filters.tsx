@@ -5,12 +5,15 @@ import EnumSelect from '@/components/dropdown-select/enum-select';
 import BaseTableFilter from '@/components/table-filters/base-table-filter';
 import FilterFormControlBox from '@/components/table-filters/filter-form-control-box';
 import InstitutionSelect from '@/components/selectors/institution-select';
+import RoleSelect from '@/components/selectors/role-select';
+import { Role } from '@/types/models';
 
 interface Props {
   isOpen: boolean;
   onClose(): void;
   showInstitution?: boolean;
   showStatus?: boolean;
+  roles?: Role[];
 }
 
 export default function UsersTableFilters({
@@ -18,6 +21,7 @@ export default function UsersTableFilters({
   onClose,
   showInstitution,
   showStatus,
+  roles,
 }: Props) {
   const { params } = useQueryString();
   const [filters, setFilters] = useState(() => ({
@@ -29,14 +33,24 @@ export default function UsersTableFilters({
   return (
     <BaseTableFilter filters={filters} isOpen={isOpen} onClose={onClose}>
       <FilterFormControlBox title="Role">
-        <EnumSelect
-          selectValue={filters.role}
-          enumData={InstitutionUserType}
-          value={filters.role}
-          refreshKey={filters.role}
-          onChange={(e: any) => setFilters({ ...filters, role: e?.value })}
-          isClearable={true}
-        />
+        {roles ? (
+          <RoleSelect
+            roles={roles}
+            selectValue={filters.role}
+            refreshKey={filters.role}
+            onChange={(e: any) => setFilters({ ...filters, role: e?.value })}
+            isClearable={true}
+          />
+        ) : (
+          <EnumSelect
+            selectValue={filters.role}
+            enumData={InstitutionUserType}
+            value={filters.role}
+            refreshKey={filters.role}
+            onChange={(e: any) => setFilters({ ...filters, role: e?.value })}
+            isClearable={true}
+          />
+        )}
       </FilterFormControlBox>
       {showInstitution && (
         <FilterFormControlBox title="Institution">

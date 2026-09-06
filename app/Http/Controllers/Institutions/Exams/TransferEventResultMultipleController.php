@@ -21,10 +21,10 @@ class TransferEventResultMultipleController extends Controller
 {
   function __construct()
   {
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Teacher
-    ]);
+  $this->allowedRoles([
+    InstitutionUserType::Admin,
+    InstitutionUserType::Teacher
+  ]);
   }
 
   public function create(Institution $institution, Event $event)

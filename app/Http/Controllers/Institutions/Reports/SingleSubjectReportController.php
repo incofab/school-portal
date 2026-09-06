@@ -12,10 +12,7 @@ class SingleSubjectReportController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([
-      InstitutionUserType::Admin,
-      InstitutionUserType::Teacher
-    ]);
+    $this->allowedRoles([InstitutionUserType::Admin, InstitutionUserType::Teacher]);
   }
 
   public function __invoke(

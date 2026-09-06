@@ -24,7 +24,10 @@ class ExamController extends Controller
     $this->allowedRoles([
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
-    ])->except('create', 'store');
+    ])->except(
+      'create',
+      'store'
+    );
     $this->allowedRoles([InstitutionUserType::Student])->only(
       'create',
       'store'

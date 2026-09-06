@@ -6,12 +6,14 @@ use App\Actions\RecordStaff;
 use App\Actions\Users\DownloadStaffRecordingSheet;
 use App\Actions\Users\InsertStaffFromRecordingSheet;
 use App\Enums\InstitutionUserType;
+use App\Enums\RoleGuard;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateStaffRequest;
 use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\User;
+use App\Services\Institutions\InstitutionRoleService;
 use App\Support\Audit\ModelAudit;
 use App\Rules\ExcelRule;
 use App\Support\Audit\SecurityActivityLogger;
@@ -21,24 +23,39 @@ use Storage;
 
 class InstitutionUserController extends Controller
 {
-  public function create(Institution $institution)
-  {
-    return inertia('institutions/users/create-edit-user');
+  public function create(
+    Institution $institution,
+    InstitutionRoleService $roleService
+  ) {
+    abort_unless(currentUser()->isInstitutionAdmin(), 403);
+
+    return inertia('institutions/users/create-edit-user', [
+      'roles' => $roleService->forStaff($institution)
+    ]);
   }
 
   public function store(Institution $institution, CreateStaffRequest $request)
   {
+    abort_unless(currentUser()->isInstitutionAdmin(), 403);
     $data = $request->validated();
     $user = ModelAudit::withoutAuditingFor(
       [User::class, InstitutionUser::class],
       fn() => RecordStaff::make($institution, $data)->create()
     );
 
+    $assignedRole =
+      $user
+        ->institutionUsers()
+        ->where('institution_id', $institution->id)
+        ->first()
+        ?->roles()
+        ->value('name') ?? '';
+
     app(SecurityActivityLogger::class)->userCreated(
       currentUser(),
       $user,
       $institution,
-      $data['role']
+      $assignedRole
     );
 
     return $this->ok();
@@ -55,14 +72,18 @@ class InstitutionUserController extends Controller
 
   public function uploadStaff(Request $request, Institution $institution)
   {
+    abort_unless(currentUser()->isInstitutionAdmin(), 403);
     $request->validate([
       'file' => ['required', 'file', new ExcelRule($request->file('file'))],
       'role' => [
         'required',
-        Rule::notIn([
-          InstitutionUserType::Student->value,
-          InstitutionUserType::Alumni->value
-        ])
+        'integer',
+        Rule::exists('roles', 'id')->where(
+          fn($query) => $query
+            ->where('institution_id', $institution->id)
+            ->where('guard_name', RoleGuard::Web->value)
+            ->whereNotIn('name', InstitutionUserType::nonStaffRoles())
+        )
       ]
     ]);
     InsertStaffFromRecordingSheet::run(
@@ -86,7 +107,7 @@ class InstitutionUserController extends Controller
         ->get();
     } else {
       // Returns Staff
-      $persons = InstitutionUser::whereNotIn('role', [
+      $persons = InstitutionUser::whereNotIn('type', [
         InstitutionUserType::Student->value,
         InstitutionUserType::Alumni->value
       ])

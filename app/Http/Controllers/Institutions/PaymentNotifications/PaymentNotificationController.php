@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Institutions\PaymentNotifications;
 
 use App\Actions\Payments\RecordFeePaymentReminder;
-use App\Enums\InstitutionUserType;
+use App\Enums\InstitutionPermission;
 use App\Enums\NotificationChannelsType;
 use App\Http\Controllers\Controller;
 use App\Models\Fee;
@@ -18,7 +18,7 @@ class PaymentNotificationController extends Controller
 {
   function __construct(protected Institution $institution)
   {
-    $this->allowedRoles([InstitutionUserType::Admin])->except([
+    $this->allowedPermissions([InstitutionPermission::ManageFees])->except([
       'index',
       'search',
       'show'

@@ -1,9 +1,8 @@
 <?php
 $institution = currentInstitution();
-$institutionGroup =
-  $institution?->institutionGroup ?? getInstitutionGroupFromDomain();
-$logo =
-  $institution?->photo ?? $institutionGroup?->institutions()?->first()?->photo;
+$domainInstitutionGroup = getInstitutionGroupFromDomain();
+$institutionGroup = $institution?->institutionGroup ?? $domainInstitutionGroup;
+$logo = $domainInstitutionGroup?->institutions()?->first()?->photo;
 
 // dd($institutionGroup->toArray());
 ?>
@@ -15,7 +14,7 @@ $logo =
 
     <title>{{ $institutionGroup?->name ?? config('app.name') }}</title>
 
-    <link rel="icon" type="image/x-icon" href="{{ $logo ?? '/favicon.ico' }}?v=2" />
+    <link rel="icon" type="image/x-icon" href="{{ $logo ?? '/favicon.ico' }}?v=3" />
 
     @routes
     @viteReactRefresh

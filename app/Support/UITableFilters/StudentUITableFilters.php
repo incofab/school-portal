@@ -72,7 +72,7 @@ class StudentUITableFilters extends UserUITableFilters
         $this->requestGet('studentRole'),
         fn($q, $value) => $value == 'all' || !$value
           ? $q
-          : $q->where('institution_users.role', $value)
+          : $q->where('institution_users.type', $value)
       );
 
     return $this;

@@ -19,6 +19,10 @@ import DateTimeDisplay from '@/components/date-time-display';
 import { dateTimeFormat } from '@/util/util';
 import useModalToggle from '@/hooks/use-modal-toggle';
 import LessonPlanTableFilters from '@/components/table-filters/lesson-plan-table-filters';
+import PermissionGate from '@/components/permission-gate';
+import { InstitutionPermission } from '@/types/permissions';
+import useSharedProps from '@/hooks/use-shared-props';
+import useIsAdmin from '@/hooks/use-is-admin';
 
 interface Props {
   lessonPlans: PaginationResponse<LessonPlan>;
@@ -26,8 +30,10 @@ interface Props {
 
 export default function LessonPlans({ lessonPlans }: Props) {
   const { instRoute } = useInstitutionRoute();
+  const { currentUser } = useSharedProps();
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
+  const isAdmin = useIsAdmin();
   const filterToggle = useModalToggle();
 
   async function deleteItem(obj: LessonPlan) {
@@ -80,35 +86,51 @@ export default function LessonPlans({ lessonPlans }: Props) {
             variant={'link'}
             title="View"
           />
-          <IconButton
-            aria-label={'Edit Lesson Plan'}
-            icon={<Icon as={PencilIcon} />}
-            as={InertiaLink}
-            href={instRoute('lesson-plans.edit', [row.id])}
-            variant={'ghost'}
-            colorScheme={'brand'}
-          />
-
-          <DestructivePopover
-            label={'Delete this Lesson Plan'}
-            onConfirm={() => deleteItem(row)}
-            isLoading={deleteForm.processing}
+          <PermissionGate
+          permissions={InstitutionPermission.NaturalAccess}
+            when={isAdmin || row.course_teacher?.user_id === currentUser.id}
           >
             <IconButton
-              aria-label={'Delete Plan'}
-              icon={<Icon as={TrashIcon} />}
+              aria-label={'Edit Lesson Plan'}
+              icon={<Icon as={PencilIcon} />}
+              as={InertiaLink}
+              href={instRoute('lesson-plans.edit', [row.id])}
               variant={'ghost'}
-              colorScheme={'red'}
+              colorScheme={'brand'}
             />
-          </DestructivePopover>
+          </PermissionGate>
 
-          {row.lesson_note === null && (
+          <PermissionGate
+            permissions={InstitutionPermission.NaturalAccess}
+            when={isAdmin || row.course_teacher?.user_id === currentUser.id}
+          >
+            <DestructivePopover
+              label={'Delete this Lesson Plan'}
+              onConfirm={() => deleteItem(row)}
+              isLoading={deleteForm.processing}
+            >
+              <IconButton
+                aria-label={'Delete Plan'}
+                icon={<Icon as={TrashIcon} />}
+                variant={'ghost'}
+                colorScheme={'red'}
+              />
+            </DestructivePopover>
+          </PermissionGate>
+
+          <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+            when={
+              row.lesson_note === null &&
+              (isAdmin || row.course_teacher?.user_id === currentUser.id)
+            }
+          >
             <LinkButton
               href={instRoute('lesson-notes.create', [row.id])}
               variant={'link'}
               title="Create Lesson Note"
             />
-          )}
+          </PermissionGate>
         </HStack>
       ),
     },
@@ -120,10 +142,14 @@ export default function LessonPlans({ lessonPlans }: Props) {
         <SlabHeading
           title="Lesson Plans"
           rightElement={
-            <LinkButton
-              href={instRoute('scheme-of-works.index')}
-              title={'New'}
-            />
+            <PermissionGate
+              permissions={InstitutionPermission.NaturalAccess}
+            >
+              <LinkButton
+                href={instRoute('scheme-of-works.index')}
+                title={'New'}
+              />
+            </PermissionGate>
           }
         />
         <SlabBody>

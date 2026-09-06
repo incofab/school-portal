@@ -39,7 +39,10 @@ export default function ShowUser({ userModel }: Props) {
 
   async function resetPassword(onClose: () => void) {
     const res = await form.submit((data, web) => {
-      return web.post(route('managers.users.reset-password', [userModel.id]), data);
+      return web.post(
+        route('managers.users.reset-password', [userModel.id]),
+        data
+      );
     });
 
     if (!handleResponseToast(res)) return;
@@ -54,21 +57,23 @@ export default function ShowUser({ userModel }: Props) {
     { label: 'Phone', value: userModel.phone || 'N/A' },
     { label: 'Gender', value: startCase(userModel.gender) || 'N/A' },
     {
-        label: 'Manager Roles',
-        value: (
-          <HStack spacing={2}>
-            {userModel.roles && userModel.roles.length > 0 ? (
-              userModel.roles.map((role) => (
-                <Badge key={role.id} colorScheme="purple">
-                  {role.name}
-                </Badge>
-              ))
-            ) : (
-              <Text fontSize="sm" color="gray.500">None</Text>
-            )}
-          </HStack>
-        ),
-      },
+      label: 'Manager Roles',
+      value: (
+        <HStack spacing={2}>
+          {userModel.roles && userModel.roles.length > 0 ? (
+            userModel.roles.map((role) => (
+              <Badge key={role.id} colorScheme="purple">
+                {role.name}
+              </Badge>
+            ))
+          ) : (
+            <Text fontSize="sm" color="gray.500">
+              None
+            </Text>
+          )}
+        </HStack>
+      ),
+    },
   ];
 
   return (
@@ -80,13 +85,22 @@ export default function ShowUser({ userModel }: Props) {
             <GridItem colSpan={{ lg: 2 }}>
               <Stack spacing={6}>
                 <Div>
-                   <Text fontWeight="bold" fontSize="lg" mb={3}>Basic Information</Text>
-                   <Dt contentData={profileData} spacing={4} labelWidth={'150px'} />
+                  <Text fontWeight="bold" fontSize="lg" mb={3}>
+                    Basic Information
+                  </Text>
+                  <Dt
+                    contentData={profileData}
+                    spacing={4}
+                    labelWidth={'150px'}
+                  />
                 </Div>
 
                 <Div>
-                  <Text fontWeight="bold" fontSize="lg" mb={3}>Institutions & Roles</Text>
-                  {userModel.institution_users && userModel.institution_users.length > 0 ? (
+                  <Text fontWeight="bold" fontSize="lg" mb={3}>
+                    Institutions & Roles
+                  </Text>
+                  {userModel.institution_users &&
+                  userModel.institution_users.length > 0 ? (
                     <Stack spacing={4}>
                       {userModel.institution_users.map((iu) => (
                         <Div
@@ -98,31 +112,55 @@ export default function ShowUser({ userModel }: Props) {
                         >
                           <Grid templateColumns="repeat(2, 1fr)" gap={2}>
                             <GridItem>
-                              <Text fontWeight="semibold">{iu.institution?.name}</Text>
-                              <Text fontSize="xs" color="gray.500">{iu.institution?.uuid}</Text>
+                              <Text fontWeight="semibold">
+                                {iu.institution?.name}
+                              </Text>
+                              <Text fontSize="xs" color="gray.500">
+                                {iu.institution?.uuid}
+                              </Text>
                             </GridItem>
                             <GridItem textAlign="right">
-                                <Badge colorScheme="brand" mr={2}>{startCase(iu.role)}</Badge>
-                                <Badge colorScheme={iu.status === 'suspended' ? 'red' : 'green'}>
-                                    {iu.status}
-                                </Badge>
+                              <Badge colorScheme="brand" mr={2}>
+                                {startCase(iu.type)}
+                              </Badge>
+                              <Badge
+                                colorScheme={
+                                  iu.status === 'suspended' ? 'red' : 'green'
+                                }
+                              >
+                                {iu.status}
+                              </Badge>
                             </GridItem>
                             {iu.student && (
-                                <GridItem colSpan={2} mt={2} pt={2} borderTopWidth="1px" borderStyle="dashed">
-                                     <Text fontSize="sm">
-                                        <Text as="span" fontWeight="semibold">Student ID:</Text> {iu.student.code}
-                                     </Text>
-                                     <Text fontSize="sm">
-                                        <Text as="span" fontWeight="semibold">Class:</Text> {iu.student.classification?.title || 'N/A'}
-                                     </Text>
-                                </GridItem>
+                              <GridItem
+                                colSpan={2}
+                                mt={2}
+                                pt={2}
+                                borderTopWidth="1px"
+                                borderStyle="dashed"
+                              >
+                                <Text fontSize="sm">
+                                  <Text as="span" fontWeight="semibold">
+                                    Student ID:
+                                  </Text>{' '}
+                                  {iu.student.code}
+                                </Text>
+                                <Text fontSize="sm">
+                                  <Text as="span" fontWeight="semibold">
+                                    Class:
+                                  </Text>{' '}
+                                  {iu.student.classification?.title || 'N/A'}
+                                </Text>
+                              </GridItem>
                             )}
                           </Grid>
                         </Div>
                       ))}
                     </Stack>
                   ) : (
-                    <Text color="gray.500">This user is not associated with any institution.</Text>
+                    <Text color="gray.500">
+                      This user is not associated with any institution.
+                    </Text>
                   )}
                 </Div>
               </Stack>
@@ -130,28 +168,32 @@ export default function ShowUser({ userModel }: Props) {
 
             <GridItem colSpan={{ lg: 1 }}>
               <Stack spacing={6} align="center">
-                <Avatar size="2xl" src={userModel.photo_url || userModel.photo} name={userModel.full_name} />
+                <Avatar
+                  size="2xl"
+                  src={userModel.photo_url || userModel.photo}
+                  name={userModel.full_name}
+                />
 
                 <Stack spacing={3} w="full">
-                   {currentUser.id !== userModel.id && (
-                     <DestructivePopover
-                        label={`Reset ${userModel.full_name}'s password to default?`}
-                        onConfirm={(onClose) => resetPassword(onClose)}
-                        isLoading={form.processing}
-                        positiveButtonLabel="Reset"
-                      >
-                        <Button colorScheme="brand" variant={'solid'} w="full">
-                          Reset Password
-                        </Button>
-                      </DestructivePopover>
-                   )}
+                  {currentUser.id !== userModel.id && (
+                    <DestructivePopover
+                      label={`Reset ${userModel.full_name}'s password to default?`}
+                      onConfirm={(onClose) => resetPassword(onClose)}
+                      isLoading={form.processing}
+                      positiveButtonLabel="Reset"
+                    >
+                      <Button colorScheme="brand" variant={'solid'} w="full">
+                        Reset Password
+                      </Button>
+                    </DestructivePopover>
+                  )}
 
-                   <LinkButton
+                  <LinkButton
                     href={route('users.impersonate', [userModel.id])}
                     colorScheme={'red'}
                     title="Impersonate User"
                     w="full"
-                   />
+                  />
                 </Stack>
               </Stack>
             </GridItem>

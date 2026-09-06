@@ -5,7 +5,8 @@ import DashboardLayout from '@/layout/dashboard-layout';
 import NotificationList from '@/pages/notifications/notification-list';
 import { LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import useIsStaff from '@/hooks/use-is-staff';
+import { InstitutionPermission } from '@/types/permissions';
+import PermissionGate from '@/components/permission-gate';
 import { HStack } from '@chakra-ui/react';
 
 interface Props {
@@ -14,13 +15,12 @@ interface Props {
 
 export default function ListNotifications({ notifications }: Props) {
   const { instRoute } = useInstitutionRoute();
-  const isStaff = useIsStaff();
   return (
     <DashboardLayout>
       <NotificationList
         notifications={notifications}
         rightElement={
-          isStaff ? (
+          <PermissionGate permissions={InstitutionPermission.ManageNotifications}>
             <HStack>
               <LinkButton
                 title="Sent"
@@ -31,9 +31,7 @@ export default function ListNotifications({ notifications }: Props) {
                 href={instRoute('notifications.create')}
               />
             </HStack>
-          ) : (
-            <></>
-          )
+          </PermissionGate>
         }
       />
     </DashboardLayout>

@@ -15,7 +15,7 @@ class SearchUserController extends Controller
   {
     $institutionUser = currentInstitutionUser();
     abort_if(
-      in_array($institutionUser->role, [
+      in_array($institutionUser->type, [
         InstitutionUserType::Alumni,
         InstitutionUserType::Student
       ]),

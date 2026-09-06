@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Institutions;
 
 use App\Actions\RecordAttendance;
+use App\Enums\InstitutionPermission;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Institution;
@@ -47,7 +48,9 @@ class AttendanceController extends Controller
     $data = $request->validate(Attendance::createRule());
     $staffInstitutionUser = currentInstitutionUser();
     abort_unless(
-      $staffInstitutionUser->isStaff(),
+      $staffInstitutionUser->hasInstitutionPermission(
+        InstitutionPermission::ManageAttendance
+      ),
       403,
       'You are not authorized to record attendance'
     );

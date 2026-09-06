@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\CCD;
 
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
+use App\Models\Course;
 use App\Http\Requests\TheoryQuestionRequest;
 use App\Models\CourseSession;
 use App\Models\EventCourseable;
@@ -13,6 +15,14 @@ use App\Support\MorphableHandler;
 
 class TheoryQuestionController extends Controller
 {
+    public function __construct()
+    {
+        $this->allowedRoles([
+            InstitutionUserType::Admin,
+            InstitutionUserType::Teacher,
+        ])->only(['create', 'store', 'edit', 'update']);
+    }
+
     public function index(Institution $institution, QuestionCourseable $morphable)
     {
         $this->authorizeCourseable($institution, $morphable);
@@ -126,6 +136,7 @@ class TheoryQuestionController extends Controller
             $this->courseableInstitutionId($courseable) === $institution->id,
             404
         );
+        $this->authorize('viewQuestionBank', [Course::class, $courseable->getCourse()]);
     }
 
     private function authorizeTheoryQuestion(
@@ -133,6 +144,10 @@ class TheoryQuestionController extends Controller
         TheoryQuestion $theoryQuestion
     ): void {
         abort_unless($theoryQuestion->institution_id === $institution->id, 404);
+        $this->authorizeCourseable(
+            $institution,
+            $theoryQuestion->courseable
+        );
     }
 
     private function courseableInstitutionId(QuestionCourseable $courseable): int

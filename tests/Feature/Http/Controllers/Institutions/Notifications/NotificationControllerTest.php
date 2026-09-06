@@ -31,7 +31,7 @@ beforeEach(function () {
 
   $this->studentInstitutionUser = InstitutionUser::factory()
     ->withInstitution($this->institution)
-    ->create(['role' => InstitutionUserType::Student->value]);
+    ->create(['type' => InstitutionUserType::Student->value]);
   $this->student = Student::factory()
     ->withInstitution(
       $this->institution,
@@ -194,7 +194,7 @@ it(
   function () {
     $teacherInstitutionUser = InstitutionUser::factory()
       ->withInstitution($this->institution)
-      ->create(['role' => InstitutionUserType::Teacher->value]);
+      ->create(['type' => InstitutionUserType::Teacher->value]);
 
     $otherStaffNotification = app(CreateInternalNotification::class)->execute(
       $teacherInstitutionUser,
