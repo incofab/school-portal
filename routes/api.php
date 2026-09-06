@@ -21,7 +21,7 @@ use App\Http\Controllers\API\WhatsappWebhookController;
 */
 
 Route::group(['middleware' => ['auth:sanctum', 'institution.user']], function () {
-    Route::post('/{institution:code}/attendance/self', [Inst\AttendanceController::class, 'selfStore'])
+    Route::post('/{institution}/attendance/self', [Inst\AttendanceController::class, 'selfStore'])
         ->name('institutions.attendance.self');
     Route::post('/{institution:code}/attendance', [Inst\AttendanceController::class, 'store']);
 });
