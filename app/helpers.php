@@ -43,10 +43,7 @@ if (!function_exists('currentInstitutionUser')) {
       return null;
     }
 
-    return $institution
-      ->institutionUsers()
-      ->where('user_id', $user->id)
-      ->first();
+    return $institution->institutionUsers->where('user_id', $user->id)->first();
   }
 }
 

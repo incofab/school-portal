@@ -76,7 +76,9 @@ class RecordAttendance
         $this->logAttendanceUpdated($attendance, $oldValues);
         $this->sendNotification($attendance, AttendanceType::In);
 
-        return successRes('', ['status' => 'recorded']);
+        return successRes('Attendace recorded successfully', [
+          'status' => 'recorded'
+        ]);
       }
 
       return successRes('User already signed in today.', [
@@ -100,7 +102,9 @@ class RecordAttendance
     $this->logAttendanceRecorded($attendance);
     $this->sendNotification($attendance, AttendanceType::In);
 
-    return successRes('', ['status' => 'recorded']);
+    return successRes('Attendace recorded successfully', [
+      'status' => 'recorded'
+    ]);
   }
 
   public function checkOut(): Res
@@ -137,7 +141,9 @@ class RecordAttendance
       $this->logAttendanceUpdated($todaySignOut, $oldValues);
       $this->sendNotification($todaySignOut, AttendanceType::Out);
 
-      return successRes('', ['status' => 'recorded']);
+      return successRes('Attendace checked out successfully', [
+        'status' => 'recorded'
+      ]);
     }
 
     $lastSignIn = Attendance::where(
@@ -172,7 +178,9 @@ class RecordAttendance
     $this->logAttendanceUpdated($lastSignIn, $oldValues);
     $this->sendNotification($lastSignIn, AttendanceType::Out);
 
-    return successRes('', ['status' => 'recorded']);
+    return successRes('Attendace checked out successfully', [
+      'status' => 'recorded'
+    ]);
   }
 
   private function sendNotification(
@@ -198,7 +206,7 @@ class RecordAttendance
       return failRes('Attendance can only be recorded on active school days.');
     }
 
-    return successRes();
+    return successRes('Active day.');
   }
 
   private function attendanceAt(): Carbon

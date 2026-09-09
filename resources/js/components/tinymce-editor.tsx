@@ -23,7 +23,7 @@ export default function TinyMceEditor({ ...props }: IAllProps) {
         //   'insertdatetime media table paste code help wordcount',
         // ],
         toolbar:
-          'bullist | numlist | tiny_mce_wiris_formulaEditor | tiny_mce_wiris_formulaEditorChemistry | undo redo | link image | code | bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull | formatselect | backcolor | alignleft aligncenter  alignright alignjustify |  outdent indent |  removeformat | nativemathml',
+          'bullist | numlist | undo redo | link image | code | bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull | formatselect | backcolor | alignleft aligncenter  alignright alignjustify |  outdent indent |  removeformat | nativemathml | superscript | subscript | underline | strikethrough | table |',
         content_style:
           'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
         charmap_append: [

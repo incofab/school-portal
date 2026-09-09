@@ -14,7 +14,10 @@ class AdmissionFormController extends Controller
 {
   function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin]);
+    $this->allowedRoles([InstitutionUserType::Admin])->except([
+      'index',
+      'search'
+    ]);
   }
 
   // Admin/Institution side

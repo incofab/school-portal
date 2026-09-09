@@ -21,8 +21,8 @@ function initTinymce() {
     
     // document_base_url: '{{$imagePath}}',
 
-    toolbar: 'tiny_mce_wiris_formulaEditor | tiny_mce_wiris_formulaEditorChemistry | undo redo | link image | code | bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,',
-    
+    toolbar: 'bullist | numlist | nativemathml | superscript | subscript | underline | strikethrough | table | undo redo | link image | code | bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull',
+
     // enable title field in the Image dialog
     image_title: true, 
     

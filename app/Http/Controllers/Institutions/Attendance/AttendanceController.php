@@ -89,7 +89,11 @@ class AttendanceController extends Controller
     )
       ->filterQuery()
       ->getQuery()
-      ->with('institutionUser.user', 'institutionUser.student.classification')
+      ->with(
+        'institutionUser.user',
+        'institutionUser.student.classification',
+        'staffUser.user'
+      )
       ->latest('attendances.id');
     return Inertia::render(
       'institutions/attendances/list-institution-attendances',
@@ -107,7 +111,11 @@ class AttendanceController extends Controller
     )
       ->filterQuery()
       ->getQuery()
-      ->with('institutionUser.user', 'institutionUser.student.classification')
+      ->with(
+        'institutionUser.user',
+        'institutionUser.student.classification',
+        'staffUser.user'
+      )
       ->latest('attendances.id');
     return response()->json([
       'result' => paginateFromRequest($query)

@@ -151,6 +151,8 @@ export default function InstitutionDashboard({
 }: Props) {
   // console.log('Dashboard data', dashboardData);
   const { currentInstitutionUser, currentUser } = useSharedProps();
+  console.log('currentInstitutionUser', currentInstitutionUser);
+
   const student = currentInstitutionUser.student;
   const { forTeacher, forAccountant } = useInstitutionRole();
   const { instRoute } = useInstitutionRoute();
