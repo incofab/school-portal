@@ -23,10 +23,7 @@ class EventController extends Controller
     $this->allowedRoles([
       InstitutionUserType::Admin,
       InstitutionUserType::Teacher
-    ])->except(
-      'index',
-      'show'
-    );
+    ])->except('index', 'show');
   }
 
   function index(Request $request, Institution $institution)
@@ -41,6 +38,7 @@ class EventController extends Controller
       ->events()
       ->getQuery()
       ->forStudent($student)
+      ->with('classDivision')
       ->withCount('eventCourseables');
 
     if ($institutionUser?->isTeacher()) {
@@ -102,7 +100,8 @@ class EventController extends Controller
     $event->load(
       'eventCourseables.courseable.course',
       'classificationGroup',
-      'classification'
+      'classification',
+      'classDivision'
     );
     $student = currentInstitutionUser()->student;
     return Inertia::render('institutions/exams/show-event', [

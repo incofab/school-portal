@@ -23,7 +23,9 @@ use App\Support\SettingsHandler;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
+use Inertia\Testing\AssertableInertia;
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\getJson;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertSoftDeleted;
 
@@ -33,6 +35,7 @@ use function Pest\Laravel\assertSoftDeleted;
 
 beforeEach(function () {
   $this->institution = Institution::factory()->create();
+  $this->institution->institutionGroup->update(['credit_wallet' => 1000]);
   $this->admin = $this->institution->createdBy;
   $this->institutionUser = InstitutionUser::factory()
     ->withInstitution($this->institution)
@@ -72,6 +75,68 @@ it('renders the create attendance view for authorized users', function () {
     ->get($route)
     ->assertOk();
 });
+
+it(
+  'filters attendance by date, event, and lateness and supports sorting',
+  function () {
+    $onTime = Attendance::factory()
+      ->institutionUser($this->institutionUser)
+      ->create([
+        'signed_in_at' => Carbon::parse('2024-06-04 08:00:00'),
+        'signed_out_at' => Carbon::parse('2024-06-04 15:00:00')
+      ]);
+    $late = Attendance::factory()
+      ->institutionUser($this->institutionUser)
+      ->create([
+        'signed_in_at' => Carbon::parse('2024-06-04 08:15:00'),
+        'signed_out_at' => Carbon::parse('2024-06-04 15:00:00')
+      ]);
+
+    actingAs($this->admin);
+
+    getJson(
+      route('institutions.attendances.index', [
+        'institution' => $this->institution,
+        'signed_in_at' => [
+          'date_from' => '2024-06-04',
+          'date_to' => '2024-06-04'
+        ],
+        'type' => AttendanceType::Out->value,
+        'lateness' => 'late',
+        'checkInTime' => '08:00',
+        'sortKey' => 'signedInAt',
+        'sortDir' => 'asc'
+      ])
+    )
+      ->assertOk()
+      ->assertInertia(
+        fn(AssertableInertia $page) => $page
+          ->where('attendance.data.0.id', $late->id)
+          ->where('attendance.total', 1)
+      );
+
+    getJson(
+      route('institutions.attendances.index', [
+        'institution' => $this->institution,
+        'signed_in_at' => [
+          'date_from' => '2024-06-04',
+          'date_to' => '2024-06-04'
+        ],
+        'type' => AttendanceType::In->value,
+        'sortKey' => 'signedInAt',
+        'sortDir' => 'desc'
+      ])
+    )
+      ->assertOk()
+      ->assertInertia(
+        fn(AssertableInertia $page) => $page
+          ->where('attendance.data.0.id', $late->id)
+          ->where('attendance.total', 2)
+      );
+
+    expect($onTime->id)->not->toBe($late->id);
+  }
+);
 
 // Test attendance store with 'sign-in' type
 it('allows authorized user to store a sign-in attendance record', function () {

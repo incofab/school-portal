@@ -37,6 +37,7 @@ import { InstitutionPermission } from '@/types/permissions';
 import PermissionGate from '@/components/permission-gate';
 import useIsAdmin from '@/hooks/use-is-admin';
 import useIsTeacher from '@/hooks/use-is-teacher';
+import startCase from 'lodash/startCase';
 
 interface Props {
   events: PaginationResponse<Event>;
@@ -106,6 +107,18 @@ export default function ListEvents({
           dateTimeformat={dateTimeFormat}
         />
       ),
+    },
+    {
+      label: 'Term',
+      render: (row) => (row.term ? startCase(String(row.term)) : '—'),
+    },
+    // {
+    //   label: 'Section',
+    //   render: (row) => row.class_division?.title ?? '—',
+    // },
+    {
+      label: 'Week',
+      render: (row) => row.week_number ?? '—',
     },
     {
       label: 'View Corrections',

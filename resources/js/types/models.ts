@@ -1073,13 +1073,18 @@ export interface Event extends InstitutionRow {
   num_of_subjects: number;
   show_corrections: boolean;
   type: EventType;
+  academic_session_id?: number;
+  term?: TermType;
+  week_number?: string | null;
   classification_id?: number;
   classification_group_id?: number;
+  class_division_id?: number;
   event_courseables?: EventCourseable[];
   event_courseables_count?: number;
   exams?: Exam[];
   classification?: Classification;
   classification_group?: ClassificationGroup;
+  class_division?: ClassDivision;
 }
 
 export interface Assignment extends InstitutionRow {

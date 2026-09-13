@@ -26,11 +26,14 @@ import useInstitutionRoute from '@/hooks/use-institution-route';
 import FormControlBox from '@/components/forms/form-control-box';
 import format from 'date-fns/format';
 import ClassificationGroupSelect from '@/components/selectors/classification-group-select';
-import { EventType } from '@/types/types';
+import AcademicSessionSelect from '@/components/selectors/academic-session-select';
+import ClassDivisionSelect from '@/components/selectors/class-division-select';
+import { EventType, TermType } from '@/types/types';
 import EnumSelect from '@/components/dropdown-select/enum-select';
 import { Div } from '@/components/semantic';
 import MySelect from '@/components/dropdown-select/my-select';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import useSharedProps from '@/hooks/use-shared-props';
 
 interface Props {
   event?: Event;
@@ -40,6 +43,8 @@ interface Props {
 export default function CreateOrUpdateEvent({ event, courses }: Props) {
   const { handleResponseToast } = useMyToast();
   const { instRoute } = useInstitutionRoute();
+  const { currentAcademicSessionId, currentTerm, lockTermSession } =
+    useSharedProps();
   const [eventCourseableData, setEventCourseableData] = useState<
     EventCourseableData[]
   >([]);
@@ -49,6 +54,10 @@ export default function CreateOrUpdateEvent({ event, courses }: Props) {
     duration: event?.duration ?? '',
     status: event?.status ?? '',
     starts_at: event?.starts_at ?? '',
+    academic_session_id: event?.academic_session_id ?? currentAcademicSessionId,
+    term: event?.term ?? currentTerm,
+    class_division_id: event?.class_division_id ?? '',
+    week_number: event?.week_number ?? '',
     num_of_subjects: event?.num_of_subjects ?? 1,
     type: event?.type ?? EventType.StudentTest,
     classification_id: event?.classification_id ?? '',
@@ -171,6 +180,63 @@ export default function CreateOrUpdateEvent({ event, courses }: Props) {
                   onChange={(e: any) => webForm.setValue('type', e?.value)}
                 />
               </FormControlBox>
+              <FormControlBox
+                title="Academic Session"
+                form={webForm as any}
+                formKey="academic_session_id"
+              >
+                <AcademicSessionSelect
+                  selectValue={webForm.data.academic_session_id}
+                  isMulti={false}
+                  isClearable={true}
+                  onChange={(e: any) =>
+                    webForm.setValue('academic_session_id', e?.value)
+                  }
+                  isDisabled={lockTermSession}
+                />
+              </FormControlBox>
+              <HStack align="start" spacing={3} w="full">
+                <FormControlBox
+                  title="Term"
+                  form={webForm as any}
+                  formKey="term"
+                  flex={1}
+                  minW={0}
+                >
+                  <EnumSelect
+                    enumData={TermType}
+                    selectValue={webForm.data.term}
+                    isMulti={false}
+                    isClearable={true}
+                    onChange={(e: any) => webForm.setValue('term', e?.value)}
+                    isDisabled={lockTermSession}
+                  />
+                </FormControlBox>
+                {/* <FormControlBox
+                  title="Section"
+                  form={webForm as any}
+                  formKey="class_division_id"
+                  flex={1}
+                  minW={0}
+                >
+                  <ClassDivisionSelect
+                    selectValue={webForm.data.class_division_id}
+                    isMulti={false}
+                    isClearable={true}
+                    onChange={(e: any) =>
+                      webForm.setValue('class_division_id', e?.value)
+                    }
+                  />
+                </FormControlBox> */}
+              </HStack>
+              <InputForm
+                form={webForm as any}
+                formKey="week_number"
+                title="Week Number [optional]"
+                type="text"
+                inputMode="text"
+                placeholder="e.g. 1A1B or 6B"
+              />
               {forStudents && (
                 <FormControlBox
                   title="Class Group"

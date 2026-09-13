@@ -18,7 +18,7 @@ import { PaginationResponse } from '@/types/types';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { ServerPaginatedTableHeader } from '@/components/server-paginated-table';
 import useInstitutionRoute from '@/hooks/use-institution-route';
-import UsersTableFilters from '@/components/table-filters/users-table-filters';
+import AttendanceTableFilters from '@/components/table-filters/attendance-table-filters';
 import { EyeIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { Inertia } from '@inertiajs/inertia';
 import DestructivePopover from '@/components/destructive-popover';
@@ -27,6 +27,8 @@ import useMyToast from '@/hooks/use-my-toast';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 import InfoPopover from '@/components/info-popover';
 import { format, differenceInMinutes } from 'date-fns';
+import useQueryString from '@/hooks/use-query-string';
+import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-filter';
 
 interface Props {
   attendance: PaginationResponse<Attendance>;
@@ -35,6 +37,8 @@ interface Props {
 export default function ListAttendances({ attendance }: Props) {
   const { instRoute } = useInstitutionRoute();
   const userFilterToggle = useModalToggle();
+  const { params } = useQueryString();
+  const showLateness = Boolean(params.lateness || params.checkInTime);
 
   const deleteForm = useWebForm({});
   const { handleResponseToast } = useMyToast();
@@ -51,6 +55,7 @@ export default function ListAttendances({ attendance }: Props) {
     {
       label: 'Person',
       value: 'institution_user.user.full_name',
+      sortKey: 'firstName',
       render: (row) => (
         <VStack align="start" spacing={1}>
           <Box fontWeight="semibold">
@@ -76,15 +81,30 @@ export default function ListAttendances({ attendance }: Props) {
     {
       label: 'Check In',
       render: (row) => <TimeBlock label="In" value={row.signed_in_at} />,
+      sortKey: 'signedInAt',
     },
     {
       label: 'Check Out',
       render: (row) => <TimeBlock label="Out" value={row.signed_out_at} />,
+      sortKey: 'signedOutAt',
     },
     {
       label: 'Duration',
       render: (row) => <DurationBlock attendance={row} />,
     },
+    ...(showLateness
+      ? [
+          {
+            label: 'Lateness',
+            render: (row: Attendance) => (
+              <LatenessBlock
+                attendance={row}
+                checkInTime={params.checkInTime}
+              />
+            ),
+          },
+        ]
+      : []),
     {
       label: 'Recorded By',
       render: (row) => (
@@ -137,13 +157,21 @@ export default function ListAttendances({ attendance }: Props) {
             headers={headers}
             data={attendance.data}
             keyExtractor={(row) => row.id}
-            validFilters={['role']}
+            validFilters={[
+              'name',
+              'role',
+              'type',
+              'classification',
+              'lateness',
+              'checkInTime',
+              ...dateRangeFilterQueryKeys('signed_in_at'),
+            ]}
             paginator={attendance}
             onFilterButtonClick={userFilterToggle.open}
           />
         </SlabBody>
       </Slab>
-      <UsersTableFilters {...userFilterToggle.props} />
+      <AttendanceTableFilters {...userFilterToggle.props} />
     </DashboardLayout>
   );
 }
@@ -202,5 +230,29 @@ function DurationBlock({ attendance }: { attendance: Attendance }) {
       {hours > 0 ? `${hours}h ` : ''}
       {mins}m
     </Text>
+  );
+}
+
+function LatenessBlock({
+  attendance,
+  checkInTime,
+}: {
+  attendance: Attendance;
+  checkInTime?: string;
+}) {
+  if (!attendance.signed_in_at || !checkInTime) {
+    return <Text color="gray.500">Not assessed</Text>;
+  }
+
+  const [hours, minutes] = checkInTime.split(':').map(Number);
+  const signedInAt = new Date(attendance.signed_in_at);
+  const signedInMinutes = signedInAt.getHours() * 60 + signedInAt.getMinutes();
+  const expectedMinutes = hours * 60 + minutes;
+  const isLate = signedInMinutes > expectedMinutes;
+
+  return (
+    <Badge colorScheme={isLate ? 'orange' : 'green'}>
+      {isLate ? 'Late' : 'On time'}
+    </Badge>
   );
 }

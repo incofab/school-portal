@@ -19,6 +19,7 @@ use App\Support\MorphMap;
 use App\Support\Res;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Mail;
 
 class RecordFeePaymentReminder
@@ -77,10 +78,12 @@ class RecordFeePaymentReminder
 
     $messageModel = $this->saveMessage($users, $schoolNotification);
 
+    $chargeReference = Str::orderedUuid()->toString();
     $res = ApplyMessageCharges::make($this->institution)->run(
       $users,
       $this->notificationChannel,
-      $messageModel
+      $messageModel,
+      $chargeReference
     );
     if ($res->isNotSuccessful()) {
       return $res;
@@ -88,7 +91,7 @@ class RecordFeePaymentReminder
 
     foreach ($users as $user) {
       $guardian = $user->student->guardian;
-      $this->dispatchMessage($guardian, $user, $messageModel);
+      $this->dispatchMessage($guardian, $user, $messageModel, $chargeReference);
     }
 
     app(FinancialActivityLogger::class)->paymentNotificationSent(
@@ -104,7 +107,8 @@ class RecordFeePaymentReminder
   private function dispatchMessage(
     User $guardian,
     User $user,
-    Message $messageModel
+    Message $messageModel,
+    string $chargeReference
   ) {
     if ($this->notificationChannel === NotificationChannelsType::Email->value) {
       // info("Running => {$user->id}");
@@ -113,7 +117,8 @@ class RecordFeePaymentReminder
           $user->student,
           $guardian,
           $this->fee,
-          $messageModel->id
+          $messageModel->id,
+          $chargeReference
         )
       );
     } elseif (
@@ -123,7 +128,9 @@ class RecordFeePaymentReminder
         $this->getSmsMessage($user),
         $guardian->phone,
         $messageModel,
-        $this->institution
+        $this->institution,
+        1,
+        $chargeReference
       );
     } else {
       throw new Exception('No channel selected');

@@ -2,26 +2,34 @@
 
 namespace App\Mail;
 
+use App\Enums\NotificationChannelsType;
 use App\Models\Institution;
 use App\Models\Message;
 use App\Models\User;
+use App\Traits\ChargesInstitutionMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Markdown;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class AdmissionLetterMail extends Mailable
 {
-  use Queueable, SerializesModels;
+  use ChargesInstitutionMessage, Queueable, SerializesModels;
+
+  private string $chargeReference;
 
   public function __construct(
     public Institution $institution,
     public User $user,
     public $url,
-    private ?Message $messageModel = null
+    private ?Message $messageModel = null,
+    ?string $chargeReference = null
   ) {
+    $this->afterCommit();
+    $this->chargeReference = $chargeReference ?? Str::orderedUuid()->toString();
   }
 
   /**
@@ -41,14 +49,26 @@ class AdmissionLetterMail extends Mailable
   }
 
   /**
-   * @param \Illuminate\Contracts\Mail\Mailer $mailer
+   * @param  \Illuminate\Contracts\Mail\Mailer  $mailer
    */
-  function send($mailer)
+  public function send($mailer)
   {
-    parent::send($mailer);
+    if (
+      !$this->chargeInstitutionMessage(
+        $this->institution,
+        NotificationChannelsType::Email,
+        1,
+        $this->messageModel,
+        $this->chargeReference
+      )
+    ) {
+      return null;
+    }
+
+    $sentMessage = parent::send($mailer);
 
     if (!$this->messageModel) {
-      return;
+      return $sentMessage;
     }
 
     $markdown = new Markdown(view(), config('mail.markdown'));
@@ -61,6 +81,8 @@ class AdmissionLetterMail extends Mailable
     $this->messageModel
       ->fill(['body' => $bodyContent, 'sent_at' => now()])
       ->save();
+
+    return $sentMessage;
   }
 
   /**

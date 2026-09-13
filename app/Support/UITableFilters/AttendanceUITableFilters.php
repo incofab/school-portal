@@ -4,15 +4,17 @@ namespace App\Support\UITableFilters;
 
 use App\Enums\AttendanceType;
 use App\Enums\InstitutionUserType;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class AttendanceUITableFilters extends BaseUITableFilter
 {
   protected array $sortableColumns = [
-    'firstName' => 'first_name',
-    'lastName' => 'last_name',
-    'email' => 'email',
-    'createdAt' => 'created_at'
+    'firstName' => 'users.first_name',
+    'lastName' => 'users.last_name',
+    'createdAt' => 'attendances.created_at',
+    'signedInAt' => 'attendances.signed_in_at',
+    'signedOutAt' => 'attendances.signed_out_at'
   ];
 
   protected function extraValidationRules(): array
@@ -24,8 +26,22 @@ class AttendanceUITableFilters extends BaseUITableFilter
       'email' => ['sometimes', 'string'],
       'role' => ['sometimes', new Enum(InstitutionUserType::class)],
       'type' => ['sometimes', new Enum(AttendanceType::class)],
+      'classification' => ['sometimes', 'integer'],
+      'lateness' => ['sometimes', Rule::in(['late', 'on_time'])],
+      'checkInTime' => [
+        'sometimes',
+        'date_format:H:i',
+        'required_if:lateness,late,on_time'
+      ],
       'roles_not_in' => ['sometimes', 'array'],
       'roles_in' => ['sometimes', 'array']
+    ];
+  }
+
+  protected function extraDateRangeColumns(): array
+  {
+    return [
+      'signed_in_at' => 'attendances.signed_in_at'
     ];
   }
 
@@ -59,6 +75,18 @@ class AttendanceUITableFilters extends BaseUITableFilter
       );
     }
     return $this;
+  }
+
+  protected function joinStudents(): static
+  {
+    return $this->joinInstitutionUser()->callOnce(
+      'joinStudents',
+      fn() => $this->baseQuery->join(
+        'students',
+        'institution_users.user_id',
+        'students.user_id'
+      )
+    );
   }
 
   protected function directQuery()
@@ -110,7 +138,26 @@ class AttendanceUITableFilters extends BaseUITableFilter
               ->where('users.last_name', 'like', "%$value%")
               ->orWhere('users.first_name', 'like', "%$value%")
           )
+      )
+      ->when(
+        $this->requestGet('classification'),
+        fn(self $that, $value) => $that
+          ->joinStudents()
+          ->baseQuery->where('students.classification_id', $value)
+      )
+      ->when(
+        $this->requestGet('lateness') && $this->requestGet('checkInTime'),
+        fn(self $that) => $that->baseQuery->whereTime(
+          'attendances.signed_in_at',
+          $that->requestGet('lateness') === 'late' ? '>' : '<=',
+          $that->requestGet('checkInTime')
+        )
       );
+
+    if (in_array($this->requestGet('sortKey'), ['firstName', 'lastName'])) {
+      $this->joinInstitutionUser(true);
+    }
+
     return $this;
   }
 }

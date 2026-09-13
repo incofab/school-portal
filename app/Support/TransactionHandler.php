@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Support;
 
 use App\Enums\TransactionType;
@@ -14,16 +15,24 @@ use Illuminate\Support\Facades\DB;
 class TransactionHandler
 {
   private float $amount;
+
   private float $bbt;
+
   private float $bat;
+
   private WalletType $walletType;
+
   private TransactionType $transactionType;
+
   private Model $transactionable;
+
   private ?string $remark;
+
   private ?Institution $institution = null;
+
   private InstitutionGroup $institutionGroup;
 
-  function __construct(
+  public function __construct(
     Institution|InstitutionGroup $institutionOrGroup,
     private string $reference
   ) {
@@ -36,22 +45,23 @@ class TransactionHandler
     }
   }
 
-  static function make(
+  public static function make(
     Institution|InstitutionGroup $institutionOrGroup,
     string $reference
   ) {
     return new self($institutionOrGroup, $reference);
   }
 
-  static function makeFromPaymentReference(PaymentReference $paymentReference)
-  {
+  public static function makeFromPaymentReference(
+    PaymentReference $paymentReference
+  ) {
     return new self(
       $paymentReference->institution,
       $paymentReference->reference
     );
   }
 
-  function topupDebtWallet(
+  public function topupDebtWallet(
     $amount,
     Model $transactionable,
     ?string $remark = null
@@ -65,7 +75,7 @@ class TransactionHandler
     $this->recordTransaction();
   }
 
-  function deductDebtWallet(
+  public function deductDebtWallet(
     float $amount,
     Model $transactionable,
     ?string $remark = null
@@ -79,7 +89,7 @@ class TransactionHandler
     $this->recordTransaction();
   }
 
-  function topupCreditWallet(
+  public function topupCreditWallet(
     $amount,
     Model $transactionable,
     ?string $remark = null
@@ -93,7 +103,7 @@ class TransactionHandler
     $this->recordTransaction();
   }
 
-  function deductCreditWallet(
+  public function deductCreditWallet(
     $amount,
     Model $transactionable,
     ?string $remark = null
@@ -104,6 +114,7 @@ class TransactionHandler
     $this->transactionable = $transactionable;
 
     $this->amount = $amount;
+
     return $this->recordTransaction();
   }
 
@@ -120,7 +131,7 @@ class TransactionHandler
         return $existingTransaction;
       }
 
-      if ($this->amount < 1) {
+      if ($this->amount <= 0) {
         return throw new Exception('Amount cannot be zero or less');
       }
 

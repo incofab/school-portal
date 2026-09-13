@@ -3,12 +3,13 @@ import useQueryString from '@/hooks/use-query-string';
 import BaseTableFilter from './base-table-filter';
 import FilterFormControlBox from './filter-form-control-box';
 import ClassificationSelect from '../selectors/classification-select';
-import { TermType } from '@/types/types';
+import { ReceiptStatus, TermType } from '@/types/types';
 import AcademicSessionSelect from '../selectors/academic-session-select';
 import EnumSelect from '../dropdown-select/enum-select';
 import useSharedProps from '@/hooks/use-shared-props';
 import StudentSelect from '../selectors/student-select';
 import FeeSelect from '../selectors/fee-select';
+import DateRangeFilter, { getDateRangeFilterParams } from './date-range-filter';
 
 interface Props {
   isOpen: boolean;
@@ -22,9 +23,10 @@ export default function ReceiptTableFilters({ isOpen, onClose }: Props) {
     term: params.term ?? currentTerm,
     academicSession: params.academicSession ?? currentAcademicSessionId,
     classification: params.classification ?? '',
-    studentClass: params.studentClass ?? '',
     user: params.user ?? '',
     fee: params.fee ?? '',
+    status: params.status ?? '',
+    ...getDateRangeFilterParams(params, 'created_at'),
   }));
 
   return (
@@ -58,10 +60,10 @@ export default function ReceiptTableFilters({ isOpen, onClose }: Props) {
       </FilterFormControlBox>
       <FilterFormControlBox title="Class">
         <ClassificationSelect
-          selectValue={filters.studentClass}
+          selectValue={filters.classification}
           isClearable={true}
           onChange={(e: any) =>
-            setFilters({ ...filters, studentClass: e?.value })
+            setFilters({ ...filters, classification: e?.value })
           }
         />
       </FilterFormControlBox>
@@ -72,6 +74,20 @@ export default function ReceiptTableFilters({ isOpen, onClose }: Props) {
           isClearable={true}
         />
       </FilterFormControlBox>
+      <FilterFormControlBox title="Payment status">
+        <EnumSelect
+          selectValue={filters.status}
+          enumData={ReceiptStatus}
+          isClearable={true}
+          onChange={(e: any) => setFilters({ ...filters, status: e?.value })}
+        />
+      </FilterFormControlBox>
+      <DateRangeFilter
+        label="Receipt date"
+        filterKey="created_at"
+        filters={filters}
+        onChange={(dateRange) => setFilters({ ...filters, ...dateRange })}
+      />
     </BaseTableFilter>
   );
 }

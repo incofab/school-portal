@@ -273,27 +273,27 @@ export default function Template9(props: ResultProps) {
                   <th>
                     3rd Term
                     <br />
-                    CA&nbsp;{score(assessmentMax)}%
+                    CA&nbsp;({score(assessmentMax)}%)
                   </th>
                   <th>
                     3rd Term
                     <br />
-                    Exam&nbsp;{score(examMax)}%
+                    Exam&nbsp;({score(examMax)}%)
                   </th>
                   <th>
                     3rd Term
                     <br />
-                    Total&nbsp;({TOTAL_SCORE_MAX})%
+                    &nbsp;({TOTAL_SCORE_MAX}%)
                   </th>
                   <th>
                     2nd Term
                     <br />
-                    Total&nbsp;({TOTAL_SCORE_MAX})%
+                    &nbsp;({TOTAL_SCORE_MAX}%)
                   </th>
                   <th>
                     1st Term
                     <br />
-                    Total&nbsp;({TOTAL_SCORE_MAX})%
+                    &nbsp;({TOTAL_SCORE_MAX}%)
                   </th>
                   <th>Pos</th>
                   <th>

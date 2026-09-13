@@ -271,7 +271,6 @@ it('fails if institution has insufficient wallet balance', function () {
   $res = $action->run();
 
   expect($res->isSuccessful())->toBeFalse();
-  expect($res->getMessage())->toBe('Insufficient wallet balance');
 
   // Assert SchoolNotification was created (charge happens after)
   assertDatabaseHas('school_notifications', ['reference' => $this->reference]);

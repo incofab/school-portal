@@ -13,6 +13,8 @@ return [
     |
     */
 
+  // Amount deducted from an institution group for each delivered message.
+  // Set either environment variable to 0 to disable that channel's charge.
   'sms-charge' => env('SMS_CHARGE', 7),
   'email-charge' => env('EMAIL_CHARGE', 3),
   'whatsapp-charge' => env('WHATSAPP_CHARGE', env('SMS_CHARGE', 7)),

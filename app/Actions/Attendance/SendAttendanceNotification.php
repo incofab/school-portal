@@ -16,7 +16,6 @@ use App\Services\Messaging\Whatsapp\PhoneNumberNormalizer;
 use App\Support\Res;
 use App\Support\SettingsHandler;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class SendAttendanceNotification
@@ -84,13 +83,16 @@ class SendAttendanceNotification
     );
 
     try {
-      (new MessageDispatcher($institution))->dispatch(
+      $dispatchResult = (new MessageDispatcher($institution))->dispatch(
         collect([$contact]),
         $channel,
         $body,
         self::SUBJECT,
         $message
       );
+      if ($dispatchResult->isNotSuccessful()) {
+        return $dispatchResult;
+      }
     } catch (Throwable $exception) {
       $meta = $message->meta ?? [];
       $message

@@ -62,8 +62,8 @@ export default function TransferEventResultsMultiple({
   const eventCourseables = event.event_courseables ?? [];
 
   const webForm = useWebForm<TransferFormData>(() => ({
-    academic_session_id: currentAcademicSessionId,
-    term: currentTerm,
+    academic_session_id: event.academic_session_id ?? currentAcademicSessionId,
+    term: event.term ?? currentTerm,
     event_courseables: eventCourseables.map((eventCourseable) => ({
       event_courseable_id: eventCourseable.id,
       course_teacher_id: null,

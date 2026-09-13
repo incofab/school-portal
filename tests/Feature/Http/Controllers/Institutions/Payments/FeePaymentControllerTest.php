@@ -3,14 +3,17 @@
 use App\Enums\InstitutionUserType;
 use App\Enums\TermType;
 use App\Models\AcademicSession;
+use App\Models\Classification;
 use App\Models\Fee;
 use App\Models\FeePayment;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\Receipt;
 use App\Models\Student;
+use Inertia\Testing\AssertableInertia;
 use Illuminate\Support\Str;
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\getJson;
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
@@ -77,6 +80,78 @@ it('stores a fee payment successfully', function () {
     'fee_id' => $this->fee->id
   ]);
 });
+
+it(
+  'filters fee payments by student class, status, method, and payment date',
+  function () {
+    $classification = Classification::factory()
+      ->withInstitution($this->institution)
+      ->create();
+    $student = Student::factory()
+      ->withInstitution($this->institution, $classification)
+      ->create();
+    $receipt = Receipt::factory()
+      ->fee($this->fee)
+      ->student($student)
+      ->create([
+        'status' => 'paid',
+        'created_at' => '2024-06-04 09:00:00'
+      ]);
+    $payment = FeePayment::factory()
+      ->fee($this->fee)
+      ->receipt($receipt)
+      ->create([
+        'amount' => 500,
+        'method' => 'bank',
+        'created_at' => '2024-06-04 09:30:00'
+      ]);
+
+    actingAs($this->admin);
+
+    getJson(
+      route('institutions.fee-payments.index', [
+        'institution' => $this->institution,
+        'classification' => $classification->id,
+        'status' => 'paid',
+        'method' => 'bank',
+        'created_at' => [
+          'date_from' => '2024-06-04',
+          'date_to' => '2024-06-04'
+        ]
+      ])
+    )
+      ->assertOk()
+      ->assertInertia(
+        fn(AssertableInertia $page) => $page
+          ->where('feePayments.data.0.id', $payment->id)
+          ->where('feePayments.total', 1)
+      );
+
+    $largerPayment = FeePayment::factory()
+      ->fee($this->fee)
+      ->receipt($receipt)
+      ->create([
+        'amount' => 2000,
+        'method' => 'bank',
+        'created_at' => '2024-06-04 10:00:00'
+      ]);
+
+    getJson(
+      route('institutions.fee-payments.index', [
+        'institution' => $this->institution,
+        'sortKey' => 'amount',
+        'sortDir' => 'desc'
+      ])
+    )
+      ->assertOk()
+      ->assertInertia(
+        fn(AssertableInertia $page) => $page->where(
+          'feePayments.data.0.id',
+          $largerPayment->id
+        )
+      );
+  }
+);
 
 it('updates fee payments', function () {
   [$amountPaid1, $amountPaid2] = [1000, 2000];

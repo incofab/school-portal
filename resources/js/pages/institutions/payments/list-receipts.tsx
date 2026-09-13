@@ -1,5 +1,5 @@
 import React from 'react';
-import { Receipt, User } from '@/types/models';
+import { Receipt } from '@/types/models';
 import DashboardLayout from '@/layout/dashboard-layout';
 import ServerPaginatedTable from '@/components/server-paginated-table';
 import { PaginationResponse } from '@/types/types';
@@ -14,6 +14,8 @@ import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import { LabelText } from '@/components/result-helper-components';
 import { formatAsCurrency } from '@/util/util';
 import UniversalReceiptModal from '@/components/modals/universal-receipt-modal';
+import DateTimeDisplay from '@/components/date-time-display';
+import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-filter';
 
 interface Props {
   receipts: PaginationResponse<Receipt>;
@@ -35,18 +37,22 @@ export default function ListReceipts({
       label: 'Student',
       value: 'user.full_name',
       render: (row: Receipt) => <DisplayUserFullname user={row.user} />,
+      sortKey: 'student',
     },
     {
       label: 'Fee',
       value: 'fee.title',
+      sortKey: 'feeTitle',
     },
     {
       label: 'Amount',
       value: 'amount',
+      sortKey: 'amount',
     },
     {
       label: 'Term',
       value: 'term',
+      sortKey: 'term',
     },
     {
       label: 'Session',
@@ -55,10 +61,18 @@ export default function ListReceipts({
     {
       label: 'Balance',
       value: 'amount_remaining',
+      sortKey: 'amountRemaining',
     },
     {
       label: 'Status',
       value: 'status',
+      sortKey: 'status',
+    },
+    {
+      label: 'Issued on',
+      value: 'created_at',
+      render: (row: Receipt) => <DateTimeDisplay dateTime={row.created_at} />,
+      sortKey: 'createdAt',
     },
     {
       label: 'Actions',
@@ -78,15 +92,16 @@ export default function ListReceipts({
   return (
     <DashboardLayout>
       <Slab>
-        <SlabHeading title="List Receipts" 
+        <SlabHeading
+          title="List Receipts"
           rightElement={
-            <BrandButton 
+            <BrandButton
               variant={'ghost'}
               onClick={() => universalReceiptModalToggle.open({})}
-              title='Print Universal Receipt'
+              title="Print Universal Receipt"
             />
           }
-        /> 
+        />
         <SlabBody>
           <VStack align={'stretch'}>
             <LabelText label="Number of Payments" text={num_of_payments} />
@@ -106,8 +121,10 @@ export default function ListReceipts({
               'term',
               'academicSession',
               'classification',
-              'studentUser',
+              'user',
               'fee',
+              'status',
+              ...dateRangeFilterQueryKeys('created_at'),
             ]}
             onFilterButtonClick={receiptFilterToggle.open}
           />

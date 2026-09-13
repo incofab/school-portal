@@ -25,8 +25,8 @@
       <p>
         A complete digital school management platform for administrators, teachers, parents, and students.
       </p>
-      <a class="site-footer__contact" href="mailto:support@edumanager.ng">support@edumanager.ng</a>
-      <a class="site-footer__contact" href="tel:+2349035316014">09035316014</a>
+      <a class="site-footer__contact" href="mailto:{{ config('app.email') }}">{{ config('app.email') }}</a>
+      <a class="site-footer__contact" href="tel:{{ config('app.phone') }}">{{ config('app.phone') }}</a>
     </div>
 
     @foreach ($footerLinks as $heading => $links)

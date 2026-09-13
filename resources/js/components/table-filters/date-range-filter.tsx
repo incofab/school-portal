@@ -334,43 +334,55 @@ export default function DateRangeFilter({
                   Exact dates
                 </Text>
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
-                  <InputGroup>
-                    <InputLeftElement pointerEvents="none">
-                      <Icon
-                        as={CalendarDaysIcon}
-                        color="gray.400"
-                        boxSize={4}
+                  <Stack spacing={1}>
+                    <Text fontSize="xs" color={summaryColor}>
+                      Date from
+                    </Text>
+                    <InputGroup>
+                      <InputLeftElement pointerEvents="none">
+                        <Icon
+                          as={CalendarDaysIcon}
+                          color="gray.400"
+                          boxSize={4}
+                        />
+                      </InputLeftElement>
+                      <Input
+                        type="date"
+                        aria-label="Date from"
+                        bg="white"
+                        rounded="xl"
+                        value={dateRange[keys.dateFrom] ?? ''}
+                        onChange={(e) =>
+                          updateDate(keys.dateFrom, e.currentTarget.value)
+                        }
                       />
-                    </InputLeftElement>
-                    <Input
-                      type="date"
-                      bg="white"
-                      rounded="xl"
-                      value={dateRange[keys.dateFrom] ?? ''}
-                      onChange={(e) =>
-                        updateDate(keys.dateFrom, e.currentTarget.value)
-                      }
-                    />
-                  </InputGroup>
+                    </InputGroup>
+                  </Stack>
 
-                  <InputGroup>
-                    <InputLeftElement pointerEvents="none">
-                      <Icon
-                        as={CalendarDaysIcon}
-                        color="gray.400"
-                        boxSize={4}
+                  <Stack spacing={1}>
+                    <Text fontSize="xs" color={summaryColor}>
+                      Date to
+                    </Text>
+                    <InputGroup>
+                      <InputLeftElement pointerEvents="none">
+                        <Icon
+                          as={CalendarDaysIcon}
+                          color="gray.400"
+                          boxSize={4}
+                        />
+                      </InputLeftElement>
+                      <Input
+                        type="date"
+                        aria-label="Date to"
+                        bg="white"
+                        rounded="xl"
+                        value={dateRange[keys.dateTo] ?? ''}
+                        onChange={(e) =>
+                          updateDate(keys.dateTo, e.currentTarget.value)
+                        }
                       />
-                    </InputLeftElement>
-                    <Input
-                      type="date"
-                      bg="white"
-                      rounded="xl"
-                      value={dateRange[keys.dateTo] ?? ''}
-                      onChange={(e) =>
-                        updateDate(keys.dateTo, e.currentTarget.value)
-                      }
-                    />
-                  </InputGroup>
+                    </InputGroup>
+                  </Stack>
                 </SimpleGrid>
                 <Text mt={3} fontSize="xs" color={summaryColor}>
                   Manual dates clear the keyword automatically.

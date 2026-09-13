@@ -1197,7 +1197,10 @@
             Attendance supports single-person creation, batch check-in/check-out
             for class-filtered student registers and all-staff registers,
             improved attendance record display with check-in/check-out status,
-            class day and weekly attendance register reports, API-style CRUD,
+            institution attendance list filters for check-in date ranges,
+            check-in/check-out events, roles, classes, people, and lateness
+            against a persisted expected check-in time, class day and weekly
+            attendance register reports, API-style CRUD,
             institution attendance listing, student attendance report retrieval,
             an authenticated API endpoint for scanning a student's attendance
             code, and a separate authenticated self-attendance endpoint for
@@ -1645,8 +1648,9 @@
             handling, fee payment recording, student fee payment views, manual
             bank-transfer payment requests for fees and admission form
             purchases, manual payment review/confirmation/rejection, fee payment
-            summary retrieval, receipt listing/showing, universal receipt
-            printing, payment notifications, admission form payments, payment
+            summary retrieval, receipt listing/showing with date, class, student,
+            fee, session, term, and status filters, universal receipt printing,
+            payment notifications, admission form payments, payment
             references, and provider webhook processing. Fee creation can reuse
             previous term/session fee structures so staff can copy line items,
             amounts, intervals, and category assignments into a new period

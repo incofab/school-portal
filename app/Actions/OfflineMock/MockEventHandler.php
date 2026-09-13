@@ -32,7 +32,11 @@ class MockEventHandler
         'num_of_subjects',
         'status',
         'duration',
-        'show_corrections'
+        'show_corrections',
+        'academic_session_id',
+        'term',
+        'class_division_id',
+        'week_number'
       ),
       'event_courses' => $event
         ->eventCourseables()

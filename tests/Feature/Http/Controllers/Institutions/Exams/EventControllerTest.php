@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\TermType;
+use App\Models\AcademicSession;
+use App\Models\ClassDivision;
 use App\Models\CourseSession;
 use App\Models\Event;
 use App\Models\Exam;
@@ -37,13 +40,11 @@ it('displays the create event form', function () {
 it('displays the offline cbt setup guide for staff', function () {
   actingAs($this->admin)
     ->get(instRoute('events.offline-cbt.setup-guide', [], $this->institution))
-    ->assertInertia(fn(AssertableInertia $page) => $page
-      ->component('institutions/exams/offline-cbt-setup-guide')
-      ->where(
-        'videoUrl',
-        'https://www.youtube.com/watch?v=RpbM29SH9Q0'
-      )
-      ->where('downloadUrl', route('download-offline-cbt-app'))
+    ->assertInertia(
+      fn(AssertableInertia $page) => $page
+        ->component('institutions/exams/offline-cbt-setup-guide')
+        ->where('videoUrl', 'https://www.youtube.com/watch?v=RpbM29SH9Q0')
+        ->where('downloadUrl', route('download-offline-cbt-app'))
     );
 });
 
@@ -114,6 +115,76 @@ it('stores a new event and event courseables', function () {
     ->assertStatus(200);
   assertDatabaseHas('events', [...$data, 'duration' => $data['duration'] * 60]);
   assertDatabaseHas('event_courseables', [...$eventCourseables[0]]);
+});
+
+it(
+  'stores an event academic context, section, and alphanumeric week number',
+  function () {
+    $academicSession = AcademicSession::factory()->create();
+    $classDivision = ClassDivision::factory()
+      ->withInstitution($this->institution)
+      ->create();
+    $data = Event::factory()
+      ->institution($this->institution)
+      ->make()
+      ->toArray();
+    $data = [
+      ...collect($data)
+        ->except('code')
+        ->toArray(),
+      'academic_session_id' => $academicSession->id,
+      'term' => TermType::First->value,
+      'class_division_id' => $classDivision->id,
+      'week_number' => '1A1B'
+    ];
+
+    actingAs($this->admin)
+      ->post(instRoute('events.store', [], $this->institution), $data)
+      ->assertStatus(200);
+
+    assertDatabaseHas('events', [
+      'academic_session_id' => $academicSession->id,
+      'term' => TermType::First->value,
+      'class_division_id' => $classDivision->id,
+      'week_number' => '1A1B'
+    ]);
+  }
+);
+
+it('limits section-specific events to students in that section', function () {
+  $student = Student::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  $matchingSection = ClassDivision::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  $otherSection = ClassDivision::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  $matchingSection->classifications()->attach($student->classification_id);
+
+  $matchingEvent = Event::factory()
+    ->institution($this->institution)
+    ->create([
+      'class_division_id' => $matchingSection->id,
+      'classification_id' => null,
+      'classification_group_id' => null
+    ]);
+  $otherEvent = Event::factory()
+    ->institution($this->institution)
+    ->create([
+      'class_division_id' => $otherSection->id,
+      'classification_id' => null,
+      'classification_group_id' => null
+    ]);
+
+  $visibleEventIds = Event::query()
+    ->whereKey([$matchingEvent->id, $otherEvent->id])
+    ->forStudent($student->load('classification'))
+    ->pluck('id');
+
+  expect($visibleEventIds)->toHaveCount(1);
+  expect($visibleEventIds->first())->toBe($matchingEvent->id);
 });
 
 it('updates an event', function () {

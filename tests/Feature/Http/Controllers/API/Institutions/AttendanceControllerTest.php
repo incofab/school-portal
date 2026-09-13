@@ -56,7 +56,7 @@ it('records attendance for the authenticated institution user', function () {
 
   $response = actingAs($institutionUser->user, 'sanctum')->postJson(
     route('api.institutions.attendance.self', [
-      'institution' => $this->institution->code
+      'institution' => $this->institution->uuid
     ]),
     [
       'institution_user_id' => $otherInstitutionUser->id,
@@ -93,7 +93,7 @@ it('records attendance for the authenticated institution user', function () {
   actingAs($institutionUser->user, 'sanctum')
     ->postJson(
       route('api.institutions.attendance.self', [
-        'institution' => $this->institution->code
+        'institution' => $this->institution->uuid
       ]),
       [
         'type' => AttendanceType::In->value,
@@ -122,7 +122,7 @@ it(
     actingAs($institutionUser->user, 'sanctum')
       ->postJson(
         route('api.institutions.attendance.self', [
-          'institution' => $this->institution->code
+          'institution' => $this->institution->uuid
         ]),
         [
           'datetime' => '2026-08-28 07:30:00',
@@ -162,7 +162,7 @@ it(
     actingAs($institutionUser->user, 'sanctum')
       ->postJson(
         route('api.institutions.attendance.self', [
-          'institution' => $this->institution->code
+          'institution' => $this->institution->uuid
         ]),
         [
           'datetime' => '2026-08-29 17:00:00',
@@ -195,7 +195,7 @@ it(
     actingAs($institutionUser->user, 'sanctum')
       ->postJson(
         route('api.institutions.attendance.self', [
-          'institution' => $this->institution->code
+          'institution' => $this->institution->uuid
         ])
       )
       ->assertForbidden();
@@ -214,7 +214,7 @@ it(
     actingAs($institutionUser->user, 'sanctum')
       ->postJson(
         route('api.institutions.attendance.self', [
-          'institution' => $this->institution->code
+          'institution' => $this->institution->uuid
         ]),
         [
           'type' => AttendanceType::In->value,
@@ -242,7 +242,7 @@ it('validates the optional attendance datetime value', function () {
   actingAs($institutionUser->user, 'sanctum')
     ->postJson(
       route('api.institutions.attendance.self', [
-        'institution' => $this->institution->code
+        'institution' => $this->institution->uuid
       ]),
       [
         'datetime' => 'not a datetime',
@@ -257,7 +257,7 @@ it('validates the optional attendance datetime value', function () {
 it('requires authentication for self attendance', function () {
   postJson(
     route('api.institutions.attendance.self', [
-      'institution' => $this->institution->code
+      'institution' => $this->institution->uuid
     ])
   )->assertUnauthorized();
 });

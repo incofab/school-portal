@@ -68,7 +68,7 @@ test('can store message to a specific model (classification)', function () {
   actingAs($this->adminUser)
     ->post(route('institutions.messages.store', $this->institution), $data)
     ->assertForbidden()
-    ->assertJson(['message' => 'Insufficient wallet balance']);
+    ->assertJson(['success' => false]);
 
   $this->institutionGroup->fill(['credit_wallet' => 100])->save();
 

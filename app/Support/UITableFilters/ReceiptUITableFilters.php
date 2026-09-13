@@ -2,13 +2,20 @@
 
 namespace App\Support\UITableFilters;
 
+use App\Enums\ReceiptStatus;
 use App\Enums\TermType;
 use Illuminate\Validation\Rules\Enum;
 
 class ReceiptUITableFilters extends BaseUITableFilter
 {
   protected array $sortableColumns = [
-    'createdAt' => 'created_at'
+    'student' => 'users.last_name',
+    'feeTitle' => 'fees.title',
+    'amount' => 'receipts.amount',
+    'amountRemaining' => 'receipts.amount_remaining',
+    'status' => 'receipts.status',
+    'term' => 'receipts.term',
+    'createdAt' => 'receipts.created_at'
   ];
 
   protected function extraValidationRules(): array
@@ -18,7 +25,10 @@ class ReceiptUITableFilters extends BaseUITableFilter
       'paymentableType' => ['sometimes', 'string'],
       'paymentableId' => ['sometimes', 'integer'],
       'academicSession' => ['sometimes', 'integer'],
-      'term' => ['sometimes', new Enum(TermType::class)]
+      'term' => ['sometimes', new Enum(TermType::class)],
+      'classification' => ['sometimes', 'integer'],
+      'fee' => ['sometimes', 'integer'],
+      'status' => ['sometimes', new Enum(ReceiptStatus::class)]
     ];
   }
 
@@ -36,18 +46,48 @@ class ReceiptUITableFilters extends BaseUITableFilter
     return $this;
   }
 
+  public function joinUser(): static
+  {
+    $this->callOnce(
+      'joinUser',
+      fn() => $this->baseQuery->join('users', 'users.id', 'receipts.user_id')
+    );
+    return $this;
+  }
+
+  protected function joinStudents(): static
+  {
+    return $this->callOnce(
+      'joinStudents',
+      fn() => $this->baseQuery->join(
+        'students',
+        'receipts.user_id',
+        'students.user_id'
+      )
+    );
+  }
+
   protected function directQuery()
   {
     $this->joinFee();
 
-    $this->baseQuery
-      ->when(
+    $this->when(
+      $this->requestGet('classification'),
+      fn(self $that, $value) => $that
+        ->joinStudents()
+        ->baseQuery->where('students.classification_id', $value)
+    )
+      ->baseQuery->when(
         $this->requestGet('institution_id'),
         fn($q, $value) => $q->where('receipts.institution_id', $value)
       )
       ->when(
         $this->requestGet('user'),
         fn($q, $value) => $q->where('receipts.user_id', $value)
+      )
+      ->when(
+        $this->requestGet('fee'),
+        fn($q, $value) => $q->where('receipts.fee_id', $value)
       )
       ->when(
         $this->requestGet('paymentableType') &&
@@ -63,7 +103,15 @@ class ReceiptUITableFilters extends BaseUITableFilter
       ->when(
         $this->requestGet('term'),
         fn($q, $value) => $q->where('receipts.term', $value)
+      )
+      ->when(
+        $this->requestGet('status'),
+        fn($q, $value) => $q->where('receipts.status', $value)
       );
+
+    if ($this->requestGet('sortKey') === 'student') {
+      $this->joinUser();
+    }
 
     return $this;
   }

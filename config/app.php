@@ -15,6 +15,9 @@ return [
   'name' => env('APP_NAME', 'Laravel'),
   'email' => env('APP_EMAIL', 'support@edumanager.ng'),
   'user_default_password' => env('USER_DEFAULT_PASSWORD', 'password'),
+  'phone' => env('APP_PHONE', '09035316014'),
+  'whatsapp_link' =>
+    'https://wa.me/234' . ltrim(env('APP_PHONE', '09035316014'), '0'),
 
   /*
     |--------------------------------------------------------------------------
@@ -175,7 +178,7 @@ return [
     // App\Providers\BroadcastServiceProvider::class,
     App\Providers\EventServiceProvider::class,
     App\Providers\RouteServiceProvider::class,
-        App\Providers\TelescopeServiceProvider::class,
+    App\Providers\TelescopeServiceProvider::class,
     App\Providers\ViewServiceProvider::class
   ],
 

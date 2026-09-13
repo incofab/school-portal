@@ -36,6 +36,9 @@ export default function ShowEvent({ event, studentExam }: Props) {
     },
     { label: 'Num of Subject', value: String(event.num_of_subjects) },
     { label: 'Class', value: String(event.classification_group?.title ?? '') },
+    { label: 'Term', value: event.term ? String(event.term) : '' },
+    // { label: 'Section', value: event.class_division?.title ?? '' },
+    { label: 'Week', value: event.week_number ?? '' },
   ];
 
   function canStart() {
@@ -48,7 +51,7 @@ export default function ShowEvent({ event, studentExam }: Props) {
     if (!isTimeExpired(event.starts_at)) {
       return false;
     }
-    return studentExam == undefined;
+    return studentExam === undefined;
   }
 
   return (

@@ -112,9 +112,10 @@
           EduManager brings student management, admissions, attendance, fees, results, online exams, parent communication, and school automation into one secure digital school platform.
         </p>
         <div class="hero-section__actions" aria-label="Primary calls to action">
-          <a class="btn btn--primary btn--large" href="{{ route('registration-requests.create') }}">Get Started</a>
-          <a class="btn btn--secondary btn--large" href="mailto:support@edumanager.ng?subject=EduManager%20Demo%20Request">Request Demo</a>
-          <a class="btn btn--text" href="{{ route('login') }}">Login to your school</a>
+          <a class="btn btn--primary btn--large" href="{{ route('registration-requests.create') }}">Register Your School</a>
+          <a class="btn btn--secondary btn--large" href="{{ config('app.whatsapp_link') }}">Request Demo</a>
+          <a class="btn btn--ghost btn--large" style="color: white;" href="{{ route('login') }}">Login</a>
+          <a class="btn btn--secondary btn--large" href="{{ route('partner-registration-requests.create') }}">Partner With Us</a>
         </div>
         <dl class="hero-section__proof" aria-label="EduManager platform highlights">
           <div>

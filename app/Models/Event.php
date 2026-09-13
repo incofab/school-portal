@@ -27,6 +27,7 @@ class Event extends BaseModel
     'num_of_activations' => 'integer',
     'classification_id' => 'integer',
     'classification_group_id' => 'integer',
+    'class_division_id' => 'integer',
     'show_corrections' => 'boolean',
     'academic_session_id' => 'integer',
     'duration' => 'float',
@@ -53,6 +54,18 @@ class Event extends BaseModel
       'num_of_activations' => ['nullable', 'integer'],
       'show_corrections' => ['sometimes', 'boolean'],
       'type' => ['required', new Enum(EventType::class)],
+      'academic_session_id' => [
+        'nullable',
+        'integer',
+        new ValidateExistsRule(AcademicSession::class)
+      ],
+      'term' => ['nullable', new Enum(TermType::class)],
+      'class_division_id' => [
+        'nullable',
+        'integer',
+        new ValidateExistsRule(ClassDivision::class)
+      ],
+      'week_number' => ['nullable', 'string', 'max:20'],
       'classification_group_id' => [
         'nullable',
         new ValidateExistsRule(ClassificationGroup::class)
@@ -94,20 +107,45 @@ class Event extends BaseModel
     if (!$student) {
       return $query;
     }
-    if (!$student->classification->classification_group_id) {
-      return $query->where('classification_id', $student->classification_id);
-    }
-    return $query
-      ->where(
-        fn($q) => $q
-          ->where(
-            'classification_group_id',
-            '=',
-            $student->classification->classification_group_id
-          )
-          ->whereNull('classification_id')
-      )
-      ->orWhere('classification_id', $student->classification_id);
+
+    $audienceQuery = function ($query) use ($student) {
+      if (!$student->classification->classification_group_id) {
+        $query->where('classification_id', $student->classification_id);
+        return;
+      }
+
+      $query
+        ->where(
+          fn($q) => $q
+            ->where(
+              'classification_group_id',
+              '=',
+              $student->classification->classification_group_id
+            )
+            ->whereNull('classification_id')
+        )
+        ->orWhere('classification_id', $student->classification_id);
+    };
+
+    return $query->where(function ($query) use ($student, $audienceQuery) {
+      $query
+        ->whereNull('class_division_id')
+        ->where($audienceQuery)
+        ->orWhere(function ($query) use ($student, $audienceQuery) {
+          $query
+            ->whereHas(
+              'classDivision.classifications',
+              fn($query) => $query->whereKey($student->classification_id)
+            )
+            ->where(function ($query) use ($audienceQuery) {
+              $query->where($audienceQuery)->orWhere(function ($query) {
+                $query
+                  ->whereNull('classification_id')
+                  ->whereNull('classification_group_id');
+              });
+            });
+        });
+    });
   }
 
   function canCreateExamCheck()
@@ -151,5 +189,10 @@ class Event extends BaseModel
   function classificationGroup()
   {
     return $this->belongsTo(ClassificationGroup::class);
+  }
+
+  function classDivision()
+  {
+    return $this->belongsTo(ClassDivision::class);
   }
 }

@@ -2,8 +2,10 @@
 
 use App\Models\Fee;
 use App\Models\FeePayment;
+use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\Receipt;
+use App\Models\Student;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
@@ -57,5 +59,65 @@ test('show displays a single receipt with its relations', function () {
         ->has('receipt')
         ->where('receipt.id', $this->receipt->id)
         ->has('receipt.user') // Check relation loaded
+    );
+});
+
+test('index filters receipts by class, status, and receipt date', function () {
+  $classification = Classification::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  $student = Student::factory()
+    ->withInstitution($this->institution, $classification)
+    ->create();
+  $receipt = Receipt::factory()
+    ->fee($this->fee)
+    ->student($student)
+    ->create([
+      'status' => 'paid',
+      'amount' => 500,
+      'created_at' => '2024-06-04 09:00:00'
+    ]);
+  $largerReceipt = Receipt::factory()
+    ->fee($this->fee)
+    ->student($student)
+    ->create([
+      'status' => 'paid',
+      'amount' => 1000,
+      'created_at' => '2024-06-05 10:00:00'
+    ]);
+
+  getJson(
+    route('institutions.receipts.index', [
+      'institution' => $this->institution,
+      'classification' => $classification->id,
+      'status' => 'paid',
+      'created_at' => [
+        'date_from' => '2024-06-04',
+        'date_to' => '2024-06-04'
+      ]
+    ])
+  )
+    ->assertOk()
+    ->assertInertia(
+      fn(AssertableInertia $page) => $page
+        ->where('receipts.data.0.id', $receipt->id)
+        ->where('receipts.total', 1)
+    );
+
+  getJson(
+    route('institutions.receipts.index', [
+      'institution' => $this->institution,
+      'classification' => $classification->id,
+      'status' => 'paid',
+      'sortKey' => 'amount',
+      'sortDir' => 'desc'
+    ])
+  )
+    ->assertOk()
+    ->assertInertia(
+      fn(AssertableInertia $page) => $page->where(
+        'receipts.data.0.id',
+        $largerReceipt->id
+      )
     );
 });

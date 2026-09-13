@@ -3,33 +3,41 @@
 namespace App\Mail;
 
 use App\Enums\MessageStatus;
-use App\Models\Message;
+use App\Enums\NotificationChannelsType;
 use App\Models\Fee;
 use App\Models\Institution;
+use App\Models\Message;
 use App\Models\Student;
 use App\Models\User;
+use App\Traits\ChargesInstitutionMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Markdown;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class FeePaymentReminderMail extends Mailable implements ShouldQueue
 {
-  use Queueable, SerializesModels;
+  use ChargesInstitutionMessage, Queueable, SerializesModels;
 
   public Institution $institution;
+
+  private string $chargeReference;
 
   public function __construct(
     public Student $student,
     public User $guardian,
     public Fee $fee,
-    private int $messageId
+    private int $messageId,
+    ?string $chargeReference = null
   ) {
+    $this->afterCommit();
     $this->institution = $fee->institution;
     $this->guardian = $student->guardian;
+    $this->chargeReference = $chargeReference ?? Str::orderedUuid()->toString();
   }
 
   /**
@@ -49,18 +57,31 @@ class FeePaymentReminderMail extends Mailable implements ShouldQueue
   }
 
   /**
-   * @param \Illuminate\Contracts\Mail\Mailer $mailer
+   * @param  \Illuminate\Contracts\Mail\Mailer  $mailer
    */
-  function send($mailer)
+  public function send($mailer)
   {
-    parent::send($mailer);
+    $messageModel = Message::find($this->messageId);
+
+    if (
+      !$this->chargeInstitutionMessage(
+        $this->institution,
+        NotificationChannelsType::Email,
+        1,
+        $messageModel,
+        $this->chargeReference
+      )
+    ) {
+      return null;
+    }
+
+    $sentMessage = parent::send($mailer);
 
     // Render the markdown content to HTML using the Markdown class
     $markdown = new Markdown(view(), config('mail.markdown'));
 
-    $messageModel = Message::find($this->messageId);
-    if ($messageModel->body) {
-      return;
+    if (!$messageModel || $messageModel->body) {
+      return $sentMessage;
     }
 
     $bodyContent = $markdown->renderText('mail.fee-payment-reminder-mail', [
@@ -77,6 +98,8 @@ class FeePaymentReminderMail extends Mailable implements ShouldQueue
         'status' => MessageStatus::Sent->value
       ])
       ->save();
+
+    return $sentMessage;
   }
 
   /**

@@ -1,13 +1,6 @@
 import React from 'react';
 import { Fee, FeePayment } from '@/types/models';
-import {
-  HStack,
-  IconButton,
-  Icon,
-  Button,
-  VStack,
-  Divider,
-} from '@chakra-ui/react';
+import { HStack, IconButton, Icon, VStack, Divider } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -28,6 +21,8 @@ import startCase from 'lodash/startCase';
 import { LabelText } from '@/components/result-helper-components';
 import { formatAsCurrency } from '@/util/util';
 import RetrievePaymentSummaryModal from '@/components/modals/retrieve-payment-summary-modal';
+import DateTimeDisplay from '@/components/date-time-display';
+import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-filter';
 
 interface Props {
   feePayments: PaginationResponse<FeePayment>;
@@ -62,10 +57,12 @@ export default function ListFeePayments({
     {
       label: 'Fee',
       value: 'fee.title',
+      sortKey: 'feeTitle',
     },
     {
       label: 'Student',
       value: 'receipt.user.full_name',
+      sortKey: 'student',
     },
     // {
     //   label: 'Fee Amount',
@@ -74,6 +71,7 @@ export default function ListFeePayments({
     {
       label: 'Amount',
       value: 'amount',
+      sortKey: 'amount',
     },
     // {
     //   label: 'Balance',
@@ -91,6 +89,12 @@ export default function ListFeePayments({
       label: 'Term',
       value: 'term',
       render: (row) => startCase(row.receipt?.term),
+    },
+    {
+      label: 'Paid on',
+      value: 'created_at',
+      render: (row) => <DateTimeDisplay dateTime={row.created_at} />,
+      sortKey: 'createdAt',
     },
     ...(isAdmin
       ? [
@@ -126,7 +130,7 @@ export default function ListFeePayments({
     <DashboardLayout>
       <Slab>
         <SlabHeading
-          title="List Fees"
+          title="List Fee Payments"
           rightElement={
             <HStack>
               <BrandButton
@@ -156,7 +160,17 @@ export default function ListFeePayments({
             data={feePayments.data}
             keyExtractor={(row) => row.id}
             paginator={feePayments}
-            validFilters={['fee', 'user', 'academicSession', 'term']}
+            validFilters={[
+              'fee',
+              'user',
+              'classification',
+              'academicSession',
+              'term',
+              'status',
+              'method',
+              'reference',
+              ...dateRangeFilterQueryKeys('created_at'),
+            ]}
             onFilterButtonClick={feePaymentFilterToggle.open}
           />
         </SlabBody>

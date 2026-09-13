@@ -167,6 +167,17 @@ export enum Attendance {
   Out = 'out',
 }
 
+export enum PaymentMethod {
+  Wallet = 'wallet',
+  Card = 'card',
+  Bank = 'bank',
+}
+
+export enum ReceiptStatus {
+  Paid = 'paid',
+  Partial = 'partial',
+}
+
 export enum GuardianRelationship {
   Parent = 'parent',
   Sibling = 'sibling',

@@ -50,8 +50,8 @@ export default function TransferEventResultModal({
     lockTermSession,
   } = useSharedProps();
   const webForm = useWebForm({
-    academic_session_id: currentAcademicSessionId,
-    term: currentTerm,
+    academic_session_id: event.academic_session_id ?? currentAcademicSessionId,
+    term: event.term ?? currentTerm,
     for_mid_term: false,
     for_exam: false,
     assessment_id: '',
@@ -152,7 +152,7 @@ export default function TransferEventResultModal({
                 isMulti={false}
                 selectValue={webForm.data.assessment_id}
                 getOptions={() =>
-                  assessments.map((assessment, i) => ({
+                  assessments.map((assessment) => ({
                     label: assessment.title,
                     value: assessment.id,
                   }))

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions\Messages;
 
 use App\Enums\NotificationChannelsType;
@@ -17,10 +18,11 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class GenericMessageHandler
 {
-  function __construct(
+  public function __construct(
     private Institution $institution,
     private User $senderUser,
     private string $message,
@@ -28,7 +30,7 @@ class GenericMessageHandler
   ) {
   }
 
-  function sendToUsers(
+  public function sendToUsers(
     ?Model $messageable,
     $channel,
     $forGuardians = false
@@ -52,13 +54,15 @@ class GenericMessageHandler
     $res = $this->submit($receivers, $channel, $messageModel);
     if ($res->isNotSuccessful()) {
       DB::rollback();
+
       return $res;
     }
     DB::commit();
+
     return $res;
   }
 
-  function sendToReceivers(Collection $receivers, $channel): Res
+  public function sendToReceivers(Collection $receivers, $channel): Res
   {
     DB::beginTransaction();
     $recordMessage = new RecordMessage($this->institution, $this->senderUser, [
@@ -79,13 +83,15 @@ class GenericMessageHandler
     $res = $this->submit($receivers, $channel, $messageModel);
     if ($res->isNotSuccessful()) {
       DB::rollback();
+
       return $res;
     }
     DB::commit();
+
     return $res;
   }
 
-  function getUsers(?Model $model, $forGuardians = false): Collection
+  public function getUsers(?Model $model, $forGuardians = false): Collection
   {
     $users = collect();
     if (!$model) {
@@ -141,6 +147,7 @@ class GenericMessageHandler
         fn($guardianStudent) => $guardianStudent->guardian
       );
     }
+
     return $users;
   }
 
@@ -153,10 +160,12 @@ class GenericMessageHandler
       return failRes('No receivers found');
     }
 
+    $chargeReference = Str::orderedUuid()->toString();
     $res = ApplyMessageCharges::make($this->institution)->run(
       $receivers,
       $channel,
-      $messageModel
+      $messageModel,
+      $chargeReference
     );
     if ($res->isNotSuccessful()) {
       return $res;
@@ -167,7 +176,9 @@ class GenericMessageHandler
         $this->getSmsMessage(),
         $receivers->join(','),
         $messageModel,
-        $this->institution
+        $this->institution,
+        $receivers->count(),
+        $chargeReference
       );
     } else {
       Mail::to($receivers->toArray())->queue(
@@ -175,7 +186,9 @@ class GenericMessageHandler
           $this->institution,
           $this->subject ?? 'Generic Message',
           $this->message,
-          $messageModel
+          $messageModel,
+          $receivers->count(),
+          $chargeReference
         )
       );
     }
@@ -183,7 +196,7 @@ class GenericMessageHandler
     return successRes();
   }
 
-  function getSmsMessage()
+  public function getSmsMessage()
   {
     return substr($this->institution->name, 0, 8) . PHP_EOL . $this->message;
   }
