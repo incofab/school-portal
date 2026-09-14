@@ -33,6 +33,10 @@ class Kernel extends ConsoleKernel
    */
   protected function schedule(Schedule $schedule)
   {
+    $schedule
+      ->command('queue:work --stop-when-empty --timeout=120')
+      ->everyMinute()
+      ->withoutOverlapping();
     // $schedule->command('inspire')->hourly();
     $schedule->command('telescope:prune --hours=48')->daily();
     $schedule->command('audit:prune')->dailyAt('02:30');

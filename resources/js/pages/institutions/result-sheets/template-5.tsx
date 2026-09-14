@@ -145,7 +145,7 @@ export default function Template5(props: ResultProps) {
         ]
       : []),
     {
-      label: 'Total',
+      label: 'Tot.',
       value: 'result',
     },
     {
@@ -159,13 +159,13 @@ export default function Template5(props: ResultProps) {
       ? []
       : [
           {
-            label: 'Position',
+            label: 'Pos',
             render: (courseResult: CourseResult) =>
               ResultUtil.formatPosition(courseResult.position),
           },
         ]),
     {
-      label: 'Average',
+      label: 'Avg',
       render: (courseResult) =>
         String(courseResultInfoData[courseResult.course_id]?.average),
     },

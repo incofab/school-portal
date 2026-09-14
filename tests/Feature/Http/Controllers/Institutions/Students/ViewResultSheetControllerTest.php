@@ -34,6 +34,10 @@ it('exposes cumulative subject averages on result sheet data', function () {
   $otherCourse = Course::factory()
     ->withInstitution($institution)
     ->create(['title' => 'English Language']);
+  $firstAssessment = $institution
+    ->assessments()
+    ->oldest('id')
+    ->firstOrFail();
   $resultPublication = ResultPublication::factory()->create([
     'institution_id' => $institution->id,
     'institution_group_id' => $institution->institution_group_id,
@@ -122,7 +126,10 @@ it('exposes cumulative subject averages on result sheet data', function () {
       'academic_session_id' => $academicSession->id,
       'term' => $term,
       'for_mid_term' => false,
-      'assessment_values' => [],
+      'assessment_values' =>
+        $term === TermType::Third->value
+          ? [$firstAssessment->assessmentResultKey() => 0]
+          : [],
       'exam' => $score,
       'result' => $score,
       'grade' => 'A',
@@ -170,6 +177,8 @@ it('exposes cumulative subject averages on result sheet data', function () {
         ->missing("subjectTermTotals.{$otherCourse->id}.first")
         ->missing("subjectTermTotals.{$otherCourse->id}.second")
         ->where("subjectTermTotals.{$otherCourse->id}.third", 65)
+        ->has('assessments', 1)
+        ->where('assessments.0.id', $firstAssessment->id)
     );
 });
 

@@ -21,6 +21,7 @@ use App\Support\UITableFilters\ClassResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultInfoUITableFilters;
 use App\Support\UITableFilters\CourseResultsUITableFilters;
 use App\Support\UITableFilters\TermResultUITableFilters;
+use Illuminate\Database\Eloquent\Collection;
 
 class GetViewResultSheetData
 {
@@ -117,6 +118,7 @@ class GetViewResultSheetData
       $classification,
       true
     );
+    $assessments = self::filterAssessments($assessments, $courseResults);
     $resultCommentTemplate = ResultCommentTemplate::getTemplate(
       $classification,
       $forMidTerm
@@ -318,5 +320,53 @@ class GetViewResultSheetData
       ->where('classification_id', $classification->id)
       ->where('academic_session_id', $academicSession->id)
       ->first();
+  }
+
+  /**
+   * Keep only assessments for which at least one of the displayed course
+   * results has a recorded value.
+   *
+   * Assessment values are normally keyed with the assessment result key, but
+   * title-only keys and keys from before an assessment was renamed are also
+   * supported here for results created before the key migration.
+   *
+   * @param  Collection<int, Assessment>  $assessments
+   * @param  Collection<int, CourseResult>  $courseResults
+   * @return array<int, Assessment>
+   */
+  private static function filterAssessments(
+    Collection $assessments,
+    Collection $courseResults
+  ): array {
+    $recordedAssessmentKeys = [];
+
+    foreach ($courseResults as $courseResult) {
+      foreach (
+        array_keys((array) ($courseResult->assessment_values ?? []))
+        as $key
+      ) {
+        $recordedAssessmentKeys[(string) $key] = true;
+      }
+    }
+
+    return $assessments
+      ->filter(function (Assessment $assessment) use ($recordedAssessmentKeys) {
+        if (
+          isset($recordedAssessmentKeys[$assessment->assessmentResultKey()]) ||
+          isset($recordedAssessmentKeys[$assessment->raw_title])
+        ) {
+          return true;
+        }
+
+        foreach (array_keys($recordedAssessmentKeys) as $key) {
+          if (Assessment::resultKeyId($key) === (int) $assessment->id) {
+            return true;
+          }
+        }
+
+        return false;
+      })
+      ->values()
+      ->all();
   }
 }
