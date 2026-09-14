@@ -40,6 +40,6 @@ enum PaymentMerchantType: string
 
   static function getDefault(): string
   {
-    return self::Paystack->value;
+    return self::Monnify->value;
   }
 }
