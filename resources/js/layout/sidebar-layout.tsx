@@ -29,7 +29,7 @@ import route from '@/util/route';
 interface MenuType {
   label: string;
   icon?: string;
-  roles?: Nullable<InstitutionUserType[]>;
+  user_types?: Nullable<InstitutionUserType[]>;
   permissions?: string[];
   route?: string;
   onClick?: () => void;
@@ -73,7 +73,7 @@ export default function SideBarLayout() {
           {
             label: 'My Results',
             route: instRoute('students.term-results.index', [student]),
-            roles: [InstitutionUserType.Student],
+            user_types: [InstitutionUserType.Student],
           },
         ]
       : []),
@@ -83,21 +83,23 @@ export default function SideBarLayout() {
         {
           label: 'All Staff',
           route: instRoute('users.index', { staffOnly: true }),
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Add Staff',
           route: instRoute('users.create'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Roles and permissions',
           route: instRoute('roles.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
           permissions: [InstitutionPermission.ManageRoles],
         },
         {
           label: 'Staff ID Cards',
           route: instRoute('users.idcards'),
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'My Bank Accounts',
@@ -116,21 +118,22 @@ export default function SideBarLayout() {
         {
           label: 'Guardians',
           route: instRoute('guardians.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Add Student',
           route: instRoute('students.create'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Student ID Cards',
           route: instRoute('students.idcards'),
+          user_types: teachers,
         },
         // {
         //   label: 'Student Applications',
         //   route: instRoute('admission-applications.index'),
-        //   roles: [InstitutionUserType.Admin],
+        //   user_types: [InstitutionUserType.Admin],
         // },
       ],
     },
@@ -144,7 +147,7 @@ export default function SideBarLayout() {
         {
           label: 'Add Subject',
           route: instRoute('courses.create'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Subject Teachers',
@@ -152,18 +155,18 @@ export default function SideBarLayout() {
             'course-teachers.index',
             isTeacher ? [currentUser.id] : undefined
           ),
-          roles: teachers,
+          user_types: teachers,
         },
         {
           label: 'Recorded Results',
           route: instRoute('course-result-info.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
       ],
     },
     {
       label: 'Classes',
-      roles: [
+      user_types: [
         ...teachers,
         InstitutionUserType.Student,
         InstitutionUserType.Alumni,
@@ -176,7 +179,7 @@ export default function SideBarLayout() {
         {
           label: 'Add Class',
           route: instRoute('classifications.create'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'All Class Groups',
@@ -185,7 +188,7 @@ export default function SideBarLayout() {
         {
           label: 'Student Class Changes',
           route: instRoute('student-class-movements.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Class Divisions',
@@ -194,12 +197,12 @@ export default function SideBarLayout() {
         {
           label: 'Class Result',
           route: instRoute('class-result-info.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Session Result',
           route: instRoute('session-results.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Live Classes',
@@ -210,7 +213,7 @@ export default function SideBarLayout() {
     {
       label: 'Timetable',
       route: instRoute('timetables.index'),
-      roles: [...teachers, InstitutionUserType.Student],
+      user_types: [...teachers, InstitutionUserType.Student],
     },
     {
       label: 'Attendance',
@@ -237,7 +240,7 @@ export default function SideBarLayout() {
     },
     {
       label: 'Reports',
-      roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+      user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
       sub_items: [
         {
           label: 'Grade Report',
@@ -330,7 +333,7 @@ export default function SideBarLayout() {
                 );
               },
             }),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Cummulative Results',
@@ -358,7 +361,7 @@ export default function SideBarLayout() {
                 Inertia.visit(instRoute('cummulative-result.index', params));
               },
             }),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Session Results',
@@ -379,40 +382,40 @@ export default function SideBarLayout() {
                 );
               },
             }),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
       ],
     },
     {
       label: 'Admissions',
-      roles: [InstitutionUserType.Admin],
+      user_types: [InstitutionUserType.Admin],
       sub_items: [
         {
           label: 'Admission Forms',
           route: instRoute('admission-forms.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Admission Applications',
           route: instRoute('admission-applications.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
       ],
     },
     {
       label: 'Recruitment',
-      roles: [InstitutionUserType.Admin],
+      user_types: [InstitutionUserType.Admin],
       sub_items: [
         {
           label: 'Vacancy Posts',
           route: instRoute('vacancy-posts.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
       ],
     },
     {
       label: 'Curriculum',
-      roles: [
+      user_types: [
         InstitutionUserType.Admin,
         InstitutionUserType.Teacher,
         InstitutionUserType.Student,
@@ -421,22 +424,22 @@ export default function SideBarLayout() {
         {
           label: 'Topics',
           route: instRoute('inst-topics.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Scheme of Work',
           route: instRoute('scheme-of-works.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Lesson Plans',
           route: instRoute('lesson-plans.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
         {
           label: 'Lesson Notes',
           route: instRoute('lesson-notes.index'),
-          roles: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
         },
       ],
     },
@@ -455,7 +458,7 @@ export default function SideBarLayout() {
         {
           label: 'Submitted Assignments',
           route: instRoute('assignment-submissions.index'),
-          roles: [InstitutionUserType.Student],
+          user_types: [InstitutionUserType.Student],
         },
       ],
     },
@@ -475,109 +478,109 @@ export default function SideBarLayout() {
     },
     {
       label: 'Admin',
-      roles: [InstitutionUserType.Admin],
+      user_types: [InstitutionUserType.Admin],
       sub_items: [
         {
           label: 'School Profile',
           route: instRoute('profile'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Activity Logs',
           route: instRoute('activity-logs.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Current Term Detail',
           route: instRoute('term-details.index'),
-          roles: teachers,
+          user_types: teachers,
         },
         {
           label: 'Pins',
           route: instRoute('pin-generators.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Assessments',
           route: instRoute('assessments.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Cummulative Results',
           route: instRoute('cummulative-result.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Result Comments',
           route: instRoute('result-comment-templates.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Result Publication',
           route: instRoute('result-publications.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Student/Staff Divisions',
           route: instRoute('associations.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'School Bank Accounts',
           route: instRoute('inst-bank-accounts.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Sent Notifications',
           route: instRoute('notifications.sent.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'SMS/Email Messages',
           route: instRoute('messages.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
       ],
     },
     {
       label: 'Funds',
-      roles: [InstitutionUserType.Admin],
+      user_types: [InstitutionUserType.Admin],
       sub_items: [
         {
           label: 'Add Fund',
           route: instRoute('fundings.create'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'All Fundings',
           route: instRoute('fundings.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'All Transactions',
           route: instRoute('transactions.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Expenses',
           route: instRoute('expenses.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Expense Categorires',
           route: instRoute('expense-categories.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Withdrawals',
           route: instRoute('inst-withdrawals.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
       ],
     },
     {
       label: 'Payments',
-      roles: [...accountant, ...studentOrAlumni],
+      user_types: [...accountant, ...studentOrAlumni],
       sub_items: [
         {
           label: 'Fees',
@@ -609,24 +612,24 @@ export default function SideBarLayout() {
               {
                 label: 'Receipts',
                 route: instRoute('students.receipts.index', [student.id]),
-                roles: studentOrAlumni,
+                user_types: studentOrAlumni,
               },
               {
                 label: 'Pay Fees',
                 route: instRoute('students.fee-payments.create', [student.id]),
-                roles: studentOrAlumni,
+                user_types: studentOrAlumni,
               },
               {
                 label: 'Manual Payments',
                 route: instRoute('students.manual-payments.history', [
                   student.id,
                 ]),
-                roles: studentOrAlumni,
+                user_types: studentOrAlumni,
               },
               {
                 label: 'Payment Attempts',
                 route: instRoute('payment-attempts.index'),
-                roles: studentOrAlumni,
+                user_types: studentOrAlumni,
               },
             ]
           : []),
@@ -639,21 +642,21 @@ export default function SideBarLayout() {
     {
       label: 'Settings',
       route: instRoute('settings.create'),
-      roles: [InstitutionUserType.Admin],
+      user_types: [InstitutionUserType.Admin],
     },
     {
       label: 'Evaluations',
-      roles: [InstitutionUserType.Admin],
+      user_types: [InstitutionUserType.Admin],
       sub_items: [
         {
           label: 'Evaluation Types',
           route: instRoute('learning-evaluation-domains.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
         {
           label: 'Evaluations',
           route: instRoute('learning-evaluations.index'),
-          roles: [InstitutionUserType.Admin],
+          user_types: [InstitutionUserType.Admin],
         },
       ],
     },
@@ -679,14 +682,14 @@ export default function SideBarLayout() {
         // {
         //   label: 'Bonuses/Deductions',
         //   route: instRoute('payroll-adjustments.index'),
-        //   roles: [InstitutionUserType.Admin],
+        //   user_types: [InstitutionUserType.Admin],
         // },
       ],
     },
     {
       label: 'FAQ / Knowledge Base',
       route: route('knowledge-base'),
-      roles: null,
+      user_types: null,
     },
     // {
     //   label: 'Profile',
@@ -742,7 +745,10 @@ export default function SideBarLayout() {
       <SidebarHeader />
       <Menu menuItemStyles={menuItemStyles}>
         {menus.map(function (menu: MenuListType, i: number) {
-          if (menu.roles && !menu.roles.includes(currentInstitutionUser.type)) {
+          if (
+            menu.user_types &&
+            !menu.user_types.includes(currentInstitutionUser.type)
+          ) {
             return;
           }
           if (
@@ -775,8 +781,8 @@ export default function SideBarLayout() {
             <SubMenu label={menu.label} key={i}>
               {menu.sub_items.map(function (subItem: MenuListType, i: number) {
                 if (
-                  subItem.roles &&
-                  !subItem.roles?.includes(currentInstitutionUser.type)
+                  subItem.user_types &&
+                  !subItem.user_types?.includes(currentInstitutionUser.type)
                 ) {
                   return;
                 }
