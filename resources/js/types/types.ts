@@ -93,7 +93,26 @@ export enum InstitutionUserType {
   Teacher = 'teacher',
   Alumni = 'alumni',
   Guardian = 'guardian',
+  Others = 'others',
 }
+
+export const staffTypes = [
+  InstitutionUserType.Admin,
+  InstitutionUserType.Teacher,
+  InstitutionUserType.Accountant,
+  InstitutionUserType.Others,
+];
+
+export const studentTypes = [
+  InstitutionUserType.Student,
+  InstitutionUserType.Alumni,
+];
+
+export const studentAndGuardianTypes = [
+  InstitutionUserType.Student,
+  InstitutionUserType.Alumni,
+  InstitutionUserType.Guardian,
+];
 
 export enum ChatThreadType {
   DirectUser = 'direct-user',

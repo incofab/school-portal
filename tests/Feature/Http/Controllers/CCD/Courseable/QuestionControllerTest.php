@@ -10,9 +10,8 @@ use App\Models\EventCourseable;
 use App\Models\Question;
 use App\Models\Topic;
 use App\Models\User;
+use App\Services\AI\LaravelAiTextAgent;
 use Illuminate\Http\UploadedFile;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Testing\TextResponseFake;
 
 use function Pest\Laravel\actingAs;
 
@@ -267,31 +266,27 @@ test('question upload page includes segmented TinyMCE controls', function () {
 test(
   'segmented question content is sent to AI one segment at a time',
   function () {
-    $fake = Prism::fake([
-      TextResponseFake::make()->withText(
-        json_encode([
-          [
-            'question_no' => 1,
-            'question' => '<p>First question</p>',
-            'option_a' => '<p>First A</p>',
-            'option_b' => '<p>First B</p>',
-            'option_c' => '<p>First C</p>',
-            'answer' => 'A'
-          ]
-        ])
-      ),
-      TextResponseFake::make()->withText(
-        json_encode([
-          [
-            'question_no' => 2,
-            'question' => '<p>Second question</p>',
-            'option_a' => '<p>Second A</p>',
-            'option_b' => '<p>Second B</p>',
-            'option_c' => '<p>Second C</p>',
-            'answer' => 'B'
-          ]
-        ])
-      )
+    $fake = LaravelAiTextAgent::fake([
+      json_encode([
+        [
+          'question_no' => 1,
+          'question' => '<p>First question</p>',
+          'option_a' => '<p>First A</p>',
+          'option_b' => '<p>First B</p>',
+          'option_c' => '<p>First C</p>',
+          'answer' => 'A'
+        ]
+      ]),
+      json_encode([
+        [
+          'question_no' => 2,
+          'question' => '<p>Second question</p>',
+          'option_a' => '<p>Second A</p>',
+          'option_b' => '<p>Second B</p>',
+          'option_c' => '<p>Second C</p>',
+          'answer' => 'B'
+        ]
+      ])
     ]);
 
     $response = actingAs($this->instAdmin)->post(
@@ -309,12 +304,14 @@ test(
     );
 
     $response->assertRedirect();
-    $fake->assertCallCount(2);
-    $fake->assertRequest(function ($requests) {
-      expect($requests[0]->prompt())->toContain('First segment content');
-      expect($requests[0]->prompt())->not->toContain('Second segment content');
-      expect($requests[1]->prompt())->toContain('Second segment content');
-      expect($requests[1]->prompt())->not->toContain('First segment content');
+    LaravelAiTextAgent::assertPromptedTimes(2);
+    LaravelAiTextAgent::assertPrompted(function ($request): bool {
+      return str_contains($request->prompt, 'First segment content') &&
+        !str_contains($request->prompt, 'Second segment content');
+    });
+    LaravelAiTextAgent::assertPrompted(function ($request): bool {
+      return str_contains($request->prompt, 'Second segment content') &&
+        !str_contains($request->prompt, 'First segment content');
     });
     expect(
       Question::query()

@@ -230,6 +230,27 @@ class SecurityActivityLogger
       ->log();
   }
 
+  public function userTypeChanged(
+    User $actor,
+    InstitutionUser $target,
+    Institution $institution,
+    string $oldType,
+    string $newType
+  ): void {
+    app(ActivityLogger::class)
+      ->event('access.user_type_changed')
+      ->category(ActivityLogCategory::Authorization)
+      ->action('user_type_changed')
+      ->by($actor)
+      ->on($target->user)
+      ->inInstitution($institution)
+      ->description('Institution user type was changed.')
+      ->oldValues(['type' => $oldType])
+      ->newValues(['type' => $newType])
+      ->severity(ActivityLogSeverity::Critical)
+      ->log();
+  }
+
   public function permissionChanged(
     User $actor,
     Model $target,

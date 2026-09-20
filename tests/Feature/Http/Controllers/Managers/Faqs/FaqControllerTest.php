@@ -110,14 +110,14 @@ it('filters the manager content library by type', function () {
 it('seeds faq records and representative knowledge base guides idempotently', function () {
   seed(FaqSeeder::class);
 
-  expect(Faq::query()->faqs()->count())->toBe(61);
+  expect(Faq::query()->faqs()->count())->toBe(373);
   expect(Faq::query()->knowledgeBase()->count())->toBe(5);
   expect(Faq::query()->where('code', 'login-main-dashboard')->value('type'))
     ->toBe(FaqType::Faq);
 
   seed(FaqSeeder::class);
 
-  expect(Faq::query()->count())->toBe(66);
+  expect(Faq::query()->count())->toBe(378);
 });
 
 it(

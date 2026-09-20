@@ -1,0 +1,546 @@
+[
+  {
+    "name": "How do I sign in to EduManager as school staff?",
+    "code": "login-main-dashboard",
+    "description": "<p>Open the regular <strong>Login</strong> page and enter the email address and password registered to your staff account. If your account belongs to more than one school, choose the institution you want to open.</p><p>Your role controls the dashboard and tools you can access. Students use the separate Student Login with their student code; guardians sign in with their own account.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 1
+  },
+  {
+    "name": "Why can I not see a feature or school record?",
+    "code": "roles-permissions",
+    "description": "<p>EduManager shows menus and actions according to your account role, assigned permissions, selected institution, and access to the relevant class or student record. If a feature or record is missing, first confirm that you opened the correct school, then ask your institution administrator to check your role, permissions, and school or class assignments.</p><p>Institution administrators can review or manage roles under <strong>Roles and permissions</strong>. They can create or edit roles and choose which school tools each role can access. Only an institution administrator can manage these role settings.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 9
+  },
+  {
+    "name": "How do I complete the school setup checklist?",
+    "code": "school-setup-checklist",
+    "description": "<p>From the school dashboard, select <strong>Continue Setup</strong> when the unfinished-setup notice appears. The checklist links to the tasks for adding classes, subjects, students, teachers or staff, and assigning teachers to subjects. Complete each required task using its <strong>Add Now</strong> link.</p><p>Adding fees is listed as optional. The setup is considered complete when the required class, subject, student, staff, and teacher-assignment records exist; adding fees is not required for checklist completion.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 12
+  },
+  {
+    "name": "How do I update my school's profile and logo?",
+    "code": "institution-profile-branding",
+    "description": "<p>An institution administrator can open <strong>Admin → School Profile</strong> to edit the school name, subtitle, caption, phone, email, address, and website. Save the profile form when finished. These identity and contact details appear across the dashboard, documents, and printable outputs.</p><p>Use the profile photo control on the same page to upload or replace the school logo, then wait for the upload to finish. If you cannot open School Profile, ask an institution administrator to make the change.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 14
+  },
+  {
+    "name": "How do I set the current academic session and term?",
+    "code": "setup-current-session-term",
+    "description": "<p>An institution administrator should open <strong>Settings</strong>, choose the current academic session and term under <strong>Academic context</strong>, then select <strong>Save academic context</strong>. These values supply the default context for term-based school workflows, including result entry and reports.</p><p>Check the session and term before staff create records. The <strong>Lock term and session changes</strong> setting controls whether staff can change this context while entering results; turn it off only when that is needed.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 15
+  },
+  {
+    "name": "Where do I set term dates and attendance days?",
+    "code": "term-details-resumption",
+    "description": "<p>Open <strong>Admin → Current Term Detail</strong> to create a term detail or edit an existing session and term record. Set opening and closing dates, the next resumption date, expected school days, and weekdays when the school is normally closed.</p><p>You can also add special active dates and one-off inactive dates with reasons. These calendar details are separate from the current session and term selected in Institution Settings. Save the term detail when finished.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 16
+  },
+  {
+    "name": "How do I configure result sheet presentation?",
+    "code": "result-settings",
+    "description": "<p>Open <strong>Settings</strong> and find <strong>Result presentation</strong>. Select the default report template, choose whether result position is shown as a position, a grade, or hidden, and decide whether the annual session result should be used for third-term results. Select <strong>Save results and PIN access</strong> to save these settings.</p><p>To review the selected layout, use <strong>Preview template</strong>. The preview uses sample data; it does not create or publish a student's result.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 17
+  },
+  {
+    "name": "When are exam scores shown on report cards?",
+    "code": "mid-term-full-term",
+    "description": "<p>In <strong>Settings → Result presentation</strong>, the institution administrator chooses the default exam display mode: no exam score, mid-term, full-term, or both. The institution setting applies unless a term detail has a specific override.</p><p>To override one term, open <strong>Admin → Current Term Detail</strong>, edit that session and term, and choose <strong>Show Exam Result</strong>. Select <strong>Inherit</strong> to use the institution default, or choose the applicable mode for that term. Save the term detail.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 18
+  },
+  {
+    "name": "How can I preview the available result sheet templates?",
+    "code": "result-template-preview",
+    "description": "<p>Open <strong>Settings → Result presentation</strong> and select one of the available templates, numbered 1 through 9. Save the selected result presentation, then choose <strong>Preview template</strong> to view a sample report sheet in the configured layout.</p><p>The preview uses sample student and result data and does not save a result. To compare layouts, select and save another template, then preview it. Template 9 supports the annual or session result in the third-term layout when that option is enabled.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 19
+  },
+  {
+    "name": "Does my school need to enter payment gateway keys?",
+    "code": "payment-settings",
+    "description": "<p>No. The school-specific payment-key form is deprecated and is not active in the current settings page. EduManager processes institution online payments through its platform Paystack integration, so schools do not need to enter their own public or private gateway keys.</p><p>For manual bank-transfer payments, an administrator should configure the school's receiving bank account under Bank Accounts. Contact EduManager support if an online payment setup issue needs review.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 20
+  },
+  {
+    "name": "Which school-wide preferences can an administrator change?",
+    "code": "institution-general-settings",
+    "description": "<p>Open <strong>Settings</strong> to manage the school's academic context, result access, result presentation, and display preferences. For example, <strong>Name display</strong> lets an administrator choose the order in which first, other, and last names appear on institution pages and responses; the preview shows the selected format. The <strong>School stamp</strong> section lets you upload the image used on institution documents.</p><p>Other settings control whether mid-term results are used, whether students need result activation PINs, the permitted PIN usage count, and whether term/session changes are locked during result entry. Use the save button for the relevant settings group and review its dedicated FAQ for term, result, or attendance details.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 21
+  },
+  {
+    "name": "How do I configure attendance notifications to guardians?",
+    "code": "attendance-notification-settings",
+    "description": "<p>Open <strong>Settings → Attendance notifications</strong>. Choose whether guardians receive no notification, a check-in notice, check-in and check-out notices, or a summary at check-out. Choose the preferred message channel—email, SMS, or WhatsApp—then select <strong>Save attendance notifications</strong>.</p><p>Notifications use the guardian contact saved for the child. Keep those contact details current and make sure the selected channel is available for your institution.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 22
+  },
+  {
+    "name": "What is the difference between my school and its institution group wallet?",
+    "code": "institution-group-wallet-context",
+    "description": "<p>A school is an institution with its own classes, students, staff, academic settings, and school records. An institution group can contain one or more institutions and has group-level finance records, including the credit wallet, debt balance, and bank accounts used in supported payment workflows.</p><p>The Wallet Balance and Debt Balance cards on an administrator or accountant dashboard refer to the institution group's balances. A guardian's wallet and reserved deposit account belong to that guardian's account, not to the institution group. Check which account or group is shown before reviewing a balance or payment.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 23
+  },
+  {
+    "name": "How do I add one staff member to my school?",
+    "code": "add-staff-member",
+    "description": "<p>An institution administrator can open <strong>Staff → Add Staff</strong>, enter the staff member's first name, surname, optional other names, email, phone, and gender, then assign a staff role and save. Use an email address that is not already registered to another account.</p><p>The new account starts with the default password <strong>password</strong>. Share the sign-in details with the staff member and have them change the password after signing in.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 24
+  },
+  {
+    "name": "How do I bulk upload staff from the spreadsheet template?",
+    "code": "bulk-upload-staff",
+    "description": "<p>Open <strong>Staff → All Staff</strong>, choose <strong>Upload Staff</strong>, and download the staff recording template. Add one staff member per row using the template's first name, last name, other names, gender, email, and phone columns; keep its headers and layout unchanged.</p><p>In the upload window, select the role to assign to every staff member in that file, attach the completed Excel workbook, and submit it. Each email must be valid and unique, including within the uploaded file. Correct validation errors in the workbook and upload it again.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 25
+  },
+  {
+    "name": "How do I edit a staff profile and photo?",
+    "code": "edit-staff-profile",
+    "description": "<p>An institution administrator can open <strong>Staff → All Staff</strong> and select the pencil action on the staff member's row to edit their name, email, phone, gender, or role. Save the updated record.</p><p>To change the photo, select the staff member's name to open their profile, then use the profile photo control to choose and upload an image. If the staff member's account is shared with another institution, confirm the account details before changing them.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 27
+  },
+  {
+    "name": "How do I suspend or reactivate a staff account?",
+    "code": "staff-account-status",
+    "description": "<p>An institution administrator can open the staff profile and use the <strong>Active/Suspended</strong> control. When suspending an account, enter the suspension message. The staff account is then blocked from using the institution; the message can explain the status to the affected user.</p><p>To restore access, switch the status back to <strong>Active</strong> and confirm. An administrator cannot suspend their own account.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 28
+  },
+  {
+    "name": "How do I reset a staff member's password?",
+    "code": "reset-staff-password",
+    "description": "<p>Open the staff member's profile and select <strong>Reset Password</strong>, then confirm. EduManager resets the password to the institution's configured default, which is <strong>password</strong> unless the installation has changed it. The confirmation displays the default password.</p><p>Give the staff member the reset password so they can sign in, then have them change it from the account menu. Administrators cannot reset their own password from another staff profile; use the signed-in password change or password recovery flow.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 29
+  },
+  {
+    "name": "How do I change a staff role or remove a staff account?",
+    "code": "change-staff-role-or-remove-account",
+    "description": "<p>To change a staff member's permissions, open their profile, choose <strong>Change Role</strong>, select a role for this institution, and update it. The new role changes which school tools the staff member can access.</p><p>To remove the account, use the delete action in <strong>Staff → All Staff</strong> and confirm. Deletion removes the user account and related course-teacher assignments; if a student record is attached, that record is also deleted. Use suspension instead when you only need to temporarily block access.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 30
+  },
+  {
+    "name": "How do I create a custom role and assign permissions?",
+    "code": "custom-role-permissions",
+    "description": "<p>An institution administrator can open <strong>Staff → Roles and permissions</strong> and choose <strong>Create role</strong>. Enter a unique role name and optional description, select the permissions the role needs, then save. Permissions are grouped by area and include roles, admissions, recruitment, library, attendance, fees, finance, payroll, notifications, and chat.</p><p>Use the pencil action to change a role's details or permissions. Before deleting a role, assign its users another role: users assigned to a deleted role lose that role's permissions.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 31
+  },
+  {
+    "name": "What access do the built-in school roles have?",
+    "code": "built-in-role-access",
+    "description": "<p>EduManager provides institution roles for <strong>Admin</strong>, <strong>Teacher</strong>, <strong>Accountant</strong>, <strong>Student</strong>, <strong>Alumni</strong>, and <strong>Guardian</strong>. Admin has the default full set of institution permissions. Teacher is set up for teaching and academic work, with library, attendance, and chat permissions. Accountant is set up for finance work, including fees, finance, payroll, notifications, and chat. Student, Alumni, and Guardian accounts have their own student or family workflows and default chat access.</p><p>Administrators can customise built-in roles and create additional roles. The role, specific permissions, linked records, and selected school determine which menus and actions a person can use.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 32
+  },
+  {
+    "name": "How do I print staff ID cards?",
+    "code": "print-id-card",
+    "description": "<p>Open <strong>Staff → Staff ID Cards</strong> to view the staff cards for the selected institution. Review the names and school details, then select <strong>Print ID cards</strong> and use your browser's print dialog.</p><p>Staff ID cards are different from student ID cards. To print student cards, select a class from the class or student ID-card page.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 33
+  },
+  {
+    "name": "How do I assign a teacher to subjects and classes?",
+    "code": "assign-subject-teacher",
+    "description": "<p>An institution administrator can open <strong>Subject → Subject Teachers</strong> and choose <strong>Assign</strong>. Select a teacher, one or more subjects, and one or more classes, then submit. EduManager creates an assignment for each selected subject and class combination.</p><p>Assignments connect teachers to the academic tools and class-subject records they are allowed to manage. To correct an assignment, remove the incorrect row and create the correct assignment.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 34
+  },
+  {
+    "name": "How do I create one class?",
+    "code": "create-classes",
+    "description": "<p>An institution administrator can open <strong>Classes → Add Class</strong>. Select the required class group, enter the class title, and optionally add a description and form teacher. Choose whether the class has the same number of subjects as other classes in its group, then save.</p><p>To create several classes together, use <strong>Multi Create</strong>. Add a class group before creating classes if the required group is not in the list.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 37
+  },
+  {
+    "name": "How do I create several classes at once?",
+    "code": "create-multiple-classes",
+    "description": "<p>Open <strong>Classes → All Classes</strong> and select <strong>Multi Create</strong>. Add a row for each class, then choose its class group, enter the class title, choose whether it has an equal number of subjects, and optionally assign a form teacher. Remove any extra rows and submit when the list is ready.</p><p>Each row creates a separate class. Use the single-class form when you need to add a class description or make an individual change later.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 38
+  },
+  {
+    "name": "Can I import or export class records with a spreadsheet?",
+    "code": "class-import-export",
+    "description": "<p>The older class workbook supports exporting class names and the <strong>Equal Subjects (Y/N)</strong> setting. It does not include class groups, form teachers, or descriptions. The current <strong>Classes → All Classes</strong> screen does not show a spreadsheet upload or download control, so use <strong>New</strong> or <strong>Multi Create</strong> to create classes from the interface.</p><p>If a class spreadsheet upload screen is available in your institution, use its downloaded workbook and keep the column headings unchanged. Review imported classes afterward and set their class group and form teacher in the class editor.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 39
+  },
+  {
+    "name": "How do I create or edit a class group?",
+    "code": "classification-groups",
+    "description": "<p>Open <strong>Classes → All Class Groups</strong> and choose the create option. Enter the group title. Under <strong>More Options</strong>, you can set the titles used for the head of school, head of class, and students. Save the group, then select it when creating or editing a class.</p><p>Class groups organise related classes for school terminology, results, and promotion workflows. A group cannot be deleted while it still contains classes.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 40
+  },
+  {
+    "name": "How do I organise classes into divisions?",
+    "code": "class-divisions",
+    "description": "<p>An institution administrator can open <strong>Classes → Class Divisions</strong>, create a division title, and link the classes that belong in it. Use the add-classes action to link more classes later, or remove a class from the division with its tag control.</p><p>You can optionally choose a result template for the division. That template is used for its linked classes where a division-specific template applies. Removing a division does not delete the classes.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 41
+  },
+  {
+    "name": "How do I add a student to a class?",
+    "code": "add-student",
+    "description": "<p>An institution administrator or authorised teacher can open <strong>Students → Add Student</strong>, enter the student's personal and contact details, choose a class, and add the guardian phone number if available. Save the record; EduManager creates a student code if one was not supplied.</p><p>New student accounts start with the default password <strong>password</strong>. Give the student their Student Login code and password, and ask them to change the password after signing in.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 43
+  },
+  {
+    "name": "How do I bulk upload students from a spreadsheet?",
+    "code": "bulk-upload-students",
+    "description": "<p>Open <strong>Students → All Students</strong>, choose <strong>Upload Students</strong>, download the student recording template, and complete one student per row. Use the template's name, gender, guardian phone, and phone columns without changing its layout.</p><p>Select the destination class in the upload window, attach the completed Excel workbook, and submit it. Blank rows are skipped, student codes are generated when they are not supplied, and duplicate codes or invalid rows must be corrected before uploading again.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 44
+  },
+  {
+    "name": "How do I find and update a student profile?",
+    "code": "edit-student-profile",
+    "description": "<p>Open <strong>Students → All Students</strong>, search or filter for the student, and select the student's name to review their profile. Use the edit action in the row to update personal details such as name, contact information, gender, or guardian phone, then save.</p><p>Change a student's code with the pencil beside Student ID. Change their class through the class-movement action. These actions are separate from editing the profile details.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 45
+  },
+  {
+    "name": "How do I change a student's ID or login code?",
+    "code": "update-student-code",
+    "description": "<p>Open <strong>Students → All Students</strong> and select the pencil beside the student's <strong>Student ID</strong>. Enter the new unique code and save. EduManager rejects a code that is already assigned to another student in the school.</p><p>The code is used for Student Login and appears in student-facing links such as fee-payment links. Share the updated code with the student and use it in any new links or records that ask for the student code.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 46
+  },
+  {
+    "name": "How do I suspend or reactivate a student account?",
+    "code": "student-status",
+    "description": "<p>An institution administrator can use the <strong>Suspended</strong> control beside a student in the student list. When suspending a student, enter a status message; the student sees that message when access is blocked. Set the status back to <strong>Active</strong> to restore access.</p><p>Student status is Active or Suspended. To move a student who has left the class into the Alumni account type, use the class-movement action instead of suspending them.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 47
+  },
+  {
+    "name": "How do I print student ID cards for a class?",
+    "code": "student-id-cards",
+    "description": "<p>Open <strong>Classes → All Classes</strong>, open the class action menu, and choose <strong>Student ID Cards</strong>. You can also open <strong>Students → Student ID Cards</strong> and select a class. Review the cards, then choose <strong>Print</strong> and use your browser's print dialog.</p><p>Check student names, codes, and school details before printing. Staff cards are printed separately from the staff ID-card page.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 48
+  },
+  {
+    "name": "How do I move one student to another class?",
+    "code": "student-class-change",
+    "description": "<p>Open the student's profile and use the class-change control beside their current class. Select a destination class and submit. To move the student to the Alumni account type, select <strong>Move this student to alumni</strong> instead.</p><p>EduManager records the source class, destination class, staff member, and current academic session and term in Student Class Changes. Use this individual action for one student's correction or transfer; use the batch move flow for several students.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 49
+  },
+  {
+    "name": "How do I move several students to another class?",
+    "code": "batch-student-class-change",
+    "description": "<p>Open <strong>Classes → All Classes</strong>, open the source class action menu, and choose <strong>Move Students</strong>. To move everyone in that class, select a destination class or choose to move them to alumni, then submit. To move only some students, choose <strong>Select Students</strong>, check the students to move, choose the destination class or alumni option, and submit.</p><p>EduManager records the move as a batch in <strong>Classes → Student Class Changes</strong>. Review the selected students and destination before submitting.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 50
+  },
+  {
+    "name": "How do I promote students from one class group to the next?",
+    "code": "promote-class-group",
+    "description": "<p>Open <strong>Classes → All Class Groups</strong> and choose <strong>Promote Students</strong> for the source group. Promotion uses students’ session results from the current academic session. Add a promotion row for each average range, choose its destination class, and enter the minimum and maximum averages for that range.</p><p>Review the displayed session results and ranges, then submit. Students whose averages fall within a range are moved to its selected class, and EduManager records the moves in <strong>Student Class Changes</strong>.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 51
+  },
+  {
+    "name": "Where can I review student class changes?",
+    "code": "student-class-movement-history",
+    "description": "<p>Open <strong>Classes → Student Class Changes</strong> to review student movements. The table shows the student, date, source and destination class (or Alumni), academic session and term, staff member, batch, and any reversal date. Use the available filters to narrow the list.</p><p>A batch number groups movements submitted together. If a movement was reversed, the original row remains in the history with its reversal date.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 52
+  },
+  {
+    "name": "How do I revert a mistaken student class change?",
+    "code": "revert-student-class-movement",
+    "description": "<p>An institution administrator can open <strong>Classes → Student Class Changes</strong>, find the movement, and choose <strong>Revert → Revert One</strong>. To reverse the complete operation, choose <strong>Revert entire Batch</strong> for that batch number and confirm.</p><p>Reversal creates a new movement back to the previous class and marks the original movement as reverted; it does not erase the audit history. Review the student and batch before confirming.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 53
+  },
+  {
+    "name": "How do I create guardian accounts for a class?",
+    "code": "create-guardians-for-class",
+    "description": "<p>Open <strong>Guardians</strong>, choose <strong>Record Guardians</strong>, and select a class. For each student without a linked guardian, enter the guardian’s name, phone, email, gender, and relationship, then submit the form. Students who already have a guardian are shown with their current link.</p><p>New guardian accounts use the default password <strong>password</strong>. Share the sign-in details with each guardian and ask them to change the password after logging in.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 55
+  },
+  {
+    "name": "How do I link another student to an existing guardian?",
+    "code": "link-guardian-to-student",
+    "description": "<p>Open <strong>Guardians</strong>, find the existing guardian, and choose <strong>Attach Student</strong>. Select the student and the relationship, then submit. This links the student to the existing guardian account, so the guardian can see each linked child from the dependants page.</p><p>Use this option when one parent or guardian needs access to more than one student. Confirm the correct guardian and student before submitting.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 56
+  },
+  {
+    "name": "How do I review guardian and student links?",
+    "code": "view-guardian-list",
+    "description": "<p>Open <strong>Guardians</strong> in the school menu. The list shows each guardian, the linked student, their relationship, and when that link was created. One guardian may appear on more than one row when linked to multiple students.</p><p>Use <strong>Attach Student</strong> on a guardian row to link another student and relationship. If a guardian or student is missing, check the account and relationship details with the school administrator.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 57
+  },
+  {
+    "name": "How do I add a subject to my school?",
+    "code": "add-subject",
+    "description": "<p>An institution administrator can open <strong>Subject → All Subjects</strong> and choose <strong>New</strong>. Enter the subject title, optional order and description, then save. The subject code is based on its title.</p><p>To create several subjects in one operation, choose <strong>Multi Create</strong>. Assign subjects to classes and teachers before staff begin recording results.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 64
+  },
+  {
+    "name": "How do I create several subjects at once?",
+    "code": "create-multiple-subjects",
+    "description": "<p>Open <strong>Subject → All Subjects</strong> and choose <strong>Multi Create</strong>. Add a row for each subject, enter its title, and optionally set its display order and description. Remove any extra rows, then submit.</p><p>Each row creates a separate subject. Review the subject list afterward, then assign the subjects to classes and teachers as needed.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 65
+  },
+  {
+    "name": "How do I edit or delete a subject?",
+    "code": "edit-or-delete-subject",
+    "description": "<p>Open <strong>Subject → All Subjects</strong>. Use the edit action to change a subject’s title, code, order, category, or description. The order controls how subjects are arranged in lists and result views.</p><p>Use the delete action only when the subject has no course sessions, topics, results, assignments, lesson notes, or other linked records. EduManager blocks deletion when existing records depend on the subject; edit or keep it in that case.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 66
+  },
+  {
+    "name": "How do I make subjects available for a class and teacher?",
+    "code": "assign-subjects-to-classes",
+    "description": "<p>First open <strong>Subject → Subject Teachers</strong> and choose <strong>Assign</strong>. Select a teacher, one or more subjects, and one or more classes, then submit. EduManager creates an assignment for every selected subject and class combination.</p><p>Assignments make those class-subject workflows available to the teacher. When recording results, choose the academic session, term, and result type separately; these are selected for each result entry.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 67
+  },
+  {
+    "name": "How do I set up assessment components and score limits?",
+    "code": "configure-assessment-components",
+    "description": "<p>An institution administrator can open <strong>Assessments</strong> and create an assessment component. Enter its title and maximum score, choose the term and mid-term or full-term scope, and select the classes where it applies. Leave the class selection empty or choose all classes to make it institution-wide.</p><p>Save the assessment before teachers record results. Entered scores must be numeric, at least zero, and no higher than the component’s maximum; assessment and exam scores together must not exceed 100.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 68
+  },
+  {
+    "name": "How do I set an assessment to use scores from another term?",
+    "code": "set-assessment-score-dependencies",
+    "description": "<p>An institution administrator can open <strong>Assessments</strong> and choose <strong>Change</strong> in the component’s Reference column. Select the source assessment result period, such as First Mid-Term or First Term, then update. Choose <strong>None</strong> when the component should be entered manually.</p><p>When a reference is configured, EduManager uses the corresponding result to populate that component during score processing. Confirm the selected source period before teachers enter or process results.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 69
+  },
+  {
+    "name": "Can I fill assessment scores from an existing course result?",
+    "code": "fill-assessment-from-existing-result",
+    "description": "<p>The assessment page contains an <strong>Insert Scores</strong> workflow, but its row action is currently hidden in the interface. If the action is available in your school build, open it for the target assessment, select the source and destination session, term, class, and result type, then submit.</p><p>The workflow reads existing course results and uses them to populate the selected assessment component. The source and destination class must match. Review the results afterward; if the action is not visible, enter the scores through the normal result-entry page.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 70
+  },
+  {
+    "name": "How do I send an in-app school notification?",
+    "code": "send-in-app-school-notification",
+    "description": "<p>A user with notification-management permission can open <strong>Notifications</strong> and choose <strong>New</strong>. Enter the title and message, select the intended recipients—such as institution users, students, a class, or a class group—and add an optional action link or notification type if needed. Submit the form to send it.</p><p>Check the recipient selection before sending. Use the <strong>Sent</strong> view to find the announcement and review its recipient and read information.</p>",
+    "sort_order": 188,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I review or delete a sent school notification?",
+    "code": "review-or-delete-sent-notification",
+    "description": "<p>Open <strong>Notifications</strong> and choose <strong>Sent</strong>. Select a notification to review its title, message, targets, and recipient/read counts.</p><p>An institution administrator can delete a sent notification only while no recipient has read it. If it has already been read, the delete action is blocked; send a correction or follow-up notification instead.</p>",
+    "sort_order": 189,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I send an SMS or email message to school users?",
+    "code": "send-sms-or-email-to-school-users",
+    "description": "<p>An institution administrator can open <strong>SMS/Email Messages</strong> and choose <strong>New</strong>. Select a recipient group such as everyone, a class, or a division, or enter contact details directly. Choose SMS or email; email requires a subject. For a group recipient, use <strong>Send to Guardians</strong> when the message should go to linked guardians.</p><p>Review the channel, recipients, and message before sending. SMS messages are limited to 145 characters in this form. Return to the message list to review sent records; use in-app notifications or Chats for communication that should remain inside EduManager.</p>",
+    "sort_order": 190,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I start and use an institution chat?",
+    "code": "start-and-use-institution-chat",
+    "description": "<p>If <strong>Chats</strong> is available to your account, open it and choose to start a conversation. Depending on your role and permissions, you can contact the institution admin desk, a staff role, or an individual staff member. Enter the first message and send it to create the thread.</p><p>Open a thread to read replies and send another message. Chat access and available recipients depend on your institution role; only users allowed to access a thread can view and reply to it.</p>",
+    "sort_order": 191,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I find unread chats and return to a conversation?",
+    "code": "find-unread-chats-and-return",
+    "description": "<p>Open <strong>Chats</strong> to see your conversation list. Threads with new messages have an unread indicator, and the chat page shows your unread count. Some dashboards also show an unread-chat attention item; select it to return to Chats.</p><p>Choose the conversation to read the new messages. Opening a thread marks it as read for your account, and you can reply in the same thread.</p>",
+    "sort_order": 192,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I create and publish an admission form?",
+    "code": "create-and-publish-admission-form",
+    "description": "<p>An institution administrator can open <strong>Admissions → Admission Forms</strong> and choose <strong>New</strong>. Enter the form title, optional description, price, academic session if applicable, and term. Select <strong>Publish</strong> when candidates should be able to apply, then save the form.</p><p>Review the title, fee, session, and term before publishing. Edit the form to update its details or publication setting. Keep a form with existing applications for record history rather than removing its application data.</p>",
+    "sort_order": 195,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I review or preview an admission application?",
+    "code": "review-or-preview-admission-application",
+    "description": "<p>Open <strong>Admissions → Admission Applications</strong>. If you are reviewing applications for a particular form, select that form’s application list. Open an application to review the applicant’s details, application number, guardian information, and available photo or attachments.</p><p>Use the application preview when you need to inspect the submitted form or its payment state. Confirm the application belongs to the intended intake before changing its status.</p>",
+    "sort_order": 199,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I bulk upload admission applications?",
+    "code": "bulk-upload-admission-applications",
+    "description": "<p>Open <strong>Admissions → Admission Forms</strong> and use the upload action beside the form that should receive the applications. Download the application recording template, enter one applicant per row using its columns, and keep the template headings and layout unchanged.</p><p>Upload the completed workbook and submit it. Correct the rows identified by validation errors and upload the corrected file. Confirm that you selected the right admission form before importing records.</p>",
+    "sort_order": 200,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I update an applicant’s admission status?",
+    "code": "update-admission-application-status",
+    "description": "<p>Open the application from <strong>Admission Applications</strong>. For an application that is still pending, choose <strong>Admit Student</strong> and select the class for the new student, or choose <strong>Deny Admission</strong>. Review the selected class before confirming an admission.</p><p>Only pending applications can be handled from this screen. Once a status has been changed, the status action is no longer available for that application.</p>",
+    "sort_order": 201,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I issue or view an admission letter?",
+    "code": "issue-and-view-admission-letter",
+    "description": "<p>After an applicant is admitted, the school can open the admission letter view for the created student. The letter displays the institution’s profile and the student’s name and class as a provisional offer. Review the details, then use the page’s print or save-as-PDF controls to produce a copy.</p><p>Share the letter with the applicant through the school’s chosen channel. If the letter view is not linked from your application list, ask the institution administrator to provide access to it.</p>",
+    "sort_order": 202,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I create, publish, or close a vacancy post?",
+    "code": "create-and-publish-vacancy-post",
+    "description": "<p>An institution administrator can open <strong>Recruitment → Vacancy Posts</strong> and choose <strong>New</strong>. Enter the job title, department, employment type, location, description, requirements, responsibilities, and any salary range, number of positions, or deadline. Select <strong>Publish</strong> to show the post on the public recruitment page, then save.</p><p>Edit the post to update its details. To close it to new public applicants, turn off its publication setting and save; existing applications remain in the school’s records.</p>",
+    "sort_order": 204,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I review and manage recruitment applications?",
+    "code": "review-and-manage-recruitment-applications",
+    "description": "<p>Open <strong>Recruitment → Vacancy Posts</strong> and choose <strong>Applications</strong> for the relevant vacancy. Open an application to review the candidate’s contact details, experience, qualification, application number, and any CV, cover-letter, or portfolio links.</p><p>Update the application status and add a review note from its details page. Use the delete action only when the application record should be removed; confirm the vacancy before changing or deleting an application.</p>",
+    "sort_order": 207,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I create and manage school associations?",
+    "code": "create-manage-school-associations",
+    "description": "<p>Open <strong>Associations</strong> in the school administration menu and choose <strong>Add</strong>. Enter the association title and an optional description, then save. The association list shows its title, description, member count, and available actions.</p><p>Use the edit action to update an association. Before deleting one, review its member list so you do not remove a grouping that staff still use.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 231
+  },
+  {
+    "name": "How do I assign users to an association?",
+    "code": "assign-users-to-association",
+    "description": "<p>From <strong>Associations</strong>, choose <strong>View Members</strong> for the required association, then select <strong>Add Members</strong>. Choose the association and select the staff or students who should belong to it. You can select all users shown in the form or choose them individually, then submit.</p><p>The member list shows each linked user's name and the date they were added. Use the delete action beside a member to remove that link; this does not delete the user's school account.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 232
+  },
+  {
+    "name": "How do I review school activity logs?",
+    "code": "review-school-activity-logs",
+    "description": "<p>Open <strong>Admin → Activity Logs</strong> to review recorded activity for the current school. Use the filter control to narrow entries by date range, category, event, actor, subject, severity, or retention category, then apply the filters. Open a row to inspect its available details.</p><p>Logs can include changes to school records, results, attendance, payments, settings, and account access. The available history depends on the event and the log's retention category.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 233
+  },
+  {
+    "name": "How do I export school activity logs?",
+    "code": "export-school-activity-logs",
+    "description": "<p>Open <strong>Admin → Activity Logs</strong> and apply the date and other filters you want included. Choose <strong>Export</strong> to download the matching activity as a CSV file. The export uses the filters currently applied to the log list.</p><p>If you cannot see the export control, your account may not have permission to export institution logs. Ask an institution administrator to review your access.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 234
+  },
+  {
+    "name": "What do account, security, and result audit events show?",
+    "code": "understand-security-and-result-audit-events",
+    "description": "<p>Activity logs can record authentication events, password changes or resets, authorization and role changes, impersonation, result score changes, result locking or unlocking, result publication, and payment or wallet activity. Filter by category, event, actor, subject, severity, and date to locate a relevant entry.</p><p>Open the event details to review the recorded action and related record. Sensitive values such as passwords, PINs, tokens, private keys, and identity numbers are redacted; an activity log is not a way to recover credentials.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 235
+  },
+  {
+    "name": "How do I use search and lookup fields in school forms?",
+    "code": "use-school-search-and-lookup-fields",
+    "description": "<p>In a school form, use the relevant search or selection field to find an existing institution, session, class, subject, student, staff member, bank, fee, or other record. Type part of the name or identifier when the control supports searching, then choose the matching result so it is attached to the form.</p><p>Check the selected record before saving, especially when names are similar. Clear the selection and search again if it is wrong. If the expected option is missing, confirm the institution, current session, record status, and your access.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 236
+  },
+  {
+    "name": "How do I set up WhatsApp result checking for my school?",
+    "code": "setup-whatsapp-result-checking",
+    "description": "<p>Confirm the school's supported WhatsApp contact and result-checking configuration with the institution administrator or technical contact. Make sure student and guardian contact details are current and that the school has published the relevant results. Share the school's official WhatsApp link or contact with families.</p><p>When the flow asks for a result PIN, provide the PIN for the correct student and result period. WhatsApp result access depends on the institution's configured integration and result publication; use the student or guardian account if the WhatsApp option is unavailable.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 270
+  }
+]

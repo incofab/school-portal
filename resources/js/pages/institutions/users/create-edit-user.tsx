@@ -19,6 +19,8 @@ import useMyToast from '@/hooks/use-my-toast';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import useIsAdmin from '@/hooks/use-is-admin';
 import RoleSelect from '@/components/selectors/role-select';
+import EnumSelect from '@/components/dropdown-select/enum-select';
+import { InstitutionUserType } from '@/types/types';
 
 interface Props {
   institutionUser?: InstitutionUser;
@@ -39,19 +41,23 @@ export default function CreateOrUpdateStudent({
     email: institutionUser?.user!.email ?? '',
     phone: institutionUser?.user!.phone ?? '',
     role: institutionUser?.roles?.[0]?.id ?? '',
+    type: institutionUser?.type ?? InstitutionUserType.Teacher,
     gender: institutionUser?.user!.gender ?? '',
   });
   const forEdit = institutionUser !== undefined;
   const submit = async () => {
-    const res = await webForm.submit((data, web: AxiosInstance) =>
-      institutionUser
-        ? web.put(instRoute('users.update', [institutionUser]), data)
+    const res = await webForm.submit((data, web: AxiosInstance) => {
+      const { type, ...userData } = data;
+
+      return institutionUser
+        ? web.put(instRoute('users.update', [institutionUser]), userData)
         : web.post(instRoute('users.store'), {
-            ...data,
+            ...userData,
+            type,
             password: 'password',
             password_confirmation: 'password',
-          })
-    );
+          });
+    });
 
     if (!handleResponseToast(res)) return;
 
@@ -72,6 +78,26 @@ export default function CreateOrUpdateStudent({
               onSubmit={preventNativeSubmit(submit)}
             >
               <UserInputForm webForm={webForm as any} forEdit={forEdit} />
+              {!forEdit && isAdmin && (
+                <FormControl isRequired isInvalid={!!webForm.errors.type}>
+                  <FormLabel>User Type</FormLabel>
+                  <EnumSelect
+                    enumData={InstitutionUserType}
+                    allowedEnum={[
+                      InstitutionUserType.Admin,
+                      InstitutionUserType.Teacher,
+                      InstitutionUserType.Accountant,
+                    ]}
+                    selectValue={webForm.data.type}
+                    onChange={(option: any) =>
+                      webForm.setValue('type', option?.value ?? '')
+                    }
+                    isClearable={false}
+                    required
+                  />
+                  <FormErrorMessage>{webForm.errors.type}</FormErrorMessage>
+                </FormControl>
+              )}
               {isAdmin && (
                 <>
                   <FormControl isRequired isInvalid={!!webForm.errors.role}>

@@ -6,19 +6,17 @@ use App\Actions\RecordStaff;
 use App\Actions\Users\DownloadStaffRecordingSheet;
 use App\Actions\Users\InsertStaffFromRecordingSheet;
 use App\Enums\InstitutionUserType;
-use App\Enums\RoleGuard;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateStaffRequest;
 use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\User;
+use App\Rules\ExcelRule;
 use App\Services\Institutions\InstitutionRoleService;
 use App\Support\Audit\ModelAudit;
-use App\Rules\ExcelRule;
 use App\Support\Audit\SecurityActivityLogger;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Storage;
 
 class InstitutionUserController extends Controller
@@ -78,12 +76,7 @@ class InstitutionUserController extends Controller
       'role' => [
         'required',
         'integer',
-        Rule::exists('roles', 'id')->where(
-          fn($query) => $query
-            ->where('institution_id', $institution->id)
-            ->where('guard_name', RoleGuard::Web->value)
-            ->whereNotIn('name', InstitutionUserType::nonStaffRoles())
-        )
+        app(InstitutionRoleService::class)->staffRoleRule($institution)
       ]
     ]);
     InsertStaffFromRecordingSheet::run(

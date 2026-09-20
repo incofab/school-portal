@@ -52,7 +52,15 @@ return [
   ],
 
   'bulksms_nigeria' => [
-    'api-token' => env('BULKSMS_NIGERIA_API_TOKEN')
+    'api-token' => env('BULKSMS_NIGERIA_API_TOKEN'),
+    'sender-id' => env('BULKSMS_NIGERIA_SENDER_ID', 'EduManager'),
+    'base-url' => env(
+      'BULKSMS_NIGERIA_BASE_URL',
+      'https://www.bulksmsnigeria.com/api/v2'
+    ),
+    'gateway' => env('BULKSMS_NIGERIA_GATEWAY', 'direct-refund'),
+    'timeout' => (int) env('BULKSMS_NIGERIA_TIMEOUT', 30),
+    'connect-timeout' => (int) env('BULKSMS_NIGERIA_CONNECT_TIMEOUT', 10)
   ],
 
   'ai_keys' => [

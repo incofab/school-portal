@@ -16,6 +16,10 @@ class FaqSeeder extends Seeder
         $this->faqs()
       ),
       ...array_map(
+        fn(array $faq) => [...$faq, 'type' => FaqType::Faq->value],
+        $this->faqArticlesFromJson()
+      ),
+      ...array_map(
         fn(array $article) => [
           ...$article,
           'type' => FaqType::KnowledgeBase->value
@@ -24,9 +28,46 @@ class FaqSeeder extends Seeder
       )
     ];
 
-    foreach ($contents as $content) {
-      Faq::query()->updateOrCreate(['code' => $content['code']], $content);
+    Faq::withoutEvents(function () use ($contents): void {
+      foreach ($contents as $content) {
+        Faq::query()->updateOrCreate(['code' => $content['code']], $content);
+      }
+    });
+
+  }
+
+  private function faqArticlesFromJson(): array
+  {
+    $faqFiles = glob(database_path('seeders/data/faqs/*.json')) ?: [];
+    $faqs = [];
+
+    foreach ($faqFiles as $faqFile) {
+      $fileContents = file_get_contents($faqFile);
+      $fileFaqs = json_decode(
+        $fileContents === false ? '' : $fileContents,
+        true,
+        512,
+        JSON_THROW_ON_ERROR
+      );
+
+      if (!is_array($fileFaqs) || !array_is_list($fileFaqs)) {
+        throw new \UnexpectedValueException(
+          "FAQ seed file must contain a JSON array: {$faqFile}"
+        );
+      }
+
+      foreach ($fileFaqs as $faq) {
+        if (!is_array($faq)) {
+          throw new \UnexpectedValueException(
+            "FAQ seed entries must be JSON objects: {$faqFile}"
+          );
+        }
+
+        $faqs[] = $faq;
+      }
     }
+
+    return $faqs;
   }
 
   private function faqs(): array

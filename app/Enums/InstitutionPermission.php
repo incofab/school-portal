@@ -24,6 +24,7 @@ enum InstitutionPermission: string
         self::ManageAttendance,
         self::ManageChat
       ],
+      InstitutionUserType::Others => [],
       InstitutionUserType::Accountant => [
         self::ManageFees,
         self::ManageFinance,
@@ -33,7 +34,8 @@ enum InstitutionPermission: string
       ],
       InstitutionUserType::Student,
       InstitutionUserType::Alumni,
-      InstitutionUserType::Guardian => [self::ManageChat]
+      InstitutionUserType::Guardian
+        => [self::ManageChat]
     };
   }
 }

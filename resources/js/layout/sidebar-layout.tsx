@@ -11,7 +11,11 @@ import {
 } from 'react-pro-sidebar';
 import { SidebarHeader } from '../components/sidebar-header';
 import { InertiaLink } from '@inertiajs/inertia-react';
-import { Nullable, InstitutionUserType } from '@/types/types';
+import {
+  Nullable,
+  InstitutionUserType,
+  studentAndGuardianTypes,
+} from '@/types/types';
 import {
   hasInstitutionPermission,
   InstitutionPermission,
@@ -52,16 +56,16 @@ export default function SideBarLayout() {
     InstitutionUserType.Admin,
     InstitutionUserType.Accountant,
   ];
-  const studentOrAlumni = [
-    InstitutionUserType.Student,
-    InstitutionUserType.Alumni,
-    InstitutionUserType.Guardian,
-  ];
+  const studentOrAlumni = studentAndGuardianTypes;
 
   const menus: MenuListType[] = [
     {
       label: 'Dashboard',
       route: instRoute('dashboard'),
+    },
+    {
+      label: 'AI Assistant',
+      route: instRoute('assistant.index'),
     },
     {
       label: 'Chats',

@@ -6,6 +6,7 @@ use App\Console\Commands\AssignRoleToUser;
 use App\Console\Commands\ProcessSettlements;
 use App\Console\Commands\PruneActivityLogs;
 use App\Console\Commands\PublishPendingResult;
+use App\Console\Commands\PruneAssistantData;
 use App\Console\Commands\SeedInstitutionRoles;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -21,6 +22,7 @@ class Kernel extends ConsoleKernel
     AssignRoleToUser::class,
     ProcessSettlements::class,
     PublishPendingResult::class,
+    PruneAssistantData::class,
     PruneActivityLogs::class,
     SeedInstitutionRoles::class
   ];
@@ -40,6 +42,10 @@ class Kernel extends ConsoleKernel
     // $schedule->command('inspire')->hourly();
     $schedule->command('telescope:prune --hours=48')->daily();
     $schedule->command('audit:prune')->dailyAt('02:30');
+    $schedule
+      ->command('ai:prune-data')
+      ->dailyAt('03:00')
+      ->withoutOverlapping();
     $schedule
       ->command('settlements:process')
       ->dailyAt('01:00')

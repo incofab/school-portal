@@ -230,13 +230,14 @@ class MonnifyHelper
 
   public function validateBankAccount($bankCode, $accountNumber)
   {
-    $url = $this->url('v1/disbursements/account/validate');
+    $url = $this->url('v2/disbursements/account/validate');
     $res = $this->execCurl(
       "$url?" .
         http_build_query([
-          'bankCode' => $bankCode,
-          'accountNumber' => $accountNumber
+          'accountNumber' => $accountNumber,
+          'bankCode' => $bankCode
         ]),
+      [],
       'GET',
       true
     );

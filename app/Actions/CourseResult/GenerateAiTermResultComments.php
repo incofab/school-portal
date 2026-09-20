@@ -49,13 +49,12 @@ class GenerateAiTermResultComments
   protected function generateComments(array $payload): array
   {
     $prompt = $this->buildPrompt($payload);
-    $aiRes = initPrism(
-      'You are an experienced school teacher and principal writing student result comments.'
-    )
-      ->withPrompt($prompt)
-      ->asText();
-
-    $raw = trimAiResponse($aiRes->text ?? '');
+    $raw = trimAiResponse(
+      generateAiText(
+        $prompt,
+        'You are an experienced school teacher and principal writing student result comments.'
+      )
+    );
     $decoded = json_decode($raw, true);
 
     if (isset($decoded['comments']) && is_array($decoded['comments'])) {

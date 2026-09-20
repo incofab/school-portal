@@ -1,12 +1,11 @@
 <?php
 
+use App\Contracts\AI\AssistantTextGenerator;
 use App\DTO\BreadCrumb;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\User;
 use App\Support\Res;
-use Prism\Prism\Enums\Provider;
-use Prism\Prism\Facades\Prism;
 
 if (!function_exists('currentUser')) {
   function currentUser(): User|null
@@ -190,15 +189,28 @@ if (!function_exists('formatWhatsappNumber')) {
   }
 }
 
-if (!function_exists('initPrism')) {
-  function initPrism($systemPrompt = null)
-  {
-    return Prism::text()
-      ->withClientOptions(['timeout' => 120])
-      ->using(Provider::OpenAI, config('services.openai.model'))
-      ->withSystemPrompt(
-        $systemPrompt ?? 'You are a well qualified school teacher'
-      );
+if (!function_exists('generateAiText')) {
+  function generateAiText(
+    string $prompt,
+    ?string $systemPrompt = null,
+    ?string $model = null
+  ): string {
+    $response = app(AssistantTextGenerator::class)->generate(
+      $systemPrompt ??
+        'You are a well trained, qualified school teacher. You understand the curriculum and pedagogy of teaching in both Primary and Secondary Schools in Nigeria',
+      $prompt,
+      [
+        'provider' => 'openai',
+        'model' => $model ?? config('services.openai.model'),
+        'timeout' => 120,
+        'max_turn_seconds' => 120,
+        'max_tokens' => null,
+        'retry_attempts' => 1,
+        'fallback_provider' => null
+      ]
+    );
+
+    return $response->text;
   }
 }
 

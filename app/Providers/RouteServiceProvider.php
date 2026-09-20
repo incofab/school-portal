@@ -57,6 +57,8 @@ class RouteServiceProvider extends ServiceProvider
         ->namespace($this->namespace)
         ->group(base_path('routes/web.php'));
 
+      require base_path('routes/assistant.php');
+
       Route::middleware(['web', 'auth', 'manager'])
         ->prefix('manager')
         ->name('managers.')
@@ -89,6 +91,17 @@ class RouteServiceProvider extends ServiceProvider
     RateLimiter::for('api', function (Request $request) {
       return Limit::perMinute(60)->by(
         optional($request->user())->id ?: $request->ip()
+      );
+    });
+
+    RateLimiter::for('ai-assistant', function (Request $request) {
+      return Limit::perMinutes(
+        config('ai.assistant.rate_limit_window', 1),
+        config('ai.assistant.rate_limit', 20)
+      )->by(
+        optional($request->user())->id
+          ? 'user:' . $request->user()->id
+          : 'guest:' . $request->ip()
       );
     });
   }

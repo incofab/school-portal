@@ -1,0 +1,122 @@
+[
+  {
+    "name": "How do I create topics and sub-topics?",
+    "code": "create-topics-and-subtopics",
+    "description": "<p>Open <strong>Topics</strong> and choose <strong>Add Topic</strong>. Select the term, week, class, and subject, then enter the topic details. Staff with the appropriate access can also assign a teacher and attach lesson-plan files.</p><p>To create a sub-topic, open the parent topic and choose its sub-topic action. The sub-topic stays under that parent and inherits its class and subject, so check the parent before adding it.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 138
+  },
+  {
+    "name": "How do I create and review a scheme of work?",
+    "code": "create-and-review-scheme-of-work",
+    "description": "<p>Open <strong>Scheme of Work</strong> and create a scheme from the relevant topic. Set the term and week, then enter the learning objectives and resources for the lesson. Choose whether it applies to the entire institution group when that scope is appropriate.</p><p>Save the scheme and open it from the list to review its topic, class or group scope, objectives, and resources. Check the term and week so the plan appears in the intended teaching period.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 139
+  },
+  {
+    "name": "How do I create and manage a lesson plan?",
+    "code": "create-and-manage-lesson-plans",
+    "description": "<p>Open <strong>Lesson Plans</strong> and choose <strong>Add Lesson Plan</strong>. Select your subject-teacher assignment, then add the lesson objective, activities, and content. Set the available class or institution-group scope and attach any supporting files offered on the form.</p><p>Save the plan, then use the list to search or filter lesson plans and open one to review its details. Use the edit action to update the plan or its files, and remove attachments that are no longer needed.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 140
+  },
+  {
+    "name": "How do I create, edit, and publish lesson notes?",
+    "code": "create-edit-publish-lesson-notes",
+    "description": "<p>Open <strong>Lesson Notes</strong> and add a note with its title and lesson content. Save it to create the record. You can reopen a note to edit its content, view its details, or add and remove supporting files.</p><p>New notes are saved as drafts by the server. To make a note available to students, change its status to <strong>Published</strong> from the lesson-notes list; switch it back to draft when it should no longer appear to students. Check the intended class or subject scope before publishing.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 141
+  },
+  {
+    "name": "How can AI help me draft a lesson note?",
+    "code": "generate-ai-lesson-note-draft",
+    "description": "<p>Start a lesson note and enter its title and lesson context, then choose the AI generation action. EduManager uses the lesson information to prepare a draft based on the Nigerian basic education syllabus.</p><p>Read and edit the generated content before saving; generation fills the editor but does not save or publish the note for you. Save the note, then set its status to <strong>Published</strong> from the lesson-notes list when it is ready for students.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 142
+  },
+  {
+    "name": "Where can students find published lesson materials?",
+    "code": "student-find-published-lesson-materials",
+    "description": "<p>Sign in to the student account and open the learning or lesson-notes area available in your school menu. Browse the notes and topic material provided for your class and subjects.</p><p>Only material the school has made available to your student account can be opened. If a note is missing, check that you are in the correct institution and ask your teacher whether the note has been published for your class.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 143
+  },
+  {
+    "name": "How do I create an assignment for my students?",
+    "code": "create-assignment-for-students",
+    "description": "<p>Open <strong>Assignments → Add Assignment</strong>. Choose the subject or course and the class or classes that should receive it. Enter the maximum score and due date, then write the instructions or learning material in the content editor.</p><p>Review the audience, deadline, and score before saving. The saved assignment appears to the selected students in their assignment list; reopen it from <strong>All Assignments</strong> to check or update its details.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 144
+  },
+  {
+    "name": "How do I view and submit an assignment as a student?",
+    "code": "student-view-and-submit-assignment",
+    "description": "<p>Sign in to your student account and open <strong>Assignments</strong>. Select an assignment to read its instructions, subject, due date, and maximum score.</p><p>Enter your response in the submission editor and submit it before the deadline. Return to your assignment or submission list to check that the work was recorded and see any score or feedback the teacher has entered.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 145
+  },
+  {
+    "name": "How do I review and score submitted assignments?",
+    "code": "review-and-score-assignment-submissions",
+    "description": "<p>Open <strong>Assignments → Submitted Assignments</strong> and select a submission to view the student's response and submission details. Use the score action to enter a mark within the assignment's maximum score and add a remark or feedback.</p><p>Save the score, then revisit the submission to confirm the mark and feedback are recorded. The submitted-assignment list helps you find work that is ready for review.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 146
+  },
+  {
+    "name": "How do I add and manage e-library materials?",
+    "code": "manage-school-e-library-materials",
+    "description": "<p>Open <strong>E-Library → Add Material</strong>, enter a title and material type, and choose whether to upload a file or provide an external link. Uploaded files must be 1 MB or smaller; use an external link for a larger resource. You can also set a subject, select the classes that can access it, and add a description.</p><p>Set the published option when the material is ready for students, then save it. From the library list, open a material to review or edit it, adjust its class visibility, replace its source, or remove it when it is no longer needed.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 147
+  },
+  {
+    "name": "How can students find and open e-library resources?",
+    "code": "student-find-open-e-library-resources",
+    "description": "<p>Sign in to the student account and open <strong>E-Library</strong>. Browse the published resources available to your class or subject and select a title to open its uploaded file or external link.</p><p>If you cannot see a resource, confirm that you are using the right student account and institution. The school controls whether material is published and which classes can access it.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 148
+  },
+  {
+    "name": "How do I schedule a live class and join it?",
+    "code": "schedule-and-join-live-class",
+    "description": "<p>Staff can open <strong>Live Classes</strong> and add a title, Google Meet link, start and end times, and target. Choose a class, class group, or class division, then leave the class active for participants to access it. Save the details and review the class in the list.</p><p>Students and teachers open their own live-class list and choose <strong>Join</strong> for a session available to their class or group. Check the scheduled time and link; staff can edit the listing or deactivate it if it should no longer be available.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 149
+  },
+  {
+    "name": "How do I create or view a class timetable?",
+    "code": "create-and-view-class-timetable",
+    "description": "<p>Open <strong>Timetables</strong> and choose the class whose schedule you want to manage or view. Authorized staff can add timetable entries by selecting the weekday, start and end time, and whether the entry is a subject/course or a school activity; choose the matching item and coordinator details.</p><p>Save changes and return to the class timetable to review the weekly schedule. Students can open the timetable for their class, while staff access to edit entries depends on their permissions.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 150
+  },
+  {
+    "name": "How do I create and manage school activities?",
+    "code": "manage-school-activities",
+    "description": "<p>Open <strong>School Activities</strong> and choose <strong>Add Activity</strong>. Enter the activity title and description, then save it to add it to the institution's activity list. Staff with access can reopen an activity to update its information or remove it from the list.</p><p>School activities can also be selected as timetable entries, so use a clear title and description that help staff and students recognize the activity.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 151
+  },
+  {
+    "name": "How do I generate lesson notes with AI?",
+    "code": "generate-ai-lesson-notes",
+    "description": "<p>Open the lesson-note create or edit form, enter a clear lesson title and the available lesson details, then choose <strong>Generate with AI</strong>. Wait for the draft to appear in the editor.</p><p>Review and correct the content, curriculum level, examples, and formatting before saving. Check the note's availability and publication settings separately; generating a draft does not by itself publish it to students.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 265
+  }
+]

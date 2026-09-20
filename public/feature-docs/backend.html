@@ -9016,6 +9016,57 @@
         <h2>Current Feature Notes</h2>
         <ul class="detail-list">
           <li>
+            <div><strong>AI assistant backend surface</strong></div>
+            <div class="desc">
+              Public routes live under <code>routes/web.php</code> as
+              <code>assistant.*</code> and institution routes under
+              <code>routes/institution.php</code> as
+              <code>institutions.assistant.*</code>, both handled by
+              <code>App\Http\Controllers\AI\AssistantController</code>:
+              index, conversation store/show/update/destroy (archive),
+              <code>conversations.forget</code> (permanent delete),
+              <code>messages.store</code>,
+              <code>messages.feedback</code>, and — institution only —
+              <code>actions.confirm</code> and <code>actions.cancel</code>.
+              Message and action endpoints use the
+              <code>ai-assistant</code> rate limiter defined in
+              <code>RouteServiceProvider</code>.
+              <code>App\Services\AI\EduManagerAssistant</code> runs the
+              bounded turn: memory interpretation, clarification,
+              <code>AssistantActionPlanner</code>,
+              <code>AssistantToolPlanner</code>, knowledge retrieval, then the
+              provider call through
+              <code>AssistantTextGenerator</code>/<code>LaravelAiAssistantTextGenerator</code>,
+              with <code>AssistantRunBudget</code> capping model, tool, and
+              retrieval calls. <code>AssistantActionService</code> owns the
+              prepare/confirm/cancel lifecycle inside a locked transaction with
+              hashed confirmation tokens and idempotency keys.
+              <code>AssistantTelemetry</code> records one
+              <code>assistant_run_metric</code> per turn, and
+              <code>App\Support\AI\AssistantRedactor</code> masks contact
+              details and drops credentials before anything is logged.
+              Manager-admin diagnostics are served by
+              <code>Managers\AI\AssistantDiagnosticsController</code> at
+              <code>managers.ai-assistant.diagnostics</code>, gated by
+              <code>AssistantRunMetricPolicy</code> and aggregated by
+              <code>App\Support\AI\AssistantDiagnostics</code>. Configuration
+              lives in <code>config/ai.php</code> under
+              <code>assistant</code>, <code>knowledge</code>, and
+              <code>telemetry</code>.
+            </div>
+          </li>
+          <li>
+            <div><strong>Shared staff role validation</strong></div>
+            <div class="desc">
+              <code>InstitutionRoleService::staffRoleRule()</code> is now the
+              single source for the assignable-staff-role existence rule, used
+              by <code>CreateStaffRequest</code>, the staff upload endpoint in
+              <code>InstitutionUserController</code>, and the assistant's staff
+              actions. <code>resolveStaffRoleId()</code> accepts a role id or a
+              role name so a conversational request can name a role in words.
+            </div>
+          </li>
+          <li>
             <div><strong>Admin user listing and impersonation</strong></div>
             <div class="desc">
               Admin-manager routes include <code>GET /manager/users</code> named

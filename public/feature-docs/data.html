@@ -4532,6 +4532,35 @@
         <h2>Current Feature Notes</h2>
         <ul class="detail-list">
           <li>
+            <div><strong>AI assistant schema</strong></div>
+            <div class="desc">
+              Conversations and messages reuse the Laravel AI tables via
+              <code>AiConversation</code> and
+              <code>AiConversationMessage</code>, extended by
+              <code>2026_09_15_000001_add_assistant_context_to_agent_conversations_table.php</code>
+              (participant, institution, guest token, archived_at, meta) and
+              <code>2026_09_15_000005_add_memory_to_agent_conversations_table.php</code>
+              (summary, summary_updated_at, topic, entities). Assistant
+              reference content remains in the existing <code>faqs</code>
+              table, using its <code>type</code> and <code>is_active</code>
+              fields. Search splits matching descriptions into short passages
+              in memory, so it adds no knowledge tables or FAQ copy.
+              <code>2026_09_16_000001_create_assistant_action_executions_table.php</code>
+              stores each prepared mutating action with tool name, sanitized
+              arguments, preview, hashed confirmation token, a unique
+              idempotency key, status, result, and confirmed/executed
+              timestamps, cascading from the conversation.
+              <code>2026_09_16_000002_create_assistant_run_metrics_table.php</code>
+              stores one row per turn — outcome, failure_reason, duration_ms,
+              model/tool/retrieval call counts, token usage, grounded flag,
+              source count, tool names, and feedback_rating — and deliberately
+              stores no message content, retrieved excerpt, or tool payload, so
+              diagnostics never become a second copy of the conversation.
+              Message feedback itself is stored on the assistant message's
+              <code>meta.feedback</code>.
+            </div>
+          </li>
+          <li>
             <div><strong>Topic practice tracking schema</strong></div>
             <div class="desc">
               <code

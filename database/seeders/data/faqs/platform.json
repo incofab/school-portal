@@ -1,0 +1,186 @@
+[
+  {
+    "name": "What can I review on the platform manager dashboard?",
+    "code": "platform-manager-dashboard",
+    "description": "<p>Open the manager dashboard after signing in to EduManager. Platform administrators see the manager shortcuts and attention notices available to their role. Partner users see partner-specific information such as institution groups and schools, registration requests, partner users, bank accounts, commission balance, and withdrawal activity.</p><p>Use the dashboard cards or manager menu to open the detailed list for an item. The figures and actions shown depend on your manager or partner role and the records you are allowed to manage.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 237
+  },
+  {
+    "name": "How do I review school registration requests?",
+    "code": "review-school-registration-requests",
+    "description": "<p>Open <strong>Registration Requests</strong> and search the pending requests. Review the owner, school name, contact details, and submitted date before choosing an action.</p><p>Use <strong>Create Group</strong> to create an institution group from a request, or <strong>Register Now</strong> to register the school under an eligible group. A request may be dismissed with its delete action. A request already used to register an institution cannot be registered again from the same action.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 238
+  },
+  {
+    "name": "How do I register or manage an institution from the manager area?",
+    "code": "register-manage-institutions-from-manager-area",
+    "description": "<p>Open <strong>Institutions</strong> and choose the create option to enter the school details and institution group. To work with an existing school, search or browse the institution list, then open its details or use the status action to activate or suspend it.</p><p>Institution records and available actions are scoped to your manager role. A partner can manage schools associated with their partnership; platform administrators can access the broader manager list.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 239
+  },
+  {
+    "name": "How do I create and manage institution groups?",
+    "code": "create-manage-institution-groups",
+    "description": "<p>Open <strong>Institution Groups</strong> and choose <strong>Create Group</strong>. Enter the group details, including its name and loan limit. From the edit screen, maintain supported group settings such as its website, brand colour, and banner, then save.</p><p>Use the group list to review its schools, status, and assigned partner. An institution group with institutions linked to it cannot be deleted. Suspending or reactivating a group also updates the status of its institutions.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 240
+  },
+  {
+    "name": "How do I generate an institution-group invoice?",
+    "code": "generate-institution-group-invoice",
+    "description": "<p>Open <strong>Institution Groups</strong> and choose the invoice action for a group. Select the academic session and term, add any optional extra invoice items with their titles and amounts, then generate the invoice PDF.</p><p>The invoice uses the group's configured result-checking price list and accounts for results already published under the applicable payment structure. If a price list is missing, ask a platform administrator to configure it before generating the invoice.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 241
+  },
+  {
+    "name": "How do I fund, deduct from, or record debt against a group wallet?",
+    "code": "manage-institution-group-wallet-funding",
+    "description": "<p>Platform administrators can open <strong>Funding</strong> and select the institution group, amount, reference, and optional remark. Choose the credit or debt action that matches the transaction. To deduct an amount, select the wallet type and provide the required remark and reference.</p><p>Use a unique reference and verify the group and amount before submitting. Open the funding record to download its receipt or, where allowed, reverse it; a reversal is recorded as a separate transaction.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 242
+  },
+  {
+    "name": "How do I manage platform academic sessions?",
+    "code": "manage-platform-academic-sessions",
+    "description": "<p>Open <strong>Academic Sessions</strong> in the manager area to create a session or edit an existing one. Enter the session details and save. Use the activate action to set the platform's active session when appropriate.</p><p>Activating a platform session changes the default session used by manager workflows. Review dependent billing and institution workflows before changing the active session, and avoid deleting a session that is already in use.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 243
+  },
+  {
+    "name": "How do I manage EduManager manager accounts?",
+    "code": "manage-edumanager-manager-accounts",
+    "description": "<p>Platform administrators can open <strong>Managers</strong> to browse existing manager accounts, create an account, or edit a manager's details and role. Save the changes and confirm the account appears in the list.</p><p>Use the delete action only when the manager account is no longer needed and is not attached to institution groups. Partner administration and partner staff membership are handled through the partner management screens.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 244
+  },
+  {
+    "name": "How do I search users and review account details?",
+    "code": "search-users-review-account-details",
+    "description": "<p>Open <strong>Users</strong> in the manager area and use the available filters to narrow the list by role, institution, or account status. Select a user to review their account, roles, school memberships, and linked student information where available.</p><p>Use <strong>Reset Password</strong> on the user's details page when required. You cannot reset your own password from this screen; the reset uses the platform's configured default password, which should be shared securely and changed by the user after sign-in.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 245
+  },
+  {
+    "name": "How do I impersonate an institution or user for support?",
+    "code": "impersonate-institution-or-user-for-support",
+    "description": "<p>A platform administrator can open the institution or user record and choose its impersonation action. EduManager switches to that institution or user's context and displays an impersonation notice while support access is active.</p><p>Use the visible stop/return action to end impersonation and return to your manager account. Confirm the active context before making any change, and use impersonation only for an authorized support task.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 246
+  },
+  {
+    "name": "How do I review a platform payment attempt?",
+    "code": "review-platform-payment-attempt",
+    "description": "<p>Platform administrators can open <strong>Payment Attempts</strong> and search for the transaction using its payment reference or available filters. Review the payer, institution, amount, provider, purpose, and current status shown for the attempt.</p><p>Use <strong>Verify</strong> where that action is available to ask EduManager to recheck the provider transaction. Keep the reference for support follow-up; a successful browser return alone does not confirm that the payment was recorded.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 247
+  },
+  {
+    "name": "How do I configure platform billing price lists?",
+    "code": "configure-platform-billing-price-lists",
+    "description": "<p>Platform administrators can open <strong>Billings</strong> to configure the price list for an institution group. Choose the group, billable item, payment structure, and amount, then save. Submitting the form updates the price-list entry for that group and billing type.</p><p>Review the amount and whether the charge is per student or per period before saving. The optional partner commission is configured on the billing entry; these values affect platform charges and group invoices.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 248
+  },
+  {
+    "name": "How do I configure partner commissions?",
+    "code": "configure-partner-commissions",
+    "description": "<p>Platform administrators can set a partner's commission by opening <strong>Partners</strong> and editing the partner record. Review the partner commission, referral email, and referral commission fields, then save. The commission amounts are percentages; make sure they match the partner agreement.</p><p>Use <strong>Billings</strong> to review or update a billing entry's partner commission for an institution group. The <strong>Commissions</strong> page is a record of earned commissions by group and transaction, not the screen for creating commission rules.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 249
+  },
+  {
+    "name": "How do I manage partner records and partner users?",
+    "code": "manage-partner-records-and-users",
+    "description": "<p>To onboard an approved applicant, review the request under <strong>Partner Registration Requests</strong> and use its onboarding action. A platform administrator can also create a partner account from <strong>Managers → New</strong> by selecting the Partner role and entering the partner and commission details.</p><p>To update a partner's display name or commission settings, edit its row under <strong>Partners</strong>. To add or update partner staff membership, use <strong>Partner Users</strong> and assign the correct role. Confirm the partner association and permissions before saving.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 250
+  },
+  {
+    "name": "What can I review on the partner dashboard?",
+    "code": "partner-dashboard-overview",
+    "description": "<p>The partner dashboard summarises the partner's institution groups and schools, registration requests, partner users, bank accounts, commission balance, and withdrawal activity. Use the cards or manager menu to open the related list and review individual records.</p><p>Partner administrators can manage their profile and request withdrawals when eligible. Partner staff may see a smaller set of tools based on their assigned partner role.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 251
+  },
+  {
+    "name": "How do I change the partner or company display name?",
+    "code": "update-partner-company-display-name",
+    "description": "<p>A partner administrator can use the edit control beside the partner profile on the manager dashboard. Enter the company or partner name to display and save the change.</p><p>If the edit control is missing, ask the platform administrator to confirm that your account has the partner administrator role.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 252
+  },
+  {
+    "name": "How do I manage partner bank accounts and request a withdrawal?",
+    "code": "manage-partner-bank-accounts-withdrawals",
+    "description": "<p>Open <strong>Bank Accounts</strong> to add or maintain the bank account the partner will use for payouts. Check the account name, bank, and account number before saving. Then open <strong>Withdrawals</strong>, select an available account, enter the amount and reference, and submit the request.</p><p>Return to the withdrawals list to review its status and payout details. Only a partner administrator can request a withdrawal; processing time depends on the platform's payout workflow.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 253
+  },
+  {
+    "name": "How do I review and process platform withdrawals?",
+    "code": "review-process-platform-withdrawals",
+    "description": "<p>Platform administrators can open <strong>Withdrawals</strong> to review requester, amount, bank account, request status, and payout status. Open a request for its details, then use the single-request payout action or the bulk action for pending withdrawals when ready.</p><p>Review the processing response and refresh the list to confirm the latest payout status. You can also update a request to paid or declined with an optional remark where those actions are available.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 254
+  },
+  {
+    "name": "How do I send and review platform notifications?",
+    "code": "send-review-platform-notifications",
+    "description": "<p>Open <strong>Notifications → New</strong> to create a platform notification. Enter its title and message, choose the recipients supported by the form, and submit. Use the <strong>Sent</strong> list to review notifications you created, open one to inspect the available recipient/read information, or remove it if it has not been read.</p><p>Use the notification inbox to read notifications sent to your manager or partner account. The inbox and sent history serve different purposes.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 255
+  },
+  {
+    "name": "How do I maintain public FAQs and knowledge-base articles?",
+    "code": "maintain-public-faqs-knowledge-base",
+    "description": "<p>Platform administrators can open <strong>FAQs &amp; Knowledge Base</strong> and choose <strong>New</strong> to create a public entry. Add its question or title, unique code, answer content, type, and sort order, then save. Use the preview and edit actions to check or revise the entry.</p><p>Use <strong>Activate</strong> or <strong>Deactivate</strong> to control public visibility, then verify the active entry from the public FAQ or knowledge-base page. Deleting an entry removes it from the content library.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 256
+  },
+  {
+    "name": "How do I review platform activity logs?",
+    "code": "review-platform-activity-logs",
+    "description": "<p>Open <strong>Activity Logs</strong> from the manager area. Search or filter by date, category, event, actor, subject, severity, retention category, institution, or institution group, then apply the filters and open a row for more detail.</p><p>Use <strong>Export</strong> to download the matching records as a CSV when your account has export permission. Manager logs cover platform activity; use the institution activity-log page for school-specific history.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 257
+  },
+  {
+    "name": "How do I use AI assistant diagnostics?",
+    "code": "use-ai-assistant-diagnostics",
+    "description": "<p>Platform administrators can open <strong>AI Assistant Diagnostics</strong> to review operational telemetry for the recent reporting window, including request volume, failures, grounded-answer and clarification rates, action outcomes, response timing, and feedback totals.</p><p>The diagnostics page reports run metrics and configuration controls; it does not show users' conversation message content. If the assistant is disabled or failures rise, use the displayed controls and failure summaries to guide platform-level troubleshooting.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 258
+  },
+  {
+    "name": "How do I read notifications sent to my manager or partner account?",
+    "code": "read-manager-partner-inbox-notifications",
+    "description": "<p>Open <strong>Notifications</strong> in the manager area to read notifications addressed to your manager or partner account. Select a notification to open its details or follow its action link. Visiting the inbox marks the available notifications as read.</p><p>Use <strong>Sent</strong> to review notifications you created and the available recipient/read information. The inbox shows notifications sent to you; it is separate from the sent-history list.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 280
+  }
+]

@@ -15,8 +15,7 @@ use App\Models\Topic;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Testing\TextResponseFake;
+use App\Services\AI\LaravelAiTextAgent;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseCount;
@@ -419,8 +418,8 @@ it('restricts students access to some lesson note routes', function () {
 });
 
 it('generates an AI lesson note for an existing topic', function () {
-  $fake = Prism::fake([
-    TextResponseFake::make()->withText('```html<p>Generated lesson note</p>```')
+  $fake = LaravelAiTextAgent::fake([
+    '```html<p>Generated lesson note</p>```'
   ]);
 
   $route = route('institutions.lesson-notes.gen-ai-note', [
@@ -437,18 +436,20 @@ it('generates an AI lesson note for an existing topic', function () {
     'result' => '<p>Generated lesson note</p>'
   ]);
 
-  $fake->assertCallCount(1);
+  LaravelAiTextAgent::assertPromptedTimes(1);
 
   $classificationGroupTitle = $this->classificationGroup->title;
   $expectedTopicTitle = $this->topic->title . ' - Extra Title';
 
-  $fake->assertRequest(function ($requests) use (
+  LaravelAiTextAgent::assertPrompted(function ($request) use (
     $classificationGroupTitle,
     $expectedTopicTitle
   ) {
-    expect($requests[0]->prompt())
+    expect($request->prompt)
       ->toContain($classificationGroupTitle)
       ->toContain($expectedTopicTitle);
+
+    return true;
   });
 
   assertDatabaseHas('activity_logs', [
@@ -461,8 +462,8 @@ it('generates an AI lesson note for an existing topic', function () {
 });
 
 it('generates an AI lesson note when no matching topic exists', function () {
-  $fake = Prism::fake([
-    TextResponseFake::make()->withText('<p>Generic note</p>')
+  $fake = LaravelAiTextAgent::fake([
+    '<p>Generic note</p>'
   ]);
 
   $route = route('institutions.lesson-notes.gen-ai-note', [
@@ -479,10 +480,12 @@ it('generates an AI lesson note when no matching topic exists', function () {
     'result' => '<p>Generic note</p>'
   ]);
 
-  $fake->assertRequest(function ($requests) {
-    expect($requests[0]->prompt())
+  LaravelAiTextAgent::assertPrompted(function ($request) {
+    expect($request->prompt)
       ->toContain('a class')
       ->toContain('A Standalone Topic');
+
+    return true;
   });
 
   assertDatabaseHas('activity_logs', [
@@ -495,7 +498,7 @@ it('generates an AI lesson note when no matching topic exists', function () {
 });
 
 it('does not allow a student to generate an AI lesson note', function () {
-  Prism::fake([TextResponseFake::make()->withText('<p>Note</p>')]);
+  LaravelAiTextAgent::fake(['<p>Note</p>']);
 
   $route = route('institutions.lesson-notes.gen-ai-note', [
     'institution' => $this->institution->uuid

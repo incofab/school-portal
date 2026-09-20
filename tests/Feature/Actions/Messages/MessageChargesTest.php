@@ -51,6 +51,52 @@ it('does not send an SMS when the institution cannot afford it', function () {
     )->toBeFalse();
 });
 
+it('rejects non-compliant SMS before charging or contacting the provider', function () {
+    Http::fake();
+    $this->institutionGroup->update(['credit_wallet' => 20]);
+
+    (new SendBulksms(
+        'Your code is ready',
+        '08012345678',
+        $this->message,
+        $this->institution,
+        1,
+        'sms-blocked-content-reference'
+    ))->handle();
+
+    Http::assertNothingSent();
+    expect($this->institutionGroup->fresh()->credit_wallet)->toBe(20.0);
+    expect($this->message->fresh()->status)->toBe(MessageStatus::Failed);
+    expect($this->message->fresh()->meta['sms_failure']['violations'])
+        ->toHaveKey('blocked_words');
+});
+
+it('normalizes recipients and records a provider-accepted SMS as sent', function () {
+    Http::fake([
+        'https://www.bulksmsnigeria.com/api/v2/sms' => Http::response([
+            'status' => 'success',
+        ], 200),
+    ]);
+    $this->institutionGroup->update(['credit_wallet' => 20]);
+
+    (new SendBulksms(
+        'Your result is ready',
+        '08012345678',
+        $this->message,
+        $this->institution,
+        1,
+        'sms-success-reference'
+    ))->handle();
+
+    Http::assertSent(function ($request) {
+        return $request['from'] === 'EduManager' &&
+            $request['to'] === '2348012345678' &&
+            $request['body'] === 'Your result is ready';
+    });
+    expect($this->institutionGroup->fresh()->credit_wallet)->toBe(13.0);
+    expect($this->message->fresh()->status)->toBe(MessageStatus::Sent);
+});
+
 it('charges an SMS once when a queued job is retried', function () {
     Http::fake(['https://www.bulksmsnigeria.com/*' => Http::response([])]);
     $this->institutionGroup->update(['credit_wallet' => 20]);

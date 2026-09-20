@@ -106,11 +106,8 @@ class GenerateTopicPracticeQuestions
     ]
     Here are the lesson Notes :: $lessonNotes";
 
-    $aiRes = initPrism()
-      ->withPrompt($prompt)
-      ->asText();
-
-    $decodedQuestions = json_decode(trimAiResponse($aiRes->text), true) ?? [];
+    $decodedQuestions =
+      json_decode(trimAiResponse(generateAiText($prompt)), true) ?? [];
 
     return collect($decodedQuestions)
       ->filter(fn($question) => is_array($question))

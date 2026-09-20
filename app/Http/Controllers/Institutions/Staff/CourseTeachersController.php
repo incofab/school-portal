@@ -95,10 +95,15 @@ class CourseTeachersController extends Controller
 
   public function store(Request $request, Institution $institution, User $user)
   {
+    $institutionUser = $user
+      ->institutionUsers()
+      ->where('institution_id', $institution->id)
+      ->first();
+
     abort_unless(
-      $user->isInstitutionTeacher() || $user->isInstitutionAdmin(),
+      $institutionUser?->isStaff(),
       403,
-      'User must be a teacher'
+      'User must be an staff member'
     );
 
     $data = $request->validate([

@@ -31,7 +31,7 @@ beforeEach(function () {
   ]);
 
   Http::fake([
-    'sandbox.monnify.com/api/v1/disbursements/account/validate*' => Http::response(
+    'sandbox.monnify.com/api/v2/disbursements/account/validate*' => Http::response(
       [
         'requestSuccessful' => true,
         'responseBody' => [

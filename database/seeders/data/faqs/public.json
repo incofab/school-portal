@@ -1,0 +1,106 @@
+[
+  {
+    "name": "How do I register my school on EduManager?",
+    "code": "school-registration",
+    "description": "<p>Open the <strong>Register Your Institution</strong> page. An owner, director, administrator, or authorised staff member should enter their contact and account details, then provide the school's name, phone number, email address, and address. Review the information and submit the form.</p><p>EduManager records this as a registration request; the school is not activated immediately. After submission, the confirmation page says the EduManager team will contact you to continue onboarding. If you have a partner registration link, use that link so the request is associated with the partner.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 11
+  },
+  {
+    "name": "How do I browse the public knowledge base and FAQs?",
+    "code": "browse-public-knowledge-base-and-faqs",
+    "description": "<p>Open <strong>Knowledge Base</strong> or <strong>FAQ</strong> from EduManager’s public site. Browse the available help topics or search for a question, then open an article to read its instructions.</p><p>You can visit the knowledge base without signing in. For a school-specific account, payment, result, or access issue, contact the relevant institution because public articles cannot review your private records.</p>",
+    "sort_order": 194,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How can I find an institution’s admission form?",
+    "code": "find-institution-admission-form",
+    "description": "<p>Open the admission application link provided by the school. Confirm the school name at the top of the page, then search for and select the admission form for the intended intake. Check the form’s session, term, and fee before you continue.</p><p>If you cannot find the correct form or do not have the school’s application link, contact the school’s admissions office. Admission applications are tied to the institution whose application page you opened.</p>",
+    "sort_order": 196,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I pay for an admission form online?",
+    "code": "buy-admission-form-online",
+    "description": "<p>After completing the admission application, review the application number and form fee on the purchase step. Choose the instant online payment option and continue to the payment provider’s checkout. Follow the provider’s instructions, then return to the application preview and check the payment status.</p><p>If you choose manual payment, follow the displayed bank instructions and submit proof when prompted. Keep the application number and payment reference until the school confirms the payment. The wallet option shown on this page is not available for admission-form purchases.</p>",
+    "sort_order": 197,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I submit an admission application?",
+    "code": "submit-admission-application",
+    "description": "<p>On the school’s admission application page, choose the correct form and complete the applicant’s personal, contact, address, and intended-class details. Add at least one guardian with their contact information and relationship. Upload the requested applicant photo and supporting files, then submit the application.</p><p>Keep the application number shown after submission. EduManager opens the application preview; if the form has a fee, continue through the purchase step before relying on the preview as a completed, paid application. Contact the school if a required document or field is unclear.</p>",
+    "sort_order": 198,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I take an admission entrance exam?",
+    "code": "take-admission-entrance-exam",
+    "description": "<p>Open <strong>Admission Exam Login</strong> using the link provided by the school. Enter the exam event code and your admission application number, then choose <strong>Start Exam</strong>. Follow the instructions shown in the exam.</p><p>The event and application number must belong to the same institution, and the school must have configured the exam. If login fails, check both values against the information from the admissions office.</p>",
+    "sort_order": 203,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I browse a school’s public vacancies?",
+    "code": "browse-public-school-vacancies",
+    "description": "<p>Open the school’s recruitment page using the link shared by the institution. Browse the published vacancy posts and select <strong>View Vacancy</strong> to read the role, location, requirements, responsibilities, and application details.</p><p>If no suitable vacancy appears, check with the school for the correct recruitment link or whether it has published a post. Follow any application deadline shown on the vacancy.</p>",
+    "sort_order": 205,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I apply for a school vacancy?",
+    "code": "apply-for-school-vacancy",
+    "description": "<p>Open the vacancy from the school’s public recruitment page and choose its application link. Enter your name, contact details, current role, experience, qualification, and availability. Add the CV, cover-letter, or portfolio links requested by the form; this form accepts links rather than uploaded files.</p><p>Review your contact details and links, then submit. Keep the application number shown on the success page so you can refer to your submission when contacting the school.</p>",
+    "sort_order": 206,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I take a recruitment screening exam?",
+    "code": "take-recruitment-screening-exam",
+    "description": "<p>Open <strong>Recruitment Exam Login</strong> using the link from the school. Enter the event code and the recruitment application number, then choose <strong>Start Exam</strong> and follow the on-screen instructions.</p><p>The application and exam event must belong to the same institution, and the school must have configured the event. If you cannot start the exam, verify the event code and application number with the recruitment contact.</p>",
+    "sort_order": 208,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I submit a partner registration request?",
+    "code": "submit-public-partner-registration-request",
+    "description": "<p>Open the public <strong>Partner Registration</strong> page and complete the applicant and company details requested by the form. Review the information and submit the request.</p><p>Submission creates a request for the EduManager team to review; it does not immediately create a partner account or grant dashboard access. Keep the contact details you entered available so the team can follow up.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 267
+  },
+  {
+    "name": "How do I use a school's public admission or recruitment page?",
+    "code": "use-public-admission-recruitment-pages",
+    "description": "<p>Open the admission or recruitment link provided by the school and check the institution name on the page. Admission pages let applicants find a form, submit an application, and follow any payment or exam instructions. Recruitment pages show published vacancies and provide the application link for each role.</p><p>These public pages are for applicants and do not require access to the school's administration dashboard. Contact the school if a form, vacancy, deadline, or application status is unclear.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 268
+  },
+  {
+    "name": "How do I join a public event or competition as an external participant?",
+    "code": "join-public-event-as-external-participant",
+    "description": "<p>Open the participant link provided by the school or event organiser and use the participant token to access the external participant area. Complete or update your profile, then review the active events available to you.</p><p>Open the event and follow its instructions to join an exam. Use the external leaderboard page to review published standings. If the event is missing or you cannot join, ask the organiser to confirm your token and that the event is active.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 278
+  },
+  {
+    "name": "Where can I find EduManager's public information pages?",
+    "code": "find-edumanager-public-information-pages",
+    "description": "<p>Use the EduManager public home page to find product and proposal information, the privacy policy, registration links, sign-in, and the public knowledge base. Public school admission, recruitment, fee, result, and exam pages are reached through the links shared by the relevant institution.</p><p>Check that a school-specific page names the institution you intend to contact before submitting personal information or making a payment. For account-specific questions, sign in to the correct account or contact the school.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 279
+  }
+]

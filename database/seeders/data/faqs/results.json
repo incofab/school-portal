@@ -1,0 +1,282 @@
+[
+  {
+    "name": "How do I recalculate class results after correcting scores?",
+    "code": "recalculate-class-results",
+    "description": "<p>After correcting the underlying subject scores, open <strong>Class Result</strong> and find the row for the class, academic session, term, and result type you changed. Use that row's <strong>Recalculate</strong> action to process the result again.</p><p>Recalculation refreshes derived term totals, averages, grades, and positions from the saved course results. Review the updated class and student records before publishing or sending them.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 81
+  },
+  {
+    "name": "How are class and class-group positions calculated?",
+    "code": "class-and-group-result-positions",
+    "description": "<p>EduManager calculates student positions when class results are processed, using the position method configured for the school. A class-group position can also appear when the class belongs to a group and <strong>Show Class Group Position</strong> is enabled for that group.</p><p>Position may be hidden from student-facing results by the school's result settings. If a score changes, ask an authorized staff member to recalculate the class before relying on the updated position.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 82
+  },
+  {
+    "name": "How do I lock or unlock a class result?",
+    "code": "lock-unlock-class-results",
+    "description": "<p>Open <strong>Class Result</strong> and use the <strong>Locked</strong> switch on the row for the required class, session, term, and result type. A result is locked after it is calculated. An administrator, or the class form teacher with the required result permission, can change the lock state.</p><p>While a result is locked, score corrections that affect it are blocked. Unlock it before making authorized corrections, then recalculate and lock it again when the figures are final.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 83
+  },
+  {
+    "name": "How do I add or update a teacher comment on a result?",
+    "code": "add-teacher-result-comment",
+    "description": "<p>Open <strong>Class Result</strong>, select <strong>Student Results</strong> for the correct result period, and find the student's term-result row. Use the teacher-comment action, enter or revise the comment, and save.</p><p>Check that you have the right student, class, session, term, and mid-term or full-term result selected. Your ability to edit a comment depends on your role and access to that class result.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 84
+  },
+  {
+    "name": "How do I add or update a principal's comment on a result?",
+    "code": "add-principal-result-comment",
+    "description": "<p>Open the relevant <strong>Class Result</strong> and choose <strong>Student Results</strong>. Find the student's term-result row, open the principal-comment action, enter or revise the comment, and save.</p><p>Confirm the student and result period before saving. Principal comments are available to authorized school administrators; if the action is missing, ask an institution administrator to check your access.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 85
+  },
+  {
+    "name": "How do I create or edit result-comment templates?",
+    "code": "manage-result-comment-templates",
+    "description": "<p>Open <strong>Admin → Result Comments</strong>. Create a template for the type of comment your school needs, enter the reusable comment text and any applicable grade range, then save. Use the edit action to revise a template or the delete action to remove one that is no longer needed.</p><p>Templates can provide suggested teacher or principal comments when staff prepare results. Review the wording and the selected student's performance before applying a suggestion.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 86
+  },
+  {
+    "name": "How do I generate AI comments for a class's results?",
+    "code": "generate-ai-class-result-comments",
+    "description": "<p>Open <strong>Class Result</strong> and find the processed result row for the class and period. Choose <strong>Generate AI Comments</strong> from its actions. EduManager uses the available class-performance data to create comments for the results.</p><p>Read every generated comment and correct or replace anything that is inaccurate, unclear, or unsuitable for the student. Treat generated wording as a draft that needs staff review before results are shared.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 87
+  },
+  {
+    "name": "How do I set up and record learning evaluations?",
+    "code": "set-up-and-record-learning-evaluations",
+    "description": "<p>An administrator can open <strong>Evaluations → Evaluation Types</strong> to create the school's evaluation areas, such as affective or psychomotor skills, and define the values staff should record. Keep the labels and scale consistent with the school's report-card policy.</p><p>After class results are processed, authorized staff can open that class result's <strong>Record Evaluations</strong> action, select a student, enter the values for each evaluation area, and save them to the term result.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 88
+  },
+  {
+    "name": "How do I record evaluations for all students in a class?",
+    "code": "record-class-learning-evaluations",
+    "description": "<p>Open <strong>Class Result</strong> and select <strong>Record Evaluations</strong> on the row for the class and result period. Review the student roster and the evaluation areas configured by your school, then enter each student's values and save.</p><p>Use the same session, term, and result type as the class result. If an evaluation area or allowed value is missing, ask an administrator to update <strong>Evaluations → Evaluation Types</strong>.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 89
+  },
+  {
+    "name": "How do I update extra result-sheet details and the next-term date?",
+    "code": "update-result-sheet-extra-data",
+    "description": "<p>Open the student's term result from <strong>Class Result → Student Results</strong> and choose the extra-data action. Update the supplementary fields available for your school, such as attendance details, and save.</p><p>To set when the next term begins, use the resumption-date action on the relevant class result and enter the correct date. The result sheet uses the saved class date or the term detail date when available.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 90
+  },
+  {
+    "name": "How do I find or remove a term-result record?",
+    "code": "find-and-delete-term-results",
+    "description": "<p>Open <strong>Class Result</strong>, then choose <strong>Student Results</strong> for the required class result. Use the available filters to find a student or narrow the list by class, session, term, or result type. Open a row to review its saved result details.</p><p>Where your role permits it, use the delete action to remove an incorrect term-result record. Deleting a processed result does not correct the underlying subject scores; correct those first and recalculate the class if you need to rebuild the result.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 91
+  },
+  {
+    "name": "How do I view or print one student's term result as staff?",
+    "code": "staff-view-print-student-term-result",
+    "description": "<p>Open <strong>Reports → Student Result</strong>. Select the class, student, academic session, and term, then select the mid-term option if you want a mid-term result. Choose <strong>View Result</strong> to open the student's report card.</p><p>Use <strong>Download</strong> to save the result or your browser's print command to print it. Confirm that the student and period are correct before sharing the report.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 92
+  },
+  {
+    "name": "How do I view or print result sheets for a whole class?",
+    "code": "staff-view-print-class-result-sheets",
+    "description": "<p>Open <strong>Reports → Student Class Sheet</strong>. Choose the class, academic session, term, and whether you need the mid-term result, then select <strong>View Sheet</strong>. EduManager opens the class's result sheets for the selected period.</p><p>Browse the students' sheets, download them, or print using your browser. If a student's sheet is missing, check that their result was processed and that you selected the correct period.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 93
+  },
+  {
+    "name": "How do I use the school's different report-card templates?",
+    "code": "use-result-sheet-templates",
+    "description": "<p>The school selects its default report-card template under <strong>Settings → Result Settings</strong>. When you open a student's or class's result sheet, EduManager displays it using that configured template; staff should not need to choose a different layout for each learner.</p><p>Templates can arrange assessment scores, grades, positions, comments, learning evaluations, and school details differently. Use the sheet's <strong>Download</strong> control or your browser's print command to produce a copy.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 94
+  },
+  {
+    "name": "How do I share a secure result-sheet link?",
+    "code": "share-secure-result-sheet-link",
+    "description": "<p>Open the student's result sheet from <strong>Reports → Student Result</strong>. EduManager generates a signed link for that specific student, class, session, term, and result type; the link expires, so it should be opened while it is still valid.</p><p>To deliver results to guardians through the supported school channel, use <strong>Send Results via WhatsApp</strong> from the relevant class-result row. Avoid using a link for a different student or sharing it in a public space.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 95
+  },
+  {
+    "name": "What is the difference between session results and a term result sheet?",
+    "code": "session-results-vs-term-result-sheet",
+    "description": "<p>A <strong>Session Result</strong> view presents course-result information for a class or student across an academic session. Staff can open <strong>Classes → Session Result</strong> and choose a class and session. Students can open <strong>My Results</strong> to see the session records available to their own account.</p><p>A term result sheet is a report card for one class, session, term, and mid-term or full-term result type. It can include the school's configured comments, evaluations, and other report-card details.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 96
+  },
+  {
+    "name": "How do I view cumulative results for a class or student?",
+    "code": "view-cumulative-results",
+    "description": "<p>Staff can open <strong>Reports → Cumulative Results</strong>, select a class and academic session, and optionally choose a term. Leave the term blank to view the available cumulative results for the session. Use the sheet's download or print control to keep a copy.</p><p>Students should open <strong>My Results</strong> to review only their own released result records. Which cumulative views are available depends on the school's result setup and access settings.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 97
+  },
+  {
+    "name": "How do I view or print a student's transcript?",
+    "code": "view-print-student-transcript",
+    "description": "<p>Staff can open <strong>Reports → Transcript</strong>, select the student, and choose the transcript format offered by the school. Review the academic history, then download or print the transcript from the page.</p><p>Students can use <strong>My Results</strong> to open a transcript for their own account when the school makes that option available. A student account cannot select or view another student's transcript.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 98
+  },
+  {
+    "name": "How do I run a subject report for a class?",
+    "code": "run-class-subject-report",
+    "description": "<p>Open <strong>Reports → Subject Report</strong>, then select the class and academic session. Choose a term or <strong>All Terms</strong> to display the subject-performance summary for that period.</p><p>Review student counts, totals, averages, and the available highest and lowest scores by subject before downloading or printing. Use <strong>Single Subject Report</strong> when you need student-by-student scores for one subject across the session.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 99
+  },
+  {
+    "name": "How do I run a single-subject report for a class?",
+    "code": "run-single-subject-class-report",
+    "description": "<p>Open <strong>Reports → Single Subject Report</strong> and select the class, academic session, and subject. The report lists each student, their scores and positions by term, and the overall score and position for that subject in the session.</p><p>Review the selected class, session, and subject before downloading or printing. To view one student's full term report card instead, use <strong>Reports → Student Result</strong> and select that student.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 100
+  },
+  {
+    "name": "How do I run the full class-by-subject result report?",
+    "code": "run-class-subject-result-matrix",
+    "description": "<p>Open <strong>Reports → Full Subject Result</strong> and select the class and academic session. EduManager displays the class-by-subject result matrix so you can compare student scores across the subjects recorded for that session.</p><p>Review the class and session headings before exporting or printing. This matrix is useful for a broad comparison; use a term result sheet for a student's complete report-card details.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 101
+  },
+  {
+    "name": "How do I run a full class report?",
+    "code": "run-full-class-report",
+    "description": "<p>Open <strong>Reports → Full Class Report</strong> and select the class, academic session, and term. The report brings together the available class results and performance measures for that period.</p><p>Confirm that subject results have been recorded and the class result has been processed before interpreting the report. Use the page's download or print control to save a copy.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 102
+  },
+  {
+    "name": "How do I read the grade report?",
+    "code": "read-class-grade-report",
+    "description": "<p>Open <strong>Reports → Grade Report</strong> and select the class, session, term, and mid-term or full-term result type. The report shows the class-wide grade distribution and the available grade counts by subject.</p><p>Grade bands and labels come from the school's grading configuration. Check that the class result for the same period has been calculated before using the report to compare grades.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 103
+  },
+  {
+    "name": "How do I publish results to students and guardians?",
+    "code": "publish-class-results",
+    "description": "<p>An administrator can open <strong>Admin → Result Publication</strong>, choose the academic session and term, select the classes, and review the number of results and the displayed publication charge. Submit the publication when the selection is correct.</p><p>If the page reports an insufficient school-group wallet balance, use <strong>Pay Now</strong> to fund it, then return and publish. Publication makes eligible results available to students and guardians; it is separate from calculating the results and from PIN activation where PINs are required.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 104
+  },
+  {
+    "name": "How do I send class results to guardians on WhatsApp?",
+    "code": "send-class-results-to-guardians",
+    "description": "<p>Open <strong>Class Result</strong> and use <strong>Send Results via WhatsApp</strong> on the row for the class and result period. Confirm that you selected the intended class, session, and term before sending.</p><p>EduManager sends result links to the guardian WhatsApp contacts recorded for the students. Check that the school has the correct guardian numbers and that the results are available before using this action. Delivery depends on the school's WhatsApp setup.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 105
+  },
+  {
+    "name": "Why can't a student or guardian see a result yet?",
+    "code": "result-publication-and-student-access",
+    "description": "<p>Calculating a result prepares its totals and positions, but does not by itself publish it. The school may still need to publish the term results. If the school requires activation PINs, the result must also be activated before it can be opened.</p><p>Students should check <strong>My Results</strong> in their student account. Guardians should sign in with their own guardian account, select the linked child, and open that child's result. If the period or child is missing, ask the school to check the student's class, result status, publication, PIN settings, and guardian link.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 106
+  },
+  {
+    "name": "How do I generate a batch of result-checker PINs?",
+    "code": "generate-result-pin-batch",
+    "description": "<p>Open <strong>Admin → Pins</strong> and choose <strong>Generate Result Pins</strong>. Enter the number of PINs to create and an optional comment, then submit. Open the generated batch to review it and download the PIN list for distribution.</p><p>A generated batch is separate from assigning PINs to a specific student or class. Distribute each PIN only with the result period and student instructions intended by the school.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 107
+  },
+  {
+    "name": "How do I assign a result PIN to one student?",
+    "code": "assign-result-pin-to-student",
+    "description": "<p>Open the student's profile from <strong>Students → All Students</strong>. Choose the result-checker PIN action, select the required academic session and term if prompted, and generate or assign the PIN. Review the student's PIN details before sharing them.</p><p>Give the student the PIN together with the student's own login code and the correct result period. A PIN can be restricted by its assigned student, session, or use settings.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 108
+  },
+  {
+    "name": "How do I generate result PINs for a class?",
+    "code": "assign-result-pins-to-class",
+    "description": "<p>Open <strong>Classes → All Classes</strong>, find the class, and choose its result-checker PIN action. Generate the PINs for the intended result period, then review the student-to-PIN list before downloading or distributing it.</p><p>Keep each PIN with the matching student's code and school instructions. If a student has the wrong PIN, open that student's profile and check the assignment before activation.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 109
+  },
+  {
+    "name": "How does a student activate a result with a PIN?",
+    "code": "student-activate-result-with-pin",
+    "description": "<p>Open the public <strong>Result</strong> activation page. Enter the student's own student code and the result PIN provided by the school, then submit. If more than one unactivated result is available, select the intended result and continue.</p><p>After activation, open the result link or sign in through <strong>Student Login</strong> and choose <strong>My Results</strong>. If the school does not require activation PINs, use the student account to view released results instead.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 110
+  },
+  {
+    "name": "How does a guardian open or activate a child's result?",
+    "code": "guardian-open-or-activate-child-result",
+    "description": "<p>Sign in to your own guardian account and select the linked child from the dependant selector. Open the result shown in that child's account context; do not sign in as the child or use another dependant's result.</p><p>If the school requires a result PIN, use the child's student code and the PIN supplied for that child on the public <strong>Result</strong> activation page. Return to the selected child's result after activation. Contact the school if the child or result period is not listed.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 111
+  },
+  {
+    "name": "How do I check a result through WhatsApp?",
+    "code": "check-result-through-whatsapp",
+    "description": "<p>Use the WhatsApp number and contact recorded with the school, then type <strong>Check Result</strong> or reply with the offered result-check option. If more than one student is linked to the number, choose the student whose result you want to open.</p><p>Enter the result activation PIN if WhatsApp requests one, then open the result link sent in the conversation. This service is available only where the school has enabled the supported WhatsApp result flow; otherwise use the student or guardian account.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 112
+  },
+  {
+    "name": "How do I troubleshoot a missing or inaccessible result?",
+    "code": "troubleshoot-result-access",
+    "description": "<p><strong>School staff:</strong> confirm the correct class, student, session, term, and result type; check that subject scores are saved and the class result was calculated. Then check publication and whether the school requires a PIN activation. Unlock the class before permitted score corrections, then recalculate.</p><p><strong>Students:</strong> use Student Login and check <strong>My Results</strong> for your own account. <strong>Guardians:</strong> sign in to your guardian account and select the correct linked child. If a record is still missing, ask the school to confirm the student's class, account link, publication status, and PIN assignment.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 113
+  },
+  {
+    "name": "How do I generate AI comments for student results?",
+    "code": "generate-ai-result-comments-workflow",
+    "description": "<p>Open the processed class result and choose <strong>Generate AI Comments</strong> for the class and result period. EduManager prepares teacher and principal comment drafts from the available result information.</p><p>Review every draft against the student's actual performance, edit or replace wording that is inaccurate or unsuitable, and save the approved comments through the normal result workflow. Generated comments are drafts and do not replace staff review.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 264
+  },
+  {
+    "name": "How do signed result links and public result activation work?",
+    "code": "understand-signed-result-links-and-public-activation",
+    "description": "<p>A signed result-sheet link opens the specific result sheet included in the link and is valid only while its signature and any expiry remain valid. Use the complete link supplied by the school; do not edit its path or query values. If it has expired or fails validation, ask the school for a fresh link.</p><p>Public result activation is a separate flow used when a school requires a student code and result PIN. After activation, open the result using the destination provided or sign in to the appropriate student or guardian account.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 274
+  }
+]

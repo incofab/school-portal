@@ -27,7 +27,7 @@ class RecordStaff
 
     /** @var User $user */
     $user = User::query()->create([
-      ...collect($this->userData)->except('role'),
+      ...collect($this->userData)->except('role', 'type'),
       'password' => bcrypt('password')
     ]);
 
@@ -45,7 +45,7 @@ class RecordStaff
     $user
       ->fill(
         collect($this->userData)
-          ->except('role')
+          ->except('role', 'type')
           ->toArray()
       )
       ->save();
@@ -62,7 +62,7 @@ class RecordStaff
       ->institutionUsers()
       ->firstOrCreate(
         ['institution_id' => $this->institution->id],
-        ['type' => InstitutionUserType::Teacher]
+        ['type' => $this->userType()]
       );
 
     if (empty($this->userData['role'])) {
@@ -79,5 +79,17 @@ class RecordStaff
         (int) $this->userData['role']
       )
     );
+  }
+
+  private function userType(): InstitutionUserType
+  {
+    $type = $this->userData['type'] ?? null;
+
+    if ($type instanceof InstitutionUserType) {
+      return $type;
+    }
+
+    return InstitutionUserType::tryFrom((string) $type) ??
+      InstitutionUserType::Teacher;
   }
 }

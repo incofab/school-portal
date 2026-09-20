@@ -41,6 +41,7 @@ import useIsAdmin from '@/hooks/use-is-admin';
 import DestructivePopover from '@/components/destructive-popover';
 import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import ChangeRoleModal from '@/components/modals/change-role-modal';
+import ChangeInstitutionUserTypeModal from '@/components/modals/change-institution-user-type-modal';
 import startCase from 'lodash/startCase';
 import ChangeStudentClassModal from '@/components/modals/change-student-class-modal';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
@@ -62,6 +63,7 @@ export default function Profile({ user, institutionUser, roles }: Props) {
   const { handleResponseToast } = useMyToast();
   const downloadRecordingSheetModalToggle = useModalToggle();
   const changeClassModalToggle = useModalValueToggle<Nullable<Student>>();
+  const changeUserTypeModalToggle = useModalToggle();
   const form = useWebForm({
     photo: user.photo,
   });
@@ -268,6 +270,10 @@ export default function Profile({ user, institutionUser, roles }: Props) {
                             title="Change Role"
                             onClick={changeRoleModalToggle.open}
                           />
+                          <BrandButton
+                            title="Change User Type"
+                            onClick={changeUserTypeModalToggle.open}
+                          />
                           <DestructivePopover
                             label={`Reset user's password to default?`}
                             onConfirm={(onClose) => resetPassword(onClose)}
@@ -376,6 +382,12 @@ export default function Profile({ user, institutionUser, roles }: Props) {
             institutionUser={institutionUser}
             roles={roles}
             {...changeRoleModalToggle.props}
+            onSuccess={() => Inertia.reload({ only: ['institutionUser'] })}
+          />
+          <ChangeInstitutionUserTypeModal
+            key={institutionUser.type}
+            institutionUser={institutionUser}
+            {...changeUserTypeModalToggle.props}
             onSuccess={() => Inertia.reload({ only: ['institutionUser'] })}
           />
           {changeClassModalToggle.state && (

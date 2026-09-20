@@ -1,0 +1,130 @@
+[
+  {
+    "name": "How does a student sign in with a student ID or code?",
+    "code": "student-sign-in",
+    "description": "<p>Open <strong>Student Login</strong> from the regular login page. Enter the student's ID or code. If EduManager asks for a password, enter the password provided to the student by the school.</p><p>Student Login is separate from staff login. If the code is not recognized or the password does not work, ask the school administrator to confirm the student's code and account access.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 2
+  },
+  {
+    "name": "How do I view the class list and class roster?",
+    "code": "class-list-rosters",
+    "description": "<p>Open <strong>Classes → All Classes</strong> in your school account to browse the classes listed for your institution. The class table includes details such as class group, title, class size, and form teacher.</p><p>School administrators can use a class's action menu to open student tiles or the student list; teachers see class and roster tools allowed by their assignments and permissions. Students and alumni should use their own student account for personal results and records; they do not use staff roster controls to manage students.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 42
+  },
+  {
+    "name": "How do I use EduManager after I become an alumnus?",
+    "code": "alumni-former-student-access",
+    "description": "<p>When the school moves your student record to Alumni, your account keeps its student code but changes to the alumni account type and is no longer assigned to an active class. Use <strong>Student Login</strong> with your student code and password to sign in.</p><p>Alumni menus and access differ from an active student's. Your existing academic records remain linked to your profile; if a result or other record is not available, contact the school to confirm your alumni access and the record's release status.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 54
+  },
+  {
+    "name": "What can I do from my student dashboard?",
+    "code": "student-dashboard-and-school-tools",
+    "description": "<p>Sign in through <strong>Student Login</strong> with your own student credentials and choose your institution if prompted. Your dashboard and menus are for your student account; a guardian uses a separate account and selects a linked child.</p><p>Depending on your school setup and account access, you may see your results, classes, timetable, assignments, lesson notes, library materials, CBT events, fee payments, notifications, or Chats. If a school tool is missing, ask your school to check your account status and access.</p>",
+    "sort_order": 209,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I view my own term results?",
+    "code": "view-own-term-results",
+    "description": "<p>Sign in to your student account and choose <strong>My Results</strong>. Browse or filter your term results, then open the result detail for the session and term you need. Use only your own student account to view your results.</p><p>A result sheet opens only when the school has published the result and enabled your access; some schools also require result activation. If a term is missing or locked, ask the school whether it has been calculated, published, and activated.</p>",
+    "sort_order": 210,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I print or save my report card?",
+    "code": "print-or-save-own-report-card",
+    "description": "<p>From <strong>My Results</strong>, open the result sheet for the correct session, term, and result type. Check that your name and period are correct, then use the sheet’s print action or your browser’s print dialog to print or save a PDF.</p><p>Schools can use different report templates and may hide some result fields. If the print action is unavailable or the result is not released, contact the school.</p>",
+    "sort_order": 211,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I view my session results or transcript?",
+    "code": "view-own-session-results-and-transcript",
+    "description": "<p>Open the <strong>Session Results</strong> view provided by your school to see available results by academic session. Choose <strong>Result Sheet</strong> for a session to open its cumulative result. This view uses your own student account and does not show another student’s records.</p><p>If you need a transcript and cannot find a transcript link in your student menu or result pages, ask the school to provide the transcript. Some transcript views are opened by school staff rather than through a student menu.</p>",
+    "sort_order": 212,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I pay fees and check payment history as a student?",
+    "code": "student-pay-fees-and-check-history",
+    "description": "<p>From your student account, open <strong>Payments → Pay Fees</strong>, select the fee, and review its amount and academic period. Choose an available online payment method and complete checkout, or select the manual option and follow the bank-transfer proof instructions.</p><p>Use <strong>Receipts</strong> to review completed payments, <strong>Manual Payments</strong> to check proof submissions, and <strong>Payment Attempts</strong> to verify a pending or failed online transaction. Confirm the status before starting another payment.</p>",
+    "sort_order": 213,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I view my class timetable?",
+    "code": "view-own-class-timetable",
+    "description": "<p>Sign in to your student account and open <strong>Timetable</strong>. EduManager shows the timetable for your current class, including the scheduled subject or school activity, day, and time.</p><p>If no timetable is shown or your class has changed, ask the school to check your current class placement and timetable records.</p>",
+    "sort_order": 214,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "What attendance information can I access as a student?",
+    "code": "student-attendance-information",
+    "description": "<p>The standard institution Attendance screens are permission-controlled staff registers. Student accounts do not have a separate personal attendance report or self-marking form in the usual student menu. Students should not use a staff attendance register to record their own attendance.</p><p>Ask your teacher or school office to check your attendance record or correct an absence. If your school has enabled a separate student attendance feature, follow the instructions supplied by the school.</p>",
+    "sort_order": 215,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I view assignments and submit my work?",
+    "code": "view-and-submit-student-assignments",
+    "description": "<p>Open <strong>Assignments → All Assignments</strong> to find work assigned to your class. Select an assignment to read its subject, instructions, and deadline. Enter your answer in the submission field and submit it before the deadline; expired assignments can no longer accept a student submission.</p><p>Use <strong>Submitted Assignments</strong> to review your submissions and any score or teacher remark that has been added. Contact your teacher if the assignment or submission status is incorrect.</p>",
+    "sort_order": 216,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I access lesson notes, topics, and library materials?",
+    "code": "student-access-lesson-notes-topics-library",
+    "description": "<p>When your school has shared the <strong>Lesson Notes</strong> link with you, open it to find notes available for your class, then select a note to read its content and any attached material. Subject and topic details may appear with the lesson content. The topic management pages are staff tools and may not be available in a student menu.</p><p>Open <strong>E-Library</strong> to browse resources your school has published for everyone or targeted to your class. If a note or library item is missing, ask your teacher to confirm it is available for your class.</p>",
+    "sort_order": 217,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I join a live class as a student?",
+    "code": "join-live-class-as-student",
+    "description": "<p>Open <strong>Classes → Live Classes</strong> in your student account. The list shows active sessions targeted to your class or its class group/division. Check the title and teacher, then choose <strong>Join Class</strong> at the scheduled time.</p><p>The meeting opens using the link supplied by the teacher. If the class is missing or the link does not work, contact the teacher or school administrator.</p>",
+    "sort_order": 218,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I take a school CBT exam and review the result?",
+    "code": "take-school-cbt-exam-as-student",
+    "description": "<p>Sign in to your student account and open <strong>CBT Events</strong>. Select an event available to your class, open it, and start the exam assigned to you. Follow the exam instructions and submit your answers before leaving the exam.</p><p>Return to the event or exam page to review any result the school has made available. If no exam appears or its result is not shown, ask the school to confirm your event access and result-release settings.</p>",
+    "sort_order": 219,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I practise topic questions and review my progress?",
+    "code": "practise-topic-questions-and-review-progress",
+    "description": "<p>Open <strong>Subjects</strong> and choose <strong>Practice Question</strong> for a subject. Select a topic and submit to generate practice questions. Choose your answers, submit the attempt, then review the feedback and score.</p><p>Open <strong>Practice Progress</strong> to see topics attempted, attempt counts, and best and latest scores. Available topics depend on the content set up for your subjects.</p>",
+    "sort_order": 220,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I read school notifications and use chat as a student?",
+    "code": "student-notifications-and-chat",
+    "description": "<p>Use the <strong>Notifications</strong> bell in your student dashboard to read announcements sent to your account. Open a notification’s action link when one is provided. Opening the list marks notifications as read.</p><p>Open <strong>Chats</strong> when it is available to your account to read or send messages in permitted conversations. Chat access depends on your school’s role permissions; use the school’s official contact channel if Chats is not available.</p>",
+    "sort_order": 221,
+    "video_url": null,
+    "is_active": true
+  }
+]

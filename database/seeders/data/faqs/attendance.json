@@ -1,0 +1,58 @@
+[
+  {
+    "name": "How do I record attendance for one student or staff member?",
+    "code": "record-individual-attendance",
+    "description": "<p>Open <strong>Attendance → Mark Attendance</strong> and use <strong>Single Attendance</strong>. Select the student or staff member, choose <strong>Sign In</strong> or <strong>Sign Out</strong>, and add an optional remark before submitting.</p><p>EduManager records the attendance action with its timestamp and recorder. To correct an incorrect record, open <strong>All Attendances</strong>, locate the entry, remove it if you have permission, and record the correct action.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 152
+  },
+  {
+    "name": "How do I take attendance for a class in one batch?",
+    "code": "take-class-attendance-in-batch",
+    "description": "<p>Open <strong>Attendance → Mark Attendance</strong> and switch to <strong>Batch Attendance</strong>. Choose <strong>Students</strong>, select the class, and choose whether the register is for check-in or check-out. Select the students to mark; the list shows their status for today, and you can refresh it before submitting. Add an optional remark and choose the action for the selected students.</p><p>You can also batch-mark staff by switching the people selector to <strong>Staff</strong>. Use <strong>Class Attendance Register</strong> to review a class by day or week; that screen displays the register, while marking is done from the batch attendance form.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 153
+  },
+  {
+    "name": "How do I find an attendance record?",
+    "code": "find-attendance-records",
+    "description": "<p>Open <strong>Attendance → All Attendances</strong>. Use the table search and filters to narrow records by name, role, attendance type, class, lateness, or sign-in date range.</p><p>Each row shows the person, attendance status, sign-in and sign-out times, duration, and who recorded it. Open the remark action when a record has a note. Staff with the required permission can remove an incorrect record from this list.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 154
+  },
+  {
+    "name": "How do I generate and print an attendance report?",
+    "code": "generate-attendance-report",
+    "description": "<p>Open <strong>Attendance Report</strong>, select the student or staff member, academic session, and term, then choose <strong>View Report</strong>. The report shows recorded attendance, expected attendance, active days in the reporting range, the term window, and individual check-in/check-out records where available.</p><p>Use the report's <strong>Print</strong> action when you need a paper copy. If expected attendance is blank or does not match the school calendar, check that the term details and expected attendance settings are configured for the selected period.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 155
+  },
+  {
+    "name": "Can I record attendance from an app or API?",
+    "code": "record-attendance-through-authenticated-api",
+    "description": "<p>EduManager provides an authenticated self-attendance API for an institution-linked user. The request must include a valid Sanctum-authenticated account and the institution context; it is not an anonymous public attendance form. The signed-in account is used to identify the person recording self-attendance.</p><p>For an integration, use the institution's configured API client and the supported self-attendance route. If the account is not linked to the institution or the token is invalid, the request will not be accepted. School staff can use the web Mark Attendance screen when an API integration is unavailable.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 156
+  },
+  {
+    "name": "When do guardians receive attendance notifications?",
+    "code": "attendance-notifications-for-guardians",
+    "description": "<p>Guardians receive attendance notices only when the school has enabled attendance notifications and configured the timing and delivery channel. School administrators can review these options under <strong>Settings → Attendance Notifications</strong>, including the available email, SMS, or WhatsApp choices.</p><p>When a student's attendance action matches the configured notification rules, EduManager sends the notice using the school's selected settings. If a guardian did not receive an expected update, ask the school to check its notification settings and the guardian contact details linked to the student.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 157
+  },
+  {
+    "name": "How do I use the attendance API integration?",
+    "code": "use-attendance-api-integration",
+    "description": "<p>The attendance API requires a valid Sanctum-authenticated user and institution context. A staff member can submit their own attendance to <code>POST /api/{institution}/attendance/self</code>. Authorized staff with the attendance permission can record attendance for a school user through <code>POST /api/{institution-code}/attendance</code>.</p><p>Send the attendance fields required by the API validation rules and use the correct institution code and user identifier. Check the API response for validation or permission errors; keep tokens out of logs and shared documents.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 272
+  }
+]

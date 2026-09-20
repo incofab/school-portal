@@ -2146,6 +2146,109 @@
             </li>
           </ul>
         </div>
+
+        <div class="feature">
+          <h3><span>29</span> AI Conversational Assistant</h3>
+          <p>
+            An open-ended natural-language assistant available to guests on
+            <code>/assistant</code> and to institution users on
+            <code>/{institution}/assistant</code>. Users type anything they
+            want; suggested prompts are optional discoverability aids and never
+            the capability boundary. The assistant understands broadly but may
+            only expose information or perform actions EduManager explicitly
+            permits for the current actor. It is separate from the
+            human-to-human chat subsystem.
+          </p>
+          <ul>
+            <li>
+              <strong>Grounding:</strong> answers are grounded in active FAQ
+              and Knowledge Base entries from the existing <code>faqs</code>
+              table. Matching text is split into short passages in memory for
+              each search; no copy, chunk table, or sync command is needed.
+              When no source matches, the assistant says so rather than
+              inventing product facts, and every grounded answer carries source
+              citations.
+            </li>
+            <li>
+              <strong>Memory:</strong> conversation summaries, bounded context
+              assembly, follow-up entity resolution for sessions, terms,
+              classes, subjects, and students, clarification questions for
+              ambiguous academic context, topic-change resets, and user
+              corrections that override older hints.
+            </li>
+            <li>
+              <strong>Read-only tools:</strong> a typed tool registry covering
+              institution profile, academic sessions and terms, authorized
+              staff, classes, students, and published student results. Every
+              tool re-enforces institution scope, teacher assignment,
+              student/guardian ownership, and result publication rules in
+              application code — never in the prompt.
+            </li>
+            <li>
+              <strong>Confirmed actions:</strong> create/update a class, create
+              a subject, add/update a staff member, and send an explicitly
+              targeted internal notification. Each is previewed first, mutates
+              nothing until the user confirms in a dialog, carries an
+              idempotency key so a replayed confirmation cannot duplicate a
+              record, runs through existing validation
+              (<code>Classification::createRule()</code>,
+              <code>Course::createRule()</code>,
+              <code>User::generalRule()</code>) and existing actions
+              (<code>RecordStaff</code>,
+              <code>CreateInternalNotification</code>), and writes an audit
+              event at every lifecycle step.
+            </li>
+            <li>
+              <strong>Interface:</strong> Chakra UI assistant page with
+              conversation history (drawer on narrow screens), progressive
+              in-flight turn display, clarification / source / tool-observation
+              cards, confirmation dialogs, retry on provider failure, copy,
+              helpful / not-helpful feedback, rename, archive, and permanent
+              delete.
+            </li>
+            <li>
+              <strong>Safety:</strong> bounded model/tool/retrieval budgets per
+              turn, rate limiting via the <code>ai-assistant</code> limiter,
+              guest isolation, conversation-ownership checks, prompt-injection
+              resistance, and safe provider-failure handling. Retrieved
+              FAQ passages, tool results, and user text are always framed as data,
+              never as instructions.
+            </li>
+            <li>
+              <strong>Observability:</strong> per-turn telemetry in
+              <code>assistant_run_metrics</code> (outcome, failure category,
+              latency, call counts, token usage, groundedness, feedback) with no
+              message content retained, surfaced on the manager-admin
+              diagnostics page
+              <code>managers.ai-assistant.diagnostics</code>. Audit properties
+              are redacted through <code>AssistantRedactor</code>.
+            </li>
+            <li>
+              <strong>Operational controls:</strong>
+              <code>AI_ASSISTANT_ENABLED</code> (kill switch),
+              <code>AI_ASSISTANT_GUEST_ACCESS</code>,
+              <code>AI_KNOWLEDGE_ENABLED</code>,
+              <code>AI_TELEMETRY_ENABLED</code>, rate limits, call budgets, and
+              timeouts — all read per request and reported on the diagnostics
+              page.
+            </li>
+            <li>
+              <strong>Not yet covered:</strong> academic-session creation
+              (manager-scoped, and the assistant is not wired into the manager
+              area), student import (needs message attachments), report
+              generation, and CBT drafts.
+            </li>
+            <li>
+              Tests: <code>tests/Feature/AI/AssistantControllerTest.php</code>,
+              <code>AssistantToolsTest.php</code>,
+              <code>AssistantActionsTest.php</code>,
+              <code>AssistantInterfaceTest.php</code>,
+              <code>AssistantSecurityTest.php</code>,
+              <code>AssistantObservabilityTest.php</code>, and
+              <code>KnowledgeRetrievalTest.php</code>.
+            </li>
+          </ul>
+        </div>
       </section>
 
       <section>

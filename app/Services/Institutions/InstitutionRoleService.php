@@ -9,6 +9,8 @@ use App\Models\InstitutionUser;
 use App\Models\Role;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Exists;
 use Spatie\Permission\Models\Permission;
 
 class InstitutionRoleService
@@ -72,6 +74,41 @@ class InstitutionRoleService
         )
       )
       ->values();
+  }
+
+  /**
+   * The shared existence rule for a staff role selection. Used by staff
+   * request validation and by the assistant's staff actions so both paths
+   * accept exactly the same set of roles.
+   */
+  public function staffRoleRule(?Institution $institution): Exists
+  {
+    return Rule::exists('roles', 'id')->where(
+      fn($query) => $query
+        ->where('institution_id', $institution?->id)
+        ->where('guard_name', self::GUARD)
+        ->whereNotIn('name', InstitutionUserType::nonStaffRoles())
+    );
+  }
+
+  /**
+   * Resolve a staff role supplied as an id or as a role name.
+   */
+  public function resolveStaffRoleId(
+    Institution $institution,
+    int|string|null $role
+  ): ?int {
+    if (blank($role)) {
+      return null;
+    }
+
+    if (is_int($role) || ctype_digit((string) $role)) {
+      return (int) $role;
+    }
+
+    return $this->forStaff($institution)->first(
+      fn(Role $item) => Str::lower($item->name) === Str::lower(trim($role))
+    )?->id;
   }
 
   public function findOrCreate(Institution $institution, string $name): Role
@@ -165,9 +202,6 @@ class InstitutionRoleService
 
   /**
    * Syncs the default permissions for a role based on its name and institution.
-   *
-   * @param Role $role
-   * @return void
    */
   private function syncDefaultPermissions(Role $role): void
   {

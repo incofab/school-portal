@@ -14,6 +14,7 @@ enum InstitutionUserType: string
   case Accountant = 'accountant';
   case Alumni = 'alumni';
   case Guardian = 'guardian';
+  case Others = 'others';
 
   public static function nonStaffRoles(): array
   {
@@ -23,6 +24,12 @@ enum InstitutionUserType: string
   public static function studentRoles(): array
   {
     return [self::Student->value, self::Alumni->value];
+  }
+
+  /** @return array<self> */
+  public static function staffTypes(): array
+  {
+    return [self::Admin, self::Teacher, self::Accountant, self::Others];
   }
 
   public function description(): string
@@ -35,7 +42,8 @@ enum InstitutionUserType: string
       self::Student => 'Access for currently enrolled students.',
       self::Alumni => 'Access for former students and alumni.',
       self::Guardian
-        => 'Access for parents and guardians to follow dependants.'
+        => 'Access for parents and guardians to follow dependants.',
+      self::Others => 'Access for other staff and non-academic personnel.'
     };
   }
 }

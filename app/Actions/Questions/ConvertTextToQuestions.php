@@ -14,13 +14,12 @@ class ConvertTextToQuestions
     }
 
     $prompt = $this->buildPrompt($content);
-    $aiRes = initPrism(
-      'You are a well qualified school teacher and expert at formatting exam questions.'
-    )
-      ->withPrompt($prompt)
-      ->asText();
-
-    $raw = trimAiResponse($aiRes->text ?? '');
+    $raw = trimAiResponse(
+      generateAiText(
+        $prompt,
+        'You are a well qualified school teacher and expert at formatting exam questions.'
+      )
+    );
     $decoded = json_decode($raw, true);
 
     if (!is_array($decoded)) {

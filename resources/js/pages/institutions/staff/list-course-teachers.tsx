@@ -71,7 +71,7 @@ function ListLecturerCourses({ courseTeachers }: Props) {
 
   const headers: ServerPaginatedTableHeader<CourseTeacher>[] = [
     {
-      label: 'Teacher',
+      label: 'Staff member',
       value: 'user.full_name',
       render: (row) => <DisplayUserFullname user={row.user} />,
     },
@@ -182,7 +182,7 @@ function ListLecturerCourses({ courseTeachers }: Props) {
     <DashboardLayout>
       <Slab>
         <SlabHeading
-          title={'Subject Teachers'}
+          title={'Subject Assignments'}
           rightElement={
             <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
               {isAdmin && (

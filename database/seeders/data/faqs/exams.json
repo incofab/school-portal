@@ -1,0 +1,210 @@
+[
+  {
+    "name": "How do I create a CBT event?",
+    "code": "create-cbt-event",
+    "description": "<p>Open <strong>CBT Events</strong> and choose <strong>New</strong>. Enter an event title, duration, start time, event type, academic session, and any class or class-group details required for that event. Choose how many subjects candidates may take and whether they can view corrections.</p><p>Add the relevant subject sessions to the event before candidates begin. Review the event timing and target group carefully; candidates can only start while the event is available to them.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 114
+  },
+  {
+    "name": "How do I add or remove subjects from a CBT event?",
+    "code": "manage-cbt-event-subjects",
+    "description": "<p>Open <strong>CBT Events</strong>, find the event, and choose <strong>Content</strong>. Add the course sessions candidates should be able to take, or remove a session that should no longer be offered. Check the event's subject-selection limit against the number of subjects you add.</p><p>Review the subject list before the event starts. The selected event content determines the questions available in each candidate's exam attempt.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 115
+  },
+  {
+    "name": "How is an exam created for a CBT event?",
+    "code": "create-exam-for-cbt-event",
+    "description": "<p>Staff prepare the event, its schedule, duration, subject limit, and course content under <strong>CBT Events</strong>. An eligible student or applicant starts the event during its availability window; EduManager then creates the exam attempt for that candidate. If the event offers multiple subjects, the candidate selects the allowed subjects before starting.</p><p>Staff can open the event's <strong>Exams</strong> list to review created attempts. Check the event setup and its question content before candidates begin, because those settings determine each attempt.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 116
+  },
+  {
+    "name": "How do I build an objective exam?",
+    "code": "build-objective-exam",
+    "description": "<p>Open the relevant subject's course session in the question-bank workspace and choose <strong>Questions</strong>. Add each objective question with its prompt, answer choices, correct answer, and question number. Save the questions, then make sure the course session is included in the intended CBT event.</p><p>Check the wording, choices, correct answer, and any attached images before the exam opens. The event controls the candidate's available time; objective answers are scored from the saved answer key.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 117
+  },
+  {
+    "name": "How do I build a theory exam?",
+    "code": "build-theory-exam",
+    "description": "<p>Open the subject's course session in the question-bank workspace and choose <strong>Theory Questions</strong>. Add the question text, question number, and maximum marks for each question, then save. Include the course session in the relevant CBT event.</p><p>Review the questions and mark limits before candidates start. Students type their responses during the exam; an authorized staff member must evaluate theory answers before the theory score is final.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 118
+  },
+  {
+    "name": "How do I add a passage or instructions to exam content?",
+    "code": "add-exam-passages-and-instructions",
+    "description": "<p>Open the relevant course session or event content in the question-bank workspace. Use its <strong>Passages</strong> or <strong>Instructions</strong> page to add the shared text, then save it with the correct course or event content.</p><p>Check the displayed passage and directions before the event begins. Use these shared content records when candidates need the same context or instructions alongside related questions.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 119
+  },
+  {
+    "name": "How do I manage objective and theory question-bank content?",
+    "code": "manage-objective-theory-question-bank",
+    "description": "<p>Open <strong>Subject → All Subject</strong>, choose the relevant subject and course session, then open <strong>Questions</strong> or <strong>Theory Questions</strong>. Use the available actions to add, edit, view, or remove question records. Add course topics separately when you need to organize lesson and practice content.</p><p>Only staff with access to that subject's question bank can manage its content. Review changes before using the course session in a CBT event.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 120
+  },
+  {
+    "name": "How do I import or export question-bank questions?",
+    "code": "import-export-question-bank-spreadsheet",
+    "description": "<p>From the course session's <strong>Questions</strong> page, choose the upload or download action. The exported workbook is an Excel file. For spreadsheet uploads, use columns A–H in this order: question number, question, options A–E, and answer. Start the first question on row 2 and keep the column order unchanged.</p><p>CSV, XLS, and XLSX files are supported. Word or text documents can also be uploaded for AI extraction; check the upload page for its current accepted formats. Review imported questions in the bank and correct any formatting or answer-key issues before using them.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 121
+  },
+  {
+    "name": "How do I import or export a subject's learning content?",
+    "code": "import-export-course-learning-content",
+    "description": "<p>Open <strong>Subject → All Subject</strong>, find the subject, and choose its course-content upload or export action. Export the course package when you need a copy of its learning content. To import content, upload the ZIP package for the selected subject; the upload page accepts ZIP files up to 20 MB.</p><p>Use the package prepared for the intended subject and review the course content after upload. This course package is different from the Excel workbook used to import only objective questions.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 122
+  },
+  {
+    "name": "How do I use AI to extract questions from a document?",
+    "code": "extract-question-bank-content-from-document",
+    "description": "<p>Open the intended course session's <strong>Questions → Upload Session Questions</strong> page and upload a supported DOC, DOCX, or TXT document. EduManager uses AI to extract objective questions, options, and explanations and converts the content for the question bank. You can also paste question text into the segmented editors, using up to six segments.</p><p>Document extraction imports the extracted questions into the selected question bank. Review the resulting records on the Questions page and edit or remove any question, option, or answer that needs correction before adding the session to an exam.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 123
+  },
+  {
+    "name": "How can a student practise questions by topic?",
+    "code": "student-practise-questions-by-topic",
+    "description": "<p>Open <strong>Subject → All Subject</strong>, choose the subject, and start practice for one of its available topics. EduManager generates objective practice questions for the selected topic. Choose an answer for each question and submit when you are ready to see your feedback.</p><p>After submission, review which answers were correct and your score. Open <strong>Practice Progress</strong> to see your attempts and best results by topic. Practice progress belongs to your student account.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 124
+  },
+  {
+    "name": "How can a teacher review students' topic-practice progress?",
+    "code": "teacher-review-topic-practice-progress",
+    "description": "<p>Open <strong>Subject → All Subject</strong> and choose <strong>Practice Progress</strong>. Select a topic and class to see which students have attempted it, how many attempts they made, and their latest and best scores.</p><p>Use the summary cards to compare attempted and not-yet-attempted students and the average best percentage. Open a student's attempt history to review their recorded practice activity.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 125
+  },
+  {
+    "name": "How does a student take an online CBT exam?",
+    "code": "student-take-online-cbt-exam",
+    "description": "<p>Sign in with your student account and open <strong>CBT Events</strong>. Choose the event provided by your school and select <strong>Start</strong> while it is available. If the event offers more than one subject, select the required subjects and continue into the exam.</p><p>Answer the objective and theory questions, then submit the exam and wait for the confirmation. Objective scores may be available first; theory answers can remain pending until school staff evaluate them. If your school gave you an event code and student code for a separate exam-login page, use those details there.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 126
+  },
+  {
+    "name": "How does an admission applicant take an online exam?",
+    "code": "admission-applicant-take-online-exam",
+    "description": "<p>Open <strong>Admission Exam Login</strong> and enter the event code and the application number supplied by the school. Choose <strong>Start Exam</strong> to open the available exam.</p><p>Check that the event code and application number match your admission application. This applicant login is separate from student login; contact the admissions office if the credentials are not accepted or the event is unavailable.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 127
+  },
+  {
+    "name": "How does a recruitment candidate take an online exam?",
+    "code": "recruitment-candidate-take-online-exam",
+    "description": "<p>Open <strong>Recruitment Exam Login</strong> and enter the event code and recruitment application number provided by the institution. Choose <strong>Start Exam</strong> to open the available exam.</p><p>Use the recruitment number for your own application. Recruitment exam access is separate from student and admission-applicant logins; contact the institution if your details are rejected or the event is not open.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 128
+  },
+  {
+    "name": "How do I monitor exam attempts and activity for an event?",
+    "code": "monitor-cbt-event-attempt-activity",
+    "description": "<p>Open <strong>CBT Events</strong>, find the event, and choose <strong>Attempt Activity</strong>. The summary shows each candidate's status, questions answered, progress, last question, start time, last activity, and submission time.</p><p>Use the activity status to distinguish active, idle, submitted, and not-started attempts. The page refreshes its activity while it remains open; use the event's exam list if you need to review a specific attempt in more detail.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 129
+  },
+  {
+    "name": "How do I evaluate theory answers from a CBT exam?",
+    "code": "evaluate-cbt-theory-answers",
+    "description": "<p>Open <strong>CBT Events</strong>, choose the event's <strong>Exams</strong> list, and open the submitted candidate attempt. Select <strong>View Details</strong> for the subject, then open the <strong>Theory</strong> tab to read each response.</p><p>Enter a score for each question within its displayed maximum marks and choose <strong>Mark Theory Evaluated</strong>. If an evaluation needs correction, reopen the attempt and use <strong>Update Evaluation</strong>. Check the total and candidate before saving.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 130
+  },
+  {
+    "name": "How do I pause or end an active exam?",
+    "code": "pause-or-end-active-exam",
+    "description": "<p>Open <strong>CBT Events</strong>, choose the event, and open its exam attempts. Select the candidate's active attempt and use the available <strong>Pause</strong> or <strong>End Exam</strong> control. These actions are for authorized school staff; the candidate cannot use staff controls from the exam page.</p><p>Pause the attempt when the candidate needs to stop temporarily, and end it when the attempt should be closed. Ending an exam can make its result available for review. Use the re-evaluation option only when an authorized staff member needs the attempt evaluated again, then review the result.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 131
+  },
+  {
+    "name": "Where can I view an exam result or leaderboard?",
+    "code": "view-exam-result-or-leaderboard",
+    "description": "<p>For an individual student result, open the student's exam attempt from the event's <strong>Exams</strong> list, or use the candidate's <strong>View Result</strong> link after the attempt has ended. A student should sign in to their own account to see their own exam result.</p><p>The event leaderboard is a ranking view for completed attempts. External participants use the event's external leaderboard link, which is separate from a student's result sheet. If an attempt is still active, its result may not be available yet.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 132
+  },
+  {
+    "name": "How can I look up an exam result without a student account?",
+    "code": "lookup-exam-result-with-exam-number",
+    "description": "<p>Open <strong>Exam Result Login</strong> and enter the exam number shown on the candidate's exam record. This lookup is for student CBT results and does not use the regular student password.</p><p>The exam must have ended before its result can be shown. Admission and recruitment candidates use their separate exam or application login flows; if the number is missing or the result is unavailable, ask the school that organized the event to check the attempt.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 133
+  },
+  {
+    "name": "How do I transfer one event's exam results to course results?",
+    "code": "transfer-single-event-results-to-course-results",
+    "description": "<p>From <strong>CBT Events</strong>, choose the event's result-transfer action. Select the academic session and term, choose whether the score belongs to the mid-term or full-term result, and map the event subject to the appropriate course teacher and assessment where those choices are available.</p><p>Review the selected subject and destination before submitting. Teachers can transfer results only for courses assigned to them. If the event contains multiple event subjects, use the multiple-transfer workflow. After transfer, review the destination course results and recalculate the class result if your school's workflow requires an updated aggregate.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 134
+  },
+  {
+    "name": "How do I transfer results from multiple CBT events?",
+    "code": "transfer-multiple-event-results",
+    "description": "<p>Open <strong>CBT Events</strong> and choose the multiple result-transfer action for the event. For each event subject, select whether to include it and map it to the destination course teacher and result period. Choose the academic session, term, assessment, and mid-term or exam destination as the form requests.</p><p>Check every included subject and mapping before saving. A teacher can transfer only results for their assigned course. Then review the course result records and update any class-level calculation that depends on them.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 135
+  },
+  {
+    "name": "How do I set up offline CBT?",
+    "code": "setup-offline-cbt",
+    "description": "<p>As school staff, open <strong>CBT Events → Offline CBT Guide</strong> and download the offline application on the computer that will act as the server. The guide recommends a dedicated server with at least 8 GB RAM. Extract the package to <code>C:\\zam</code>, open <code>Controls</code>, and start the required services in ZAM Control.</p><p>On the server, open <code>http://localhost/cbt/public</code> and register with the school name, admin email, and institution code from EduManager. Sync the prepared event before exam day. Connect student computers to the same local network, open <code>http://[SERVER-IP]/cbt/public/examiner</code>, and have candidates enter the event code and student ID. After the exams are evaluated, use the offline app's upload action to send results back to EduManager.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 136
+  },
+  {
+    "name": "What should I check if offline CBT will not sync?",
+    "code": "troubleshoot-offline-cbt-sync",
+    "description": "<p>For event download problems, confirm the offline app is registered with the correct school name, admin email, and institution code. Check that the server has internet access, the local services are running, and the event was created online with its candidates and content before syncing. Sync the event again after important online changes and before candidates begin.</p><p>For result uploads, keep the offline server connected to the internet and use the app's upload action after local evaluation is complete. If the upload does not finish, check the event and attempt status in EduManager before retrying. Keep the offline records intact and contact school support with the event and candidate details if the sync remains unresolved.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 137
+  },
+  {
+    "name": "How do I generate practice questions from a topic or source content?",
+    "code": "generate-practice-questions-from-source-content",
+    "description": "<p>Open the intended course session's <strong>Questions → Upload Session Questions</strong> page and upload a supported DOC, DOCX, or TXT source document. EduManager uses AI to extract objective questions, options, and explanations into the selected question bank. You can also paste question text into the segmented editors where that option is available.</p><p>Review the extracted questions on the Questions page and correct or remove anything inaccurate before using them in an exam or practice activity. Use the normal question-bank controls to maintain the reviewed records; generated content is not ready for students until you have checked it.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 266
+  },
+  {
+    "name": "How do I use the offline CBT mock API?",
+    "code": "use-offline-cbt-mock-api",
+    "description": "<p>The offline CBT client can retrieve institution details and event data under <code>/api/offline-mock/institutions/{institution-code}</code>. Use the event list and event detail endpoints to sync content; use the deep-show endpoint when the client needs passages, instructions, and question data. The event list accepts a latest event ID and returns a limited batch.</p><p>Upload completed attempts through <code>POST /api/offline-mock/institutions/{institution-code}/exams/upload</code> using the documented exam and course fields. Review each returned success or failure entry and reconcile failed uploads before clearing local results.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 273
+  }
+]

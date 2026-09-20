@@ -5,7 +5,7 @@ import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
 import { User } from '@/types/models';
-import { InstitutionUserType, Nullable, SelectOptionType } from '@/types/types';
+import { Nullable, SelectOptionType, staffTypes } from '@/types/types';
 import { MultiValue } from 'react-select';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import { FormButton } from '@/components/buttons';
@@ -58,7 +58,7 @@ export default function RegisterCourseTeacher({ user }: Props) {
                 <>
                   <HStack spacing={4} w={'full'} align={'start'}>
                     <VStack spacing={2} align={'start'}>
-                      <Text>Teacher:</Text>
+                      <Text>Staff member:</Text>
                       <Text>Phone:</Text>
                       <Text>Email:</Text>
                     </VStack>
@@ -72,17 +72,14 @@ export default function RegisterCourseTeacher({ user }: Props) {
                 </>
               ) : (
                 <FormControlBox
-                  title="Teacher"
+                  title="Staff member"
                   form={webForm as any}
                   formKey="user_id"
                 >
                   <StaffSelect
                     value={webForm.data.user_id}
                     isClearable={true}
-                    rolesIn={[
-                      InstitutionUserType.Teacher,
-                      InstitutionUserType.Admin,
-                    ]}
+                    rolesIn={staffTypes}
                     onChange={(e) => webForm.setValue('user_id', e)}
                     isMulti={false}
                     required

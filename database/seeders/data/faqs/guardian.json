@@ -1,0 +1,138 @@
+[
+  {
+    "name": "How do I submit my BVN or NIN?",
+    "code": "bank-bvn-nin",
+    "description": "<p>A BVN or NIN form may appear on a guardian dashboard when neither identity number is saved on the account. Choose <strong>BVN</strong> or <strong>NIN</strong>, enter the matching 11-digit number, and select <strong>Submit</strong>. EduManager may use the submitted detail to set up a reserved payment account.</p><p>If account setup fails, check the number and try again. This form is only shown when the account has neither value; contact your school administrator if you need help.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 10
+  },
+  {
+    "name": "How do I sign in to EduManager as a parent or guardian?",
+    "code": "guardian-login",
+    "description": "<p>Open the regular <strong>Login</strong> page and enter the email address and password registered to your guardian account. Use <strong>Student Login</strong> only for a student's own account; a guardian signs in with their own email and password.</p><p>If the school created your account, use the sign-in details it provided. Select <strong>Forgot Password?</strong> if you need a reset, or contact the school to check that your guardian account is linked to the correct institution.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 58
+  },
+  {
+    "name": "How do I select or switch to one of my children?",
+    "code": "guardian-select-child",
+    "description": "<p>From your school dashboard, open <strong>My Students</strong> to see the children linked to your guardian account. Choose the child whose class, results, fees, or dashboard you want to open.</p><p>If you have more than one child, return to <strong>My Students</strong> and choose another child. If a child is missing, ask the school to link that student to your guardian account.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 59
+  },
+  {
+    "name": "How do I view my child's school dashboard?",
+    "code": "guardian-view-child-school-info",
+    "description": "<p>Open <strong>My Students</strong>, find your child, and select <strong>Go to Dashboard</strong>. EduManager opens the child's student dashboard so you can use the student tools available for that account.</p><p>Use the return-to-guardian control in the dashboard header to end the temporary student view and return to your guardian account. To view another child, return to <strong>My Students</strong> and choose that child.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 60
+  },
+  {
+    "name": "How do I pay fees or view receipts for my child?",
+    "code": "guardian-child-fees-receipts",
+    "description": "<p>Open <strong>My Students</strong> and use the selected child's <strong>Fees &amp; Receipts</strong> action to review that child's payment records. Choose <strong>Pay Fees</strong> when you need to pay a fee available for the child's class, term, and academic session.</p><p>Follow the payment options shown on screen, then return to the child's receipts to confirm the payment. Available fees and payment methods depend on the school's setup.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 61
+  },
+  {
+    "name": "How do I view my child's term result as a guardian?",
+    "code": "guardian-child-term-results",
+    "description": "<p>Open <strong>My Students</strong> and select <strong>Term Results</strong> for the child. Choose the available session, term, and result type to open the report sheet. Only results that the school has published and made available for guardian access appear.</p><p>If a result is missing, confirm that you selected the correct child and ask the school whether the result has been calculated, published, and activated for access.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 62
+  },
+  {
+    "name": "How do I remove a child from my guardian account?",
+    "code": "guardian-remove-dependent",
+    "description": "<p>Open <strong>My Students</strong>, find the child, choose <strong>Delete</strong>, and confirm that you want to remove the child or ward. This removes the guardian-student link from your account; it does not delete the student's school profile or academic records.</p><p>After removal, the child will no longer appear in your dependants list. Contact the school if the link was removed by mistake so an administrator or teacher can attach the student again.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 63
+  },
+  {
+    "name": "How do automated WhatsApp messages work?",
+    "code": "understand-automated-whatsapp-messages",
+    "description": "<p>Schools can configure attendance notices to guardians by email, SMS, or WhatsApp. Attendance messages are sent only when the school enables the notice type and channel and has a valid guardian contact for the child. Ask the school to check its attendance notification settings if an expected notice is missing.</p><p>Where the school has enabled WhatsApp result access, use the school’s WhatsApp contact or result link and follow the prompts; a result activation PIN may be required. Result links are available only when the school’s result workflow and configuration support them. Use your guardian or student account if the WhatsApp option is not available.</p>",
+    "sort_order": 193,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I find the children linked to my guardian account?",
+    "code": "guardian-dashboard-and-dependants",
+    "description": "<p>Sign in with your own guardian account and open the <strong>Students</strong> card on the school dashboard. The <strong>My Students</strong> page lists the children or wards linked to you, with each student’s class and student ID.</p><p>Choose an action on the correct child’s card to view that child’s results, fees, or dashboard. If a child is missing, ask the school to check the guardian-student link.</p>",
+    "sort_order": 222,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I switch between multiple children?",
+    "code": "guardian-switch-between-children",
+    "description": "<p>On <strong>My Students</strong>, identify the child by name, class, and student ID, then choose the action on that child’s card. Each card opens results, session results, fees, or the child’s dashboard for that selected student.</p><p>If you choose <strong>Goto Dashboard</strong>, EduManager temporarily opens the child’s student account context. Use the visible impersonation banner’s <strong>Return to your account</strong> action when you finish to return to your guardian account.</p>",
+    "sort_order": 223,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I view a child’s published term result?",
+    "code": "guardian-view-child-published-term-result",
+    "description": "<p>From your guardian account, open <strong>My Students</strong> and choose <strong>Term Results</strong> on the correct child’s card. Select the available session, term, and result type to open the child’s result sheet.</p><p>The school must publish and activate the result for guardian access. If the result is missing or locked, confirm the selected child and ask the school whether the result is ready and released.</p>",
+    "sort_order": 224,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I view a child’s session results or transcript?",
+    "code": "guardian-view-child-session-results-and-transcript",
+    "description": "<p>On <strong>My Students</strong>, choose <strong>Session Results</strong> on the child’s card to review the session result sheets available for that child. Confirm the student name and academic session before opening a result.</p><p>If you need a transcript and no transcript link is available from the child’s results, ask the school to provide it. Some transcript views are opened by school staff rather than from the guardian page.</p>",
+    "sort_order": 225,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I pay a child’s school fees online?",
+    "code": "guardian-pay-child-school-fees",
+    "description": "<p>On <strong>My Students</strong>, choose <strong>Goto Dashboard</strong> on the child’s card and confirm the child’s name in the dashboard banner. Open <strong>Payments → Pay Fees</strong>, select the fee, and review the amount and academic period before checkout.</p><p>Choose an online payment option, complete the provider checkout, then return to the child’s account to check the receipt or payment attempt. Use <strong>Return to your account</strong> in the impersonation banner when you have finished.</p>",
+    "sort_order": 226,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I submit manual payment proof for a child?",
+    "code": "guardian-submit-child-manual-payment-proof",
+    "description": "<p>Open the correct child from <strong>My Students</strong> and go to <strong>Payments → Pay Fees</strong> from that child’s dashboard. Select the fee and manual payment option, follow the school’s bank instructions, then enter the payment details and upload the proof when prompted.</p><p>Keep the pending-payment reference and return link. Use the child’s <strong>Manual Payments</strong> history or the reference link to check whether the school has confirmed or rejected the submission. Return to your guardian account from the impersonation banner when finished.</p>",
+    "sort_order": 227,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I review a child’s receipts and payment status?",
+    "code": "guardian-review-child-receipts-and-payment-status",
+    "description": "<p>Open <strong>My Students</strong> and choose <strong>Fees &amp; Receipts</strong> on the child’s card to review that child’s receipts. To check a pending or failed online transaction, open the child’s dashboard and use <strong>Payment Attempts</strong>; use <strong>Manual Payments</strong> for bank-transfer proof history.</p><p>Confirm the student and payment reference before contacting the school. A receipt appears after a payment has been recorded as successful.</p>",
+    "sort_order": 228,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I receive school messages, attendance notices, and result links?",
+    "code": "guardian-school-messages-attendance-and-results",
+    "description": "<p>Use the <strong>Notifications</strong> bell and <strong>Chats</strong> in your guardian account when those tools are available and the school has sent you a message. Chats depend on your account permissions. Notifications addressed to your account appear in the notification list.</p><p>Attendance notices are sent only if the school enabled a channel and has your correct contact details. For WhatsApp result links, use the school’s configured contact and follow its prompts; a result activation PIN may be required. Contact the school if a message or expected link does not arrive.</p>",
+    "sort_order": 229,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "Why can’t I see a child in my guardian account?",
+    "code": "troubleshoot-missing-child-access",
+    "description": "<p>Confirm that you signed in with the correct guardian account and selected the correct institution. Open <strong>My Students</strong> and check the names, class, and student IDs shown. Results and fees are opened from the selected child’s card, so check the child before continuing.</p><p>If a child is not listed, or a result/payment page denies access, contact the school and ask staff to verify the guardian-student relationship, the child’s active account and institution, and the result’s publication or activation status. Do not use a different student’s account to work around a missing link.</p>",
+    "sort_order": 230,
+    "video_url": null,
+    "is_active": true
+  }
+]

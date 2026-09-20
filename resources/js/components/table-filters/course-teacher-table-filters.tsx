@@ -3,7 +3,7 @@ import useQueryString from '@/hooks/use-query-string';
 import BaseTableFilter from './base-table-filter';
 import FilterFormControlBox from './filter-form-control-box';
 import ClassificationSelect from '../selectors/classification-select';
-import { InstitutionUserType } from '@/types/types';
+import { staffTypes } from '@/types/types';
 import CourseSelect from '../selectors/course-select';
 import StaffSelect from '../selectors/staff-select';
 
@@ -38,9 +38,9 @@ export default function CourseTeacherTableFilters({ isOpen, onClose }: Props) {
           isClearable={true}
         />
       </FilterFormControlBox>
-      <FilterFormControlBox title="Teacher">
+      <FilterFormControlBox title="Staff member">
         <StaffSelect
-          rolesIn={[InstitutionUserType.Teacher]}
+          rolesIn={staffTypes}
           onChange={(e: any) => setFilters({ ...filters, teacher: e?.value })}
           isClearable={true}
         />

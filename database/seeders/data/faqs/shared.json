@@ -1,0 +1,50 @@
+[
+  {
+    "name": "How do I reset my EduManager password if I forgot it?",
+    "code": "forgot-password",
+    "description": "<p>On the regular Login page, choose <strong>Forgot Password</strong> and enter the email address on your account. Follow the password-reset link sent to that email, then choose and confirm a new password.</p><p>If the message does not arrive, check your spam folder and ask your school administrator to confirm the email address on your account. Student accounts should contact the school if they do not have an email address for password recovery.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 3
+  },
+  {
+    "name": "How do I change my password while signed in?",
+    "code": "change-password",
+    "description": "<p>Open your account menu in the dashboard header and choose <strong>Change Password</strong>. Enter your current password, enter the new password, and confirm it before submitting.</p><p>If your current password is not accepted, use Forgot Password or ask your school administrator for help.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 5
+  },
+  {
+    "name": "How do I update my personal profile and profile photo?",
+    "code": "account-profile",
+    "description": "<p>Open your account menu and choose <strong>Profile</strong>. Select Edit to update your name, email, phone number, or gender, then save. Use the photo control on your profile to upload a new profile image.</p><p>If a profile change is rejected, check that the email is valid and is not already used by another account. Ask your school administrator to update school records that are not part of your personal account profile.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 6
+  },
+  {
+    "name": "How do I switch between institutions?",
+    "code": "switch-institution",
+    "description": "<p>If your account is linked to more than one institution, EduManager shows an institution selection page after sign-in. Choose the school you want to work in. The selected school sets the context for the records, dashboard, and tools you see. If your account is linked to only one school, EduManager opens it directly.</p><p>If an expected school is missing, ask its administrator to add your account to that institution.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 7
+  },
+  {
+    "name": "How do I sign out of EduManager?",
+    "code": "logout",
+    "description": "<p>Open your account menu in the dashboard header and select <strong>Logout</strong>. EduManager ends your signed-in session. Student accounts are returned to Student Login; other accounts are returned to the regular Login page.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 8
+  },
+  {
+    "name": "How do I read a school notification?",
+    "code": "read-school-notifications",
+    "description": "<p>While signed in to the correct institution, select the <strong>Notifications</strong> bell in the dashboard header. The list shows notifications sent to your account, including the title, message, sender, and date. Select <strong>Open</strong> when a notification includes an action link.</p><p>Opening the notification list marks your notifications as read. If you expected an announcement but cannot find it, confirm that you are in the right school and ask the sender whether your account or class was included.</p>",
+    "sort_order": 187,
+    "video_url": null,
+    "is_active": true
+  }
+]

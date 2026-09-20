@@ -303,10 +303,7 @@ class LessonNoteController extends Controller
 
     $question = "Using the Nigerian Basic Education Syllabus, write a long detailed class note for $className on the topic: $topicTitle. Try to touch every aspect of this topic in detail. Give me only the class note, no comment or side comment. You can include some practice questions. Return the response in pure html. Do not include stylings, meta tags, etc.";
 
-    $aiRes = initPrism()
-      ->withPrompt($question)
-      ->asText();
-    $fullNote = trimAiResponse($aiRes->text);
+    $fullNote = trimAiResponse(generateAiText($question));
 
     app(AcademicActivityLogger::class)->workflowEvent(
       $institution,

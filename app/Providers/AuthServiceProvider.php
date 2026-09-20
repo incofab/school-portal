@@ -6,6 +6,8 @@ use App\Models\ActivityLog;
 use App\Models\Faq;
 use App\Models\PaymentReference;
 use App\Policies\ActivityLogPolicy;
+use App\Models\AssistantRunMetric;
+use App\Policies\AssistantRunMetricPolicy;
 use App\Policies\FaqPolicy;
 use App\Policies\PaymentReferencePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -20,6 +22,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         ActivityLog::class => ActivityLogPolicy::class,
+        AssistantRunMetric::class => AssistantRunMetricPolicy::class,
         Faq::class => FaqPolicy::class,
         PaymentReference::class => PaymentReferencePolicy::class,
     ];

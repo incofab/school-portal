@@ -1,0 +1,258 @@
+[
+  {
+    "name": "How do I create a fee and choose who it applies to?",
+    "code": "create-fee-and-set-student-scope",
+    "description": "<p>Open <strong>Payments → Fees</strong> and choose <strong>Create Fee</strong>. Enter the fee title and amount, choose its payment interval, and add or adjust the fee items that explain what the charge covers. For a termly fee, select the academic session and term; for a session-based fee, select the session. A one-time fee does not require those period choices.</p><p>Choose the student categories or classes that the fee applies to, then review the amount, period, and selected categories before saving. A fee's category scope determines which students see it as payable.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 158
+  },
+  {
+    "name": "How do I reuse fees from a previous term?",
+    "code": "reuse-fees-from-previous-term",
+    "description": "<p>From the fee area, choose <strong>Duplicate Fees</strong> and select the previous period's fees you want to copy into the current term. Review the selected records and submit the duplication.</p><p>EduManager carries forward the fee setup, including its title, amount, interval, fee items, and student categories. Confirm the destination session or term and review the new fee list afterwards; fees that already exist for the destination may be skipped.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 159
+  },
+  {
+    "name": "How do I review fees and outstanding student balances?",
+    "code": "review-fees-and-payment-summaries",
+    "description": "<p>Use <strong>Payments → Fees</strong> to find the fee record and check its amount, items, interval, period, and student categories. Open <strong>Fee Payments</strong> and choose <strong>Payment Summary</strong> to retrieve a summary for the fee and class or student scope you need.</p><p>The summary shows payment activity and remaining amounts for the selected records. Check the fee's session, term, and category when an expected student or outstanding amount is missing from the results.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 160
+  },
+  {
+    "name": "How do I record a fee payment for a student?",
+    "code": "record-student-fee-payment-as-staff",
+    "description": "<p>Open <strong>Payments → Fee Payments</strong> and choose <strong>Record Payment</strong>. In the payment form, select the student and fee, enter the amount received, and complete the payment details requested by the form. Submit the record after checking the student and amount.</p><p>The payment is added to the student's fee receipt and appears in the fee-payment list. Open the receipt from the payment row to review or print it. Use this staff workflow for payments received outside the student's online checkout.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 161
+  },
+  {
+    "name": "How does a student pay school fees online?",
+    "code": "student-pay-school-fees-online",
+    "description": "<p>Sign in to your own student account and open the fees or <strong>Pay Fees</strong> area. Choose an outstanding fee and the amount you intend to pay, then select an online payment option offered at checkout and follow the payment provider's instructions.</p><p>Return to your student account after checkout to review the payment or receipt. If the transaction is still pending, open your payment attempts and use the available verification action before trying to pay again.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 162
+  },
+  {
+    "name": "How can a guardian pay a child's school fees online?",
+    "code": "guardian-pay-child-school-fees-online",
+    "description": "<p>Sign in to the guardian account, open <strong>My Students</strong>, and select the child whose fees you want to pay. Go to that child's dashboard or fee area and choose an outstanding fee.</p><p>Select an available online payment option and complete the provider checkout. Return to the selected child's account to review the payment and receipt. Confirm the child's name before starting checkout so the payment is attached to the right student.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 163
+  },
+  {
+    "name": "How do I pay a student's fee using the public payment link?",
+    "code": "pay-fee-through-public-student-link",
+    "description": "<p>Open the payment link provided by the school. The public student-payment address identifies the institution and student code, so check that both belong to the intended school and student before continuing.</p><p>Select the fee and amount shown as payable, choose an available checkout option, and follow the payment provider's instructions. Keep the payment reference until the school confirms the transaction. Contact the school if the link does not recognize the student or does not show the expected fee.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 164
+  },
+  {
+    "name": "How do I submit or update proof of a manual payment?",
+    "code": "submit-or-update-manual-payment-proof",
+    "description": "<p>Choose the manual payment option for the relevant fee and follow the prompt to open the payment form. Select the school's receiving bank account, enter the depositor name and payment date, and upload the payment proof. Add a note if needed, then submit and keep the reference or pending-payment link.</p><p>You can reopen the reference link to check the status. While the request is still pending and belongs to you, use its edit action to update the bank account or payment details and replace or add proof. The school must confirm the submission before it is recorded as a completed fee payment.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 165
+  },
+  {
+    "name": "How do I approve or reject a manual payment?",
+    "code": "approve-or-reject-manual-payment",
+    "description": "<p>Open <strong>Payments → Manual Payments</strong> and find a pending submission. Review the payer, amount, selected receiving account, payment date, note, and uploaded proof before making a decision.</p><p>Choose <strong>Confirm</strong> when the payment has been verified, or <strong>Reject</strong> when it cannot be accepted. The status is then shown to the payer in their manual-payment details or history. If you need to explain a rejected submission, contact the payer using the school's normal communication channel.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 166
+  },
+  {
+    "name": "Where can school staff review manual-payment history?",
+    "code": "staff-review-manual-payment-history",
+    "description": "<p>Open <strong>Payments → Manual Payments</strong> to review submissions waiting for a decision. For previously handled submissions, open the manual-payment <strong>History</strong> view.</p><p>Review each payment's reference, student or payer, amount, proof, and status to confirm how it was handled. Use the pending list for outstanding decisions and the history view when checking a confirmed or rejected submission.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 167
+  },
+  {
+    "name": "How can a student check manual-payment status?",
+    "code": "student-check-manual-payment-history",
+    "description": "<p>Sign in to your student account and open the manual-payment history available in the payments area. Select a submission to review its reference, amount, proof details, and current status.</p><p>A pending submission is waiting for the school to confirm it. If it remains pending and you need to correct your details, reopen its reference link while the payment is still editable. Contact the school if the submission was rejected or you cannot find it in your account.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 168
+  },
+  {
+    "name": "How do I verify a pending or failed online payment?",
+    "code": "verify-online-payment-attempt",
+    "description": "<p>For your own payment, open <strong>Payment Attempts</strong> from your signed-in account, find the transaction by its reference, and choose <strong>Verify</strong> when that action is available. School staff can open the institution's <strong>Payment Attempts</strong> list and verify a transaction there.</p><p>Verification checks the provider's transaction status and updates EduManager when a confirmed result is returned. Check the attempt status and receipt before starting another payment, and keep the reference if the provider and EduManager still show different statuses.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 169
+  },
+  {
+    "name": "Where can I find and print a fee receipt?",
+    "code": "find-and-print-fee-receipt",
+    "description": "<p>School staff can open <strong>Payments → Receipts</strong>, find the receipt, open it, and choose the print action. A student should sign in to their own account and open their receipt list. A guardian should select the child under <strong>My Students</strong> first, then open that child's receipts.</p><p>Use the receipt details to check the student, fee, amount paid, balance, and payment reference before printing. If a recent online payment is not listed, check its payment-attempt status or ask school staff to verify it.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 170
+  },
+  {
+    "name": "How do I print a universal receipt for a student?",
+    "code": "print-universal-student-receipt",
+    "description": "<p>School staff can open the receipt or student payment area and choose <strong>Universal Receipt</strong>. Select the student, academic session, and term requested by the form, then generate the consolidated receipt view.</p><p>Review the student and period on the resulting page, then use <strong>Print</strong> to produce a copy. A universal receipt combines the student's receipts for the selected period; use an individual receipt when you need details for one fee payment.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 171
+  },
+  {
+    "name": "How do I send a reminder for an outstanding fee?",
+    "code": "send-outstanding-fee-reminder",
+    "description": "<p>Open <strong>Payments → Fees</strong> and choose the reminder action for a fee. Select the fee and a notification channel, either SMS or email, then submit. EduManager sends the reminder to guardians of students who owe that fee and have a contact detail for the selected channel.</p><p>Confirm the fee and channel before submitting. If no guardians are found, check that the fee applies to the expected students and that their linked guardians have a phone number or email address for the chosen channel.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 172
+  },
+  {
+    "name": "Which online payment methods can I use for school fees?",
+    "code": "supported-school-fee-online-payment-methods",
+    "description": "<p>EduManager supports online fee checkout through the payment providers enabled for the institution, including Paystack, Monnify, and PaymentPoint. The options offered for a transaction depend on the school's configuration and what the provider makes available at checkout.</p><p>Choose one of the displayed online options and follow its checkout instructions. A manual bank-payment submission is a separate option: it requires proof and school confirmation rather than an online provider callback. Check your payment attempt or receipt after checkout to confirm the result.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 173
+  },
+  {
+    "name": "How do I add funds to the institution-group wallet?",
+    "code": "fund-institution-group-wallet",
+    "description": "<p>Open the institution-group <strong>Funds</strong> area and choose <strong>Add Fund</strong>. Enter the amount and continue with an online funding option shown by the page. Complete checkout and return to EduManager to review the funding record.</p><p>This wallet belongs to the institution group and is used for platform charges, such as result publication. It is separate from a student's fee balance and from a school's bank account. Make sure you are in the intended institution-group context before funding it.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 174
+  },
+  {
+    "name": "How do I review wallet funding and transactions?",
+    "code": "review-wallet-funding-and-transactions",
+    "description": "<p>Open <strong>Funds</strong> to review wallet funding records, then choose <strong>Transactions</strong> to inspect wallet movements. Select the relevant wallet type when the page offers that filter.</p><p>Funding records show top-ups; wallet transactions can also show credits, debits or charges, and reversals. Check the amount, date, reference, and description to understand a balance change. The institution-group wallet is separate from an individual staff member's wallet.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 175
+  },
+  {
+    "name": "How do I add and verify a school bank account?",
+    "code": "add-and-verify-school-bank-account",
+    "description": "<p>Open <strong>Bank Accounts</strong> in the school finance area and choose <strong>Add Bank Account</strong>. Select the bank, enter the account number and account details requested, and submit the form for validation.</p><p>Review the returned account name and number before saving or using the account. A verified school account can be selected for receiving manual-payment proof or for an eligible withdrawal. If validation fails, check the bank and account number or contact your bank.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 176
+  },
+  {
+    "name": "How do I request a withdrawal from the school wallet?",
+    "code": "request-school-wallet-withdrawal",
+    "description": "<p>Open <strong>Withdrawals</strong> and choose <strong>New Request</strong>. Enter the withdrawal amount and select an eligible verified school bank account, then review the details and submit the request.</p><p>The request appears in the withdrawal list with its current status. A submitted request may remain pending while it is reviewed and processed. Check that the wallet has sufficient available funds and that the destination bank account is correct before submitting.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 177
+  },
+  {
+    "name": "Where can I review school withdrawal requests?",
+    "code": "review-school-withdrawal-history",
+    "description": "<p>Open <strong>Withdrawals</strong> to view requests with their amount, status, payout bank, request time, and settlement time when available.</p><p>Use the status to see whether a request is pending, paid, or declined. Open the listed bank and amount details to identify the request, and contact the finance administrator if a status or settlement date needs clarification.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 178
+  },
+  {
+    "name": "How do I categorize and record a school expense?",
+    "code": "create-expense-categories-and-record-expenses",
+    "description": "<p>Open <strong>Expenses → Categories</strong> to add a category title and description for the type of spending you track. Then open <strong>Expenses</strong> and create a record with its title, amount, expense date, category, academic session, and term; add an optional description.</p><p>Save the record and review it in the expense list. Use a consistent category and period so finance staff can find and report expenses accurately. From the list, you can view a record's details or remove it if you have the required permission.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 179
+  },
+  {
+    "name": "How do I view the details of an expense?",
+    "code": "view-expense-record-details",
+    "description": "<p>Open <strong>Expenses</strong> and find the record by its title, date, or category. Choose the eye-shaped <strong>View Expense</strong> action to open the Expense Details panel.</p><p>Review the title, amount, academic session, term, expense date, category, staff member who recorded it, and description. Close the panel to return to the list; the list also provides a remove action to users who have the required access.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 180
+  },
+  {
+    "name": "How do I configure salary components?",
+    "code": "configure-salary-components",
+    "description": "<p>Open <strong>Payroll → Salary Components</strong> and choose <strong>Add New</strong>. Enter a title, choose <strong>Earnings/Income</strong> or <strong>Deduction</strong>, and select whether the component is a fixed amount or a relative amount. For a relative component, choose its related salary component and enter the percentage. Add an optional description and save.</p><p>Use these components when recording staff salaries. A component cannot be deleted while it is used by a salary or has child components, so update its definition carefully.</p>",
+    "sort_order": 181,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I set up or update a staff salary?",
+    "code": "set-up-staff-salary",
+    "description": "<p>Open <strong>Payroll → Salaries</strong> and choose <strong>Add New</strong>. Select the staff member and salary component, enter the amount when the component uses a fixed amount, and add an optional description. Submit the form to save the salary. The staff selector includes institution admins, accountants, and teachers.</p><p>To change a salary, use its edit action and confirm the staff member and component before saving. Check that the salary record is correct before processing the payroll period that will use it.</p>",
+    "sort_order": 182,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I configure payroll adjustment types?",
+    "code": "configure-payroll-adjustment-types",
+    "description": "<p>When you add a payroll adjustment, choose the <strong>+</strong> beside <strong>Adjustment Type</strong> to create a type without leaving the payroll workflow. Enter a title, choose <strong>Bonus</strong> or <strong>Deduction</strong>, add an optional description, and save. The separate <strong>Adjustment Types</strong> page can also be used when it is available in your school’s Payroll area.</p><p>These types classify one-off bonuses and deductions added to a payroll summary. The current type form exposes a title and bonus/deduction choice; relative percentage setup is not available there.</p>",
+    "sort_order": 183,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I add a payroll adjustment for staff?",
+    "code": "add-payroll-adjustments",
+    "description": "<p>Open <strong>Payroll</strong>, select the month and year summary, then choose <strong>Bonuses/Deductions</strong> for that summary and select <strong>Add New</strong>. Choose one or more staff members, select an adjustment type, enter the amount, and add an optional description. Create the adjustment before processing the payroll.</p><p>You can edit or remove an adjustment while its payroll summary is still unevaluated. An evaluated payroll cannot be modified this way; review the period and staff selections before processing.</p>",
+    "sort_order": 184,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I generate and download a payroll summary?",
+    "code": "generate-payroll-summary",
+    "description": "<p>Open <strong>Payroll</strong> and choose <strong>Start Payroll</strong>. Select the month and year, then start the payroll summary. Add or review any bonuses and deductions for that period, then choose <strong>Process Payroll</strong> on its summary row and confirm. EduManager calculates each staff member’s payroll from the salary records and adjustments for the selected period.</p><p>Review the summary totals for amount paid, bonuses, and deductions. Use the download action on the summary row to export an Excel file. If payroll inputs need correction after evaluation, use the available re-evaluation action after making the permitted updates.</p>",
+    "sort_order": 185,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I review an individual payroll and its adjustments?",
+    "code": "review-individual-payroll",
+    "description": "<p>From <strong>Payroll</strong>, open the month and year summary with <strong>View</strong>. Find the staff member and choose the view action to open their payslip. Review the salary components, bonuses, deductions, gross salary, and net salary for that period.</p><p>Use <strong>Print Payslip</strong> to print or save the payslip. Return to the summary and choose <strong>Bonuses/Deductions</strong> to review the period’s adjustment records.</p>",
+    "sort_order": 186,
+    "video_url": null,
+    "is_active": true
+  },
+  {
+    "name": "How do I complete an online payment and verify a pending payment?",
+    "code": "complete-online-payment-verify-pending",
+    "description": "<p>Choose the online payment option on the fee, invoice, or application screen and follow the payment provider's checkout instructions. Keep the payment reference shown by EduManager or the provider, then return to the application or payment page to review the status.</p><p>If the payment is still pending, open <strong>Payment Attempts</strong> from your account and use <strong>Verify</strong> where available. School staff can also search the institution's payment attempts by reference. Do not submit a second payment until the first attempt has been checked.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 269
+  },
+  {
+    "name": "Where do I find and use my reserved deposit account?",
+    "code": "find-and-use-reserved-deposit-account",
+    "description": "<p>When a reserved deposit account is available for your user, open your school dashboard and review the account details shown there. Copy the account number and follow the displayed bank-transfer, POS, or direct-deposit instructions where those options are enabled.</p><p>A deposit to your reserved account credits the associated user's EduManager wallet. It is separate from the institution group's credit wallet used for platform charges. Contact the school or platform support with the transaction reference if a deposit is not reflected.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 276
+  },
+  {
+    "name": "How are collected school payments settled?",
+    "code": "understand-settlement-of-school-payments",
+    "description": "<p>The settlement process groups eligible confirmed payment references that have not already been settled. EduManager records a settlement, links the included payment references, and creates a related withdrawal record for the institution group using its configured payout bank account.</p><p>Finance or platform staff can review the resulting withdrawal and payout status from <strong>Withdrawals</strong>. A missing group payout bank account or a processing failure needs platform support before settlement can complete; keep the affected payment references for investigation.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 277
+  }
+]

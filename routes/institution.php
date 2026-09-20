@@ -208,6 +208,8 @@ Route::delete('/users/{user}', Web\Users\DeleteUserController::class)
     ->name('users.destroy');
 Route::post('/users/{suppliedInstitutionUser}/change-role', Web\Users\ChangeUserRoleController::class)
     ->name('users.change-role');
+Route::post('/users/{institutionUser}/change-type', Web\Users\ChangeInstitutionUserTypeController::class)
+    ->name('users.change-type');
 
 // Teacher courses
 Route::get('/course-teachers/index/{user?}', [Web\Staff\CourseTeachersController::class, 'index'])

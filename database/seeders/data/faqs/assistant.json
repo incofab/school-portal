@@ -1,0 +1,50 @@
+[
+  {
+    "name": "How do I start a conversation with the AI assistant?",
+    "code": "start-ai-assistant-conversation",
+    "description": "<p>Open <strong>AI Assistant</strong> from the school menu and start a new conversation. Enter a question or task in the message box and send it. You can also choose one of the suggested prompts shown on the page.</p><p>Ask one clear question at a time and include the relevant class, session, or record context when appropriate. The assistant's available answers and actions depend on your role, institution permissions, and whether the service is enabled.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 259
+  },
+  {
+    "name": "How do I continue, rename, or reopen an assistant conversation?",
+    "code": "continue-rename-reopen-assistant-conversation",
+    "description": "<p>Open the assistant's conversation history and select a previous conversation to continue it. Use the conversation menu to rename a thread, then save the new title. Starting a new conversation creates a separate thread.</p><p>If a conversation does not appear, confirm you are signed in to the same account and institution context used to create it. Guest conversations are associated with the browser session that created them.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 260
+  },
+  {
+    "name": "How do I confirm or cancel an assistant-proposed school action?",
+    "code": "confirm-cancel-assistant-proposed-action",
+    "description": "<p>When the institution assistant proposes a supported school action, review the preview carefully, including the record details and any information that will be created or changed. Choose <strong>Confirm</strong> only when the action and values are correct; choose <strong>Cancel</strong> to stop it.</p><p>Only actions available for your institution role can be confirmed. The assistant does not make the change until you confirm the proposal, and you should review the resulting record in its normal school screen.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 261
+  },
+  {
+    "name": "How do I give feedback on an assistant response?",
+    "code": "give-feedback-on-assistant-response",
+    "description": "<p>Use the helpful or not-helpful feedback control beneath the assistant response. Select the rating that best describes whether the answer helped with your question.</p><p>Feedback applies to that response. If the answer needs correction, include the missing context in a follow-up message and verify any important school record in its normal screen.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 262
+  },
+  {
+    "name": "How do I delete a conversation or ask the assistant to forget it?",
+    "code": "delete-or-forget-assistant-conversation",
+    "description": "<p>Open the conversation menu and choose <strong>Delete</strong> to remove the conversation from your visible history. Confirm the prompt if asked. To use the separate forget action, choose <strong>Forget</strong> and confirm; it asks the assistant service to forget the conversation context.</p><p>Review the action label before confirming. Deleting a thread and using Forget are separate controls and should not be treated as the same operation.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 263
+  },
+  {
+    "name": "What school information can I ask the AI assistant to find?",
+    "code": "ask-ai-assistant-about-school-data",
+    "description": "<p>In the institution assistant, ask about school profile details, academic sessions, classes, students, staff, teacher assignments, class performance or attendance, a student's attendance or fee summary, and published student results. Include enough identifying information to select the intended class, student, or period.</p><p>The assistant checks your institution context and permissions before answering. It may not return unpublished results or records you are not allowed to view; verify important information in the relevant school screen.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 275
+  }
+]

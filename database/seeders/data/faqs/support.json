@@ -1,0 +1,402 @@
+[
+  {
+    "name": "Why can a teacher not see a class or subject?",
+    "code": "troubleshoot-missing-class-or-subject",
+    "description": "<p>Confirm that you are working in the intended institution and that the class is active in the school records. A class or subject may not appear when it is outside your role access or the current selection.</p><p>Ask an administrator to check the class subject offering and your teacher assignment. If those are correct, share the institution, class, subject, and page where the option is missing with school support.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 281
+  },
+  {
+    "name": "How do I fix a teacher assignment before recording results?",
+    "code": "troubleshoot-teacher-assignment-for-results",
+    "description": "<p>Before entering scores, confirm the selected class, subject, session, term, and result mode. The teacher must be assigned to the correct class and subject offering for the relevant workflow.</p><p>An administrator can open subject-teacher assignments, correct or add the teacher assignment, and ask you to reopen the result page. Do not record scores under another teacher or subject as a workaround.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 282
+  },
+  {
+    "name": "What should I check if a student is missing from a class roster?",
+    "code": "troubleshoot-student-missing-from-roster",
+    "description": "<p>Check that you opened the right institution and class, and search for the student by their name or student code. A student assigned to a different class or marked inactive may not appear in the roster you expect.</p><p>If the student's class or status is wrong, ask an authorized staff member to update the student record. Avoid adding a second student profile before checking whether the original record already exists.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 283
+  },
+  {
+    "name": "How do I resolve a duplicate student code or admission identifier?",
+    "code": "resolve-duplicate-student-identifier",
+    "description": "<p>Search the student list for the code or identifier and compare the matching records before changing anything. Confirm which record belongs to the student and which identifier the school intends to keep.</p><p>An administrator can update the correct student's code from student management. For a spreadsheet import, correct the duplicate value in the source file and check the import result before uploading again.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 284
+  },
+  {
+    "name": "How do I undo an incorrect student class movement?",
+    "code": "undo-incorrect-student-class-movement",
+    "description": "<p>Open Student Class Changes and find the movement using the student, source and destination class, or movement date. Review the movement details to ensure you have selected the mistaken move.</p><p>An administrator with access can revert one movement or the full batch. Reversion records the correction in movement history; check the student's current class afterward.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 285
+  },
+  {
+    "name": "How do I check a result recorded under the wrong session, term, or mode?",
+    "code": "troubleshoot-result-period-or-mode",
+    "description": "<p>Open the result record and compare its class, subject, academic session, term, and mid-term/full-term mode with the intended reporting period. Results entered for another period will not appear in the report you expect.</p><p>Ask an authorized teacher or administrator to correct the affected result using the appropriate workflow. Recalculate the class results after correction if the derived totals or positions need to be refreshed.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 286
+  },
+  {
+    "name": "Why are some scores missing from a calculated result?",
+    "code": "troubleshoot-missing-result-scores",
+    "description": "<p>Check whether the student has saved scores for the correct class, subject, session, term, and result mode. Also review the assessment components and maximum scores configured for that result type.</p><p>If the source scores are present but the calculated result is still incomplete, ask an authorized staff member to review the result details and recalculate after any correction. Confirm the updated result before publishing it.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 287
+  },
+  {
+    "name": "Why does a result total differ from the scores I entered?",
+    "code": "troubleshoot-result-total-mismatch",
+    "description": "<p>Compare the saved assessment and exam scores with the configured component maximums and the selected result mode. The total may differ if a component is omitted, a score was not saved, or you are looking at a different term or subject.</p><p>Ask a teacher or administrator with result access to inspect the individual result details. Correct the source score or assessment setup, then recalculate and review the result again.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 288
+  },
+  {
+    "name": "How do I edit a result that is locked?",
+    "code": "troubleshoot-locked-result-edit",
+    "description": "<p>Confirm that the result belongs to the intended class and period, then check whether the result has been locked after calculation. A locked result prevents score changes through normal entry screens.</p><p>Ask an administrator or another authorized user to unlock the result. Make the correction, recalculate if needed, and follow the school's process to lock the result again.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 289
+  },
+  {
+    "name": "Why are class results missing after calculation?",
+    "code": "troubleshoot-results-missing-after-calculation",
+    "description": "<p>Check the class, academic session, term, and mid-term/full-term selection used in the calculation. Then open the term-result list for that same scope to confirm whether records were created.</p><p>If the records are absent, check that scores exist for the class and ask an authorized staff member to run the calculation again. Review the result list before publishing or sharing report cards.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 290
+  },
+  {
+    "name": "What should I check if a calculated result has not been published?",
+    "code": "troubleshoot-calculated-result-not-published",
+    "description": "<p>Calculation creates or updates result records; it does not by itself make them available to students and guardians. Ask school staff to check the publication list for the correct class, session, and term.</p><p>If publication cannot proceed, an authorized administrator should review the displayed publication summary and any wallet requirement. After publication, check the result from the intended student or guardian account.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 291
+  },
+  {
+    "name": "Why can a student not see a published result?",
+    "code": "troubleshoot-student-cannot-see-published-result",
+    "description": "<p>Sign in through Student Login and confirm the account belongs to the intended institution and student. Check that you opened the same session and term for which the school published results.</p><p>If the result is still missing, ask school staff to verify the student's status, result publication, and any activation or PIN requirement. Share the session and term so they can check the correct record.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 292
+  },
+  {
+    "name": "Why can a guardian not open a child's result?",
+    "code": "troubleshoot-guardian-cannot-open-child-result",
+    "description": "<p>Start from the guardian account, select the intended child from Dependants, and check the correct institution and result period. A guardian views a child's result in that dependant's context, not by signing in as the student.</p><p>If the result is not available, ask the school to confirm the guardian-child link, publication status, and any result activation requirement. Do not share student credentials as a workaround.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 293
+  },
+  {
+    "name": "Why is a result PIN not accepted?",
+    "code": "troubleshoot-result-pin-rejected",
+    "description": "<p>Re-enter the PIN carefully and confirm it was issued for the intended student and result period. A PIN may already be used, assigned to another student, or unavailable for a result the school has not published.</p><p>If it still fails, contact school staff with the student code and result period so they can review the PIN assignment and provide valid access where appropriate. Do not post the PIN publicly.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 294
+  },
+  {
+    "name": "What should I check if I cannot sign in to a student account?",
+    "code": "troubleshoot-student-sign-in",
+    "description": "<p>Use the separate Student Login page and enter the student credentials supplied by the school. Check the student code and institution, and make sure you are not using the staff or guardian sign-in path.</p><p>Use the available password reset option if it applies to the account. If access still fails, ask the school to confirm the student's account status and login details.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 295
+  },
+  {
+    "name": "Why is a dependant missing from my guardian account?",
+    "code": "troubleshoot-guardian-dependant-missing",
+    "description": "<p>Confirm that you are signed in to the guardian account and selected the correct institution. Check the Dependants list and search for the child using the details available in your account.</p><p>If the child is not listed, contact the school and ask staff to verify the guardian link and matching contact details on the student record. The school may need to add or correct the relationship.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 296
+  },
+  {
+    "name": "Why can students not see a lesson note?",
+    "code": "troubleshoot-student-cannot-see-lesson-note",
+    "description": "<p>Ask the teacher to confirm that the lesson note is saved and published. Students can only access material made available to their class and relevant subject.</p><p>If the note is published but remains unavailable, check that the student is signed in to the correct institution and belongs to the intended class. The teacher can review the note's class and publication settings.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 297
+  },
+  {
+    "name": "Why is an assignment missing from a student's list?",
+    "code": "troubleshoot-assignment-missing-for-student",
+    "description": "<p>Confirm that you are signed in to the student's own account and institution. The assignment must be available to the student's class and subject before it appears in the student's work list.</p><p>Ask the teacher to check the assignment's audience and publication details. If those are correct, provide the assignment title and class so the teacher can review its status.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 298
+  },
+  {
+    "name": "Why can a teacher not find an assignment submission?",
+    "code": "troubleshoot-submission-missing-from-teacher-list",
+    "description": "<p>Open the submissions for the correct assignment and confirm the student is in the class or subject audience. Ask the student to check that the work was submitted from their own account and that a submission status is shown.</p><p>If a submitted item is still missing, compare the assignment title, student account, and submission time, then contact school support with those details.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 299
+  },
+  {
+    "name": "What should I do if an assignment score or feedback looks incorrect?",
+    "code": "troubleshoot-assignment-score-or-feedback",
+    "description": "<p>Open the specific assignment submission and review the score and feedback shown there. Check that you are viewing the correct student and assignment.</p><p>If something still appears incorrect, contact the assigned teacher with the assignment title and a description of the issue. The teacher can reopen the submission and review or update its assessment where permitted.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 300
+  },
+  {
+    "name": "What should I check if an e-library item will not open?",
+    "code": "troubleshoot-e-library-item-will-not-open",
+    "description": "<p>Confirm the item is available to your class and open it from the school e-library. Uploaded files open from their resource entry; external links open at the destination supplied by the school.</p><p>If the resource is missing or its file or link is broken, tell a teacher or administrator the item title and what happens when you open it. They can check its class visibility and replace the resource if needed.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 301
+  },
+  {
+    "name": "How do I troubleshoot a lesson attachment that will not open?",
+    "code": "troubleshoot-lesson-attachment",
+    "description": "<p>Confirm that you can open the lesson itself and that it is available to your role. Retry the attachment from the lesson page.</p><p>If the file is unavailable, ask the lesson author to check the attachment and upload a replacement. Include the lesson title and attachment name when reporting the problem.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 302
+  },
+  {
+    "name": "What should I do if a live-class join link does not work?",
+    "code": "troubleshoot-live-class-join-link",
+    "description": "<p>Open the live-class entry for the correct class and scheduled time, then use the join link shown there. Check any meeting access instructions provided by the teacher.</p><p>If the link is incorrect, expired, or unavailable, contact the teacher or organizer and ask them to review the live-class details. EduManager can display the link supplied for the meeting but cannot repair an external meeting service.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 303
+  },
+  {
+    "name": "How do I check an incorrect or missing timetable entry?",
+    "code": "troubleshoot-timetable-entry",
+    "description": "<p>Confirm you opened the timetable for the intended class and institution. Check the day and time shown in the entry and refresh the class timetable.</p><p>If an entry is missing or incorrect, ask an authorized staff member to review the saved timetable details and update them. Students and teachers should not create a replacement entry unless they have timetable-edit access.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 304
+  },
+  {
+    "name": "Why is a school activity not visible?",
+    "code": "troubleshoot-school-activity-visibility",
+    "description": "<p>Check whether you are looking for the activity in the school staff area or on a public-facing page. Confirm the institution and the activity title.</p><p>Ask an authorized school user to verify that the activity was saved and is available in the relevant view. If the activity should be public, confirm the school has shared the correct public page.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 305
+  },
+  {
+    "name": "How do I correct attendance recorded on the wrong date?",
+    "code": "correct-attendance-wrong-date",
+    "description": "<p>Search attendance records for the person and the date that was recorded. Verify the class or attendance type before changing the entry.</p><p>Use the correction action available to an authorized staff member. Avoid adding a second attendance record as a workaround, since that can leave conflicting entries for the same person.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 306
+  },
+  {
+    "name": "Why is a student missing from the class attendance register?",
+    "code": "troubleshoot-student-missing-from-attendance-register",
+    "description": "<p>Confirm the selected class and attendance date, then search for the student in the student list. The register reflects the roster for the selected class.</p><p>If the student is assigned to another class or has an unexpected status, ask an administrator to review the student record before attendance is taken.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 307
+  },
+  {
+    "name": "Why does an attendance report show no entries?",
+    "code": "troubleshoot-empty-attendance-report",
+    "description": "<p>Check the institution, student or class, date range, and attendance type selected for the report. A narrow date range or a different class can make existing records appear absent.</p><p>If the filters are correct, review the attendance list for the same dates. Ask school staff to confirm whether attendance was recorded for that period.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 308
+  },
+  {
+    "name": "Why is a guardian not receiving attendance notifications?",
+    "code": "troubleshoot-missing-guardian-attendance-notification",
+    "description": "<p>Confirm the guardian is linked to the correct student and that the school has the guardian's current contact details. Attendance notifications depend on institution settings and enabled delivery channels.</p><p>Ask school staff to check the notification timing and channel configuration for the institution. The guardian can also review their account notifications and contact the school if a required contact detail is outdated.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 309
+  },
+  {
+    "name": "How do I troubleshoot a rejected attendance API request?",
+    "code": "troubleshoot-attendance-api-request",
+    "description": "<p>Confirm the request is authenticated for the intended institution and user, and that the account is allowed to submit the requested attendance type. Check the required person, date, and status fields against the integration documentation.</p><p>Retain the HTTP response status and error message, remove credentials from any shared logs, and ask the integration administrator to review the request. Do not repeatedly retry an invalid request without correcting its context or fields.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 310
+  },
+  {
+    "name": "What should I check if a school inbox notification is missing?",
+    "code": "troubleshoot-missing-school-notification",
+    "description": "<p>Confirm that you are signed in to the right account and institution, then open the received notifications list. Notifications addressed to a different account or audience will not appear in your inbox.</p><p>If the item is still missing, ask the sender to check the sent notification and intended audience. Share the notification topic and approximate send time with school support.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 311
+  },
+  {
+    "name": "How do I check whether a notification was sent to the right audience?",
+    "code": "troubleshoot-notification-audience",
+    "description": "<p>Open the sent-notification history and review the saved notification and its selected audience. Confirm that the recipient account belongs to the expected role, class, or group.</p><p>If the audience was incorrect, correct the recipient details before sending a new notification. Check with the intended recipients afterward; a sent record does not confirm that every external delivery channel received the message.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 312
+  },
+  {
+    "name": "Why can I not find a school chat conversation?",
+    "code": "troubleshoot-missing-school-chat",
+    "description": "<p>Check that you are in the correct institution and open Chats to review your conversation list. A thread may not be visible if your account was not included as a participant.</p><p>Ask another participant to confirm the conversation was created with your school account. If you still cannot access it, provide the participant names and institution to the school administrator.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 313
+  },
+  {
+    "name": "What should I check if a school SMS or email was not received?",
+    "code": "troubleshoot-school-sms-email-delivery",
+    "description": "<p>Confirm that the recipient's phone number or email address is current and that the message was sent using the intended channel. School message history can help identify the message and recipient group.</p><p>Ask the school administrator to check the institution's channel configuration and any provider status available. A saved message does not by itself confirm delivery to an inbox or phone.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 314
+  },
+  {
+    "name": "How do I troubleshoot a photo or document upload?",
+    "code": "troubleshoot-photo-document-upload",
+    "description": "<p>Confirm that you opened the correct student, staff, lesson, or application form and selected the intended file. Follow the file requirements displayed by that form and wait for the upload to finish before leaving the page.</p><p>If the upload fails again, note the page, file type, and displayed error and contact school support. Do not send private documents through an unrelated channel unless the school requests it securely.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 315
+  },
+  {
+    "name": "Why is an admission form missing from the public page?",
+    "code": "troubleshoot-public-admission-form-missing",
+    "description": "<p>Check that you opened the admission link shared by the intended school and confirm the institution name on the page. Search the available forms for the correct intake or academic period.</p><p>If the form is not listed, contact the school's admissions office to ask whether it is available to applicants. Staff can review the form's status and public application settings.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 316
+  },
+  {
+    "name": "How do I find an admission application after submitting it?",
+    "code": "troubleshoot-admission-application-not-found",
+    "description": "<p>Keep the application number shown after submission and confirm the school and admission form you used. The application is recorded under the institution whose public page you opened.</p><p>Contact the admissions office with the application number and applicant name. Staff can search the admission-application list and check whether the record was received.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 317
+  },
+  {
+    "name": "Why does an admission application still show an unpaid fee?",
+    "code": "troubleshoot-admission-fee-unpaid",
+    "description": "<p>Keep the application number and payment reference, then check the payment status shown in the application flow. A browser return from the payment provider does not always mean the payment has been verified.</p><p>Ask the admissions office to review the payment reference before trying again. This helps avoid paying twice while the first attempt is still being checked.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 318
+  },
+  {
+    "name": "What should I check if admission exam login fails?",
+    "code": "troubleshoot-admission-exam-login",
+    "description": "<p>Open Admission Exam Login and enter the event code and application number supplied by the school. Check that both values belong to the same institution and that the school has configured the exam.</p><p>If the values are correct but the exam will not start, contact the admissions office with the application number and event code for a review.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 319
+  },
+  {
+    "name": "Why is an admission letter unavailable?",
+    "code": "troubleshoot-admission-letter-unavailable",
+    "description": "<p>Confirm that you are opening the letter for the correct application and institution. Admission letters depend on the school's review and issuance of the letter for the applicant.</p><p>Contact the admissions office with the application number and ask whether the application status allows a letter to be issued. Staff can review the admission record and letter screen.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 320
+  },
+  {
+    "name": "Why is a vacancy missing from the public recruitment page?",
+    "code": "troubleshoot-public-vacancy-missing",
+    "description": "<p>Confirm that you are using the recruitment link for the intended school and check whether the vacancy appears in its public vacancy list. A vacancy that is not published or is no longer open may not be available to applicants.</p><p>Contact the school recruitment office to confirm the post's status and application period. Staff can review the vacancy post and its public listing.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 321
+  },
+  {
+    "name": "How do I find a submitted recruitment application?",
+    "code": "troubleshoot-recruitment-application-not-found",
+    "description": "<p>Keep the application number shown after submission and note the vacancy title and school. Recruitment applications are associated with the vacancy and institution where you applied.</p><p>Contact the recruitment office with those details and ask staff to search the applications for that vacancy. They can confirm whether the submission was received.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 322
+  },
+  {
+    "name": "How do I check an unclear recruitment application status?",
+    "code": "troubleshoot-recruitment-application-status",
+    "description": "<p>Use the application number and vacancy title when following up with the school. The recruitment team can review the status recorded for that application.</p><p>Ask the school to explain any status you do not understand and whether you need to take another step. Keep the application reference available until the process is complete.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 323
+  },
+  {
+    "name": "What should I check if recruitment exam login fails?",
+    "code": "troubleshoot-recruitment-exam-login",
+    "description": "<p>Open Recruitment Exam Login and enter the event code and recruitment application number supplied by the school. The event and application must belong to the same institution, and the exam must be configured.</p><p>If the login is still rejected, contact the recruitment office and ask them to verify both values and the exam event.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 324
+  },
+  {
+    "name": "Why is a fee payment still pending after checkout?",
+    "code": "troubleshoot-fee-payment-pending-after-checkout",
+    "description": "<p>Keep the payment reference and check the payment-attempt history for its current status. Payment verification may complete after the provider sends its confirmation, so returning to the school page does not always update the status immediately.</p><p>Use the available verification action or ask finance staff to check the reference before trying another payment. Do not treat a redirect alone as proof of payment.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 325
+  },
+  {
+    "name": "How do I follow up on a manual payment that is still pending?",
+    "code": "troubleshoot-manual-payment-pending",
+    "description": "<p>Open the manual-payment history or the reference link and check that the request is still pending. Keep the reference and the proof of transfer available.</p><p>Contact the school's finance office and ask them to review the submission. If the pending-payment page allows updates, use that page to replace or correct the proof rather than creating another request.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 326
+  },
+  {
+    "name": "What should I do after manual payment proof is rejected?",
+    "code": "troubleshoot-manual-payment-rejected",
+    "description": "<p>Read the rejection status or message and compare it with the transfer details and uploaded proof. Contact the school finance office if you need clarification about the decision.</p><p>If the reference-based pending-payment page still allows changes, update the proof there and retain the same reference. Otherwise, follow the school's instructions before submitting another payment request.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 327
+  },
+  {
+    "name": "Why can I not find a fee receipt?",
+    "code": "troubleshoot-fee-receipt-missing",
+    "description": "<p>Check the receipt list for the correct student account or selected dependant and confirm the payment reference and status. A payment that is still pending may not yet have a receipt.</p><p>If a confirmed payment has no receipt, contact school finance staff with the payment reference so they can review the payment record and receipt list.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 328
+  },
+  {
+    "name": "How do I check duplicate or repeated payment attempts?",
+    "code": "troubleshoot-duplicate-payment-attempts",
+    "description": "<p>Compare the references and statuses in your payment history before starting another checkout. Multiple attempts do not necessarily mean multiple successful charges.</p><p>If more than one transaction appears successful or you are unsure whether money was collected twice, contact the school finance office with each reference. Ask them to verify the attempts before making another payment.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 329
+  },
+  {
+    "name": "Why has a reserved-deposit account payment not appeared in the wallet?",
+    "code": "troubleshoot-reserved-deposit-not-reflected",
+    "description": "<p>Confirm the reserved account belongs to the user whose wallet you expect to fund, then compare the deposit details and transaction reference with the account information shown on the dashboard. This user's wallet is separate from the institution-group credit wallet.</p><p>If the deposit is not reflected, contact support or school finance staff with the account holder and transaction reference so they can review the deposit status. Do not share bank credentials or full account statements in a public message.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 330
+  }
+]

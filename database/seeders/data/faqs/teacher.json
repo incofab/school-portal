@@ -1,0 +1,122 @@
+[
+  {
+    "name": "What appears on the school dashboard?",
+    "code": "school-dashboard-overview",
+    "description": "<p>Open <strong>Dashboard</strong> in the school menu. Dashboard cards provide shortcuts and counts for areas such as staff, students, subjects, classes, results, and payments; the available cards depend on your institution role. School administrators also see charts about enrolment, classes, users, and fee payments.</p><p>Administrators and finance staff may see attention notices for pending manual payments, unread chats, or missing school bank accounts. Administrators can continue setup from the checklist alert. Teachers see academic tools allowed by their role. Guardians see their own wallet and reserved account details, while students see their own results and receipts.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 11
+  },
+  {
+    "name": "How do I use the Guide on a school page?",
+    "code": "contextual-page-guide",
+    "description": "<p>On a supported school page, select <strong>Guide</strong> in the dashboard header to open an explanation for that page. Read the overview and related guidance in the panel, then close it to return to your work.</p><p>The Guide button appears only on pages with a prepared explanation. If you do not see it, use the FAQ / Knowledge Base menu or ask your school administrator for help with that page.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 13
+  },
+  {
+    "name": "How do I find and review a staff account?",
+    "code": "find-staff-accounts",
+    "description": "<p>Open <strong>Staff → All Staff</strong>. Search by the staff member's name or use the role filter to narrow the list. The table shows available account details such as name, email, phone, role, and gender. Select a staff member's name to view their profile.</p><p>Administrators can edit staff records and manage accounts. Teachers can review the staff list, but profile access and actions depend on their role and permissions; ask an institution administrator if you cannot open a record.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 26
+  },
+  {
+    "name": "How do I review a teacher's subject assignments?",
+    "code": "review-teacher-subject-assignments",
+    "description": "<p>Open <strong>Subject → Subject Teachers</strong>. Teachers see their own assigned subjects and classes; institution administrators can review all assignments and filter by teacher, subject, or class. Open a row to use its available subject and class tools.</p><p>Teacher assignments determine which class-subject workflows are available, including result recording and lesson-planning tools. If an assignment is missing or incorrect, ask an institution administrator to add or change it.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 35
+  },
+  {
+    "name": "How do I add or update my staff bank account?",
+    "code": "staff-bank-accounts",
+    "description": "<p>When the option is available to your role, open <strong>Staff → My Bank Accounts</strong> and choose <strong>New</strong>. Select your bank, enter your account number, choose <strong>Validate</strong> to confirm the account name, and save. You can mark one account as your primary account.</p><p>Use this page for your personal staff bank details. The school's receiving bank accounts are managed separately under School Bank Accounts. Some bank-account changes may be unavailable while a withdrawal is linked to the account.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 36
+  },
+  {
+    "name": "How do I record or edit one student's result in one subject?",
+    "code": "record-student-subject-result",
+    "description": "<p>Open your assigned subject and class under <strong>Subject Teachers</strong>, then choose <strong>Record Results</strong>. Select the academic session, term, result type, and student. Enter the configured assessment scores and exam score, then save. Each score must be within its limit and the total must not exceed 100.</p><p>To edit a saved result, open it from <strong>Student Results</strong> and use the edit action. You can correct or delete a result only when the class result is open and you are assigned to that subject; otherwise ask the school administrator or form teacher to unlock or update it.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 71
+  },
+  {
+    "name": "How do I record results for every student in one subject?",
+    "code": "record-class-subject-results",
+    "description": "<p>Open your assigned subject and class under <strong>Subject Teachers</strong> and choose the class result-entry action. Select the result type, then enter the configured assessment and exam scores for each student shown in the class. Save when the entries are ready.</p><p>Check the academic session and term before saving. Scores are recorded for the selected subject and class; use the individual result workflow when you need to record or correct only one student's result.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 72
+  },
+  {
+    "name": "How do I download and fill a result recording spreadsheet?",
+    "code": "download-result-recording-sheet",
+    "description": "<p>Open your staff profile and choose <strong>Download Result Recording Sheet</strong>. Select the class, academic session, and term; choose the mid-term option if your school uses it, then download the Excel workbook. It contains student IDs and names plus columns for the configured assessment components and exam.</p><p>Enter scores in the matching columns and keep the student IDs and headings unchanged. Use the result type and academic period that match the workbook when recording or uploading scores. This workbook path remains available for offline and limited-connectivity support while spreadsheet entry is being phased down.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 73
+  },
+  {
+    "name": "How do I upload one subject's results from Excel?",
+    "code": "upload-course-results-excel",
+    "description": "<p>Open <strong>Student Results</strong> and choose <strong>Upload Results</strong>. Select the subject-teacher assignment, academic session, term, and result type, then upload the completed Excel workbook. The sheet uses student ID and name columns followed by the configured assessment and exam columns.</p><p>Keep the student IDs and column order unchanged, enter valid scores within the assessment limits, and upload only the result type selected in the form. Spreadsheet upload remains available for offline and limited-connectivity workflows while online entry is being phased down.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 74
+  },
+  {
+    "name": "How do I upload a whole class's results from Excel?",
+    "code": "upload-class-results-excel",
+    "description": "<p>Open <strong>Class Result Analysis</strong> and choose <strong>Upload Class Sheet</strong>. Select the academic session, term, and class, then upload a workbook with student IDs in column A, names in column B, and a score column for each subject. Keep the subject headings in the format expected by your school's subject records.</p><p>This class sheet uploads one score per student and subject across the class. It is different from <strong>Upload Results</strong>, which uploads assessment and exam components for one subject-teacher assignment. Review the class and result period before submitting. This spreadsheet path remains implemented for offline and limited-connectivity support while spreadsheet entry is being phased down.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 75
+  },
+  {
+    "name": "How do I record one student's results across several subjects?",
+    "code": "record-student-multiple-subject-results",
+    "description": "<p>Open <strong>Student Results</strong> and choose <strong>Record Student Subjects</strong>. Select the student, academic session, term, and result type. EduManager loads the subjects available for that student's class; a teacher sees the subjects assigned to them, while an administrator can work with the class offerings.</p><p>Enter the assessment and exam scores for each subject, then save. Existing results for the selected student and period are loaded so you can review or update them together.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 76
+  },
+  {
+    "name": "How do I choose mid-term or full-term result entry?",
+    "code": "select-result-entry-mode",
+    "description": "<p>When mid-term results are enabled for your school, choose <strong>Mid-Term</strong> or <strong>Full Term</strong> before entering or uploading scores. The selected type controls which assessment components and existing scores are shown. If mid-term results are disabled, the page records full-term results.</p><p>Exam fields appear according to the school's result settings. Check the selected type, session, and term before saving so scores go into the intended result record.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 77
+  },
+  {
+    "name": "Why do existing scores load when I select a student or result period?",
+    "code": "load-existing-result-scores",
+    "description": "<p>EduManager looks for a result matching the selected student, subject, class, academic session, term, and mid-term or full-term type. If a matching result exists, its assessment and exam scores appear so you can review or edit them; otherwise the fields are blank for a new entry.</p><p>Changing a selection reloads the page and temporarily disables the form while the matching data is fetched. Wait for loading to finish before editing, and save your work before changing the selection because unsaved edits may be lost.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 78
+  },
+  {
+    "name": "How do I review or download recorded subject results?",
+    "code": "review-course-results",
+    "description": "<p>Open <strong>Student Results</strong> to review individual subject-result rows. Filter by student, subject, class, academic session, term, or result type to find scores, assessment values, grades, and positions. Use the row actions to edit or delete a result when your role allows it and the class result is unlocked.</p><p>To download a subject results workbook, select the subject, class, session, and term filters first, then choose <strong>Download</strong>. Use <strong>Course Result Info</strong> or <strong>Class Result Analysis</strong> for class-level summaries.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 79
+  },
+  {
+    "name": "How do I calculate a class's term results?",
+    "code": "calculate-class-term-results",
+    "description": "<p>After subject scores are recorded, open <strong>Class Result Analysis</strong> and choose <strong>Calculate</strong>. Select the class or classes, academic session, term, and result type, then choose <strong>Evaluate</strong>. Enable the option to calculate the term result with missing subject results only when your school intends to process an incomplete set.</p><p>EduManager calculates class totals and averages, processes term-result records, and assigns grades and positions from the available scores. A successfully calculated class result is locked; review the class, session, and term before processing.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 80
+  }
+]

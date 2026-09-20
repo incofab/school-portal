@@ -6211,6 +6211,38 @@
         <h2>Current Feature Notes</h2>
         <ul class="detail-list">
           <li>
+            <div><strong>AI assistant interface</strong></div>
+            <div class="desc">
+              <code>resources/js/components/ai-assistant/assistant-page.tsx</code>
+              is the shared surface rendered by
+              <code>resources/js/pages/assistant/index.tsx</code> (guest, no
+              dashboard chrome) and
+              <code>resources/js/pages/institutions/assistant/index.tsx</code>
+              (authenticated, inside <code>DashboardLayout</code>). It provides
+              free-form composition with a character counter and Ctrl/Cmd+Enter
+              send, optional role-aware suggestion chips, a progressive
+              in-flight turn indicator, clarification / verified-source /
+              "what I checked" tool cards, a confirmation dialog listing each
+              field an action will change, retry after a provider failure,
+              copy and helpful/not-helpful feedback per answer, and rename,
+              archive, and permanent-delete controls. Conversation history is a
+              sidebar at <code>lg</code> and above and a
+              <code>Drawer</code> below it; the transcript is an
+              <code>aria-live</code> log and dialogs manage initial focus.
+              Manager diagnostics live at
+              <code>resources/js/pages/managers/ai-assistant/diagnostics.tsx</code>,
+              linked from
+              <code>resources/js/layout/managers/manager-sidebar-layout.tsx</code>
+              for manager admins. Assistant types are in
+              <code>resources/js/types/models.ts</code>
+              (<code>AiAssistantConversation</code>,
+              <code>AiAssistantMessage</code>,
+              <code>AiAssistantAction</code>,
+              <code>AiAssistantFeedback</code>,
+              <code>AiAssistantToolObservation</code>).
+            </div>
+          </li>
+          <li>
             <div><strong>Manager academic sessions</strong></div>
             <div class="desc">
               Manager UI includes

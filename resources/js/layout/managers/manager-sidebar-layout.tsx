@@ -135,6 +135,11 @@ export default function ManagerSideBarLayout() {
     //   ],
     // },
     {
+      label: 'AI Assistant Diagnostics',
+      route: route('managers.ai-assistant.diagnostics'),
+      roles: [ManagerRole.ManagerAdmin],
+    },
+    {
       label: 'Knowledge Base',
       route: route('knowledge-base'),
     },

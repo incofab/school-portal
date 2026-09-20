@@ -1386,6 +1386,110 @@ export interface ChatComposerOptions {
   staffTargets: ChatComposerTarget[];
 }
 
+export interface AiAssistantMessage {
+  id: string;
+  role: 'user' | 'assistant' | string;
+  content: string;
+  created_at?: string | null;
+  grounded?: boolean;
+  sources?: AiAssistantSource[];
+  clarification?: AiAssistantClarification | null;
+  tools?: AiAssistantToolObservation[];
+  action?: AiAssistantAction | null;
+  feedback?: AiAssistantFeedback | null;
+  links?: {
+    feedback: string;
+  };
+  memory?: {
+    topic?: string | null;
+    entities?: Record<string, string>;
+    correction?: boolean;
+    topic_changed?: boolean;
+  } | null;
+}
+
+export interface AiAssistantFeedback {
+  rating: 'helpful' | 'not_helpful' | string;
+  note?: string | null;
+  recorded_at?: string | null;
+}
+
+export interface AiAssistantAction {
+  id: string;
+  tool: string;
+  status: 'pending' | 'executed' | 'failed' | 'cancelled' | string;
+  idempotency_key?: string;
+  confirmation_token?: string;
+  preview?: {
+    title?: string;
+    summary?: string;
+    changes?: Record<string, unknown>;
+  };
+  result?: {
+    ok?: boolean;
+    message?: string;
+    data?: Record<string, unknown>;
+    meta?: Record<string, unknown>;
+  } | null;
+  links?: {
+    confirm: string;
+    cancel: string;
+  };
+}
+
+export interface AiAssistantClarification {
+  question: string;
+  required: string[];
+  topic: string;
+}
+
+export interface AiAssistantToolObservation {
+  name: string;
+  arguments?: Record<string, unknown>;
+  result: {
+    ok: boolean;
+    message: string;
+    data?: Record<string, unknown>;
+    meta?: Record<string, unknown>;
+  };
+}
+
+export interface AiAssistantSource {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt?: string;
+  score?: number;
+  url?: string | null;
+}
+
+export interface AiAssistantConversationLinks {
+  self: string;
+  messages: string;
+  update: string;
+  archive: string;
+  delete: string;
+}
+
+export interface AiAssistantConversationSummary {
+  id: string;
+  title: string;
+  updated_at?: string | null;
+  archived_at?: string | null;
+  topic?: string | null;
+  links: AiAssistantConversationLinks;
+}
+
+export interface AiAssistantConversation
+  extends AiAssistantConversationSummary {
+  memory?: {
+    summary?: string | null;
+    summary_updated_at?: string | null;
+    entities?: Record<string, string>;
+  };
+  messages: AiAssistantMessage[];
+}
+
 export interface ReservedAccount extends Row {
   reservable_id: number;
   reservable_type: string;

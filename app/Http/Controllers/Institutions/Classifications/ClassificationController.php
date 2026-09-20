@@ -110,7 +110,7 @@ class ClassificationController extends Controller
   function destroy(Institution $institution, Classification $classification)
   {
     $numOfStudents = $classification->students()->count();
-    abort_unless($numOfStudents > 0, 403, 'This class contains some students');
+    abort_if($numOfStudents > 0, 403, 'This class contains some students');
     $classification->delete();
     return $this->ok();
   }

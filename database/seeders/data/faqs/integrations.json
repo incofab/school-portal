@@ -1,0 +1,10 @@
+[
+  {
+    "name": "How do payment-provider callbacks and webhooks update payment status?",
+    "code": "understand-payment-provider-callbacks-webhooks",
+    "description": "<p>Paystack, Monnify, and PaymentPoint send callback or webhook requests containing a transaction reference and provider status. EduManager uses the reference to locate the payment record and process or verify the transaction; reserved-account deposits follow their configured account and transaction checks.</p><p>Integration operators should register the application's configured callback/webhook URLs with the provider and keep the matching credentials and signature settings current. Reconcile a transaction in Payment Attempts by its reference; do not treat a browser redirect alone as proof of payment.</p>",
+    "video_url": null,
+    "is_active": true,
+    "sort_order": 271
+  }
+]
