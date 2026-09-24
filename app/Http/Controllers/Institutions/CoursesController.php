@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseTeacher;
 use App\Models\CourseSession;
+use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\Question;
 use App\Models\Topic;
@@ -59,35 +60,80 @@ class CoursesController extends Controller
     ]);
   }
 
-  public function lessonNotes(Institution $institution, Course $course)
-  {
+  public function lessonNotes(
+    Institution $institution,
+    Course $course,
+    Request $request
+  ) {
     $institutionUser = currentInstitutionUser();
-    $query = $course
-      ->lessonNotes()
-      ->with([
-        'classification',
-        'courseTeacher.user',
-        'lessonPlan.schemeOfWork.topic',
-        'media'
-      ])
-      ->latest('lesson_notes.id');
+    $student = null;
+    $classificationQuery = Classification::query()->orderBy('title');
 
     if ($institutionUser->isStudent()) {
       $student = $institutionUser->student()->first();
-      $query->where('classification_id', $student?->classification_id);
-    } elseif ($institutionUser->isTeacher()) {
-      $query->whereIn(
-        'course_teacher_id',
-        CourseTeacher::query()
-          ->where('user_id', $institutionUser->user_id)
-          ->where('course_id', $course->id)
-          ->pluck('id')
+      $classificationQuery->whereKey($student?->classification_id);
+    } else {
+      $courseTeacherQuery = CourseTeacher::query()->where(
+        'course_id',
+        $course->id
       );
+
+      if ($institutionUser->isTeacher()) {
+        $courseTeacherQuery->where('user_id', $institutionUser->user_id);
+      }
+
+      $classificationQuery->whereIn(
+        'id',
+        $courseTeacherQuery->select('classification_id')
+      );
+    }
+
+    $classifications = $classificationQuery->get(['id', 'title']);
+    $requestedClassificationId = $request->integer('classification_id') ?: null;
+    if ($classifications->count() === 1 && !$requestedClassificationId) {
+      $requestedClassificationId = $classifications->first()->id;
+    }
+    $selectedClassificationId = $classifications->contains(
+      'id',
+      $requestedClassificationId
+    )
+      ? $requestedClassificationId
+      : null;
+
+    $lessonNotes = collect();
+
+    if ($selectedClassificationId) {
+      $query = $course
+        ->lessonNotes()
+        ->with([
+          'classification',
+          'courseTeacher.user',
+          'lessonPlan.schemeOfWork.topic',
+          'media'
+        ])
+        ->where('classification_id', $selectedClassificationId)
+        ->latest('lesson_notes.id');
+
+      if ($institutionUser->isStudent()) {
+        $query->where('classification_id', $student?->classification_id);
+      } elseif ($institutionUser->isTeacher()) {
+        $query->whereIn(
+          'course_teacher_id',
+          CourseTeacher::query()
+            ->where('user_id', $institutionUser->user_id)
+            ->where('course_id', $course->id)
+            ->pluck('id')
+        );
+      }
+
+      $lessonNotes = $query->get();
     }
 
     return Inertia::render('institutions/courses/list-course-lesson-notes', [
       'course' => $course,
-      'lessonNotes' => $query->get()
+      'classifications' => $classifications,
+      'selectedClassificationId' => $selectedClassificationId,
+      'lessonNotes' => $lessonNotes
     ]);
   }
 

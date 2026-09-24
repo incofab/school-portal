@@ -83,15 +83,30 @@ it('lists lesson notes for a selected subject', function () {
       'title' => 'Cell Structure Lesson Note'
     ]);
 
+  $lessonNotesUrl = route('institutions.courses.lesson-notes', [
+    $this->institution,
+    $course
+  ]);
+
   actingAs($this->admin)
-    ->get(
-      route('institutions.courses.lesson-notes', [$this->institution, $course])
-    )
+    ->get($lessonNotesUrl)
+    ->assertOk()
+    ->assertInertia(
+      fn(Assert $page) => $page
+        ->component('institutions/courses/list-course-lesson-notes')
+        ->has('classifications', 1)
+        ->has('lessonNotes', 0)
+        ->where('selectedClassificationId', null)
+    );
+
+  actingAs($this->admin)
+    ->get($lessonNotesUrl . '?classification_id=' . $classification->id)
     ->assertOk()
     ->assertInertia(
       fn(Assert $page) => $page
         ->component('institutions/courses/list-course-lesson-notes')
         ->where('course.id', $course->id)
+        ->where('selectedClassificationId', $classification->id)
         ->has('lessonNotes', 1)
         ->where('lessonNotes.0.id', $lessonNote->id)
         ->where('lessonNotes.0.title', 'Cell Structure Lesson Note')

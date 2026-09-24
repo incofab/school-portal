@@ -6,14 +6,19 @@ import {
   Badge,
   Box,
   Divider,
+  FormControl,
+  FormHelperText,
+  FormLabel,
   Heading,
+  Select,
   SimpleGrid,
   Stack,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
-import { Course, LessonNote } from '@/types/models';
+import { Inertia } from '@inertiajs/inertia';
+import { Classification, Course, LessonNote } from '@/types/models';
 import MediaAttachmentsList from '@/components/media-attachments-list';
 import DateTimeDisplay from '@/components/date-time-display';
 import { NoteStatusType } from '@/types/types';
@@ -22,11 +27,25 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 
 interface Props {
   course: Course;
+  classifications: Classification[];
+  selectedClassificationId?: number | null;
   lessonNotes: LessonNote[];
 }
 
-export default function ListCourseLessonNotes({ course, lessonNotes }: Props) {
+export default function ListCourseLessonNotes({
+  course,
+  classifications,
+  selectedClassificationId,
+  lessonNotes,
+}: Props) {
   const { instRoute } = useInstitutionRoute();
+
+  function visitWithClassification(classificationId?: number) {
+    Inertia.visit(instRoute('courses.lesson-notes', [course.id]), {
+      data: classificationId ? { classification_id: classificationId } : {},
+      preserveScroll: true,
+    });
+  }
 
   return (
     <DashboardLayout>
@@ -58,13 +77,49 @@ export default function ListCourseLessonNotes({ course, lessonNotes }: Props) {
             </Box>
           </Stack>
 
-          {lessonNotes.length === 0 ? (
+          <FormControl maxW={{ base: '100%', md: '360px' }}>
+            <FormLabel htmlFor="lesson-notes-class">Class</FormLabel>
+            <Select
+              id="lesson-notes-class"
+              placeholder="Select a class"
+              value={selectedClassificationId ?? ''}
+              onChange={(event) =>
+                visitWithClassification(
+                  event.target.value ? Number(event.target.value) : undefined
+                )
+              }
+            >
+              {classifications.map((classification) => (
+                <option key={classification.id} value={classification.id}>
+                  {classification.title}
+                </option>
+              ))}
+            </Select>
+            <FormHelperText>
+              Select a class to view its lesson notes.
+            </FormHelperText>
+          </FormControl>
+
+          {!selectedClassificationId ? (
             <Alert status="info" rounded="md">
               <AlertIcon />
               <Box>
-                <Text fontWeight="semibold">No lesson notes found</Text>
+                <Text fontWeight="semibold">Select a class to continue</Text>
                 <Text fontSize="sm">
-                  Lesson notes created for {course.title} will appear here.
+                  Choose a class above to view its lesson notes for{' '}
+                  {course.title}.
+                </Text>
+              </Box>
+            </Alert>
+          ) : lessonNotes.length === 0 ? (
+            <Alert status="info" rounded="md">
+              <AlertIcon />
+              <Box>
+                <Text fontWeight="semibold">
+                  No lesson notes found for this class
+                </Text>
+                <Text fontSize="sm">
+                  Lesson notes created for this class will appear here.
                 </Text>
               </Box>
             </Alert>
