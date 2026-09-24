@@ -59,6 +59,38 @@ class CoursesController extends Controller
     ]);
   }
 
+  public function lessonNotes(Institution $institution, Course $course)
+  {
+    $institutionUser = currentInstitutionUser();
+    $query = $course
+      ->lessonNotes()
+      ->with([
+        'classification',
+        'courseTeacher.user',
+        'lessonPlan.schemeOfWork.topic',
+        'media'
+      ])
+      ->latest('lesson_notes.id');
+
+    if ($institutionUser->isStudent()) {
+      $student = $institutionUser->student()->first();
+      $query->where('classification_id', $student?->classification_id);
+    } elseif ($institutionUser->isTeacher()) {
+      $query->whereIn(
+        'course_teacher_id',
+        CourseTeacher::query()
+          ->where('user_id', $institutionUser->user_id)
+          ->where('course_id', $course->id)
+          ->pluck('id')
+      );
+    }
+
+    return Inertia::render('institutions/courses/list-course-lesson-notes', [
+      'course' => $course,
+      'lessonNotes' => $query->get()
+    ]);
+  }
+
   public function search(Institution $institution, Request $request)
   {
     $query = Course::query()->when(

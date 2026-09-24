@@ -30,6 +30,7 @@
 
 				<div id="question-segments" data-max-segments="6">
 					@foreach ($questionSegments as $index => $segment)
+						@php($segmentError = $errors->first('question_segments.' . $index))
 						<div class="question-segment border rounded p-3 mb-3" data-segment>
 							<div class="d-flex justify-content-between align-items-center mb-2">
 								<label for="question-segment-{{$index + 1}}" class="font-weight-bold mb-0">
@@ -44,7 +45,17 @@
 							</div>
 							<textarea name="question_segments[]" id="question-segment-{{$index + 1}}"
 								rows="18" class="form-control segmented-question-editor"
-								aria-label="Question segment {{$index + 1}}">{{ $segment }}</textarea>
+								aria-label="Question segment {{$index + 1}}"
+								aria-describedby="question-segment-error-{{$index + 1}}">{{ $segment }}</textarea>
+							<div class="d-flex justify-content-between mt-1">
+								<small class="text-muted" data-character-count aria-live="polite">
+									0/2,500 characters
+								</small>
+							</div>
+							<div id="question-segment-error-{{$index + 1}}"
+								class="text-danger small mt-1" data-character-error role="alert" {{$segmentError ? '' : 'hidden'}}>
+								{{$segmentError ?: 'This segment has exceeded the 2,500-character limit. Click “Add segment” to continue entering the remaining content in another segment.'}}
+							</div>
 						</div>
 					@endforeach
 				</div>
@@ -121,6 +132,7 @@
 		var countLabel = document.getElementById('question-segment-count');
 		var submitButton = document.getElementById('submit-segmented-questions');
 		var maxSegments = Number(segmentsContainer?.dataset.maxSegments || 6);
+		var maxCharacters = 2500;
 		var editorHeight = 460;
 		var nextSegmentId = segmentsContainer?.querySelectorAll('[data-segment]').length + 1 || 1;
 
@@ -132,15 +144,65 @@
 			return Array.from(segmentsContainer.querySelectorAll('[data-segment]'));
 		}
 
+		function countCharacters(value) {
+			var container = document.createElement('div');
+			container.innerHTML = value || '';
+			var text = container.textContent || container.innerText || '';
+
+			return Array.from(text).length;
+		}
+
+		function updateCharacterCount(textarea, value) {
+			if (!textarea) {
+				return false;
+			}
+
+			var segmentCard = textarea.closest('[data-segment]');
+			var countElement = segmentCard?.querySelector('[data-character-count]');
+			var errorElement = segmentCard?.querySelector('[data-character-error]');
+			var characterCount = countCharacters(value ?? textarea.value);
+			var isOverLimit = characterCount > maxCharacters;
+
+			if (countElement) {
+				countElement.textContent = characterCount.toLocaleString() + '/' + maxCharacters.toLocaleString() + ' characters';
+				countElement.classList.toggle('text-danger', isOverLimit);
+				countElement.classList.toggle('text-muted', !isOverLimit);
+			}
+			if (errorElement) {
+				errorElement.hidden = !isOverLimit;
+			}
+
+			textarea.setAttribute('aria-invalid', isOverLimit ? 'true' : 'false');
+
+			return isOverLimit;
+		}
+
 		function initEditor(textarea) {
-			if (!textarea || !window.initTinymce) {
+			if (!textarea) {
+				return;
+			}
+
+			textarea.addEventListener('input', function () {
+				updateCharacterCount(textarea);
+			});
+			updateCharacterCount(textarea);
+
+			if (!window.initTinymce) {
 				return;
 			}
 
 			window.initTinymce('#' + textarea.id, {
 				height: editorHeight,
 				menubar: true,
-				content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+				content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+				setup: function (editor) {
+					editor.on('init', function () {
+						updateCharacterCount(textarea, editor.getContent({format: 'text'}));
+					});
+					editor.on('input change keyup undo redo', function () {
+						updateCharacterCount(textarea, editor.getContent({format: 'text'}));
+					});
+				}
 			});
 		}
 
@@ -167,6 +229,11 @@
 				}
 				if (textarea) {
 					textarea.setAttribute('aria-label', 'Question segment ' + segmentNumber);
+					textarea.setAttribute('aria-describedby', 'question-segment-error-' + segmentNumber);
+					var characterError = card.querySelector('[data-character-error]');
+					if (characterError) {
+						characterError.id = 'question-segment-error-' + segmentNumber;
+					}
 				}
 			});
 		}
@@ -184,12 +251,14 @@
 			card.setAttribute('data-segment', '');
 			card.innerHTML =
 				'<div class="d-flex justify-content-between align-items-center mb-2">' +
-					'<label for="question-segment-' + segmentId + '" class="font-weight-bold mb-0">Segment ' + segmentNumber + '</label>' +
+				'<label for="question-segment-' + segmentId + '" class="font-weight-bold mb-0">Segment ' + segmentNumber + '</label>' +
 					'<button type="button" class="btn btn-outline-danger btn-sm remove-question-segment" aria-label="Remove segment ' + segmentNumber + '">' +
 						'<i class="fa fa-trash" aria-hidden="true"></i><span class="ml-1">Remove</span>' +
 					'</button>' +
 				'</div>' +
-				'<textarea name="question_segments[]" id="question-segment-' + segmentId + '" rows="18" class="form-control segmented-question-editor" aria-label="Question segment ' + segmentNumber + '"></textarea>';
+				'<textarea name="question_segments[]" id="question-segment-' + segmentId + '" rows="18" class="form-control segmented-question-editor" aria-label="Question segment ' + segmentNumber + '" aria-describedby="question-segment-error-' + segmentNumber + '"></textarea>' +
+				'<div class="d-flex justify-content-between mt-1"><small class="text-muted" data-character-count aria-live="polite">0/2,500 characters</small></div>' +
+				'<div id="question-segment-error-' + segmentNumber + '" class="text-danger small mt-1" data-character-error role="alert" hidden>This segment has exceeded the 2,500-character limit. Click “Add segment” to continue entering the remaining content in another segment.</div>';
 
 			segmentsContainer.appendChild(card);
 			initEditor(card.querySelector('textarea'));
@@ -220,6 +289,19 @@
 		form.addEventListener('submit', function (event) {
 			if (window.tinymce) {
 				window.tinymce.triggerSave();
+			}
+			var overLimitCard = getSegmentCards().find(function (card) {
+				var textarea = card.querySelector('textarea');
+				var editor = textarea && window.tinymce ? window.tinymce.get(textarea.id) : null;
+				return updateCharacterCount(
+					textarea,
+					editor ? editor.getContent({format: 'text'}) : textarea?.value
+				);
+			});
+			if (overLimitCard) {
+				event.preventDefault();
+				overLimitCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+				return;
 			}
 			var hasContent = getSegmentCards().some(function (card) {
 				var textarea = card.querySelector('textarea');

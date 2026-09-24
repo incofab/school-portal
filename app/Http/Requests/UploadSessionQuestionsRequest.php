@@ -13,10 +13,57 @@ use Illuminate\Validation\ValidationException;
 
 class UploadSessionQuestionsRequest extends FormRequest
 {
+  public const MAX_SEGMENT_CHARACTERS = 2500;
+
   protected function prepareForValidation()
   {
     $this->handleUploadedFile();
+
+    if (!$this->hasFile('file') && $this->segmentsExceedCharacterLimit()) {
+      return;
+    }
+
     $this->handleQuestionSegments();
+  }
+
+  public function withValidator($validator): void
+  {
+    $validator->after(function ($validator) {
+      if ($this->hasFile('file')) {
+        return;
+      }
+
+      foreach (Arr::wrap($this->input('question_segments')) as $index => $segment) {
+        if (!$this->segmentsExceedCharacterLimit($segment)) {
+          continue;
+        }
+
+        $validator->errors()->add(
+          "question_segments.$index",
+          'This segment has exceeded the 2,500-character limit. Click “Add segment” to continue entering the remaining content in another segment.'
+        );
+      }
+    });
+  }
+
+  private function segmentsExceedCharacterLimit(?string $segment = null): bool
+  {
+    $segments = $segment === null
+      ? Arr::wrap($this->input('question_segments'))
+      : [$segment];
+
+    foreach ($segments as $item) {
+      if (!is_string($item)) {
+        continue;
+      }
+
+      $text = html_entity_decode(strip_tags($item), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+      if (mb_strlen($text) > self::MAX_SEGMENT_CHARACTERS) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private function handleUploadedFile()

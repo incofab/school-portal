@@ -1,5 +1,13 @@
-import React from 'react';
-import { FormControl, VStack, Checkbox, HStack } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import {
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  VStack,
+  Checkbox,
+  HStack,
+  Text,
+} from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import useWebForm from '@/hooks/use-web-form';
 import { preventNativeSubmit } from '@/util/util';
@@ -15,6 +23,10 @@ import { Input } from '@chakra-ui/react';
 import { NoteStatusType } from '@/types/types';
 import TinyMceEditor from '@/components/tinymce-editor';
 import { Div } from '@/components/semantic';
+import FileDropper from '@/components/file-dropper';
+import FileObject from '@/components/file-dropper/file-object';
+import { FileDropperType } from '@/components/file-dropper/common';
+import MediaAttachmentsList from '@/components/media-attachments-list';
 
 interface Props {
   lessonPlan?: LessonPlan;
@@ -24,6 +36,7 @@ interface Props {
 export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
   const { handleResponseToast, toastError } = useMyToast();
   const { instRoute } = useInstitutionRoute();
+  const [lessonNoteFiles, setLessonNoteFiles] = useState<FileObject[]>([]);
 
   const webForm = useWebForm({
     lesson_plan_id: lessonPlan ? lessonPlan.id : lessonNote?.lesson_plan?.id,
@@ -56,12 +69,38 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
   const topicId = lessonNote
     ? lessonNote.topic_id
     : lessonPlan?.scheme_of_work?.topic_id;
+  const fileError = (webForm.errors as Record<string, string>).file;
 
   const submit = async () => {
     const res = await webForm.submit((data, web) => {
+      if (lessonNote || lessonNoteFiles.length === 0) {
+        return web.post(
+          instRoute('lesson-notes.store-or-update', lessonNote ?? [lessonNote]),
+          data
+        );
+      }
+
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value === undefined || value === null || value === '') {
+          return;
+        }
+
+        formData.append(
+          key,
+          typeof value === 'boolean' ? (value ? '1' : '0') : String(value)
+        );
+      });
+      formData.append(
+        'file',
+        lessonNoteFiles[0].file,
+        lessonNoteFiles[0].getNameWithExtension()
+      );
+
       return web.post(
         instRoute('lesson-notes.store-or-update', lessonNote ?? [lessonNote]),
-        data
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
     });
 
@@ -162,6 +201,39 @@ export default function CreateOrUpdateEvent({ lessonPlan, lessonNote }: Props) {
                   />
                 </HStack>
               </FormControl>
+
+              {!lessonNote && (
+                <FormControl isInvalid={!!fileError}>
+                  <FormLabel mb={0}>Supporting document</FormLabel>
+                  <FileDropper
+                    files={lessonNoteFiles}
+                    onChange={(files) => setLessonNoteFiles(files.slice(0, 1))}
+                    accept={[FileDropperType.Media]}
+                    multiple={false}
+                    canRename={false}
+                    maxSize={10 * 1024 * 1024}
+                    isLoading={webForm.processing}
+                  />
+                  <Text fontSize="sm" color="blackAlpha.700" mt={1}>
+                    Optional. Images and supported documents up to 10MB can be
+                    attached while creating the note.
+                  </Text>
+                  <FormErrorMessage>{fileError}</FormErrorMessage>
+                </FormControl>
+              )}
+
+              {lessonNote && (
+                <FormControl>
+                  <FormLabel mb={0}>Current attachment</FormLabel>
+                  <Text fontSize="sm" color="blackAlpha.700" mb={2}>
+                    Attachments cannot be changed while editing a lesson note.
+                  </Text>
+                  <MediaAttachmentsList
+                    media={lessonNote.media}
+                    emptyText="No document attached."
+                  />
+                </FormControl>
+              )}
 
               <FormControl>
                 <Checkbox

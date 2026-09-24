@@ -2,6 +2,7 @@
 
 namespace App\Actions\CourseResult;
 
+use App\Enums\AiModels;
 use App\Models\ClassResultInfo;
 use App\Models\CourseResult;
 use App\Models\TermResult;
@@ -52,7 +53,8 @@ class GenerateAiTermResultComments
     $raw = trimAiResponse(
       generateAiText(
         $prompt,
-        'You are an experienced school teacher and principal writing student result comments.'
+        'You are an experienced school teacher and principal writing student result comments.',
+        AiModels::small()
       )
     );
     $decoded = json_decode($raw, true);

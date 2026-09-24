@@ -2,6 +2,8 @@
 
 namespace App\Actions\Questions;
 
+use App\Enums\AiModels;
+
 class ConvertTextToQuestions
 {
   public function run(string $content): array
@@ -17,7 +19,8 @@ class ConvertTextToQuestions
     $raw = trimAiResponse(
       generateAiText(
         $prompt,
-        'You are a well qualified school teacher and expert at formatting exam questions.'
+        'You are a well qualified school teacher and expert at formatting exam questions.',
+        AiModels::small()
       )
     );
     $decoded = json_decode($raw, true);

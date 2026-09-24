@@ -89,6 +89,7 @@ it('tests the index page', function () {
     ->assertInertia(function (AssertableInertia $assert) {
       return $assert
         ->has('lessonNotes')
+        ->has('lessonPlans')
         ->has('classificationGroups')
         ->component('institutions/lesson-notes/list-lesson-notes');
     });
@@ -100,10 +101,35 @@ it('tests the index page', function () {
     ->assertInertia(function (AssertableInertia $assert) {
       return $assert
         ->has('lessonNotes')
+        ->has('lessonPlans')
         ->has('classificationGroups')
         ->component('institutions/lesson-notes/list-lesson-notes');
     });
 });
+
+it(
+  'provides lesson plans without notes for the new lesson note picker',
+  function () {
+    $availableLessonPlan = LessonPlan::factory()
+      ->schemeOfWork($this->schemeOfWork)
+      ->create(['course_teacher_id' => $this->courseTeacher->id]);
+
+    $route = route('institutions.lesson-notes.index', [
+      'institution' => $this->institution->uuid
+    ]);
+
+    actingAs($this->admin)
+      ->getJson($route)
+      ->assertOk()
+      ->assertInertia(function (AssertableInertia $assert) use (
+        $availableLessonPlan
+      ) {
+        return $assert
+          ->has('lessonPlans', 1)
+          ->where('lessonPlans.0.id', $availableLessonPlan->id);
+      });
+  }
+);
 
 it('tests the create page', function () {
   $newLessonPlan = LessonPlan::factory()
@@ -213,6 +239,49 @@ it('stores lesson note data', function () {
   assertDatabaseHas('lesson_notes', $dLessonNote);
 });
 
+it(
+  'creates a lesson note and stores its attachment in the same request',
+  function () {
+    Storage::fake('s3_public');
+
+    $availableLessonPlan = LessonPlan::factory()
+      ->schemeOfWork($this->schemeOfWork)
+      ->create(['course_teacher_id' => $this->courseTeacher->id]);
+
+    $route = route('institutions.lesson-notes.store-or-update', [
+      'institution' => $this->institution->uuid
+    ]);
+
+    $response = actingAs($this->admin)->post($route, [
+      'lesson_plan_id' => $availableLessonPlan->id,
+      'title' => 'Lesson note with attachment',
+      'content' => '<p>Lesson content</p>',
+      'is_published' => true,
+      'is_used_by_classification_group' => false,
+      'is_used_by_institution_group' => false,
+      'file' => UploadedFile::fake()->create(
+        'lesson-note.docx',
+        20,
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      )
+    ]);
+
+    $response->assertOk();
+
+    $lessonNote = LessonNote::query()
+      ->where('title', 'Lesson note with attachment')
+      ->firstOrFail();
+
+    $response->assertJsonPath('lessonNote.id', $lessonNote->id);
+    assertDatabaseHas('media', [
+      'mediable_type' => $lessonNote->getMorphClass(),
+      'mediable_id' => $lessonNote->id,
+      'collection_name' => 'attachments',
+      'original_name' => 'lesson-note.docx'
+    ]);
+  }
+);
+
 it('updates lesson note data', function () {
   $lessonNote = LessonNote::factory()
     ->lessonPlan($this->lessonPlan)
@@ -245,6 +314,28 @@ it('updates lesson note data', function () {
   assertEquals($updatedData['title'], $lessonNote->title);
   assertEquals($updatedData['content'], $lessonNote->content);
 });
+
+it(
+  'does not allow an attachment to be changed while updating a lesson note',
+  function () {
+    $route = route('institutions.lesson-notes.store-or-update', [
+      'institution' => $this->institution->uuid,
+      'lessonNote' => $this->lessonNote->id
+    ]);
+
+    actingAs($this->admin)
+      ->withHeaders(['Accept' => 'application/json'])
+      ->post($route, [
+        'title' => 'Updated title',
+        'content' => 'Updated content',
+        'is_published' => false,
+        'is_used_by_classification_group' => false,
+        'is_used_by_institution_group' => false,
+        'file' => UploadedFile::fake()->image('replacement.jpg')
+      ])
+      ->assertUnprocessable();
+  }
+);
 
 it('uploads lesson note media one file at a time', function () {
   Storage::fake('s3_public');

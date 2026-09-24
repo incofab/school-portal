@@ -1,6 +1,6 @@
 import React from 'react';
-import { LessonNote } from '@/types/models';
-import { HStack, IconButton, Icon, Text } from '@chakra-ui/react';
+import { LessonNote, LessonPlan } from '@/types/models';
+import { Button, HStack, IconButton, Icon, Text } from '@chakra-ui/react';
 import DashboardLayout from '@/layout/dashboard-layout';
 import { Inertia } from '@inertiajs/inertia';
 import ServerPaginatedTable from '@/components/server-paginated-table';
@@ -25,13 +25,16 @@ import ButtonSwitch from '@/components/button-switch';
 import useSharedProps from '@/hooks/use-shared-props';
 import { InstitutionPermission } from '@/types/permissions';
 import PermissionGate from '@/components/permission-gate';
+import SelectLessonPlanModal from '@/components/modals/select-lesson-plan-modal';
 
 interface Props {
   lessonNotes: PaginationResponse<LessonNote>;
+  lessonPlans: LessonPlan[];
 }
 
-export default function ListLessonNotes({ lessonNotes }: Props) {
+export default function ListLessonNotes({ lessonNotes, lessonPlans }: Props) {
   const lessonNoteFilterToggle = useModalToggle();
+  const newLessonNoteToggle = useModalToggle();
   const { instRoute } = useInstitutionRoute();
   const deleteForm = useWebForm({});
   const toggleStatusForm = useWebForm({});
@@ -39,6 +42,11 @@ export default function ListLessonNotes({ lessonNotes }: Props) {
   const isAdmin = useIsAdmin();
   const isStudent = useIsStudent();
   const { currentUser } = useSharedProps();
+
+  function openLessonNoteCreation(lessonPlanId: number) {
+    newLessonNoteToggle.close();
+    Inertia.visit(instRoute('lesson-notes.create', [lessonPlanId]));
+  }
   async function deleteItem(obj: LessonNote) {
     const res = await deleteForm.submit((data, web) =>
       web.delete(instRoute('lesson-notes.destroy', [obj.id]))
@@ -91,7 +99,11 @@ export default function ListLessonNotes({ lessonNotes }: Props) {
               },
             ]}
             value={row.status}
-            _disabled={toggleStatusForm.processing ? 'disabled' : ''}
+            _disabled={
+              toggleStatusForm.processing
+                ? { pointerEvents: 'none', opacity: 0.5 }
+                : undefined
+            }
           />
         </PermissionGate>
       ),
@@ -153,14 +165,18 @@ export default function ListLessonNotes({ lessonNotes }: Props) {
         <SlabHeading
           title="Lesson Notes"
           rightElement={
-            <PermissionGate
-              permissions={InstitutionPermission.NaturalAccess}
-            >
+            <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
               {!isStudent && (
-                <LinkButton
-                  href={instRoute('lesson-plans.index')}
-                  title={'New'}
-                />
+                <Button
+                  title={'New Lesson Note'}
+                  onClick={newLessonNoteToggle.open}
+                  type="button"
+                  colorScheme="brand"
+                  size="sm"
+                  fontWeight="normal"
+                >
+                  New Lesson Note
+                </Button>
               )}
             </PermissionGate>
           }
@@ -184,6 +200,11 @@ export default function ListLessonNotes({ lessonNotes }: Props) {
           />
         </SlabBody>
         <LessonNoteTableFilters {...lessonNoteFilterToggle.props} />
+        <SelectLessonPlanModal
+          {...newLessonNoteToggle.props}
+          lessonPlans={lessonPlans}
+          onContinue={openLessonNoteCreation}
+        />
       </Slab>
     </DashboardLayout>
   );

@@ -29,7 +29,11 @@ class LessonNoteRequest extends FormRequest
       'is_published' => ['required', 'boolean'],
       'is_used_by_institution_group' => ['required', 'boolean'],
       'is_used_by_classification_group' => ['required', 'boolean'],
-      'institution_id' => ['nullable']
+      'institution_id' => ['nullable'],
+      'file' =>
+        $lessonNote instanceof LessonNote
+          ? ['prohibited']
+          : CurriculumMediaRequest::fileRules(false)
     ];
   }
 }

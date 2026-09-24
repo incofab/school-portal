@@ -260,7 +260,25 @@ test('question upload page includes segmented TinyMCE controls', function () {
     ->assertSee('Paste Questions in Segments')
     ->assertSee('name="question_segments[]"', false)
     ->assertSee('data-max-segments="6"', false)
+    ->assertSee('0/2,500 characters')
+    ->assertSee('data-character-error', false)
     ->assertSee('Process and upload segments');
+});
+
+test('rejects a question segment that exceeds 2,500 characters', function () {
+  $response = actingAs($this->instAdmin)->post(
+    route('institutions.questions.upload.store', [
+      $this->institution,
+      $this->courseSession->getMorphedId()
+    ]),
+    [
+      'question_segments' => [str_repeat('a', 2501)]
+    ]
+  );
+
+  $response
+    ->assertRedirect()
+    ->assertSessionHasErrors('question_segments.0');
 });
 
 test(

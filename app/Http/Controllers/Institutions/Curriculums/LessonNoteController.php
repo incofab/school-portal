@@ -75,6 +75,7 @@ class LessonNoteController extends Controller
       'lessonNotes' => paginateFromRequest(
         $query->with('classification', 'course', 'courseTeacher')->latest('id')
       ),
+      'lessonPlans' => $this->getAvailableLessonPlans($institutionUser),
       'classificationGroups' => ClassificationGroup::all()
     ]);
   }
@@ -123,6 +124,7 @@ class LessonNoteController extends Controller
   public function storeOrUpdate(
     Institution $institution,
     LessonNoteRequest $request,
+    CurriculumMediaService $curriculumMediaService,
     ?LessonNote $lessonNote = null
   ) {
     if ($lessonNote) {
@@ -177,7 +179,17 @@ class LessonNoteController extends Controller
       $lessonNote->update($params);
     }
 
-    return $this->ok();
+    if (!$lessonNote->wasRecentlyCreated || !$request->hasFile('file')) {
+      return $this->ok(['lessonNote' => $lessonNote]);
+    }
+
+    $curriculumMediaService->storeLessonNoteAttachment(
+      $institution,
+      $lessonNote,
+      $request->file('file')
+    );
+
+    return $this->ok(['lessonNote' => $lessonNote->load('media')]);
   }
 
   public function uploadMedia(
@@ -261,6 +273,31 @@ class LessonNoteController extends Controller
       403,
       'You can only work on your own lesson notes'
     );
+  }
+
+  private function getAvailableLessonPlans($institutionUser)
+  {
+    if ($institutionUser->isStudent()) {
+      return collect();
+    }
+
+    $query = LessonPlan::query()
+      ->whereDoesntHave('lessonNote')
+      ->with([
+        'schemeOfWork.topic.course',
+        'schemeOfWork.topic.classificationGroup',
+        'courseTeacher.user'
+      ])
+      ->latest('id');
+
+    if ($institutionUser->isTeacher()) {
+      $query->whereIn(
+        'course_teacher_id',
+        $institutionUser->user->courseTeachers()->pluck('id')
+      );
+    }
+
+    return $query->get();
   }
 
   public function togglePublish(

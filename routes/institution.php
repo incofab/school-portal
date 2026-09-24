@@ -174,6 +174,8 @@ Route::get('/courses/multi-create', [Web\CoursesController::class, 'multiCreate'
     ->name('courses.multi-create');
 Route::post('/courses/multi-store', [Web\CoursesController::class, 'multiStore'])
     ->name('courses.multi-store');
+Route::get('/courses/{course}/lesson-notes', [Web\CoursesController::class, 'lessonNotes'])
+    ->name('courses.lesson-notes');
 Route::resource('/courses', Web\CoursesController::class);
 
 Route::get('/users/{user}/profile', [Web\Users\UpdateInstitutionUserController::class, 'profile'])

@@ -4,7 +4,11 @@ use App\Models\Course;
 use App\Models\CourseSession;
 use App\Models\CourseTeacher;
 use App\Models\Classification;
+use App\Models\ClassificationGroup;
 use App\Models\Institution;
+use App\Models\LessonNote;
+use App\Models\LessonPlan;
+use App\Models\SchemeOfWork;
 use App\Models\Student;
 use App\Models\Topic;
 use App\Models\TopicPracticeAttempt;
@@ -41,6 +45,56 @@ it('lists courses by order and then title', function () {
         ->where('courses.data.1.title', 'Biology')
         ->where('courses.data.2.title', 'Zoology')
         ->where('courses.data.0.order', 1)
+    );
+});
+
+it('lists lesson notes for a selected subject', function () {
+  $course = Course::factory()
+    ->withInstitution($this->institution)
+    ->create(['title' => 'Biology']);
+  $classificationGroup = ClassificationGroup::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  $classification = Classification::factory()
+    ->classificationGroup($classificationGroup)
+    ->create();
+  $courseTeacher = CourseTeacher::factory()->create([
+    'institution_id' => $this->institution->id,
+    'course_id' => $course->id,
+    'user_id' => $this->admin->id,
+    'classification_id' => $classification->id
+  ]);
+  $topic = Topic::factory()
+    ->course($course)
+    ->classificationGroup($classificationGroup)
+    ->create(['title' => 'Cell Structure']);
+  $schemeOfWork = SchemeOfWork::factory()
+    ->topic($topic)
+    ->create();
+  $lessonPlan = LessonPlan::factory()
+    ->schemeOfWork($schemeOfWork)
+    ->create(['course_teacher_id' => $courseTeacher->id]);
+  $lessonNote = LessonNote::factory()
+    ->lessonPlan($lessonPlan, $classification)
+    ->create([
+      'course_id' => $course->id,
+      'topic_id' => $topic->id,
+      'course_teacher_id' => $courseTeacher->id,
+      'title' => 'Cell Structure Lesson Note'
+    ]);
+
+  actingAs($this->admin)
+    ->get(
+      route('institutions.courses.lesson-notes', [$this->institution, $course])
+    )
+    ->assertOk()
+    ->assertInertia(
+      fn(Assert $page) => $page
+        ->component('institutions/courses/list-course-lesson-notes')
+        ->where('course.id', $course->id)
+        ->has('lessonNotes', 1)
+        ->where('lessonNotes.0.id', $lessonNote->id)
+        ->where('lessonNotes.0.title', 'Cell Structure Lesson Note')
     );
 });
 

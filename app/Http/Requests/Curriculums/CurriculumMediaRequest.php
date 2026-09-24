@@ -14,12 +14,17 @@ class CurriculumMediaRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'file' => [
-        'required',
-        'file',
-        'mimes:jpg,jpeg,png,webp,pdf,doc,docx,mp4,mov,avi,mkv,mp3,wav',
-        'max:10240'
-      ]
+      'file' => self::fileRules()
+    ];
+  }
+
+  public static function fileRules(bool $required = true): array
+  {
+    return [
+      $required ? 'required' : 'nullable',
+      'file',
+      'mimes:jpg,jpeg,png,webp,pdf,doc,docx,mp4,mov,avi,mkv,mp3,wav',
+      'max:10240'
     ];
   }
 }
