@@ -13,13 +13,13 @@
 
 use Database\Seeders\PermissionInventorySeeder;
 use Database\Seeders\RoleSeeder;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\seed;
 
 pest()
   ->extend(Tests\TestCase::class)
-  ->use(DatabaseTransactions::class)
+  ->use(RefreshDatabase::class)
   ->in('Feature');
 
 // uses(Tests\TestCase::class)
