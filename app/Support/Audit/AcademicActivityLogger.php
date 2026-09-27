@@ -450,7 +450,7 @@ class AcademicActivityLogger
   private function courseTeacherMetadata(CourseTeacher $courseTeacher): array
   {
     return [
-      'course_teacher_id' => $courseTeacher->id,
+      'course_teacher_assignment_id' => $courseTeacher->id,
       'course_id' => $courseTeacher->course_id,
       'course_title' => $courseTeacher->course?->title,
       'course_code' => $courseTeacher->course?->code,

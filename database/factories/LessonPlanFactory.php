@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\CourseTeacher;
 use App\Models\LessonPlan;
 use App\Models\Institution;
 use App\Models\InstitutionGroup;
 use App\Models\SchemeOfWork;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LessonPlanFactory extends Factory
@@ -18,7 +18,7 @@ class LessonPlanFactory extends Factory
         return [
             'institution_id' => Institution::factory(),
             'scheme_of_work_id' => SchemeOfWork::factory(),
-            'course_teacher_id' => CourseTeacher::factory(),
+            'teacher_user_id' => User::factory(),
             'objective' => $this->faker->text(200),
             'activities' => $this->faker->text(200),
             'content' => $this->faker->text(500),

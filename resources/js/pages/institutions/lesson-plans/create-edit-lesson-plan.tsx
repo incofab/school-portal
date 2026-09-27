@@ -31,15 +31,20 @@ export default function CreateOrUpdateTopic({
 
   const [courseTeacher, setCourseTeacher] = useState(
     (lessonPlan
-      ? {
-          label: `${lessonPlan.course_teacher?.user?.full_name}`,
-          value: lessonPlan.course_teacher?.id,
-        }
+      ? (() => {
+          const selected = lessonPlanCourseTeachers?.find(
+            (item) => item.user_id === lessonPlan.teacher_user_id
+          );
+          return {
+            label: `${selected?.user?.full_name}`,
+            value: selected?.id,
+          };
+        })()
       : {}) as SingleValue<SelectOptionType<number>>
   );
 
   const webForm = useWebForm({
-    course_teacher_id: '',
+    teacher_user_id: '',
     scheme_of_work_id: schemeOfWork ? schemeOfWork.id : null,
     objective: lessonPlan ? lessonPlan.objective : '',
     activities: lessonPlan ? lessonPlan.activities : '',
@@ -62,7 +67,7 @@ export default function CreateOrUpdateTopic({
         instRoute('lesson-plans.store-or-update', lessonPlan ?? [lessonPlan]),
         {
           ...data,
-          course_teacher_id: courseTeacher?.value,
+          teacher_user_id: courseTeacher?.value,
         }
       );
     });
@@ -88,7 +93,7 @@ export default function CreateOrUpdateTopic({
             <FormControlBox
               title="Select the subject teacher"
               form={webForm as any}
-              formKey="course_teacher_id"
+              formKey="teacher_user_id"
               isRequired
             >
               <LessonPlanCourseTeacherSelect

@@ -47,7 +47,7 @@ export default function ShowLessonPlan({ lessonPlan }: Props) {
   const isSubTopic = Boolean(topic?.parent_topic);
   const canWorkOnLessonPlan =
     canManageLessonPlans &&
-    (isAdmin || lessonPlan.course_teacher?.user_id === currentUser.id);
+    (isAdmin || lessonPlan.teacher_user_id === currentUser.id);
 
   const uploadMedia = async (files: FileObject[]) => {
     if (files.length === 0) {

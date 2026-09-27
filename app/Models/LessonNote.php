@@ -25,7 +25,7 @@ class LessonNote extends BaseModel
     'lesson_plan_id' => 'integer',
     'course_id' => 'integer',
     'topic_id' => 'integer',
-    'course_teacher_id' => 'integer',
+    'teacher_user_id' => 'integer',
     'status' => NoteStatusType::class
   ];
 
@@ -39,7 +39,6 @@ class LessonNote extends BaseModel
         new ValidateExistsRule(LessonPlan::class)
       ],
       // 'course_id' => ['required', new ValidateExistsRule(Course::class)],
-      // 'course_teacher_id' => ['required', new ValidateExistsRule(CourseTeacher::class)],
       'title' => ['required', 'string'],
       'content' => ['required', 'string'],
       // 'status' => ['nullable', 'string'],
@@ -80,8 +79,8 @@ class LessonNote extends BaseModel
     return $this->belongsTo(Course::class);
   }
 
-  public function courseTeacher()
+  public function teacher()
   {
-    return $this->belongsTo(CourseTeacher::class);
+    return $this->belongsTo(User::class, 'teacher_user_id');
   }
 }

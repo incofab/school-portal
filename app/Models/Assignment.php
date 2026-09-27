@@ -21,6 +21,7 @@ class Assignment extends BaseModel
     'status' => AssignmentStatus::class,
     'institution_id' => 'integer',
     'course_id' => 'integer',
+    'teacher_user_id' => 'integer',
     'academic_session_id' => 'integer',
     'term' => TermType::class
   ];
@@ -61,9 +62,9 @@ class Assignment extends BaseModel
     return $this->belongsTo(InstitutionUser::class);
   }
 
-  public function courseTeacher()
+  public function teacher()
   {
-    return $this->belongsTo(CourseTeacher::class);
+    return $this->belongsTo(User::class, 'teacher_user_id');
   }
 
   function assignmentSubmissions()

@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('course_teacher_id')->nullable();
+            $table->unsignedBigInteger('teacher_user_id')->nullable();
             $table->unsignedBigInteger('institution_id');
             $table->unsignedBigInteger('course_id')->nullable();
             $table->unsignedBigInteger('classification_id')->nullable();
@@ -24,10 +24,10 @@ return new class extends Migration
             $table->timestamps();
 
             $table
-                ->foreign('course_teacher_id')
+                ->foreign('teacher_user_id')
                 ->references('id')
-                ->on('course_teachers')
-                ->cascadeOnDelete();
+                ->on('users')
+                ->nullOnDelete();
 
             $table
                 ->foreign('academic_session_id')

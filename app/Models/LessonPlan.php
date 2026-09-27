@@ -20,16 +20,13 @@ class LessonPlan extends BaseModel
     'institution_group_id' => 'integer',
     'institution_id' => 'integer',
     'scheme_of_work_id' => 'integer',
-    'course_teacher_id' => 'integer'
+    'teacher_user_id' => 'integer'
   ];
 
   public static function createRule()
   {
     return [
-      'course_teacher_id' => [
-        'required',
-        new ValidateExistsRule(CourseTeacher::class)
-      ],
+      'teacher_user_id' => ['required', 'exists:users,id'],
       'scheme_of_work_id' => [
         'nullable',
         new ValidateExistsRule(SchemeOfWork::class)
@@ -67,8 +64,8 @@ class LessonPlan extends BaseModel
     return $this->hasMany(LessonNote::class);
   }
 
-  public function courseTeacher()
+  public function teacher()
   {
-    return $this->belongsTo(CourseTeacher::class);
+    return $this->belongsTo(User::class, 'teacher_user_id');
   }
 }

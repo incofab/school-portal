@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\OneTime;
 
 use App\Models\Assessment;
 use App\Models\CourseResult;

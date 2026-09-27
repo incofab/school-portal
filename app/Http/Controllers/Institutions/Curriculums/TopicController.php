@@ -97,10 +97,9 @@ class TopicController extends Controller
       'schemeOfWorks' => fn($query) => $query
         ->with([
           'lessonPlans' => fn($lessonPlanQuery) => $lessonPlanQuery->with([
-            'courseTeacher.user',
-            'courseTeacher.classification',
+            'teacher',
             'media',
-            'lessonNote.courseTeacher',
+            'lessonNote.teacher',
             'lessonNote.media'
           ])
         ])
@@ -112,17 +111,17 @@ class TopicController extends Controller
     $user = $institutionUser->user;
 
     if ($institutionUser->isTeacher()) {
-      $assignedCourseIds = CourseTeacher::query()
+      $assignedTeacherUserIds = CourseTeacher::query()
         ->where('user_id', $user->id)
-        ->pluck('id')
+        ->pluck('user_id')
         ->toArray();
     } else {
-      $assignedCourseIds = [];
+      $assignedTeacherUserIds = [];
     }
 
     return Inertia::render('institutions/topics/show-topic', [
       'topic' => $topic,
-      'assignedCourseIds' => $assignedCourseIds
+      'assignedTeacherUserIds' => $assignedTeacherUserIds
     ]);
   }
 
@@ -201,7 +200,7 @@ class TopicController extends Controller
         'topic_id' => $newTopic->id
       ]);
       $newLessonPlan = LessonPlan::query()->create([
-        'course_teacher_id' => $courseTeacher->id,
+        'teacher_user_id' => $courseTeacher->user_id,
         'objective' => 'NA',
         'activities' => 'NA',
         'content' => 'NA',

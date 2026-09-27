@@ -5,7 +5,7 @@ import MySelect from '../dropdown-select/my-select';
 interface Props {
   lessonPlanCourseTeachers: CourseTeacher[];
   selectValue?: number;
-} 
+}
 
 export default function LessonPlanCourseTeacherSelect({
   lessonPlanCourseTeachers,
@@ -19,7 +19,7 @@ export default function LessonPlanCourseTeacherSelect({
       getOptions={() =>
         lessonPlanCourseTeachers.map((item) => ({
           label: `${item?.classification?.title}  ->  ${item?.user?.full_name}`,
-          value: item.id,
+          value: item.user_id,
         }))
       }
     />

@@ -67,7 +67,10 @@ class LessonPlanUITableFilters extends BaseUITableFilter
     $this->baseQuery
       ->when(
         $this->requestGet('courseTeacher'),
-        fn($q, $value) => $q->where('lesson_plans.course_teacher_id', $value)
+        fn($q, $value) => $q->whereHas(
+          'teacher.courseTeachers',
+          fn($courseTeacherQuery) => $courseTeacherQuery->whereKey($value)
+        )
       )
       ->when(
         $this->requestGet('classificationGroup'),
@@ -82,11 +85,8 @@ class LessonPlanUITableFilters extends BaseUITableFilter
       ->when(
         $this->requestGet('classification'),
         fn($q, $value) => $q->whereHas(
-          'courseTeacher',
-          fn($courseTeacherQuery) => $courseTeacherQuery->where(
-            'classification_id',
-            $value
-          )
+          'schemeOfWork.topic.classificationGroup.classifications',
+          fn($classificationQuery) => $classificationQuery->whereKey($value)
         )
       )
       ->when(

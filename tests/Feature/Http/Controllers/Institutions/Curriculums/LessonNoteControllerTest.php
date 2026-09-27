@@ -63,13 +63,13 @@ beforeEach(function () {
 
   $this->lessonPlan = LessonPlan::factory()
     ->schemeOfWork($this->schemeOfWork)
-    ->create(['course_teacher_id' => $this->courseTeacher->id]);
+    ->create(['teacher_user_id' => $this->courseTeacher->user_id]);
 
   $this->lessonNote = LessonNote::factory()
     ->lessonPlan($this->lessonPlan, $this->classification)
     ->create([
       'course_id' => $this->course->id,
-      'course_teacher_id' => $this->courseTeacher->id
+      'teacher_user_id' => $this->courseTeacher->user_id
     ]);
 
   $this->student = Student::factory()
@@ -112,7 +112,7 @@ it(
   function () {
     $availableLessonPlan = LessonPlan::factory()
       ->schemeOfWork($this->schemeOfWork)
-      ->create(['course_teacher_id' => $this->courseTeacher->id]);
+      ->create(['teacher_user_id' => $this->courseTeacher->user_id]);
 
     $route = route('institutions.lesson-notes.index', [
       'institution' => $this->institution->uuid
@@ -134,7 +134,7 @@ it(
 it('tests the create page', function () {
   $newLessonPlan = LessonPlan::factory()
     ->schemeOfWork($this->schemeOfWork)
-    ->create(['course_teacher_id' => $this->courseTeacher->id]);
+    ->create(['teacher_user_id' => $this->courseTeacher->user_id]);
 
   $route = route('institutions.lesson-notes.create', [
     'institution' => $this->institution->uuid,
@@ -220,7 +220,7 @@ it('stores lesson note data', function () {
       'institution_group_id' => $this->institution->institution_group_id,
       'course_id' => $this->course->id,
       'topic_id' => $this->topic->id,
-      'course_teacher_id' => $this->courseTeacher->id
+      'teacher_user_id' => $this->courseTeacher->user_id
     ])
     ->toArray();
 
@@ -246,7 +246,7 @@ it(
 
     $availableLessonPlan = LessonPlan::factory()
       ->schemeOfWork($this->schemeOfWork)
-      ->create(['course_teacher_id' => $this->courseTeacher->id]);
+      ->create(['teacher_user_id' => $this->courseTeacher->user_id]);
 
     $route = route('institutions.lesson-notes.store-or-update', [
       'institution' => $this->institution->uuid
@@ -285,7 +285,7 @@ it(
 it('updates lesson note data', function () {
   $lessonNote = LessonNote::factory()
     ->lessonPlan($this->lessonPlan)
-    ->create(['course_teacher_id' => $this->courseTeacher->id]);
+    ->create(['teacher_user_id' => $this->courseTeacher->user_id]);
 
   $route = route('institutions.lesson-notes.store-or-update', [
     'institution' => $this->institution->uuid,

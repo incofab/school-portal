@@ -45,7 +45,7 @@ export default function ShowLessonNote({ lessonNote }: Props) {
   const sanitizedContent = DOMPurify.sanitize(lessonNote.content);
   const canWorkOnLessonNote =
     canManageLessonNotes &&
-    (isAdmin || lessonNote.course_teacher?.user_id === currentUser.id);
+    (isAdmin || lessonNote.teacher_user_id === currentUser.id);
 
   const uploadMedia = async (files: FileObject[]) => {
     if (files.length === 0) {

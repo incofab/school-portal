@@ -50,10 +50,13 @@ beforeEach(function () {
   $this->classification = Classification::factory()
     ->classificationGroup($this->classificationGroup)
     ->create();
+  $this->courseTeacher->update([
+    'classification_id' => $this->classification->id
+  ]);
 
   $this->topic = Topic::factory()
     ->classificationGroup($this->classificationGroup)
-    ->create();
+    ->create(['course_id' => $this->course->id]);
 
   $this->schemeOfWork = SchemeOfWork::factory()
     ->topic($this->topic)
@@ -75,7 +78,7 @@ it('lists and filters lesson plans', function () {
   $lessonPlan = LessonPlan::factory()
     ->schemeOfWork($this->schemeOfWork)
     ->create([
-      'course_teacher_id' => $this->courseTeacher->id,
+      'teacher_user_id' => $this->courseTeacher->user_id,
       'objective' => 'Teach number bonds'
     ]);
 
@@ -114,13 +117,13 @@ it(
 
     $lessonPlan = LessonPlan::factory()
       ->schemeOfWork($this->schemeOfWork)
-      ->create(['course_teacher_id' => $this->courseTeacher->id]);
+      ->create(['teacher_user_id' => $this->courseTeacher->user_id]);
     $lessonNote = LessonNote::factory()
       ->lessonPlan($lessonPlan, $this->classification)
       ->create([
         'course_id' => $this->course->id,
         'topic_id' => $this->topic->id,
-        'course_teacher_id' => $this->courseTeacher->id
+        'teacher_user_id' => $this->courseTeacher->user_id
       ]);
 
     $route = route('institutions.courses.lesson-plans', [
@@ -205,7 +208,7 @@ it('stores lesson plan data', function () {
   //     ->assertJsonValidationErrors(['scheme_of_work_id']);
 
   $lessonPlanData = [
-    'course_teacher_id' => $this->courseTeacher->id,
+    'teacher_user_id' => $this->courseTeacher->user_id,
     'objective' => 'Test Objective',
     'activities' => 'Test Activities',
     'content' => 'Test Content',
@@ -226,7 +229,7 @@ it('stores lesson plan data', function () {
 it('updates lesson plan data', function () {
   $lessonPlan = LessonPlan::factory()
     ->schemeOfWork($this->schemeOfWork)
-    ->create(['course_teacher_id' => $this->courseTeacher->id]);
+    ->create(['teacher_user_id' => $this->courseTeacher->user_id]);
 
   $route = route('institutions.lesson-plans.store-or-update', [
     'institution' => $this->institution->uuid,
@@ -237,7 +240,7 @@ it('updates lesson plan data', function () {
 
   $updatedData = [
     'scheme_of_work_id' => $this->schemeOfWork->id,
-    'course_teacher_id' => $dCourseTeacher->id,
+    'teacher_user_id' => $dCourseTeacher->user_id,
     'objective' => 'Updated Test Objective',
     'activities' => 'Updated Test Activities',
     'content' => 'Updated Test Content',

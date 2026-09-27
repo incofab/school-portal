@@ -8,7 +8,6 @@ use App\Models\AcademicSession;
 use App\Models\Assignment;
 use App\Models\Classification;
 use App\Models\Course;
-use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
 use App\Models\User;
@@ -30,6 +29,7 @@ class AssignmentFactory extends Factory
     return [
       'institution_id' => Institution::factory(),
       'course_id' => Course::factory(),
+      'teacher_user_id' => User::factory()->teacher(),
       'academic_session_id' => AcademicSession::factory(),
       'term' => TermType::First->value,
       'status' => AssignmentStatus::Active->value,

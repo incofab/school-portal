@@ -13,6 +13,7 @@ use App\Enums\TermType;
 use App\Models\AcademicSession;
 use App\Models\ClassificationGroup;
 use App\Models\Student;
+use App\Support\SettingsHandler;
 use Carbon\Carbon;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseCount;
@@ -24,6 +25,11 @@ use function Pest\Laravel\assertDatabaseMissing;
  */
 
 beforeEach(function () {
+  SettingsHandler::clear();
+  AcademicSession::factory()
+    ->active()
+    ->create();
+
   $this->institution = Institution::factory()->create();
   $this->admin = $this->institution->createdBy;
   $this->user = User::factory()->create();
@@ -153,14 +159,11 @@ it('teacher can view assignments of another teacher', function () {
 
 it('admin can create an assignment', function () {
   $classificationIds = $this->classifications->pluck('id');
-  $academicSessionId = AcademicSession::factory()->create()->id;
+  $settingsHandler = SettingsHandler::makeFromInstitution($this->institution);
 
   $assignmentData = [
     'institution_user_id' => $this->adminInstitutionUser->id,
     'course_id' => $this->course->id,
-    'academic_session_id' => $academicSessionId,
-    'term' => TermType::First->value,
-    'status' => AssignmentStatus::Active->value,
     'max_score' => fake()->randomNumber(2) + 1,
     'content' => fake()->sentence(),
     'expires_at' => now()
@@ -174,7 +177,12 @@ it('admin can create an assignment', function () {
       'classification_ids' => $classificationIds
     ])
     ->assertStatus(200);
-  assertDatabaseHas('assignments', $assignmentData);
+  assertDatabaseHas('assignments', [
+    ...$assignmentData,
+    'academic_session_id' => $settingsHandler->getCurrentAcademicSession(),
+    'term' => $settingsHandler->getCurrentTerm(),
+    'status' => AssignmentStatus::Active->value
+  ]);
 });
 
 it('admin cannot create assignment with invalid data', function () {

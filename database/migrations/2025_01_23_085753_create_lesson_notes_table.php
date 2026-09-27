@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('lesson_plan_id')->constrained()->cascadeOnDelete();
             $table->foreignId('course_id')->constrained()->cascadeOnDelete();
             $table->foreignId('topic_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('course_teacher_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('teacher_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('term');
             $table->string('title');
             $table->text('content');

@@ -9,15 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lesson_plans', function (Blueprint $table) {
-            $table->foreignId('course_teacher_id')->after('institution_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('teacher_user_id')->nullable()->after('institution_id')->constrained('users')->nullOnDelete();
         });
     }
 
     public function down(): void
     {
         Schema::table('lesson_plans', function (Blueprint $table) {
-            $table->dropForeign(['course_teacher_id']);
-            $table->dropColumn('course_teacher_id');
+            $table->dropForeign(['teacher_user_id']);
+            $table->dropColumn('teacher_user_id');
         });
     }
 };

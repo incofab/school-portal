@@ -1200,9 +1200,9 @@ export interface LessonPlan extends InstitutionRow {
   institution_group_id: number;
   institution_id: number;
   scheme_of_work_id: number;
-  course_teacher_id: number;
+  teacher_user_id: number | null;
 
-  course_teacher?: CourseTeacher;
+  teacher?: User;
   lesson_note?: LessonNote;
   scheme_of_work?: SchemeOfWork;
   media?: Media[];
@@ -1218,7 +1218,8 @@ export interface LessonNote extends InstitutionRow {
 
   course?: Course;
   classification?: Classification;
-  course_teacher?: CourseTeacher;
+  teacher_user_id: number | null;
+  teacher?: User;
   lesson_plan?: LessonPlan;
   media?: Media[];
 }

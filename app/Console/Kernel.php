@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\AssignRoleToUser;
+use App\Console\Commands\OneTime\ConvertCourseTeacherIdsToTeacherUserIds;
 use App\Console\Commands\ProcessSettlements;
 use App\Console\Commands\PruneActivityLogs;
 use App\Console\Commands\PublishPendingResult;
@@ -20,6 +21,7 @@ class Kernel extends ConsoleKernel
    */
   protected $commands = [
     AssignRoleToUser::class,
+    ConvertCourseTeacherIdsToTeacherUserIds::class,
     ProcessSettlements::class,
     PublishPendingResult::class,
     PruneAssistantData::class,

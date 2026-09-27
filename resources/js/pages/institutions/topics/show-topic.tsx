@@ -54,10 +54,13 @@ import { ucFirst } from '@/util/util';
 
 interface Props {
   topic: Topic;
-  assignedCourseIds?: number[];
+  assignedTeacherUserIds?: number[];
 }
 
-export default function ShowTopic({ topic, assignedCourseIds = [] }: Props) {
+export default function ShowTopic({
+  topic,
+  assignedTeacherUserIds = [],
+}: Props) {
   const isAdmin = useIsAdmin();
   const schemeOfWorks = topic.scheme_of_works ?? [];
   const lessonPlans = schemeOfWorks.flatMap(
@@ -87,7 +90,7 @@ export default function ShowTopic({ topic, assignedCourseIds = [] }: Props) {
                 <SchemesPanel
                   topic={topic}
                   schemeOfWorks={schemeOfWorks}
-                  assignedCourseIds={assignedCourseIds}
+                  assignedTeacherUserIds={assignedTeacherUserIds}
                   isAdmin={isAdmin}
                 />
               </TabPanel>
@@ -222,12 +225,12 @@ function OverviewPanel({ topic }: { topic: Topic }) {
 function SchemesPanel({
   topic,
   schemeOfWorks,
-  assignedCourseIds,
+  assignedTeacherUserIds,
   isAdmin,
 }: {
   topic: Topic;
   schemeOfWorks: SchemeOfWork[];
-  assignedCourseIds: number[];
+  assignedTeacherUserIds: number[];
   isAdmin: boolean;
 }) {
   const { instRoute } = useInstitutionRoute();
@@ -238,9 +241,7 @@ function SchemesPanel({
         title="No scheme of work yet"
         description="Create a scheme to define the term, week, objectives, resources, and lesson plans for this topic."
         action={
-          <PermissionGate
-            permissions={InstitutionPermission.NaturalAccess}
-          >
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
             <Button
               as={InertiaLink}
               href={instRoute('scheme-of-works.create', [topic.id])}
@@ -324,7 +325,7 @@ function SchemesPanel({
           <Divider my={4} />
           <LessonPlanList
             schemeOfWork={schemeOfWork}
-            assignedCourseIds={assignedCourseIds}
+            assignedTeacherUserIds={assignedTeacherUserIds}
             isAdmin={isAdmin}
           />
         </Section>
@@ -335,11 +336,11 @@ function SchemesPanel({
 
 function LessonPlanList({
   schemeOfWork,
-  assignedCourseIds,
+  assignedTeacherUserIds,
   isAdmin,
 }: {
   schemeOfWork: SchemeOfWork;
-  assignedCourseIds: number[];
+  assignedTeacherUserIds: number[];
   isAdmin: boolean;
 }) {
   const { instRoute } = useInstitutionRoute();
@@ -405,12 +406,11 @@ function LessonPlanList({
                 )}
               </HStack>
               <Text fontWeight={'semibold'}>
-                {lessonPlan.course_teacher?.user?.full_name ??
-                  'No teacher selected'}
+                {lessonPlan.teacher?.full_name ?? 'No teacher selected'}
               </Text>
               <Text fontSize={'sm'} color={'blackAlpha.700'}>
-                {lessonPlan.course_teacher?.classification?.title ??
-                  'Class not available'}
+                {lessonPlan.scheme_of_work?.topic?.classification_group
+                  ?.title ?? 'Class not available'}
               </Text>
             </VStack>
             <Wrap spacing={2}>
@@ -419,7 +419,9 @@ function LessonPlanList({
                 when={
                   !lessonPlan.lesson_note &&
                   (isAdmin ||
-                    assignedCourseIds.includes(lessonPlan.course_teacher_id))
+                    assignedTeacherUserIds.includes(
+                      lessonPlan.teacher_user_id ?? -1
+                    ))
                 }
               >
                 <WrapItem>
@@ -448,7 +450,9 @@ function LessonPlanList({
                 permissions={InstitutionPermission.NaturalAccess}
                 when={
                   isAdmin ||
-                  assignedCourseIds.includes(lessonPlan.course_teacher_id)
+                  assignedTeacherUserIds.includes(
+                    lessonPlan.teacher_user_id ?? -1
+                  )
                 }
               >
                 <WrapItem>
@@ -466,7 +470,9 @@ function LessonPlanList({
                 permissions={InstitutionPermission.NaturalAccess}
                 when={
                   isAdmin ||
-                  assignedCourseIds.includes(lessonPlan.course_teacher_id)
+                  assignedTeacherUserIds.includes(
+                    lessonPlan.teacher_user_id ?? -1
+                  )
                 }
               >
                 <WrapItem>
@@ -543,10 +549,10 @@ function NotesPanel({
               editPermission={InstitutionPermission.NaturalAccess}
               deletePermission={InstitutionPermission.NaturalAccess}
               editWhen={
-                isAdmin || lessonNote.course_teacher?.user_id === currentUser.id
+                isAdmin || lessonNote.teacher_user_id === currentUser.id
               }
               deleteWhen={
-                isAdmin || lessonNote.course_teacher?.user_id === currentUser.id
+                isAdmin || lessonNote.teacher_user_id === currentUser.id
               }
               editRoute={instRoute('lesson-notes.edit', [lessonNote.id])}
               deleteRoute={instRoute('lesson-notes.destroy', [lessonNote.id])}

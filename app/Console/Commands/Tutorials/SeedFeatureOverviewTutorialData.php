@@ -507,7 +507,7 @@ class SeedFeatureOverviewTutorialData extends Command
       ->schemeOfWork($schemeOfWork)
       ->create([
         'institution_id' => $institution->id,
-        'course_teacher_id' => $courseTeacher->id,
+        'teacher_user_id' => $courseTeacher->user_id,
         'objective' => 'Learners identify equivalent fractions.',
         'activities' => 'Guided examples followed by paired practice.',
         'content' => 'Use visual models to compare parts of a whole.'

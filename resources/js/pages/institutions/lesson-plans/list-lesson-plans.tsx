@@ -87,8 +87,8 @@ export default function LessonPlans({ lessonPlans }: Props) {
             title="View"
           />
           <PermissionGate
-          permissions={InstitutionPermission.NaturalAccess}
-            when={isAdmin || row.course_teacher?.user_id === currentUser.id}
+            permissions={InstitutionPermission.NaturalAccess}
+            when={isAdmin || row.teacher_user_id === currentUser.id}
           >
             <IconButton
               aria-label={'Edit Lesson Plan'}
@@ -102,7 +102,7 @@ export default function LessonPlans({ lessonPlans }: Props) {
 
           <PermissionGate
             permissions={InstitutionPermission.NaturalAccess}
-            when={isAdmin || row.course_teacher?.user_id === currentUser.id}
+            when={isAdmin || row.teacher_user_id === currentUser.id}
           >
             <DestructivePopover
               label={'Delete this Lesson Plan'}
@@ -119,10 +119,10 @@ export default function LessonPlans({ lessonPlans }: Props) {
           </PermissionGate>
 
           <PermissionGate
-              permissions={InstitutionPermission.NaturalAccess}
+            permissions={InstitutionPermission.NaturalAccess}
             when={
               row.lesson_note === null &&
-              (isAdmin || row.course_teacher?.user_id === currentUser.id)
+              (isAdmin || row.teacher_user_id === currentUser.id)
             }
           >
             <LinkButton
@@ -142,9 +142,7 @@ export default function LessonPlans({ lessonPlans }: Props) {
         <SlabHeading
           title="Lesson Plans"
           rightElement={
-            <PermissionGate
-              permissions={InstitutionPermission.NaturalAccess}
-            >
+            <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
               <LinkButton
                 href={instRoute('scheme-of-works.index')}
                 title={'New'}

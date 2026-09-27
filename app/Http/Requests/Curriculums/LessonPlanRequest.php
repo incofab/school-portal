@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Curriculums;
 
-use App\Models\CourseTeacher;
 use App\Models\LessonPlan;
 use App\Models\SchemeOfWork;
+use App\Models\User;
 use App\Rules\ValidateExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -21,9 +21,9 @@ class LessonPlanRequest extends FormRequest
     $lessonPlan = $this->route('lessonPlan');
 
     return [
-      'course_teacher_id' => [
+      'teacher_user_id' => [
         'required',
-        new ValidateExistsRule(CourseTeacher::class)
+        new ValidateExistsRule(User::class)
       ],
       'scheme_of_work_id' => [
         $lessonPlan instanceof LessonPlan ? 'nullable' : 'required',

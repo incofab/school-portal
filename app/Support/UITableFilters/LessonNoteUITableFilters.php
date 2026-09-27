@@ -63,7 +63,10 @@ class LessonNoteUITableFilters extends BaseUITableFilter
     $this->baseQuery
       ->when(
         $this->requestGet('courseTeacher'),
-        fn($q, $value) => $q->where('lesson_notes.course_teacher_id', $value)
+        fn($q, $value) => $q->whereHas(
+          'teacher.courseTeachers',
+          fn($courseTeacherQuery) => $courseTeacherQuery->whereKey($value)
+        )
       )
       ->when(
         $this->requestGet('classificationGroup'),

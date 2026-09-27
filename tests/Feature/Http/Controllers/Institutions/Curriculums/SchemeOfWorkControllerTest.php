@@ -13,7 +13,6 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertSoftDeleted;
 use function PHPUnit\Framework\assertEquals;
@@ -145,7 +144,11 @@ it('stores scheme of work data', function () {
         ->postJson($route, $schemeOfWorkData)
         ->assertOk();
 
-    assertDatabaseCount('scheme_of_works', 1);
+    expect(
+        SchemeOfWork::query()
+            ->where('institution_id', $this->institution->id)
+            ->count()
+    )->toBe(1);
     assertDatabaseHas('scheme_of_works', $schemeOfWork);
 });
 

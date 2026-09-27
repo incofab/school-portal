@@ -65,6 +65,7 @@ class LessonNoteController extends Controller
       $requestData['course_id'] = null;
 
       $query
+        ->where('teacher_user_id', $user->id)
         ->whereIn('course_id', $teacherCourseIds)
         ->whereIn('classification_id', $teacherClassIds);
     }
@@ -73,7 +74,7 @@ class LessonNoteController extends Controller
 
     return Inertia::render('institutions/lesson-notes/list-lesson-notes', [
       'lessonNotes' => paginateFromRequest(
-        $query->with('classification', 'course', 'courseTeacher')->latest('id')
+        $query->with('classification', 'course', 'teacher')->latest('id')
       ),
       'lessonPlans' => $this->getAvailableLessonPlans($institutionUser),
       'classificationGroups' => ClassificationGroup::all()
@@ -87,11 +88,11 @@ class LessonNoteController extends Controller
   ) {
     // == Create New Lesson Note ==
     if (!empty($lessonPlan)) {
-      $lessonPlan->loadMissing('courseTeacher');
+      $lessonPlan->loadMissing('teacher');
       $institutionUser = currentInstitutionUser();
       abort_unless(
         $institutionUser->isAdmin() ||
-          $lessonPlan->courseTeacher?->user_id === $institutionUser->user_id,
+          $lessonPlan->teacher_user_id === $institutionUser->user_id,
         403,
         'You can only work on your own lesson notes'
       );
@@ -110,7 +111,7 @@ class LessonNoteController extends Controller
 
     // == Edit Existing Lesson Note ==
     if (!empty($lessonNote)) {
-      $lessonNote->load('media', 'lessonPlan.courseTeacher');
+      $lessonNote->load('media', 'lessonPlan.teacher');
       $this->ensureTeacherOwns($lessonNote);
       $params['lessonNote'] = $lessonNote;
     }
@@ -128,7 +129,7 @@ class LessonNoteController extends Controller
     ?LessonNote $lessonNote = null
   ) {
     if ($lessonNote) {
-      $lessonNote->loadMissing('courseTeacher');
+      $lessonNote->loadMissing('teacher');
       $this->ensureTeacherOwns($lessonNote);
     }
 
@@ -139,16 +140,32 @@ class LessonNoteController extends Controller
       : $data['lesson_plan_id'];
 
     $getLessonPlan = LessonPlan::where('id', $lessonPlanId)
-      ->with('schemeOfWork.topic', 'courseTeacher')
+      ->with('schemeOfWork.topic.classificationGroup', 'teacher')
       ->first();
 
-    $classificationId = $getLessonPlan->courseTeacher->classification_id;
+    $courseTeacher = CourseTeacher::query()
+      ->where('user_id', $getLessonPlan->teacher_user_id)
+      ->where('course_id', $getLessonPlan->schemeOfWork->topic->course_id)
+      ->whereIn(
+        'classification_id',
+        $getLessonPlan->schemeOfWork->topic->classificationGroup
+          ->classifications()
+          ->pluck('id')
+      )
+      ->first();
+
+    abort_unless(
+      $courseTeacher,
+      422,
+      'The lesson plan teacher is no longer assigned to this subject and class.'
+    );
+
+    $classificationId = $courseTeacher->classification_id;
     $classificationGroupId =
       $getLessonPlan->schemeOfWork->topic->classification_group_id;
     $courseId = $getLessonPlan->schemeOfWork->topic->course_id;
     $term = $getLessonPlan->schemeOfWork->term;
     $topicId = $getLessonPlan->schemeOfWork->topic_id;
-    $courseTeacherId = $getLessonPlan->course_teacher_id;
 
     $params = [
       'lesson_plan_id' => $lessonPlanId,
@@ -157,7 +174,7 @@ class LessonNoteController extends Controller
       'content' => $data['content'],
       'course_id' => $courseId,
       'topic_id' => $topicId,
-      'course_teacher_id' => $courseTeacherId,
+      'teacher_user_id' => $getLessonPlan->teacher_user_id,
       'status' => NoteStatusType::Draft,
       // 'status' => $data['is_published']
       //   ? NoteStatusType::Published
@@ -198,7 +215,7 @@ class LessonNoteController extends Controller
     LessonNote $lessonNote,
     CurriculumMediaService $curriculumMediaService
   ) {
-    $lessonNote->loadMissing('courseTeacher');
+    $lessonNote->loadMissing('teacher');
     $this->ensureTeacherOwns($lessonNote);
 
     $media = $curriculumMediaService->storeLessonNoteAttachment(
@@ -216,7 +233,7 @@ class LessonNoteController extends Controller
     Media $media,
     CurriculumMediaService $curriculumMediaService
   ) {
-    $lessonNote->loadMissing('courseTeacher');
+    $lessonNote->loadMissing('teacher');
     $this->ensureTeacherOwns($lessonNote);
 
     $curriculumMediaService->deleteLessonNoteAttachment(
@@ -247,7 +264,7 @@ class LessonNoteController extends Controller
       'lessonNote' => $lessonNote->load(
         'classification',
         'course',
-        'courseTeacher',
+        'teacher',
         'lessonPlan.schemeOfWork.topic',
         'media'
       )
@@ -269,7 +286,7 @@ class LessonNoteController extends Controller
 
     abort_unless(
       $institutionUser->isAdmin() ||
-        $lessonNote->courseTeacher?->user_id === $institutionUser->user_id,
+        $lessonNote->teacher_user_id === $institutionUser->user_id,
       403,
       'You can only work on your own lesson notes'
     );
@@ -286,14 +303,14 @@ class LessonNoteController extends Controller
       ->with([
         'schemeOfWork.topic.course',
         'schemeOfWork.topic.classificationGroup',
-        'courseTeacher.user'
+        'teacher'
       ])
       ->latest('id');
 
     if ($institutionUser->isTeacher()) {
       $query->whereIn(
-        'course_teacher_id',
-        $institutionUser->user->courseTeachers()->pluck('id')
+        'teacher_user_id',
+        [$institutionUser->user_id]
       );
     }
 

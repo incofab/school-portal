@@ -73,13 +73,13 @@ it('lists lesson notes for a selected subject', function () {
     ->create();
   $lessonPlan = LessonPlan::factory()
     ->schemeOfWork($schemeOfWork)
-    ->create(['course_teacher_id' => $courseTeacher->id]);
+    ->create(['teacher_user_id' => $courseTeacher->user_id]);
   $lessonNote = LessonNote::factory()
     ->lessonPlan($lessonPlan, $classification)
     ->create([
       'course_id' => $course->id,
       'topic_id' => $topic->id,
-      'course_teacher_id' => $courseTeacher->id,
+      'teacher_user_id' => $courseTeacher->user_id,
       'title' => 'Cell Structure Lesson Note'
     ]);
 

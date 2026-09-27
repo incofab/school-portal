@@ -104,7 +104,7 @@ class CoursesController extends Controller
         ->lessonNotes()
         ->with([
           'classification',
-          'courseTeacher.user',
+          'teacher',
           'lessonPlan.schemeOfWork.topic',
           'media'
         ])
@@ -115,11 +115,8 @@ class CoursesController extends Controller
         $query->where('classification_id', $student?->classification_id);
       } elseif ($institutionUser->isTeacher()) {
         $query->whereIn(
-          'course_teacher_id',
-          CourseTeacher::query()
-            ->where('user_id', $institutionUser->user_id)
-            ->where('course_id', $course->id)
-            ->pluck('id')
+          'teacher_user_id',
+          [$institutionUser->user_id]
         );
       }
 

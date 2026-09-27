@@ -7,11 +7,11 @@ use App\Enums\TermType;
 use App\Models\Classification;
 use App\Models\ClassificationGroup;
 use App\Models\Course;
-use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\LessonNote;
 use App\Models\LessonPlan;
 use App\Models\Topic;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -30,7 +30,7 @@ class LessonNoteFactory extends Factory
       'lesson_plan_id' => LessonPlan::factory(),
       'course_id' => Course::factory(),
       'topic_id' => Topic::factory(),
-      'course_teacher_id' => CourseTeacher::factory(),
+      'teacher_user_id' => User::factory(),
       'term' => TermType::First->value,
       'title' => $this->faker->text(100),
       'content' => $this->faker->text(500),
@@ -51,11 +51,11 @@ class LessonNoteFactory extends Factory
     );
   }
 
-  function courseTeacher(CourseTeacher $courseTeacher)
+  function courseTeacher(\App\Models\CourseTeacher $courseTeacher)
   {
     return $this->state(
       fn($attr) => [
-        'course_teacher_id' => $courseTeacher->id
+        'teacher_user_id' => $courseTeacher->user_id
       ]
     );
   }

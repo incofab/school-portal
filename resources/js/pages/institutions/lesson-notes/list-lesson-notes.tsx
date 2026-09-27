@@ -129,7 +129,7 @@ export default function ListLessonNotes({ lessonNotes, lessonPlans }: Props) {
           />
 
           <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
-            {isAdmin || row.course_teacher?.user_id === currentUser.id ? (
+            {isAdmin || row.teacher_user_id === currentUser.id ? (
               <>
                 <IconButton
                   aria-label={'Edit Topic'}

@@ -36,8 +36,8 @@ class LessonPlanController extends Controller
 
     if ($institutionUser->isTeacher()) {
       $query->whereIn(
-        'course_teacher_id',
-        $institutionUser->user->courseTeachers()->pluck('id')
+        'teacher_user_id',
+        [$institutionUser->user_id]
       );
     }
 
@@ -49,8 +49,7 @@ class LessonPlanController extends Controller
           ->with(
             'schemeOfWork.topic.classificationGroup',
             'schemeOfWork.topic.course',
-            'courseTeacher.classification',
-            'courseTeacher.user',
+            'teacher',
             'lessonNote'
           )
           ->latest('id')
@@ -94,23 +93,20 @@ class LessonPlanController extends Controller
           'schemeOfWork.topic',
           fn($query) => $query->where('course_id', $course->id)
         )
-        ->whereHas('courseTeacher', function ($query) use (
-          $course,
-          $institutionUser,
-          $selectedClassificationId
-        ) {
-          $query
-            ->where('course_id', $course->id)
-            ->where('classification_id', $selectedClassificationId)
-            ->when(
-              $institutionUser->isTeacher(),
-              fn($query) => $query->where('user_id', $institutionUser->user_id)
-            );
-        })
+        ->when(
+          $institutionUser->isTeacher(),
+          fn($query) => $query->where(
+            'teacher_user_id',
+            $institutionUser->user_id
+          )
+        )
+        ->whereHas(
+          'schemeOfWork.topic.classificationGroup.classifications',
+          fn($query) => $query->where('classifications.id', $selectedClassificationId)
+        )
         ->with([
           'schemeOfWork.topic',
-          'courseTeacher.classification',
-          'courseTeacher.user',
+          'teacher',
           'lessonNote'
         ])
         ->latest('lesson_plans.id')
@@ -146,7 +142,7 @@ class LessonPlanController extends Controller
         ->pluck('id');
 
       // Pass the LessonPlan to the view
-      $params['lessonPlan'] = $lessonPlan->load('courseTeacher.user', 'media');
+      $params['lessonPlan'] = $lessonPlan->load('teacher', 'media');
     }
 
     // == Create New Lesson Plan ==
@@ -202,10 +198,12 @@ class LessonPlanController extends Controller
     }
 
     $data = $request->validated();
+    $teacherUserId = $this->resolveTeacherUserId($data, $lessonPlan);
 
     $params = collect($data)
-      ->only(['course_teacher_id', 'objective', 'activities', 'content'])
+      ->only(['objective', 'activities', 'content'])
       ->merge([
+        'teacher_user_id' => $teacherUserId,
         'scheme_of_work_id' => $lessonPlan
           ? $lessonPlan->scheme_of_work_id
           : $data['scheme_of_work_id'],
@@ -266,7 +264,7 @@ class LessonPlanController extends Controller
         'schemeOfWork.topic.course',
         'schemeOfWork.topic.classification',
         'schemeOfWork.topic.parentTopic',
-        'courseTeacher',
+        'teacher',
         'media'
       )
       ->loadCount('lessonNotes');
@@ -295,9 +293,36 @@ class LessonPlanController extends Controller
 
     abort_unless(
       $institutionUser->isAdmin() ||
-        $lessonPlan->courseTeacher?->user_id === $institutionUser->user_id,
+        $lessonPlan->teacher_user_id === $institutionUser->user_id,
       403,
       'You can only work on your own lesson plans'
     );
+  }
+
+  private function resolveTeacherUserId(
+    array $data,
+    ?LessonPlan $lessonPlan
+  ): int {
+    $schemeOfWork = SchemeOfWork::query()
+      ->with('topic.classificationGroup')
+      ->findOrFail(
+        $lessonPlan?->scheme_of_work_id ?? $data['scheme_of_work_id']
+      );
+
+    $classificationIds = $schemeOfWork->topic->classificationGroup
+      ->classifications()
+      ->pluck('id');
+
+    abort_unless(
+      CourseTeacher::query()
+        ->where('user_id', $data['teacher_user_id'])
+        ->where('course_id', $schemeOfWork->topic->course_id)
+        ->whereIn('classification_id', $classificationIds)
+        ->exists(),
+      422,
+      'This teacher is not assigned to the selected subject and class.'
+    );
+
+    return (int) $data['teacher_user_id'];
   }
 }
