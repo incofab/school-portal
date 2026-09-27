@@ -174,6 +174,8 @@ Route::get('/courses/multi-create', [Web\CoursesController::class, 'multiCreate'
     ->name('courses.multi-create');
 Route::post('/courses/multi-store', [Web\CoursesController::class, 'multiStore'])
     ->name('courses.multi-store');
+Route::get('/courses/{course}/lesson-plans', [Web\Curriculums\LessonPlanController::class, 'courseIndex'])
+    ->name('courses.lesson-plans');
 Route::get('/courses/{course}/lesson-notes', [Web\CoursesController::class, 'lessonNotes'])
     ->name('courses.lesson-notes');
 Route::resource('/courses', Web\CoursesController::class);
@@ -346,6 +348,7 @@ Route::resource('/fees', Web\Payments\FeeController::class)->except(['show']);
 // Route::get('/fee-payments/download/{classification}/{receiptType}', [Web\Payments\FeePaymentController::class, 'download'])->name('fee-payments.download');
 // Route::post('/fee-payments/upload', [Web\Payments\FeePaymentController::class, 'upload'])->name('fee-payments.upload');
 Route::get('/fee-payments/summary', [Web\Payments\FeePaymentController::class, 'feePaymentSummary'])->name('fee-payments.summary');
+Route::get('/fee-payments/overview', [Web\Payments\FeePaymentController::class, 'collectionOverview'])->name('fee-payments.overview');
 Route::get('/fee-payments/index/{fee?}', [Web\Payments\FeePaymentController::class, 'index'])->name('fee-payments.index');
 Route::resource('/fee-payments', Web\Payments\FeePaymentController::class)->except(['index', 'edit', 'update']);
 Route::get('/payment-attempts', [\App\Http\Controllers\PaymentHistoryController::class, 'institutionIndex'])->name('payment-attempts.index');

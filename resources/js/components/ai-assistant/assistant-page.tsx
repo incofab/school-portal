@@ -124,11 +124,45 @@ function safeSourceUrl(url?: string | null): string | null {
   }
 }
 
+function safeAssistantLinkUrl(url?: string | null): string | null {
+  const href = safeSourceUrl(url);
+  if (!href) {
+    return null;
+  }
+
+  try {
+    return new URL(href).origin === window.location.origin ? href : null;
+  } catch {
+    return null;
+  }
+}
+
 function renderInlineMarkdown(text: string): React.ReactNode[] {
   return text
-    .split(/(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g)
+    .split(
+      /(\[[^\]]+\]\((?:https?:\/\/|\/)[^)]+\)|\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g
+    )
     .filter(Boolean)
     .map((part, index) => {
+      const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+      if (link) {
+        const href = safeAssistantLinkUrl(link[2]);
+
+        return href ? (
+          <Link
+            key={`${part}-${index}`}
+            href={href}
+            color="brand.600"
+            textDecoration="underline"
+            _dark={{ color: 'brand.200' }}
+          >
+            {link[1]}
+          </Link>
+        ) : (
+          <React.Fragment key={`${part}-${index}`}>{link[1]}</React.Fragment>
+        );
+      }
+
       if (part.startsWith('**') && part.endsWith('**')) {
         return <strong key={`${part}-${index}`}>{part.slice(2, -2)}</strong>;
       }

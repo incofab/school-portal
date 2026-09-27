@@ -32,8 +32,21 @@ class AssistantToolPlanner
     $lower = Str::lower($message);
     $entities = $conversation->entities ?? [];
     $plans = [];
+    $navigationRequest = $this->isNavigationRequest($lower);
+    $paymentRequest = Str::contains($lower, [
+      'payment',
+      'payments',
+      'fee payment',
+      'fee payments',
+      'owing',
+      'outstanding balance',
+      'fully paid',
+      'students that paid',
+      'students who paid'
+    ]);
 
     if (
+      !$navigationRequest &&
       Str::contains($lower, [
         'school',
         'institution',
@@ -55,15 +68,23 @@ class AssistantToolPlanner
       $plans[] = ['name' => 'list_academic_sessions', 'arguments' => []];
     }
 
-    if (Str::contains($lower, ['staff', 'teacher', 'teachers', 'employees'])) {
+    if (
+      !$navigationRequest &&
+      Str::contains($lower, ['staff', 'teacher', 'teachers', 'employees'])
+    ) {
       $plans[] = ['name' => 'list_authorized_staff', 'arguments' => []];
     }
 
-    if (Str::contains($lower, ['class', 'classes', 'jss', 'sss', 'primary'])) {
+    if (
+      !$navigationRequest &&
+      Str::contains($lower, ['class', 'classes', 'jss', 'sss', 'primary'])
+    ) {
       $plans[] = ['name' => 'list_authorized_classes', 'arguments' => []];
     }
 
     if (
+      !$navigationRequest &&
+      !$paymentRequest &&
       Str::contains($lower, [
         'student',
         'students',
@@ -75,6 +96,19 @@ class AssistantToolPlanner
       $plans[] = [
         'name' => 'list_authorized_students',
         'arguments' => []
+      ];
+    }
+
+    if (!$navigationRequest && $paymentRequest) {
+      $plans[] = [
+        'name' => 'view_payment_overview',
+        'arguments' => [
+          'status' => Str::contains($lower, ['owing', 'outstanding'])
+            ? 'owing'
+            : (Str::contains($lower, ['paid', 'settled'])
+              ? 'paid'
+              : 'all')
+        ]
       ];
     }
 
@@ -279,5 +313,47 @@ class AssistantToolPlanner
       'my grade',
       'for me'
     ]);
+  }
+
+  private function isNavigationRequest(string $message): bool
+  {
+    if (
+      Str::contains($message, [
+        'how many',
+        'number of',
+        'count of',
+        'owing',
+        'outstanding',
+        'paid',
+        'balance'
+      ])
+    ) {
+      return false;
+    }
+
+    return Str::contains($message, [
+      'where can i find',
+      'where do i find',
+      'take me to',
+      'go to',
+      'open the',
+      'open my',
+      'link to',
+      'show me the list',
+      'show the list',
+      'view the list',
+      'see the list',
+      'list of classes',
+      'list of students',
+      'list of staff',
+      'list of teachers',
+      'list of subjects',
+      'list of payments',
+      'list of receipts'
+    ]) ||
+      preg_match(
+        '/\b(show|view|see)\b.*\b(list|classes|students|staff|teachers|subjects|receipts|fees|attendance|results)\b/',
+        $message
+      ) === 1;
   }
 }

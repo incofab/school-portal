@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\InstitutionUser;
+use App\Models\LessonNote;
 use App\Models\LessonPlan;
 use App\Models\Media;
 use App\Models\SchemeOfWork;
@@ -99,6 +100,58 @@ it('lists and filters lesson plans', function () {
         ->where('lessonPlans.data.0.id', $lessonPlan->id)
     );
 });
+
+it(
+  'lists lesson plans with their lesson notes for a selected subject class',
+  function () {
+    $this->topic->update([
+      'course_id' => $this->course->id,
+      'classification_group_id' => $this->classificationGroup->id
+    ]);
+    $this->courseTeacher->update([
+      'classification_id' => $this->classification->id
+    ]);
+
+    $lessonPlan = LessonPlan::factory()
+      ->schemeOfWork($this->schemeOfWork)
+      ->create(['course_teacher_id' => $this->courseTeacher->id]);
+    $lessonNote = LessonNote::factory()
+      ->lessonPlan($lessonPlan, $this->classification)
+      ->create([
+        'course_id' => $this->course->id,
+        'topic_id' => $this->topic->id,
+        'course_teacher_id' => $this->courseTeacher->id
+      ]);
+
+    $route = route('institutions.courses.lesson-plans', [
+      'institution' => $this->institution->uuid,
+      'course' => $this->course->id
+    ]);
+
+    actingAs($this->admin)
+      ->get($route)
+      ->assertOk()
+      ->assertInertia(
+        fn(AssertableInertia $assert) => $assert
+          ->component('institutions/courses/list-course-lesson-plans')
+          ->has('lessonPlans', 0)
+          ->where('selectedClassificationId', null)
+      );
+
+    actingAs($this->admin)
+      ->get($route . '?classification_id=' . $this->classification->id)
+      ->assertOk()
+      ->assertInertia(
+        fn(AssertableInertia $assert) => $assert
+          ->component('institutions/courses/list-course-lesson-plans')
+          ->where('course.id', $this->course->id)
+          ->where('selectedClassificationId', $this->classification->id)
+          ->has('lessonPlans', 1)
+          ->where('lessonPlans.0.id', $lessonPlan->id)
+          ->where('lessonPlans.0.lesson_note.id', $lessonNote->id)
+      );
+  }
+);
 
 it('tests the create page', function () {
   $route = route('institutions.lesson-plans.create', [

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Institutions\Payments;
 
 use App\Actions\Fees\GetClassFeePaymentSummary;
+use App\Actions\Fees\GetFeeCollectionOverview;
 use App\Actions\Payments\FeePaymentHandler;
 use App\Enums\InstitutionUserType;
 use App\Enums\InstitutionPermission;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\Fee;
+use App\Models\FeeCategory;
 use App\Models\FeePayment;
 use App\Models\Institution;
 use App\Rules\ValidateExistsRule;
@@ -152,6 +154,39 @@ class FeePaymentController extends Controller
       'term' => $term,
       'academicSession' => $academicSession,
       'classification' => $classification
+    ]);
+  }
+
+  function collectionOverview(Institution $institution, Request $request)
+  {
+    $feeRule = new ValidateExistsRule(Fee::class);
+    $classificationRule = new ValidateExistsRule(Classification::class);
+    $data = $request->validate([
+      'fee' => ['nullable', 'integer', $feeRule],
+      'classification' => ['nullable', 'integer', $classificationRule],
+      'status' => ['nullable', Rule::in(['paid', 'partial', 'unpaid'])]
+    ]);
+
+    $fee = $feeRule->getModel();
+    $classification = $classificationRule->getModel();
+    $overview = $fee
+      ? (new GetFeeCollectionOverview($institution, $fee))->run(
+        $classification?->id,
+        $data['status'] ?? null
+      )
+      : null;
+
+    return inertia('institutions/payments/fee-collection-overview', [
+      'fees' => Fee::query()->with('academicSession')->latest('id')->get(),
+      'classifications' => Classification::query()
+        ->orderBy('title')
+        ->get(),
+      'selectedFee' => $fee?->load([
+        'academicSession',
+        'feeCategories.feeable' => FeeCategory::feeableConstraint()
+      ]),
+      'selectedClassification' => $classification,
+      'overview' => $overview
     ]);
   }
 

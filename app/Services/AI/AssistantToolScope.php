@@ -102,6 +102,17 @@ class AssistantToolScope
       $institutionUser->isGuardian();
   }
 
+  public function canViewPaymentCollection(AssistantActorContext $context): bool
+  {
+    if (!$this->canAccessInstitution($context)) {
+      return false;
+    }
+
+    return $context->institutionUser->hasInstitutionPermission(
+      InstitutionPermission::ManageFees
+    );
+  }
+
   public function canViewClassSummary(AssistantActorContext $context): bool
   {
     if (!$this->canAccessInstitution($context)) {

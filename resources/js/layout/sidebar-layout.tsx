@@ -597,6 +597,11 @@ export default function SideBarLayout() {
           permissions: [InstitutionPermission.ManageFees],
         },
         {
+          label: 'Collection Overview',
+          route: instRoute('fee-payments.overview'),
+          permissions: [InstitutionPermission.ManageFees],
+        },
+        {
           label: 'Payment Attempts',
           route: instRoute('payment-attempts.index'),
           permissions: [InstitutionPermission.ManageFees],

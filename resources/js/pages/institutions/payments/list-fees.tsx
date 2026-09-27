@@ -28,9 +28,7 @@ import { formatAsCurrency } from '@/util/util';
 import feeableUtil from '@/util/feeable-util';
 import { Div } from '@/components/semantic';
 import { LabelText } from '@/components/result-helper-components';
-import useModalToggle, {
-  useModalValueToggle,
-} from '@/hooks/use-modal-toggle';
+import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import CreateFeeReminderModal from '@/components/modals/create-fee-reminder-modal';
 import DuplicateFeesModal from '@/components/modals/duplicate-fees-modal';
 
@@ -98,6 +96,13 @@ export default function ListFees({ fees }: Props) {
             label: 'Action',
             render: (row: Fee) => (
               <HStack>
+                <LinkButton
+                  title="Overview"
+                  href={instRoute('fee-payments.overview', {
+                    fee: row.id,
+                  })}
+                  variant="link"
+                />
                 <Tooltip label="Send Reminder" title={'Send Reminder'}>
                   <IconButton
                     aria-label={'Send Reminder'}

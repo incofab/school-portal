@@ -6,6 +6,8 @@ use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Curriculums\CurriculumMediaRequest;
 use App\Http\Requests\Curriculums\LessonPlanRequest;
+use App\Models\Classification;
+use App\Models\Course;
 use App\Models\CourseTeacher;
 use App\Models\Institution;
 use App\Models\LessonPlan;
@@ -53,6 +55,73 @@ class LessonPlanController extends Controller
           )
           ->latest('id')
       )
+    ]);
+  }
+
+  public function courseIndex(
+    Institution $institution,
+    Course $course,
+    Request $request
+  ) {
+    $institutionUser = currentInstitutionUser();
+    $courseTeacherQuery = CourseTeacher::query()->where(
+      'course_id',
+      $course->id
+    );
+
+    if ($institutionUser->isTeacher()) {
+      $courseTeacherQuery->where('user_id', $institutionUser->user_id);
+    }
+
+    $classifications = Classification::query()
+      ->whereIn('id', $courseTeacherQuery->select('classification_id'))
+      ->orderBy('title')
+      ->get(['id', 'title']);
+
+    $requestedClassificationId = $request->integer('classification_id') ?: null;
+    $selectedClassificationId = $classifications->contains(
+      'id',
+      $requestedClassificationId
+    )
+      ? $requestedClassificationId
+      : null;
+
+    $lessonPlans = collect();
+
+    if ($selectedClassificationId) {
+      $lessonPlans = LessonPlan::query()
+        ->whereHas(
+          'schemeOfWork.topic',
+          fn($query) => $query->where('course_id', $course->id)
+        )
+        ->whereHas('courseTeacher', function ($query) use (
+          $course,
+          $institutionUser,
+          $selectedClassificationId
+        ) {
+          $query
+            ->where('course_id', $course->id)
+            ->where('classification_id', $selectedClassificationId)
+            ->when(
+              $institutionUser->isTeacher(),
+              fn($query) => $query->where('user_id', $institutionUser->user_id)
+            );
+        })
+        ->with([
+          'schemeOfWork.topic',
+          'courseTeacher.classification',
+          'courseTeacher.user',
+          'lessonNote'
+        ])
+        ->latest('lesson_plans.id')
+        ->get();
+    }
+
+    return Inertia::render('institutions/courses/list-course-lesson-plans', [
+      'course' => $course,
+      'classifications' => $classifications,
+      'selectedClassificationId' => $selectedClassificationId,
+      'lessonPlans' => $lessonPlans
     ]);
   }
 

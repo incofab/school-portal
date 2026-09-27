@@ -90,9 +90,6 @@ class CoursesController extends Controller
 
     $classifications = $classificationQuery->get(['id', 'title']);
     $requestedClassificationId = $request->integer('classification_id') ?: null;
-    if ($classifications->count() === 1 && !$requestedClassificationId) {
-      $requestedClassificationId = $classifications->first()->id;
-    }
     $selectedClassificationId = $classifications->contains(
       'id',
       $requestedClassificationId

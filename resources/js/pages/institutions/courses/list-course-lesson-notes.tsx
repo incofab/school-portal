@@ -10,7 +10,6 @@ import {
   FormHelperText,
   FormLabel,
   Heading,
-  Select,
   SimpleGrid,
   Stack,
   Text,
@@ -24,6 +23,7 @@ import DateTimeDisplay from '@/components/date-time-display';
 import { NoteStatusType } from '@/types/types';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
+import ClassificationSelect from '@/components/selectors/classification-select';
 
 interface Props {
   course: Course;
@@ -79,22 +79,18 @@ export default function ListCourseLessonNotes({
 
           <FormControl maxW={{ base: '100%', md: '360px' }}>
             <FormLabel htmlFor="lesson-notes-class">Class</FormLabel>
-            <Select
-              id="lesson-notes-class"
+            <ClassificationSelect
+              inputId="lesson-notes-class"
               placeholder="Select a class"
-              value={selectedClassificationId ?? ''}
-              onChange={(event) =>
+              classifications={classifications}
+              selectValue={selectedClassificationId ?? undefined}
+              isClearable
+              onChange={(option: any) =>
                 visitWithClassification(
-                  event.target.value ? Number(event.target.value) : undefined
+                  option?.value ? Number(option.value) : undefined
                 )
               }
-            >
-              {classifications.map((classification) => (
-                <option key={classification.id} value={classification.id}>
-                  {classification.title}
-                </option>
-              ))}
-            </Select>
+            />
             <FormHelperText>
               Select a class to view its lesson notes.
             </FormHelperText>

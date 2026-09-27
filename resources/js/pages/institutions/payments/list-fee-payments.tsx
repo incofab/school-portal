@@ -138,6 +138,11 @@ export default function ListFeePayments({
                 onClick={retrievePaymentSummaryModal.open}
                 variant={'outline'}
               />
+              <LinkButton
+                title={'Collection Overview'}
+                href={instRoute('fee-payments.overview')}
+                variant={'outline'}
+              />
               <BrandButton
                 title={'Record Payment'}
                 onClick={recordFeePaymentModalToggle.open}

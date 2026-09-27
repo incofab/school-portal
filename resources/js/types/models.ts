@@ -778,6 +778,26 @@ export interface FeePayment extends InstitutionRow {
   payable?: User;
 }
 
+export type FeeCollectionStatus = 'paid' | 'partial' | 'unpaid';
+
+export interface FeeCollectionStudent {
+  student: Student;
+  amount_expected: number;
+  amount_paid: number;
+  amount_remaining: number;
+  status: FeeCollectionStatus;
+}
+
+export interface FeeCollectionSummary {
+  total_students: number;
+  paid: number;
+  partial: number;
+  unpaid: number;
+  amount_expected: number;
+  amount_paid: number;
+  amount_remaining: number;
+}
+
 export interface ManualPayment extends InstitutionRow {
   user_id?: number;
   bank_account_id?: number;

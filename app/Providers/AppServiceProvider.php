@@ -26,6 +26,7 @@ use App\Services\AI\Tools\ViewClassPerformanceSummaryTool;
 use App\Services\AI\Tools\ViewPublishedStudentResultTool;
 use App\Services\AI\Tools\ViewStudentAttendanceSummaryTool;
 use App\Services\AI\Tools\ViewStudentFeeSummaryTool;
+use App\Services\AI\Tools\ViewPaymentOverviewTool;
 use App\Support\Audit\ModelAuditRegistry;
 use App\Support\MorphMap;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -62,7 +63,8 @@ class AppServiceProvider extends ServiceProvider
         $app->make(ViewClassAttendanceSummaryTool::class),
         $app->make(ViewStudentFeeSummaryTool::class),
         $app->make(ViewClassPerformanceSummaryTool::class),
-        $app->make(ListAuthorizedTeacherAssignmentsTool::class)
+        $app->make(ListAuthorizedTeacherAssignmentsTool::class),
+        $app->make(ViewPaymentOverviewTool::class)
       ]);
     });
     $this->app->singleton(AssistantActionRegistry::class, function ($app) {

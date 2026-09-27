@@ -91,10 +91,8 @@ export default function ListCourse({ courses, assignedCourseIds = [] }: Props) {
               />
               <MenuList>
                 <MenuItem
-                  as="a"
-                  href={instRoute('lesson-plans.index', {
-                    course: row.id,
-                  })}
+                  as={InertiaLink}
+                  href={instRoute('courses.lesson-plans', [row.id])}
                 >
                   Lesson Plans
                 </MenuItem>

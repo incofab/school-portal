@@ -81,6 +81,37 @@ it('stores a fee payment successfully', function () {
   ]);
 });
 
+it('loads the fee collection overview for a selected fee', function () {
+  $classification = Classification::factory()
+    ->withInstitution($this->institution)
+    ->create();
+  $student = Student::factory()
+    ->withInstitution($this->institution, $classification)
+    ->create();
+  \App\Models\FeeCategory::factory()
+    ->fee($this->fee)
+    ->feeable($this->institution)
+    ->create();
+
+  actingAs($this->admin)
+    ->get(
+      route('institutions.fee-payments.overview', [
+        'institution' => $this->institution,
+        'fee' => $this->fee->id,
+        'classification' => $classification->id
+      ])
+    )
+    ->assertOk()
+    ->assertInertia(
+      fn(AssertableInertia $page) => $page
+        ->component('institutions/payments/fee-collection-overview')
+        ->where('selectedFee.id', $this->fee->id)
+        ->where('overview.summary.total_students', 1)
+        ->where('overview.summary.unpaid', 1)
+        ->where('overview.students.data.0.student.id', $student->id)
+    );
+});
+
 it(
   'filters fee payments by student class, status, method, and payment date',
   function () {

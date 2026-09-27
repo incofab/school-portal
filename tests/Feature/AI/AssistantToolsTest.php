@@ -15,7 +15,9 @@ use App\Models\Student;
 use App\Models\TermDetail;
 use App\Models\TermResult;
 use App\Models\User;
+use App\Enums\ReceiptStatus;
 use App\Services\AI\AssistantContextResolver;
+use App\Services\AI\AssistantNavigationLinkCatalog;
 use App\Services\AI\AssistantRunBudget;
 use App\Services\AI\AssistantToolPlanner;
 use App\Services\AI\AssistantToolRegistry;
@@ -32,6 +34,39 @@ beforeEach(function () {
     $this->institution
   );
 });
+
+it(
+  'exposes navigation links according to the current institution role',
+  function () {
+    $adminLinks = collect(
+      app(AssistantNavigationLinkCatalog::class)->for($this->context)
+    );
+
+    expect($adminLinks->pluck('label')->all())->toContain(
+      'Fee payments',
+      'Collection overview',
+      'Classes'
+    );
+
+    $teacher = User::factory()->create();
+    InstitutionUser::factory()
+      ->withInstitution($this->institution)
+      ->teacher()
+      ->user($teacher)
+      ->create();
+    actingAs($teacher);
+    $teacherContext = app(AssistantContextResolver::class)->resolve(
+      $this->institution
+    );
+    $teacherLinks = collect(
+      app(AssistantNavigationLinkCatalog::class)->for($teacherContext)
+    );
+
+    expect($teacherLinks->pluck('label')->all())
+      ->toContain('Classes', 'Attendance')
+      ->not->toContain('Fee payments', 'Collection overview');
+  }
+);
 
 it('registers typed read-only tools with schemas', function () {
   $definitions = app(AssistantToolRegistry::class)->definitions();
@@ -50,7 +85,8 @@ it('registers typed read-only tools with schemas', function () {
     'view_class_attendance_summary',
     'view_student_fee_summary',
     'view_class_performance_summary',
-    'list_authorized_teacher_assignments'
+    'list_authorized_teacher_assignments',
+    'view_payment_overview'
   );
   expect(
     collect($definitions)->every(
@@ -296,6 +332,75 @@ it('returns only the authorized student fee balance', function () {
     ->and($result->data['fees'][0]['title'])
     ->toBe('Tuition');
 });
+
+it(
+  'returns payment counts and student status only to fee managers',
+  function () {
+    $class = Classification::factory()
+      ->withInstitution($this->institution)
+      ->create();
+    $paidStudent = Student::factory()
+      ->withInstitution($this->institution, $class)
+      ->create();
+    $owingStudent = Student::factory()
+      ->withInstitution($this->institution, $class)
+      ->create();
+    $fee = Fee::factory()
+      ->institution($this->institution)
+      ->create();
+
+    Receipt::factory()
+      ->fee($fee)
+      ->student($paidStudent)
+      ->create([
+        'amount' => 100,
+        'amount_paid' => 100,
+        'amount_remaining' => 0,
+        'status' => ReceiptStatus::Paid
+      ]);
+    Receipt::factory()
+      ->fee($fee)
+      ->student($owingStudent)
+      ->create([
+        'amount' => 100,
+        'amount_paid' => 40,
+        'amount_remaining' => 60,
+        'status' => ReceiptStatus::Partial
+      ]);
+
+    $owing = app(AssistantToolRegistry::class)->execute(
+      'view_payment_overview',
+      ['status' => 'owing'],
+      $this->context
+    );
+
+    expect($owing->ok)
+      ->toBeTrue()
+      ->and($owing->data['payment_count'])
+      ->toBe(1)
+      ->and($owing->data['students'][0]['id'])
+      ->toBe($owingStudent->id);
+
+    $teacher = User::factory()->create();
+    InstitutionUser::factory()
+      ->withInstitution($this->institution)
+      ->teacher()
+      ->user($teacher)
+      ->create();
+    actingAs($teacher);
+    $teacherContext = app(AssistantContextResolver::class)->resolve(
+      $this->institution
+    );
+
+    expect(
+      app(AssistantToolRegistry::class)->execute(
+        'view_payment_overview',
+        ['status' => 'all'],
+        $teacherContext
+      )->meta['reason']
+    )->toBe('unauthorized');
+  }
+);
 
 it(
   'does not expose fee summaries to a teacher without fee permission',
@@ -598,9 +703,7 @@ it('returns only published results within the actor scope', function () {
 });
 
 it('exposes authorized read-only tools to the model request', function () {
-  $fake = LaravelAiTextAgent::fake([
-    'I found the authorized class list.'
-  ]);
+  $fake = LaravelAiTextAgent::fake(['I found the authorized class list.']);
 
   $class = Classification::factory()
     ->withInstitution($this->institution)
