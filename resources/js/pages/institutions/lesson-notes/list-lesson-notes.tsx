@@ -26,6 +26,7 @@ import useSharedProps from '@/hooks/use-shared-props';
 import { InstitutionPermission } from '@/types/permissions';
 import PermissionGate from '@/components/permission-gate';
 import SelectLessonPlanModal from '@/components/modals/select-lesson-plan-modal';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   lessonNotes: PaginationResponse<LessonNote>;
@@ -197,6 +198,27 @@ export default function ListLessonNotes({ lessonNotes, lessonPlans }: Props) {
               'term',
             ]}
             onFilterButtonClick={lessonNoteFilterToggle.open}
+            emptyState={
+              <ListEmptyState
+                title="No lesson notes yet"
+                description="Lesson notes give students the material and explanations for each lesson. Choose a lesson plan to create a note, then publish it for the class."
+                action={
+                  <PermissionGate
+                    permissions={InstitutionPermission.NaturalAccess}
+                  >
+                    {!isStudent && (
+                      <Button
+                        onClick={newLessonNoteToggle.open}
+                        colorScheme="brand"
+                        size="sm"
+                      >
+                        Create lesson note
+                      </Button>
+                    )}
+                  </PermissionGate>
+                }
+              />
+            }
           />
         </SlabBody>
         <LessonNoteTableFilters {...lessonNoteFilterToggle.props} />

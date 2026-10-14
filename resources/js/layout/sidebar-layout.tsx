@@ -181,6 +181,11 @@ export default function SideBarLayout() {
           route: instRoute('classifications.index'),
         },
         {
+          label: 'Designations',
+          route: instRoute('designations.index'),
+          user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
+        },
+        {
           label: 'Add Class',
           route: instRoute('classifications.create'),
           user_types: [InstitutionUserType.Admin],

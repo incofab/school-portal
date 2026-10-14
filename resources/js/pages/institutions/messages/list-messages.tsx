@@ -8,6 +8,7 @@ import { ServerPaginatedTableHeader } from '@/components/server-paginated-table'
 import { LinkButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import DateTimeDisplay from '@/components/date-time-display';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   messages: PaginationResponse<Message>;
@@ -55,6 +56,18 @@ export default function ListMessages({ messages }: Props) {
             keyExtractor={(row) => row.id}
             paginator={messages}
             hideSearchField={true}
+            emptyState={
+              <ListEmptyState
+                title="No messages sent yet"
+                description="This page keeps a history of messages sent to students, guardians, or staff, including the delivery channel and time. Compose a message to notify your school community."
+                action={
+                  <LinkButton
+                    title="Compose message"
+                    href={instRoute('messages.create')}
+                  />
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

@@ -215,6 +215,21 @@
     </div>
   </section>
 
+  <section class="exam-scholars-promo" aria-labelledby="exam-scholars-promo-title">
+    <div class="site-container exam-scholars-promo__inner">
+      <div class="exam-scholars-promo__mark" aria-hidden="true">ES<span>+</span></div>
+      <div class="exam-scholars-promo__copy">
+        <p class="eyebrow">Introducing Exam Scholars</p>
+        <h2 id="exam-scholars-promo-title">Help learners feel ready before exam day.</h2>
+        <p>Practise JAMB, WAEC, BECE and NCEE questions with realistic CBT sessions, clear explanations, performance insights and offline access.</p>
+      </div>
+      <div class="exam-scholars-promo__actions">
+        <a class="btn btn--primary" href="{{ route('exam-scholars') }}">Explore Exam Scholars</a>
+        <a class="exam-scholars-promo__link" href="https://examscholars.com" target="_blank" rel="noopener noreferrer">Visit examscholars.com <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
+
   <section id="why-edumanager" class="section section--tinted">
     <div class="site-container split-section">
       <div class="split-section__content">

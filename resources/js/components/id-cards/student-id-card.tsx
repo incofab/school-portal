@@ -12,6 +12,10 @@ interface Props {
 
 export default function StudentIdCard({ institution, student }: Props) {
   const fullName = student.user?.full_name ?? 'Unnamed student';
+  const designationTitles = student.active_designation_assignments
+    ?.map((assignment) => assignment.designation?.title)
+    .filter(Boolean)
+    .join(', ');
 
   return (
     <Box
@@ -140,10 +144,14 @@ export default function StudentIdCard({ institution, student }: Props) {
                 label="CLASS"
                 value={student.classification?.title ?? 'Not assigned'}
               />
-              <StudentDetail
-                label="GENDER"
-                value={ucFirst(student.user?.gender || 'Not provided')}
-              />
+              {designationTitles ? (
+                <StudentDetail label="DESIGNATION" value={designationTitles} />
+              ) : (
+                <StudentDetail
+                  label="GENDER"
+                  value={ucFirst(student.user?.gender || 'Not provided')}
+                />
+              )}
             </VStack>
 
             <Box
@@ -178,6 +186,24 @@ export default function StudentIdCard({ institution, student }: Props) {
           {institution.website ? `Web: ${institution.website}` : ''}
         </Text>
         <Text fontSize="5.5pt" color="gray.600" noOfLines={1} textAlign="right">
+          {`Emergency: ${student.guardian_phone || 'Not provided'}`}
+        </Text>
+
+        <Text fontSize="5.5pt" color="gray.600" noOfLines={1} minW={0} flex={1}>
+          {designationTitles
+            ? `Designation: ${designationTitles}`
+            : institution.website
+            ? `Web: ${institution.website}`
+            : ''}
+        </Text>
+        <Text
+          fontSize="5.5pt"
+          color="gray.600"
+          noOfLines={1}
+          textAlign="right"
+          flexShrink={0}
+          maxW="50%"
+        >
           {`Emergency: ${student.guardian_phone || 'Not provided'}`}
         </Text>
       </HStack>

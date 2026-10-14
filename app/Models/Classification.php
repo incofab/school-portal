@@ -80,6 +80,21 @@ class Classification extends BaseModel
     return $this->hasMany(Student::class);
   }
 
+  function designations()
+  {
+    return $this->belongsToMany(
+      Designation::class,
+      'designation_classification'
+    )
+      ->withPivot('institution_id')
+      ->withTimestamps();
+  }
+
+  function designationAssignments()
+  {
+    return $this->hasMany(DesignationAssignment::class);
+  }
+
   function courseResults()
   {
     return $this->hasMany(CourseResult::class);

@@ -122,6 +122,10 @@ export default function Profile({ user, institutionUser, roles }: Props) {
   }
 
   const student = institutionUser.student;
+  const designationTitles =
+    institutionUser.active_designation_assignments
+      ?.map((assignment) => assignment.designation?.title)
+      .filter((title): title is string => !!title) ?? [];
   if (student) {
     student.user = user;
   }
@@ -139,6 +143,9 @@ export default function Profile({ user, institutionUser, roles }: Props) {
         'Not assigned',
     },
     { label: 'Gender', value: user.gender },
+    ...(designationTitles.length
+      ? [{ label: 'Designations', value: designationTitles.join(', ') }]
+      : []),
     ...(student
       ? [
           { label: 'Student Id', value: student.code },
@@ -201,6 +208,11 @@ export default function Profile({ user, institutionUser, roles }: Props) {
                         {institutionUser.roles?.map((role) => (
                           <Badge key={role.id} colorScheme="purple">
                             {role.name}
+                          </Badge>
+                        ))}
+                        {designationTitles.map((title) => (
+                          <Badge key={title} colorScheme="green">
+                            {title}
                           </Badge>
                         ))}
                         {student && (

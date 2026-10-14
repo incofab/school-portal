@@ -19,6 +19,7 @@ import useIsTeacher from '@/hooks/use-is-teacher';
 import useSharedProps from '@/hooks/use-shared-props';
 import { InstitutionPermission } from '@/types/permissions';
 import PermissionGate from '@/components/permission-gate';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   liveClasses: LiveClass[];
@@ -131,6 +132,24 @@ export default function ListLiveClasses({ liveClasses }: Props) {
             keyExtractor={(row) => row.id}
             hideSearchField={true}
             scroll={true}
+            emptyState={
+              <ListEmptyState
+                title="No live classes scheduled yet"
+                description="Live classes let teachers host online lessons for students. Create a session with its subject and schedule, then students can join from this list."
+                action={
+                  <PermissionGate
+                    permissions={InstitutionPermission.NaturalAccess}
+                  >
+                    {(isAdmin || isTeacher) && (
+                      <LinkButton
+                        href={instRoute('live-classes.create')}
+                        title="Create live class"
+                      />
+                    )}
+                  </PermissionGate>
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

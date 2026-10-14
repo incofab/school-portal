@@ -10,13 +10,14 @@ import { VacancyPost } from '@/types/models';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { LinkButton } from '@/components/buttons';
 import { InertiaLink } from '@inertiajs/inertia-react';
-import { EyeIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { PencilIcon } from '@heroicons/react/24/outline';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import DestructivePopover from '@/components/destructive-popover';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
 import DateTimeDisplay from '@/components/date-time-display';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   vacancyPosts: PaginationResponse<VacancyPost>;
@@ -121,6 +122,18 @@ export default function ListVacancyPosts({ vacancyPosts }: Props) {
             data={vacancyPosts.data}
             keyExtractor={(row) => row.id}
             paginator={vacancyPosts}
+            emptyState={
+              <ListEmptyState
+                title="No vacancy posts yet"
+                description="Publish vacancy posts to describe open positions and invite candidates to apply. Applications for each post can then be reviewed from the recruitment area."
+                action={
+                  <LinkButton
+                    href={instRoute('vacancy-posts.create')}
+                    title="Create vacancy post"
+                  />
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

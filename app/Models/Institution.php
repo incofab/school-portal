@@ -117,6 +117,16 @@ class Institution extends BaseModel
     return $this->hasMany(Classification::class);
   }
 
+  public function designations()
+  {
+    return $this->hasMany(Designation::class);
+  }
+
+  public function designationAssignments()
+  {
+    return $this->hasMany(DesignationAssignment::class);
+  }
+
   public function classificationGroups()
   {
     return $this->hasMany(ClassificationGroup::class);

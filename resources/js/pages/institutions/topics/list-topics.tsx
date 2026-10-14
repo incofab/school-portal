@@ -21,6 +21,7 @@ import useModalToggle from '@/hooks/use-modal-toggle';
 import TopicTableFilters from '@/components/table-filters/topic-table-filters';
 import PermissionGate from '@/components/permission-gate';
 import { InstitutionPermission } from '@/types/permissions';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   topics: PaginationResponse<Topic>;
@@ -139,6 +140,22 @@ export default function ListTopics({ topics, parentTopic }: Props) {
             paginator={topics}
             validFilters={['classificationGroup', 'course']}
             onFilterButtonClick={topicFilterToggle.open}
+            emptyState={
+              <ListEmptyState
+                title={parentTopic ? 'No sub-topics yet' : 'No topics yet'}
+                description="Topics organise subject content by class and term. Add topics and sub-topics to build a clear structure for schemes of work, lesson plans, and notes."
+                action={
+                  <PermissionGate
+                    permissions={InstitutionPermission.NaturalAccess}
+                  >
+                    <LinkButton
+                      href={instRoute('inst-topics.create-or-edit')}
+                      title="Create topic"
+                    />
+                  </PermissionGate>
+                }
+              />
+            }
           />
         </SlabBody>
         <TopicTableFilters {...topicFilterToggle.props} />

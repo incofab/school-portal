@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { Div } from '@/components/semantic';
 import {
-  Box,
   Divider,
   HStack,
   Icon,
@@ -50,6 +49,7 @@ interface Props<T> {
   hideSearchField?: boolean;
   validFilters?: string[];
   onFilterButtonClick?: () => void;
+  emptyState?: ReactNode;
 }
 
 export default function ServerPaginatedTable<T>({
@@ -62,6 +62,7 @@ export default function ServerPaginatedTable<T>({
   hideSearchField,
   validFilters,
   onFilterButtonClick,
+  emptyState,
 }: Props<T>) {
   const [content, setContent] = useState<T[]>(data);
   useEffect(() => setContent(data), [data]);
@@ -74,6 +75,11 @@ export default function ServerPaginatedTable<T>({
     });
     return params;
   }, [window.location.href]);
+  const hasActiveFilters = Object.keys(params).some(
+    (key) => !['page', 'sortKey', 'sortDir', 'perPage'].includes(key)
+  );
+  const showEmptyState =
+    data.length === 0 && Boolean(emptyState) && !hasActiveFilters;
 
   function updateQueryAndNavigate(newParams: { [key: string]: string }) {
     const url = new URL(window.location.href);
@@ -101,12 +107,6 @@ export default function ServerPaginatedTable<T>({
     });
   }
 
-  function setPerPage(amount: number) {
-    updateQueryAndNavigate({
-      perPage: `${amount}`,
-    });
-  }
-
   function goToPrevPage() {
     updateQueryAndNavigate({ page: `${Number(params.page || 1) - 1}` });
   }
@@ -121,68 +121,89 @@ export default function ServerPaginatedTable<T>({
 
   return (
     <Div>
-      <HStack>
-        {!hideSearchField && (
-          <FieldSearchForm
-            onChange={(value: string) => setContent(searchContent(data, value))}
-          />
-        )}
-        <Spacer />
-        {validFilters && (
-          <FilterButton
-            validFilters={validFilters}
-            onClick={onFilterButtonClick}
-          />
-        )}
-      </HStack>
-      <Divider my={2} />
-      <Div overflow={scroll ? 'auto' : undefined}>
-        <Table size={'sm'}>
-          <Thead>
-            <Tr>
-              {headers.map((header, i) => (
-                <Th
-                  key={i}
-                  onClick={() => sortHeader(header)}
-                  cursor={isHeaderSortable(header) ? 'pointer' : undefined}
-                >
-                  <HStack spacing={2}>
-                    <Text fontWeight={400}>{header.label}</Text>
-                    {header.sortKey && header.sortKey === params.sortKey ? (
-                      params.sortDir === 'desc' ? (
-                        <Icon as={ArrowDownIcon} />
-                      ) : (
-                        <Icon as={ArrowUpIcon} />
-                      )
-                    ) : null}
-                  </HStack>
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {content.map((row) => (
-              <Tr
-                key={keyExtractor(row)}
-                {...(tableRowProps ? tableRowProps(row) : null)}
-              >
+      {!showEmptyState && (
+        <>
+          <HStack>
+            {!hideSearchField && (
+              <FieldSearchForm
+                onChange={(value: string) =>
+                  setContent(searchContent(data, value))
+                }
+              />
+            )}
+            <Spacer />
+            {validFilters && (
+              <FilterButton
+                validFilters={validFilters}
+                onClick={onFilterButtonClick}
+              />
+            )}
+          </HStack>
+          <Divider my={2} />
+        </>
+      )}
+      {showEmptyState ? (
+        emptyState
+      ) : (
+        <Div overflow={scroll ? 'auto' : undefined}>
+          <Table size={'sm'}>
+            <Thead>
+              <Tr>
                 {headers.map((header, i) => (
-                  <Td key={i}>
-                    {header.render
-                      ? header.render(row)
-                      : header.value
-                      ? getNestedProperty(row, header.value)
-                      : null}
-                  </Td>
+                  <Th
+                    key={i}
+                    onClick={() => sortHeader(header)}
+                    cursor={isHeaderSortable(header) ? 'pointer' : undefined}
+                  >
+                    <HStack spacing={2}>
+                      <Text fontWeight={400}>{header.label}</Text>
+                      {header.sortKey && header.sortKey === params.sortKey ? (
+                        params.sortDir === 'desc' ? (
+                          <Icon as={ArrowDownIcon} />
+                        ) : (
+                          <Icon as={ArrowUpIcon} />
+                        )
+                      ) : null}
+                    </HStack>
+                  </Th>
                 ))}
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </Div>
-      <Div display={'flex'} justifyContent={'end'} mt={4}>
-        <HStack spacing={8}>
-          {/* <HStack spacing={2}>
+            </Thead>
+            <Tbody>
+              {content.length > 0 ? (
+                content.map((row) => (
+                  <Tr
+                    key={keyExtractor(row)}
+                    {...(tableRowProps ? tableRowProps(row) : null)}
+                  >
+                    {headers.map((header, i) => (
+                      <Td key={i}>
+                        {header.render
+                          ? header.render(row)
+                          : header.value
+                          ? getNestedProperty(row, header.value)
+                          : null}
+                      </Td>
+                    ))}
+                  </Tr>
+                ))
+              ) : (
+                <Tr>
+                  <Td colSpan={headers.length}>
+                    <Text textAlign="center" py={2}>
+                      No results found
+                    </Text>
+                  </Td>
+                </Tr>
+              )}
+            </Tbody>
+          </Table>
+        </Div>
+      )}
+      {!showEmptyState && (
+        <Div display={'flex'} justifyContent={'end'} mt={4}>
+          <HStack spacing={8}>
+            {/* <HStack spacing={2}>
             <Text fontSize={'sm'}>Per Page </Text>
             <HStack
               spacing={2}
@@ -202,32 +223,33 @@ export default function ServerPaginatedTable<T>({
               ))}
             </HStack>
           </HStack> */}
-          <HStack spacing={2}>
-            {paginator.prev_page_url && (
-              <IconButton
-                aria-label={'Prev Page'}
-                icon={<Icon as={ArrowLeftCircleIcon} />}
-                size={'md'}
-                variant={'ghost'}
-                onClick={() => goToPrevPage()}
-              />
-            )}
-            <Text fontSize={'sm'}>
-              Showing {paginator.from || 0} to {paginator.to || 0} of{' '}
-              {paginator.total || 0}
-            </Text>
-            {paginator.next_page_url && (
-              <IconButton
-                aria-label={'Next Page'}
-                icon={<Icon as={ArrowRightCircleIcon} />}
-                size={'md'}
-                variant={'ghost'}
-                onClick={() => goToNextPage()}
-              />
-            )}
+            <HStack spacing={2}>
+              {paginator.prev_page_url && (
+                <IconButton
+                  aria-label={'Prev Page'}
+                  icon={<Icon as={ArrowLeftCircleIcon} />}
+                  size={'md'}
+                  variant={'ghost'}
+                  onClick={() => goToPrevPage()}
+                />
+              )}
+              <Text fontSize={'sm'}>
+                Showing {paginator.from || 0} to {paginator.to || 0} of{' '}
+                {paginator.total || 0}
+              </Text>
+              {paginator.next_page_url && (
+                <IconButton
+                  aria-label={'Next Page'}
+                  icon={<Icon as={ArrowRightCircleIcon} />}
+                  size={'md'}
+                  variant={'ghost'}
+                  onClick={() => goToNextPage()}
+                />
+              )}
+            </HStack>
           </HStack>
-        </HStack>
-      </Div>
+        </Div>
+      )}
     </Div>
   );
 }

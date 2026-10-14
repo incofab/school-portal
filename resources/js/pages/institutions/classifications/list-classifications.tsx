@@ -38,6 +38,7 @@ import useInstitutionPermissions from '@/hooks/use-institution-permissions';
 import { InstitutionPermission } from '@/types/permissions';
 import PermissionGate from '@/components/permission-gate';
 import ResultUtil from '@/util/result-util';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   classifications: PaginationResponse<Classification>;
@@ -160,7 +161,9 @@ export default function ListClassification({ classifications }: Props) {
             label: 'Action',
             render: (row: Classification) => (
               <HStack spacing={3}>
-                <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
+                <PermissionGate
+                  permissions={InstitutionPermission.NaturalAccess}
+                >
                   {isAdmin || isFormTeacher(row) ? (
                     <LinkButton
                       title="Results"
@@ -172,7 +175,7 @@ export default function ListClassification({ classifications }: Props) {
                   ) : null}
                 </PermissionGate>
                 <PermissionGate
-                permissions={InstitutionPermission.NaturalAccess}
+                  permissions={InstitutionPermission.NaturalAccess}
                 >
                   <LinkButton
                     title="List Lesson Plans"
@@ -183,7 +186,7 @@ export default function ListClassification({ classifications }: Props) {
                   />
                 </PermissionGate>
                 <PermissionGate
-                permissions={InstitutionPermission.NaturalAccess}
+                  permissions={InstitutionPermission.NaturalAccess}
                 >
                   <LinkButton
                     title="List Topics"
@@ -362,6 +365,20 @@ export default function ListClassification({ classifications }: Props) {
             data={classifications.data}
             keyExtractor={(row) => row.id}
             paginator={classifications}
+            emptyState={
+              <ListEmptyState
+                title="No classes added yet"
+                description="Create classes to organise students by level or group, such as Primary 4, JSS 2, or Science Class. You can then assign students, subjects, and class teachers."
+                action={
+                  isAdmin ? (
+                    <LinkButton
+                      href={instRoute('classifications.create')}
+                      title="Create class"
+                    />
+                  ) : undefined
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

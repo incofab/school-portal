@@ -16,6 +16,7 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
 import { LinkButton } from '@/components/buttons';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   recruitmentApplications: PaginationResponse<RecruitmentApplication>;
@@ -114,6 +115,12 @@ export default function ListRecruitmentApplications({
             data={recruitmentApplications.data}
             keyExtractor={(row) => row.id}
             paginator={recruitmentApplications}
+            emptyState={
+              <ListEmptyState
+                title="No applications received yet"
+                description="Applications submitted for this vacancy will appear here so you can review candidate details and track recruitment progress. Share the vacancy post to invite applicants."
+              />
+            }
           />
         </SlabBody>
       </Slab>

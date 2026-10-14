@@ -243,6 +243,7 @@ Route::group(['prefix' => '{institution}/my-exam/'], function () {
 });
 
 Route::get('/', [Home\HomeController::class, 'index'])->name('home');
+Route::view('/exam-scholars', 'home.exam-scholars')->name('exam-scholars');
 Route::any('/privacy-policy', [Home\HomeController::class, 'privacyPolicy'])->name('privacy-policy');
 Route::any('/paystack/callback', [Home\PaystackController::class, 'callback'])->name('paystack.callback');
 Route::any('/paystack/verify-reference', [Home\PaystackController::class, 'verifyReference'])->name('paystack.verify-reference');

@@ -12,6 +12,7 @@ import { dateFormat } from '@/util/util';
 import { Icon, IconButton, Text } from '@chakra-ui/react';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { PencilIcon } from '@heroicons/react/24/outline';
+import ListEmptyState from '@/components/list-empty-state';
 import { format } from 'date-fns';
 import startCase from 'lodash/startCase';
 
@@ -136,6 +137,18 @@ export default function ListTermDetails({ termDetails }: Props) {
             keyExtractor={(row) => row.id}
             paginator={termDetails}
             hideSearchField={true}
+            emptyState={
+              <ListEmptyState
+                title="No term details added yet"
+                description="Term details hold key calendar information such as resumption dates, holidays, and closing dates. Add these dates so staff and families can refer to the school calendar."
+                action={
+                  <LinkButton
+                    title="Add term details"
+                    href={instRoute('term-details.create')}
+                  />
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

@@ -28,6 +28,7 @@ import useIsAdmin from '@/hooks/use-is-admin';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import CreateEditClassDivisionModal from '@/components/modals/create-edit-class-division-modal';
 import AddClassificationsToClassDivisionModal from '@/components/modals/add-classifications-to-class-division-modal';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   classdivisions: PaginationResponse<ClassDivision>;
@@ -158,6 +159,20 @@ export default function ListClassDivision({ classdivisions }: Props) {
             data={classdivisions.data}
             keyExtractor={(row) => row.id}
             paginator={classdivisions}
+            emptyState={
+              <ListEmptyState
+                title="No class divisions yet"
+                description="Class divisions let you group classes into larger sections, such as Junior and Senior School, for easier organisation and reporting. Create a division, then add the classes it contains."
+                action={
+                  isAdmin ? (
+                    <BrandButton
+                      title="Create class division"
+                      onClick={() => createEditModal.open(undefined)}
+                    />
+                  ) : undefined
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

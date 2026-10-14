@@ -14,6 +14,7 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   schoolActivities: PaginationResponse<SchoolActivity>;
@@ -91,6 +92,18 @@ export default function ListSchoolActivities({ schoolActivities }: Props) {
             data={schoolActivities.data}
             keyExtractor={(row) => row.id}
             paginator={schoolActivities}
+            emptyState={
+              <ListEmptyState
+                title="No school activities added yet"
+                description="Use school activities to share upcoming programmes, events, and important dates with your school community. Add an activity with its details and schedule."
+                action={
+                  <LinkButton
+                    href={instRoute('school-activities.create')}
+                    title="Add activity"
+                  />
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

@@ -36,6 +36,7 @@ import { InstitutionPermission } from '@/types/permissions';
 import PermissionGate from '@/components/permission-gate';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   libraries: PaginationResponse<Library>;
@@ -182,6 +183,24 @@ export default function ListLibraries({ libraries }: Props) {
             data={libraries.data}
             keyExtractor={(row) => row.id}
             paginator={libraries}
+            emptyState={
+              <ListEmptyState
+                title="No learning materials added yet"
+                description="The E-Library stores resources students and staff can access, such as documents, images, and videos. Add a material and choose whether it is available to everyone or selected classes."
+                action={
+                  <PermissionGate
+                    permissions={InstitutionPermission.ManageLibrary}
+                  >
+                    {!isStudent && (
+                      <LinkButton
+                        href={instRoute('libraries.create')}
+                        title="Add material"
+                      />
+                    )}
+                  </PermissionGate>
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

@@ -23,6 +23,7 @@ import { formatAsCurrency } from '@/util/util';
 import RetrievePaymentSummaryModal from '@/components/modals/retrieve-payment-summary-modal';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-filter';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   feePayments: PaginationResponse<FeePayment>;
@@ -177,6 +178,18 @@ export default function ListFeePayments({
               ...dateRangeFilterQueryKeys('created_at'),
             ]}
             onFilterButtonClick={feePaymentFilterToggle.open}
+            emptyState={
+              <ListEmptyState
+                title="No fee payments recorded yet"
+                description="This list tracks payments received from students, including the fee, amount, term, and receipt. Record a payment here or use Collection Overview to review fee progress."
+                action={
+                  <BrandButton
+                    title="Record payment"
+                    onClick={recordFeePaymentModalToggle.open}
+                  />
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

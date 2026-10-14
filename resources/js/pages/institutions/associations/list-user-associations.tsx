@@ -15,6 +15,7 @@ import DestructivePopover from '@/components/destructive-popover';
 import DateTimeDisplay from '@/components/date-time-display';
 import { LinkButton } from '@/components/buttons';
 import { PaginationResponse } from '@/types/types';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   userAssociations: PaginationResponse<UserAssociation>;
@@ -91,6 +92,19 @@ export default function ListAssociations({
             keyExtractor={(row) => row.id}
             paginator={userAssociations}
             hideSearchField={true}
+            emptyState={
+              <ListEmptyState
+                title="No members in this association"
+                description="Add institution users to this association to keep its membership and participation organised."
+                action={
+                  <LinkButton
+                    href={instRoute('user-associations.create')}
+                    title="Add members"
+                    colorScheme="brand"
+                  />
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

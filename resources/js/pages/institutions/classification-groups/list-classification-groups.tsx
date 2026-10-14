@@ -20,6 +20,7 @@ import SelectClassGroupModal from '@/components/modals/select-class-group-modal'
 import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import SetResumptionDateModal from '@/components/modals/set-resumption-date-modal';
 import ResultUtil from '@/util/result-util';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   classificationgroups: PaginationResponse<ClassificationGroup>;
@@ -141,6 +142,18 @@ export default function ListClassificationGroup({
               data={classificationgroups.data}
               keyExtractor={(row) => row.id}
               paginator={classificationgroups}
+              emptyState={
+                <ListEmptyState
+                  title="No class groups yet"
+                  description="Class groups organise related classes by level or school section, such as Primary or Senior Secondary. Add a group before creating the classes that belong to it."
+                  action={
+                    <LinkButton
+                      href={instRoute('classification-groups.create')}
+                      title="Create class group"
+                    />
+                  }
+                />
+              }
             />
           </SlabBody>
         </Slab>

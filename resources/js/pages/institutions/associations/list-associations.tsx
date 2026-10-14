@@ -17,6 +17,7 @@ import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import DateTimeDisplay from '@/components/date-time-display';
 import DataTable from '@/components/data-table';
 import CreateEditAssociationModal from '@/components/modals/create-edit-association-modal';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   associations: Association[];
@@ -116,6 +117,20 @@ export default function ListAssociations({ associations }: Props) {
             headers={headers}
             data={associations}
             keyExtractor={(row) => row.id}
+            emptyState={
+              <ListEmptyState
+                title="No associations created yet"
+                description="Associations group institution users for shared activities, such as clubs, houses, or staff committees. Create an association, then add its members."
+                action={
+                  isAdmin ? (
+                    <BrandButton
+                      title="Create association"
+                      onClick={() => associationModalToggle.open(undefined)}
+                    />
+                  ) : undefined
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

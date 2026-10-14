@@ -148,6 +148,26 @@ class InstitutionUser extends BaseModel
     return $this->hasOne(Student::class);
   }
 
+  function designationAssignments()
+  {
+    return $this->hasMany(DesignationAssignment::class);
+  }
+
+  function activeDesignationAssignments()
+  {
+    return $this->designationAssignments()->whereNull('ended_at');
+  }
+
+  function activeDesignations()
+  {
+    return $this->belongsToMany(
+      Designation::class,
+      'designation_assignments',
+      'institution_user_id',
+      'designation_id'
+    )->whereNull('designation_assignments.ended_at');
+  }
+
   function user()
   {
     return $this->belongsTo(User::class);

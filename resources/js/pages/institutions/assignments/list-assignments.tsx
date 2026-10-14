@@ -23,6 +23,7 @@ import useIsTeacher from '@/hooks/use-is-teacher';
 import useSharedProps from '@/hooks/use-shared-props';
 import { InstitutionPermission } from '@/types/permissions';
 import PermissionGate from '@/components/permission-gate';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   assignments: PaginationResponse<Assignment>;
@@ -141,6 +142,24 @@ export default function ListEvents({ assignments }: Props) {
             keyExtractor={(row) => row.id}
             paginator={assignments}
             hideSearchField={true}
+            emptyState={
+              <ListEmptyState
+                title="No assignments yet"
+                description="Assignments let teachers give students class or subject work with a submission deadline. Create one to share instructions and collect responses."
+                action={
+                  <PermissionGate
+                    permissions={InstitutionPermission.NaturalAccess}
+                  >
+                    {!isStudent && (isAdmin || isTeacher) && (
+                      <LinkButton
+                        href={instRoute('assignments.create')}
+                        title="Create assignment"
+                      />
+                    )}
+                  </PermissionGate>
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

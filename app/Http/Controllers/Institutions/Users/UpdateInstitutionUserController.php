@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Services\Institutions\InstitutionRoleService;
 use App\Support\Audit\ModelAudit;
 use App\Support\Audit\SecurityActivityLogger;
+use App\Support\SettingsHandler;
 use App\Support\Media\MediaManager;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
@@ -39,9 +40,17 @@ class UpdateInstitutionUserController extends Controller
       $this->validateUser($user);
     }
 
+    $currentAcademicSessionId = SettingsHandler::makeFromRoute()->getCurrentAcademicSession();
     $institutionUser = $user
       ->institutionUser()
-      ->with('student.classification', 'roles')
+      ->where('institution_id', $institution->id)
+      ->with([
+        'student.classification',
+        'roles',
+        'activeDesignationAssignments' => fn($query) => $query
+          ->where('academic_session_id', $currentAcademicSessionId)
+          ->with('designation')
+      ])
       ->first();
 
     return inertia('institutions/users/profile', [

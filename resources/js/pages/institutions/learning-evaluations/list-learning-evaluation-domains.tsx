@@ -27,6 +27,7 @@ import DataTable, { TableHeader } from '@/components/data-table';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import DestructivePopover from '@/components/destructive-popover';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   learningEvaluationDomains: LearningEvaluationDomain[];
@@ -112,6 +113,12 @@ export default function ListLearningEvaluationDomains({
               data={learningEvaluationDomains}
               keyExtractor={(row) => row.id}
               hideSearchField={true}
+              emptyState={
+                <ListEmptyState
+                  title="No evaluation types created yet"
+                  description="Evaluation types define the areas used to record and review student development, such as social, emotional, or practical skills. Add a type to make it available for evaluations."
+                />
+              }
             />
           </SlabBody>
         </Slab>

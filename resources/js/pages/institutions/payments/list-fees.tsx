@@ -31,6 +31,7 @@ import { LabelText } from '@/components/result-helper-components';
 import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import CreateFeeReminderModal from '@/components/modals/create-fee-reminder-modal';
 import DuplicateFeesModal from '@/components/modals/duplicate-fees-modal';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   fees: PaginationResponse<Fee>;
@@ -166,6 +167,20 @@ export default function ListFees({ fees }: Props) {
             data={fees.data}
             keyExtractor={(row) => row.id}
             paginator={fees}
+            emptyState={
+              <ListEmptyState
+                title="No fees set up yet"
+                description="Fees define what students are charged, how much is due, and which classes or groups the charge applies to. Add a fee to begin collecting payments."
+                action={
+                  canManageFees ? (
+                    <LinkButton
+                      href={instRoute('fees.create')}
+                      title="Create fee"
+                    />
+                  ) : undefined
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

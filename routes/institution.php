@@ -4,6 +4,18 @@ use App\Http\Controllers\Institutions as Web;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/designations', [Web\Designations\DesignationController::class, 'index'])->name('designations.index');
+Route::get('/designations/create', [Web\Designations\DesignationController::class, 'create'])->name('designations.create');
+Route::post('/designations', [Web\Designations\DesignationController::class, 'store'])->name('designations.store');
+Route::get('/designations/{designation}/edit', [Web\Designations\DesignationController::class, 'edit'])->name('designations.edit');
+Route::put('/designations/{designation}', [Web\Designations\DesignationController::class, 'update'])->name('designations.update');
+Route::get('/designations/{designation}', [Web\Designations\DesignationController::class, 'show'])->name('designations.show');
+Route::post('/designations/{designation}/deactivate', [Web\Designations\DesignationController::class, 'deactivate'])->name('designations.deactivate');
+Route::get('/designation-assignments', [Web\Designations\DesignationAssignmentController::class, 'index'])->name('designation-assignments.index');
+Route::get('/designation-assignments/targets', [Web\Designations\DesignationAssignmentController::class, 'targets'])->name('designation-assignments.targets');
+Route::post('/designation-assignments', [Web\Designations\DesignationAssignmentController::class, 'store'])->name('designation-assignments.store');
+Route::post('/designation-assignments/{designationAssignment}/end', [Web\Designations\DesignationAssignmentController::class, 'end'])->name('designation-assignments.end');
+
 // Institution
 
 Route::get('dummy2', function (\App\Models\Institution $institution) {

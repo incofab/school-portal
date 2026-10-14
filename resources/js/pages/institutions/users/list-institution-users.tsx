@@ -21,6 +21,7 @@ import useMyToast from '@/hooks/use-my-toast';
 import DisplayUserFullname from '@/domain/institutions/users/display-user-fullname';
 import startCase from 'lodash/startCase';
 import useIsAdmin from '@/hooks/use-is-admin';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   institutionUsers: PaginationResponse<InstitutionUser>;
@@ -133,6 +134,20 @@ export default function ListStudents({ institutionUsers, roles }: Props) {
             validFilters={['role']}
             paginator={institutionUsers}
             onFilterButtonClick={userFilterToggle.open}
+            emptyState={
+              <ListEmptyState
+                title="No staff members added yet"
+                description="Manage teachers and other institution staff here. Add a staff profile or upload a staff list, then assign roles to control access to institution tools."
+                action={
+                  isAdmin ? (
+                    <LinkButton
+                      href={instRoute('users.create')}
+                      title="Add staff member"
+                    />
+                  ) : undefined
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

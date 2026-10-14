@@ -124,6 +124,27 @@ class Student extends BaseModel
     return $this->belongsTo(InstitutionUser::class);
   }
 
+  function activeDesignationAssignments()
+  {
+    return $this->hasMany(
+      DesignationAssignment::class,
+      'institution_user_id',
+      'institution_user_id'
+    )->whereNull('ended_at');
+  }
+
+  function activeDesignations()
+  {
+    return $this->belongsToMany(
+      Designation::class,
+      'designation_assignments',
+      'institution_user_id',
+      'designation_id',
+      'institution_user_id',
+      'id'
+    )->whereNull('designation_assignments.ended_at');
+  }
+
   function user()
   {
     return $this->belongsTo(User::class);

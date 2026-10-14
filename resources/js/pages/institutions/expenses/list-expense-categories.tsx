@@ -12,9 +12,9 @@ import { ServerPaginatedTableHeader } from '@/components/server-paginated-table'
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import {
-    CheckBadgeIcon,
-    PaperAirplaneIcon,
-    TrashIcon,
+  CheckBadgeIcon,
+  PaperAirplaneIcon,
+  TrashIcon,
 } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
@@ -26,101 +26,114 @@ import TransferEventResultModal from '@/components/modals/transfer-event-result-
 import useModalToggle, { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import useIsStaff from '@/hooks/use-is-staff';
 import CreateEditExpenseCategoryFundModal from '@/components/modals/create-edit-expense-category-modal';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
-    expenseCategories: PaginationResponse<ExpenseCategory>;
+  expenseCategories: PaginationResponse<ExpenseCategory>;
 }
 
 export default function ListExpenseCategories({ expenseCategories }: Props) {
-    const createExpenseCategoryModalToggle = useModalToggle();
-    const editExpenseCategoryModalToggle = useModalValueToggle<ExpenseCategory|undefined>();
-    const { instRoute } = useInstitutionRoute();
-    const deleteForm = useWebForm({});
-    const { handleResponseToast } = useMyToast();
-    const isAdmin = useIsAdmin();
-    const isStaff = useIsStaff();
+  const createExpenseCategoryModalToggle = useModalToggle();
+  const editExpenseCategoryModalToggle = useModalValueToggle<
+    ExpenseCategory | undefined
+  >();
+  const { instRoute } = useInstitutionRoute();
+  const deleteForm = useWebForm({});
+  const { handleResponseToast } = useMyToast();
+  const isAdmin = useIsAdmin();
+  const isStaff = useIsStaff();
 
-    async function deleteItem(obj: ExpenseCategory) {
-        const res = await deleteForm.submit((data, web) =>
-          web.delete(instRoute('expense-categories.destroy', [obj.id]))
-        );
-        handleResponseToast(res);
-        Inertia.reload({ only: ['expenseCategories'] });
-    }
-
-    const headers: ServerPaginatedTableHeader<ExpenseCategory>[] = [
-        {
-            label: 'Title',
-            value: 'title',
-        },
-        {
-            label: 'Description',
-            value: 'description',
-        },
-        {
-            label: 'Action',
-            render: (row: ExpenseCategory) => (
-                <HStack>
-
-                    <IconButton
-                        aria-label={'Edit category'}
-                        icon={<Icon as={PencilIcon} />}
-                        variant={'ghost'}
-                        colorScheme={'brand'}
-                        onClick={() => openModal(row)}
-                    />
-
-                    <DestructivePopover
-                        label={'Delete this category'}
-                        onConfirm={() => deleteItem(row)}
-                        isLoading={deleteForm.processing}
-                    >
-                        <IconButton
-                            aria-label={'Delete category'}
-                            icon={<Icon as={TrashIcon} />}
-                            variant={'ghost'}
-                            colorScheme={'red'}
-                        />
-                    </DestructivePopover>
-                </HStack>
-            ),
-        },
-    ];
-
-    function openModal(expenseCategory?: ExpenseCategory) {
-        editExpenseCategoryModalToggle.open(expenseCategory ?? {} as ExpenseCategory);
-    }
-
-    return (
-        <DashboardLayout>
-            <Slab>
-                <SlabHeading
-                    title="List Expense Categories"
-                    rightElement={
-                        <BrandButton
-                            title="Add Category"
-                            onClick={() => openModal()}
-                        />
-                    }
-                />
-                <SlabBody>
-                    <ServerPaginatedTable
-                        scroll={true}
-                        headers={headers}
-                        data={expenseCategories.data}
-                        keyExtractor={(row) => row.id}
-                        paginator={expenseCategories}
-                        hideSearchField={true}
-                    />
-                </SlabBody>
-            </Slab>
-            {editExpenseCategoryModalToggle.state != undefined &&
-                <CreateEditExpenseCategoryFundModal
-                expenseCategory={editExpenseCategoryModalToggle.state}
-                {...editExpenseCategoryModalToggle.props}
-                onSuccess={() => Inertia.reload()}
-                />
-            }
-        </DashboardLayout>
+  async function deleteItem(obj: ExpenseCategory) {
+    const res = await deleteForm.submit((data, web) =>
+      web.delete(instRoute('expense-categories.destroy', [obj.id]))
     );
+    handleResponseToast(res);
+    Inertia.reload({ only: ['expenseCategories'] });
+  }
+
+  const headers: ServerPaginatedTableHeader<ExpenseCategory>[] = [
+    {
+      label: 'Title',
+      value: 'title',
+    },
+    {
+      label: 'Description',
+      value: 'description',
+    },
+    {
+      label: 'Action',
+      render: (row: ExpenseCategory) => (
+        <HStack>
+          <IconButton
+            aria-label={'Edit category'}
+            icon={<Icon as={PencilIcon} />}
+            variant={'ghost'}
+            colorScheme={'brand'}
+            onClick={() => openModal(row)}
+          />
+
+          <DestructivePopover
+            label={'Delete this category'}
+            onConfirm={() => deleteItem(row)}
+            isLoading={deleteForm.processing}
+          >
+            <IconButton
+              aria-label={'Delete category'}
+              icon={<Icon as={TrashIcon} />}
+              variant={'ghost'}
+              colorScheme={'red'}
+            />
+          </DestructivePopover>
+        </HStack>
+      ),
+    },
+  ];
+
+  function openModal(expenseCategory?: ExpenseCategory) {
+    editExpenseCategoryModalToggle.open(
+      expenseCategory ?? ({} as ExpenseCategory)
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <Slab>
+        <SlabHeading
+          title="List Expense Categories"
+          rightElement={
+            <BrandButton title="Add Category" onClick={() => openModal()} />
+          }
+        />
+        <SlabBody>
+          <ServerPaginatedTable
+            scroll={true}
+            headers={headers}
+            data={expenseCategories.data}
+            keyExtractor={(row) => row.id}
+            paginator={expenseCategories}
+            hideSearchField={true}
+            emptyState={
+              <ListEmptyState
+                title="No expense categories yet"
+                description="Categories help organise spending, such as utilities, supplies, or maintenance, so expense records are easier to review."
+                action={
+                  <BrandButton
+                    title="Add category"
+                    onClick={() => openModal()}
+                  />
+                }
+              />
+            }
+          />
+        </SlabBody>
+      </Slab>
+      {editExpenseCategoryModalToggle.state != undefined && (
+        <CreateEditExpenseCategoryFundModal
+          expenseCategory={editExpenseCategoryModalToggle.state}
+          {...editExpenseCategoryModalToggle.props}
+          onSuccess={() => Inertia.reload()}
+        />
+      )}
+    </DashboardLayout>
+  );
 }

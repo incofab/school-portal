@@ -16,6 +16,7 @@ import { formatAsCurrency } from '@/util/util';
 import UniversalReceiptModal from '@/components/modals/universal-receipt-modal';
 import DateTimeDisplay from '@/components/date-time-display';
 import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-filter';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   receipts: PaginationResponse<Receipt>;
@@ -127,6 +128,19 @@ export default function ListReceipts({
               ...dateRangeFilterQueryKeys('created_at'),
             ]}
             onFilterButtonClick={receiptFilterToggle.open}
+            emptyState={
+              <ListEmptyState
+                title="No receipts issued yet"
+                description="Receipts provide a record of student fee payments, balances, and the session or term covered. They appear here after payments have been recorded."
+                action={
+                  <LinkButton
+                    title="View fee payments"
+                    href={instRoute('fee-payments.index')}
+                    variant="outline"
+                  />
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

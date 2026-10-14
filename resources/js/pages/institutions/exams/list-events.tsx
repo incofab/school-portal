@@ -38,6 +38,7 @@ import PermissionGate from '@/components/permission-gate';
 import useIsAdmin from '@/hooks/use-is-admin';
 import useIsTeacher from '@/hooks/use-is-teacher';
 import startCase from 'lodash/startCase';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   events: PaginationResponse<Event>;
@@ -286,6 +287,22 @@ export default function ListEvents({
             keyExtractor={(row) => row.id}
             paginator={events}
             hideSearchField={true}
+            emptyState={
+              <ListEmptyState
+                title="No school events yet"
+                description="Events group exams and other school activities under a shared schedule. Create an event first, then add its exams or activities for the session."
+                action={
+                  <PermissionGate
+                    permissions={InstitutionPermission.NaturalAccess}
+                  >
+                    <LinkButton
+                      href={instRoute('events.create')}
+                      title="Create event"
+                    />
+                  </PermissionGate>
+                }
+              />
+            }
           />
         </SlabBody>
         {transferEventResultModalToggle.state && (

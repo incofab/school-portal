@@ -1,6 +1,7 @@
 @php
   $navigationItems = [
     ['label' => 'Features', 'href' => route('home') . '#features'],
+    ['label' => 'Exam Scholars', 'href' => route('exam-scholars')],
     ['label' => 'Why EduManager', 'href' => route('home') . '#why-edumanager'],
     ['label' => 'Trust', 'href' => route('home') . '#trust'],
     ['label' => 'Support', 'href' => route('home') . '#support'],

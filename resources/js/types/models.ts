@@ -69,6 +69,7 @@ export interface User extends Row {
   has_bvn: boolean;
   has_nin: boolean;
   roles?: Role[];
+  active_designation_assignments?: DesignationAssignment[];
   partner?: Partner;
   partner_user?: PartnerUser;
   institution_user?: InstitutionUser;
@@ -430,6 +431,31 @@ export interface Classification extends InstitutionRow {
   students_count: number;
 }
 
+export interface Designation extends InstitutionRow {
+  title: string;
+  description?: string | null;
+  is_for_students: boolean;
+  scope: 'institution' | 'classification';
+  max_holders: number;
+  is_active: boolean;
+  eligible_classes?: Classification[];
+  current_assignment_count?: number;
+}
+
+export interface DesignationAssignment extends InstitutionRow {
+  designation_id: number;
+  institution_user_id: number;
+  classification_id?: number | null;
+  academic_session_id: number;
+  assigned_at: string;
+  ended_at?: string | null;
+  note?: string | null;
+  designation?: Designation;
+  institution_user?: InstitutionUser;
+  classification?: Classification;
+  academic_session?: AcademicSession;
+}
+
 export interface ClassificationGroup extends InstitutionRow {
   title: string;
   head_of_school_title: string;
@@ -558,6 +584,7 @@ export interface Student extends Row {
   course_results?: CourseResult[];
   guardian?: User;
   practice_summary?: TopicPracticeSummary;
+  active_designation_assignments?: DesignationAssignment[];
 }
 
 export interface CourseResult extends InstitutionRow {

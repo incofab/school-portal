@@ -35,8 +35,8 @@ class HandleAdmission
     $student = RecordStudent::make($this->institution, [
       'classification_id' => $data['classification'],
       'email' => Str::orderedUuid()->toString() . '@email.com',
-      'phone' => $guardians[0]['phone'],
-      'guardian_phone' => $guardians[0]['phone'],
+      'phone' => $guardians[0]['phone'] ?? '',
+      'guardian_phone' => $guardians[0]['phone'] ?? '',
       'photo' => $destinationUrl,
       ...collect($admissionApplication)->only(
         'first_name',

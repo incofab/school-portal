@@ -4,7 +4,7 @@ import { PaginationResponse } from '@/types/types';
 import { IconButton, Icon, HStack, Text, Badge } from '@chakra-ui/react';
 import Slab, { SlabBody, SlabHeading } from '@/components/slab';
 import DashboardLayout from '@/layout/dashboard-layout';
-import { BrandButton, LinkButton } from '@/components/buttons';
+import { BrandButton } from '@/components/buttons';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import ServerPaginatedTable, {
   ServerPaginatedTableHeader,
@@ -17,6 +17,7 @@ import { EyeIcon } from '@heroicons/react/24/solid';
 import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import { Inertia } from '@inertiajs/inertia';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   payrolls: PaginationResponse<Payroll>;
@@ -132,6 +133,12 @@ export default function ListPayrolls({ payrolls, payrollSummary }: Props) {
             keyExtractor={(row) => row.id}
             paginator={payrolls}
             onFilterButtonClick={userFilterToggle.open}
+            emptyState={
+              <ListEmptyState
+                title="No staff payments for this month"
+                description="This page lists monthly staff payment calculations for the selected period. Review staff salary and adjustment details, then evaluate payroll to generate payment records."
+              />
+            }
           />
         </SlabBody>
       </Slab>

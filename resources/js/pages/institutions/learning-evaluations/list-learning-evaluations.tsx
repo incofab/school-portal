@@ -25,6 +25,7 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import DestructivePopover from '@/components/destructive-popover';
 import SingleQuerySelect from '@/components/dropdown-select/single-query-select';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   learningEvaluations: LearningEvaluation[];
@@ -107,6 +108,12 @@ export default function ListLearningEvaluationDomains({
               data={learningEvaluations}
               keyExtractor={(row) => row.id}
               hideSearchField={true}
+              emptyState={
+                <ListEmptyState
+                  title="No evaluation records yet"
+                  description="Learning evaluations capture qualitative observations about a student’s learning and development. Select an evaluation type above to record the first entry."
+                />
+              }
             />
           </SlabBody>
         </Slab>

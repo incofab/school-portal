@@ -14,6 +14,7 @@ use App\Models\Student;
 use App\Rules\ExcelRule;
 use App\Support\Audit\AcademicActivityLogger;
 use App\Support\Audit\ModelAudit;
+use App\Support\SettingsHandler;
 use App\Support\UITableFilters\StudentUITableFilters;
 use DB;
 use Illuminate\Http\Request;
@@ -85,6 +86,7 @@ class StudentManagementController extends Controller
     Institution $institution,
     ?Classification $classification = null
   ) {
+    $currentAcademicSessionId = SettingsHandler::makeFromRoute()->getCurrentAcademicSession();
     $classification ??= Classification::query()
       ->orderBy('title')
       ->first();
@@ -97,7 +99,13 @@ class StudentManagementController extends Controller
       'students' => $classification
         ? $classification
           ->students()
-          ->with('user', 'classification')
+          ->with([
+            'user',
+            'classification',
+            'activeDesignationAssignments' => fn($query) => $query
+              ->where('academic_session_id', $currentAcademicSessionId)
+              ->with('designation')
+          ])
           ->get()
         : []
     ]);

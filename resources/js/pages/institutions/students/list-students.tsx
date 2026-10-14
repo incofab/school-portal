@@ -48,6 +48,7 @@ import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-
 import useSharedProps from '@/hooks/use-shared-props';
 import route from '@/util/route';
 import { copyToClipboard } from '@/util/util';
+import ListEmptyState from '@/components/list-empty-state';
 import { InstitutionPermission } from '@/types/permissions';
 import PermissionGate from '@/components/permission-gate';
 
@@ -225,23 +226,17 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
           title="List Students"
           rightElement={
             <HStack>
-              <PermissionGate
-              permissions={InstitutionPermission.NaturalAccess}
-              >
+              <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
                 <LinkButton href={instRoute('students.create')} title={'New'} />
               </PermissionGate>
-              <PermissionGate
-              permissions={InstitutionPermission.NaturalAccess}
-              >
+              <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
                 <BrandButton
                   leftIcon={<Icon as={CloudArrowUpIcon} />}
                   onClick={studentUploadModalToggle.open}
                   title="Upload Students"
                 />
               </PermissionGate>
-              <PermissionGate
-              permissions={InstitutionPermission.NaturalAccess}
-              >
+              <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
                 <Button
                   as={'a'}
                   href={
@@ -279,6 +274,22 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
               ...dateRangeFilterQueryKeys('created_at'),
             ]}
             onFilterButtonClick={studentFiltersModalToggle.open}
+            emptyState={
+              <ListEmptyState
+                title="No students added yet"
+                description="The student list stores each learner’s profile, class, and contact details. Add a student individually or upload several student records together."
+                action={
+                  <PermissionGate
+                    permissions={InstitutionPermission.NaturalAccess}
+                  >
+                    <LinkButton
+                      href={instRoute('students.create')}
+                      title="Add student"
+                    />
+                  </PermissionGate>
+                }
+              />
+            }
           />
         </SlabBody>
         <StudentsTableFilters {...studentFiltersModalToggle.props} />

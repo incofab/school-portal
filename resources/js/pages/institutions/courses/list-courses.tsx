@@ -30,6 +30,7 @@ import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import PracticeQuestionModal from '@/components/modals/practice-question-modal';
 import { InstitutionPermission } from '@/types/permissions';
 import PermissionGate from '@/components/permission-gate';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   courses: PaginationResponse<Course>;
@@ -205,6 +206,20 @@ export default function ListCourse({ courses, assignedCourseIds = [] }: Props) {
             data={courses.data}
             keyExtractor={(row) => row.id}
             paginator={courses}
+            emptyState={
+              <ListEmptyState
+                title="No subjects added yet"
+                description="Subjects connect classes with the topics, lessons, and assessments teachers deliver. Add subjects such as Mathematics or English to make them available for class planning."
+                action={
+                  isAdmin ? (
+                    <LinkButton
+                      href={instRoute('courses.create')}
+                      title="Add subject"
+                    />
+                  ) : undefined
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

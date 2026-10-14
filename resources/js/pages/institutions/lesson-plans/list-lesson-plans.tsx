@@ -23,6 +23,7 @@ import PermissionGate from '@/components/permission-gate';
 import { InstitutionPermission } from '@/types/permissions';
 import useSharedProps from '@/hooks/use-shared-props';
 import useIsAdmin from '@/hooks/use-is-admin';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   lessonPlans: PaginationResponse<LessonPlan>;
@@ -165,6 +166,22 @@ export default function LessonPlans({ lessonPlans }: Props) {
               'term',
             ]}
             onFilterButtonClick={filterToggle.open}
+            emptyState={
+              <ListEmptyState
+                title="No lesson plans yet"
+                description="Lesson plans organise teaching by class, subject, term, and week. Start with a scheme of work, then prepare the weekly plan and teaching activities."
+                action={
+                  <PermissionGate
+                    permissions={InstitutionPermission.NaturalAccess}
+                  >
+                    <LinkButton
+                      href={instRoute('scheme-of-works.index')}
+                      title="Create a scheme of work"
+                    />
+                  </PermissionGate>
+                }
+              />
+            }
           />
         </SlabBody>
         <LessonPlanTableFilters {...filterToggle.props} />

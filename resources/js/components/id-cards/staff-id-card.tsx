@@ -14,6 +14,10 @@ export default function StaffIdCard({ institution, staff }: Props) {
   const fullName = staff.user?.full_name ?? 'Unnamed staff member';
   const staffPhone = staff.user?.phone || 'Not provided';
   const staffEmail = staff.user?.email || 'Not provided';
+  const designationTitles = staff.active_designation_assignments
+    ?.map((assignment) => assignment.designation?.title)
+    .filter(Boolean)
+    .join(', ');
 
   return (
     <Box
@@ -163,13 +167,23 @@ export default function StaffIdCard({ institution, staff }: Props) {
       </HStack>
 
       <HStack
-        justify="flex-end"
+        justify="space-between"
         minH="7mm"
         px="4mm"
         borderTop="0.3mm solid"
         borderColor="gray.200"
       >
-        <Text fontSize="5.5pt" color="gray.600" noOfLines={1}>
+        <Text fontSize="5.5pt" color="gray.600" noOfLines={1} minW={0} flex={1}>
+          {designationTitles ? `Designation: ${designationTitles}` : ''}
+        </Text>
+        <Text
+          fontSize="5.5pt"
+          color="gray.600"
+          noOfLines={1}
+          textAlign="right"
+          flexShrink={0}
+          maxW="50%"
+        >
           {`Email: ${staffEmail}`}
         </Text>
       </HStack>

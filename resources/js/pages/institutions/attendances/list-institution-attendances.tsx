@@ -29,6 +29,10 @@ import InfoPopover from '@/components/info-popover';
 import { format, differenceInMinutes } from 'date-fns';
 import useQueryString from '@/hooks/use-query-string';
 import { dateRangeFilterQueryKeys } from '@/components/table-filters/date-range-filter';
+import ListEmptyState from '@/components/list-empty-state';
+import { LinkButton } from '@/components/buttons';
+import PermissionGate from '@/components/permission-gate';
+import { InstitutionPermission } from '@/types/permissions';
 
 interface Props {
   attendance: PaginationResponse<Attendance>;
@@ -168,6 +172,22 @@ export default function ListAttendances({ attendance }: Props) {
             ]}
             paginator={attendance}
             onFilterButtonClick={userFilterToggle.open}
+            emptyState={
+              <ListEmptyState
+                title="No attendance records yet"
+                description="Attendance records track student and staff check-ins, check-outs, and lateness. Start a register to capture attendance for a class or individual."
+                action={
+                  <PermissionGate
+                    permissions={InstitutionPermission.NaturalAccess}
+                  >
+                    <LinkButton
+                      href={instRoute('attendances.create')}
+                      title="Take attendance"
+                    />
+                  </PermissionGate>
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

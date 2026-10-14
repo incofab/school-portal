@@ -13,6 +13,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import { HStack } from '@chakra-ui/react';
 import { BrandButton } from '@/components/buttons';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   guardians: PaginationResponse<GuardianStudent>;
@@ -62,6 +63,12 @@ export default function ListGuardians({ guardians }: Props) {
             data={guardians.data}
             keyExtractor={(row) => row.id}
             paginator={guardians}
+            emptyState={
+              <ListEmptyState
+                title="No guardian links yet"
+                description="This list shows guardians connected to students and their relationship to each learner. Add guardian details when creating or updating a student profile to build these links."
+              />
+            }
           />
         </SlabBody>
         {assignGuardianStudentToggle.state && (

@@ -22,6 +22,7 @@ import useModalToggle from '@/hooks/use-modal-toggle';
 import SchemeOfWorkTableFilters from '@/components/table-filters/scheme-of-work-table-filters';
 import PermissionGate from '@/components/permission-gate';
 import { InstitutionPermission } from '@/types/permissions';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   schemeOfWorks: PaginationResponse<SchemeOfWork>;
@@ -83,9 +84,7 @@ export default function ListSchemeOfWork({ schemeOfWorks }: Props) {
             variant={'link'}
             title="View"
           />
-          <PermissionGate
-            permissions={InstitutionPermission.NaturalAccess}
-          >
+          <PermissionGate permissions={InstitutionPermission.NaturalAccess}>
             <IconButton
               aria-label={'Edit Scheme'}
               icon={<Icon as={PencilIcon} />}
@@ -113,7 +112,7 @@ export default function ListSchemeOfWork({ schemeOfWorks }: Props) {
             </DestructivePopover>
           </PermissionGate>
           <PermissionGate
-              permissions={InstitutionPermission.NaturalAccess}
+            permissions={InstitutionPermission.NaturalAccess}
             when={row.lesson_plans?.length === 0}
           >
             <LinkButton
@@ -152,6 +151,22 @@ export default function ListSchemeOfWork({ schemeOfWorks }: Props) {
               'term',
             ]}
             onFilterButtonClick={filterToggle.open}
+            emptyState={
+              <ListEmptyState
+                title="No schemes of work yet"
+                description="A scheme of work maps subject topics to a class, term, and week. Create one from your topics to guide lesson planning across the term."
+                action={
+                  <PermissionGate
+                    permissions={InstitutionPermission.NaturalAccess}
+                  >
+                    <LinkButton
+                      href={instRoute('inst-topics.index')}
+                      title="Browse topics"
+                    />
+                  </PermissionGate>
+                }
+              />
+            }
           />
         </SlabBody>
         <SchemeOfWorkTableFilters {...filterToggle.props} />

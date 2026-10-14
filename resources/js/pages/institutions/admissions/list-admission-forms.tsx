@@ -19,6 +19,7 @@ import { PencilIcon } from '@heroicons/react/24/outline';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import UploadAdmissionApplicationModal from '@/components/modals/upload-admission-applications-modal';
+import ListEmptyState from '@/components/list-empty-state';
 
 interface Props {
   admissionForms: PaginationResponse<AdmissionForm>;
@@ -125,6 +126,18 @@ export default function ListAdmissionForms({ admissionForms }: Props) {
             data={admissionForms.data}
             keyExtractor={(row) => row.id}
             paginator={admissionForms}
+            emptyState={
+              <ListEmptyState
+                title="No admission forms created yet"
+                description="Admission forms collect the information applicants need to provide when applying to your institution. Create a form, then share it or record applications against it."
+                action={
+                  <LinkButton
+                    href={instRoute('admission-forms.create')}
+                    title="Create admission form"
+                  />
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

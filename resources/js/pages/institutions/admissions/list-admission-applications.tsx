@@ -15,6 +15,8 @@ import useWebForm from '@/hooks/use-web-form';
 import useMyToast from '@/hooks/use-my-toast';
 import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
+import ListEmptyState from '@/components/list-empty-state';
+import { LinkButton } from '@/components/buttons';
 
 interface Props {
   admissionApplications: PaginationResponse<AdmissionApplication>;
@@ -105,6 +107,19 @@ export default function ListAdmissionApplication({
             data={admissionApplications.data}
             keyExtractor={(row) => row.id}
             paginator={admissionApplications}
+            emptyState={
+              <ListEmptyState
+                title="No admission applications yet"
+                description="Review prospective students’ details and track each application through the admission process. Applications appear here when submitted through an admission form or recorded by staff."
+                action={
+                  <LinkButton
+                    href={instRoute('admission-forms.index')}
+                    title="Manage admission forms"
+                    variant="outline"
+                  />
+                }
+              />
+            }
           />
         </SlabBody>
       </Slab>

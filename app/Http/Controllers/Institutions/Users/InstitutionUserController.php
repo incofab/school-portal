@@ -16,6 +16,7 @@ use App\Rules\ExcelRule;
 use App\Services\Institutions\InstitutionRoleService;
 use App\Support\Audit\ModelAudit;
 use App\Support\Audit\SecurityActivityLogger;
+use App\Support\SettingsHandler;
 use Illuminate\Http\Request;
 use Storage;
 
@@ -92,19 +93,30 @@ class InstitutionUserController extends Controller
     Institution $institution,
     ?Classification $classification = null
   ) {
+    $currentAcademicSessionId = SettingsHandler::makeFromRoute()->getCurrentAcademicSession();
     if (!empty($classification)) {
       // Returns Students
       $persons = $classification
         ->students()
-        ->with('user')
+        ->with([
+          'user',
+          'activeDesignationAssignments' => fn($query) => $query
+            ->where('academic_session_id', $currentAcademicSessionId)
+            ->with('designation')
+        ])
         ->get();
     } else {
       // Returns Staff
-      $persons = InstitutionUser::whereNotIn('type', [
-        InstitutionUserType::Student->value,
-        InstitutionUserType::Alumni->value
-      ])
-        ->with('user')
+      $persons = InstitutionUser::whereIn(
+        'type',
+        array_map(fn($type) => $type->value, InstitutionUserType::staffTypes())
+      )
+        ->with([
+          'user',
+          'activeDesignationAssignments' => fn($query) => $query
+            ->where('academic_session_id', $currentAcademicSessionId)
+            ->with('designation')
+        ])
         ->get();
     }
 

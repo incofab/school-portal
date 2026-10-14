@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Div } from '@/components/semantic';
 import {
   BoxProps,
@@ -36,6 +36,7 @@ interface Props<T> {
   onFilterButtonClick?: () => void;
   //styles
   tableProps?: TableProps;
+  emptyState?: ReactNode;
 }
 
 export default function DataTable<T>({
@@ -48,12 +49,14 @@ export default function DataTable<T>({
   validFilters,
   onFilterButtonClick,
   tableProps,
+  emptyState,
 }: Props<T>) {
   function getNestedProperty(row: T, path: string): any {
     return objectGet(row, path, '');
   }
   const [content, setContent] = useState<T[]>(data);
   useEffect(() => setContent(data), [data]);
+  const showEmptyState = data.length === 0 && Boolean(emptyState);
 
   return (
     <Div
@@ -63,66 +66,76 @@ export default function DataTable<T>({
       minW={0}
       sx={scroll ? { WebkitOverflowScrolling: 'touch' } : undefined}
     >
-      <HStack>
-        {!hideSearchField && (
-          <FieldSearchForm
-            onChange={(value: string) => setContent(searchContent(data, value))}
-          />
-        )}
-        <Spacer />
-        {validFilters && (
-          <FilterButton
-            validFilters={validFilters}
-            onClick={onFilterButtonClick}
-          />
-        )}
-      </HStack>
-      <Divider my={2} />
-      <Table
-        size={'sm'}
-        minW={scroll ? 'max-content' : undefined}
-        {...tableProps}
-      >
-        <Thead>
-          <Tr>
-            {headers.map((header, i) => (
-              <Th key={i}>
-                {/* <Div> */}
-                <Text fontWeight={400}>{header.label}</Text>
-                {/* </Div> */}
-              </Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {content.length > 0 ? (
-            content.map((row) => (
-              <Tr
-                key={keyExtractor(row)}
-                {...(rowPropsExtractor ? rowPropsExtractor(row) : null)}
-              >
-                {headers.map((header: TableHeader<T>, i: number) => (
-                  <Td key={i}>
-                    {header.render
-                      ? header.render(row)
-                      : header.value
-                      ? getNestedProperty(row, header.value)
-                      : null}
-                  </Td>
-                ))}
-              </Tr>
-            ))
-          ) : (
+      {!showEmptyState && (
+        <>
+          <HStack>
+            {!hideSearchField && (
+              <FieldSearchForm
+                onChange={(value: string) =>
+                  setContent(searchContent(data, value))
+                }
+              />
+            )}
+            <Spacer />
+            {validFilters && (
+              <FilterButton
+                validFilters={validFilters}
+                onClick={onFilterButtonClick}
+              />
+            )}
+          </HStack>
+          <Divider my={2} />
+        </>
+      )}
+      {showEmptyState ? (
+        emptyState
+      ) : (
+        <Table
+          size={'sm'}
+          minW={scroll ? 'max-content' : undefined}
+          {...tableProps}
+        >
+          <Thead>
             <Tr>
-              <Td colSpan={headers.length}>
-                <Text textAlign={'center'} py={2} mt={2}>
-                  No results found
-                </Text>
-              </Td>
+              {headers.map((header, i) => (
+                <Th key={i}>
+                  {/* <Div> */}
+                  <Text fontWeight={400}>{header.label}</Text>
+                  {/* </Div> */}
+                </Th>
+              ))}
             </Tr>
-          )}
-        </Tbody>
-      </Table>
+          </Thead>
+          <Tbody>
+            {content.length > 0 ? (
+              content.map((row) => (
+                <Tr
+                  key={keyExtractor(row)}
+                  {...(rowPropsExtractor ? rowPropsExtractor(row) : null)}
+                >
+                  {headers.map((header: TableHeader<T>, i: number) => (
+                    <Td key={i}>
+                      {header.render
+                        ? header.render(row)
+                        : header.value
+                        ? getNestedProperty(row, header.value)
+                        : null}
+                    </Td>
+                  ))}
+                </Tr>
+              ))
+            ) : (
+              <Tr>
+                <Td colSpan={headers.length}>
+                  <Text textAlign={'center'} py={2} mt={2}>
+                    No results found
+                  </Text>
+                </Td>
+              </Tr>
+            )}
+          </Tbody>
+        </Table>
+      )}
     </Div>
   );
 }
