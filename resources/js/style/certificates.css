@@ -1,0 +1,1087 @@
+.certificate-artwork {
+  --certificate-primary: #1f6b50;
+  --certificate-dark: color-mix(
+    in srgb,
+    var(--certificate-primary) 72%,
+    #13211d
+  );
+  --certificate-mid: color-mix(
+    in srgb,
+    var(--certificate-primary) 84%,
+    #20382e
+  );
+  --certificate-soft: color-mix(in srgb, var(--certificate-primary) 12%, #fff);
+  --certificate-pale: color-mix(in srgb, var(--certificate-primary) 5%, #fff);
+  --certificate-ink: #202b36;
+  --certificate-muted: #65727d;
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  color: var(--certificate-ink);
+  background: #fff;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.certificate-design,
+.certificate-design * {
+  box-sizing: border-box;
+}
+
+.certificate-design {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 297 / 210;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 4.3cqw 6cqw;
+  background-color: #fff;
+  color: var(--certificate-ink);
+  text-align: center;
+  font-size: 1.15cqw;
+  line-height: 1.4;
+}
+
+.certificate-design h1,
+.certificate-design h2,
+.certificate-design p {
+  margin: 0;
+}
+
+.certificate-design h1 {
+  color: var(--certificate-dark);
+  font-size: clamp(20px, 4.1cqw, 50px);
+  line-height: 1.08;
+  font-weight: 500;
+}
+
+.certificate-design h2 {
+  color: var(--certificate-ink);
+  font-size: clamp(20px, 3.45cqw, 43px);
+  line-height: 1.08;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.certificate-school {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em 0.75em;
+  color: var(--certificate-dark);
+  font: 700 clamp(8px, 1.35cqw, 16px) / 1.2 Arial, sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.certificate-school img {
+  max-width: 4.2cqw;
+  max-height: 3.5cqw;
+  object-fit: contain;
+}
+
+.certificate-school-address {
+  flex-basis: 100%;
+  color: var(--certificate-muted);
+  font: 400 clamp(6px, 0.74cqw, 9px) / 1.25 Arial, sans-serif;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-transform: none;
+}
+
+.certificate-copy,
+.certificate-editorial-copy,
+.certificate-architecture-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55em;
+}
+
+.certificate-copy-centered {
+  text-align: center;
+}
+.certificate-copy-left {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.certificate-kicker,
+.certificate-classic-topline,
+.certificate-academic-motto,
+.certificate-editorial-heading,
+.certificate-architecture-award span {
+  color: var(--certificate-mid);
+  font: 700 clamp(7px, 0.9cqw, 11px) / 1.3 Arial, sans-serif;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.certificate-presentation {
+  color: var(--certificate-muted);
+  font: italic clamp(9px, 1.12cqw, 14px) / 1.4 Georgia, serif;
+}
+
+.certificate-citation {
+  max-width: 72cqw;
+  color: #53616c;
+  font: 400 clamp(8px, 1.05cqw, 13px) / 1.45 Arial, sans-serif;
+  white-space: pre-line;
+}
+
+.certificate-context {
+  color: var(--certificate-mid);
+  font: 700 clamp(7px, 0.84cqw, 10px) / 1.35 Arial, sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.certificate-recipient-type {
+  color: var(--certificate-muted);
+  font: 700 clamp(7px, 0.75cqw, 9px) / 1.3 Arial, sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.certificate-signatures {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 3cqw;
+  width: 100%;
+}
+
+.certificate-signatures > div {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  border-top: 1px solid
+    color-mix(in srgb, var(--certificate-primary) 48%, #bdc5c2);
+  padding: 0.55em 0.25em 0;
+  color: var(--certificate-muted);
+  font: 400 clamp(7px, 0.82cqw, 10px) / 1.3 Arial, sans-serif;
+  text-align: center;
+}
+
+.certificate-signatures strong {
+  color: var(--certificate-ink);
+  font-size: 1.08em;
+}
+
+.certificate-signatures span {
+  margin-top: 0.25em;
+}
+
+.certificate-notes {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 2cqw;
+  width: 100%;
+  color: var(--certificate-muted);
+  font: italic clamp(6px, 0.7cqw, 9px) / 1.25 Arial, sans-serif;
+  text-align: left;
+}
+
+.certificate-notes span {
+  max-width: 48%;
+}
+.certificate-notes span:last-child {
+  text-align: right;
+}
+
+.certificate-revoked-stamp {
+  position: absolute;
+  z-index: 10;
+  top: 43%;
+  left: 28%;
+  transform: rotate(-15deg);
+  border: 5px solid #b42318;
+  padding: 0.2em 0.65em;
+  color: #b42318;
+  background: rgb(255 255 255 / 76%);
+  font: 800 clamp(28px, 5cqw, 58px) / 1 Arial, sans-serif;
+  letter-spacing: 0.14em;
+  opacity: 0.8;
+}
+
+.certificate-template-preview,
+.certificate-issue-preview {
+  container-type: inline-size;
+  overflow: hidden;
+  border: 1px solid #dce2e7;
+  border-radius: 9px;
+  background: #f3f5f6;
+}
+
+.certificate-template-preview {
+  box-shadow: inset 0 1px 0 #fff;
+}
+.certificate-template-showcase {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid #dce2e7;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 18px 46px rgb(20 36 53 / 12%);
+}
+
+.certificate-template-preview .certificate-design,
+.certificate-issue-preview .certificate-design {
+  font-size: 1.15cqw;
+}
+
+/* 01 · Engraved classical seal */
+.certificate-design-01 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border: 0.9cqw double
+    color-mix(in srgb, var(--certificate-primary) 82%, #ad8c48);
+  outline: 1px solid color-mix(in srgb, var(--certificate-primary) 38%, #fff);
+  outline-offset: -2.1cqw;
+  padding: 3.2cqw 8.2cqw;
+  background: radial-gradient(
+      ellipse at 50% 48%,
+      var(--certificate-pale),
+      transparent 44%
+    ),
+    #fffefb;
+}
+.certificate-engraving {
+  position: absolute;
+  inset: 1.5%;
+  width: 97%;
+  height: 97%;
+  fill: none;
+  stroke: var(--certificate-primary);
+  stroke-width: 2;
+  opacity: 0.42;
+}
+.certificate-classic-topline {
+  position: relative;
+  z-index: 1;
+  color: #8e713b;
+}
+.certificate-classic-emblem {
+  position: relative;
+  z-index: 1;
+  width: 4.3cqw;
+  height: 4.3cqw;
+  margin: -0.6cqw 0;
+}
+.certificate-classic-emblem svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #b08b45;
+  stroke-width: 1.6;
+}
+.certificate-design-01 .certificate-copy {
+  gap: 0.45em;
+}
+.certificate-design-01 h1 {
+  font-family: 'Palatino Linotype', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.certificate-design-01 h2 {
+  border-bottom: 1px solid #b08b45;
+  padding: 0 1.2em 0.2em;
+  font-style: italic;
+}
+.certificate-design-01 .certificate-signatures {
+  width: 82%;
+}
+.certificate-seal-date {
+  max-width: 23cqw;
+}
+.certificate-footnote {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  color: var(--certificate-muted);
+  font: 700 clamp(6px, 0.65cqw, 8px) / 1.2 Arial, sans-serif;
+  letter-spacing: 0.12em;
+}
+
+/* 02 · Contemporary side rail and orbit */
+.certificate-design-02 {
+  display: grid;
+  grid-template-columns: 17% 1fr;
+  padding: 0;
+  text-align: left;
+  background: linear-gradient(118deg, #fff 0 76%, var(--certificate-pale) 76%);
+}
+.certificate-modern-rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 5cqw 1cqw;
+  background: linear-gradient(
+    155deg,
+    var(--certificate-dark),
+    var(--certificate-primary)
+  );
+  color: #fff;
+}
+.certificate-rail-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+}
+.certificate-rail-pattern svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.2;
+}
+.certificate-rail-label {
+  position: relative;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font: 700 clamp(7px, 0.8cqw, 10px) / 1.2 Arial, sans-serif;
+  letter-spacing: 0.2em;
+}
+.certificate-rail-number {
+  position: relative;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font: 700 clamp(7px, 0.75cqw, 9px) / 1.2 Arial, sans-serif;
+  text-align: center;
+}
+.certificate-modern-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 4cqw 7cqw 3.3cqw;
+}
+.certificate-modern-content .certificate-school {
+  justify-content: flex-start;
+  text-align: left;
+}
+.certificate-modern-rule {
+  width: 100%;
+  height: 1px;
+  margin: 1.6cqw 0;
+  background: color-mix(in srgb, var(--certificate-primary) 28%, #d5d9d5);
+}
+.certificate-modern-rule span {
+  display: block;
+  width: 14%;
+  height: 3px;
+  background: var(--certificate-primary);
+}
+.certificate-modern-content .certificate-copy {
+  align-items: flex-start;
+  gap: 0.65em;
+}
+.certificate-modern-content h2 {
+  border-left: 0.45cqw solid var(--certificate-primary);
+  padding-left: 0.4em;
+}
+.certificate-modern-content h1 {
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+}
+.certificate-modern-content .certificate-citation {
+  max-width: 56cqw;
+}
+.certificate-modern-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 3cqw;
+}
+.certificate-modern-bottom .certificate-signatures {
+  width: 60%;
+}
+.certificate-modern-orbit {
+  position: absolute;
+  z-index: 0;
+  right: -4%;
+  bottom: -16%;
+  width: 31%;
+  height: 74%;
+  fill: none;
+  stroke: var(--certificate-primary);
+  stroke-width: 1;
+  opacity: 0.18;
+}
+
+/* 03 · Collegiate laurel and registry */
+.certificate-design-03 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4cqw 9cqw 3cqw;
+  background: radial-gradient(
+      ellipse at 50% 35%,
+      var(--certificate-soft),
+      transparent 50%
+    ),
+    #fff;
+}
+.certificate-design-03:before {
+  position: absolute;
+  inset: 1.2cqw;
+  border: 1px solid color-mix(in srgb, var(--certificate-primary) 56%, #d6c9a0);
+  content: '';
+}
+.certificate-laurel-art {
+  position: absolute;
+  inset: 8% 12% 9%;
+  width: 76%;
+  height: 84%;
+  fill: color-mix(in srgb, var(--certificate-primary) 70%, #b49a5b);
+  stroke: var(--certificate-primary);
+  stroke-width: 2;
+  opacity: 0.18;
+}
+.certificate-academic-header {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.45em;
+}
+.certificate-academic-motto {
+  color: var(--certificate-muted);
+  font-size: clamp(6px, 0.7cqw, 9px);
+}
+.certificate-design-03 .certificate-copy {
+  gap: 0.45em;
+}
+.certificate-academic-award {
+  color: var(--certificate-dark);
+  font: 600 clamp(16px, 2.9cqw, 36px) / 1.12 'Palatino Linotype', Georgia, serif;
+}
+.certificate-academic-seal {
+  display: grid;
+  width: 5cqw;
+  height: 5cqw;
+  place-content: center;
+  border: 1px solid #a78a4d;
+  border-radius: 50%;
+  color: #8d713b;
+  font: 700 clamp(5px, 0.55cqw, 7px) / 1.25 Arial, sans-serif;
+  letter-spacing: 0.09em;
+  text-align: center;
+}
+.certificate-academic-seal b {
+  display: block;
+  margin-top: 0.3em;
+}
+.certificate-design-03 .certificate-signatures {
+  width: 86%;
+  align-items: center;
+}
+.certificate-design-03 .certificate-signatures > div:nth-child(2) {
+  flex: 0 0 auto;
+  border: 0;
+  padding: 0;
+}
+
+/* 04 · Architectural arch and split panel */
+.certificate-design-04 {
+  display: grid;
+  grid-template-columns: 7% 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 0 5cqw;
+  padding: 4cqw 7cqw 3cqw 3cqw;
+  text-align: left;
+  background: linear-gradient(90deg, #f4f0e7 0 22%, #fff 22% 100%);
+}
+.certificate-architecture-side {
+  grid-row: 1 / 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--certificate-dark);
+  font: 700 clamp(6px, 0.7cqw, 9px) / 1.2 Arial, sans-serif;
+  letter-spacing: 0.18em;
+  writing-mode: vertical-rl;
+}
+.certificate-architecture-side span {
+  transform: rotate(180deg);
+}
+.certificate-arch {
+  position: absolute;
+  top: 6%;
+  left: 15%;
+  width: 34%;
+  height: 91%;
+  fill: none;
+  stroke: var(--certificate-primary);
+  stroke-width: 2;
+  opacity: 0.23;
+}
+.certificate-design-04 > .certificate-school {
+  grid-column: 2;
+  grid-row: 1;
+  justify-content: flex-start;
+  text-align: left;
+}
+.certificate-architecture-copy {
+  grid-column: 2;
+  grid-row: 2;
+  align-items: flex-start;
+  align-self: center;
+  gap: 0.6em;
+  max-width: 68%;
+  padding: 2cqw 0;
+}
+.certificate-architecture-copy h2 {
+  font-style: italic;
+}
+.certificate-architecture-award {
+  display: grid;
+  gap: 0.25em;
+}
+.certificate-architecture-award strong {
+  color: var(--certificate-dark);
+  font: 600 clamp(16px, 2.8cqw, 34px) / 1.12 'Palatino Linotype', Georgia, serif;
+}
+.certificate-architecture-copy .certificate-citation {
+  max-width: 50cqw;
+}
+.certificate-architecture-footer {
+  grid-column: 2;
+  grid-row: 3;
+  display: grid;
+  gap: 1.2cqw;
+}
+.certificate-architecture-footer .certificate-signatures {
+  width: 78%;
+}
+.certificate-architecture-medallion {
+  position: absolute;
+  right: 11%;
+  top: 34%;
+  display: grid;
+  width: 13cqw;
+  aspect-ratio: 1;
+  place-items: center;
+  transform: rotate(45deg);
+  border: 1px solid #b48f4c;
+  outline: 1px solid #b48f4c;
+  outline-offset: 0.6cqw;
+  color: #a47e3b;
+  background: rgb(255 255 255 / 72%);
+  font-size: 5cqw;
+}
+
+/* 05 · Editorial typography and graphic registration */
+.certificate-design-05 {
+  display: grid;
+  grid-template-columns: 11% 1fr 19%;
+  padding: 0;
+  text-align: left;
+  background: linear-gradient(90deg, #182d32 0 11%, #fff 11% 100%);
+}
+.certificate-editorial-index {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4cqw 1cqw;
+  color: #f1ead8;
+  font: 700 clamp(7px, 0.8cqw, 10px) / 1.2 Arial, sans-serif;
+  letter-spacing: 0.22em;
+  writing-mode: vertical-rl;
+}
+.certificate-editorial-index b {
+  font-size: clamp(7px, 0.75cqw, 9px);
+  letter-spacing: 0.1em;
+}
+.certificate-editorial-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 4cqw 2cqw 3cqw 5cqw;
+}
+.certificate-editorial-main .certificate-school {
+  justify-content: flex-start;
+  text-align: left;
+}
+.certificate-editorial-heading {
+  display: flex;
+  align-items: center;
+  gap: 1cqw;
+  color: #a2793c;
+}
+.certificate-editorial-heading svg {
+  width: 9cqw;
+  fill: none;
+  stroke: #a2793c;
+  stroke-width: 1.3;
+}
+.certificate-editorial-copy {
+  align-items: flex-start;
+  gap: 0.55em;
+}
+.certificate-editorial-copy h1 {
+  font: 500 clamp(20px, 3.7cqw, 45px) / 1.03 Arial, sans-serif;
+  letter-spacing: -0.05em;
+}
+.certificate-editorial-copy h2 {
+  font: 600 clamp(19px, 3.25cqw, 40px) / 1.05 Arial, sans-serif;
+}
+.certificate-editorial-copy .certificate-citation {
+  max-width: 57cqw;
+}
+.certificate-editorial-footer {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: end;
+  gap: 1cqw 2cqw;
+}
+.certificate-editorial-footer .certificate-signatures {
+  grid-column: 2;
+}
+.certificate-editorial-footer .certificate-notes {
+  grid-column: 1 / -1;
+}
+.certificate-editorial-graphic {
+  align-self: center;
+  width: 18cqw;
+  height: 18cqw;
+  fill: none;
+  stroke: #b0894a;
+  stroke-width: 1.2;
+  opacity: 0.8;
+}
+
+/* 06 · Botanical hand-illustrated frame */
+.certificate-design-06 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4.2cqw 12cqw 3cqw;
+  background: radial-gradient(
+      ellipse at 5% 50%,
+      var(--certificate-soft),
+      transparent 23%
+    ),
+    radial-gradient(
+      ellipse at 95% 50%,
+      var(--certificate-soft),
+      transparent 23%
+    ),
+    #fcfbf6;
+}
+.certificate-botanical-frame {
+  position: absolute;
+  inset: 1.4cqw;
+  border: 1px solid color-mix(in srgb, var(--certificate-primary) 38%, #c7b998);
+}
+.certificate-botanical-frame:before,
+.certificate-botanical-frame:after {
+  position: absolute;
+  width: 4cqw;
+  height: 4cqw;
+  border: 1px solid #a68a56;
+  border-radius: 50% 0;
+  content: '';
+}
+.certificate-botanical-frame:before {
+  top: -1px;
+  left: -1px;
+}
+.certificate-botanical-frame:after {
+  right: -1px;
+  bottom: -1px;
+  transform: rotate(180deg);
+}
+.certificate-botanical-art {
+  position: absolute;
+  z-index: 0;
+  top: 10%;
+  width: 17%;
+  height: 80%;
+  fill: color-mix(in srgb, var(--certificate-primary) 70%, #9c9b65);
+  stroke: var(--certificate-primary);
+  stroke-width: 2;
+  opacity: 0.52;
+}
+.certificate-botanical-left {
+  left: 1.2%;
+}
+.certificate-botanical-right {
+  right: 1.2%;
+  transform: scaleX(-1);
+}
+.certificate-design-06 .certificate-copy {
+  gap: 0.52em;
+}
+.certificate-design-06 h1 {
+  font-family: 'Palatino Linotype', Georgia, serif;
+}
+.certificate-design-06 h2 {
+  font-style: italic;
+}
+.certificate-botanical-date {
+  max-width: 18cqw;
+  border: 0 !important;
+  color: var(--certificate-dark) !important;
+}
+.certificate-botanical-date b {
+  margin-bottom: 0.2em;
+  color: #9a7c49;
+  font-size: 2em;
+}
+.certificate-design-06 .certificate-signatures {
+  width: 90%;
+}
+
+/* 07 · Sculpted medal and achievement ribbon */
+.certificate-design-07 {
+  display: grid;
+  grid-template-columns: 30% 1fr 8%;
+  gap: 0 3cqw;
+  padding: 0;
+  text-align: left;
+  background: linear-gradient(110deg, #efe4ce 0 30%, #fff 30% 100%);
+}
+.certificate-medal-side {
+  position: relative;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  overflow: hidden;
+  color: #fff;
+  background: radial-gradient(
+    circle at 50% 40%,
+    color-mix(in srgb, var(--certificate-primary) 75%, #d5ad67),
+    var(--certificate-dark) 70%
+  );
+}
+.certificate-medal-ribbon {
+  position: absolute;
+  inset: 7% 14%;
+  width: 72%;
+  height: 86%;
+  fill: color-mix(in srgb, var(--certificate-primary) 40%, #d4b76e);
+  stroke: #f3dfab;
+  stroke-width: 2;
+  filter: drop-shadow(0 5px 8px rgb(0 0 0 / 20%));
+}
+.certificate-medal-side span {
+  position: relative;
+  margin-top: 15cqw;
+  color: #fff5d8;
+  font: 700 clamp(8px, 1.1cqw, 13px) / 1 Arial, sans-serif;
+  letter-spacing: 0.26em;
+}
+.certificate-medal-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 4cqw 1cqw 3cqw 0;
+}
+.certificate-medal-content .certificate-school {
+  justify-content: flex-start;
+  text-align: left;
+}
+.certificate-medal-content .certificate-copy {
+  align-items: flex-start;
+  gap: 0.55em;
+}
+.certificate-medal-content h1 {
+  font-family: 'Palatino Linotype', Georgia, serif;
+}
+.certificate-medal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  color: var(--certificate-dark);
+  font: 700 clamp(7px, 0.72cqw, 9px) / 1 Arial, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.certificate-medal-meta span {
+  border: 1px solid color-mix(in srgb, var(--certificate-primary) 35%, #c9b98f);
+  border-radius: 99px;
+  padding: 0.5em 0.8em;
+}
+.certificate-medal-content .certificate-signatures {
+  gap: 1cqw;
+}
+.certificate-medal-stars {
+  align-self: center;
+  width: 7cqw;
+  height: 80%;
+  fill: #b38b4b;
+  opacity: 0.45;
+}
+
+/* 08 · Prestige night, foil and engraved star map */
+.certificate-design-08 {
+  padding: 1.4cqw;
+  color: #fff;
+  background: radial-gradient(
+      ellipse at 50% 50%,
+      color-mix(in srgb, var(--certificate-primary) 44%, #243950),
+      transparent 65%
+    ),
+    linear-gradient(145deg, #111d2c, #1e3140 55%, #101b28);
+}
+.certificate-prestige-ornament {
+  position: absolute;
+  inset: 1%;
+  width: 98%;
+  height: 98%;
+  fill: none;
+  stroke: #d7bb78;
+  stroke-width: 1.1;
+  opacity: 0.47;
+}
+.certificate-prestige-frame {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #c6a960;
+  outline: 1px solid rgb(198 169 96 / 56%);
+  outline-offset: -0.7cqw;
+  padding: 3cqw 8cqw 2.5cqw;
+}
+.certificate-design-08 .certificate-school,
+.certificate-design-08 h1,
+.certificate-design-08 h2 {
+  color: #fff8e8;
+}
+.certificate-design-08 .certificate-kicker,
+.certificate-design-08 .certificate-context {
+  color: #e8cf8d;
+}
+.certificate-design-08 .certificate-presentation,
+.certificate-design-08 .certificate-citation,
+.certificate-design-08 .certificate-signatures span,
+.certificate-design-08 .certificate-notes {
+  color: #d4dce0;
+}
+.certificate-design-08 .certificate-signatures > div {
+  border-color: #b6a16a;
+}
+.certificate-design-08 .certificate-signatures strong {
+  color: #fff8e8;
+}
+.certificate-prestige-crest {
+  display: grid;
+  width: 5.7cqw;
+  height: 5.7cqw;
+  place-content: center;
+  border: 1px solid #d8bd7a;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.6cqw rgb(216 189 122 / 13%),
+    0 0 2cqw rgb(216 189 122 / 14%);
+  color: #e4ca8e;
+  text-align: center;
+}
+.certificate-prestige-crest span {
+  font-size: 2.6cqw;
+  line-height: 1;
+}
+.certificate-prestige-crest small {
+  font: 700 clamp(5px, 0.55cqw, 7px) / 1.2 Arial, sans-serif;
+  letter-spacing: 0.12em;
+}
+.certificate-design-08 .certificate-copy {
+  gap: 0.48em;
+}
+.certificate-design-08 .certificate-copy h1 {
+  font-family: 'Palatino Linotype', Georgia, serif;
+}
+.certificate-prestige-reference {
+  max-width: 22cqw;
+}
+
+/* 09 · Joyful radial celebration and confetti */
+.certificate-design-09 {
+  display: grid;
+  grid-template-columns: 1fr 21%;
+  gap: 0 3cqw;
+  padding: 4cqw 6cqw;
+  text-align: left;
+  background: radial-gradient(circle at 84% 51%, #fff 0 11%, transparent 11.2%),
+    radial-gradient(
+      circle at 85% 52%,
+      var(--certificate-soft) 0 23%,
+      transparent 23.3%
+    ),
+    linear-gradient(115deg, #fff 0 66%, var(--certificate-pale) 66%);
+}
+.certificate-celebration-art {
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  width: 33%;
+  height: 96%;
+  fill: none;
+  stroke: var(--certificate-primary);
+  stroke-width: 1.3;
+  opacity: 0.44;
+}
+.certificate-celebration-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+.certificate-celebration-banner {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  color: #a87832;
+  font: 700 clamp(7px, 0.9cqw, 11px) / 1 Arial, sans-serif;
+  letter-spacing: 0.24em;
+}
+.certificate-celebration-body .certificate-school {
+  justify-content: flex-start;
+  text-align: left;
+}
+.certificate-celebration-body > .certificate-presentation {
+  margin-top: 1cqw;
+}
+.certificate-celebration-body > h1 {
+  color: var(--certificate-dark);
+  font-size: clamp(22px, 4.4cqw, 54px);
+}
+.certificate-celebration-title {
+  display: grid;
+  justify-items: start;
+  gap: 0.25em;
+  border-left: 0.45cqw solid #d79642;
+  padding: 0.3em 0 0.3em 1em;
+}
+.certificate-celebration-title span {
+  color: #a87832;
+  font: 700 clamp(6px, 0.7cqw, 9px) / 1 Arial, sans-serif;
+  letter-spacing: 0.18em;
+}
+.certificate-celebration-title h2 {
+  color: var(--certificate-dark);
+  font: 600 clamp(16px, 2.7cqw, 33px) / 1.1 'Palatino Linotype', Georgia, serif;
+}
+.certificate-celebration-body .certificate-citation {
+  max-width: 58cqw;
+}
+.certificate-celebration-body .certificate-signatures {
+  width: 90%;
+}
+.certificate-celebration-medallion {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-self: center;
+  width: 17cqw;
+  aspect-ratio: 1;
+  place-content: center;
+  border: 1px solid #d59a4c;
+  border-radius: 50%;
+  outline: 1px dashed #d59a4c;
+  outline-offset: -0.9cqw;
+  color: #b77b2d;
+  background: rgb(255 255 255 / 58%);
+  text-align: center;
+}
+.certificate-celebration-medallion span {
+  font-size: 3.2cqw;
+}
+.certificate-celebration-medallion small {
+  font: 700 clamp(6px, 0.7cqw, 9px) / 1.3 Arial, sans-serif;
+  letter-spacing: 0.16em;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+  html,
+  body {
+    width: 297mm;
+    height: 210mm;
+    margin: 0 !important;
+  }
+  .certificate-artwork {
+    width: 297mm;
+    height: 210mm;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .certificate-design {
+    width: 297mm;
+    height: 210mm;
+    aspect-ratio: auto;
+    font-size: 3.4mm;
+  }
+  body:has(.certificate-page) * {
+    visibility: hidden !important;
+  }
+  body:has(.certificate-page) .certificate-page,
+  body:has(.certificate-page) .certificate-page * {
+    visibility: visible !important;
+  }
+  .certificate-page {
+    position: absolute;
+    inset: 0;
+    width: 297mm;
+    margin: 0 !important;
+  }
+  .certificate-page .certificate-print-surface {
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  .certificate-revoked-stamp {
+    font-size: 54px;
+  }
+}
+
+@media (max-width: 700px) {
+  .certificate-template-showcase {
+    border-radius: 6px;
+  }
+  .certificate-design {
+    min-width: 560px;
+  }
+  .certificate-template-preview,
+  .certificate-issue-preview {
+    overflow-x: auto;
+  }
+}

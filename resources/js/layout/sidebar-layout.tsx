@@ -68,6 +68,15 @@ export default function SideBarLayout() {
       route: instRoute('assistant.index'),
     },
     {
+      label: 'My Certificates',
+      route: instRoute('my-certificates.index'),
+    },
+    {
+      label: 'Certificates',
+      route: instRoute('certificates.index'),
+      user_types: [InstitutionUserType.Admin],
+    },
+    {
       label: 'Chats',
       route: instRoute('chats.index'),
       permissions: [InstitutionPermission.ManageChat],

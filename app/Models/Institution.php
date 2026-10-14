@@ -127,6 +127,16 @@ class Institution extends BaseModel
     return $this->hasMany(DesignationAssignment::class);
   }
 
+  public function certificateBatches()
+  {
+    return $this->hasMany(CertificateBatch::class);
+  }
+
+  public function certificateTypes()
+  {
+    return $this->hasMany(CertificateType::class);
+  }
+
   public function classificationGroups()
   {
     return $this->hasMany(ClassificationGroup::class);

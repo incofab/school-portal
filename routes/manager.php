@@ -132,6 +132,11 @@ Route::group(['middleware' => 'admin'], function () {
     Route::post('faqs/{faq}/toggle', [Web\Faqs\FaqController::class, 'toggle'])
         ->name('faqs.toggle');
     Route::resource('faqs', Web\Faqs\FaqController::class);
+    Route::get('certificate-templates/{certificateTemplate}/preview', [Web\CertificateTemplates\CertificateTemplateController::class, 'preview'])
+        ->name('certificate-templates.preview');
+    Route::resource('certificate-templates', Web\CertificateTemplates\CertificateTemplateController::class)
+        ->parameters(['certificate-templates' => 'certificateTemplate'])
+        ->except(['show']);
 });
 
 Route::post('funding/record-debt', [Web\Fundings\FundingController::class, 'recordDebt'])->name('funding.record-debt');

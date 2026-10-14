@@ -456,6 +456,97 @@ export interface DesignationAssignment extends InstitutionRow {
   academic_session?: AcademicSession;
 }
 
+export interface CertificatePlaceholder {
+  key: string;
+  label: string;
+  source: string;
+  required: boolean;
+  type: string;
+}
+
+export interface CertificateTemplate extends Row {
+  slug: string;
+  name: string;
+  template_path: string;
+  description?: string | null;
+  placeholders: CertificatePlaceholder[];
+  is_active: boolean;
+  certificate_types?: CertificateType[] | null;
+  certificate_types_count?: number;
+}
+
+export interface CertificateType extends InstitutionRow {
+  certificate_template_id: number;
+  name: string;
+  institution_name: string;
+  logo_url?: string | null;
+  primary_color: string;
+  custom_values?: Record<string, string | null> | null;
+  is_active: boolean;
+  template?: CertificateTemplate | null;
+  certificates?: Certificate[] | null;
+  certificates_count?: number;
+  batches?: CertificateBatch[] | null;
+  batches_count?: number;
+}
+
+export interface CertificateBatch extends InstitutionRow {
+  certificate_type_id: number;
+  created_by_institution_user_id: number;
+  name: string;
+  citation?: string | null;
+  issued_on: string;
+  academic_session_id?: number | null;
+  classification_id?: number | null;
+  signatory_name?: string | null;
+  signatory_title?: string | null;
+  status: string;
+  certificates_count?: number;
+  certificate_type?: CertificateType | null;
+  certificates?: Certificate[] | null;
+  created_by?: InstitutionUser | null;
+  academic_session?: AcademicSession | null;
+  classification?: Classification | null;
+}
+
+export interface CertificateRenderData {
+  certificate_type_name?: string;
+  template_name?: string;
+  template_path?: string;
+  institution_name?: string;
+  institution_logo?: string | null;
+  primary_color?: string;
+  custom_values?: Record<string, string | null>;
+  recipient_type?: string;
+  recipient_name?: string;
+  academic_session?: string | null;
+  classification?: string | null;
+}
+
+export interface Certificate extends InstitutionRow {
+  certificate_type_id: number;
+  certificate_batch_id?: number | null;
+  institution_user_id: number;
+  issued_by_institution_user_id: number;
+  reference_code: string;
+  citation?: string | null;
+  issued_on: string;
+  academic_session_id?: number | null;
+  classification_id?: number | null;
+  signatory_name?: string | null;
+  signatory_title?: string | null;
+  render_data?: CertificateRenderData | null;
+  status: string;
+  revoked_at?: string | null;
+  revocation_reason?: string | null;
+  recipient?: InstitutionUser | null;
+  certificate_type?: CertificateType | null;
+  batch?: CertificateBatch | null;
+  issued_by?: InstitutionUser | null;
+  academic_session?: AcademicSession | null;
+  classification?: Classification | null;
+}
+
 export interface ClassificationGroup extends InstitutionRow {
   title: string;
   head_of_school_title: string;

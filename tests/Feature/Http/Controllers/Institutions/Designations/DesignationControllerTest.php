@@ -1,12 +1,10 @@
 <?php
 
-use App\Enums\InstitutionUserType;
 use App\Models\AcademicSession;
 use App\Models\Classification;
 use App\Models\Designation;
 use App\Models\DesignationAssignment;
 use App\Models\Institution;
-use App\Models\InstitutionUser;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\QueryException;
@@ -25,7 +23,7 @@ beforeEach(function () {
     ->withInstitution($this->institution)
     ->create();
   $this->session = AcademicSession::factory()->create();
-  $this->route = fn(string $name, array $params = []) => route(
+  $this->routeFn = fn(string $name, array $params = []) => route(
     'institutions.' . $name,
     [$this->institution->uuid, ...$params]
   );
@@ -52,7 +50,7 @@ it(
   function () {
     actingAs($this->admin)
       ->post(
-        $this->route('designations.store'),
+        ($this->routeFn)('designations.store'),
         designationPayload([
           'eligible_class_ids' => [$this->classA->id, $this->classB->id]
         ])
@@ -60,7 +58,7 @@ it(
       ->assertOk();
     actingAs($this->admin)
       ->post(
-        $this->route('designations.store'),
+        ($this->routeFn)('designations.store'),
         designationPayload([
           'title' => 'Examination Officer',
           'is_for_students' => false,
@@ -88,7 +86,7 @@ it('keeps designation titles unique within each institution', function () {
   $otherInstitution = Institution::factory()->create();
   $this->actingAs($this->admin)
     ->post(
-      $this->route('designations.store'),
+      ($this->routeFn)('designations.store'),
       designationPayload([
         'eligible_class_ids' => [$this->classA->id]
       ])
@@ -96,7 +94,7 @@ it('keeps designation titles unique within each institution', function () {
     ->assertOk();
   $this->actingAs($this->admin)
     ->post(
-      $this->route('designations.store'),
+      ($this->routeFn)('designations.store'),
       designationPayload([
         'eligible_class_ids' => [$this->classA->id]
       ])
@@ -120,11 +118,11 @@ it(
   'requires student eligible classes and rejects classes or class scope for staff designations',
   function () {
     actingAs($this->admin)
-      ->post($this->route('designations.store'), designationPayload())
+      ->post(($this->routeFn)('designations.store'), designationPayload())
       ->assertSessionHasErrors('eligible_class_ids');
     actingAs($this->admin)
       ->post(
-        $this->route('designations.store'),
+        ($this->routeFn)('designations.store'),
         designationPayload([
           'is_for_students' => false,
           'scope' => 'classification',
@@ -134,7 +132,7 @@ it(
       ->assertSessionHasErrors('scope');
     actingAs($this->admin)
       ->post(
-        $this->route('designations.store'),
+        ($this->routeFn)('designations.store'),
         designationPayload([
           'is_for_students' => false,
           'eligible_class_ids' => [$this->classA->id]
@@ -151,7 +149,7 @@ it('rejects eligible classes from another institution', function () {
     ->create();
   actingAs($this->admin)
     ->post(
-      $this->route('designations.store'),
+      ($this->routeFn)('designations.store'),
       designationPayload([
         'eligible_class_ids' => [$otherClass->id]
       ])
@@ -173,17 +171,17 @@ it(
       ->student($this->institution)
       ->create();
     actingAs($teacher)
-      ->get($this->route('designations.index'))
+      ->get(($this->routeFn)('designations.index'))
       ->assertOk();
     actingAs($teacher)
-      ->get($this->route('designations.show', [$designation]))
+      ->get(($this->routeFn)('designations.show', [$designation]))
       ->assertOk();
     actingAs($studentUser)
-      ->get($this->route('designations.index'))
+      ->get(($this->routeFn)('designations.index'))
       ->assertForbidden();
     actingAs($teacher)
       ->post(
-        $this->route('designations.store'),
+        ($this->routeFn)('designations.store'),
         designationPayload([
           'eligible_class_ids' => [$this->classA->id]
         ])
@@ -191,7 +189,7 @@ it(
       ->assertOk();
     actingAs($teacher)
       ->post(
-        $this->route('designations.store'),
+        ($this->routeFn)('designations.store'),
         designationPayload([
           'title' => 'Staff Officer',
           'is_for_students' => false,
@@ -201,7 +199,7 @@ it(
       ->assertForbidden();
 
     actingAs($this->admin)
-      ->get($this->route('designations.index'))
+      ->get(($this->routeFn)('designations.index'))
       ->assertOk()
       ->assertInertia(
         fn(Assert $page) => $page
@@ -209,7 +207,7 @@ it(
           ->has('designations.data')
       );
     actingAs($this->admin)
-      ->get($this->route('designations.show', [$designation]))
+      ->get(($this->routeFn)('designations.show', [$designation]))
       ->assertOk()
       ->assertInertia(
         fn(Assert $page) => $page
@@ -217,7 +215,7 @@ it(
           ->where('designation.id', $designation->id)
       );
     actingAs($this->admin)
-      ->get($this->route('designation-assignments.index'))
+      ->get(($this->routeFn)('designation-assignments.index'))
       ->assertOk()
       ->assertInertia(
         fn(Assert $page) => $page
@@ -242,7 +240,7 @@ it(
     $otherStudent = Student::factory()
       ->withInstitution($this->institution, $this->classB)
       ->create();
-    $url = $this->route('designation-assignments.store');
+    $url = ($this->routeFn)('designation-assignments.store');
     $payload = [
       'designation_id' => $designation->id,
       'institution_user_id' => $student->institution_user_id,
@@ -287,7 +285,7 @@ it(
     $foreignStudent = Student::factory()
       ->withInstitution($foreignInstitution, $foreignClass)
       ->create();
-    $url = $this->route('designation-assignments.store');
+    $url = ($this->routeFn)('designation-assignments.store');
     $base = [
       'designation_id' => $studentDesignation->id,
       'academic_session_id' => $this->session->id
@@ -333,7 +331,7 @@ it(
       ->withInstitution($this->institution, $this->classA)
       ->create();
     $targetUrl =
-      $this->route('designation-assignments.targets', []) .
+      ($this->routeFn)('designation-assignments.targets', []) .
       '?designation_id=' .
       $designation->id .
       '&academic_session_id=' .
@@ -347,7 +345,7 @@ it(
       ->teacher($this->institution)
       ->create();
     actingAs($teacher)
-      ->post($this->route('designation-assignments.store'), [
+      ->post(($this->routeFn)('designation-assignments.store'), [
         'designation_id' => $designation->id,
         'institution_user_id' => $staff->id,
         'academic_session_id' => $this->session->id
@@ -379,7 +377,7 @@ it(
       'institution_user_id' => $person->institution_user_id,
       'academic_session_id' => $session?->id ?? $this->session->id
     ];
-    $url = $this->route('designation-assignments.store');
+    $url = ($this->routeFn)('designation-assignments.store');
     actingAs($this->admin)
       ->post($url, $payload($studentA))
       ->assertOk();
@@ -453,7 +451,7 @@ it(
       ->withInstitution($this->institution, $this->classA)
       ->create();
     actingAs($this->admin)
-      ->post($this->route('designation-assignments.store'), [
+      ->post(($this->routeFn)('designation-assignments.store'), [
         'designation_id' => $designation->id,
         'institution_user_id' => $student->institution_user_id,
         'academic_session_id' => $this->session->id
@@ -461,7 +459,7 @@ it(
       ->assertOk();
     $assignment = DesignationAssignment::query()->firstOrFail();
     actingAs($this->admin)
-      ->post($this->route('designation-assignments.end', [$assignment]))
+      ->post(($this->routeFn)('designation-assignments.end', [$assignment]))
       ->assertOk();
     expect($assignment->fresh()->ended_at)->not->toBeNull();
     expect(
@@ -489,7 +487,7 @@ it(
       ->withInstitution($this->institution, $this->classA)
       ->create();
     actingAs($this->admin)
-      ->post($this->route('designation-assignments.store'), [
+      ->post(($this->routeFn)('designation-assignments.store'), [
         'designation_id' => $designation->id,
         'institution_user_id' => $student->institution_user_id,
         'academic_session_id' => $this->session->id
@@ -499,7 +497,7 @@ it(
       ->withInstitution($this->institution, $this->classA)
       ->create();
     actingAs($this->admin)
-      ->post($this->route('designation-assignments.store'), [
+      ->post(($this->routeFn)('designation-assignments.store'), [
         'designation_id' => $designation->id,
         'institution_user_id' => $secondStudent->institution_user_id,
         'academic_session_id' => $this->session->id
@@ -507,7 +505,7 @@ it(
       ->assertOk();
     actingAs($this->admin)
       ->put(
-        $this->route('designations.update', [$designation]),
+        ($this->routeFn)('designations.update', [$designation]),
         designationPayload([
           'title' => $designation->title,
           'max_holders' => 1,
@@ -517,7 +515,7 @@ it(
       ->assertSessionHasErrors('max_holders');
     actingAs($this->admin)
       ->getJson(
-        $this->route('designation-assignments.targets') .
+        ($this->routeFn)('designation-assignments.targets') .
           '?designation_id=' .
           $designation->id .
           '&academic_session_id=' .

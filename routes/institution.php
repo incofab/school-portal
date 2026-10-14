@@ -4,6 +4,23 @@ use App\Http\Controllers\Institutions as Web;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/my-certificates', [Web\Certificates\CertificateController::class, 'myCertificates'])->name('my-certificates.index');
+Route::get('/my-certificates/{certificate}', [Web\Certificates\CertificateController::class, 'show'])->name('my-certificates.show');
+Route::get('/certificates', [Web\Certificates\CertificateController::class, 'index'])->name('certificates.index');
+Route::get('/certificates/create', [Web\Certificates\CertificateController::class, 'create'])->name('certificates.create');
+Route::post('/certificates', [Web\Certificates\CertificateController::class, 'store'])->name('certificates.store');
+Route::get('/certificate-types', [Web\Certificates\CertificateController::class, 'types'])->name('certificate-types.index');
+Route::get('/certificate-types/create', [Web\Certificates\CertificateController::class, 'createType'])->name('certificate-types.create');
+Route::post('/certificate-types', [Web\Certificates\CertificateController::class, 'storeType'])->name('certificate-types.store');
+Route::get('/certificate-types/{certificateType}/edit', [Web\Certificates\CertificateController::class, 'editType'])->name('certificate-types.edit');
+Route::put('/certificate-types/{certificateType}', [Web\Certificates\CertificateController::class, 'updateType'])->name('certificate-types.update');
+Route::delete('/certificate-types/{certificateType}', [Web\Certificates\CertificateController::class, 'destroyType'])->name('certificate-types.destroy');
+Route::get('/certificates/batches', [Web\Certificates\CertificateController::class, 'batches'])->name('certificates.batches');
+Route::post('/certificates/batches', [Web\Certificates\CertificateController::class, 'storeBatch'])->name('certificates.batches.store');
+Route::post('/certificates/batches/{certificateBatch}/close', [Web\Certificates\CertificateController::class, 'closeBatch'])->name('certificates.batches.close');
+Route::post('/certificates/{certificate}/revoke', [Web\Certificates\CertificateController::class, 'revoke'])->name('certificates.revoke');
+Route::get('/certificates/{certificate}', [Web\Certificates\CertificateController::class, 'show'])->name('certificates.show');
+
 Route::get('/designations', [Web\Designations\DesignationController::class, 'index'])->name('designations.index');
 Route::get('/designations/create', [Web\Designations\DesignationController::class, 'create'])->name('designations.create');
 Route::post('/designations', [Web\Designations\DesignationController::class, 'store'])->name('designations.store');

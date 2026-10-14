@@ -31,11 +31,11 @@ class SaveDesignation
       'scope' => ['required', 'in:institution,classification'],
       'max_holders' => ['required', 'integer', 'min:1'],
       'is_active' => ['required', 'boolean'],
-      'eligible_class_ids' => [
-        $isForStudents ? 'required' : 'nullable',
-        'array',
-        $isForStudents ? 'min:1' : 'max:0'
-      ],
+      'eligible_class_ids' => $isForStudents
+        ? ['required', 'array', 'min:1']
+        : ($scope === DesignationScope::Classification->value
+          ? ['nullable', 'array']
+          : ['nullable', 'array', 'max:0']),
       'eligible_class_ids.*' => ['integer', 'distinct']
     ])->validate();
 

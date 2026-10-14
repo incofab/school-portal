@@ -163,10 +163,11 @@ class DesignationAssignmentController extends Controller
         fn($q) => $q
           ->whereIn(
             'type',
-            array_map(
-              fn($type) => $type->value,
-              InstitutionUserType::staffTypes()
-            )
+            [
+              InstitutionUserType::Teacher->value,
+              InstitutionUserType::Accountant->value,
+              InstitutionUserType::Others->value
+            ]
           )
           ->whereDoesntHave('student')
       )

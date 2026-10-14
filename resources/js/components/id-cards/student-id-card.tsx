@@ -175,37 +175,49 @@ export default function StudentIdCard({ institution, student }: Props) {
       </HStack>
 
       <HStack
-        justify="space-between"
+        justify={'space-between'}
         minH="7mm"
         px="4mm"
         gap="3mm"
         borderTop="0.3mm solid"
         borderColor="gray.200"
       >
-        <Text fontSize="5.5pt" color="gray.600" noOfLines={1}>
+        {/* <Text fontSize="5.5pt" color="gray.600" noOfLines={1}>
           {institution.website ? `Web: ${institution.website}` : ''}
-        </Text>
-        <Text fontSize="5.5pt" color="gray.600" noOfLines={1} textAlign="right">
-          {`Emergency: ${student.guardian_phone || 'Not provided'}`}
-        </Text>
-
-        <Text fontSize="5.5pt" color="gray.600" noOfLines={1} minW={0} flex={1}>
-          {designationTitles
-            ? `Designation: ${designationTitles}`
-            : institution.website
-            ? `Web: ${institution.website}`
-            : ''}
-        </Text>
-        <Text
-          fontSize="5.5pt"
-          color="gray.600"
-          noOfLines={1}
-          textAlign="right"
-          flexShrink={0}
-          maxW="50%"
-        >
-          {`Emergency: ${student.guardian_phone || 'Not provided'}`}
-        </Text>
+        </Text> */}
+        {student.guardian_phone && (
+          <Text
+            fontSize="5.5pt"
+            color="gray.600"
+            noOfLines={1}
+            textAlign="right"
+          >
+            {`Emergency: ${student.guardian_phone}`}
+          </Text>
+        )}
+        {designationTitles && (
+          <Text
+            fontSize="5.5pt"
+            color="gray.600"
+            noOfLines={1}
+            minW={0}
+            flex={1}
+          >
+            Gender: {ucFirst(student.user?.gender || 'Not provided')}
+          </Text>
+        )}
+        {/* {institution.website && (
+          <Text
+            fontSize="5.5pt"
+            color="gray.600"
+            noOfLines={1}
+            textAlign="right"
+            flexShrink={0}
+            maxW="50%"
+          >
+            {`Web: ${institution.website}`}
+          </Text>
+        )} */}
       </HStack>
     </Box>
   );

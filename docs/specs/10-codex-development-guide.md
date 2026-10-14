@@ -8,6 +8,10 @@
 4. Search for an existing selector, table, filter, modal, hook, Action, query builder, media handler, payment processor, or audit wrapper before creating one.
 5. Check existing enums, settings, permissions, route names, and shared Inertia props before adding string/config duplicates.
 
+## Shared frontend models and selectors
+
+- Define frontend domain models only in `resources/js/types/models.ts` and import them into pages; reuse `resources/js/components/selectors` and shared enum selectors for existing fields instead of page-local models or duplicate dropdowns.
+
 ## Implementation rules
 
 - Preserve routes, named route contracts, middleware, permissions, data shapes, and established workflows unless the request explicitly changes them.
@@ -16,7 +20,8 @@
 - Enforce authorization on the server even when the frontend hides a control with `PermissionGate`.
 - Use the existing `useWebForm`/Axios response-and-toast pattern for pages in that family; use Inertia form/navigation conventions when the neighboring page does.
 - Use `DashboardLayout`/`ManagerDashboardLayout`, `Slab`, shared buttons, selectors, tables, filters, modals, and `useInstitutionRoute()` rather than one-off equivalents.
-- Keep responsive Chakra props, light/dark values, accessible labels, and print behavior for relevant surfaces.
+- Make every new or updated design light/dark aware, including shared components and CSS artwork. Use semantic Chakra tokens or paired `useColorModeValue` values for surfaces, text, borders, and focus states, and check both modes. Preserve intended paper colors for printed output without leaving its screen UI light-only.
+- Keep responsive Chakra props, accessible labels, and print behavior for relevant surfaces.
 - Use enums and DTOs already present for statuses and structured integration data.
 - Preserve audit logging and avoid sensitive values in logs/audit payloads.
 - Use transactions/idempotency for workflows where existing Actions and tests establish that expectation.
@@ -42,6 +47,7 @@
 - [ ] Form errors, processing state, toasts, empty/loading/error state, and reload/redirect behavior are present.
 - [ ] Permission/role visibility is consistent with the backend, without treating UI gating as authorization.
 - [ ] Desktop, tablet, mobile, dark mode, and print behavior are considered where relevant.
+- [ ] New or updated UI has been checked in both light and dark mode; empty states and other shared states remain legible in each.
 
 ### Tests and documentation
 
@@ -54,4 +60,3 @@
 ## How to resolve conflicting patterns
 
 EduManager contains older resource/Blade/AJAX patterns alongside newer Action, Inertia, audit, AI, and shared-component patterns. Do not normalize the whole project while implementing a feature. Prefer the pattern used by the same module and most recent neighboring code, while preserving compatibility with its existing route/page/test contracts. If a new abstraction is needed, document why it belongs in the existing layer and keep the first implementation narrow.
-

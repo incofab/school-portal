@@ -183,6 +183,16 @@ class InstitutionUser extends BaseModel
     return $this->hasMany(Salary::class);
   }
 
+  function certificates()
+  {
+    return $this->hasMany(Certificate::class, 'institution_user_id');
+  }
+
+  function issuedCertificates()
+  {
+    return $this->hasMany(Certificate::class, 'issued_by_institution_user_id');
+  }
+
   function payrollAdjustments()
   {
     return $this->hasMany(PayrollAdjustment::class);

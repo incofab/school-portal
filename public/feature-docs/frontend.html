@@ -102,7 +102,7 @@
   <body>
     <header>
       <h1>Frontend Architecture</h1>
-      <p>Last reviewed 2026-07-02</p>
+      <p>Last reviewed 2026-10-14</p>
       <nav>
         <a href="index.html">Overview</a><a href="backend.html">Backend</a
         ><a href="frontend.html">Frontend</a><a href="data.html">Data</a
@@ -128,6 +128,38 @@
               inside the provider tree; the shell does not add a synthetic
               first-load spinner or delayed loading state before the active page
               mounts.
+            </div>
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h2>Theme and Empty States</h2>
+        <ul class="detail-list">
+          <li>
+            <div>
+              <strong>Light and dark mode</strong>
+              <span class="path"><code>resources/js/components/list-empty-state.tsx</code></span>
+            </div>
+            <div class="desc">
+              New and updated interface designs must support both light and
+              dark color modes. Use semantic Chakra tokens or paired
+              <code>useColorModeValue</code> values for surfaces, borders, text,
+              icons, and focus states; check both modes using the dashboard
+              theme toggle. Printed artwork may retain paper colors in print
+              styles while its screen controls remain theme-aware.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>shared list empty state</strong>
+              <span class="path"><code>resources/js/components/list-empty-state.tsx</code></span>
+            </div>
+            <div class="desc">
+              Shared empty-state card used across institution lists such as
+              classes, fees, payments, students, and attendance. It pairs a
+              themed surface and icon with page-specific explanatory copy and
+              an optional next action; copy should describe the page's records
+              and what the user can do next.
             </div>
           </li>
         </ul>

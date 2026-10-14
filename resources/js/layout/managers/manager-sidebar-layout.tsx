@@ -94,6 +94,11 @@ export default function ManagerSideBarLayout() {
       roles: [ManagerRole.ManagerAdmin],
     },
     {
+      label: 'Certificate Designs',
+      route: route('managers.certificate-templates.index'),
+      roles: [ManagerRole.ManagerAdmin],
+    },
+    {
       label: 'FAQs',
       route: route('managers.faqs.index'),
       roles: [ManagerRole.ManagerAdmin],

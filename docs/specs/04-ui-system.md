@@ -6,6 +6,10 @@ The runtime Chakra theme is created in `resources/js/app.tsx`. The institution g
 
 The theme starts in light mode and does not follow the system color mode. The header toggles light/dark mode. Chakra's `brand.*` tokens should be preferred over one-off brand colors.
 
+## Light and dark mode requirement
+
+Every new or updated interface must work in both light and dark mode. This includes page layouts, cards, forms, tables, empty states, dialogs, overlays, illustrations, and CSS-based designs. Use Chakra semantic tokens or pair colors with `useColorModeValue`; do not assume a white surface, dark text, or light-only border. Check both modes with the dashboard theme toggle and keep text, controls, borders, and focus states readable in each. Print-specific artwork may keep its intended paper colors inside print styles, while its surrounding screen UI remains theme-aware.
+
 ## Shell and composition
 
 The standard authenticated shell is a two-column layout: responsive dark sidebar plus a content column with a white/dark header and a pale `brand.50`/dark-gray page background. The sidebar collapses at the Pro Sidebar `lg` breakpoint. The shared header provides:
@@ -37,6 +41,8 @@ Use visible labels, `isRequired` where the server requires a value, `isInvalid` 
 Lists typically combine a `SlabHeading` action row with `ServerPaginatedTable` and a filter Drawer. Tables use small Chakra table sizing, custom renderers for links/actions, icon buttons for compact row actions, horizontal scrolling where needed, and a “No results found” row for local tables.
 
 Use `Menu` for multiple row actions, `DestructivePopover` for irreversible deletion, and filter badges/counts through `FilterButton`. Do not hide important actions only in hover states; maintain the existing icon button labels and accessible names.
+
+The shared `resources/js/components/list-empty-state.tsx` presents contextual copy and an optional next action when a list has no records. Keep its surface, border, icon, heading, and description readable in both color modes. List-specific descriptions should explain what the page tracks and the useful next step without repeating a generic app introduction.
 
 ## Modals and drawers
 
