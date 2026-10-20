@@ -2,7 +2,6 @@
 namespace App\Actions\Sheet;
 
 use Illuminate\Http\UploadedFile;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -17,7 +16,7 @@ class ConvertSheetToArray
     private UploadedFile $file,
     private array $columnKeyMapping
   ) {
-    $this->spreadsheet = IOFactory::load($this->file->getRealPath());
+    $this->spreadsheet = LoadSpreadsheet::fromUploadedFile($this->file);
     $this->sheetData = $this->spreadsheet->getActiveSheet();
   }
 

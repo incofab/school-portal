@@ -1,13 +1,13 @@
 <?php
 namespace App\Actions\CourseResult;
 
+use App\Actions\Sheet\LoadSpreadsheet;
 use App\DTO\SheetColumnIndex;
 use App\Http\Requests\RecordCourseResultRequest;
 use App\Models\Assessment;
 use App\Models\CourseTeacher;
 use DB;
 use Illuminate\Http\UploadedFile;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Str;
@@ -28,7 +28,7 @@ class InsertResultFromRecordingSheet
     private array $post,
     private CourseTeacher $courseTeacher
   ) {
-    $this->spreadsheet = IOFactory::load($this->file->getRealPath());
+    $this->spreadsheet = LoadSpreadsheet::fromUploadedFile($this->file);
     $this->sheetData = $this->spreadsheet->getActiveSheet();
 
     $this->assessments = Assessment::getAssessments(

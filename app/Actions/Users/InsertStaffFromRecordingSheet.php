@@ -3,6 +3,7 @@
 namespace App\Actions\Users;
 
 use App\Actions\RecordStaff;
+use App\Actions\Sheet\LoadSpreadsheet;
 use App\Enums\Gender;
 use App\Enums\Sheet\StaffRecordingSheetColumn;
 use App\Models\Institution;
@@ -10,7 +11,6 @@ use App\Models\User;
 use DB;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\ValidationException;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Validator;
@@ -25,7 +25,7 @@ class InsertStaffFromRecordingSheet
     private UploadedFile $file,
     private string $role
   ) {
-    $this->spreadsheet = IOFactory::load($this->file->getRealPath());
+    $this->spreadsheet = LoadSpreadsheet::fromUploadedFile($this->file);
     $this->sheetData = $this->spreadsheet->getActiveSheet();
   }
 

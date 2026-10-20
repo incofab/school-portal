@@ -3,6 +3,7 @@
 namespace App\Actions\Users;
 
 use App\Actions\RecordStudent;
+use App\Actions\Sheet\LoadSpreadsheet;
 use App\Enums\Gender;
 use App\Enums\Sheet\StudentRecordingSheetColumn;
 use App\Models\Classification;
@@ -13,7 +14,6 @@ use App\Rules\ValidateUniqueRule;
 use DB;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Validator;
@@ -29,7 +29,7 @@ class InsertStudentFromRecordingSheet
     private UploadedFile $file,
     private Classification $classification
   ) {
-    $this->spreadsheet = IOFactory::load($this->file->getRealPath());
+    $this->spreadsheet = LoadSpreadsheet::fromUploadedFile($this->file);
     $this->sheetData = $this->spreadsheet->getActiveSheet();
   }
 

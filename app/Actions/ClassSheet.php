@@ -1,11 +1,11 @@
 <?php
 namespace App\Actions;
 
+use App\Actions\Sheet\LoadSpreadsheet;
 use App\Models\Classification;
 use App\Models\Institution;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -83,7 +83,7 @@ class ClassSheet
   /** @deprecated No longer in use */
   public function upload(UploadedFile $file)
   {
-    $sheetData = IOFactory::load($file->getRealPath())->getActiveSheet();
+    $sheetData = LoadSpreadsheet::fromUploadedFile($file)->getActiveSheet();
 
     $totalRows = $sheetData->getHighestDataRow(self::COL_TITLE);
     $rows = range(2, $totalRows);
