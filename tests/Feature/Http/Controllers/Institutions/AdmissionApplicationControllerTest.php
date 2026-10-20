@@ -6,11 +6,13 @@ use App\Enums\Payments\PaymentPurpose;
 use App\Models\AdmissionApplication;
 use App\Models\AdmissionForm;
 use App\Models\ApplicationGuardian;
+use App\Models\BankAccount;
 use App\Models\Classification;
 use App\Models\Institution;
 use App\Models\ManualPayment;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Inertia\Testing\AssertableInertia;
@@ -58,6 +60,24 @@ it('tests the index page', function () {
         ->component('institutions/admissions/list-admission-applications')
     );
 });
+
+it(
+  'preselects the admission form when applying from the form list',
+  function () {
+    $this->get(
+      route('institutions.admissions.create', [
+        'institution' => $this->institution->uuid,
+        'admission_form_id' => $this->admissionForm->id
+      ])
+    )
+      ->assertOk()
+      ->assertInertia(
+        fn(AssertableInertia $assert) => $assert
+          ->component('institutions/admissions/create-admission-application')
+          ->where('admissionForm.id', $this->admissionForm->id)
+      );
+  }
+);
 
 it('store admission application data', function () {
   $route = route('institutions.admissions.store', [
@@ -114,6 +134,108 @@ it('store admission application data', function () {
     );
   }
 });
+
+it('lets the public apply to a newly created free admission form', function () {
+  $formResponse = actingAs($this->admin)
+    ->postJson(
+      route('institutions.admission-forms.store', [$this->institution->uuid]),
+      [
+        'title' => 'Free Workflow Admission',
+        'price' => 0,
+        'is_published' => true
+      ]
+    )
+    ->assertOk();
+
+  $admissionFormId = $formResponse->json('admissionForm.id');
+  Auth::logout();
+
+  $applicationResponse = postJson(
+    route('institutions.admissions.store', [
+      'institution' => $this->institution->uuid
+    ]),
+    [
+      'admission_form_id' => $admissionFormId,
+      'reference' => 'public-free-workflow-' . uniqid(),
+      'first_name' => 'Public',
+      'last_name' => 'Applicant',
+      'guardians' => [
+        [
+          'first_name' => 'Test',
+          'last_name' => 'Guardian',
+          'phone' => '08000000000',
+          'relationship' => 'parent'
+        ]
+      ]
+    ]
+  )->assertOk();
+
+  $applicationId = $applicationResponse->json('admissionApplication.id');
+
+  $this->get(
+    route('institutions.admission-applications.preview', [
+      $this->institution->uuid,
+      $applicationId
+    ])
+  )
+    ->assertOk()
+    ->assertInertia(
+      fn(AssertableInertia $assert) => $assert
+        ->component('institutions/admissions/preview-admission-application')
+        ->where('admissionApplication.id', $applicationId)
+    );
+});
+
+it(
+  'allows a public applicant to preview a free admission application',
+  function () {
+    $admissionForm = AdmissionForm::factory()
+      ->for($this->institution)
+      ->create(['price' => 0]);
+    $application = AdmissionApplication::factory()
+      ->admissionForm($admissionForm)
+      ->create();
+
+    $this->get(
+      route('institutions.admission-applications.preview', [
+        $this->institution->uuid,
+        $application->id
+      ])
+    )
+      ->assertOk()
+      ->assertInertia(
+        fn(AssertableInertia $assert) => $assert
+          ->component('institutions/admissions/preview-admission-application')
+          ->where('admissionApplication.id', $application->id)
+      );
+  }
+);
+
+it(
+  'allows a public applicant to reach payment for a paid admission application',
+  function () {
+    $admissionForm = AdmissionForm::factory()
+      ->for($this->institution)
+      ->create(['price' => 500]);
+    $application = AdmissionApplication::factory()
+      ->admissionForm($admissionForm)
+      ->create();
+
+    $this->get(
+      route('institutions.admission-applications.preview', [
+        $this->institution->uuid,
+        $application->id
+      ])
+    )
+      ->assertOk()
+      ->assertInertia(
+        fn(AssertableInertia $assert) => $assert
+          ->component('institutions/admissions/buy-admission-application')
+          ->where('admissionApplication.id', $application->id)
+          ->where('admissionApplication.admission_form.price', '500.00')
+      );
+  }
+);
 
 it('will not run if admission status is not pending', function () {
   $admissionApplication = AdmissionApplication::factory()
@@ -238,6 +360,10 @@ it(
 it(
   'records a manual admission form payment and returns pending redirect',
   function () {
+    BankAccount::factory()
+      ->accountable($this->institution->institutionGroup)
+      ->create();
+
     $admissionApplication = AdmissionApplication::factory()
       ->admissionForm($this->admissionForm)
       ->create();
@@ -277,5 +403,28 @@ it(
         $manualPayment->reference
       ])
     );
+  }
+);
+
+it(
+  'does not start a manual admission payment without an institution bank account',
+  function () {
+    $admissionApplication = AdmissionApplication::factory()
+      ->admissionForm($this->admissionForm)
+      ->create();
+
+    postJson(
+      route('institutions.admission-forms.buy', [
+        $this->institution->uuid,
+        $this->admissionForm->id,
+        $admissionApplication->id
+      ]),
+      ['merchant' => PaymentMerchantType::Manual->value]
+    )
+      ->assertUnprocessable()
+      ->assertJsonPath(
+        'message',
+        'Manual payment is unavailable because the institution has not added a bank account yet.'
+      );
   }
 );

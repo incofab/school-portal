@@ -44,10 +44,11 @@ export function BrandButton2({ title, ...props }: Props & ButtonProps) {
   );
 }
 
-export function LinkButton({
-  title,
-  ...props
-}: Props & ButtonProps & InertiaLinkProps) {
+type LinkButtonProps = Omit<InertiaLinkProps, keyof ButtonProps> &
+  ButtonProps &
+  Omit<Props, keyof ButtonProps | keyof InertiaLinkProps>;
+
+export function LinkButton({ title, ...props }: LinkButtonProps) {
   return (
     <Button
       as={InertiaLink}

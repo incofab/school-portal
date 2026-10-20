@@ -34,6 +34,7 @@ class AdmissionApplicationController extends Controller
       'create',
       'successMessage',
       'store',
+      'previewAdmissionApplication',
       'admissionLetter',
       'buyAdmissionForm'
     ]);
@@ -57,12 +58,19 @@ class AdmissionApplicationController extends Controller
     );
   }
 
-  public function create(Institution $institution)
+  public function create(Institution $institution, Request $request)
   {
+    $admissionForm = $request->filled('admission_form_id')
+      ? $institution->admissionForms()->findOrFail(
+        $request->integer('admission_form_id')
+      )
+      : null;
+
     return Inertia::render(
       'institutions/admissions/create-admission-application',
       [
-        'institution' => $institution
+        'institution' => $institution,
+        'admissionForm' => $admissionForm
       ]
     );
   }
@@ -232,6 +240,12 @@ class AdmissionApplicationController extends Controller
     ]);
     $merchant = $request->merchant ?? PaymentMerchantType::getDefault();
     if ($merchant === PaymentMerchantType::Manual->value) {
+      abort_if(
+        !$institution->institutionGroup?->bankAccounts()->exists(),
+        422,
+        'Manual payment is unavailable because the institution has not added a bank account yet.'
+      );
+
       $reference = ManualPayment::generateReference();
       $paymentReferenceDto = new PaymentReferenceDto(
         institution_id: $institution->id,

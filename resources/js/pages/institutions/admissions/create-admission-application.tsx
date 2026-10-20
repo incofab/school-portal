@@ -45,7 +45,8 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   institution: Institution;
-  admissionForms: AdmissionForm[];
+  admissionForms?: AdmissionForm[];
+  admissionForm?: AdmissionForm | null;
 }
 
 interface GuardianProp {
@@ -60,6 +61,7 @@ interface GuardianProp {
 export default function CreateAdmissionApplication({
   institution,
   admissionForms,
+  admissionForm,
 }: Props) {
   const emptyGuardian = {
     first_name: '',
@@ -71,7 +73,7 @@ export default function CreateAdmissionApplication({
   } as GuardianProp;
   const form = useWebForm({
     reference: String(institution.id) + generateRandomString(16),
-    admission_form_id: '',
+    admission_form_id: admissionForm?.id ?? '',
     first_name: '',
     last_name: '',
     other_names: '',
@@ -179,7 +181,9 @@ export default function CreateAdmissionApplication({
                 formKey="admission_form_id"
               >
                 <AdmissionFormSelect
-                  admissionForms={admissionForms}
+                  admissionForms={
+                    admissionForm ? [admissionForm] : admissionForms
+                  }
                   onChange={(e: any) =>
                     form.setValue('admission_form_id', e?.value)
                   }
@@ -504,7 +508,6 @@ function GuardianForm({
             form.setValue('guardians', guardians);
           }}
           value={guardian.email}
-          required
         />
       </FormControlBox>
 

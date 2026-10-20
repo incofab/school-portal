@@ -15,7 +15,7 @@ import DestructivePopover from '@/components/destructive-popover';
 import useIsAdmin from '@/hooks/use-is-admin';
 import DateTimeDisplay from '@/components/date-time-display';
 import { LinkButton } from '@/components/buttons';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { InertiaLink } from '@inertiajs/inertia-react';
 import { useModalValueToggle } from '@/hooks/use-modal-toggle';
 import UploadAdmissionApplicationModal from '@/components/modals/upload-admission-applications-modal';
@@ -87,6 +87,15 @@ export default function ListAdmissionForms({ admissionForms }: Props) {
                   variant={'link'}
                   href={instRoute('admission-applications.index', [row.id])}
                   title="Applications"
+                />
+                <LinkButton
+                  variant={'outline'}
+                  leftIcon={<Icon as={PlusIcon} />}
+                  size="xs"
+                  href={`${instRoute(
+                    'admissions.create'
+                  )}?admission_form_id=${encodeURIComponent(row.id)}`}
+                  title="Apply"
                 />
                 <DestructivePopover
                   label={'Delete this Admission form'}

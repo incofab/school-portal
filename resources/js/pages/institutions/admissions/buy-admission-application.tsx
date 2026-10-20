@@ -47,8 +47,12 @@ export default function BuyAdmissionApplication({
       isDisabled: true,
     },
     {
-      label: 'Manual Payment',
+      label:
+        bankAccounts.length > 0
+          ? 'Manual Payment'
+          : 'Manual Payment (institution bank account not configured)',
       value: PaymentMerchantType.Manual,
+      isDisabled: bankAccounts.length === 0,
     },
   ] as any;
 
