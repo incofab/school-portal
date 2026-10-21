@@ -2,11 +2,17 @@
 
 namespace App\Actions\Sheet;
 
+use Illuminate\Http\UploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class LoadSpreadsheet
 {
+  public static function fromUploadedFile(UploadedFile $file): Spreadsheet
+  {
+    return self::fromPath($file->getRealPath());
+  }
+
   public static function fromPath(string $path): Spreadsheet
   {
     $previousHandler = set_error_handler(static function (
