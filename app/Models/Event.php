@@ -108,8 +108,14 @@ class Event extends BaseModel
       return $query;
     }
 
-    $audienceQuery = function ($query) use ($student) {
-      if (!$student->classification->classification_group_id) {
+    $classification = $student->classification;
+
+    if (!$classification) {
+      return $query->whereRaw('1 = 0');
+    }
+
+    $audienceQuery = function ($query) use ($student, $classification) {
+      if (!$classification->classification_group_id) {
         $query->where('classification_id', $student->classification_id);
         return;
       }
@@ -120,7 +126,7 @@ class Event extends BaseModel
             ->where(
               'classification_group_id',
               '=',
-              $student->classification->classification_group_id
+              $classification->classification_group_id
             )
             ->whereNull('classification_id')
         )
