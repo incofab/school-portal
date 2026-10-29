@@ -63,11 +63,6 @@ class RecordExamQuestionAttempt
           'updated_at' => $now
         ]
       )
-      ->sortBy(fn(array $record) => sprintf(
-        '%s:%020d',
-        $record['question']->getMorphClass(),
-        $record['question']->id
-      ))
       ->toArray();
 
     DB::transaction(function () use (
@@ -96,7 +91,7 @@ class RecordExamQuestionAttempt
           'last_questionable_id' => $lastQuestion->id,
           'current_question_index' => $currentQuestionIndex
         ]);
-    }, attempts: 5);
+    });
 
     return $records;
   }
