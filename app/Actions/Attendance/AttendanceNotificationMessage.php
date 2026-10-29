@@ -14,7 +14,8 @@ class AttendanceNotificationMessage
 
     return collect([
       "Attendance update for {$studentName}",
-      'Date: ' . $date->toFormattedDateString(),
+      // 'Date: ' . $date->toFormattedDateString(),
+      'Date: ' . $date->isoFormat('Do MMMM'),
       'Status: ' . $this->status($attendance),
       'Sign-in: ' . $this->time($attendance->signed_in_at),
       'Sign-out: ' . $this->time($attendance->signed_out_at)
