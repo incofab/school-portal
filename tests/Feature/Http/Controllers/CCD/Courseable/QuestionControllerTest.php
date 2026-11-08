@@ -276,15 +276,13 @@ test('rejects a question segment that exceeds 2,500 characters', function () {
     ]
   );
 
-  $response
-    ->assertRedirect()
-    ->assertSessionHasErrors('question_segments.0');
+  $response->assertRedirect()->assertSessionHasErrors('question_segments.0');
 });
 
 test(
-  'segmented question content is sent to AI one segment at a time',
+  'segments are processed separately and repeated requests are idempotent',
   function () {
-    $fake = LaravelAiTextAgent::fake([
+    LaravelAiTextAgent::fake([
       json_encode([
         [
           'question_no' => 1,
@@ -297,7 +295,7 @@ test(
       ]),
       json_encode([
         [
-          'question_no' => 2,
+          'question_no' => 1,
           'question' => '<p>Second question</p>',
           'option_a' => '<p>Second A</p>',
           'option_b' => '<p>Second B</p>',
@@ -307,21 +305,35 @@ test(
       ])
     ]);
 
-    $response = actingAs($this->instAdmin)->post(
-      route('institutions.questions.upload.store', [
-        $this->institution,
-        $this->courseSession->getMorphedId()
-      ]),
-      [
-        'question_segments' => [
-          '<p>First segment content</p>',
-          '<p>Second segment content</p>',
-          '<p> </p>'
-        ]
-      ]
-    );
+    $url = route('institutions.questions.upload.segment', [
+      $this->institution,
+      $this->courseSession->getMorphedId()
+    ]);
+    $firstSegment = [
+      'segment' => UploadedFile::fake()->createWithContent(
+        'segment-1.txt',
+        'First segment content'
+      ),
+      'idempotency_key' => '4a657f3c-e115-4e97-94cf-231d50d968b1'
+    ];
 
-    $response->assertRedirect();
+    $firstResponse = actingAs($this->instAdmin)->post($url, $firstSegment);
+    $firstResponse->assertOk()->assertJsonPath('questions_count', 1);
+    actingAs($this->instAdmin)
+      ->post($url, $firstSegment)
+      ->assertOk();
+
+    actingAs($this->instAdmin)
+      ->post($url, [
+        'segment' => UploadedFile::fake()->createWithContent(
+          'segment-2.txt',
+          'Second segment content'
+        ),
+        'idempotency_key' => '8b20a3f2-9f76-4765-9bc3-1cf5a511f736'
+      ])
+      ->assertOk()
+      ->assertJsonPath('questions_count', 1);
+
     LaravelAiTextAgent::assertPromptedTimes(2);
     LaravelAiTextAgent::assertPrompted(function ($request): bool {
       return str_contains($request->prompt, 'First segment content') &&

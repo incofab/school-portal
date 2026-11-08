@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\CCD;
 
 use App\Actions\GenericExport;
+use App\Actions\Questions\ConvertTextToQuestions;
 use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuestionPayloadRequest;
@@ -11,6 +12,10 @@ use App\Models\Institution;
 use App\Models\Question;
 use App\Models\Support\QuestionCourseable;
 use App\Support\MorphableHandler;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class QuestionController extends Controller
 {
@@ -27,7 +32,8 @@ class QuestionController extends Controller
       'update',
       'destroy',
       'uploadQuestionsView',
-      'uploadQuestionsStore'
+      'uploadQuestionsStore',
+      'processQuestionSegment'
     ]);
   }
 
@@ -167,6 +173,79 @@ class QuestionController extends Controller
     return redirect(
       instRoute('questions.index', $morphable->getMorphedId())
     )->with('message', 'Questions uploaded successfully');
+  }
+
+  function processQuestionSegment(
+    Institution $institution,
+    QuestionCourseable $morphable,
+    Request $request
+  ) {
+    $this->authorizeQuestionBank($morphable);
+    $validated = $request->validate([
+      'segment' => ['required', 'file', 'mimetypes:text/plain', 'max:5120'],
+      'idempotency_key' => ['required', 'uuid']
+    ]);
+    $text = file_get_contents($validated['segment']->getRealPath());
+    $plainText = html_entity_decode(
+      strip_tags($text),
+      ENT_QUOTES | ENT_HTML5,
+      'UTF-8'
+    );
+
+    if (
+      mb_strlen($plainText) >
+      UploadSessionQuestionsRequest::MAX_SEGMENT_CHARACTERS
+    ) {
+      throw ValidationException::withMessages([
+        'segment' => 'This segment has exceeded the 2,500-character limit.'
+      ]);
+    }
+
+    $cacheKey = implode(':', [
+      'question-segment-upload',
+      $institution->id,
+      $morphable->getMorphClass(),
+      $morphable->getKey(),
+      currentUser()->id,
+      $validated['idempotency_key']
+    ]);
+
+    if ($cached = Cache::get($cacheKey)) {
+      return response()->json($cached);
+    }
+
+    return Cache::lock($cacheKey . ':lock', 180)->block(10, function () use (
+      $cacheKey,
+      $text,
+      $institution,
+      $morphable
+    ) {
+      if ($cached = Cache::get($cacheKey)) {
+        return response()->json($cached);
+      }
+
+      $questions = (new ConvertTextToQuestions())->run($text, [
+        // Keep segment requests below Cloudflare's usual origin response limit.
+        'timeout' => 85,
+        'max_turn_seconds' => 85,
+        'retry_attempts' => 0
+      ]);
+      DB::transaction(function () use ($questions, $institution, $morphable) {
+        $lastQuestionNo = (int) $morphable->questions()->max('question_no');
+        foreach ($questions as $question) {
+          $question['question_no'] = ++$lastQuestionNo;
+          $this->storeQuestion($institution, $morphable, $question);
+        }
+      });
+
+      $result = [
+        'success' => true,
+        'questions_count' => count($questions)
+      ];
+      Cache::put($cacheKey, $result, now()->addDay());
+
+      return response()->json($result);
+    });
   }
 
   function downloadQuestions(

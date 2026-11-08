@@ -22,12 +22,18 @@
 			@endphp
 
 			<form method="POST" action="{{instRoute('questions.upload.store', $courseable->getMorphedId())}}"
+				data-segment-url="{{instRoute('questions.upload.segment', $courseable->getMorphedId())}}"
+				data-success-url="{{instRoute('questions.index', $courseable->getMorphedId())}}"
 				id="segmented-question-form">
 				@csrf
 				<div class="font-weight-bold mb-3">
 					<span>Title: </span> <span>{{$courseable->getName()}}</span>
 				</div>
 
+				<div class="alert alert-secondary" id="segment-upload-progress" aria-live="polite" role="status" hidden>
+					<strong><span data-sent-count>0</span> sent</strong> ·
+					<span data-remaining-count>0</span> remaining
+				</div>
 				<div id="question-segments" data-max-segments="6">
 					@foreach ($questionSegments as $index => $segment)
 						@php($segmentError = $errors->first('question_segments.' . $index))
@@ -52,6 +58,7 @@
 									0/2,500 characters
 								</small>
 							</div>
+							<div class="small mt-2" data-segment-status aria-live="polite"></div>
 							<div id="question-segment-error-{{$index + 1}}"
 								class="text-danger small mt-1" data-character-error role="alert" {{$segmentError ? '' : 'hidden'}}>
 								{{$segmentError ?: 'This segment has exceeded the 2,500-character limit. Click “Add segment” to continue entering the remaining content in another segment.'}}
@@ -133,6 +140,7 @@
 		var submitButton = document.getElementById('submit-segmented-questions');
 		var maxSegments = Number(segmentsContainer?.dataset.maxSegments || 6);
 		var maxCharacters = 2500;
+		var isProcessing = false;
 		var editorHeight = 460;
 		var nextSegmentId = segmentsContainer?.querySelectorAll('[data-segment]').length + 1 || 1;
 
@@ -238,6 +246,27 @@
 			});
 		}
 
+		function getEditorContent(textarea) {
+			var editor = textarea && window.tinymce ? window.tinymce.get(textarea.id) : null;
+			return editor ? editor.getContent() : (textarea?.value || '');
+		}
+
+		function updateUploadProgress(sent, total) {
+			var progress = document.getElementById('segment-upload-progress');
+			if (!progress) return;
+			progress.hidden = false;
+			progress.querySelector('[data-sent-count]').textContent = String(sent);
+			progress.querySelector('[data-remaining-count]').textContent = String(total - sent);
+		}
+
+		function createIdempotencyKey() {
+			if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+			return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (character) {
+				var random = Math.random() * 16 | 0;
+				return (character === 'x' ? random : (random & 3 | 8)).toString(16);
+			});
+		}
+
 		function addSegment() {
 			var segmentCards = getSegmentCards();
 			if (segmentCards.length >= maxSegments) {
@@ -258,6 +287,7 @@
 				'</div>' +
 				'<textarea name="question_segments[]" id="question-segment-' + segmentId + '" rows="18" class="form-control segmented-question-editor" aria-label="Question segment ' + segmentNumber + '" aria-describedby="question-segment-error-' + segmentNumber + '"></textarea>' +
 				'<div class="d-flex justify-content-between mt-1"><small class="text-muted" data-character-count aria-live="polite">0/2,500 characters</small></div>' +
+				'<div class="small mt-2" data-segment-status aria-live="polite"></div>' +
 				'<div id="question-segment-error-' + segmentNumber + '" class="text-danger small mt-1" data-character-error role="alert" hidden>This segment has exceeded the 2,500-character limit. Click “Add segment” to continue entering the remaining content in another segment.</div>';
 
 			segmentsContainer.appendChild(card);
@@ -286,7 +316,9 @@
 
 		addButton.addEventListener('click', addSegment);
 
-		form.addEventListener('submit', function (event) {
+		form.addEventListener('submit', async function (event) {
+			event.preventDefault();
+			if (isProcessing) return;
 			if (window.tinymce) {
 				window.tinymce.triggerSave();
 			}
@@ -303,22 +335,78 @@
 				overLimitCard.scrollIntoView({behavior: 'smooth', block: 'center'});
 				return;
 			}
-			var hasContent = getSegmentCards().some(function (card) {
+			var populatedCards = getSegmentCards().filter(function (card) {
 				var textarea = card.querySelector('textarea');
-				return textarea && (textarea.value.replace(/<[^>]*>/g, '').trim() !== '' || /<img\b/i.test(textarea.value));
+				var content = getEditorContent(textarea);
+				return textarea && (content.replace(/<[^>]*>/g, '').trim() !== '' || /<img\b/i.test(content));
 			});
-			if (!hasContent) {
-				event.preventDefault();
+			if (!populatedCards.length) {
 				window.alert('Enter question content in at least one segment before submitting.');
 				return;
 			}
-			if (!window.confirm('Process and upload the populated question segments?')) {
-				event.preventDefault();
-				return;
-			}
-			if (submitButton) {
-				submitButton.disabled = true;
-				submitButton.querySelector('span').textContent = 'Processing segments...';
+			isProcessing = true;
+			var sentCount = populatedCards.filter(function (card) { return card.dataset.sent === 'true'; }).length;
+			updateUploadProgress(sentCount, populatedCards.length);
+			addButton.disabled = true;
+			getSegmentCards().forEach(function (card) {
+				var textarea = card.querySelector('textarea');
+				var remove = card.querySelector('.remove-question-segment');
+				if (textarea) textarea.disabled = true;
+				if (remove) remove.disabled = true;
+			});
+			submitButton.disabled = true;
+			submitButton.querySelector('span').innerHTML = '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Sending segments...';
+
+			try {
+				for (var index = 0; index < populatedCards.length; index++) {
+					var card = populatedCards[index];
+					if (card.dataset.sent === 'true') continue;
+					var textarea = card.querySelector('textarea');
+					var status = card.querySelector('[data-segment-status]');
+					var segmentNumber = getSegmentCards().indexOf(card) + 1;
+					var idempotencyKey = card.dataset.idempotencyKey || createIdempotencyKey();
+					card.dataset.idempotencyKey = idempotencyKey;
+					status.className = 'small mt-2 text-primary';
+					status.innerHTML = '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Sending segment ' + segmentNumber + '...';
+					var body = new FormData();
+					body.append('segment', new File([getEditorContent(textarea)], 'segment-' + segmentNumber + '.txt', {type: 'text/plain;charset=UTF-8'}));
+					body.append('idempotency_key', idempotencyKey);
+					body.append('_token', form.querySelector('input[name="_token"]').value);
+					var response = await fetch(form.dataset.segmentUrl, {
+						method: 'POST',
+						body: body,
+						headers: {'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest'}
+					});
+					var result = await response.json().catch(function () { return {}; });
+					if (!response.ok || !result.success) {
+						throw new Error(result.message || result.errors?.segment?.[0] || 'Segment ' + segmentNumber + ' could not be processed.');
+					}
+					card.dataset.sent = 'true';
+					sentCount++;
+					status.className = 'small mt-2 text-success';
+					status.innerHTML = '<i class="fa fa-check-circle" aria-hidden="true"></i> Segment ' + segmentNumber + ' sent (' + result.questions_count + ' questions added).';
+					updateUploadProgress(sentCount, populatedCards.length);
+				}
+				window.location.assign(form.dataset.successUrl);
+			} catch (error) {
+				if (typeof card !== 'undefined' && card.dataset.sent !== 'true') {
+					var failedStatus = card.querySelector('[data-segment-status]');
+					if (failedStatus) {
+						failedStatus.className = 'small mt-2 text-danger';
+						failedStatus.textContent = 'This segment was not confirmed. Retry to continue safely.';
+					}
+				}
+				window.alert(error.message || 'Unable to process the segments. Please try again.');
+				getSegmentCards().forEach(function (card) {
+					var textarea = card.querySelector('textarea');
+					var remove = card.querySelector('.remove-question-segment');
+					if (textarea) textarea.disabled = card.dataset.sent === 'true';
+					if (remove) remove.disabled = card.dataset.sent === 'true' || getSegmentCards().length === 1;
+				});
+				addButton.disabled = getSegmentCards().length >= maxSegments;
+				submitButton.disabled = false;
+				submitButton.querySelector('span').textContent = 'Retry remaining segments';
+				isProcessing = false;
 			}
 		});
 

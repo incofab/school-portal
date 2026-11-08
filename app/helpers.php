@@ -193,21 +193,25 @@ if (!function_exists('generateAiText')) {
   function generateAiText(
     string $prompt,
     ?string $systemPrompt = null,
-    ?string $model = null
+    ?string $model = null,
+    array $options = []
   ): string {
     $response = app(AssistantTextGenerator::class)->generate(
       $systemPrompt ??
         'You are a well trained, qualified school teacher. You understand the curriculum and pedagogy of teaching in both Primary and Secondary Schools in Nigeria',
       $prompt,
-      [
-        'provider' => 'openai',
-        'model' => $model ?? config('services.openai.model'),
-        'timeout' => 120,
-        'max_turn_seconds' => 120,
-        'max_tokens' => null,
-        'retry_attempts' => 1,
-        'fallback_provider' => null
-      ]
+      array_merge(
+        [
+          'provider' => 'openai',
+          'model' => $model ?? config('services.openai.model'),
+          'timeout' => 120,
+          'max_turn_seconds' => 120,
+          'max_tokens' => null,
+          'retry_attempts' => 1,
+          'fallback_provider' => null
+        ],
+        $options
+      )
     );
 
     return $response->text;

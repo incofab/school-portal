@@ -6,7 +6,7 @@ use App\Enums\AiModels;
 
 class ConvertTextToQuestions
 {
-  public function run(string $content): array
+  public function run(string $content, array $aiOptions = []): array
   {
     $content = trim($content);
     if ($content === '') {
@@ -20,7 +20,8 @@ class ConvertTextToQuestions
       generateAiText(
         $prompt,
         'You are a well qualified school teacher and expert at formatting exam questions.',
-        AiModels::small()
+        AiModels::small(),
+        $aiOptions
       )
     );
     $decoded = json_decode($raw, true);

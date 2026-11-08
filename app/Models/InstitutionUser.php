@@ -87,6 +87,10 @@ class InstitutionUser extends BaseModel
       return false;
     }
 
+    if (!$this->hasInstitutionPermission(InstitutionPermission::StaffViewResult)) {
+      return false;
+    }
+
     return $student->classification?->form_teacher_id === $this->user_id ||
       CourseTeacher::query()
         ->where('classification_id', $student->classification_id)

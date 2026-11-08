@@ -14,6 +14,7 @@ enum InstitutionPermission: string
   case ManagePayroll = 'manage-payroll';
   case ManageNotifications = 'manage-notifications';
   case ManageChat = 'manage-chat';
+  case StaffViewResult = 'staff-view-result';
 
   public static function defaultPermissions(InstitutionUserType $role): array
   {
@@ -22,7 +23,8 @@ enum InstitutionPermission: string
       InstitutionUserType::Teacher => [
         self::ManageLibrary,
         self::ManageAttendance,
-        self::ManageChat
+        self::ManageChat,
+        self::StaffViewResult
       ],
       InstitutionUserType::Others => [],
       InstitutionUserType::Accountant => [

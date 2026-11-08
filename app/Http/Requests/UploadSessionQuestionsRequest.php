@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Actions\Questions\ConvertDocumentToQuestions;
-use App\Actions\Questions\ConvertTextToQuestions;
 use App\Actions\Sheet\ConvertSheetToArray;
 use App\Models\Question;
 use App\Rules\QuestionUploadFileRule;
@@ -18,12 +17,6 @@ class UploadSessionQuestionsRequest extends FormRequest
   protected function prepareForValidation()
   {
     $this->handleUploadedFile();
-
-    if (!$this->hasFile('file') && $this->segmentsExceedCharacterLimit()) {
-      return;
-    }
-
-    $this->handleQuestionSegments();
   }
 
   public function withValidator($validator): void
@@ -33,31 +26,41 @@ class UploadSessionQuestionsRequest extends FormRequest
         return;
       }
 
-      foreach (Arr::wrap($this->input('question_segments')) as $index => $segment) {
+      foreach (
+        Arr::wrap($this->input('question_segments'))
+        as $index => $segment
+      ) {
         if (!$this->segmentsExceedCharacterLimit($segment)) {
           continue;
         }
 
-        $validator->errors()->add(
-          "question_segments.$index",
-          'This segment has exceeded the 2,500-character limit. Click “Add segment” to continue entering the remaining content in another segment.'
-        );
+        $validator
+          ->errors()
+          ->add(
+            "question_segments.$index",
+            'This segment has exceeded the 2,500-character limit. Click “Add segment” to continue entering the remaining content in another segment.'
+          );
       }
     });
   }
 
   private function segmentsExceedCharacterLimit(?string $segment = null): bool
   {
-    $segments = $segment === null
-      ? Arr::wrap($this->input('question_segments'))
-      : [$segment];
+    $segments =
+      $segment === null
+        ? Arr::wrap($this->input('question_segments'))
+        : [$segment];
 
     foreach ($segments as $item) {
       if (!is_string($item)) {
         continue;
       }
 
-      $text = html_entity_decode(strip_tags($item), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+      $text = html_entity_decode(
+        strip_tags($item),
+        ENT_QUOTES | ENT_HTML5,
+        'UTF-8'
+      );
       if (mb_strlen($text) > self::MAX_SEGMENT_CHARACTERS) {
         return true;
       }
@@ -119,51 +122,6 @@ class UploadSessionQuestionsRequest extends FormRequest
         'file' => 'Invalid document: ' . $th->getMessage()
       ]);
     }
-  }
-
-  private function handleQuestionSegments(): void
-  {
-    if ($this->hasFile('file')) {
-      return;
-    }
-
-    $segments = Arr::wrap($this->input('question_segments'));
-    $segments = array_values(
-      array_filter(
-        $segments,
-        fn($segment) => $this->hasReadableContent($segment)
-      )
-    );
-
-    if (!$segments || count($segments) > 6) {
-      return;
-    }
-
-    try {
-      $questions = [];
-      $converter = new ConvertTextToQuestions();
-
-      foreach ($segments as $segment) {
-        $questions = [...$questions, ...$converter->run($segment)];
-      }
-
-      $this->merge(['questions' => $questions]);
-    } catch (\Throwable $th) {
-      throw ValidationException::withMessages([
-        'question_segments' =>
-          'Unable to process the question segments: ' . $th->getMessage()
-      ]);
-    }
-  }
-
-  private function hasReadableContent(mixed $segment): bool
-  {
-    if (!is_string($segment)) {
-      return false;
-    }
-
-    $text = html_entity_decode(strip_tags($segment));
-    return trim($text) !== '' || str_contains(strtolower($segment), '<img');
   }
 
   /**

@@ -45,7 +45,7 @@ class Course extends BaseModel
         )
       ],
       $prefix . 'institution_id' => ['nullable'],
-      $prefix . 'order' => ['sometimes', 'integer'],
+      $prefix . 'order' => ['nullable', 'integer'],
       $prefix . 'category' => ['nullable', 'string'],
       $prefix . 'description' => ['nullable', 'string']
     ];

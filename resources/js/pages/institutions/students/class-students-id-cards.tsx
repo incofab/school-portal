@@ -12,6 +12,9 @@ import {
   SimpleGrid,
   Spinner,
   Text,
+  Tabs,
+  TabList,
+  Tab,
   useColorModeValue,
   VStack,
 } from '@chakra-ui/react';
@@ -21,6 +24,7 @@ import { SelectOptionType } from '@/types/types';
 import useInstitutionRoute from '@/hooks/use-institution-route';
 import { Inertia } from '@inertiajs/inertia';
 import StudentIdCard from '@/components/id-cards/student-id-card';
+import StudentIdCardBack from '@/components/id-cards/student-id-card-back';
 
 interface Props {
   classification?: Classification;
@@ -33,9 +37,13 @@ export default function ClassStudentTiles({
   classifications,
   students,
 }: Props) {
-  const { currentInstitution } = useSharedProps();
+  const { currentInstitution, stamp } = useSharedProps();
   const { instRoute } = useInstitutionRoute();
   const [isChangingClass, setIsChangingClass] = useState(false);
+  const [template, setTemplate] = useState<1 | 2 | 3>(1);
+  const [orientation, setOrientation] = useState<'landscape' | 'portrait'>(
+    'landscape'
+  );
 
   function selectClass(option: SelectOptionType<number> | null) {
     if (!option?.value || option.value === classification?.id) {
@@ -125,6 +133,63 @@ export default function ClassStudentTiles({
               </HStack>
             </SimpleGrid>
           </Box>
+          <HStack
+            mt={3}
+            justify="space-between"
+            align="center"
+            flexWrap="wrap"
+            gap={3}
+          >
+            <Tabs
+              index={template - 1}
+              onChange={(index) => setTemplate((index + 1) as 1 | 2 | 3)}
+              variant="enclosed"
+              size="sm"
+            >
+              <TabList>
+                {[1, 2, 3].map((number) => (
+                  <Tab
+                    key={number}
+                    _selected={{
+                      bg: 'green.600',
+                      color: 'white',
+                      borderColor: 'green.600',
+                    }}
+                  >
+                    Template {number}
+                  </Tab>
+                ))}
+              </TabList>
+            </Tabs>
+            <HStack
+              role="group"
+              aria-label="Card orientation"
+              spacing={1}
+              border="1px solid"
+              borderColor="gray.200"
+              borderRadius="md"
+              p={1}
+            >
+              <Button
+                size="sm"
+                variant={orientation === 'landscape' ? 'solid' : 'ghost'}
+                colorScheme={orientation === 'landscape' ? 'green' : 'gray'}
+                onClick={() => setOrientation('landscape')}
+                aria-pressed={orientation === 'landscape'}
+              >
+                Landscape
+              </Button>
+              <Button
+                size="sm"
+                variant={orientation === 'portrait' ? 'solid' : 'ghost'}
+                colorScheme={orientation === 'portrait' ? 'green' : 'gray'}
+                onClick={() => setOrientation('portrait')}
+                aria-pressed={orientation === 'portrait'}
+              >
+                Portrait
+              </Button>
+            </HStack>
+          </HStack>
         </Container>
 
         {!classification ? (
@@ -153,8 +218,18 @@ export default function ClassStudentTiles({
               key={student.id}
               institution={currentInstitution}
               student={student}
+              template={template}
+              orientation={orientation}
             />
           ))}
+          {students.length > 0 && (
+            <StudentIdCardBack
+              institution={currentInstitution}
+              stamp={stamp}
+              template={template}
+              orientation={orientation}
+            />
+          )}
         </Div>
       </VStack>
     </Div>
