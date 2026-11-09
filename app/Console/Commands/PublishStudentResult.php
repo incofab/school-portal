@@ -19,15 +19,22 @@ class PublishStudentResult extends Command
   {
     $studentCode = trim($this->argument('student_code') ?? $this->ask('Student code'));
     $studentCode = last(explode('/', $studentCode));
-    $student = Student::query()->with('institution')->where('code', $studentCode)->first();
+    $student = Student::query()->with('institutionUser.institution')->where('code', $studentCode)->first();
 
     if (!$student) {
       $this->error('Student code not found.');
       return self::FAILURE;
     }
 
+    $institution = $student->institutionUser?->institution;
+
+    if (!$institution) {
+      $this->error('The student is not linked to an institution.');
+      return self::FAILURE;
+    }
+
     $results = TermResult::query()->where('student_id', $student->id)
-      ->where('institution_id', $student->institution_id)
+      ->where('institution_id', $institution->id)
       ->isPublished(false)->with(['academicSession', 'classification'])
       ->get();
 
