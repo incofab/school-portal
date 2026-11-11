@@ -54,7 +54,6 @@ class HomeController extends Controller
 
   public function privacyPolicy()
   {
-    return redirect()->route('home');
     return view('home.privacy-policy', []);
   }
 
