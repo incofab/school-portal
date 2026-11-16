@@ -1,2 +1,4 @@
 User-agent: *
 Disallow:
+
+Sitemap: https://edumanager.ng/sitemap.xml
