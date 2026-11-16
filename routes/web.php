@@ -243,6 +243,10 @@ Route::group(['prefix' => '{institution}/my-exam/'], function () {
 });
 
 Route::get('/', [Home\HomeController::class, 'index'])->name('home');
+Route::view(
+    '/resources/connected-school-management-system-nigeria',
+    'home.connected-school-management-system-nigeria'
+)->name('resources.connected-school-management-system-nigeria');
 Route::view('/exam-scholars', 'home.exam-scholars')->name('exam-scholars');
 Route::any('/privacy-policy', [Home\HomeController::class, 'privacyPolicy'])->name('privacy-policy');
 Route::any('/paystack/callback', [Home\PaystackController::class, 'callback'])->name('paystack.callback');

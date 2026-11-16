@@ -8,6 +8,7 @@
     ],
     'Company' => [
       ['label' => 'About', 'href' => route('home') . '#why-edumanager'],
+      ['label' => 'Resources', 'href' => route('resources.connected-school-management-system-nigeria')],
       ['label' => 'Support', 'href' => route('home') . '#support'],
       ['label' => 'Partner with us', 'href' => route('partner-registration-requests.create')],
       ['label' => 'Privacy Policy', 'href' => route('privacy-policy')],

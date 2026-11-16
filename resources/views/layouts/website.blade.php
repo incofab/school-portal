@@ -16,7 +16,7 @@
     />
     <link rel="canonical" href="@yield('canonical_url', url()->current())" />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="@yield('og_type', 'website')" />
     <meta property="og:site_name" content="EduManager" />
     <meta property="og:title" content="@yield('og_title', trim($__env->yieldContent('title', 'EduManager - School Management Software')))" />
     <meta
