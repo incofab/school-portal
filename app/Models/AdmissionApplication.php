@@ -59,7 +59,7 @@ class AdmissionApplication extends BaseModel
       $prefix . 'guardians.*.last_name' => ['required', 'string', 'max:255'],
       $prefix . 'guardians.*.other_names' => ['nullable', 'string', 'max:255'],
       $prefix . 'guardians.*.phone' => ['required', 'string', 'max:20'],
-      $prefix . 'guardians.*.email' => ['nullable', 'string'],
+      $prefix . 'guardians.*.email' => ['required', 'string'],
       $prefix . 'guardians.*.relationship' => [
         'required',
         new Enum(GuardianRelationship::class)

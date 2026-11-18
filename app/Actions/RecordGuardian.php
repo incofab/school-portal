@@ -9,6 +9,7 @@ use App\Services\Institutions\InstitutionRoleService;
 use App\Support\Audit\AcademicActivityLogger;
 use App\Support\Audit\ModelAudit;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class RecordGuardian
 {
@@ -30,6 +31,9 @@ class RecordGuardian
       ...collect($this->userData)
         ->except('relationship')
         ->toArray(),
+      'email' =>
+        $this->userData['email'] ??
+        Str::orderedUuid()->toString() . '@email.com',
       'password' => bcrypt('password')
     ]);
 
