@@ -105,10 +105,6 @@ function ListStudents({ students, studentCount, alumniCount }: Props) {
       sortKey: 'classification',
     },
     {
-      label: 'Guardian Phone',
-      value: 'guardian_phone',
-    },
-    {
       label: 'Gender',
       value: 'user.gender',
     },

@@ -67,7 +67,7 @@ class CoursesController extends Controller
   ) {
     $institutionUser = currentInstitutionUser();
     $student = null;
-    $classificationQuery = Classification::query()->orderBy('title');
+    $classificationQuery = Classification::query()->orderedByOrder();
 
     if ($institutionUser->isStudent()) {
       $student = $institutionUser->student()->first();
@@ -114,10 +114,7 @@ class CoursesController extends Controller
       if ($institutionUser->isStudent()) {
         $query->where('classification_id', $student?->classification_id);
       } elseif ($institutionUser->isTeacher()) {
-        $query->whereIn(
-          'teacher_user_id',
-          [$institutionUser->user_id]
-        );
+        $query->whereIn('teacher_user_id', [$institutionUser->user_id]);
       }
 
       $lessonNotes = $query->get();

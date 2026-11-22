@@ -75,7 +75,7 @@ class ResultCommentTemplate extends BaseModel
       Classification::class,
       'classifiable',
       'classifiables'
-    );
+    )->orderedByOrder();
   }
 
   function institution()

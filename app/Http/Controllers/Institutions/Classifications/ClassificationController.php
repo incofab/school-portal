@@ -22,11 +22,17 @@ class ClassificationController extends Controller
       'index',
       'search'
     ]);
+
+    $this->allowedRoles([
+      InstitutionUserType::Teacher,
+      InstitutionUserType::Admin
+    ])->only(['index', 'search']);
   }
 
   function index(Request $request, Institution $institution)
   {
     $query = Classification::query()
+      ->orderedByOrder()
       ->when(
         $request->classification_group,
         fn($q, $value) => $q->where('classification_group_id', $value)
@@ -46,7 +52,7 @@ class ClassificationController extends Controller
           request('search'),
           fn($q, $search) => $q->where('title', 'like', "%$search%")
         )
-        ->orderBy('title')
+        ->orderedByOrder()
         ->get()
     ]);
   }
@@ -54,7 +60,9 @@ class ClassificationController extends Controller
   function create(Institution $institution)
   {
     return inertia('institutions/classifications/create-edit-classification', [
-      'classificationGroups' => ClassificationGroup::all()
+      'classificationGroups' => ClassificationGroup::query()
+        ->orderedByOrder()
+        ->get()
     ]);
   }
 
@@ -63,7 +71,9 @@ class ClassificationController extends Controller
     return inertia(
       'institutions/classifications/create-multi-classifications',
       [
-        'classificationGroups' => ClassificationGroup::all()
+        'classificationGroups' => ClassificationGroup::query()
+          ->orderedByOrder()
+          ->get()
       ]
     );
   }
@@ -95,7 +105,9 @@ class ClassificationController extends Controller
         'formTeacher',
         'classificationGroup'
       ),
-      'classificationGroups' => ClassificationGroup::all()
+      'classificationGroups' => ClassificationGroup::query()
+        ->orderedByOrder()
+        ->get()
     ]);
   }
 
@@ -148,7 +160,10 @@ class ClassificationController extends Controller
 
   public function download(Request $request, Institution $institution)
   {
-    $classifications = $institution->classifications()->get();
+    $classifications = $institution
+      ->classifications()
+      ->orderedByOrder()
+      ->get();
 
     $excelWriter = ClassSheet::make($institution)->download($classifications);
 

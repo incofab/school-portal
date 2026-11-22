@@ -128,6 +128,10 @@ export default function ListClassification({ classifications }: Props) {
 
   const headers: ServerPaginatedTableHeader<Classification>[] = [
     {
+      label: 'Order',
+      value: 'order',
+    },
+    {
       label: 'Group',
       value: 'classification_group.title',
     },

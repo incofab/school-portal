@@ -200,6 +200,6 @@ class Assessment extends BaseModel
       Classification::class,
       'classifiable',
       'classifiables'
-    );
+    )->orderedByOrder();
   }
 }

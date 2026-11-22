@@ -59,7 +59,7 @@ class ListClassesTool implements AssistantTool
 
     $total = (clone $classesQuery)->count();
     $classes = $classesQuery
-      ->orderBy('title')
+      ->orderedByOrder()
       ->limit(200)
       ->get(['id', 'title', 'description']);
 

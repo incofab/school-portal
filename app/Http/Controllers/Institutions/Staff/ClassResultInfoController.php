@@ -30,7 +30,10 @@ class ClassResultInfoController extends Controller
 {
   public function __construct()
   {
-    $this->allowedRoles([InstitutionUserType::Admin, InstitutionUserType::Teacher]);
+    $this->allowedRoles([
+      InstitutionUserType::Admin,
+      InstitutionUserType::Teacher
+    ]);
   }
 
   public function index(Institution $institution, Request $request)
@@ -39,7 +42,9 @@ class ClassResultInfoController extends Controller
     ClassResultInfoUITableFilters::make($request->all(), $query)->filterQuery();
 
     return Inertia::render('institutions/courses/list-class-result-info', [
-      'classificationGroups' => Classification::query()->get(),
+      'classificationGroups' => Classification::query()
+        ->orderedByOrder()
+        ->get(),
       'classResultInfo' => paginateFromRequest(
         $query
           ->with('academicSession', 'classification')
@@ -80,16 +85,17 @@ class ClassResultInfoController extends Controller
       'You can only calculate results for your own classes'
     );
 
-    $classifications
-      ->each(function (Classification $classification) use ($data) {
-        ClassResultInfoAction::make()->calculate(
-          classification: $classification,
-          academicSessionId: $data['academic_session_id'],
-          term: $data['term'],
-          forMidTerm: $data['for_mid_term'],
-          forceCalculateTermResult: $data['force_calculate_term_result']
-        );
-      });
+    $classifications->each(function (Classification $classification) use (
+      $data
+    ) {
+      ClassResultInfoAction::make()->calculate(
+        classification: $classification,
+        academicSessionId: $data['academic_session_id'],
+        term: $data['term'],
+        forMidTerm: $data['for_mid_term'],
+        forceCalculateTermResult: $data['force_calculate_term_result']
+      );
+    });
 
     return $this->ok();
   }

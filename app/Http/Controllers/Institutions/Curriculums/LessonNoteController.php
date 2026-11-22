@@ -48,7 +48,7 @@ class LessonNoteController extends Controller
         ->first();
       $requestData['classification_id'] = $student->classification_id;
       $requestData['classification_group_id'] =
-        $student->classification_group_id;
+        $student->classification?->classification_group_id;
 
       $query->where('classification_id', $student->classification_id);
     } elseif ($institutionUser->isTeacher()) {
@@ -77,7 +77,9 @@ class LessonNoteController extends Controller
         $query->with('classification', 'course', 'teacher')->latest('id')
       ),
       'lessonPlans' => $this->getAvailableLessonPlans($institutionUser),
-      'classificationGroups' => ClassificationGroup::all()
+      'classificationGroups' => ClassificationGroup::query()
+        ->orderedByOrder()
+        ->get()
     ]);
   }
 
@@ -308,10 +310,7 @@ class LessonNoteController extends Controller
       ->latest('id');
 
     if ($institutionUser->isTeacher()) {
-      $query->whereIn(
-        'teacher_user_id',
-        [$institutionUser->user_id]
-      );
+      $query->whereIn('teacher_user_id', [$institutionUser->user_id]);
     }
 
     return $query->get();

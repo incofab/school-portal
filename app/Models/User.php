@@ -232,6 +232,11 @@ class User extends Authenticatable
     return $this->hasInstitutionRole(InstitutionUserType::Guardian);
   }
 
+  public function isInstitutionStaff()
+  {
+    return $this->hasInstitutionRole(InstitutionUserType::staffTypes());
+  }
+
   /** Manager Admin, has access to all institutions */
   public function isAdmin()
   {

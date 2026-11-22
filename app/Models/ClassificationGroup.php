@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +19,8 @@ class ClassificationGroup extends BaseModel
   public $guarded = [];
   protected $casts = [
     'institution_id' => 'integer',
-    'show_class_group_position' => 'boolean'
+    'show_class_group_position' => 'boolean',
+    'order' => 'integer'
   ];
 
   public static function createRule(
@@ -34,10 +36,18 @@ class ClassificationGroup extends BaseModel
           ->where('institution_id', $institution->id)
           ->ignore($classificationGroup?->id, 'id')
       ],
+      'order' => ['nullable', 'integer'],
       'head_of_school_title' => ['nullable', 'string', 'max:100'],
       'head_of_class_title' => ['nullable', 'string', 'max:100'],
       'student_title' => ['nullable', 'string', 'max:100']
     ];
+  }
+
+  public function scopeOrderedByOrder(Builder $query): Builder
+  {
+    return $query
+      ->orderByDesc('classification_groups.order')
+      ->orderBy('classification_groups.title');
   }
 
   public static function titleFallbacks(): array
@@ -110,6 +120,6 @@ class ClassificationGroup extends BaseModel
 
   function classifications()
   {
-    return $this->hasMany(Classification::class);
+    return $this->hasMany(Classification::class)->orderedByOrder();
   }
 }

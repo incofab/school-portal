@@ -32,6 +32,7 @@ export default function CreateOrUpdateClassification({
   const { instRoute } = useInstitutionRoute();
   const webForm = useWebForm({
     title: classificationGroup?.title ?? '',
+    order: classificationGroup?.order ?? 0,
     head_of_school_title:
       classificationGroup?.head_of_school_title ?? 'Principal',
     head_of_class_title:
@@ -72,6 +73,12 @@ export default function CreateOrUpdateClassification({
                 form={webForm as any}
                 formKey="title"
                 title="Class Group Title"
+              />
+              <InputForm
+                form={webForm as any}
+                formKey="order"
+                title="Order"
+                type="number"
               />
               <Accordion width="full" allowToggle>
                 <AccordionItem>

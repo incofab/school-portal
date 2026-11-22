@@ -422,6 +422,7 @@ export interface Attendance extends InstitutionRow {
 
 export interface Classification extends InstitutionRow {
   title: string;
+  order: number;
   description: string;
   has_equal_subjects: boolean;
   form_teacher_id: number;
@@ -549,6 +550,7 @@ export interface Certificate extends InstitutionRow {
 
 export interface ClassificationGroup extends InstitutionRow {
   title: string;
+  order: number;
   head_of_school_title: string;
   head_of_class_title: string;
   student_title: string;

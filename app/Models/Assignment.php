@@ -82,6 +82,8 @@ class Assignment extends BaseModel
     return $this->belongsToMany(
       Classification::class,
       'assignment_classifications'
-    )->withTimestamps();
+    )
+      ->withTimestamps()
+      ->orderedByOrder();
   }
 }

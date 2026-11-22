@@ -7,6 +7,7 @@ use App\Rules\ValidateExistsRule;
 use App\Rules\ValidateUniqueRule;
 use App\Traits\InstitutionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Classification extends BaseModel
@@ -18,7 +19,8 @@ class Classification extends BaseModel
     'institution_id' => 'integer',
     'classification_group_id' => 'integer',
     'form_teacher_id' => 'integer',
-    'has_equal_subjects' => 'boolean'
+    'has_equal_subjects' => 'boolean',
+    'order' => 'integer'
   ];
 
   static function createRule(
@@ -36,6 +38,7 @@ class Classification extends BaseModel
         )
       ],
       $prefix . 'description' => ['nullable', 'string'],
+      $prefix . 'order' => ['nullable', 'integer'],
       $prefix . 'has_equal_subjects' => ['nullable', 'boolean'],
       $prefix . 'form_teacher_id' => [
         'nullable',
@@ -49,6 +52,13 @@ class Classification extends BaseModel
         new ValidateExistsRule(ClassificationGroup::class)
       ]
     ];
+  }
+
+  public function scopeOrderedByOrder(Builder $query): Builder
+  {
+    return $query
+      ->orderByDesc('classifications.order')
+      ->orderBy('classifications.title');
   }
 
   function institution()

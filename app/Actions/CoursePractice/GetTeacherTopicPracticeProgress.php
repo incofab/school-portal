@@ -46,7 +46,7 @@ class GetTeacherTopicPracticeProgress
           $classificationGroupId
         )
       )
-      ->oldest('title')
+      ->orderedByOrder()
       ->get();
 
     $selectedClassificationId =

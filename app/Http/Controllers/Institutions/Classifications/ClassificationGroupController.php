@@ -1,15 +1,31 @@
 <?php
 namespace App\Http\Controllers\Institutions\Classifications;
 
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\ClassificationGroup;
 
 class ClassificationGroupController extends Controller
 {
+  public function __construct()
+  {
+    $this->allowedRoles([InstitutionUserType::Admin])->except([
+      'index',
+      'search'
+    ]);
+
+    $this->allowedRoles([
+      InstitutionUserType::Teacher,
+      InstitutionUserType::Admin
+    ])->only(['index']);
+  }
+
   public function index(Institution $institution)
   {
-    $query = ClassificationGroup::query()->withCount('classifications');
+    $query = ClassificationGroup::query()
+      ->orderedByOrder()
+      ->withCount('classifications');
     return inertia(
       'institutions/classification-groups/list-classification-groups',
       [
@@ -65,7 +81,7 @@ class ClassificationGroupController extends Controller
           request('search'),
           fn($q, $search) => $q->where('title', 'like', "%$search%")
         )
-        ->orderBy('title')
+        ->orderedByOrder()
         ->get()
     ]);
   }

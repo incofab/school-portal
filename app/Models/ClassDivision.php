@@ -52,7 +52,7 @@ class ClassDivision extends BaseModel
       Classification::class,
       'mappable',
       'class_division_mappings'
-    );
+    )->orderedByOrder();
   }
   function assessments()
   {

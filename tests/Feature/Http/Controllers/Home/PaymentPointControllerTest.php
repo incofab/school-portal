@@ -6,12 +6,11 @@ use App\Models\User;
 use App\Models\UserTransaction;
 use Illuminate\Support\Facades\Config;
 
-use function Pest\Laravel\withHeader;
-
 beforeEach(function () {
   // Ensure the route exists for the test
   $this->secret = 'test_secret';
   Config::set('services.payment-point.secret', $this->secret);
+  Config::set('app.debug', false);
 });
 
 test('it processes a valid payment point webhook', function () {
@@ -40,10 +39,9 @@ test('it processes a valid payment point webhook', function () {
 
   $signature = hash_hmac('sha256', $jsonPayload, $this->secret);
 
-  $_SERVER['HTTP_PAYMENTPOINT_SIGNATURE'] = $signature;
-  withHeader('PAYMENTPOINT_SIGNATURE', $signature)
-    ->post(route('api.payment-point.webhook'), $payload)
-    ->assertOk();
+  $this->postJson(route('api.payment-point.webhook'), $payload, [
+    'PAYMENTPOINT_SIGNATURE' => $signature
+  ])->assertOk();
 
   $user->refresh();
   expect($user->wallet)->toBe(floatval($settlementAmount));
@@ -76,13 +74,12 @@ test(
     $jsonPayload = json_encode($payload);
     $signature = hash_hmac('sha256', $jsonPayload, $this->secret);
 
-    $_SERVER['HTTP_PAYMENTPOINT_SIGNATURE'] = $signature;
-    withHeader('PAYMENTPOINT_SIGNATURE', $signature)
-      ->post(route('api.payment-point.webhook'), $payload)
-      ->assertOk();
-    withHeader('PAYMENTPOINT_SIGNATURE', $signature)
-      ->post(route('api.payment-point.webhook'), $payload)
-      ->assertOk();
+    $this->postJson(route('api.payment-point.webhook'), $payload, [
+      'PAYMENTPOINT_SIGNATURE' => $signature
+    ])->assertOk();
+    $this->postJson(route('api.payment-point.webhook'), $payload, [
+      'PAYMENTPOINT_SIGNATURE' => $signature
+    ])->assertOk();
 
     expect($user->fresh()->wallet)->toBe(floatval($settlementAmount));
     expect(
@@ -90,5 +87,25 @@ test(
         ->where('reference', 'TX-DUPLICATE')
         ->count()
     )->toBe(1);
+  }
+);
+
+test(
+  'it rejects a payment point webhook with no signature without throwing',
+  function () {
+    $this->postJson(route('api.payment-point.webhook'), [
+      'transaction_id' => 'TX-MISSING-SIGNATURE',
+      'amount_paid' => 5000,
+      'settlement_amount' => 4800,
+      'transaction_status' => 'success'
+    ])
+      ->assertBadRequest()
+      ->assertSee('Missing signature.');
+
+    expect(
+      UserTransaction::query()
+        ->where('reference', 'TX-MISSING-SIGNATURE')
+        ->exists()
+    )->toBeFalse();
   }
 );

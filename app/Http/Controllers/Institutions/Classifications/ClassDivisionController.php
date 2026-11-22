@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Institutions\Classifications;
 
+use App\Enums\InstitutionUserType;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\ClassDivision;
@@ -11,6 +12,19 @@ use Illuminate\Http\Request;
 
 class ClassDivisionController extends Controller
 {
+  public function __construct()
+  {
+    $this->allowedRoles([InstitutionUserType::Admin])->except([
+      'index',
+      'search'
+    ]);
+
+    $this->allowedRoles([
+      InstitutionUserType::Teacher,
+      InstitutionUserType::Admin
+    ])->only(['index']);
+  }
+
   public function index(Institution $institution)
   {
     $query = ClassDivision::query()
@@ -71,7 +85,6 @@ class ClassDivisionController extends Controller
     Institution $institution,
     ClassDivision $classDivision
   ) {
-    info($request->all());
     $request->validate([
       'classification_ids' => ['required', 'array', 'min:1'],
       'classification_ids.*' => [

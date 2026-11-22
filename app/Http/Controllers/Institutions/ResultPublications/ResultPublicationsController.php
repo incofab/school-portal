@@ -31,7 +31,9 @@ class ResultPublicationsController extends Controller
   function create(Institution $institution, Request $request)
   {
     $selection = $this->publicationSelection($institution, $request);
-    $classifications = Classification::all();
+    $classifications = Classification::query()
+      ->orderedByOrder()
+      ->get();
     $publicationBilling = $this->publicationBilling(
       $institution,
       $classifications->pluck('id')->toArray(),

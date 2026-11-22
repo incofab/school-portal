@@ -35,10 +35,7 @@ class LessonPlanController extends Controller
     $query = LessonPlan::query();
 
     if ($institutionUser->isTeacher()) {
-      $query->whereIn(
-        'teacher_user_id',
-        [$institutionUser->user_id]
-      );
+      $query->whereIn('teacher_user_id', [$institutionUser->user_id]);
     }
 
     LessonPlanUITableFilters::make($request->all(), $query)->filterQuery();
@@ -74,7 +71,7 @@ class LessonPlanController extends Controller
 
     $classifications = Classification::query()
       ->whereIn('id', $courseTeacherQuery->select('classification_id'))
-      ->orderBy('title')
+      ->orderedByOrder()
       ->get(['id', 'title']);
 
     $requestedClassificationId = $request->integer('classification_id') ?: null;
@@ -102,13 +99,12 @@ class LessonPlanController extends Controller
         )
         ->whereHas(
           'schemeOfWork.topic.classificationGroup.classifications',
-          fn($query) => $query->where('classifications.id', $selectedClassificationId)
+          fn($query) => $query->where(
+            'classifications.id',
+            $selectedClassificationId
+          )
         )
-        ->with([
-          'schemeOfWork.topic',
-          'teacher',
-          'lessonNote'
-        ])
+        ->with(['schemeOfWork.topic', 'teacher', 'lessonNote'])
         ->latest('lesson_plans.id')
         ->get();
     }

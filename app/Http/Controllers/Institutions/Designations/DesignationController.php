@@ -57,7 +57,7 @@ class DesignationController extends Controller
       'institutions/designations/create-edit-designation',
       [
         'classifications' => Classification::query()
-          ->orderBy('title')
+          ->orderedByOrder()
           ->get(['id', 'title']),
         'canManageStaffDesignations' =>
           currentInstitutionUser()?->isAdmin() ?? false
@@ -90,7 +90,7 @@ class DesignationController extends Controller
       [
         'designation' => $designation->load('eligibleClasses'),
         'classifications' => Classification::query()
-          ->orderBy('title')
+          ->orderedByOrder()
           ->get(['id', 'title']),
         'canManageStaffDesignations' =>
           currentInstitutionUser()?->isAdmin() ?? false

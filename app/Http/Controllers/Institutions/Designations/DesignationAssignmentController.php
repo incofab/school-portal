@@ -85,7 +85,7 @@ class DesignationAssignmentController extends Controller
           ->orderBy('title')
           ->get(['id', 'title']),
         'classifications' => Classification::query()
-          ->orderBy('title')
+          ->orderedByOrder()
           ->get(['id', 'title']),
         'academicSessions' => AcademicSession::query()
           ->orderByDesc('id')
@@ -161,14 +161,11 @@ class DesignationAssignmentController extends Controller
             )
           ),
         fn($q) => $q
-          ->whereIn(
-            'type',
-            [
-              InstitutionUserType::Teacher->value,
-              InstitutionUserType::Accountant->value,
-              InstitutionUserType::Others->value
-            ]
-          )
+          ->whereIn('type', [
+            InstitutionUserType::Teacher->value,
+            InstitutionUserType::Accountant->value,
+            InstitutionUserType::Others->value
+          ])
           ->whereDoesntHave('student')
       )
       ->with([

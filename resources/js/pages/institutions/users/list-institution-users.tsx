@@ -52,14 +52,6 @@ export default function ListStudents({ institutionUsers, roles }: Props) {
       render: (row) => <DisplayUserFullname user={row.user} />,
     },
     {
-      label: 'Email',
-      value: 'user.email',
-    },
-    {
-      label: 'Phone',
-      value: 'user.phone',
-    },
-    {
       label: 'Role',
       render: (row) => {
         const assignedRoles = row.roles

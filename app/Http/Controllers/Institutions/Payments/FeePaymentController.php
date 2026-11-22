@@ -177,9 +177,12 @@ class FeePaymentController extends Controller
       : null;
 
     return inertia('institutions/payments/fee-collection-overview', [
-      'fees' => Fee::query()->with('academicSession')->latest('id')->get(),
+      'fees' => Fee::query()
+        ->with('academicSession')
+        ->latest('id')
+        ->get(),
       'classifications' => Classification::query()
-        ->orderBy('title')
+        ->orderedByOrder()
         ->get(),
       'selectedFee' => $fee?->load([
         'academicSession',

@@ -99,6 +99,8 @@ class Library extends BaseModel
     return $this->belongsToMany(
       Classification::class,
       'library_classifications'
-    )->withTimestamps();
+    )
+      ->withTimestamps()
+      ->orderedByOrder();
   }
 }

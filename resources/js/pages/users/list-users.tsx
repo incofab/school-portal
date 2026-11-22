@@ -46,15 +46,6 @@ function ListUsers({ users }: Props) {
       sortKey: 'firstName',
     },
     {
-      label: 'Email',
-      value: 'email',
-      sortKey: 'email',
-    },
-    {
-      label: 'Phone',
-      value: 'phone',
-    },
-    {
       label: 'Manager Role',
       render: (row) =>
         row.roles && row.roles.length > 0

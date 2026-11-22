@@ -38,7 +38,7 @@ class PromoteStudentsController extends Controller
 
     $classes = (
       $destinationClassificatiinGroup?->classifications() ??
-      Classification::query()
+      Classification::query()->orderedByOrder()
     )->get();
 
     abort_if(

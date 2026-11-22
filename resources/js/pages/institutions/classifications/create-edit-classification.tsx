@@ -43,6 +43,7 @@ export default function CreateOrUpdateClassification({
 
   const webForm = useWebForm({
     title: classification?.title ?? '',
+    order: classification?.order ?? 0,
     description: classification?.description ?? '',
     has_equal_subjects: classification?.has_equal_subjects ?? true,
     form_teacher_id: classification?.form_teacher
@@ -128,6 +129,13 @@ export default function CreateOrUpdateClassification({
                 form={webForm as any}
                 formKey="title"
                 title="Class Title"
+              />
+
+              <InputForm
+                form={webForm as any}
+                formKey="order"
+                title="Order"
+                type="number"
               />
 
               <InputForm

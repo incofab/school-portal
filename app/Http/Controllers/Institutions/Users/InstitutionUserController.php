@@ -93,6 +93,7 @@ class InstitutionUserController extends Controller
     Institution $institution,
     ?Classification $classification = null
   ) {
+    abort_unless(currentUser()->isInstitutionStaff(), 403);
     $currentAcademicSessionId = SettingsHandler::makeFromRoute()->getCurrentAcademicSession();
     if (!empty($classification)) {
       // Returns Students

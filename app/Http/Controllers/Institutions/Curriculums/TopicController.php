@@ -50,7 +50,9 @@ class TopicController extends Controller
     return Inertia::render('institutions/topics/list-topics', [
       'parentTopic' => $topic,
       'topics' => paginateFromRequest($query),
-      'classificationGroups' => ClassificationGroup::all()
+      'classificationGroups' => ClassificationGroup::query()
+        ->orderedByOrder()
+        ->get()
     ]);
   }
 
@@ -65,7 +67,9 @@ class TopicController extends Controller
     return Inertia::render('institutions/topics/list-sub-topics', [
       'parentTopic' => $topic->load('classificationGroup', 'course'),
       'subtopics' => paginateFromRequest($query->latest('id')),
-      'classificationGroups' => ClassificationGroup::all()
+      'classificationGroups' => ClassificationGroup::query()
+        ->orderedByOrder()
+        ->get()
     ]);
   }
 

@@ -114,7 +114,7 @@ class Institution extends BaseModel
 
   public function classifications()
   {
-    return $this->hasMany(Classification::class);
+    return $this->hasMany(Classification::class)->orderedByOrder();
   }
 
   public function designations()
@@ -139,7 +139,7 @@ class Institution extends BaseModel
 
   public function classificationGroups()
   {
-    return $this->hasMany(ClassificationGroup::class);
+    return $this->hasMany(ClassificationGroup::class)->orderedByOrder();
   }
 
   public function classDivisions()

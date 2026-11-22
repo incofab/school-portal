@@ -164,7 +164,10 @@ it('lets the public apply to a newly created free admission form', function () {
           'first_name' => 'Test',
           'last_name' => 'Guardian',
           'phone' => '08000000000',
-          'relationship' => 'parent'
+          'relationship' => 'parent',
+          'email' => fake()
+            ->unique()
+            ->email()
         ]
       ]
     ]

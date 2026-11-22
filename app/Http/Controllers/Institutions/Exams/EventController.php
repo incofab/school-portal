@@ -81,7 +81,9 @@ class EventController extends Controller
     }
 
     return Inertia::render('institutions/exams/create-edit-event', [
-      'classificationGroups' => ClassificationGroup::all(),
+      'classificationGroups' => ClassificationGroup::query()
+        ->orderedByOrder()
+        ->get(),
       'courses' => $coursesQuery->orderedByCourseOrder()->get()
     ]);
   }
@@ -91,7 +93,9 @@ class EventController extends Controller
     $this->ensureTeacherOwns($event);
     return Inertia::render('institutions/exams/create-edit-event', [
       'event' => $event,
-      'classificationGroups' => ClassificationGroup::all()
+      'classificationGroups' => ClassificationGroup::query()
+        ->orderedByOrder()
+        ->get()
     ]);
   }
 

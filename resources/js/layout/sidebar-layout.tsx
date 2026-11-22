@@ -15,6 +15,7 @@ import {
   Nullable,
   InstitutionUserType,
   studentAndGuardianTypes,
+  staffTypes,
 } from '@/types/types';
 import {
   hasInstitutionPermission,
@@ -83,6 +84,7 @@ export default function SideBarLayout() {
       : []),
     {
       label: 'Staff',
+      user_types: staffTypes,
       sub_items: [
         {
           label: 'All Staff',
@@ -114,6 +116,7 @@ export default function SideBarLayout() {
     },
     {
       label: 'Students',
+      user_types: teachers,
       sub_items: [
         {
           label: 'All Students',
@@ -448,11 +451,7 @@ export default function SideBarLayout() {
     },
     {
       label: 'Curriculum',
-      user_types: [
-        InstitutionUserType.Admin,
-        InstitutionUserType.Teacher,
-        InstitutionUserType.Student,
-      ],
+      user_types: [InstitutionUserType.Admin, InstitutionUserType.Teacher],
       sub_items: [
         {
           label: 'Topics',

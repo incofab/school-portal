@@ -34,6 +34,7 @@ interface Props {
 
 const newClassification = () => ({
   title: '',
+  order: 0,
   has_equal_subjects: true,
   form_teacher_id: null,
   classification_group_id: '',
@@ -167,6 +168,26 @@ export default function CreateMultiClassifications({
                               )
                             }
                             required
+                          />
+                        </FormControlBox>
+
+                        <FormControlBox
+                          title="Order"
+                          form={webForm as any}
+                          formKey={`classifications.${index}.order`}
+                        >
+                          <Input
+                            type="number"
+                            value={classification.order ?? 0}
+                            onChange={(e) =>
+                              handleClassificationChange(
+                                index,
+                                'order',
+                                e.target.value === ''
+                                  ? 0
+                                  : Number(e.target.value)
+                              )
+                            }
                           />
                         </FormControlBox>
 

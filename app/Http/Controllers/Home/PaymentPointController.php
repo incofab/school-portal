@@ -13,14 +13,17 @@ class PaymentPointController extends Controller
 {
   public function webhook(Request $request)
   {
+    $inputData = $request->getContent();
+
     if (!config('app.debug')) {
       $secretKey = config('services.payment-point.secret');
 
-      // Step 1: Read the raw POST data from the request body
-      $inputData = file_get_contents('php://input');
-
-      // Step 2: Get the signature from the headers
-      $signatureHeader = $_SERVER['HTTP_PAYMENTPOINT_SIGNATURE'];
+      // Read the exact body bytes used by the sender to create its signature.
+      // A missing signature is an invalid webhook, not an application error.
+      $signatureHeader = $request->header('PAYMENTPOINT_SIGNATURE');
+      if (!is_string($signatureHeader) || $signatureHeader === '') {
+        return response()->json('Missing signature.', 400);
+      }
       // Step 3: Calculate the expected signature using HMAC-SHA256
       $calculatedSignature = hash_hmac('sha256', $inputData, $secretKey);
 
@@ -30,7 +33,7 @@ class PaymentPointController extends Controller
       }
     }
     // Step 5: Decode the JSON payload
-    $webhookData = $request->all(); // json_decode($inputData, true);
+    $webhookData = json_decode($inputData, true);
 
     // Step 6: Ensure the data was successfully decoded
     if ($webhookData === null) {

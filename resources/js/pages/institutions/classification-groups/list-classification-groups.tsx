@@ -49,6 +49,10 @@ export default function ListClassificationGroup({
 
   const headers: ServerPaginatedTableHeader<ClassificationGroup>[] = [
     {
+      label: 'Order',
+      value: 'order',
+    },
+    {
       label: 'Title',
       value: 'title',
     },

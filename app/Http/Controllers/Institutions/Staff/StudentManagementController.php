@@ -88,13 +88,13 @@ class StudentManagementController extends Controller
   ) {
     $currentAcademicSessionId = SettingsHandler::makeFromRoute()->getCurrentAcademicSession();
     $classification ??= Classification::query()
-      ->orderBy('title')
+      ->orderedByOrder()
       ->first();
 
     return inertia('institutions/students/class-students-id-cards', [
       'classification' => $classification,
       'classifications' => Classification::query()
-        ->orderBy('title')
+        ->orderedByOrder()
         ->get(),
       'students' => $classification
         ? $classification
@@ -114,7 +114,9 @@ class StudentManagementController extends Controller
   public function create(Institution $institution)
   {
     return inertia('institutions/students/create-edit-student', [
-      'classification' => Classification::all()
+      'classification' => Classification::query()
+        ->orderedByOrder()
+        ->get()
     ]);
   }
 

@@ -51,7 +51,9 @@ class TimetableController extends Controller
         'timetables' => $timetables
       ]);
     }
-    $classifications = Classification::all();
+    $classifications = Classification::query()
+      ->orderedByOrder()
+      ->get();
     if ($classifications->isNotEmpty()) {
       return $this->classTimetable($institution, $classifications->first());
     } else {
