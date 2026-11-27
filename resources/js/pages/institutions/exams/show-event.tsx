@@ -31,8 +31,8 @@ export default function ShowEvent({ event, studentExam }: Props) {
     {
       label: 'Expires At',
       value: event.expires_at
-        ? ''
-        : format(new Date(event.expires_at!), dateFormat),
+        ? format(new Date(event.expires_at!), dateFormat)
+        : 'No Expiry',
     },
     { label: 'Num of Subject', value: String(event.num_of_subjects) },
     { label: 'Class', value: String(event.classification_group?.title ?? '') },
@@ -45,7 +45,7 @@ export default function ShowEvent({ event, studentExam }: Props) {
     if (!isStudent) {
       return false;
     }
-    if (isTimeExpired(event.expires_at)) {
+    if (event.expires_at && isTimeExpired(event.expires_at)) {
       return false;
     }
     if (!isTimeExpired(event.starts_at)) {

@@ -1,9 +1,10 @@
 import React from 'react';
 import { CertificateArtworkData } from './types';
+import { Div } from '@/components/semantic';
 
 export function InstitutionAddress({ data }: { data: CertificateArtworkData }) {
   return data.schoolAddress ? (
-    <small className="certificate-school-address">{data.schoolAddress}</small>
+    <Div className="certificate-school-address">{data.schoolAddress}</Div>
   ) : null;
 }
 

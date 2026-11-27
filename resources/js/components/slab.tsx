@@ -40,11 +40,13 @@ export const SlabFooter = ({ children, ...props }: BoxProps) => (
 interface SlabHeadingProps {
   title?: string;
   rightElement?: React.ReactNode;
+  pageTitleProps?: HeadingProps;
 }
 export const SlabHeading = ({
   children,
   title,
   rightElement,
+  pageTitleProps,
   ...props
 }: SlabHeadingProps & HeadingProps) => (
   <Heading size={'md'} fontWeight={'medium'} {...props}>
@@ -56,7 +58,7 @@ export const SlabHeading = ({
         justify={'space-between'}
         spacing={3}
       >
-        <PageTitle>{title}</PageTitle>
+        <PageTitle {...pageTitleProps}>{title}</PageTitle>
         {rightElement}
       </Wrap>
     )}

@@ -5,6 +5,8 @@ import {
   InstitutionAddress,
   RecipientType,
 } from './placeholders';
+import { Div } from '@/components/semantic';
+import { HStack } from '@chakra-ui/react';
 
 export default function Template7({ data }: CertificateTemplateProps) {
   return (
@@ -25,14 +27,17 @@ export default function Template7({ data }: CertificateTemplateProps) {
       </div>
       <div className="certificate-medal-content">
         <header className="certificate-school">
-          {data.institutionLogo && <img src={data.institutionLogo} alt="" />}
-          <span>{data.institutionName}</span>
+          <HStack justify={'space-between'} spacing={3}>
+            {data.institutionLogo && <img src={data.institutionLogo} alt="" />}
+            <span>{data.institutionName}</span>
+          </HStack>
           <InstitutionAddress data={data} />
         </header>
         <div className="certificate-copy certificate-copy-left">
-          <p className="certificate-kicker">Awarded in recognition of</p>
+          <p className="certificate-kicker">Awarded to</p>
           <h2>{data.recipientName}</h2>
           <RecipientType data={data} />
+          <br />
           <h1>{data.awardType}</h1>
           <p className="certificate-citation">
             {data.citation ||
