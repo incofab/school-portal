@@ -91,7 +91,7 @@ class RecordExamQuestionAttempt
           'last_questionable_id' => $lastQuestion->id,
           'current_question_index' => $currentQuestionIndex
         ]);
-    });
+    }, 3);
 
     return $records;
   }
